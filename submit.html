@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Submit an Event — 313 Events</title>
 <link rel="canonical" href="https://313.events/submit.html">
@@ -280,7 +288,7 @@ CATS.forEach((c,i)=>{
 const form = document.getElementById('eventForm');
 const errorBox = document.getElementById('formError');
 
-form.addEventListener('submit', (e)=>{
+form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const data = new FormData(form);
   const category = data.get('category');
@@ -288,6 +296,7 @@ form.addEventListener('submit', (e)=>{
   const missing = required.some(f => !data.get(f)) || !category;
 
   if(missing){
+    errorBox.innerHTML = 'Please fill in all required fields marked with <span class="req">*</span>.';
     errorBox.classList.add('show');
     window.scrollTo({top:0, behavior:'smooth'});
     return;
@@ -297,7 +306,7 @@ form.addEventListener('submit', (e)=>{
   const catLabel = CATS.find(c=>c.key===category)?.label || category;
   const payload = {
     title: data.get('title'),
-    category: catLabel,
+    category, // CATS key, e.g. "music" — matches the event_category enum in Supabase
     description: data.get('description') || null,
     imageUrl: data.get('imageUrl') || null,
     startDate: data.get('startDate'),
@@ -306,20 +315,50 @@ form.addEventListener('submit', (e)=>{
     recurring: form.recurring.checked,
     venue: data.get('venue'),
     address: data.get('address') || null,
-    venueAddressPrivate: form.venueTba.checked,
+    venueTba: form.venueTba.checked,
     admission: data.get('admission'),
     price: data.get('price') || null,
     ticketUrl: data.get('ticketUrl') || null,
-    organizer: data.get('orgName'),
+    orgName: data.get('orgName'),
     contactEmail: data.get('contactEmail'),
-    status: "pending_review",
-    submittedVia: "Detroit Arts & Events Calendar — public submission form"
   };
 
-  document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
-  form.style.display = 'none';
-  document.getElementById('confirmPanel').classList.add('show');
-  window.scrollTo({top:0, behavior:'smooth'});
+  const submitBtn = form.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+
+  try {
+    const resp = await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(result.error || 'Submission failed — please try again.');
+    }
+
+    const preview = { ...payload, category: catLabel, status: 'pending_review' };
+    document.getElementById('jsonPreview').textContent = JSON.stringify(preview, null, 2);
+    form.style.display = 'none';
+    document.getElementById('confirmPanel').classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch (err) {
+    const msg = err && err.message || '';
+    if (msg.includes('not configured')) {
+      errorBox.textContent = 'This form isn\'t connected to a database yet — the site owner still needs to finish setup.';
+    } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+      errorBox.textContent = 'Couldn\'t reach the server. Check your connection and try again.';
+    } else {
+      errorBox.textContent = msg || 'Something went wrong submitting your event. Please try again in a moment.';
+    }
+    errorBox.classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit event for review';
+  }
 });
 
 function submitAnother(){

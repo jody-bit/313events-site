@@ -1,0 +1,124 @@
+// Vercel serverless function — proxies the Ticketmaster Discovery API so the
+// API key stays server-side (set TICKETMASTER_API_KEY in Vercel's Environment
+// Variables, never commit it to the repo). Returns events pre-shaped to match
+// the calendar's own EVENTS schema so the front end can merge them directly.
+//
+// Local dev / no key configured: returns { events: [], error: "..." } rather
+// than throwing, so the calendar always still works from its static data.
+
+const CITY = "Detroit";
+const STATE_CODE = "MI";
+const COUNTRY_CODE = "US";
+
+// Ticketmaster segment/genre -> this calendar's category keys.
+// Sports is intentionally excluded — out of scope for an arts/culture/nightlife calendar.
+function mapCategory(classifications) {
+  const c = (classifications && classifications[0]) || {};
+  const segment = (c.segment && c.segment.name) || "";
+  const genre = (c.genre && c.genre.name) || "";
+
+  if (segment === "Music") {
+    if (/comedy/i.test(genre)) return "theatre";
+    return "music";
+  }
+  if (segment === "Arts & Theatre") {
+    if (/dance|ballet/i.test(genre)) return "dance";
+    if (/comedy/i.test(genre)) return "theatre";
+    if (/theatre|musical/i.test(genre)) return "theatre";
+    if (/visual|fine art/i.test(genre)) return "visual";
+    return "theatre";
+  }
+  if (segment === "Film") return "film";
+  if (segment === "Miscellaneous" && /family/i.test(genre)) return "family";
+  return null; // includes Sports, and anything else unmapped -> excluded
+}
+
+function formatTime(dateObj) {
+  if (!dateObj || !dateObj.localTime) return "Evening";
+  const [h, m] = dateObj.localTime.split(":");
+  let hour = parseInt(h, 10);
+  const ap = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12 || 12;
+  return `${hour}:${m} ${ap}`;
+}
+
+module.exports = async (req, res) => {
+  const apiKey = process.env.TICKETMASTER_API_KEY;
+  res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate"); // cache 1hr on Vercel's edge
+
+  if (!apiKey) {
+    res.status(200).json({ events: [], error: "TICKETMASTER_API_KEY not configured" });
+    return;
+  }
+
+  const today = new Date();
+  const endWindow = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days out
+  const startDateTime = today.toISOString().slice(0, 19) + "Z";
+  const endDateTime = endWindow.toISOString().slice(0, 19) + "Z";
+
+  const allEvents = [];
+  try {
+    for (let page = 0; page < 5; page++) {
+      const url = new URL("https://app.ticketmaster.com/discovery/v2/events.json");
+      url.searchParams.set("apikey", apiKey);
+      url.searchParams.set("city", CITY);
+      url.searchParams.set("stateCode", STATE_CODE);
+      url.searchParams.set("countryCode", COUNTRY_CODE);
+      url.searchParams.set("startDateTime", startDateTime);
+      url.searchParams.set("endDateTime", endDateTime);
+      url.searchParams.set("size", "200");
+      url.searchParams.set("page", String(page));
+
+      const r = await fetch(url.toString());
+      if (!r.ok) break;
+      const data = await r.json();
+      const events = (data._embedded && data._embedded.events) || [];
+      allEvents.push(...events);
+      const totalPages = (data.page && data.page.totalPages) || 1;
+      if (page + 1 >= totalPages) break;
+    }
+  } catch (err) {
+    res.status(200).json({ events: [], error: "Ticketmaster fetch failed: " + err.message });
+    return;
+  }
+
+  const shaped = allEvents
+    .map((e) => {
+      const cat = mapCategory(e.classifications);
+      if (!cat) return null;
+
+      const venue =
+        e._embedded && e._embedded.venues && e._embedded.venues[0]
+          ? e._embedded.venues[0].name
+          : "Venue TBA";
+
+      // Keep this calendar's "City of Detroit + enclaves" scope — Ticketmaster's
+      // "Detroit" city filter can include metro venues outside that footprint.
+      const venueCity =
+        e._embedded && e._embedded.venues && e._embedded.venues[0] && e._embedded.venues[0].city
+          ? e._embedded.venues[0].city.name
+          : "";
+      const allowedCities = ["Detroit", "Hamtramck", "Highland Park"];
+      if (venueCity && !allowedCities.includes(venueCity)) return null;
+
+      const start = e.dates && e.dates.start;
+      if (!start || !start.localDate) return null;
+
+      const priceRange = e.priceRanges && e.priceRanges[0];
+
+      return {
+        date: start.localDate,
+        title: e.name,
+        venue,
+        cat,
+        time: formatTime(start),
+        free: false,
+        source: "Ticketmaster",
+        ticketUrl: e.url || null,
+        priceFrom: priceRange ? priceRange.min : null,
+      };
+    })
+    .filter(Boolean);
+
+  res.status(200).json({ events: shaped, fetchedAt: new Date().toISOString() });
+};

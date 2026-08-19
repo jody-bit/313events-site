@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — 313 Events</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --ink:#1a1d24; --ink-soft:#5b6270; --line:#e3e5ea; --bg:#f7f7f9;
+    --accent:#c8102e; --ok:#1a7f37; --bad:#b42318;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:#111319;color:#fff;padding:18px 24px;}
+  header h1{margin:0;font-size:18px;}
+  header .sub{color:#9aa0ab;font-size:13px;margin-top:2px;}
+  main{max-width:960px;margin:0 auto;padding:24px;}
+  .gate{max-width:420px;margin:80px auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px;text-align:center;}
+  .gate input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;margin:14px 0;}
+  .gate button, .card button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;}
+  .gate button{background:var(--ink);color:#fff;width:100%;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+  .card h3{margin:0 0 4px;font-size:16px;}
+  .meta{color:var(--ink-soft);font-size:13px;line-height:1.6;margin:8px 0;}
+  .meta b{color:var(--ink);}
+  .actions{display:flex;gap:8px;margin-top:12px;}
+  .btn-approve{background:var(--ok);color:#fff;}
+  .btn-reject{background:var(--bad);color:#fff;}
+  .empty{color:var(--ink-soft);text-align:center;padding:60px 0;}
+  .err{color:var(--bad);font-size:13.5px;margin-top:8px;}
+  .refresh{margin-bottom:16px;}
+  .refresh button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>313 Events — Admin</h1>
+  <div class="sub">Moderation queue for venue/organizer submissions</div>
+</header>
+
+<main>
+  <div id="gate" class="gate">
+    <div style="font-weight:600;margin-bottom:4px;">Admin access</div>
+    <div style="color:var(--ink-soft);font-size:13.5px;">Enter the admin secret configured in Vercel (ADMIN_SECRET).</div>
+    <input type="password" id="secretInput" placeholder="Admin secret">
+    <button onclick="unlock()">Enter</button>
+    <div class="err" id="gateErr" style="display:none;"></div>
+  </div>
+
+  <div id="queue" style="display:none;">
+    <div class="refresh"><button onclick="loadQueue()">↻ Refresh</button></div>
+    <div id="list"></div>
+  </div>
+</main>
+
+<script>
+let SECRET = "";
+
+function unlock() {
+  SECRET = document.getElementById('secretInput').value.trim();
+  if (!SECRET) return;
+  loadQueue();
+}
+
+async function loadQueue() {
+  const gateErr = document.getElementById('gateErr');
+  gateErr.style.display = 'none';
+  try {
+    const resp = await fetch('/api/admin-events', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Failed to load queue');
+
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('queue').style.display = 'block';
+    renderList(data.events || []);
+  } catch (err) {
+    gateErr.textContent = err.message;
+    gateErr.style.display = 'block';
+  }
+}
+
+function renderList(events) {
+  const list = document.getElementById('list');
+  if (!events.length) {
+    list.innerHTML = '<div class="empty">No pending submissions. 🎉</div>';
+    return;
+  }
+  list.innerHTML = events.map(e => `
+    <div class="card" id="card-${e.id}">
+      <h3>${escapeHtml(e.title)}</h3>
+      <div class="meta">
+        <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
+        Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b><br>
+        ${e.is_free ? 'Free' : (e.price_from ? 'From $' + e.price_from : 'Paid')}
+        ${e.ticket_url ? ' · <a href="' + escapeHtml(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a>' : ''}<br>
+        Submitted by: <b>${escapeHtml(e.submitter_org_name || '—')}</b> (${escapeHtml(e.submitter_email || '—')})
+        ${e.description ? '<br><br>' + escapeHtml(e.description) : ''}
+      </div>
+      <div class="actions">
+        <button class="btn-approve" onclick="review('${e.id}','approve')">Approve</button>
+        <button class="btn-reject" onclick="review('${e.id}','reject')">Reject</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function review(id, action) {
+  const card = document.getElementById('card-' + id);
+  card.style.opacity = '0.5';
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id, action }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    card.remove();
+  } catch (err) {
+    card.style.opacity = '1';
+    alert(err.message);
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>

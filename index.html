@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Detroit Arts &amp; Events Calendar</title>
 <link rel="canonical" href="https://313.events/">
@@ -3562,7 +3570,11 @@ const CATS = {
 
 // Real, sourced Detroit events, Aug 19 - Oct 31 2026.
 // date: YYYY-MM-DD. time: display string. free: boolean. note: optional caveat.
-const EVENTS = [
+// This array is now only a FALLBACK — used if the live Supabase database
+// can't be reached (offline, misconfigured keys, etc.) so the calendar
+// always renders something rather than going blank. The database is the
+// live source of truth; see supabase/schema.sql and loadSupabaseEvents() below.
+const FALLBACK_EVENTS = [
   {date:"2026-08-19", title:"Be My Neighbor Day", venue:"Eastern Market", cat:"family", time:"12:00–3:00 PM", free:true},
   {date:"2026-08-19", title:"Doodle Art (drop-in)", venue:"Detroit Institute of Arts", cat:"visual", time:"11:00 AM–3:00 PM", free:false, note:"Runs through Aug 23"},
   {date:"2026-08-20", title:"Doodle Art (drop-in)", venue:"Detroit Institute of Arts", cat:"visual", time:"11:00 AM–3:00 PM", free:false},
@@ -3765,8 +3777,12 @@ const EVENTS = [
   {date:"2026-10-13", title:"Dana and Alden — Papa's Boat Tour", venue:"El Club", cat:"music", time:"Evening", free:false, source:"Dice"}
 ];
 
+// Live, mutable working set. Starts as the fallback data; loadSupabaseEvents()
+// below replaces its contents with the live database rows once fetched.
+let EVENTS = FALLBACK_EVENTS.slice();
+
 // index by date
-const byDate = {};
+let byDate = {};
 EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> (a.time||"").localeCompare(b.time||"")));
 
@@ -3992,6 +4008,66 @@ document.getElementById('listViewBtn').onclick = ()=>{
 
 buildFilterBar();
 render();
+
+// ---- Live database (Supabase) ----
+// This is the real, always-current data source: hand-curated events, venue
+// submissions once approved by an admin, and Ticketmaster events written by
+// the Vercel Cron job (see api/cron-ticketmaster.js) all live in one
+// `events` table with status='approved'. The anon key below is meant to be
+// public — Row Level Security (see supabase/schema.sql) restricts it to
+// read-only access on approved rows only, nothing else.
+//
+// Fill these in once you've created your Supabase project (Project Settings
+// → API). Left blank, the calendar just keeps running on FALLBACK_EVENTS.
+const SUPABASE_URL = "https://afvyfjfqukptnfmgshzn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5"; // publishable key — safe for client code, read-only via RLS
+
+function mapSupabaseRow(row) {
+  return {
+    date: row.start_date,
+    title: row.title,
+    venue: row.venue_name_raw || "Venue TBA",
+    cat: row.category,
+    time: row.time_display || "",
+    free: !!row.is_free,
+    source: row.source || "Manual",
+    note: row.note || undefined,
+    ticketUrl: row.ticket_url || undefined,
+    priceFrom: row.price_from ?? undefined,
+  };
+}
+
+async function loadSupabaseEvents() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=title,start_date,venue_name_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    const resp = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!resp.ok) return; // fails silently — fallback data stays on screen
+    const rows = await resp.json();
+    if (!Array.isArray(rows) || !rows.length) return;
+
+    EVENTS = rows.map(mapSupabaseRow);
+    byDate = {};
+    EVENTS.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+    Object.values(byDate).forEach(list => list.sort((a,b) => (a.time||"").localeCompare(b.time||"")));
+
+    buildFilterBar();
+    render();
+
+    const badge = document.createElement('div');
+    badge.style.cssText = 'font-size:11.5px;color:#5b6270;margin-top:6px;';
+    badge.textContent = `Live data — ${EVENTS.length} approved events`;
+    document.querySelector('.notice').appendChild(badge);
+  } catch (err) {
+    // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
+  }
+}
+loadSupabaseEvents();
 </script>
 </body>
 </html>
