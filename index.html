@@ -3815,9 +3815,16 @@ let byDate = {};
 EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> (a.time||"").localeCompare(b.time||"")));
 
-const MIN_MONTH = new Date(2026,7,1);  // Aug 2026
-const MAX_MONTH = new Date(2026,9,1);  // Oct 2026
-let current = new Date(2026,7,1);
+// Navigable range is relative to today's real date, not a hardcoded month —
+// otherwise "back" dead-ends the moment today falls on the earliest allowed
+// month, and the default view goes stale as soon as the calendar page turns.
+// Uses local date components (not toISOString(), which is UTC) for the same
+// reason the "today" highlight below does.
+const _navToday = new Date();
+const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth(), 1);
+const MIN_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() - 12, 1);
+const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
+let current = new Date(_navTodayMonthStart);
 let activeCats = new Set(Object.keys(CATS));
 let freeOnly = false;
 let query = "";
