@@ -146,6 +146,36 @@
         <td><span class="badge badge-bad">Low–moderate</span></td>
         <td class="src-note">Page has zero structure to hook into (no containers, no JSON-LD) — parser was written from a description, not tested against live data. Verify its first real run. <code>api/cron-trinosophes.js</code></td>
       </tr>
+      <tr>
+        <td class="src-name">Belle Isle Nature Center</td>
+        <td>Official public JSON REST API (WordPress "The Events Calendar" plugin)</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">Verified live before building — clean field names, same plugin API as WDET. Small venue, usually only a handful of upcoming events at a time; that's expected, not a broken scraper. <code>api/cron-belle-isle-nature-center.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">Metro Times</td>
+        <td>XML sitemap + HTML scrape of individual event pages</td>
+        <td><span class="badge badge-warn">Moderate</span></td>
+        <td class="src-note">The search/listing UI is blocked by robots.txt, but the sitemap of individual event pages isn't — this reads that instead. It's a general community calendar (concerts, sports, everything), so rows land in the moderation queue (<code>pending_review</code>) rather than auto-publishing — a human sets the real category and confirms it belongs on an arts/culture/nightlife calendar. Reads a bounded batch (40 events) per run; later runs pick up more via the daily schedule. <code>api/cron-metrotimes.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">Redford Theatre</td>
+        <td>HTML scrape of the venue's own site</td>
+        <td><span class="badge badge-warn">Moderate</span></td>
+        <td class="src-note">robots.txt only blocks parameterized calendar views, not the base events page. Built from a real fetch of the live page, not guessed — still worth a spot-check on the first run. <code>api/cron-redford-theatre.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">Cinema Detroit</td>
+        <td>WordPress core REST API (<code>wp/v2/pages</code>) — no calendar plugin; each film is hand-published as its own page</td>
+        <td><span class="badge badge-bad">Low</span></td>
+        <td class="src-note">No dedicated events API on this site. At build time every published page was already past-dated, so this may upsert 0 rows until they publish something new — expected, not a bug, but worth an occasional manual check against the live site. <code>api/cron-cinema-detroit.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">Dossin Great Lakes Museum</td>
+        <td>HTML scrape of the Detroit Historical Society's combined events page, filtered by location</td>
+        <td><span class="badge badge-warn">Moderate</span></td>
+        <td class="src-note">The Dossin's own "events-listing" page is a Drupal lazy-loaded block that returns nothing to a plain fetch — this reads the general <code>/events</code> page instead and keeps only Dossin-tagged rows. Drupal's JSON:API exists at <code>/jsonapi/node/event</code> but denies anonymous reads of individual events. <code>api/cron-dossin.js</code></td>
+      </tr>
     </table>
   </section>
 
@@ -182,6 +212,11 @@
         <td class="src-note">Terms of Use ban "any automatic means... to retrieve, index, data mine" event pages, and separately ban using AXS data to "train... any automated system." No public developer API exists — the only "AXS API" is a private reseller/fulfillment integration.</td>
         <td class="src-note">Masonic Temple Theatre, The Chapel at Masonic, The Acacia Room, The Fillmore Detroit, Majestic Theatre, Magic Stick, Cliff Bell's, El Club, Music Hall Detroit, PJ's Lager House</td>
       </tr>
+      <tr>
+        <td class="src-name">Model D Media</td>
+        <td class="src-note">Terms of Use explicitly prohibit scraping, harvesting, aggregation, deep-linking, and republishing without written consent. Moot either way — no events/calendar feature exists on the site to take from.</td>
+        <td class="src-note">n/a — publication has no events calendar</td>
+      </tr>
     </table>
   </section>
 
@@ -197,6 +232,8 @@
       <tr><td class="src-name">Northern Lights Lounge</td><td class="src-note">Squarespace default AI-bot block.</td></tr>
       <tr><td class="src-name">Painted Lady Lounge (Hamtramck)</td><td class="src-note">Squarespace default AI-bot block. Also moot — the "calendar" link on the page is a malformed/broken URL, not a working embed.</td></tr>
       <tr><td class="src-name">Eastern Market Brewing Co.</td><td class="src-note">Squarespace default AI-bot block.</td></tr>
+      <tr><td class="src-name">Senate Theater</td><td class="src-note">Squarespace robots.txt explicitly names and disallows ClaudeBot and anthropic-ai. Their public calendar page also has no usable feed (Squarespace's own iCal/JSON export formats are separately blocked) — respected and skipped either way.</td></tr>
+      <tr><td class="src-name">Scarab Club</td><td class="src-note">Different case from the rest of this table: this one actually has a working per-event ICS feed on its calendar page, which would otherwise be a great source. But its robots.txt carries an explicit, deliberate blocklist of ~150 named bots/scrapers (not just the generic Squarespace AI-bot default). Given that clear signal from a small artist-run nonprofit, the right move is asking them directly for the feed rather than pulling it — not yet done, needs a human to send that email.</td></tr>
     </table>
   </section>
 
@@ -240,6 +277,10 @@
       <tr><th>Venue</th><th>What happened</th></tr>
       <tr><td class="src-name">New Dodge Lounge (Hamtramck)</td><td class="src-note">Their own site's events page rate-limited our fetch attempts (HTTP 429) twice in a row — couldn't confirm page structure. Ticketing via Ticketleap.</td></tr>
       <tr><td class="src-name">Planet Ant Theatre (Hamtramck)</td><td class="src-note">Fetch tool returned rendered season-subscription text rather than the actual show listing structure — inconclusive.</td></tr>
+      <tr><td class="src-name">Michigan Science Center</td><td class="src-note">calendar page (mi-sci.org/calendar/) is plain scrapeable HTML, robots.txt is permissive — but every date visible at check time was already in the past relative to that day, suggesting stale or cached page content. Didn't want to build a scraper against data we can't confirm is current — worth another pass with fresh eyes.</td></tr>
+      <tr><td class="src-name">Detroit Free Press</td><td class="src-note">No dedicated events/calendar page could be found — current entertainment coverage looks like SEO listicles ("things to do this weekend"), not a structured calendar. Gannett's domains were also blocked at this session's network level, independent of the site itself, so this is lower-confidence than the rest of this page — worth a two-minute manual browser check before fully ruling it out.</td></tr>
+      <tr><td class="src-name">The Detroit News</td><td class="src-note">A "Things To Do" section exists (detroitnews.com/things-to-do/events/); a dedicated calendar built on a vendor called SpinGo existed as of 2014, current status unconfirmed. Same network-level block as Free Press affected this check — recommend a manual look.</td></tr>
+      <tr><td class="src-name">Hour Detroit</td><td class="src-note">robots.txt is permissive, but the live site's firewall returns 403 to automated requests against <code>/events/</code> and its own terms page regardless — stated policy and real-world behavior don't match. Worth a spot-check in case that's inconsistent by page or time of day.</td></tr>
     </table>
   </section>
 
@@ -252,6 +293,12 @@
       <tr><td class="src-name">Grand Trunk Pub</td><td>Detroit</td><td class="src-note">Exactly one entry on the page, and it's a Labor Day hours notice, not a show.</td></tr>
       <tr><td class="src-name">Baker's Keyboard Lounge</td><td>Detroit</td><td class="src-note">Events page is a genuinely empty template — nav and contact info only.</td></tr>
       <tr><td class="src-name">Bert's Marketplace</td><td>Detroit</td><td class="src-note">Site is live, but there's no events page in its current navigation/structure at all.</td></tr>
+      <tr><td class="src-name">Deadline Detroit</td><td>Detroit</td><td class="src-note">News aggregator/commentary site — no events or calendar feature exists anywhere on it.</td></tr>
+      <tr><td class="src-name">BridgeDetroit</td><td>Detroit</td><td class="src-note">No standing events calendar — the only "listings" content found was a one-off page for the 2025 election cycle, not an ongoing feature. Their content license (CC BY-NC-ND) also explicitly bars automatic/wholesale republishing, so this would be a dead end twice over even if a calendar existed.</td></tr>
+      <tr><td class="src-name">Crain's Detroit Business</td><td>Detroit</td><td class="src-note">Has a real, technically scrapeable events page — but confirmed to be exclusively business/networking content (Power Breakfasts, "Notable" awards, sector summits), nothing arts/culture/nightlife. Out of scope, not a technical or legal problem.</td></tr>
+      <tr><td class="src-name">Belle Isle Aquarium</td><td>Detroit</td><td class="src-note">Calendar page (belleisleconservancy.org/summercalendar) is plain scrapeable HTML with no bot restrictions — but the listings are almost entirely recurring/relative ("Second Fridays," date ranges like "Jun 15 – Aug 21," multi-date entries like "Jul 30 & Aug 20"), not the discrete single dates this calendar's data model expects. Didn't want to force bad data into a clean schema — worth revisiting with real recurrence-handling logic.</td></tr>
+      <tr><td class="src-name">Tuskegee Airmen National Museum</td><td>Detroit</td><td class="src-note">events page is open and scrapeable (no robots.txt at all) — but its "events" are actually long-running recurring class schedules (e.g. a mechanic-training course meeting a dozen-plus dates through the year), a fundamentally different shape than a one-off event. Skipped rather than build something that would need custom logic just for this one source.</td></tr>
+      <tr><td class="src-name">Detroit Public Library (Main Branch)</td><td>Detroit</td><td class="src-note">Real, current, scrapeable listings exist (events-search?location=main) — but the content is overwhelmingly community/workforce programming (resume workshops, basic computer skills classes), not arts/culture/nightlife. Skipped as a scope mismatch rather than a technical one; worth reconsidering if the calendar's scope ever broadens to general community events.</td></tr>
     </table>
   </section>
 
@@ -265,8 +312,8 @@
       <tr><td class="src-name">Eastern Market</td><td class="src-note">easternmarket.org</td></tr>
       <tr><td class="src-name">Detroit Opera House</td><td class="src-note">Own ticketing (cart.detroitopera.org), also partially on Ticketmaster</td></tr>
       <tr><td class="src-name">Detroit Historical Museum</td><td class="src-note">detroithistorical.org</td></tr>
-      <tr><td class="src-name">Motown Museum</td><td class="src-note">Own Azure-based ticketing portal</td></tr>
-      <tr><td class="src-name">The Wright (Charles H. Wright Museum)</td><td class="src-note">Own/ACME ticketing</td></tr>
+      <tr><td class="src-name">Motown Museum</td><td class="src-note">Own Azure-based ticketing portal. An automated check was attempted — the site's <code>/event/</code> page has no JSON-LD or calendar-plugin API, and the listings visible at check time looked stale (past dates) and included at least one non-Detroit event (a Martha's Vineyard satellite program), so this stays manual for now rather than risk publishing bad data.</td></tr>
+      <tr><td class="src-name">The Wright (Charles H. Wright Museum)</td><td class="src-note">Own/ACME ticketing. Automated check attempted — the site runs Drupal (not WordPress), and its <code>/whats-on/events</code> page currently shows "no current events to display" behind a date-range filter form whose query parameters weren't confirmed. Worth another pass if the filter's URL pattern gets figured out.</td></tr>
       <tr><td class="src-name">Michigan Central</td><td class="src-note">Own site, mixed with some Eventbrite listings</td></tr>
       <tr><td class="src-name">Fox Theatre / 313 Presents</td><td class="src-note">livenation.com, 313presents.com</td></tr>
       <tr><td class="src-name">Comerica Park / Little Caesars Arena</td><td class="src-note">Major venue sites</td></tr>
