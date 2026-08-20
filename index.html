@@ -3505,15 +3505,17 @@
 
   <header class="site">
     <div>
-      <span class="badge-proto">Prototype</span>
       <h1>Detroit Arts &amp; Events Calendar</h1>
       <p>A comprehensive, filterable month calendar for events happening in the City of Detroit — modeled on ClevelandArtsEvents.com.</p>
     </div>
-    <a href="submit.html" style="display:inline-block;background:var(--ink);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;white-space:nowrap;">+ Submit an Event</a>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+      <a href="submit.html" style="display:inline-block;background:var(--ink);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;white-space:nowrap;">+ Submit an Event</a>
+      <a href="sources.html" style="font-size:12.5px;color:var(--ink-soft);text-decoration:none;">Data sources &amp; connection status &rarr;</a>
+    </div>
   </header>
 
   <div class="notice">
-    <b>What this is:</b> a working prototype, hand-populated with real, sourced events (Aug 19 &ndash; Oct 31, 2026) pulled from venue sites (DIA, MOCAD, Eastern Market, Fox Theatre, Detroit Opera House, Detroit Historical Museum, Comerica Park, Little Caesars Arena, Cliff Bell&rsquo;s, Hart Plaza, Marble Bar, El Club) and event platforms (19hz.info, Paxahau, Resident Advisor, Dice). Each nightlife/club listing shows its source (&ldquo;via&rdquo;) so you can verify before you go. It is <b>not</b> a live feed &mdash; see the note at the bottom for what a production version needs.
+    <b>What this is:</b> a live calendar backed by a real database — hand-curated events plus automated feeds from Ticketmaster, WDET, and several venues' own sites, updated daily. Each listing shows its source so you can verify before you go. See the <a href="sources.html">full data sources &amp; connection status page</a> for exactly what's automated, what's manual, and what we tried and couldn't connect to.
   </div>
 
   <div class="controls">

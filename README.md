@@ -9,20 +9,36 @@ modeled on ClevelandArtsEvents.com.
 - `admin.html` — moderation queue. Approve/reject pending submissions. Gated by `ADMIN_SECRET`.
 - `api/submit.js` — serverless function, inserts submissions into Supabase.
 - `api/admin-events.js` — serverless function powering admin.html (list pending / approve / reject).
-- `api/cron-ticketmaster.js` — Vercel Cron job (see `vercel.json`), pulls live ticketed events from the Ticketmaster Discovery API and upserts them into Supabase as approved events.
+- `api/cron-ticketmaster.js` — Vercel Cron job (see `vercel.json`), pulls live ticketed events from the Ticketmaster Discovery API (this also covers TicketWeb, Front Gate, MoshTix, and Universe — sub-brands the Discovery API includes, e.g. Garden Theater) and upserts them into Supabase as approved events.
+- `api/cron-trinosophes.js` — Vercel Cron job, scrapes trinosophes.com's own events page (no API/structured data available) and upserts parsed shows. Best-effort text parsing — verify its first real run against the live site before trusting it long-term.
+- `api/cron-wdet.js` — Vercel Cron job, pulls from WDET's real public JSON REST API (`wdet.org/wp-json/tribe/events/v1/events`, the standard WordPress "The Events Calendar" plugin endpoint). Includes WDET's own programming plus community/partner events at other Detroit venues; filters out WDET Travel's international trip listings. Verified live before building, high confidence.
+- `api/cron-halo.js` — Vercel Cron job, scrapes HALO Detroit's own events page (thehalodetroit.com/currentevents — robots.txt places no restriction on it). Text parser built from a confirmed literal line-by-line dump of a real event block, not guessed — moderate-high confidence, but spot check the first real run since it's still HTML scraping of a Wix site.
 - `supabase/schema.sql` — the Postgres schema (venues, events, RLS policies). Run once in the Supabase SQL editor on a fresh project.
 - `supabase/seed.sql` — generated from the original hand-curated dataset; loads it into the database.
 
 ## Status
 
 **Live product**, not a static prototype. Real database (Supabase/Postgres),
-real submission pipeline with moderation, and an automated Ticketmaster feed
-running on a daily cron. Hand-curated seed data came from venue sites and
-event platforms (19hz.info, Paxahau, Resident Advisor, Dice, Eventbrite venue
-pages, dia.org, mocadetroit.org, easternmarket.org, etc.) — see the notice
-banner in index.html for full source list and known gaps (Facebook, Partiful,
-and RA/Dice do not offer a public API or permit scraping under their current
-Terms of Service, so those remain manual/editorial-only sources).
+real submission pipeline with moderation, and automated feeds (Ticketmaster
+Discovery API, WDET's public events API, Trinosophes' own site, HALO
+Detroit's own site) running on daily crons. Hand-curated seed data came from
+venue sites and event platforms (19hz.info, Paxahau, Resident Advisor, Dice,
+Eventbrite venue pages, dia.org, mocadetroit.org, easternmarket.org, etc.) —
+see the notice banner in index.html for full source list and known gaps.
+
+**Sources ruled out for automation** (checked their Terms of Service or API
+availability directly — see chat history for the research): Resident Advisor,
+Dice, and AXS (Masonic Temple, The Fillmore Detroit, Majestic Theatre, Magic
+Stick, Cliff Bell's, El Club, Music Hall Detroit, PJ's Lager House) all
+explicitly prohibit automated scraping in their Terms of Use and have no
+public events API — manual/editorial-only. Eventbrite's public search API
+was deprecated in 2020; its current API only lets an organizer read their
+own events with their own login, so Comedy Bar Detroit, Garden Theater's
+Eventbrite listings, Planet Ant Theatre, and New Dodge Lounge aren't
+programmatically reachable through Eventbrite either. Facebook has no public
+events API. Two venue sites (Detroit House of Comedy, The Congregation
+Detroit) explicitly block AI/Claude crawlers in robots.txt — not scraped, by
+design.
 
 ## One-time setup (Supabase + Vercel)
 

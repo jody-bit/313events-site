@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Sources &amp; Connection Status — 313 Events</title>
+<link rel="canonical" href="https://313.events/sources.html">
+<meta name="description" content="Every event source 313 Events has tried connecting to, and the status of that connection — live, blocked, manual, or under investigation.">
+<style>
+  :root{
+    --bg:#f7f6f3; --panel:#ffffff; --ink:#1f2430; --ink-soft:#5b6270;
+    --line:#e4e1da; --line-soft:#eeece6; --radius:10px;
+    --ok:#1a7f37; --ok-bg:#e9f7ee;
+    --info:#2563a8; --info-bg:#eaf2fb;
+    --warn:#b3720a; --warn-bg:#fdf3e0;
+    --bad:#b42318; --bad-bg:#fbeae8;
+    --neutral:#5b6270; --neutral-bg:#eeece6;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:20px 20px 60px;}
+
+  header.site{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    gap:16px;flex-wrap:wrap;
+    padding-bottom:16px;margin-bottom:22px;border-bottom:2px solid var(--ink);
+  }
+  header.site h1{font-size:24px;margin:0 0 4px;letter-spacing:-0.01em;}
+  header.site p{margin:0;color:var(--ink-soft);font-size:14px;max-width:600px;}
+  .back-link{font-size:13px;color:var(--ink-soft);text-decoration:none;white-space:nowrap;}
+  .back-link:hover{text-decoration:underline;}
+
+  .summary-bar{
+    display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;
+  }
+  .summary-pill{
+    flex:1 1 130px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 14px;
+  }
+  .summary-pill .num{font-size:22px;font-weight:800;line-height:1;}
+  .summary-pill .lbl{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-top:4px;}
+
+  section.group{margin-bottom:30px;}
+  section.group h2{
+    font-size:15px;margin:0 0 4px;display:flex;align-items:center;gap:8px;
+  }
+  section.group .group-desc{font-size:13px;color:var(--ink-soft);margin:0 0 12px;max-width:720px;}
+
+  .badge{
+    display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
+    padding:3px 9px;border-radius:20px;white-space:nowrap;
+  }
+  .badge-ok{background:var(--ok-bg);color:var(--ok);}
+  .badge-info{background:var(--info-bg);color:var(--info);}
+  .badge-warn{background:var(--warn-bg);color:var(--warn);}
+  .badge-bad{background:var(--bad-bg);color:var(--bad);}
+  .badge-neutral{background:var(--neutral-bg);color:var(--neutral);}
+
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  table + table{margin-top:2px;}
+  th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);
+    padding:9px 12px;border-bottom:1px solid var(--line);background:var(--line-soft);
+  }
+  td{padding:10px 12px;border-bottom:1px solid var(--line-soft);font-size:13.5px;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td.src-name{font-weight:700;white-space:nowrap;}
+  td.src-note{color:var(--ink-soft);font-size:12.5px;}
+  code{background:var(--line-soft);padding:1px 5px;border-radius:4px;font-size:12px;}
+
+  footer.site{margin-top:30px;font-size:12px;color:var(--ink-soft);line-height:1.6;padding-top:16px;border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div>
+      <h1>Data Sources &amp; Connection Status</h1>
+      <p>Every event source we've tried connecting to for 313 Events, and the real, current status of that connection — no source is silently dropped.</p>
+    </div>
+    <a class="back-link" href="index.html">&larr; Back to calendar</a>
+  </header>
+
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <section class="group">
+    <h2><span class="badge badge-ok">Live &amp; Automated</span></h2>
+    <p class="group-desc">Running on a daily Vercel Cron job, writing straight into the database. No manual entry required.</p>
+    <table>
+      <tr><th>Source</th><th>Method</th><th>Confidence</th><th>Notes</th></tr>
+      <tr>
+        <td class="src-name">Ticketmaster Discovery API</td>
+        <td>Official public API (free developer key)</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">Also includes TicketWeb, Front Gate, MoshTix &amp; Universe — Ticketmaster sub-brands syndicated through the same API. <code>api/cron-ticketmaster.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">WDET (101.9 FM)</td>
+        <td>Official public JSON REST API (WordPress "The Events Calendar" plugin)</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">Verified live before building. Includes WDET's own programming plus community/partner events at other Detroit venues; WDET Travel's international trip listings are filtered out. <code>api/cron-wdet.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">HALO Detroit</td>
+        <td>HTML scrape of the venue's own site</td>
+        <td><span class="badge badge-warn">Moderate</span></td>
+        <td class="src-note">robots.txt places no restriction on this page. Parser built from a confirmed real event block, not guessed — still worth a spot-check after the first live run since it's a Wix site. <code>api/cron-halo.js</code></td>
+      </tr>
+      <tr>
+        <td class="src-name">Trinosophes</td>
+        <td>HTML/text scrape of the venue's own site</td>
+        <td><span class="badge badge-bad">Low–moderate</span></td>
+        <td class="src-note">Page has zero structure to hook into (no containers, no JSON-LD) — parser was written from a description, not tested against live data. Verify its first real run. <code>api/cron-trinosophes.js</code></td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-info">Covered Indirectly</span></h2>
+    <p class="group-desc">These venues sell tickets through a platform we already pull from automatically, so no separate connector was needed.</p>
+    <table>
+      <tr><th>Venue</th><th>Actually sells through</th><th>Notes</th></tr>
+      <tr><td class="src-name">Garden Theater</td><td>TicketWeb → Ticketmaster Discovery API</td><td class="src-note">Confirmed TicketWeb is a Ticketmaster brand included in Discovery API results.</td></tr>
+      <tr><td class="src-name">St. Andrew's Hall</td><td>Live Nation / Ticketmaster</td><td class="src-note">—</td></tr>
+      <tr><td class="src-name">Aretha Franklin Amphitheatre</td><td>Ticketmaster</td><td class="src-note">—</td></tr>
+      <tr><td class="src-name">Sound Board (MotorCity Casino)</td><td>Ticketmaster</td><td class="src-note">—</td></tr>
+      <tr><td class="src-name">Small's (Hamtramck)</td><td>Ticketmaster / Live Nation, via The Crofoot network</td><td class="src-note">—</td></tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-bad">Blocked — Terms of Service</span></h2>
+    <p class="group-desc">These platforms explicitly prohibit automated scraping in their Terms of Use and offer no public events API a project like this can use. Manual/editorial-only, unless a written partnership is pursued.</p>
+    <table>
+      <tr><th>Platform</th><th>What we found</th><th>Affected venues</th></tr>
+      <tr>
+        <td class="src-name">Resident Advisor (RA)</td>
+        <td class="src-note">ra.co Terms of Use ban scraping without a written partner agreement.</td>
+        <td class="src-note">Marble Bar, TV Lounge, Spot Lite Detroit, and others — still hand-curated where possible.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Dice.fm</td>
+        <td class="src-note">Terms of Use §8.4 explicitly bans automated data collection.</td>
+        <td class="src-note">El Club and others — hand-curated from Dice's public listing pages instead.</td>
+      </tr>
+      <tr>
+        <td class="src-name">AXS.com</td>
+        <td class="src-note">Terms of Use ban "any automatic means... to retrieve, index, data mine" event pages, and separately ban using AXS data to "train... any automated system." No public developer API exists — the only "AXS API" is a private reseller/fulfillment integration.</td>
+        <td class="src-note">Masonic Temple Theatre, The Chapel at Masonic, The Acacia Room, The Fillmore Detroit, Majestic Theatre, Magic Stick, Cliff Bell's, El Club, Music Hall Detroit, PJ's Lager House</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-bad">Blocked — robots.txt disallows AI crawlers</span></h2>
+    <p class="group-desc">These sites don't block scraping in general, but their robots.txt specifically names and disallows AI/Claude-branded crawlers. We respect that, even though it's not a blanket disallow.</p>
+    <table>
+      <tr><th>Site</th><th>robots.txt rule</th></tr>
+      <tr><td class="src-name">Detroit House of Comedy</td><td class="src-note">Disallows ClaudeBot, GPTBot, CCBot, Google-Extended, Amazonbot, Bytespider, meta-externalagent (generic <code>*</code> allowed).</td></tr>
+      <tr><td class="src-name">The Congregation Detroit</td><td class="src-note">Disallows ClaudeBot, anthropic-ai, GPTBot, PerplexityBot (generic <code>*</code> allowed).</td></tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-neutral">No Public API Available</span></h2>
+    <p class="group-desc">Not a Terms of Service prohibition — these platforms simply don't offer programmatic access to the data we'd need, for any developer.</p>
+    <table>
+      <tr><th>Platform</th><th>What we found</th><th>Affected venues</th></tr>
+      <tr>
+        <td class="src-name">Eventbrite</td>
+        <td class="src-note">Public search API was deprecated in Feb 2020. The current API only lets an organizer read their own events with their own login — no third-party access to other organizers' events.</td>
+        <td class="src-note">Comedy Bar Detroit (100% Eventbrite-hosted, no listings on their own site), Planet Ant Theatre, New Dodge Lounge, some Garden Theater shows</td>
+      </tr>
+      <tr>
+        <td class="src-name">Facebook Events</td>
+        <td class="src-note">No public events API. Requires an authenticated app + Meta's review process.</td>
+        <td class="src-note">General gap — noted in the calendar's footer</td>
+      </tr>
+      <tr>
+        <td class="src-name">Partiful</td>
+        <td class="src-note">Events are private invite links by design — nothing public to pull from.</td>
+        <td class="src-note">General gap</td>
+      </tr>
+      <tr>
+        <td class="src-name">Edmtrain</td>
+        <td class="src-note">Event search renders via JavaScript in ways that couldn't be reliably fetched past the navigation shell.</td>
+        <td class="src-note">General gap</td>
+      </tr>
+      <tr>
+        <td class="src-name">thedetroitilove.com</td>
+        <td class="src-note">robots.txt blocks automated fetching — skipped out of respect for that, same as the AI-bot blocks above.</td>
+        <td class="src-note">General gap</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-warn">Investigated — Inconclusive</span></h2>
+    <p class="group-desc">Real attempts were made; the result wasn't clean enough to build against yet. Worth another pass.</p>
+    <table>
+      <tr><th>Venue</th><th>What happened</th></tr>
+      <tr><td class="src-name">New Dodge Lounge (Hamtramck)</td><td class="src-note">Their own site's events page rate-limited our fetch attempts (HTTP 429) twice in a row — couldn't confirm page structure. Ticketing via Ticketleap.</td></tr>
+      <tr><td class="src-name">Planet Ant Theatre (Hamtramck)</td><td class="src-note">Fetch tool returned rendered season-subscription text rather than the actual show listing structure — inconclusive.</td></tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-neutral">Identified, Not Yet Prioritized</span></h2>
+    <p class="group-desc">Real, in-scope, independent venues surfaced during venue mapping research. robots.txt allows crawling their site, but none expose structured event data (no JSON-LD), so each would need its own bespoke, fragile scraper — not yet built.</p>
+    <table>
+      <tr><th>Venue</th><th>City</th><th>Note</th></tr>
+      <tr><td class="src-name">TV Lounge</td><td>Detroit</td><td class="src-note">Also listed on RA</td></tr>
+      <tr><td class="src-name">Spot Lite Detroit</td><td>Detroit</td><td class="src-note">RA widget embed on their own site</td></tr>
+      <tr><td class="src-name">Northern Lights Lounge</td><td>Detroit</td><td class="src-note">No online ticketing (cover charge only)</td></tr>
+      <tr><td class="src-name">Painted Lady Lounge</td><td>Hamtramck</td><td class="src-note">Uses a Google Calendar embed — worth checking for a public ICS/JSON feed, which would be far more reliable than HTML scraping</td></tr>
+      <tr><td class="src-name">Batch Brewing Company</td><td>Detroit</td><td class="src-note">Own events page mostly placeholder; one third-party listing suggests Ticketmaster</td></tr>
+      <tr><td class="src-name">Eastern Market Brewing Co.</td><td>Detroit</td><td class="src-note">Own events page mostly placeholder</td></tr>
+      <tr><td class="src-name">Grand Trunk Pub</td><td>Detroit</td><td class="src-note">Independent, plain HTML</td></tr>
+      <tr><td class="src-name">Bert's Marketplace</td><td>Detroit</td><td class="src-note">Squarespace site</td></tr>
+      <tr><td class="src-name">Baker's Keyboard Lounge</td><td>Detroit</td><td class="src-note">Events page appears to be an empty template</td></tr>
+    </table>
+  </section>
+
+  <section class="group">
+    <h2><span class="badge badge-neutral">Manually Curated</span></h2>
+    <p class="group-desc">No automated connector — these are hand-entered from the venue's own listings, editorially reviewed, and re-checked periodically. This is how the original 187-event seed dataset was built.</p>
+    <table>
+      <tr><th>Source</th><th>Note</th></tr>
+      <tr><td class="src-name">Detroit Institute of Arts (DIA)</td><td class="src-note">dia.org — own ticketing (tickets.dia.org)</td></tr>
+      <tr><td class="src-name">MOCAD</td><td class="src-note">mocadetroit.org — mostly free events</td></tr>
+      <tr><td class="src-name">Eastern Market</td><td class="src-note">easternmarket.org</td></tr>
+      <tr><td class="src-name">Detroit Opera House</td><td class="src-note">Own ticketing (cart.detroitopera.org), also partially on Ticketmaster</td></tr>
+      <tr><td class="src-name">Detroit Historical Museum</td><td class="src-note">detroithistorical.org</td></tr>
+      <tr><td class="src-name">Motown Museum</td><td class="src-note">Own Azure-based ticketing portal</td></tr>
+      <tr><td class="src-name">The Wright (Charles H. Wright Museum)</td><td class="src-note">Own/ACME ticketing</td></tr>
+      <tr><td class="src-name">Michigan Central</td><td class="src-note">Own site, mixed with some Eventbrite listings</td></tr>
+      <tr><td class="src-name">Fox Theatre / 313 Presents</td><td class="src-note">livenation.com, 313presents.com</td></tr>
+      <tr><td class="src-name">Comerica Park / Little Caesars Arena</td><td class="src-note">Major venue sites</td></tr>
+      <tr><td class="src-name">19hz.info</td><td class="src-note">Underground/electronic listings aggregator</td></tr>
+      <tr><td class="src-name">Paxahau</td><td class="src-note">paxahau.com — Movement Festival &amp; affiliated electronic events</td></tr>
+      <tr><td class="src-name">Resident Advisor (manual)</td><td class="src-note">Hand-pulled from RA's per-week Detroit listing pages, not just their "Popular" homepage picks — see the AXS/RA/Dice blocked-sources note above for why this stays manual</td></tr>
+      <tr><td class="src-name">Dice (manual)</td><td class="src-note">Hand-pulled from Dice's public listing pages, primarily El Club</td></tr>
+    </table>
+  </section>
+
+  <footer class="site">
+    <b>Scope corrections found along the way:</b> Cranbrook is in Bloomfield Hills, not Detroit/Hamtramck/Highland Park — excluded. Populux is the same physical space as Magic Stick (renamed c. 2015–16) — not a separate venue.
+    <br><br>
+    Have a source we haven't tried, or think one of these statuses is wrong? <a href="submit.html">Submit an event</a> or let us know — this page is updated as new sources are investigated.
+  </footer>
+
+</div>
+
+<script>
+// Auto-count badges per summary category so the top bar stays accurate
+// without hand-maintaining numbers separately from the tables below.
+(function(){
+  const groups = document.querySelectorAll('section.group');
+  const counts = {};
+  const order = [];
+  groups.forEach(g => {
+    const badge = g.querySelector('h2 .badge');
+    if(!badge) return;
+    const label = badge.textContent.trim();
+    const rows = g.querySelectorAll('table tr').length - g.querySelectorAll('table').length; // subtract header rows
+    if(!(label in counts)) order.push(label);
+    counts[label] = (counts[label]||0) + rows;
+  });
+  const bar = document.getElementById('summaryBar');
+  order.forEach(label => {
+    const pill = document.createElement('div');
+    pill.className = 'summary-pill';
+    pill.innerHTML = `<div class="num">${counts[label]}</div><div class="lbl">${label}</div>`;
+    bar.appendChild(pill);
+  });
+})();
+</script>
+
+</body>
+</html>
