@@ -1,0 +1,68 @@
+[
+  {
+    "candidate": "A",
+    "source": "IMG_4027.MOV",
+    "strength": "SCALE",
+    "desktop": {
+      "file": "313-events-homepage-hero-A.webp",
+      "size": [
+        2400,
+        1350
+      ]
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-A-mobile.webp",
+      "size": [
+        900,
+        1200
+      ]
+    },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree"
+  },
+  {
+    "candidate": "B",
+    "source": "video-3377_singular_display.mov",
+    "strength": "PRESENCE",
+    "desktop": {
+      "file": "313-events-homepage-hero-B.webp",
+      "size": [
+        2400,
+        1350
+      ]
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-B-mobile.webp",
+      "size": [
+        900,
+        1200
+      ]
+    },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree"
+  },
+  {
+    "candidate": "C",
+    "source": "od_video-3786_singular_display.mov",
+    "strength": "BALANCE",
+    "desktop": {
+      "file": "313-events-homepage-hero-C.webp",
+      "size": [
+        2400,
+        1350
+      ]
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-C-mobile.webp",
+      "size": [
+        900,
+        1200
+      ]
+    },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree"
+  }
+]
