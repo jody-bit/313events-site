@@ -3858,7 +3858,12 @@ function renderMonth(){
   const daysInPrev = new Date(y,m,0).getDate();
   const totalCells = Math.ceil((firstDow + daysInMonth)/7)*7;
 
-  const todayISO = new Date().toISOString().slice(0,10);
+  // Use local date components, not toISOString() (which is UTC) — Detroit is
+  // UTC-4/-5, so from evening through midnight local time, the UTC date has
+  // already rolled to the next day while it's still "today" here. This
+  // matches whatever timezone the visitor's own browser/device is set to.
+  const _now = new Date();
+  const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
 
   for(let i=0;i<totalCells;i++){
     const cell = document.createElement('div');
