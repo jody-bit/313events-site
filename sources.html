@@ -166,11 +166,16 @@
 
   <section class="group">
     <h2><span class="badge badge-bad">Blocked — robots.txt disallows AI crawlers</span></h2>
-    <p class="group-desc">These sites don't block scraping in general, but their robots.txt specifically names and disallows AI/Claude-branded crawlers. We respect that, even though it's not a blanket disallow.</p>
+    <p class="group-desc">These sites don't block scraping in general, but their robots.txt specifically names and disallows AI/Claude-branded crawlers. We respect that, even though it's not a blanket disallow. Squarespace appears to ship this AI-bot block by default on many client sites now — five of the seven below hit it for that reason alone.</p>
     <table>
       <tr><th>Site</th><th>robots.txt rule</th></tr>
       <tr><td class="src-name">Detroit House of Comedy</td><td class="src-note">Disallows ClaudeBot, GPTBot, CCBot, Google-Extended, Amazonbot, Bytespider, meta-externalagent (generic <code>*</code> allowed).</td></tr>
       <tr><td class="src-name">The Congregation Detroit</td><td class="src-note">Disallows ClaudeBot, anthropic-ai, GPTBot, PerplexityBot (generic <code>*</code> allowed).</td></tr>
+      <tr><td class="src-name">TV Lounge</td><td class="src-note">Squarespace default AI-bot block (ClaudeBot, anthropic-ai, GPTBot, and ~20 others).</td></tr>
+      <tr><td class="src-name">Spot Lite Detroit</td><td class="src-note">Same Squarespace block — also moot either way, since the page itself just embeds an RA promoter widget (<code>ra.co/promoters/107721/widget/events</code>), so the underlying data is RA's regardless.</td></tr>
+      <tr><td class="src-name">Northern Lights Lounge</td><td class="src-note">Squarespace default AI-bot block.</td></tr>
+      <tr><td class="src-name">Painted Lady Lounge (Hamtramck)</td><td class="src-note">Squarespace default AI-bot block. Also moot — the "calendar" link on the page is a malformed/broken URL, not a working embed.</td></tr>
+      <tr><td class="src-name">Eastern Market Brewing Co.</td><td class="src-note">Squarespace default AI-bot block.</td></tr>
     </table>
   </section>
 
@@ -218,19 +223,14 @@
   </section>
 
   <section class="group">
-    <h2><span class="badge badge-neutral">Identified, Not Yet Prioritized</span></h2>
-    <p class="group-desc">Real, in-scope, independent venues surfaced during venue mapping research. robots.txt allows crawling their site, but none expose structured event data (no JSON-LD), so each would need its own bespoke, fragile scraper — not yet built.</p>
+    <h2><span class="badge badge-neutral">Checked — Nothing to Connect To</span></h2>
+    <p class="group-desc">robots.txt allows crawling these, and they're not on any blocked platform — but as of the last check, there's no actual event content on the page to pull. A scraper here would reliably return zero results, so nothing was built. Worth a periodic re-check rather than a one-time build.</p>
     <table>
-      <tr><th>Venue</th><th>City</th><th>Note</th></tr>
-      <tr><td class="src-name">TV Lounge</td><td>Detroit</td><td class="src-note">Also listed on RA</td></tr>
-      <tr><td class="src-name">Spot Lite Detroit</td><td>Detroit</td><td class="src-note">RA widget embed on their own site</td></tr>
-      <tr><td class="src-name">Northern Lights Lounge</td><td>Detroit</td><td class="src-note">No online ticketing (cover charge only)</td></tr>
-      <tr><td class="src-name">Painted Lady Lounge</td><td>Hamtramck</td><td class="src-note">Uses a Google Calendar embed — worth checking for a public ICS/JSON feed, which would be far more reliable than HTML scraping</td></tr>
-      <tr><td class="src-name">Batch Brewing Company</td><td>Detroit</td><td class="src-note">Own events page mostly placeholder; one third-party listing suggests Ticketmaster</td></tr>
-      <tr><td class="src-name">Eastern Market Brewing Co.</td><td>Detroit</td><td class="src-note">Own events page mostly placeholder</td></tr>
-      <tr><td class="src-name">Grand Trunk Pub</td><td>Detroit</td><td class="src-note">Independent, plain HTML</td></tr>
-      <tr><td class="src-name">Bert's Marketplace</td><td>Detroit</td><td class="src-note">Squarespace site</td></tr>
-      <tr><td class="src-name">Baker's Keyboard Lounge</td><td>Detroit</td><td class="src-note">Events page appears to be an empty template</td></tr>
+      <tr><th>Venue</th><th>City</th><th>What we found</th></tr>
+      <tr><td class="src-name">Batch Brewing Company</td><td>Detroit</td><td class="src-note">Events page just reads "email us to host an event" — no listings. Wix site, no JSON-LD.</td></tr>
+      <tr><td class="src-name">Grand Trunk Pub</td><td>Detroit</td><td class="src-note">Exactly one entry on the page, and it's a Labor Day hours notice, not a show.</td></tr>
+      <tr><td class="src-name">Baker's Keyboard Lounge</td><td>Detroit</td><td class="src-note">Events page is a genuinely empty template — nav and contact info only.</td></tr>
+      <tr><td class="src-name">Bert's Marketplace</td><td>Detroit</td><td class="src-note">Site is live, but there's no events page in its current navigation/structure at all.</td></tr>
     </table>
   </section>
 
