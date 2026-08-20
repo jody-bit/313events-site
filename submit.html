@@ -11,54 +11,75 @@
   gtag('config', 'G-1078BKN0M3');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Submit an Event — 313 Events</title>
+<title>Submit an Event — 313.events</title>
 <link rel="canonical" href="https://313.events/submit.html">
-<meta name="description" content="Submit your event to the 313 Events Detroit calendar.">
+<meta name="description" content="Submit your event to the 313.events Detroit calendar.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Submit an Event — 313 Events">
+<meta property="og:title" content="Submit an Event — 313.events">
 <meta property="og:description" content="For venues, promoters, and organizers to add their own listing to the Detroit events calendar.">
 <meta property="og:url" content="https://313.events/submit.html">
-<meta property="og:site_name" content="313 Events">
-<meta name="twitter:card" content="summary">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 
 <style>
   :root{
-    --bg:#f7f6f3; --panel:#ffffff; --ink:#1f2430; --ink-soft:#5b6270;
-    --line:#e4e1da; --line-soft:#eeece6; --radius:10px;
-    --accent:#1f2430; --accent-soft:#eef0fb;
+    /* Detroit Signal V2 — locked color architecture */
+    --bg:#0A0A0A;          /* asphalt — primary dark environment */
+    --panel:#202020;       /* charcoal — raised surface: cards, panels */
+    --panel-alt:#161616;   /* slightly recessed surface */
+    --panel-hover:#272727;
+    --ink:#F2F0E8;         /* warm white — primary text */
+    --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
+    --ink-dim:#5c5d58;
+    --line:#2c2c2c;
+    --line-soft:#212121;
+    --accent:#D7FF00;      /* signal chartreuse — state only */
+    --on-accent:#0A0A0A;
+    --radius:10px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.4;
   }
   .wrap{max-width:760px;margin:0 auto;padding:20px 20px 60px;}
 
   header.site{padding-bottom:16px;margin-bottom:22px;border-bottom:2px solid var(--ink);}
-  header.site h1{font-size:26px;margin:0 0 4px;letter-spacing:-0.01em;}
+  header.site h1{font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;text-transform:uppercase;font-size:26px;margin:0 0 4px;letter-spacing:-0.01em;}
   header.site p{margin:0;color:var(--ink-soft);font-size:14px;max-width:600px;}
-  .badge-proto{
-    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
-    text-transform:uppercase;background:#1f2430;color:#fff;padding:4px 9px;border-radius:999px;
-    margin-bottom:8px;
-  }
   .back-link{display:inline-block;margin-bottom:14px;font-size:13px;color:var(--ink-soft);text-decoration:none;}
-  .back-link:hover{text-decoration:underline;}
+  .back-link:hover{text-decoration:underline;color:var(--accent);}
 
   .notice{
-    background:#fbf3e3;border:1px solid #e9d8ac;border-radius:var(--radius);
-    padding:12px 16px;font-size:13.5px;color:#5a4a1f;margin-bottom:24px;
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);
+    padding:12px 16px;font-size:13.5px;color:var(--ink-soft);margin-bottom:24px;
   }
-  .notice b{color:#3d3115;}
+  .notice b{color:var(--ink);}
 
   .login-mock{
-    background:#eef0fb;border:1px solid #cfd6f5;border-radius:var(--radius);
-    padding:12px 16px;font-size:13px;color:#26307a;margin-bottom:24px;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 16px;font-size:13px;color:var(--ink-soft);margin-bottom:24px;
     display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
   }
   .login-mock button{
-    border:1px solid #26307a;background:#26307a;color:#fff;padding:7px 14px;border-radius:8px;
+    border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:8px;
     font-size:12.5px;font-weight:600;cursor:pointer;
   }
 
@@ -75,12 +96,13 @@
   .row .field{flex:1 1 200px;}
   label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;}
   label .opt{font-weight:400;color:var(--ink-soft);text-transform:none;}
-  label .req{color:#c23b3b;}
+  label .req{color:#e07a72;}
   input[type=text], input[type=email], input[type=url], input[type=date], input[type=time], input[type=number], select, textarea{
     width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;
-    font-family:inherit;color:var(--ink);background:#fff;
+    font-family:inherit;color:var(--ink);background:var(--panel-alt);
   }
-  input:focus, select:focus, textarea:focus{outline:2px solid #4361EE;outline-offset:1px;}
+  input::placeholder, textarea::placeholder{color:var(--ink-dim);}
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--accent);outline-offset:1px;}
   textarea{resize:vertical;min-height:80px;}
   .hint{font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
   .checkbox-row{display:flex;align-items:center;gap:8px;}
@@ -90,7 +112,7 @@
   .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
   .cat-option{
     border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;cursor:pointer;
-    display:flex;align-items:center;gap:7px;user-select:none;
+    display:flex;align-items:center;gap:7px;user-select:none;color:var(--ink-soft);
   }
   .cat-option input{width:auto;margin:0;}
   .cat-option .sw{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
@@ -99,9 +121,9 @@
   .btn{
     border:none;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;
   }
-  .btn-primary{background:var(--ink);color:#fff;}
-  .btn-primary:hover{background:#33394a;}
-  .btn-secondary{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  .btn-primary{background:var(--ink);color:var(--bg);}
+  .btn-primary:hover{background:var(--accent);}
+  .btn-secondary{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);}
 
   #confirmPanel{
     display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
@@ -111,15 +133,15 @@
   #confirmPanel h2{margin:0 0 6px;font-size:20px;}
   #confirmPanel .sub{color:var(--ink-soft);font-size:13.5px;margin-bottom:18px;}
   #confirmPanel .checkmark{
-    width:42px;height:42px;border-radius:50%;background:#16713a;color:#fff;display:flex;
+    width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;
     align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;
   }
   pre#jsonPreview{
-    background:#f5f4ef;border:1px solid var(--line-soft);border-radius:8px;padding:14px;
-    font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;color:#33394a;
+    background:var(--panel-alt);border:1px solid var(--line-soft);border-radius:8px;padding:14px;
+    font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;color:var(--ink-soft);
   }
   .form-error{
-    background:#fdeaea;border:1px solid #f1bcbc;color:#8a2222;border-radius:8px;
+    background:#3a1f1f;border:1px solid #6b3232;color:#f0a8a8;border-radius:8px;
     padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;
   }
   .form-error.show{display:block;}
@@ -131,18 +153,17 @@
   <a class="back-link" href="index.html">&larr; Back to the calendar</a>
 
   <header class="site">
-    <span class="badge-proto">Prototype</span>
     <h1>Submit an Event</h1>
     <p>For venues, promoters, and organizers to add their own listing to the Detroit Arts &amp; Events Calendar &mdash; the same self-service model Cleveland's calendar uses (organizations register, log in, and submit their own events).</p>
   </header>
 
   <div class="login-mock">
-    <span><strong>In a live version:</strong> you'd sign in as a registered venue/organizer before reaching this form, so submissions are tied to a real account and can be moderated.</span>
-    <button type="button" onclick="alert('This is a UI mock only — account system not built in this prototype.')">Sign in (mock)</button>
+    <span><strong>Coming soon:</strong> account sign-in for registered venues/organizers, so submissions are tied to a verified account. For now, every submission is reviewed by hand before it goes live.</span>
+    <button type="button" onclick="alert('Account sign-in isn\'t built yet — for now every submission goes through manual review instead.')">Sign in (coming soon)</button>
   </div>
 
   <div class="notice">
-    <b>What this is:</b> a working front-end for event submission &mdash; validation, category picker, and a confirmation step all function. It does <b>not</b> save anywhere yet. A real version needs a backend: a database, a moderation/review queue before events go live (to prevent spam), email verification for new organizers, and duplicate-detection against the other sources already feeding the calendar.
+    <b>What this is:</b> a real submission form backed by a database. Your event is saved to a moderation queue and reviewed by hand before it appears on the calendar &mdash; this helps prevent spam and lets us check for duplicates against the other sources already feeding the calendar.
   </div>
 
   <form id="eventForm" novalidate>

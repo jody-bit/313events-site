@@ -1,0 +1,14 @@
+{
+  "name": "313.events — Detroit Arts & Events Calendar",
+  "short_name": "313.events",
+  "description": "The city is on. A live index of Detroit's cultural activity.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "icons": [
+    { "src": "/assets/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/icons/icon-maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

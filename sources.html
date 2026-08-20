@@ -11,23 +11,43 @@
   gtag('config', 'G-1078BKN0M3');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Sources &amp; Connection Status — 313 Events</title>
+<title>Data Sources &amp; Connection Status — 313.events</title>
 <link rel="canonical" href="https://313.events/sources.html">
-<meta name="description" content="Every event source 313 Events has tried connecting to, and the status of that connection — live, blocked, manual, or under investigation.">
+<meta name="description" content="Every event source 313.events has tried connecting to, and the status of that connection — live, blocked, manual, or under investigation.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Data Sources &amp; Connection Status — 313.events">
+<meta property="og:description" content="Every event source 313.events has tried connecting to, and the status of that connection.">
+<meta property="og:url" content="https://313.events/sources.html">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 <style>
   :root{
-    --bg:#f7f6f3; --panel:#ffffff; --ink:#1f2430; --ink-soft:#5b6270;
-    --line:#e4e1da; --line-soft:#eeece6; --radius:10px;
-    --ok:#1a7f37; --ok-bg:#e9f7ee;
-    --info:#2563a8; --info-bg:#eaf2fb;
-    --warn:#b3720a; --warn-bg:#fdf3e0;
-    --bad:#b42318; --bad-bg:#fbeae8;
-    --neutral:#5b6270; --neutral-bg:#eeece6;
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121; --radius:10px;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --ok:#3fbf6a; --ok-ink:#06210f;
+    --info:#7c9bff; --info-ink:#0c1230;
+    --warn:#e0b23f; --warn-ink:#3a2a06;
+    --bad:#e07a72; --bad-ink:#3a1414;
+    --neutral:#9b9c96; --neutral-ink:#1a1a1a;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.5;
   }
   .wrap{max-width:980px;margin:0 auto;padding:20px 20px 60px;}
@@ -37,10 +57,10 @@
     gap:16px;flex-wrap:wrap;
     padding-bottom:16px;margin-bottom:22px;border-bottom:2px solid var(--ink);
   }
-  header.site h1{font-size:24px;margin:0 0 4px;letter-spacing:-0.01em;}
+  header.site h1{font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;text-transform:uppercase;font-size:24px;margin:0 0 4px;letter-spacing:-0.01em;}
   header.site p{margin:0;color:var(--ink-soft);font-size:14px;max-width:600px;}
   .back-link{font-size:13px;color:var(--ink-soft);text-decoration:none;white-space:nowrap;}
-  .back-link:hover{text-decoration:underline;}
+  .back-link:hover{text-decoration:underline;color:var(--accent);}
 
   .summary-bar{
     display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;
@@ -49,7 +69,7 @@
     flex:1 1 130px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:12px 14px;
   }
-  .summary-pill .num{font-size:22px;font-weight:800;line-height:1;}
+  .summary-pill .num{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;line-height:1;}
   .summary-pill .lbl{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-top:4px;}
 
   section.group{margin-bottom:30px;}
@@ -62,23 +82,24 @@
     display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
     padding:3px 9px;border-radius:20px;white-space:nowrap;
   }
-  .badge-ok{background:var(--ok-bg);color:var(--ok);}
-  .badge-info{background:var(--info-bg);color:var(--info);}
-  .badge-warn{background:var(--warn-bg);color:var(--warn);}
-  .badge-bad{background:var(--bad-bg);color:var(--bad);}
-  .badge-neutral{background:var(--neutral-bg);color:var(--neutral);}
+  .badge-ok{background:var(--ok);color:var(--ok-ink);}
+  .badge-info{background:var(--info);color:var(--info-ink);}
+  .badge-warn{background:var(--warn);color:var(--warn-ink);}
+  .badge-bad{background:var(--bad);color:var(--bad-ink);}
+  .badge-neutral{background:var(--neutral);color:var(--neutral-ink);}
 
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
   table + table{margin-top:2px;}
   th{
     text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);
-    padding:9px 12px;border-bottom:1px solid var(--line);background:var(--line-soft);
+    padding:9px 12px;border-bottom:1px solid var(--line);background:var(--panel-alt);
   }
   td{padding:10px 12px;border-bottom:1px solid var(--line-soft);font-size:13.5px;vertical-align:top;}
   tr:last-child td{border-bottom:none;}
   td.src-name{font-weight:700;white-space:nowrap;}
   td.src-note{color:var(--ink-soft);font-size:12.5px;}
-  code{background:var(--line-soft);padding:1px 5px;border-radius:4px;font-size:12px;}
+  code{background:var(--panel-alt);color:var(--ink-soft);padding:1px 5px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace;}
+  a{color:var(--accent);}
 
   footer.site{margin-top:30px;font-size:12px;color:var(--ink-soft);line-height:1.6;padding-top:16px;border-top:1px solid var(--line);}
 </style>

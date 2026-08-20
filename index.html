@@ -11,17 +11,33 @@
   gtag('config', 'G-1078BKN0M3');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Detroit Arts &amp; Events Calendar</title>
+<title>313.events — THE CITY IS ON.</title>
 <link rel="canonical" href="https://313.events/">
 <meta name="description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events happening in the City of Detroit.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
-<meta property="og:title" content="313 Events — Detroit Arts & Events Calendar">
+<meta property="og:title" content="313.events — THE CITY IS ON.">
 <meta property="og:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events happening in the City of Detroit.">
 <meta property="og:url" content="https://313.events/">
-<meta property="og:site_name" content="313 Events">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="313 Events — Detroit Arts & Events Calendar">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="313.events — THE CITY IS ON.">
 <meta name="twitter:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events happening in the City of Detroit.">
+<meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -3344,15 +3360,20 @@
 
 <style>
   :root{
-    --bg:#f7f6f3;
-    --panel:#ffffff;
-    --ink:#1f2430;
-    --ink-soft:#5b6270;
-    --line:#e4e1da;
-    --line-soft:#eeece6;
-    --accent:#1f2430;
-    --today:#fff4e0;
-    --today-ring:#e0a72c;
+    /* Detroit Signal V2 — locked color architecture */
+    --bg:#0A0A0A;          /* asphalt — primary dark environment */
+    --panel:#202020;       /* charcoal — raised surface: cards, panels */
+    --panel-alt:#161616;   /* slightly recessed surface: strip headers, muted rows */
+    --panel-hover:#272727;
+    --ink:#F2F0E8;         /* warm white — primary text */
+    --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
+    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
+    --line:#2c2c2c;
+    --line-soft:#212121;
+    --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
+    --on-accent:#0A0A0A;   /* required dark text/icon color on chartreuse fills */
+    --today:rgba(215,255,0,.09);
+    --today-ring:#D7FF00;
     --radius:10px;
 
     --c-music:#4361EE;
@@ -3369,7 +3390,7 @@
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);
     color:var(--ink);
     line-height:1.4;
@@ -3381,19 +3402,23 @@
     gap:16px;flex-wrap:wrap;
     padding-bottom:16px;margin-bottom:18px;border-bottom:2px solid var(--ink);
   }
-  header.site h1{font-size:26px;margin:0 0 4px;letter-spacing:-0.01em;}
+  header.site h1{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
+  }
   header.site p{margin:0;color:var(--ink-soft);font-size:14px;max-width:560px;}
   .badge-proto{
     display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
-    text-transform:uppercase;background:#1f2430;color:#fff;padding:4px 9px;border-radius:999px;
+    text-transform:uppercase;background:var(--ink);color:var(--bg);padding:4px 9px;border-radius:999px;
     margin-bottom:8px;
   }
 
   .notice{
-    background:#fbf3e3;border:1px solid #e9d8ac;border-radius:var(--radius);
-    padding:12px 16px;font-size:13.5px;color:#5a4a1f;margin-bottom:20px;
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);
+    padding:12px 16px;font-size:13.5px;color:var(--ink-soft);margin-bottom:20px;
   }
-  .notice b{color:#3d3115;}
+  .notice b{color:var(--ink);}
+  .notice a{color:var(--accent);}
 
   .controls{
     display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
@@ -3402,54 +3427,56 @@
   }
   .nav-group{display:flex;align-items:center;gap:10px;}
   .nav-group button.navbtn{
-    border:1px solid var(--line);background:#fff;border-radius:8px;width:34px;height:34px;
+    border:1px solid var(--line);background:var(--panel-alt);border-radius:8px;width:34px;height:34px;
     font-size:16px;cursor:pointer;color:var(--ink);
   }
-  .nav-group button.navbtn:hover:not(:disabled){background:#f0efe9;}
+  .nav-group button.navbtn:hover:not(:disabled){background:var(--panel-hover);}
   .nav-group button.navbtn:disabled{opacity:.35;cursor:not-allowed;}
-  #monthLabel{font-size:18px;font-weight:700;min-width:170px;text-align:center;}
+  #monthLabel{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;min-width:170px;text-align:center;}
   .view-toggle{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
   .view-toggle button{
-    border:none;background:#fff;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--ink-soft);
+    border:none;background:var(--panel-alt);padding:7px 14px;font-size:13px;cursor:pointer;color:var(--ink-soft);
   }
-  .view-toggle button.active{background:var(--ink);color:#fff;}
+  .view-toggle button.active{background:var(--accent);color:var(--on-accent);font-weight:700;}
   #search{
     border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13.5px;min-width:200px;
+    background:var(--panel-alt);color:var(--ink);
   }
+  #search::placeholder{color:var(--ink-dim);}
 
   .filters{
     display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;
   }
   .chip{
-    border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;
+    border:1px solid var(--line);background:var(--panel-alt);border-radius:999px;padding:6px 12px;
     font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
     user-select:none;
   }
   .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-  .chip.active .dot{outline:1.5px solid #fff;}
-  .chip#freeChip.active{background:#16713a;border-color:#16713a;}
-  .chip#clearChip{color:#9a3b3b;border-color:#e6c8c8;}
+  .chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;}
+  .chip.active .dot{outline:1.5px solid var(--bg);}
+  .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
+  .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
 
   /* Calendar grid */
   .cal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;}
-  .cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;background:#f0efe9;border-bottom:1px solid var(--line);}
+  .cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;background:var(--panel-alt);border-bottom:1px solid var(--line);}
   .cal-head div{padding:9px 0;text-align:center;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;}
   .day-cell{
     min-height:112px;min-width:0;overflow:hidden;
     border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
-    padding:6px 6px 8px;position:relative;cursor:pointer;background:#fff;
+    padding:6px 6px 8px;position:relative;cursor:pointer;background:var(--panel);
   }
   .day-cell:nth-child(7n){border-right:none;}
-  .day-cell.otherMonth{background:#fbfaf7;color:#c3c0b7;}
+  .day-cell.otherMonth{background:var(--panel-alt);color:var(--ink-dim);}
   .day-cell.today{background:var(--today);box-shadow:inset 0 0 0 2px var(--today-ring);}
-  .day-cell:hover{background:#f5f4ef;}
+  .day-cell:hover{background:var(--panel-hover);}
   .day-cell.today:hover{background:var(--today);}
-  .daynum{font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);}
-  .day-cell.today .daynum{color:#8a5b00;}
+  .daynum{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);}
+  .day-cell.today .daynum{color:var(--accent);}
   .pill{
-    font-size:10.8px;background:#eef0fb;color:#26307a;border-radius:5px;padding:2px 5px;margin-bottom:3px;
+    font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:5px;padding:2px 5px;margin-bottom:3px;
     display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;
   }
   .pill .sw{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
@@ -3469,24 +3496,24 @@
     display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;
   }
   .evt-row:first-of-type{border-top:none;}
-  .evt-time{font-size:12px;color:var(--ink-soft);min-width:96px;font-weight:600;padding-top:2px;}
+  .evt-time{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-soft);min-width:96px;font-weight:600;padding-top:2px;}
   .evt-main{flex:1;}
   .evt-title{font-size:14.5px;font-weight:700;margin-bottom:2px;}
   .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .tag{
     display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
-    padding:2px 7px;border-radius:999px;color:#fff;text-transform:uppercase;letter-spacing:.02em;
+    padding:2px 7px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
   }
-  .tag.free{background:#16713a;}
-  .note{font-size:12px;color:#8a6d1f;margin-top:3px;font-style:italic;}
-  .src{font-size:11px;color:#9a9585;font-style:italic;}
+  .tag.free{background:#3fbf6a;}
+  .note{font-size:12px;color:#d1b34a;margin-top:3px;font-style:italic;}
+  .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
 
   /* List view */
   #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
   #listView.show{display:block;}
   .list-day-group{padding:12px 0;border-top:1px solid var(--line-soft);}
   .list-day-group:first-child{border-top:none;}
-  .list-day-heading{font-size:13px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
+  .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
 
   footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
@@ -3495,7 +3522,7 @@
   @media (max-width:720px){
     .day-cell{min-height:78px;}
     .pill{display:none;}
-    .day-cell.hasEvents::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--ink);margin-top:2px;}
+    .day-cell.hasEvents::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:2px;}
     #monthLabel{min-width:0;}
   }
 </style>
@@ -3505,11 +3532,11 @@
 
   <header class="site">
     <div>
-      <h1>Detroit Arts &amp; Events Calendar</h1>
-      <p>A comprehensive, filterable month calendar for events happening in the City of Detroit — modeled on ClevelandArtsEvents.com.</p>
+      <h1><img src="/assets/wordmark.svg" alt="313.events" height="34" style="display:block;"></h1>
+      <p>The city is on. A comprehensive, filterable month calendar for arts, culture, and nightlife events happening in the City of Detroit.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-      <a href="submit.html" style="display:inline-block;background:var(--ink);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;white-space:nowrap;">+ Submit an Event</a>
+      <a href="submit.html" style="display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;white-space:nowrap;">+ Submit an Event</a>
       <a href="sources.html" style="font-size:12.5px;color:var(--ink-soft);text-decoration:none;">Data sources &amp; connection status &rarr;</a>
     </div>
   </header>

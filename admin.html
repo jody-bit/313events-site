@@ -11,34 +11,46 @@
   gtag('config', 'G-1078BKN0M3');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — 313 Events</title>
+<title>Admin — 313.events</title>
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1a1d24; --ink-soft:#5b6270; --line:#e3e5ea; --bg:#f7f7f9;
-    --accent:#c8102e; --ok:#1a7f37; --bad:#b42318;
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --ok:#3fbf6a; --ok-ink:#06210f; --bad:#e07a72; --bad-ink:#3a1f1f;
   }
   *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);}
-  header{background:#111319;color:#fff;padding:18px 24px;}
-  header h1{margin:0;font-size:18px;}
-  header .sub{color:#9aa0ab;font-size:13px;margin-top:2px;}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:var(--panel-alt);color:var(--ink);padding:18px 24px;border-bottom:2px solid var(--line);}
+  header h1{margin:0;font-size:18px;font-family:'Archivo Narrow',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.01em;}
+  header .sub{color:var(--ink-soft);font-size:13px;margin-top:2px;}
   main{max-width:960px;margin:0 auto;padding:24px;}
-  .gate{max-width:420px;margin:80px auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px;text-align:center;}
-  .gate input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;margin:14px 0;}
+  .gate{max-width:420px;margin:80px auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px;text-align:center;}
+  .gate input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;margin:14px 0;background:var(--panel-alt);color:var(--ink);}
   .gate button, .card button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:600;}
-  .gate button{background:var(--ink);color:#fff;width:100%;}
-  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+  .gate button{background:var(--ink);color:var(--bg);width:100%;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
   .card h3{margin:0 0 4px;font-size:16px;}
   .meta{color:var(--ink-soft);font-size:13px;line-height:1.6;margin:8px 0;}
   .meta b{color:var(--ink);}
+  .meta a{color:var(--accent);}
   .actions{display:flex;gap:8px;margin-top:12px;}
-  .btn-approve{background:var(--ok);color:#fff;}
-  .btn-reject{background:var(--bad);color:#fff;}
+  .btn-approve{background:var(--ok);color:var(--ok-ink);}
+  .btn-reject{background:var(--bad);color:var(--bad-ink);}
   .empty{color:var(--ink-soft);text-align:center;padding:60px 0;}
   .err{color:var(--bad);font-size:13.5px;margin-top:8px;}
   .refresh{margin-bottom:16px;}
-  .refresh button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
+  .refresh button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
 </style>
 </head>
 <body>
