@@ -104,7 +104,7 @@ insert into events (
  'City-Wide (Hamtramck) — multiple venues', '2026-10-03', null, true, null,
  'City of Hamtramck (2026 Annual Events flyer)', null, 'approved')
 
-on conflict (external_id) do update set
+on conflict (external_id) where external_id is not null do update set
   title = excluded.title,
   description = excluded.description,
   category = excluded.category,
