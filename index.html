@@ -3884,11 +3884,23 @@ function buildFilterBar(){
   bar.appendChild(clearChip);
 }
 
+// Keeps the month label and prev/next disabled state in sync with `current`
+// regardless of which view (month grid or list) is currently rendered.
+// Previously this only ran inside renderMonth(), so switching to List view
+// and paging with next/prev silently left the header showing a stale month
+// while the list content underneath had actually moved on — same events,
+// wrong label. Called once per render() so both views always agree.
+function updateMonthHeader(){
+  const y = current.getFullYear(), m = current.getMonth();
+  document.getElementById('monthLabel').textContent = fmtMonth(current);
+  document.getElementById('prevBtn').disabled = (y===MIN_MONTH.getFullYear() && m===MIN_MONTH.getMonth());
+  document.getElementById('nextBtn').disabled = (y===MAX_MONTH.getFullYear() && m===MAX_MONTH.getMonth());
+}
+
 function renderMonth(){
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
   const y = current.getFullYear(), m = current.getMonth();
-  document.getElementById('monthLabel').textContent = fmtMonth(current);
 
   const firstDow = new Date(y,m,1).getDay();
   const daysInMonth = new Date(y,m+1,0).getDate();
@@ -3945,9 +3957,6 @@ function renderMonth(){
     cell.onclick = ()=>{ selectedDate = iso; showDayPanel(iso); };
     grid.appendChild(cell);
   }
-
-  document.getElementById('prevBtn').disabled = (y===MIN_MONTH.getFullYear() && m===MIN_MONTH.getMonth());
-  document.getElementById('nextBtn').disabled = (y===MAX_MONTH.getFullYear() && m===MAX_MONTH.getMonth());
 }
 
 function showDayPanel(iso){
@@ -4016,6 +4025,7 @@ function renderList(){
 }
 
 function render(){
+  updateMonthHeader();
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
