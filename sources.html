@@ -217,6 +217,11 @@
         <td class="src-note">Terms of Use explicitly prohibit scraping, harvesting, aggregation, deep-linking, and republishing without written consent. Moot either way — no events/calendar feature exists on the site to take from.</td>
         <td class="src-note">n/a — publication has no events calendar</td>
       </tr>
+      <tr>
+        <td class="src-name">Eventbrite (discovery/search pages)</td>
+        <td class="src-note">Different question than the API row below — this is about the human-facing <code>eventbrite.com/d/mi--&lt;city&gt;/events/</code> browse pages. Technically these ARE scrapeable (real event data renders server-side in plain HTML, and robots.txt doesn't block the <code>/d/</code> path) — but Eventbrite's Terms of Service §13, "Scraping or Commercial Use of Site Content is Prohibited," explicitly states: "You have no right to, and you agree not to, scrape, crawl, or employ any automated means to extract data from the Sites." That's an unconditional contractual ban regardless of what robots.txt allows, so this stays off-limits.</td>
+        <td class="src-note">Checked for Detroit, Hamtramck, and Highland Park city-discovery pages — same platform, same ToS, same verdict for all three.</td>
+      </tr>
     </table>
   </section>
 
@@ -281,6 +286,7 @@
       <tr><td class="src-name">Detroit Free Press</td><td class="src-note">No dedicated events/calendar page could be found — current entertainment coverage looks like SEO listicles ("things to do this weekend"), not a structured calendar. Gannett's domains were also blocked at this session's network level, independent of the site itself, so this is lower-confidence than the rest of this page — worth a two-minute manual browser check before fully ruling it out.</td></tr>
       <tr><td class="src-name">The Detroit News</td><td class="src-note">A "Things To Do" section exists (detroitnews.com/things-to-do/events/); a dedicated calendar built on a vendor called SpinGo existed as of 2014, current status unconfirmed. Same network-level block as Free Press affected this check — recommend a manual look.</td></tr>
       <tr><td class="src-name">Hour Detroit</td><td class="src-note">robots.txt is permissive, but the live site's firewall returns 403 to automated requests against <code>/events/</code> and its own terms page regardless — stated policy and real-world behavior don't match. Worth a spot-check in case that's inconsistent by page or time of day.</td></tr>
+      <tr><td class="src-name">Cosm Detroit</td><td class="src-note">Real, confirmed venue — an immersive-dome sports/entertainment space opening September 10, 2026 at Cadillac Square, downtown Detroit. Squarely in scope by location. But the site is a JS-rendered Next.js app with no feed, API, or JSON-LD in the static HTML a plain scraper sees — content only appears after client-side rendering. robots.txt is permissive (explicitly allows the relevant paths), so this isn't a permissions problem, just a bigger technical lift: every other source on this page is read with a plain <code>fetch()</code>, and this would be the first one needing an actual headless browser. Worth revisiting once it opens and there's real programming to check against — either as a manual-curation entry or as the case for adding headless-browser scraping to this project.</td></tr>
     </table>
   </section>
 
@@ -299,6 +305,8 @@
       <tr><td class="src-name">Belle Isle Aquarium</td><td>Detroit</td><td class="src-note">Calendar page (belleisleconservancy.org/summercalendar) is plain scrapeable HTML with no bot restrictions — but the listings are almost entirely recurring/relative ("Second Fridays," date ranges like "Jun 15 – Aug 21," multi-date entries like "Jul 30 & Aug 20"), not the discrete single dates this calendar's data model expects. Didn't want to force bad data into a clean schema — worth revisiting with real recurrence-handling logic.</td></tr>
       <tr><td class="src-name">Tuskegee Airmen National Museum</td><td>Detroit</td><td class="src-note">events page is open and scrapeable (no robots.txt at all) — but its "events" are actually long-running recurring class schedules (e.g. a mechanic-training course meeting a dozen-plus dates through the year), a fundamentally different shape than a one-off event. Skipped rather than build something that would need custom logic just for this one source.</td></tr>
       <tr><td class="src-name">Detroit Public Library (Main Branch)</td><td>Detroit</td><td class="src-note">Real, current, scrapeable listings exist (events-search?location=main) — but the content is overwhelmingly community/workforce programming (resume workshops, basic computer skills classes), not arts/culture/nightlife. Skipped as a scope mismatch rather than a technical one; worth reconsidering if the calendar's scope ever broadens to general community events.</td></tr>
+      <tr><td class="src-name">City of Detroit official calendar</td><td>Detroit</td><td class="src-note">detroitmi.gov/Calendar-and-Events is real and live, but the content sampled was entirely civic/government business — Planning Commission and Board of Police Commissioners meetings, an Ombudsman office-hours notice, a vehicle auction, an Election Dept. item. No parks/rec, festival, or arts programming showed up. No feed/API/JSON-LD either way. Out of scope, not a technical problem — worth a periodic re-check in case that changes.</td></tr>
+      <tr><td class="src-name">City of Highland Park official calendar</td><td>Highland Park</td><td class="src-note">highlandparkmi.gov/community/calendar/ is a thin hub page that mostly links out to City Council/Planning Commission/Police &amp; Fire Commission meeting pages — no dated public event listings found, no feed/API. Small-municipality site (runs a CMS called MuniCMS/Muniweb), doesn't appear to maintain a real public events database.</td></tr>
     </table>
   </section>
 
@@ -321,6 +329,7 @@
       <tr><td class="src-name">Paxahau</td><td class="src-note">paxahau.com — Movement Festival &amp; affiliated electronic events</td></tr>
       <tr><td class="src-name">Resident Advisor (manual)</td><td class="src-note">Hand-pulled from RA's per-week Detroit listing pages, not just their "Popular" homepage picks — see the AXS/RA/Dice blocked-sources note above for why this stays manual</td></tr>
       <tr><td class="src-name">Dice (manual)</td><td class="src-note">Hand-pulled from Dice's public listing pages, primarily El Club</td></tr>
+      <tr><td class="src-name">City of Hamtramck festivals</td><td class="src-note">hamtramckcity.gov/community/festivals-events/ describes five recurring annual festivals (Diversity Festival, Labor Day Festival, Eid Festival, Paczki Day Run, Strawberry Festival) but without inline dates — the real dates live in a linked, yearly-updated "Annual Events Schedule" PDF. No feed/API exists (robots.txt is permissive, no ToS restriction found), but with only five stable annual events, hand-checking that PDF once a year is more reliable than building a PDF-parsing scraper for it. Hamtramck Blowout isn't listed on this city page at all — that stays whatever source it's currently tracked from, if any.</td></tr>
     </table>
   </section>
 
