@@ -2,6 +2,8 @@
 
 Per the brief's own process (§55–58): audit first, then design architecture, then homepage, then core entity pages. This document is that audit + the proposed architecture. No homepage code has been written yet — this is the checkpoint before that starts.
 
+> **Scope-change note (2026-08-24):** everything below was written when the site's coverage area was the City of Detroit plus the Hamtramck and Highland Park enclaves. As of this date the service area is a 75-mile radius from Detroit, matching the Census-defined regional radius (see `SERVICE_AREA.md`). That doesn't change the architecture below, but it does mean any future "neighborhood" or geography-scoped module needs to account for a much larger, multi-county, cross-state, and cross-border footprint rather than Detroit's ~39 neighborhoods alone — see the matching note in `FOUNDATIONAL_ITEMS.md`.
+
 ---
 
 ## A. Current technology stack

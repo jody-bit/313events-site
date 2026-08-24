@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>313.events — THE CITY IS ON.</title>
 <link rel="canonical" href="https://313.events/">
-<meta name="description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events happening in the City of Detroit.">
+<meta name="description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events within 75 miles of Detroit.">
 <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
@@ -28,7 +28,7 @@
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="313.events — THE CITY IS ON.">
-<meta property="og:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events happening in the City of Detroit.">
+<meta property="og:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events within 75 miles of Detroit.">
 <meta property="og:url" content="https://313.events/">
 <meta property="og:site_name" content="313.events">
 <meta property="og:image" content="https://313.events/assets/social/og-default.png">
@@ -36,7 +36,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="313.events — THE CITY IS ON.">
-<meta name="twitter:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events happening in the City of Detroit.">
+<meta name="twitter:description" content="A comprehensive, filterable calendar of arts, culture, and nightlife events within 75 miles of Detroit.">
 <meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 <script type="application/ld+json">
 {
@@ -3536,7 +3536,7 @@
   <header class="site">
     <div>
       <h1><img src="/assets/wordmark.svg" alt="313.events" height="34" style="display:block;"></h1>
-      <p>The city is on. A comprehensive, filterable month calendar for arts, culture, and nightlife events happening in the City of Detroit.</p>
+      <p>The city is on. A comprehensive, filterable month calendar for arts, culture, and nightlife events within 75 miles of Detroit.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
       <a href="submit.html" style="display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;white-space:nowrap;">+ Submit an Event</a>
@@ -3577,9 +3577,9 @@
   <footer class="site">
     <b>Sources pulled for this prototype:</b> dia.org, mocadetroit.org, easternmarket.org, livenation.com (Fox Theatre), 313presents.com, detroitoperahouse.org, detroithistorical.org, detroitjazzfest.org, cliffbells.com, 19hz.info, paxahau.com, Dice (El Club listings), and Resident Advisor &mdash; pulled via RA's per-week Detroit listing pages (<code>ra.co/events/us/detroit/week/&hellip;</code>) for every week from Aug 19 through Oct 31, 2026, not just RA's "Popular" homepage picks (which show only ~10 of RA's 160+ regional listings). Always confirm dates/times/venues with the source before making plans, especially "Venue TBA" listings, which many underground/warehouse parties intentionally keep private until day-of.
     <br><br>
-    <b>Scope note on Hamtramck &amp; Highland Park:</b> both are legally independent cities, but geographically they're enclaves completely surrounded by the City of Detroit, so events there (Paris Bar, Small's, Vault313, etc.) are included in this calendar.
+    <b>Service area: within 75 miles of Detroit.</b> This calendar's coverage area was expanded from the City of Detroit (plus the Hamtramck and Highland Park enclaves) to a 75-mile radius, matching the same regional radius used by the area's music census work. That radius reaches Ann Arbor and Jackson to the west, Flint and Port Huron to the north, Toledo, OH and Monroe to the south, and across the river into Windsor, Chatham, and Sarnia, Ontario to the east — see <code>SERVICE_AREA.md</code> for the full computed boundary and which nearby cities fall just outside it (Lansing, Saginaw, Kalamazoo, London ON).
     <br><br>
-    <b>Excluded as genuinely outside metro Detroit</b> (RA and 19hz both tag broader "Detroit region" listings, but these venues sit in separate suburbs, not enclaves): Necto (Ann Arbor), 215 West (Ferndale), Pine Knob, Meadow Brook, and Michigan Lottery Amphitheatre (Sterling Heights/Clarkston/Rochester). One listing, "The House of Tarot" at "MAD Arts," was dropped because its venue location couldn't be confirmed at all.
+    <b>Reconsidered under the new radius:</b> Necto (Ann Arbor), 215 West (Ferndale), Pine Knob, Meadow Brook, and Michigan Lottery Amphitheatre (Sterling Heights/Clarkston/Rochester) were previously excluded specifically for being outside city-limits Detroit — all five are well within 75 miles and are candidates to bring back in during the next data pass. One listing, "The House of Tarot" at "MAD Arts," stays dropped either way since its venue location couldn't be confirmed at all.
     <br><br>
     <b>Not included:</b> Facebook Events and Partiful have no public, searchable listing pages to pull from automatically (Facebook requires an authenticated app + review process; Partiful events are private invite links by design). Eventbrite and Edmtrain's event search still render via JavaScript in ways this prototype's fetch tool couldn't reliably scrape past their navigation shell &mdash; a production build would use their official APIs/RSS feeds instead of page-scraping. thedetroitilove.com blocks automated fetching via robots.txt and was skipped out of respect for that.
   </footer>
