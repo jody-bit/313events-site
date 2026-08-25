@@ -14,10 +14,15 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
 
-const CITY = "Detroit";
-const STATE_CODE = "MI";
-const COUNTRY_CODE = "US";
-const ALLOWED_CITIES = ["Detroit", "Hamtramck", "Highland Park"];
+// Geographic radius search, not a city allowlist — 313.events' coverage area
+// is a 75-mile radius from Detroit's center (see SERVICE_AREA.md), which pulls
+// in dozens of cities/townships (Ann Arbor, Pontiac, Windsor ON, Toledo OH,
+// etc.) that a hardcoded city list would have silently dropped. Center point
+// and radius match SERVICE_AREA.md exactly so this stays in sync with that
+// document if the radius or center ever changes.
+const CENTER_LAT = 42.3314;
+const CENTER_LON = -83.0458;
+const RADIUS_MILES = 75;
 
 // Ticketmaster segment/genre -> this calendar's category keys.
 // Sports is intentionally excluded — out of scope for an arts/culture/nightlife calendar.
@@ -61,9 +66,9 @@ async function fetchTicketmasterEvents() {
   for (let page = 0; page < 5; page++) {
     const url = new URL("https://app.ticketmaster.com/discovery/v2/events.json");
     url.searchParams.set("apikey", TICKETMASTER_API_KEY);
-    url.searchParams.set("city", CITY);
-    url.searchParams.set("stateCode", STATE_CODE);
-    url.searchParams.set("countryCode", COUNTRY_CODE);
+    url.searchParams.set("latlong", `${CENTER_LAT},${CENTER_LON}`);
+    url.searchParams.set("radius", String(RADIUS_MILES));
+    url.searchParams.set("unit", "miles");
     url.searchParams.set("startDateTime", startDateTime);
     url.searchParams.set("endDateTime", endDateTime);
     url.searchParams.set("size", "200");
@@ -86,8 +91,9 @@ function shapeForDb(e) {
 
   const venue0 = e._embedded && e._embedded.venues && e._embedded.venues[0];
   const venueName = venue0 ? venue0.name : "Venue TBA";
-  const venueCity = venue0 && venue0.city ? venue0.city.name : "";
-  if (venueCity && !ALLOWED_CITIES.includes(venueCity)) return null;
+  // No city allowlist here on purpose — the latlong+radius params above
+  // already constrain results geographically, so every venue Ticketmaster
+  // returns is already within the 75-mile service area.
 
   const start = e.dates && e.dates.start;
   if (!start || !start.localDate) return null;
