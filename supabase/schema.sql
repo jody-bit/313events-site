@@ -88,7 +88,15 @@ create table if not exists events (
 create index if not exists events_start_date_idx on events (start_date);
 create index if not exists events_status_idx on events (status);
 create index if not exists events_category_idx on events (category);
-create unique index if not exists events_external_id_key on events (external_id) where external_id is not null;
+-- No WHERE clause here on purpose: in standard SQL, NULL is never considered
+-- equal to another NULL, so a plain unique index already allows unlimited
+-- rows with external_id = NULL (manually-entered events with no dedupe key)
+-- without any partial-index predicate. A partial index was tried here
+-- originally and broke every cron's `?on_conflict=external_id` upsert, since
+-- PostgREST always generates a plain `ON CONFLICT (external_id)` that can
+-- only match a non-partial unique index — Postgres requires an exact match
+-- between the ON CONFLICT target and the index definition. Fixed 2026-08-25.
+create unique index if not exists events_external_id_key on events (external_id);
 
 -- keep updated_at fresh
 create or replace function set_updated_at() returns trigger as $$
