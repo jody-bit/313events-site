@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name='impact-site-verification' value='8597fd2a-b17d-42b6-a53d-66d15db4baea'>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
 <script>
@@ -155,8 +156,8 @@
       <tr>
         <td class="src-name">Metro Times</td>
         <td>XML sitemap + HTML scrape of individual event pages</td>
-        <td><span class="badge badge-warn">Moderate</span></td>
-        <td class="src-note">The search/listing UI is blocked by robots.txt, but the sitemap of individual event pages isn't — this reads that instead. It's a general community calendar (concerts, sports, everything), so rows land in the moderation queue (<code>pending_review</code>) rather than auto-publishing — a human sets the real category and confirms it belongs on an arts/culture/nightlife calendar. Reads a bounded batch (40 events) per run; later runs pick up more via the daily schedule. <code>api/cron-metrotimes.js</code></td>
+        <td><span class="badge badge-bad">Blocked — infra, not policy</span></td>
+        <td class="src-note">The search/listing UI is blocked by robots.txt, but the sitemap of individual event pages isn't, and this cron is built to read that instead. The catch, confirmed 2026-08-25: the same URL fetches cleanly from outside Vercel but fails every time the cron itself runs, which points to Metro Times' bot-protection blocking Vercel's hosting IP ranges specifically — a common default for sites behind a WAF, unrelated to anything about this request or Vercel's plan tier. Tried a standard browser User-Agent as a first fix; still blocked. Leaving <code>api/cron-metrotimes.js</code> in place (it's correctly built and would work if run from anywhere else) but not chasing an IP-reputation problem further for now. Would still land as <code>pending_review</code> rather than auto-publish if it ever does connect, since it's a general community calendar (concerts, sports, everything).</td>
       </tr>
       <tr>
         <td class="src-name">Redford Theatre</td>
