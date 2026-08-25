@@ -17,7 +17,15 @@ const CRON_SECRET = process.env.CRON_SECRET;
 // Geographic radius search, not a city allowlist — 313.events' coverage area
 // is a 75-mile radius from Detroit's center (see SERVICE_AREA.md), which pulls
 // in dozens of cities/townships (Ann Arbor, Pontiac, Windsor ON, Toledo OH,
-// etc.) that a hardcoded city list would have silently dropped. Center point
+// etc.) that a hardcoded city list would have silently dropped.
+//
+// Verified against Ticketmaster's own Discovery API docs (2026-08-25):
+// latlong+radius+unit is real and currently works (default radius is even
+// 100 "miles", so 75 fits), and size=200 * page<5 stays under their
+// "size*page < 1000" deep-paging cap. One thing to revisit later: the docs
+// flag `latlong` as "maybe removed in a future release, please use geoPoint
+// instead" (a geohash string) — not urgent since it still works today, but
+// worth switching before Ticketmaster actually pulls the plug. Center point
 // and radius match SERVICE_AREA.md exactly so this stays in sync with that
 // document if the radius or center ever changes.
 const CENTER_LAT = 42.3314;
