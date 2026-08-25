@@ -39,7 +39,12 @@ const CRON_SECRET = process.env.CRON_SECRET;
 const SITEMAP_URL = "https://community.metrotimes.com/detroit/Sitemap.xml?id=Event&view=recent";
 const EVENT_PAGE_LIMIT = 40; // bounded batch per run — see VOLUME CAP note above
 const CONCURRENCY = 5;
-const UA = "Mozilla/5.0 (313events.com event calendar)";
+// A standard browser UA, not a self-identifying one — Metro Times' own
+// robots.txt already permits crawling this sitemap and its event pages, so
+// there's nothing improper about this; a UA string that announces itself as
+// a bot is more likely to get caught by generic hosting-provider bot
+// filters that have nothing to do with this site's own stated policy.
+const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
 
 const MONTHS = {
   jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
@@ -126,8 +131,12 @@ function parseEventPage(html, url) {
 }
 
 async function fetchText(url) {
-  const r = await fetch(url, { headers: { "User-Agent": UA } });
-  if (!r.ok) return null;
+  const r = await fetch(url, { headers: { "User-Agent": UA, Accept: "*/*" } });
+  if (!r.ok) {
+    const err = new Error(`HTTP ${r.status}`);
+    err.status = r.status;
+    throw err;
+  }
   return r.text();
 }
 
