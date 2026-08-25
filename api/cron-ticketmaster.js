@@ -99,9 +99,14 @@ function shapeForDb(e) {
 
   const venue0 = e._embedded && e._embedded.venues && e._embedded.venues[0];
   const venueName = venue0 ? venue0.name : "Venue TBA";
+  const venueCity = venue0 && venue0.city ? venue0.city.name : null;
   // No city allowlist here on purpose — the latlong+radius params above
   // already constrain results geographically, so every venue Ticketmaster
-  // returns is already within the 75-mile service area.
+  // returns is already within the 75-mile service area. venueCity IS still
+  // captured (into venue_city_raw below) so the site can display it — a
+  // 75-mile radius pulls in Rochester Hills, Sterling Heights, Clarkston,
+  // etc., and without a visible city label those all silently read as
+  // Detroit on the calendar. See migration_006.
 
   const start = e.dates && e.dates.start;
   if (!start || !start.localDate) return null;
@@ -113,6 +118,7 @@ function shapeForDb(e) {
     title: e.name,
     category: cat,
     venue_name_raw: venueName,
+    venue_city_raw: venueCity,
     start_date: start.localDate,
     time_display: formatTime(start),
     is_free: false,

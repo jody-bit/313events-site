@@ -3978,7 +3978,7 @@ function showDayPanel(iso){
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
               ${e.free?'<span class="tag free">Free</span>':''}
-              <span>${e.venue}</span>
+              <span>${e.venue}${e.city?` — ${e.city}`:''}</span>
               ${e.source?`<span class="src">via ${e.source}</span>`:''}
             </div>
             ${e.note?`<div class="note">${e.note}</div>`:''}
@@ -4013,7 +4013,7 @@ function renderList(){
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
               ${e.free?'<span class="tag free">Free</span>':''}
-              <span>${e.venue}</span>
+              <span>${e.venue}${e.city?` — ${e.city}`:''}</span>
               ${e.source?`<span class="src">via ${e.source}</span>`:''}
             </div>
             ${e.note?`<div class="note">${e.note}</div>`:''}
@@ -4084,6 +4084,11 @@ function mapSupabaseRow(row) {
     date: row.start_date,
     title: row.title,
     venue: row.venue_name_raw || "Venue TBA",
+    // Suppress "Detroit" specifically — it's the implicit default everywhere
+    // else on the site, so showing it on every card would just be noise.
+    // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
+    // shows, since that's exactly the info that was silently missing before.
+    city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? row.venue_city_raw : undefined,
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
@@ -4097,7 +4102,7 @@ function mapSupabaseRow(row) {
 async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=title,start_date,venue_name_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
