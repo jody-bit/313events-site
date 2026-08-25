@@ -117,7 +117,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const rows = parsed.map((e) => ({
+  const rawRows = parsed.map((e) => ({
     external_id: `redford-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "film",
@@ -128,6 +128,15 @@ module.exports = async (req, res) => {
     source: "Redford Theatre",
     status: "approved",
   }));
+
+  // De-dupe by external_id before sending — Postgres's ON CONFLICT DO UPDATE
+  // can't touch the same target row twice in one statement, so one duplicate
+  // pair would otherwise fail the entire batch instead of just that pair.
+  const seen = new Map();
+  for (const row of rawRows) {
+    if (!seen.has(row.external_id)) seen.set(row.external_id, row);
+  }
+  const rows = Array.from(seen.values());
 
   try {
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {

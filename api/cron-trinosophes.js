@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const rows = parsed.map((e) => ({
+  const rawRows = parsed.map((e) => ({
     external_id: `trinosophes-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "music", // Trinosophes is predominantly a music/arts venue; not fine-grained per event
@@ -141,6 +141,18 @@ module.exports = async (req, res) => {
     source: "Trinosophes",
     status: "approved",
   }));
+
+  // De-dupe by external_id before sending. The page lists recurring events
+  // across multiple years with untested year-tracking (see BEST-EFFORT note
+  // above), so two real, different-date events can occasionally land on the
+  // same computed external_id. Postgres's ON CONFLICT DO UPDATE can't touch
+  // the same target row twice in one statement — without this, one bad pair
+  // fails the ENTIRE batch (every real event in the run), not just the dupe.
+  const seen = new Map();
+  for (const row of rawRows) {
+    if (!seen.has(row.external_id)) seen.set(row.external_id, row);
+  }
+  const rows = Array.from(seen.values());
 
   try {
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
