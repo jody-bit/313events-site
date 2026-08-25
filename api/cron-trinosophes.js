@@ -124,9 +124,14 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const parsed = parseTrinosophesEvents(html);
+  // Trinosophes' page turned out to be a full historical archive (real shows
+  // going back to 2012), not just upcoming ones — discovered 2026-08-25 when
+  // a live run upserted 552 rows. Keep only current/upcoming events, same
+  // pattern as cron-cinema-detroit.js.
+  const today = new Date().toISOString().slice(0, 10);
+  const parsed = parseTrinosophesEvents(html).filter((e) => e.date >= today);
   if (!parsed.length) {
-    res.status(200).json({ upserted: 0, note: "No events parsed — the site's layout may have changed.", fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: 0, note: "No upcoming events parsed — the site's layout may have changed, or none are currently listed.", fetchedAt: new Date().toISOString() });
     return;
   }
 
