@@ -3496,6 +3496,53 @@
   .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
   .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
 
+  /* Location + radius bar — Phase 1 Chunk 3. Same restrained styling as the
+     discovery bar (ink-on-active, chartreuse reserved for state, not chrome). */
+  .location-bar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;
+  }
+  .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .loc-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .loc-combo{position:relative;min-width:200px;}
+  #locInput{
+    border:1px solid var(--line);border-radius:8px;padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
+    background:var(--panel-alt);color:var(--ink);
+  }
+  #locInput::placeholder{color:var(--ink-dim);}
+  .loc-clear-btn{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    width:20px;height:20px;font-size:11px;line-height:1;cursor:pointer;align-items:center;justify-content:center;display:flex;
+  }
+  .loc-clear-btn:hover{background:var(--ink);color:var(--bg);}
+  .loc-suggestions{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:280px;overflow-y:auto;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .loc-item{
+    padding:8px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .loc-item:last-child{border-bottom:none;}
+  .loc-item:hover, .loc-item.hl{background:var(--panel-hover);}
+  .loc-item-name{color:var(--ink);font-weight:600;}
+  .loc-item-type{color:var(--ink-dim);font-size:10.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+  .loc-empty{padding:10px 12px;font-size:12.5px;color:var(--ink-dim);}
+  .loc-geo-btn{
+    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:8px;
+    padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);}
+  .loc-geo-btn:disabled{opacity:.6;cursor:default;}
+  .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .radius-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-right:2px;}
+  .radius-chip{
+    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:999px;
+    padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .radius-chip:hover{background:var(--panel-hover);}
+  .radius-chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
   /* Calendar grid */
   .cal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;}
   .cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;background:var(--panel-alt);border-bottom:1px solid var(--line);}
@@ -3617,6 +3664,28 @@
     <button class="when-btn" data-when="date">Date</button>
   </div>
 
+  <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
+    <div class="loc-control">
+      <span class="loc-label">Where</span>
+      <div class="loc-combo">
+        <input type="text" id="locInput" placeholder="Search city, neighborhood&hellip;" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="locSuggestions" aria-label="Search for a city or neighborhood">
+        <button type="button" id="locClearBtn" class="loc-clear-btn" style="display:none;" aria-label="Clear location">&#10005;</button>
+        <div class="loc-suggestions" id="locSuggestions" role="listbox" style="display:none;"></div>
+      </div>
+      <button type="button" id="useMyLocationBtn" class="loc-geo-btn">Use my location</button>
+    </div>
+    <div class="radius-group" id="radiusGroup" style="display:none;" role="group" aria-label="Distance from selected location">
+      <span class="radius-label">Within</span>
+      <button type="button" class="radius-chip" data-radius="5">5 mi</button>
+      <button type="button" class="radius-chip" data-radius="10">10 mi</button>
+      <button type="button" class="radius-chip" data-radius="25">25 mi</button>
+      <button type="button" class="radius-chip" data-radius="50">50 mi</button>
+      <button type="button" class="radius-chip" data-radius="75">75 mi</button>
+      <button type="button" class="radius-chip active" data-radius="all">All</button>
+    </div>
+  </div>
+
   <div class="controls">
     <div class="nav-group">
       <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
@@ -3671,6 +3740,147 @@ const CATS = {
   nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
   sports:   {label:"Sports",            color:"var(--c-sports)"}
 };
+
+// ---- Location reference data (Phase 1 Chunk 3) ----
+// Static, hand-curated dataset backing predictive location search and
+// city-level radius filtering — see DISCOVERY_PHASE1_AUDIT.md §2/§3 for the
+// full reasoning. No geocoding API, no per-venue backfill: this alone covers
+// autocomplete and city-level distance math. Two tiers:
+//   - type:'neighborhood' — Detroit's 39 named areas (Detroit-only by
+//     design; see SERVICE_AREA.md's "Neighborhood scope — resolved" note).
+//     Selectable as a search origin only — events don't carry neighborhood
+//     data yet (the venue_id gap, see audit §1), so these never match an
+//     event's own location, only the chosen "from here" point.
+//   - type:'city' — every city SERVICE_AREA.md names as inside the 75-mile
+//     boundary, plus a supplementary set of well-known Detroit-metro
+//     suburbs (all comfortably inside 75mi already) added so real
+//     venue_city_raw values — which come straight from Ticketmaster's own
+//     venue data and can legitimately be any city in the region — have a
+//     real chance of resolving to coordinates. Only this tier is matched
+//     against event data; see CITY_LOOKUP below.
+// Coordinates are hand-sourced city-centroid estimates, not survey-grade —
+// entirely adequate for bucketing into 5/10/25/50/75-mile rings, not meant
+// for turn-by-turn precision. Re-derivable/correctable independently of
+// event data since this ships as a plain static list, not a migration.
+const LOCATIONS = [
+  {name:"Detroit", type:"city", region:"Michigan", lat:42.3314, lng:-83.0458},
+
+  // --- Detroit neighborhoods (39) — see migration_002_neighborhoods_and_organizers.sql ---
+  {name:"Downtown", type:"neighborhood", region:"Detroit", lat:42.3316, lng:-83.0466},
+  {name:"Midtown", type:"neighborhood", region:"Detroit", lat:42.3536, lng:-83.0666},
+  {name:"New Center", type:"neighborhood", region:"Detroit", lat:42.3707, lng:-83.0710},
+  {name:"Corktown", type:"neighborhood", region:"Detroit", lat:42.3308, lng:-83.0680},
+  {name:"North Corktown", type:"neighborhood", region:"Detroit", lat:42.3385, lng:-83.0710},
+  {name:"Core City", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-83.0790},
+  {name:"Woodbridge", type:"neighborhood", region:"Detroit", lat:42.3480, lng:-83.0790},
+  {name:"Eastern Market", type:"neighborhood", region:"Detroit", lat:42.3459, lng:-83.0416},
+  {name:"Brush Park", type:"neighborhood", region:"Detroit", lat:42.3435, lng:-83.0530},
+  {name:"Lafayette Park", type:"neighborhood", region:"Detroit", lat:42.3350, lng:-83.0290},
+  {name:"Rivertown", type:"neighborhood", region:"Detroit", lat:42.3395, lng:-83.0180},
+  {name:"Indian Village", type:"neighborhood", region:"Detroit", lat:42.3660, lng:-82.9840},
+  {name:"West Village", type:"neighborhood", region:"Detroit", lat:42.3610, lng:-82.9910},
+  {name:"Islandview", type:"neighborhood", region:"Detroit", lat:42.3630, lng:-82.9950},
+  {name:"Milwaukee Junction", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0570},
+  {name:"North End", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.0660},
+  {name:"Poletown East", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0330},
+  {name:"Jefferson-Chalmers", type:"neighborhood", region:"Detroit", lat:42.4000, lng:-82.9350},
+  {name:"Belle Isle", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-82.9700},
+  {name:"Morningside", type:"neighborhood", region:"Detroit", lat:42.4070, lng:-82.9550},
+  {name:"East English Village", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-82.9420},
+  {name:"Boston-Edison", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.1010},
+  {name:"Arden Park-East Boston", type:"neighborhood", region:"Detroit", lat:42.3830, lng:-83.0900},
+  {name:"University District", type:"neighborhood", region:"Detroit", lat:42.4150, lng:-83.1350},
+  {name:"Palmer Park", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1350},
+  {name:"Palmer Woods", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1400},
+  {name:"Sherwood Forest", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1470},
+  {name:"Bagley", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1500},
+  {name:"Russell Woods", type:"neighborhood", region:"Detroit", lat:42.3860, lng:-83.1450},
+  {name:"Fitzgerald", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.1670},
+  {name:"Grandmont-Rosedale", type:"neighborhood", region:"Detroit", lat:42.4080, lng:-83.2000},
+  {name:"Old Redford", type:"neighborhood", region:"Detroit", lat:42.4090, lng:-83.2260},
+  {name:"Warrendale", type:"neighborhood", region:"Detroit", lat:42.3670, lng:-83.2100},
+  {name:"Brightmoor", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.2350},
+  {name:"Mexicantown / Southwest Detroit", type:"neighborhood", region:"Detroit", lat:42.3210, lng:-83.0940},
+  {name:"Springwells", type:"neighborhood", region:"Detroit", lat:42.3110, lng:-83.1170},
+  {name:"Delray", type:"neighborhood", region:"Detroit", lat:42.2900, lng:-83.1180},
+  {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
+  {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
+
+  // --- SERVICE_AREA.md cities (75-mile boundary), nearest to farthest ---
+  {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
+  {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
+  {name:"Rochester", type:"city", region:"Michigan", lat:42.6806, lng:-83.1341},
+  {name:"Pontiac", type:"city", region:"Michigan", lat:42.6389, lng:-83.2910},
+  {name:"Ypsilanti", type:"city", region:"Michigan", lat:42.2411, lng:-83.6130},
+  {name:"Milford", type:"city", region:"Michigan", lat:42.5926, lng:-83.6002},
+  {name:"Clarkston", type:"city", region:"Michigan", lat:42.7364, lng:-83.4199},
+  {name:"Monroe", type:"city", region:"Michigan", lat:41.9164, lng:-83.3977},
+  {name:"Ann Arbor", type:"city", region:"Michigan", lat:42.2808, lng:-83.7430},
+  {name:"Brighton", type:"city", region:"Michigan", lat:42.5297, lng:-83.7796},
+  {name:"Chatham", type:"city", region:"Ontario", lat:42.4048, lng:-82.1910},
+  {name:"Fenton", type:"city", region:"Michigan", lat:42.7970, lng:-83.7054},
+  {name:"Howell", type:"city", region:"Michigan", lat:42.6072, lng:-83.9294},
+  {name:"Toledo", type:"city", region:"Ohio", lat:41.6528, lng:-83.5379},
+  {name:"Port Huron", type:"city", region:"Michigan", lat:42.9709, lng:-82.4252},
+  {name:"Sarnia", type:"city", region:"Ontario", lat:42.9748, lng:-82.4066},
+  {name:"Flint", type:"city", region:"Michigan", lat:43.0125, lng:-83.6875},
+  {name:"Adrian", type:"city", region:"Michigan", lat:41.8975, lng:-84.0372},
+  {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
+  {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
+
+  // --- Supplementary Detroit-metro suburbs (added for venue-city match
+  // coverage beyond the SERVICE_AREA.md boundary-illustration list above —
+  // all comfortably inside the 75-mile radius already established there) ---
+  {name:"Hamtramck", type:"city", region:"Michigan", lat:42.3922, lng:-83.0497},
+  {name:"Highland Park", type:"city", region:"Michigan", lat:42.4054, lng:-83.0997},
+  {name:"Dearborn", type:"city", region:"Michigan", lat:42.3223, lng:-83.1763},
+  {name:"Dearborn Heights", type:"city", region:"Michigan", lat:42.3373, lng:-83.2733},
+  {name:"Ferndale", type:"city", region:"Michigan", lat:42.4606, lng:-83.1344},
+  {name:"Royal Oak", type:"city", region:"Michigan", lat:42.4895, lng:-83.1446},
+  {name:"Berkley", type:"city", region:"Michigan", lat:42.5023, lng:-83.1838},
+  {name:"Oak Park", type:"city", region:"Michigan", lat:42.4595, lng:-83.1830},
+  {name:"Southfield", type:"city", region:"Michigan", lat:42.4734, lng:-83.2219},
+  {name:"Birmingham", type:"city", region:"Michigan", lat:42.5467, lng:-83.2113},
+  {name:"Troy", type:"city", region:"Michigan", lat:42.6064, lng:-83.1499},
+  {name:"Sterling Heights", type:"city", region:"Michigan", lat:42.5803, lng:-83.0302},
+  {name:"Warren", type:"city", region:"Michigan", lat:42.5145, lng:-83.0147},
+  {name:"Madison Heights", type:"city", region:"Michigan", lat:42.5292, lng:-83.1057},
+  {name:"Auburn Hills", type:"city", region:"Michigan", lat:42.6875, lng:-83.2341},
+  {name:"Rochester Hills", type:"city", region:"Michigan", lat:42.6583, lng:-83.1499},
+  {name:"Waterford", type:"city", region:"Michigan", lat:42.6892, lng:-83.3585},
+  {name:"Novi", type:"city", region:"Michigan", lat:42.4806, lng:-83.4755},
+  {name:"Farmington Hills", type:"city", region:"Michigan", lat:42.4989, lng:-83.3677},
+  {name:"Livonia", type:"city", region:"Michigan", lat:42.3684, lng:-83.3527},
+  {name:"Westland", type:"city", region:"Michigan", lat:42.3242, lng:-83.4002},
+  {name:"Taylor", type:"city", region:"Michigan", lat:42.2409, lng:-83.2699},
+  {name:"Lincoln Park", type:"city", region:"Michigan", lat:42.2506, lng:-83.1785},
+  {name:"Wyandotte", type:"city", region:"Michigan", lat:42.2142, lng:-83.1499},
+  {name:"Grosse Pointe", type:"city", region:"Michigan", lat:42.3861, lng:-82.9116},
+  {name:"St. Clair Shores", type:"city", region:"Michigan", lat:42.4970, lng:-82.8888},
+  {name:"Roseville", type:"city", region:"Michigan", lat:42.4973, lng:-82.9371},
+  {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
+  {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
+  {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
+  {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
+  {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
+];
+
+// Only cities are matched against event data (venue_city_raw) — neighborhoods
+// are origin-only, see the note above LOCATIONS.
+const CITY_LOOKUP = new Map(
+  LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
+);
+
+// Great-circle distance in miles — matches the method used to derive
+// SERVICE_AREA.md's own boundary table, so radius math stays consistent
+// with the reasoning that document already documents.
+function haversineMiles(lat1, lng1, lat2, lng2){
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
 
 // Real, sourced Detroit events, Aug 19 - Oct 31 2026.
 // date: YYYY-MM-DD. time: display string. free: boolean. note: optional caveat.
@@ -3913,6 +4123,14 @@ let whenMode = null;
 // not on every render, since "this weekend" only changes at midnight.
 let cachedWeekendDates = [];
 let selectedDate = null;
+// originLocation: the chosen search-radius origin — {name, type, region,
+// lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
+// null means no location filter is active at all.
+let originLocation = null;
+// radiusMiles: 5/10/25/50/75 (number) or 'all' (no distance cutoff, but a
+// location is still set — useful as a reference point without narrowing).
+// Only meaningful while originLocation is set.
+let radiusMiles = null;
 
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
@@ -3989,6 +4207,16 @@ function matchesFilters(e){
       }
     }
   }
+  if(originLocation && radiusMiles !== null && radiusMiles !== 'all'){
+    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
+    // An event whose city isn't in the reference table has no resolvable
+    // distance from the chosen origin — excluded rather than guessed at,
+    // the same "deliberate narrowing over silent inclusion" call made for
+    // TONIGHT above (this is an active, opt-in radius filter, not a safety
+    // net like NOW).
+    if(!loc) return false;
+    if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles) return false;
+  }
   return true;
 }
 
@@ -4036,6 +4264,7 @@ function clearAllFilters(){
   query = '';
   whenMode = null;
   selectedDate = null;
+  clearLocation({skipRender: true});
   buildFilterBar();
   render();
 }
@@ -4073,6 +4302,10 @@ function renderActiveFilters(){
       buildFilterBar();
       render();
     }});
+  }
+  if(originLocation){
+    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'All' : `${radiusMiles} mi`;
+    chips.push({label: `${radiusLabel} · ${originLocation.name}`, onRemove: ()=> clearLocation()});
   }
 
   if(!chips.length){ tray.style.display = 'none'; tray.innerHTML = ''; return; }
@@ -4298,6 +4531,7 @@ function renderList(dateList){
 function emptyStateMessage(scopeLabel){
   const actions = [];
   if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
   if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
   if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
   const scope = scopeLabel ? ` in ${escapeHtml(scopeLabel)}` : '';
@@ -4307,6 +4541,7 @@ function emptyStateMessage(scopeLabel){
 function render(){
   updateMonthHeader();
   updateWhenButtons();
+  updateRadiusButtons();
   renderActiveFilters();
   if(mode === 'month'){
     renderMonth();
@@ -4392,6 +4627,153 @@ document.querySelectorAll('.when-btn').forEach(btn=>{
   btn.onclick = ()=> activateWhen(btn.dataset.when);
 });
 
+// ---- Location + radius (Phase 1 Chunk 3) ----
+
+function updateRadiusButtons(){
+  document.querySelectorAll('.radius-chip').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.radius === String(radiusMiles));
+  });
+}
+
+// Keeps the location combobox's visible state (input text, clear button,
+// radius group visibility) in sync with originLocation — needed both after
+// a manual selection and after restoring state from the URL on load.
+function updateLocationControlUI(){
+  const input = document.getElementById('locInput');
+  const clearBtn = document.getElementById('locClearBtn');
+  const radiusGroup = document.getElementById('radiusGroup');
+  if(originLocation){
+    input.value = originLocation.name;
+    clearBtn.style.display = 'flex';
+    radiusGroup.style.display = 'flex';
+  } else {
+    clearBtn.style.display = 'none';
+    radiusGroup.style.display = 'none';
+  }
+  updateRadiusButtons();
+}
+
+function renderLocationSuggestions(q){
+  const box = document.getElementById('locSuggestions');
+  const input = document.getElementById('locInput');
+  box.innerHTML = '';
+  if(!q || !q.trim()){
+    box.style.display = 'none';
+    input.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  const ql = q.trim().toLowerCase();
+  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
+  if(!matches.length){
+    box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
+  } else {
+    matches.forEach(loc=>{
+      const item = document.createElement('div');
+      item.className = 'loc-item';
+      item.setAttribute('role', 'option');
+      item.tabIndex = -1;
+      const nameEl = document.createElement('span');
+      nameEl.className = 'loc-item-name';
+      nameEl.textContent = loc.name;
+      const typeEl = document.createElement('span');
+      typeEl.className = 'loc-item-type';
+      typeEl.textContent = `${loc.type.toUpperCase()} · ${loc.region.toUpperCase()}`;
+      item.appendChild(nameEl);
+      item.appendChild(typeEl);
+      item.onclick = ()=> selectLocation(loc);
+      box.appendChild(item);
+    });
+  }
+  box.style.display = 'block';
+  input.setAttribute('aria-expanded', 'true');
+}
+
+// Sets the active search-radius origin, defaulting radius to 'all' (visible,
+// non-narrowing) so choosing a location alone never silently hides events —
+// the user has to deliberately pick a mile ring to actually narrow anything.
+function selectLocation(loc){
+  originLocation = loc;
+  if(radiusMiles === null) radiusMiles = 'all';
+  document.getElementById('locSuggestions').style.display = 'none';
+  document.getElementById('locSuggestions').innerHTML = '';
+  updateLocationControlUI();
+  render();
+}
+
+// opts.skipRender lets clearAllFilters() reset location state without
+// triggering a second render() right before its own render() call.
+function clearLocation(opts){
+  originLocation = null;
+  radiusMiles = null;
+  document.getElementById('locInput').value = '';
+  document.getElementById('locSuggestions').style.display = 'none';
+  updateLocationControlUI();
+  if(!(opts && opts.skipRender)) render();
+}
+
+function expandRadius(){
+  const steps = [5, 10, 25, 50, 75, 'all'];
+  const idx = steps.indexOf(radiusMiles);
+  radiusMiles = steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)];
+  updateRadiusButtons();
+  render();
+}
+
+// Requests the browser's geolocation only on this explicit click — never on
+// page load — per the brief's requirement to ask before using device
+// location. Fails soft on denial/timeout: the text search box stays usable
+// either way, nothing else on the page depends on this succeeding.
+function useMyLocation(){
+  const btn = document.getElementById('useMyLocationBtn');
+  const original = btn.textContent;
+  if(!navigator.geolocation){
+    btn.textContent = 'Not supported';
+    setTimeout(()=>{ btn.textContent = original; }, 2500);
+    return;
+  }
+  btn.textContent = 'Locating…';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      selectLocation({name: 'Your location', type: 'here', region: '', lat: pos.coords.latitude, lng: pos.coords.longitude});
+      btn.textContent = original;
+      btn.disabled = false;
+    },
+    ()=>{
+      btn.textContent = 'Location unavailable';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.textContent = original; }, 2500);
+    },
+    {timeout: 8000}
+  );
+}
+
+const locInputEl = document.getElementById('locInput');
+locInputEl.addEventListener('input', (e)=> renderLocationSuggestions(e.target.value));
+locInputEl.addEventListener('focus', (e)=>{ if(e.target.value) renderLocationSuggestions(e.target.value); });
+locInputEl.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    document.getElementById('locSuggestions').style.display = 'none';
+  } else if(e.key === 'Enter'){
+    e.preventDefault();
+    const first = document.querySelector('.loc-item');
+    if(first) first.click();
+  }
+});
+document.addEventListener('click', (e)=>{
+  const combo = document.querySelector('.loc-combo');
+  if(combo && !combo.contains(e.target)) document.getElementById('locSuggestions').style.display = 'none';
+});
+document.getElementById('locClearBtn').onclick = ()=> clearLocation();
+document.getElementById('useMyLocationBtn').onclick = useMyLocation;
+document.querySelectorAll('.radius-chip').forEach(btn=>{
+  btn.onclick = ()=>{
+    radiusMiles = btn.dataset.radius === 'all' ? 'all' : parseInt(btn.dataset.radius, 10);
+    updateRadiusButtons();
+    render();
+  };
+});
+
 // ---- URL state ----
 // Reflects date/view/categories/search/when in the URL so a state can be
 // bookmarked, shared, or reloaded — per the brief's "filter state + URLs"
@@ -4406,6 +4788,13 @@ function syncURL(){
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
   if(query) params.set('q', query);
+  // A geolocation-derived origin (type:'here') has no stable name to
+  // round-trip through a URL — omitted rather than encoding raw coordinates,
+  // which would put the visitor's location in a shareable link.
+  if(originLocation && originLocation.type !== 'here'){
+    params.set('loc', originLocation.name);
+    if(radiusMiles !== null) params.set('radius', String(radiusMiles));
+  }
   const qs = params.toString();
   history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
 }
@@ -4457,6 +4846,24 @@ function readStateFromURL(){
     document.getElementById('calWrap').style.display = 'none';
     document.getElementById('listView').classList.add('show');
   }
+
+  // A shared link only restores a NAMED location (a real match in
+  // LOCATIONS) — a one-off geolocation origin was never put in the URL to
+  // begin with (see syncURL), so there's nothing to restore for those.
+  const locParam = params.get('loc');
+  if(locParam){
+    const found = LOCATIONS.find(l => l.name.toLowerCase() === locParam.toLowerCase());
+    if(found){
+      originLocation = found;
+      const radiusParam = params.get('radius');
+      if(radiusParam === 'all') radiusMiles = 'all';
+      else {
+        const n = parseInt(radiusParam, 10);
+        radiusMiles = (!isNaN(n) && [5,10,25,50,75].includes(n)) ? n : 'all';
+      }
+    }
+  }
+  updateLocationControlUI();
 }
 
 readStateFromURL();
