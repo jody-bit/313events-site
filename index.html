@@ -3475,30 +3475,18 @@
     background:var(--panel);border:1px solid var(--line);margin-bottom:10px;
     min-height:320px;
   }
-  /* Row layout: the 3 stacked words on the left, one giant circle standing
-     in for the period on the right — sized to the full hero row height
-     (matching the photo), not a small inline mark. .hero-headline is a grid
-     item under .hero's default align-items:stretch, so its own box is
-     already exactly as tall as the photo; the dot's height:100% inherits
-     that, and aspect-ratio:1/1 makes width match. Deliberately allowed to
-     overflow into the photo column (z-index keeps it on top) — that bleed
-     is the point, not a bug. */
-  .hero-headline{padding:22px 20px;display:flex;flex-direction:row;align-items:center;gap:14px;min-width:0;}
-  .hl-lines{display:flex;flex-direction:column;justify-content:center;flex:0 0 auto;min-width:0;}
+  .hero-headline{padding:22px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;}
   .hl-line{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
     font-size:clamp(34px,4.6vw,58px);line-height:.92;letter-spacing:-0.01em;
     text-transform:uppercase;color:var(--ink);
   }
+  /* Sized against the headline's own font-size (em), matching the mockup's
+     modest accent dot — NOT the full photo height, which read as a giant
+     blob covering half the image once actually live. */
   .hl-dot{
-    flex:0 0 auto;height:100%;aspect-ratio:1/1;border-radius:50%;
-    background:var(--accent);position:relative;z-index:2;
-  }
-  @media (max-width:980px){
-    /* Once the hero stacks (headline no longer shares a row with the photo),
-       there's no photo height to match — falls back to a plain, modest
-       accent dot instead of trying to force a huge circle into a short row. */
-    .hl-dot{height:.6em;width:.6em;align-self:flex-end;margin-bottom:.12em;}
+    display:inline-block;width:.5em;height:.5em;border-radius:50%;
+    background:var(--accent);margin-left:.14em;vertical-align:-0.08em;
   }
   .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
@@ -3889,12 +3877,9 @@
 
   <section class="hero" id="heroSection">
     <div class="hero-headline">
-      <div class="hl-lines">
-        <div class="hl-line">THE</div>
-        <div class="hl-line">CITY</div>
-        <div class="hl-line">IS ON</div>
-      </div>
-      <span class="hl-dot" aria-hidden="true"></span>
+      <div class="hl-line">THE</div>
+      <div class="hl-line">CITY</div>
+      <div class="hl-line">IS ON<span class="hl-dot" aria-hidden="true"></span></div>
     </div>
     <div class="hero-photo">
       <picture>
