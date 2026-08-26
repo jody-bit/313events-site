@@ -4243,6 +4243,22 @@ const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth
 const MIN_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() - 12, 1);
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
 let current = new Date(_navTodayMonthStart);
+
+// Hard content block: events matching any name on this list are excluded
+// from every view (calendar, list, Today strip) regardless of source —
+// checked against the event title and note/description, case-insensitively.
+// This is a manual, always-on suppression list independent of the normal
+// category/free/search/when filters. Add additional blocked names as
+// simple strings.
+const BLOCKED_NAMES = ["Augustus Williams"];
+function isBlockedEvent(e){
+  return BLOCKED_NAMES.some(name => {
+    const n = name.toLowerCase();
+    return (e.title && e.title.toLowerCase().includes(n)) ||
+           (e.note && e.note.toLowerCase().includes(n));
+  });
+}
+
 let activeCats = new Set(Object.keys(CATS));
 let freeOnly = false;
 let query = "";
@@ -4316,6 +4332,7 @@ function getWeekendDates(){
 // narrowing below. Every other call site omits it and behaves exactly as
 // before.
 function matchesFilters(e, dateOverride){
+  if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
   if(query){
