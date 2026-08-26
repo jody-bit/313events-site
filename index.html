@@ -3391,6 +3391,14 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  button{font-family:inherit;}
+  /* Visible keyboard-only focus ring (not shown on mouse click) across every
+     interactive control added/converted for the Chunk 4 accessibility pass —
+     chartreuse matches the brand's existing "state" usage (today ring,
+     live badge), not decoration. */
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
   body{
     font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);
@@ -3636,6 +3644,63 @@
     .more-link{display:none;} /* redundant once .day-count shows the total */
     #monthLabel{min-width:0;}
   }
+
+  /* ---- Mobile WHEN/WHERE/FILTER pattern — Phase 1 Chunk 4 ----
+     An architectural swap, not a squeeze: above 720px the discovery bar,
+     location bar, and filter bar render inline exactly as chunks 1-3 built
+     them (these two rules are no-ops on desktop). Below it, those same three
+     bars — same DOM, same IDs, same JS — detach from normal flow and render
+     as a fixed bottom sheet instead, opened by one of three trigger buttons. */
+  .mobile-triggers{display:none;}
+  .sheet-backdrop{display:none;}
+
+  @media (max-width:720px){
+    .mobile-triggers{
+      display:flex;gap:8px;margin-bottom:12px;
+    }
+    .mobile-trigger{
+      flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+      border-radius:8px;padding:9px 8px;font-size:12.5px;font-weight:700;cursor:pointer;
+      display:flex;flex-direction:column;align-items:center;gap:2px;
+    }
+    .mobile-trigger .mt-sub{
+      font-size:10.5px;font-weight:600;color:var(--ink-soft);max-width:100%;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .mobile-trigger.has-value{border-color:var(--accent);}
+    .mobile-trigger.has-value .mt-sub{color:var(--ink);}
+
+    .sheet-backdrop{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
+    }
+    .sheet-backdrop.show{display:block;}
+
+    .discovery-bar, .location-bar, .filters{display:none;}
+    .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
+      display:flex;flex-direction:column;flex-wrap:nowrap;
+      position:fixed;left:0;right:0;bottom:0;z-index:40;
+      background:var(--panel);border:1px solid var(--line);border-bottom:none;
+      border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
+      padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+      max-height:75vh;overflow-y:auto;margin:0 0 12px;
+    }
+    /* Radius/location controls stack full-width inside the sheet rather
+       than trying to fit the desktop's side-by-side row. */
+    .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
+    .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
+    .sheet-header{display:none;}
+    .discovery-bar.sheet-active .sheet-header,
+    .location-bar.sheet-active .sheet-header,
+    .filters.sheet-active .sheet-header{
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;
+      font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+    }
+    .sheet-close{
+      border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
+      width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
+    }
+    .sheet-close:hover{background:var(--ink);color:var(--bg);}
+  }
 </style>
 </head>
 <body>
@@ -3656,7 +3721,21 @@
     <b>What this is:</b> a live calendar backed by a real database — hand-curated events plus automated feeds from Ticketmaster, WDET, and several venues' own sites, updated daily. Each listing shows its source so you can verify before you go. See the <a href="sources.html">full data sources &amp; connection status page</a> for exactly what's automated, what's manual, and what we tried and couldn't connect to.
   </div>
 
+  <div class="mobile-triggers" id="mobileTriggers">
+    <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
+      <span>When</span><span class="mt-sub" id="whenTriggerSub">Anytime</span>
+    </button>
+    <button type="button" class="mobile-trigger" id="whereTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="locationBar">
+      <span>Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
+    </button>
+    <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
+      <span>Filter</span><span class="mt-sub" id="filterTriggerSub">All categories</span>
+    </button>
+  </div>
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+
   <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
+    <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
     <button class="when-btn" data-when="now">Now</button>
     <button class="when-btn" data-when="today">Today</button>
     <button class="when-btn" data-when="tonight">Tonight</button>
@@ -3665,6 +3744,7 @@
   </div>
 
   <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
+    <div class="sheet-header"><span>Where</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
     <div class="loc-control">
       <span class="loc-label">Where</span>
       <div class="loc-combo">
@@ -4223,29 +4303,58 @@ function matchesFilters(e){
 function buildFilterBar(){
   const bar = document.getElementById('filterBar');
   bar.innerHTML = '';
+
+  // #filterBar doubles as the mobile FILTER sheet's content (see Chunk 4's
+  // .sheet-active rules) — its innerHTML is fully rebuilt on every call, so
+  // the sheet header has to be re-added here rather than living statically
+  // in the HTML the way discoveryBar/locationBar's headers do.
+  const header = document.createElement('div');
+  header.className = 'sheet-header';
+  const headerLabel = document.createElement('span');
+  headerLabel.textContent = 'Filter';
+  const headerClose = document.createElement('button');
+  headerClose.type = 'button';
+  headerClose.className = 'sheet-close';
+  headerClose.setAttribute('aria-label', 'Close');
+  headerClose.innerHTML = '&#10005;';
+  header.appendChild(headerLabel);
+  header.appendChild(headerClose);
+  bar.appendChild(header);
+
   Object.entries(CATS).forEach(([key,c])=>{
-    const chip = document.createElement('div');
+    const chip = document.createElement('button');
+    chip.type = 'button';
     // Reflects actual activeCats state (not hardcoded active) — matters once
     // state can also arrive from the URL or a "Clear All" that only clears
     // some dimensions, not just from clicking chips one at a time.
     chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
     chip.dataset.cat = key;
+    chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
     chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
     chip.onclick = ()=>{
       if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
       else { activeCats.add(key); chip.classList.add('active'); }
+      chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
       render();
     };
     bar.appendChild(chip);
   });
-  const freeChip = document.createElement('div');
+  const freeChip = document.createElement('button');
+  freeChip.type = 'button';
   freeChip.className = 'chip' + (freeOnly ? ' active' : '');
   freeChip.id = 'freeChip';
+  freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
   freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
-  freeChip.onclick = ()=>{ freeOnly = !freeOnly; freeChip.classList.toggle('active'); render(); };
+  freeChip.onclick = ()=>{
+    freeOnly = !freeOnly;
+    freeChip.classList.toggle('active');
+    freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
+    render();
+  };
   bar.appendChild(freeChip);
 
-  const clearChip = document.createElement('div');
+  const clearChip = document.createElement('button');
+  clearChip.type = 'button';
   clearChip.className = 'chip';
   clearChip.id = 'clearChip';
   clearChip.textContent = 'Reset filters';
@@ -4424,7 +4533,20 @@ function renderMonth(){
       cell.appendChild(more);
     }
 
-    cell.onclick = ()=>{ selectedDate = iso; showDayPanel(iso); };
+    // Keyboard/screen-reader access — previously a plain unfocusable <div>
+    // with only a click handler, so the whole calendar grid was unreachable
+    // by keyboard. Each cell is now a real interactive control: focusable,
+    // labeled with its date + event count, and Enter/Space-operable.
+    cell.tabIndex = 0;
+    cell.setAttribute('role', 'button');
+    const dayLabel = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    const countLabel = events.length ? `, ${events.length} event${events.length===1?'':'s'}` : ', no events';
+    cell.setAttribute('aria-label', dayLabel + countLabel + (iso===todayISO ? ' (today)' : ''));
+    const openDay = ()=>{ selectedDate = iso; showDayPanel(iso); };
+    cell.onclick = openDay;
+    cell.onkeydown = (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDay(); }
+    };
     grid.appendChild(cell);
   }
 }
@@ -4542,6 +4664,7 @@ function render(){
   updateMonthHeader();
   updateWhenButtons();
   updateRadiusButtons();
+  updateMobileTriggers();
   renderActiveFilters();
   if(mode === 'month'){
     renderMonth();
@@ -4596,6 +4719,7 @@ function activateWhen(key){
     selectedDate = null;
     updateWhenButtons();
     render();
+    closeSheet(); // no-op on desktop / when no sheet is open
     return;
   }
 
@@ -4621,6 +4745,7 @@ function activateWhen(key){
 
   updateWhenButtons();
   render();
+  closeSheet(); // each WHEN option is a single, complete choice — dismiss the mobile sheet after picking one, unlike WHERE/FILTER which stay open for further adjustment.
 }
 
 document.querySelectorAll('.when-btn').forEach(btn=>{
@@ -4653,10 +4778,17 @@ function updateLocationControlUI(){
   updateRadiusButtons();
 }
 
+// Tracks which suggestion (if any) is currently arrow-key-highlighted —
+// part of the Chunk 4 accessibility pass so this combobox is fully
+// keyboard-operable, not just clickable.
+let locHighlightIndex = -1;
+
 function renderLocationSuggestions(q){
   const box = document.getElementById('locSuggestions');
   const input = document.getElementById('locInput');
   box.innerHTML = '';
+  locHighlightIndex = -1;
+  input.removeAttribute('aria-activedescendant');
   if(!q || !q.trim()){
     box.style.display = 'none';
     input.setAttribute('aria-expanded', 'false');
@@ -4667,10 +4799,12 @@ function renderLocationSuggestions(q){
   if(!matches.length){
     box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
   } else {
-    matches.forEach(loc=>{
+    matches.forEach((loc, i)=>{
       const item = document.createElement('div');
       item.className = 'loc-item';
+      item.id = `locItem${i}`;
       item.setAttribute('role', 'option');
+      item.setAttribute('aria-selected', 'false');
       item.tabIndex = -1;
       const nameEl = document.createElement('span');
       nameEl.className = 'loc-item-name';
@@ -4681,11 +4815,31 @@ function renderLocationSuggestions(q){
       item.appendChild(nameEl);
       item.appendChild(typeEl);
       item.onclick = ()=> selectLocation(loc);
+      item.onmouseenter = ()=> setLocHighlight(i);
       box.appendChild(item);
     });
   }
   box.style.display = 'block';
   input.setAttribute('aria-expanded', 'true');
+}
+
+// Moves the arrow-key highlight to suggestion index i (or clears it for -1),
+// keeping the visible .hl style, aria-selected, and aria-activedescendant
+// all in sync with each other.
+function setLocHighlight(i){
+  const items = document.querySelectorAll('#locSuggestions .loc-item');
+  const input = document.getElementById('locInput');
+  items.forEach(el => { el.classList.remove('hl'); el.setAttribute('aria-selected', 'false'); });
+  if(i >= 0 && i < items.length){
+    items[i].classList.add('hl');
+    items[i].setAttribute('aria-selected', 'true');
+    items[i].scrollIntoView({block: 'nearest'});
+    input.setAttribute('aria-activedescendant', items[i].id);
+    locHighlightIndex = i;
+  } else {
+    input.removeAttribute('aria-activedescendant');
+    locHighlightIndex = -1;
+  }
 }
 
 // Sets the active search-radius origin, defaulting radius to 'all' (visible,
@@ -4752,12 +4906,17 @@ const locInputEl = document.getElementById('locInput');
 locInputEl.addEventListener('input', (e)=> renderLocationSuggestions(e.target.value));
 locInputEl.addEventListener('focus', (e)=>{ if(e.target.value) renderLocationSuggestions(e.target.value); });
 locInputEl.addEventListener('keydown', (e)=>{
+  const items = document.querySelectorAll('#locSuggestions .loc-item');
   if(e.key === 'Escape'){
     document.getElementById('locSuggestions').style.display = 'none';
+  } else if(e.key === 'ArrowDown'){
+    if(items.length){ e.preventDefault(); setLocHighlight((locHighlightIndex + 1) % items.length); }
+  } else if(e.key === 'ArrowUp'){
+    if(items.length){ e.preventDefault(); setLocHighlight((locHighlightIndex - 1 + items.length) % items.length); }
   } else if(e.key === 'Enter'){
     e.preventDefault();
-    const first = document.querySelector('.loc-item');
-    if(first) first.click();
+    const target = items[locHighlightIndex] || items[0];
+    if(target) target.click();
   }
 });
 document.addEventListener('click', (e)=>{
@@ -4773,6 +4932,88 @@ document.querySelectorAll('.radius-chip').forEach(btn=>{
     render();
   };
 });
+
+// ---- Mobile WHEN/WHERE/FILTER sheets (Phase 1 Chunk 4) ----
+// Below 720px, the discovery bar / location bar / filter bar collapse into
+// three trigger buttons, each opening the SAME underlying bar (same IDs,
+// same JS, same state) as a fixed bottom sheet rather than a squeezed row.
+// Above 720px this whole block is inert — the triggers are display:none via
+// CSS, so openSheet()/closeSheet() are simply never called.
+let openSheetName = null; // 'when' | 'where' | 'filter' | null
+const SHEETS = {
+  when:   {barId: 'discoveryBar', triggerId: 'whenTriggerBtn'},
+  where:  {barId: 'locationBar',  triggerId: 'whereTriggerBtn'},
+  filter: {barId: 'filterBar',    triggerId: 'filterTriggerBtn'},
+};
+
+function openSheet(name){
+  if(openSheetName === name){ closeSheet(); return; }
+  Object.entries(SHEETS).forEach(([key, {barId, triggerId}])=>{
+    const active = key === name;
+    document.getElementById(barId).classList.toggle('sheet-active', active);
+    document.getElementById(triggerId).setAttribute('aria-expanded', String(active));
+  });
+  document.getElementById('sheetBackdrop').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  openSheetName = name;
+  // Move focus into the sheet for keyboard/screen-reader users rather than
+  // leaving it stranded on a now-background trigger button.
+  const bar = document.getElementById(SHEETS[name].barId);
+  const focusable = bar.querySelector('button, input, [tabindex]');
+  if(focusable) focusable.focus();
+}
+
+function closeSheet(){
+  if(!openSheetName) return;
+  const prevName = openSheetName;
+  Object.values(SHEETS).forEach(({barId, triggerId})=>{
+    document.getElementById(barId).classList.remove('sheet-active');
+    document.getElementById(triggerId).setAttribute('aria-expanded', 'false');
+  });
+  document.getElementById('sheetBackdrop').classList.remove('show');
+  document.body.style.overflow = '';
+  openSheetName = null;
+  const trigger = document.getElementById(SHEETS[prevName].triggerId);
+  if(trigger) trigger.focus();
+}
+
+document.getElementById('whenTriggerBtn').onclick = ()=> openSheet('when');
+document.getElementById('whereTriggerBtn').onclick = ()=> openSheet('where');
+document.getElementById('filterTriggerBtn').onclick = ()=> openSheet('filter');
+document.getElementById('sheetBackdrop').onclick = closeSheet;
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && openSheetName) closeSheet(); });
+// Delegated — #filterBar's sheet-close button is rebuilt fresh on every
+// buildFilterBar() call, so a directly-bound listener would go stale.
+document.addEventListener('click', (e)=>{
+  if(e.target.closest && e.target.closest('.sheet-close')) closeSheet();
+});
+
+// Keeps each trigger's subtitle in sync with actual filter state, so
+// collapsing WHEN/WHERE/FILTER into three buttons never hides what's
+// currently active from someone who hasn't opened a sheet.
+function updateMobileTriggers(){
+  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
+  const whenSub = document.getElementById('whenTriggerSub');
+  whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
+  document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!whenMode);
+
+  const whereSub = document.getElementById('whereTriggerSub');
+  if(originLocation){
+    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'All' : `${radiusMiles} mi`;
+    whereSub.textContent = `${radiusLabel} · ${originLocation.name}`;
+  } else {
+    whereSub.textContent = 'Everywhere';
+  }
+  document.getElementById('whereTriggerBtn').classList.toggle('has-value', !!originLocation);
+
+  const filterSub = document.getElementById('filterTriggerSub');
+  const totalCats = Object.keys(CATS).length;
+  const parts = [];
+  if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
+  if(freeOnly) parts.push('Free');
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All categories';
+  document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
+}
 
 // ---- URL state ----
 // Reflects date/view/categories/search/when in the URL so a state can be
