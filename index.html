@@ -3971,7 +3971,7 @@
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
       <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
-        <span class="mt-label">When</span><span class="mt-sub" id="whenTriggerSub">Anytime</span>
+        <span class="mt-label">When</span><span class="mt-sub" id="whenTriggerSub">Now</span>
       </button>
       <button type="button" class="mobile-trigger" id="whereTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="locationBar">
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
@@ -4457,7 +4457,15 @@ let query = "";
 // Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
 // 'tonight' | 'weekend'. Independent of category/free/search filters — see
 // matchesFilters() below, which combines all of them.
-let whenMode = null;
+//
+// Defaults to 'now' rather than null (2026-08-26): the list should always
+// land already scoped to today's date and the current hour forward — see
+// matchesFilters()'s whenMode==='now' branch, which is exactly "today +
+// hour >= now". null ("Anytime"/unfiltered) stays reachable — it's what
+// "Browse" and "Reset filters" explicitly set via clearAllFilters(), and
+// what the "Date" button sets via activateWhen('date') — this only changes
+// what a fresh page load starts on.
+let whenMode = 'now';
 // Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
 // currently in scope. Recomputed each time weekend mode is (re)activated,
 // not on every render, since "this weekend" only changes at midnight.
@@ -4709,12 +4717,15 @@ function buildFilterBar(){
 }
 
 // Resets every discovery dimension at once: categories, free-only, search
-// text, and the when-shortcut. Used by both the category bar's "Reset
-// filters" chip and the active-filter tray's "Clear All", so there's exactly
-// one reset behavior instead of two subtly different ones. Also returns the
-// calendar to the current month (today) rather than leaving it wherever the
-// user had navigated to — a reset should feel like coming back to "now",
-// not just clearing filters on whatever month happens to be on screen.
+// text, and the when-shortcut — deliberately to null/Anytime, not back to
+// the page's own 'now' default, since this is also what BROWSE means
+// ("clear every narrowing dimension, see everything"). Used by the category
+// bar's "Reset filters" chip, the active-filter tray's "Clear All", AND the
+// header's Browse button, so there's exactly one reset behavior instead of
+// several subtly different ones. Also returns the calendar to the current
+// month (today) rather than leaving it wherever the user had navigated to —
+// a reset should feel like coming back to today, not just clearing filters
+// on whatever month happens to be on screen.
 function clearAllFilters(){
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
@@ -5071,13 +5082,20 @@ function render(){
   syncURL();
 }
 
+// Paging to a different month exits the day-scoped Now/Today/Tonight
+// narrowing — those only ever match today's actual date (see
+// matchesFilters()), so leaving them on while browsing another month would
+// silently show an empty list instead of that month's events.
+function exitDayScopedWhenMode(){
+  if(whenMode === 'now' || whenMode === 'today' || whenMode === 'tonight') whenMode = null;
+}
 document.getElementById('prevBtn').onclick = ()=>{
   const p = new Date(current.getFullYear(), current.getMonth()-1, 1);
-  if(p >= MIN_MONTH){ current = p; render(); }
+  if(p >= MIN_MONTH){ current = p; exitDayScopedWhenMode(); render(); }
 };
 document.getElementById('nextBtn').onclick = ()=>{
   const n = new Date(current.getFullYear(), current.getMonth()+1, 1);
-  if(n <= MAX_MONTH){ current = n; render(); }
+  if(n <= MAX_MONTH){ current = n; exitDayScopedWhenMode(); render(); }
 };
 document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); render(); });
 
@@ -5453,7 +5471,13 @@ function syncURL(){
   const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
   const dateForUrl = isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1);
   params.set('date', dateForUrl);
-  if(whenMode) params.set('when', whenMode);
+  // Always written, even when null — the page's own default is 'now' (see
+  // that variable's declaration), so a bare/legacy URL with no 'when' param
+  // at all is exactly what should fall back to that default. A link that
+  // was explicitly shared from "Anytime" (whenMode===null) needs its own
+  // marker so reloading it doesn't silently snap back to 'now' instead of
+  // faithfully restoring what was shared.
+  params.set('when', whenMode || 'any');
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
   if(query) params.set('q', query);
@@ -5505,12 +5529,20 @@ function readStateFromURL(){
   // Note: an old bookmarked link with ?view=month has nothing to restore to
   // anymore — the homepage is List-only now, so that param is simply ignored.
   const whenParam = params.get('when');
-  if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
+  if(whenParam === 'any'){
+    // Explicit marker for a link shared from "Anytime" (see syncURL) —
+    // distinct from a plain missing param, which instead falls through to
+    // whenMode's own default ('now').
+    whenMode = null;
+  } else if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
     whenMode = whenParam;
     if(whenParam === 'weekend'){
       cachedWeekendDates = getWeekendDates();
     }
   }
+  // else: no recognized 'when' param at all (e.g. a pre-existing bookmark
+  // from before this param was always written) — leave whenMode at its
+  // declared default of 'now' rather than guessing further.
 
   // A shared link only restores a NAMED location (a real match in
   // LOCATIONS) — a one-off geolocation origin was never put in the URL to
