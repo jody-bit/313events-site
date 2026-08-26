@@ -4796,7 +4796,15 @@ function syncURL(){
     if(radiusMiles !== null) params.set('radius', String(radiusMiles));
   }
   const qs = params.toString();
-  history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
+  // Wrapped defensively: history.replaceState throws a SecurityError in a
+  // sandboxed about:srcdoc context (e.g. an embedded preview iframe, which
+  // has no real address of its own to rewrite) — URL bookmarking is a
+  // nice-to-have, so a failure here should never break the rest of render().
+  try {
+    history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
+  } catch (err) {
+    // Silently skip — nothing else depends on this succeeding.
+  }
 }
 
 // Reads the above back out on initial load, so a shared/bookmarked link
