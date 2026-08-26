@@ -3760,37 +3760,73 @@
   #dayPanel h2{margin:0 0 12px;font-size:17px;display:flex;justify-content:space-between;align-items:center;}
   #dayPanel h2 button{border:none;background:none;font-size:14px;color:var(--ink-soft);cursor:pointer;}
 
+  /* Event rows, restyled as individual cards per the mockup's row
+     treatment — larger touch targets and clearer visual hierarchy than the
+     previous dense border-separated list. No bookmark/save icon (stays
+     rejected — see FINAL IMPLEMENTATION DIRECTIVE). Shared by both the
+     List view (renderList()) and the month view's day panel
+     (showDayPanel()), so both get this treatment for free. */
   .evt-row{
-    display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;
+    display:flex;gap:14px;padding:16px 16px 16px 20px;align-items:flex-start;
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:10px;position:relative;
   }
-  .evt-row:first-of-type{border-top:none;}
+  .evt-row:last-child{margin-bottom:0;}
+  .evt-row:hover{background:var(--panel-hover);border-color:var(--ink-dim);}
+  /* Category-color accent bar — a quick-scan cue at a glance, using the
+     same per-category --c-* palette already established for chips/dots/
+     pills. Set per-row via the inline --evt-accent custom property. */
+  .evt-row::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+    border-radius:var(--radius) 0 0 var(--radius);background:var(--evt-accent, var(--line));
+  }
   /* Time promoted from muted-secondary to primary ink — the design doc's
      interface priority order is DATE → TIME → EVENT → PLACE → ..., so time
      leading the row in full-contrast ink (not chartreuse — that's reserved
      for state, not decoration) is a hierarchy correction, not new styling
-     for its own sake. */
-  .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;font-weight:700;padding-top:2px;}
-  .evt-main{flex:1;}
-  .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
-  .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+     for its own sake. Boxed as its own small badge for a bigger, clearer
+     touch target; :empty so a time-less event doesn't render an empty box. */
+  .evt-time{
+    font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);font-weight:700;
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    padding:7px 10px;text-align:center;flex:0 0 auto;white-space:nowrap;
+  }
+  .evt-time:empty{display:none;}
+  .evt-main{flex:1;min-width:0;}
+  .evt-title{font-size:17px;font-weight:800;margin-bottom:5px;line-height:1.25;}
+  .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:8px;align-items:center;row-gap:6px;}
   .tag{
     display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
-    padding:2px 7px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
+    padding:3px 8px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
   }
   .tag.free{background:#3fbf6a;}
   .tag.price{background:var(--panel-hover);color:var(--ink);}
-  .note{font-size:12px;color:#d1b34a;margin-top:3px;font-style:italic;}
+  .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
-  .evt-link:hover{text-decoration:underline;}
+  /* A real button, not an inline text link — bigger touch target, matching
+     the "larger touch targets" ask along with the boxed time above. */
+  .evt-link{
+    display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+    font-size:13px;font-weight:700;color:var(--on-accent);background:var(--accent);
+    padding:9px 16px;border-radius:var(--radius);text-decoration:none;
+  }
+  .evt-link:hover{filter:brightness(1.08);}
   .evt-link::after{content:'→';}
 
+  @media (max-width:560px){
+    /* Time badge moves above the title instead of sitting beside it — on a
+       narrow column, side-by-side left the title column too cramped and
+       shrank the very touch targets this pass is meant to grow. */
+    .evt-row{flex-direction:column;gap:8px;padding:14px 14px 14px 18px;}
+    .evt-time{align-self:flex-start;}
+  }
+
   /* List view */
-  #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
+  #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;}
   #listView.show{display:block;}
-  .list-day-group{padding:12px 0;border-top:1px solid var(--line-soft);}
-  .list-day-group:first-child{border-top:none;}
-  .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
+  .list-day-group{padding:14px 0;border-top:1px solid var(--line-soft);}
+  .list-day-group:first-child{padding-top:0;border-top:none;}
+  .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;}
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
@@ -4952,7 +4988,7 @@ function showDayPanel(iso){
   } else {
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
-        <div class="evt-row">
+        <div class="evt-row" style="--evt-accent:${CATS[e.cat].color}">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-title">${escapeHtml(e.title)}</div>
@@ -4993,7 +5029,7 @@ function renderList(dateList){
     const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
       events.map(e=>`
-        <div class="evt-row">
+        <div class="evt-row" style="--evt-accent:${CATS[e.cat].color}">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-title">${escapeHtml(e.title)}</div>
