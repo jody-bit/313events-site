@@ -32,17 +32,34 @@ const MONTHS = {
 // "Saturday, May 9, 2026 | 3:30 p.m."  or  "Friday, January 16, 2026 at 7:00 p.m."
 const DATE_TIME = /(?:[A-Za-z]+day,\s*)?([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})(?:\s*(?:\||at)\s*(\d{1,2}:\d{2}\s*[ap]\.?m\.?))?/i;
 
-function stripToText(html) {
-  return (html || "")
-    .replace(/\[[^\]]*\]/g, " ") // Divi shortcodes
-    .replace(/<[^>]+>/g, "\n")
+// Decodes HTML entities in scraped/WP-API text. The previous version only
+// handled &amp;/&#8217;/&nbsp; by name, which missed common WordPress
+// numeric entities like &#038; (its usual encoding of "&" — WP's REST API
+// returns title.rendered already entity-encoded, so this matters even for
+// the title itself, not just the scraped body text). Numeric decoding
+// (decimal and hex) is handled generically here so nothing needs to be
+// added to a hand-picked list again.
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
     .replace(/&amp;/g, "&")
-    .replace(/&#8217;/g, "’")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
     .replace(/&nbsp;/g, " ");
 }
 
+function stripToText(html) {
+  return decodeEntities(
+    (html || "")
+      .replace(/\[[^\]]*\]/g, " ") // Divi shortcodes
+      .replace(/<[^>]+>/g, "\n")
+  );
+}
+
 function parsePage(page) {
-  const title = page.title && page.title.rendered ? page.title.rendered.trim() : null;
+  const title = page.title && page.title.rendered ? decodeEntities(page.title.rendered.trim()) : null;
   if (!title) return null;
 
   const text = stripToText(page.content && page.content.rendered);

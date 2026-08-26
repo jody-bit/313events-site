@@ -35,6 +35,23 @@ const CATEGORY_MAP = {
   theater: "theatre",
 };
 
+// WordPress's Tribe Events REST API returns title/venue name already
+// HTML-entity-encoded (the same "rendered" behavior as core WP's REST API),
+// e.g. a raw "&#038;" instead of "&" — undecoded, that leaks straight
+// through to the live site as literal entity text. Numeric decoding
+// (decimal and hex) is generic, so nothing needs to be added to a
+// hand-picked list as new entities show up.
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ");
+}
+
 function mapCategory(categories) {
   if (!Array.isArray(categories)) return null;
   for (const c of categories) {
@@ -109,9 +126,9 @@ module.exports = async (req, res) => {
 
       return {
         external_id: `wdet-${e.id}`,
-        title: e.title,
+        title: decodeEntities(e.title),
         category: cat,
-        venue_name_raw: venueName,
+        venue_name_raw: decodeEntities(venueName),
         start_date: startDate,
         time_display: formatTimeRange(e.start_date, e.end_date),
         is_free: /free/i.test(e.cost || "") || !e.cost,

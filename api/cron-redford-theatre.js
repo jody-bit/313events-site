@@ -31,14 +31,30 @@ const MONTHS = {
 const DATE_LINE = /^[A-Za-z]+day,?\s+([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?(?:,\s*(\d{4}))?(?:\s*[-–]\s*[A-Za-z]+day,?\s+[A-Za-z]+\s+\d{1,2}(?:st|nd|rd|th)?,?\s*(\d{4})?)?(?:\s+at\s+(\d{1,2}:\d{2}\s*[AP]M))?/i;
 const NOISE_LINE = /^(home|about|events|calendar|tickets?|buy tickets|donate|history|organ|membership|volunteer|contact|newsletter|subscribe|instagram|facebook|copyright|all rights reserved)/i;
 
+// Decodes HTML entities in scraped text. The previous version only handled
+// &amp;/&#8217;/&nbsp; by name, which missed common WordPress numeric
+// entities like &#038; (its usual encoding of "&") — those slipped straight
+// through and showed up as literal "&#038;" text on the live site instead of
+// "&". Numeric decoding (both decimal and hex) is handled generically here
+// so nothing needs to be added to a hand-picked list again.
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ");
+}
+
 function htmlToLines(html) {
-  const text = html
+  const text = decodeEntities(html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/(p|div|li|h[1-6]|tr|article|section)>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&").replace(/&#8217;/g, "’").replace(/&nbsp;/g, " ");
+    .replace(/<[^>]+>/g, ""));
   return text.split("\n").map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean);
 }
 

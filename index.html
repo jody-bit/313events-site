@@ -3446,6 +3446,42 @@
   }
   #search::placeholder{color:var(--ink-dim);}
 
+  /* Discovery bar — time-range shortcuts. Deliberately styled like the
+     existing view-toggle/chip controls (ink-on-active, not chartreuse) —
+     the brief is explicit that Signal stays scarce and controls need
+     conventional usability, not brand theatrics. */
+  .discovery-bar{
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
+  }
+  .when-btn{
+    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
+    border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .when-btn:hover{background:var(--panel-hover);}
+  .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+  /* Active-filter tray — one visible summary of whatever is currently
+     narrowing the event universe (time-range shortcut, free-only, search
+     text, a narrowed category set), each independently removable, per the
+     brief's "filter state must never be invisible" requirement. */
+  .active-filters{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;
+  }
+  .af-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .af-chip{
+    display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
+    border-radius:999px;padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
+  }
+  .af-chip button{
+    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .af-chip button:hover{background:var(--ink);color:var(--bg);}
+  .af-clear{
+    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:999px;padding:5px 12px;
+    font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+
   .filters{
     display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
   }
@@ -3537,6 +3573,12 @@
   .list-day-group:first-child{border-top:none;}
   .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
+  .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+  .es-action{
+    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:8px;
+    padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .es-action:hover{background:var(--panel-hover);}
 
   footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
@@ -3567,6 +3609,14 @@
     <b>What this is:</b> a live calendar backed by a real database — hand-curated events plus automated feeds from Ticketmaster, WDET, and several venues' own sites, updated daily. Each listing shows its source so you can verify before you go. See the <a href="sources.html">full data sources &amp; connection status page</a> for exactly what's automated, what's manual, and what we tried and couldn't connect to.
   </div>
 
+  <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
+    <button class="when-btn" data-when="now">Now</button>
+    <button class="when-btn" data-when="today">Today</button>
+    <button class="when-btn" data-when="tonight">Tonight</button>
+    <button class="when-btn" data-when="weekend">This Weekend</button>
+    <button class="when-btn" data-when="date">Date</button>
+  </div>
+
   <div class="controls">
     <div class="nav-group">
       <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
@@ -3581,6 +3631,8 @@
   </div>
 
   <div class="filters" id="filterBar"></div>
+
+  <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
   <div class="cal" id="calWrap">
     <div class="cal-head">
@@ -3852,10 +3904,60 @@ let activeCats = new Set(Object.keys(CATS));
 let freeOnly = false;
 let query = "";
 let mode = "month"; // month | list
+// Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
+// 'tonight' | 'weekend'. Independent of category/free/search filters — see
+// matchesFilters() below, which combines all of them.
+let whenMode = null;
+// Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
+// currently in scope. Recomputed each time weekend mode is (re)activated,
+// not on every render, since "this weekend" only changes at midnight.
+let cachedWeekendDates = [];
 let selectedDate = null;
 
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+
+// Uses local date components (not toISOString(), which is UTC) — same
+// reasoning as renderMonth()'s own todayISO: Detroit is UTC-4/-5, so late
+// evening through midnight local time would otherwise read as tomorrow.
+function getTodayISO(){
+  const d = new Date();
+  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+// Best-effort parse of the free-text time_display field ("7:30 PM",
+// "12:00–3:00 PM", "Evening", "3:00 & 7:00 PM"...) into a 24h hour number.
+// This is a soft convenience signal for the NOW/TONIGHT shortcuts, not
+// authoritative scheduling data — see DISCOVERY_PHASE1_AUDIT.md. For a
+// range like "12:00–3:00 PM" this returns whichever time the regex finds
+// first (often the end of the range, since the start half usually has no
+// AM/PM of its own) — good enough to classify "roughly when", not precise
+// enough for anything that needs a real start time. Returns null when
+// nothing parseable is found; callers decide how to treat that.
+function parseHour(timeStr){
+  if(!timeStr) return null;
+  if(/evening/i.test(timeStr)) return 19;
+  const m = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if(!m) return null;
+  let hour = parseInt(m[1],10) % 12;
+  if(/PM/i.test(m[3])) hour += 12;
+  return hour;
+}
+
+// "This weekend" = the Friday/Saturday/Sunday currently in progress or the
+// next upcoming one — never a weekend that's already fully over. Returns 3
+// ISO date strings.
+function getWeekendDates(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  const dow = d.getDay(); // 0=Sun..6=Sat
+  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
+  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  return [0,1,2].map(off=>{
+    const x = new Date(fri); x.setDate(fri.getDate()+off);
+    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+  });
+}
 
 function matchesFilters(e){
   if(!activeCats.has(e.cat)) return false;
@@ -3863,6 +3965,29 @@ function matchesFilters(e){
   if(query){
     const q = query.toLowerCase();
     if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
+  }
+  if(whenMode){
+    const todayIso = getTodayISO();
+    if(whenMode === 'weekend'){
+      if(!cachedWeekendDates.includes(e.date)) return false;
+    } else {
+      // now / today / tonight are all "today", narrowed further below
+      if(e.date !== todayIso) return false;
+      if(whenMode === 'now'){
+        const hr = parseHour(e.time);
+        const nowHour = new Date().getHours();
+        // Unparseable times stay included — NOW is a safety net ("what's
+        // still ahead"), not a deliberate narrowing, so an unknown time
+        // should never silently disappear from it.
+        if(hr !== null && hr < nowHour) return false;
+      } else if(whenMode === 'tonight'){
+        // Unlike NOW, TONIGHT *is* a deliberate narrowing — an event with no
+        // parseable time isn't confidently "tonight", so it's excluded here
+        // rather than guessed at.
+        const hr = parseHour(e.time);
+        if(hr === null || hr < 17) return false;
+      }
+    }
   }
   return true;
 }
@@ -3872,7 +3997,10 @@ function buildFilterBar(){
   bar.innerHTML = '';
   Object.entries(CATS).forEach(([key,c])=>{
     const chip = document.createElement('div');
-    chip.className = 'chip active';
+    // Reflects actual activeCats state (not hardcoded active) — matters once
+    // state can also arrive from the URL or a "Clear All" that only clears
+    // some dimensions, not just from clicking chips one at a time.
+    chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
     chip.dataset.cat = key;
     chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
     chip.onclick = ()=>{
@@ -3883,7 +4011,7 @@ function buildFilterBar(){
     bar.appendChild(chip);
   });
   const freeChip = document.createElement('div');
-  freeChip.className = 'chip';
+  freeChip.className = 'chip' + (freeOnly ? ' active' : '');
   freeChip.id = 'freeChip';
   freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
   freeChip.onclick = ()=>{ freeOnly = !freeOnly; freeChip.classList.toggle('active'); render(); };
@@ -3893,15 +4021,88 @@ function buildFilterBar(){
   clearChip.className = 'chip';
   clearChip.id = 'clearChip';
   clearChip.textContent = 'Reset filters';
-  clearChip.onclick = ()=>{
-    activeCats = new Set(Object.keys(CATS));
-    freeOnly = false;
-    document.getElementById('search').value = '';
-    query = '';
-    buildFilterBar();
-    render();
-  };
+  clearChip.onclick = ()=>{ clearAllFilters(); };
   bar.appendChild(clearChip);
+}
+
+// Resets every discovery dimension at once: categories, free-only, search
+// text, and the when-shortcut. Used by both the category bar's "Reset
+// filters" chip and the active-filter tray's "Clear All", so there's exactly
+// one reset behavior instead of two subtly different ones.
+function clearAllFilters(){
+  activeCats = new Set(Object.keys(CATS));
+  freeOnly = false;
+  document.getElementById('search').value = '';
+  query = '';
+  whenMode = null;
+  selectedDate = null;
+  buildFilterBar();
+  render();
+}
+
+// Renders the "what am I looking at" summary tray above the calendar/list —
+// each active dimension shown as its own removable chip, per the brief's
+// "filter state must be visible" requirement. Categories only show up here
+// when narrowed below the full set (showing all 11 active chips twice, once
+// in the category bar and again here, would just be noise).
+function renderActiveFilters(){
+  const tray = document.getElementById('activeFilters');
+  const chips = [];
+
+  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
+  if(whenMode && WHEN_LABELS[whenMode]){
+    chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; updateWhenButtons(); render(); }});
+  }
+  if(freeOnly){
+    chips.push({label: 'Free only', onRemove: ()=>{
+      freeOnly = false;
+      document.getElementById('freeChip').classList.remove('active');
+      render();
+    }});
+  }
+  if(query){
+    chips.push({label: `"${query}"`, onRemove: ()=>{
+      query = '';
+      document.getElementById('search').value = '';
+      render();
+    }});
+  }
+  if(activeCats.size < Object.keys(CATS).length){
+    chips.push({label: `${activeCats.size} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
+      activeCats = new Set(Object.keys(CATS));
+      buildFilterBar();
+      render();
+    }});
+  }
+
+  if(!chips.length){ tray.style.display = 'none'; tray.innerHTML = ''; return; }
+
+  tray.style.display = 'flex';
+  tray.innerHTML = '';
+  const label = document.createElement('span');
+  label.className = 'af-label';
+  label.textContent = 'Showing:';
+  tray.appendChild(label);
+  chips.forEach(({label: text, onRemove})=>{
+    const chip = document.createElement('div');
+    chip.className = 'af-chip';
+    const span = document.createElement('span');
+    span.textContent = text;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', `Remove ${text} filter`);
+    btn.textContent = '✕';
+    btn.onclick = onRemove;
+    chip.appendChild(span);
+    chip.appendChild(btn);
+    tray.appendChild(chip);
+  });
+  const clearAll = document.createElement('button');
+  clearAll.type = 'button';
+  clearAll.className = 'af-clear';
+  clearAll.textContent = 'Clear all';
+  clearAll.onclick = ()=>{ clearAllFilters(); };
+  tray.appendChild(clearAll);
 }
 
 // Keeps the month label and prev/next disabled state in sync with `current`
@@ -4027,7 +4228,7 @@ function showDayPanel(iso){
   const label = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   if(!events.length){
-    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">No events match your filters on this day.</div>`;
+    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${emptyStateMessage()}</div>`;
   } else {
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
@@ -4052,14 +4253,20 @@ function showDayPanel(iso){
 }
 function closeDayPanel(){ document.getElementById('dayPanel').classList.remove('show'); selectedDate=null; }
 
-function renderList(){
+// dateList, if provided, is an explicit array of ISO date strings to render
+// instead of every day in current's month — needed for "This Weekend", which
+// can span a month boundary (e.g. Fri Jan 30 → Sun Feb 1) that a plain
+// daysInMonth loop over `current` alone wouldn't catch.
+function renderList(dateList){
   const el = document.getElementById('listView');
   const y = current.getFullYear(), m = current.getMonth();
   const daysInMonth = new Date(y,m+1,0).getDate();
+  const isos = dateList && dateList.length
+    ? dateList
+    : Array.from({length: daysInMonth}, (_,i)=> toISO(y,m,i+1));
   let html = '';
   let any = false;
-  for(let d=1; d<=daysInMonth; d++){
-    const iso = toISO(y,m,d);
+  for(const iso of isos){
     const events = (byDate[iso]||[]).filter(matchesFilters);
     if(!events.length) continue;
     any = true;
@@ -4082,17 +4289,32 @@ function renderList(){
         </div>
       `).join('') + `</div>`;
   }
-  el.innerHTML = any ? html : `<div class="empty-state">No events match your filters in ${fmtMonth(current)}.</div>`;
+  el.innerHTML = any ? html : `<div class="empty-state">${emptyStateMessage(dateList ? null : fmtMonth(current))}</div>`;
+}
+
+// Shared empty-state copy for both the list and day-panel views. Per the
+// brief: never a dead end — always paired with concrete actions to widen
+// the search, not just a flat "nothing here."
+function emptyStateMessage(scopeLabel){
+  const actions = [];
+  if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
+  if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
+  const scope = scopeLabel ? ` in ${escapeHtml(scopeLabel)}` : '';
+  return `Nothing on the signal here${scope}.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
 }
 
 function render(){
   updateMonthHeader();
+  updateWhenButtons();
+  renderActiveFilters();
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
   } else {
-    renderList();
+    renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
   }
+  syncURL();
 }
 
 document.getElementById('prevBtn').onclick = ()=>{
@@ -4123,6 +4345,121 @@ document.getElementById('listViewBtn').onclick = ()=>{
   render();
 };
 
+// ---- Discovery bar (time-range shortcuts) ----
+
+function updateWhenButtons(){
+  document.querySelectorAll('.when-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.when === whenMode);
+  });
+}
+
+function activateWhen(key){
+  if(key === 'date'){
+    // "Date" isn't a filter of its own — it just clears any active time
+    // shortcut and returns to ordinary free browsing of the calendar.
+    whenMode = null;
+    selectedDate = null;
+    updateWhenButtons();
+    render();
+    return;
+  }
+
+  whenMode = key;
+  const todayIso = getTodayISO();
+
+  if(key === 'weekend'){
+    cachedWeekendDates = getWeekendDates();
+    const fri = new Date(cachedWeekendDates[0]+"T12:00:00");
+    current = new Date(fri.getFullYear(), fri.getMonth(), 1);
+    selectedDate = null;
+    closeDayPanel();
+    // Weekend spans 3 days — the single-date day panel can't show that, so
+    // this shortcut always switches to List view rather than Month.
+    if(mode !== 'list') document.getElementById('listViewBtn').onclick();
+  } else {
+    // now / today / tonight are all "today" — jump there and open its day
+    // panel directly rather than making the user click the highlighted cell.
+    const t = new Date(todayIso+"T12:00:00");
+    current = new Date(t.getFullYear(), t.getMonth(), 1);
+    selectedDate = todayIso;
+  }
+
+  updateWhenButtons();
+  render();
+}
+
+document.querySelectorAll('.when-btn').forEach(btn=>{
+  btn.onclick = ()=> activateWhen(btn.dataset.when);
+});
+
+// ---- URL state ----
+// Reflects date/view/categories/search/when in the URL so a state can be
+// bookmarked, shared, or reloaded — per the brief's "filter state + URLs"
+// requirement. Uses replaceState (not pushState) on every change so normal
+// browsing doesn't spam browser history with one entry per keystroke/click;
+// the URL still updates live and reloading/sharing it reproduces the view.
+function syncURL(){
+  const params = new URLSearchParams();
+  params.set('date', toISO(current.getFullYear(), current.getMonth(), 1));
+  if(mode !== 'month') params.set('view', mode);
+  if(whenMode) params.set('when', whenMode);
+  if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
+  if(freeOnly) params.set('free', '1');
+  if(query) params.set('q', query);
+  const qs = params.toString();
+  history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
+}
+
+// Reads the above back out on initial load, so a shared/bookmarked link
+// reproduces the same view. Applied once, before the first render() — every
+// later interaction just goes through the normal state variables + syncURL().
+function readStateFromURL(){
+  const params = new URLSearchParams(location.search);
+
+  const dateParam = params.get('date');
+  if(dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)){
+    const d = new Date(dateParam+"T12:00:00");
+    const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
+    if(monthStart >= MIN_MONTH && monthStart <= MAX_MONTH) current = monthStart;
+  }
+
+  const catsParam = params.get('cats');
+  if(catsParam !== null){
+    // An empty/invalid list intentionally means "show nothing" — matching
+    // whatever state was actually shared, rather than silently falling back
+    // to "show everything" and misrepresenting the link.
+    activeCats = new Set(catsParam.split(',').filter(k=>CATS[k]));
+  }
+
+  if(params.get('free') === '1') freeOnly = true;
+
+  const qParam = params.get('q');
+  if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
+
+  const viewParam = params.get('view');
+  const explicitView = viewParam === 'list' || viewParam === 'month';
+  if(viewParam === 'list') mode = 'list';
+
+  const whenParam = params.get('when');
+  if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
+    whenMode = whenParam;
+    if(whenParam === 'weekend'){
+      cachedWeekendDates = getWeekendDates();
+      if(!explicitView) mode = 'list';
+    } else {
+      selectedDate = getTodayISO();
+    }
+  }
+
+  if(mode === 'list'){
+    document.getElementById('listViewBtn').classList.add('active');
+    document.getElementById('monthViewBtn').classList.remove('active');
+    document.getElementById('calWrap').style.display = 'none';
+    document.getElementById('listView').classList.add('show');
+  }
+}
+
+readStateFromURL();
 buildFilterBar();
 render();
 
@@ -4139,21 +4476,36 @@ render();
 const SUPABASE_URL = "https://afvyfjfqukptnfmgshzn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5"; // publishable key — safe for client code, read-only via RLS
 
+// Decodes HTML entities (e.g. a raw "&#038;" left over from a WordPress-
+// sourced scraper) into their real characters, so text displays correctly
+// instead of showing literal entity codes. Safe from XSS: a <textarea>'s
+// content is always parsed as plain text and never executed, no matter what
+// it contains — this only ever decodes characters, it doesn't introduce
+// markup. Applied here (before escapeHtml() at render time) as a
+// defense-in-depth cleanup covering any source, not just the specific crons
+// that have since been fixed to decode entities before they're stored.
+function decodeEntities(str){
+  if(!str) return str;
+  const ta = document.createElement('textarea');
+  ta.innerHTML = str;
+  return ta.value;
+}
+
 function mapSupabaseRow(row) {
   return {
     date: row.start_date,
-    title: row.title,
-    venue: row.venue_name_raw || "Venue TBA",
+    title: decodeEntities(row.title),
+    venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
     // shows, since that's exactly the info that was silently missing before.
-    city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? row.venue_city_raw : undefined,
+    city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city_raw) : undefined,
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
     source: row.source || "Manual",
-    note: row.note || undefined,
+    note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
     priceFrom: row.price_from ?? undefined,
   };

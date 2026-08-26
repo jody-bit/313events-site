@@ -63,13 +63,30 @@ function extractSitemapUrls(xml) {
   return urls;
 }
 
+// Decodes HTML entities in scraped text. The previous version only handled
+// &amp;/&#8217; by name, which missed common WordPress numeric entities like
+// &#038; (its usual encoding of "&") — those slipped straight through and
+// showed up as literal "&#038;" text on the live site instead of "&".
+// Numeric decoding (decimal and hex) is handled generically here so nothing
+// needs to be added to a hand-picked list again.
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ");
+}
+
 function getMeta(html, name) {
   const re = new RegExp(
     `<meta[^>]+(?:property|name)=["']${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'][^>]+content=["']([^"']*)["']`,
     "i"
   );
   const m = html.match(re);
-  return m ? m[1].replace(/&amp;/g, "&").replace(/&#8217;/g, "’") : null;
+  return m ? decodeEntities(m[1]) : null;
 }
 
 function nextOccurrenceOf(monthIdx, day) {
@@ -88,7 +105,7 @@ function nextOccurrenceOf(monthIdx, day) {
 
 function parseEventPage(html, url) {
   const titleMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  const title = titleMatch ? titleMatch[1].trim().replace(/&amp;/g, "&").replace(/&#8217;/g, "’") : null;
+  const title = titleMatch ? decodeEntities(titleMatch[1].trim()) : null;
   if (!title) return null;
 
   const whenMatch = html.match(/When:?<\/[^>]+>\s*([^<]{4,120})|When:\s*([^<\n]{4,120})/i);
@@ -114,7 +131,7 @@ function parseEventPage(html, url) {
   const first = occurrences[0]; // multi-date listings get one row for the first occurrence
 
   const venueMatch = html.match(/<a[^>]+href="[^"]*\/location\/[^"]*"[^>]*>([^<]+)<\/a>/i);
-  const venueName = venueMatch ? venueMatch[1].trim().replace(/&amp;/g, "&") : (getMeta(html, "og:site_name") || "Detroit Metro Times");
+  const venueName = venueMatch ? decodeEntities(venueMatch[1].trim()) : (getMeta(html, "og:site_name") || "Detroit Metro Times");
 
   const idMatch = url.match(/-(\d+)$/);
   const id = idMatch ? idMatch[1] : url;

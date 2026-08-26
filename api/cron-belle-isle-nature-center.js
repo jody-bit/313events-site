@@ -40,6 +40,23 @@ function stripHtml(html) {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+// WordPress's Tribe Events REST API returns title/description already
+// HTML-entity-encoded (the same "rendered" behavior as core WP's REST API),
+// e.g. a raw "&#038;" instead of "&" — undecoded, that leaks straight
+// through to the live site as literal entity text. Numeric decoding
+// (decimal and hex) is generic, so nothing needs to be added to a
+// hand-picked list as new entities show up.
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ");
+}
+
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
@@ -72,8 +89,8 @@ module.exports = async (req, res) => {
     .filter((e) => e.start_date)
     .map((e) => ({
       external_id: `bink-${e.id}`,
-      title: e.title,
-      description: stripHtml(e.description).slice(0, 500) || null,
+      title: decodeEntities(e.title),
+      description: decodeEntities(stripHtml(e.description)).slice(0, 500) || null,
       category: "family",
       venue_name_raw: VENUE_NAME,
       start_date: e.start_date.slice(0, 10),
