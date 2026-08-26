@@ -3782,11 +3782,21 @@
      here are often ranges ("11:00 AM–3:00 PM") or non-numeric ("Evening",
      "Varies"), which a stylized split can't safely parse. */
   .evt-time{
+    grid-column:1;
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
     font-size:16.5px;line-height:1.3;color:var(--accent);padding-top:1px;
   }
   .evt-time:empty{display:none;}
-  .evt-main{min-width:0;}
+  /* Explicit grid-column pins on all three children — required because
+     .evt-time can be display:none (see :empty rule above) when an event has
+     no time_display. CSS Grid auto-placement skips display:none items and
+     re-flows the REMAINING items into the earliest open columns, so without
+     these pins .evt-main would slide into the 98px time column and .evt-side
+     into the 1fr column whenever a time is missing — squeezing the title
+     into a ~98px-wide strip (causing severe multi-line wrapping) and
+     cramming the actions row too. Pinning columns keeps layout stable
+     regardless of which items are present. */
+  .evt-main{grid-column:2;min-width:0;}
   .evt-title{font-size:18px;font-weight:800;margin-bottom:4px;line-height:1.25;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
   .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
@@ -3815,7 +3825,7 @@
      chip/dot system — the mock's plain gray text was tied to its own
      placeholder taxonomy, not this project's locked, color-coded one) and
      price/free stacked underneath, right-aligned. */
-  .evt-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;text-align:right;}
+  .evt-side{grid-column:3;display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;text-align:right;}
   .evt-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
   .evt-price{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
   .evt-price.free{color:#3fbf6a;}
@@ -3825,9 +3835,12 @@
        either side — a three-column grid gets cramped fast on a narrow
        phone width. */
     .evt-row{grid-template-columns:1fr;gap:4px;padding:14px 0;}
-    .evt-time{order:1;}
-    .evt-side{order:2;flex-direction:row;align-items:baseline;gap:8px;text-align:left;}
-    .evt-main{order:3;}
+    /* Reset the desktop grid-column pins back to the single mobile column —
+       otherwise grid-column:2/3 would force extra implicit column tracks
+       instead of stacking, and the order:* below would have no effect. */
+    .evt-time{grid-column:1;order:1;}
+    .evt-side{grid-column:1;order:2;flex-direction:row;align-items:baseline;gap:8px;text-align:left;}
+    .evt-main{grid-column:1;order:3;}
   }
 
   /* List view */
@@ -4902,6 +4915,22 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Some submitted/imported rows have `source` set to a placeholder ("Manual")
+// or literally repeat the venue name (e.g. a venue's own listing page —
+// venue_name_raw "Trinosophes", source "Trinosophes"), which renders as a
+// useless "via Trinosophes" right next to "Trinosophes" itself. Suppress the
+// "via ..." label in both places it's shown (the visible venue line and the
+// Add-to-Calendar description) whenever it wouldn't tell the reader anything
+// the venue name hasn't already.
+function shouldShowSource(e){
+  if(!e.source) return false;
+  const norm = s => String(s).trim().toLowerCase().replace(/[^a-z0-9]/g,'');
+  const src = norm(e.source);
+  if(!src || src === 'manual') return false;
+  if(e.venue && norm(e.venue) === src) return false;
+  return true;
+}
+
 // Only allow http(s) links into href attributes. Blocks javascript: URLs and
 // similar schemes that would otherwise let a submitted "ticket link" execute
 // code on click instead of just navigating.
@@ -5020,7 +5049,7 @@ function foldICSLine(line){
 function buildEventDescription(e){
   const parts = [];
   if(e.note) parts.push(e.note);
-  if(e.source) parts.push(`Via ${e.source}`);
+  if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
   parts.push('Details: https://313.events/');
   return parts.join('\n');
@@ -5144,7 +5173,7 @@ function renderList(dateList){
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-title">${escapeHtml(e.title)}</div>
-            <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${e.source?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+            <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             <div class="evt-actions">
               ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
