@@ -3379,8 +3379,8 @@
        corner — a direct, deliberately conservative move toward the Detroit
        Signal concept board's rectilinear, editorial-broadcast language.
        Scoped to this single token: every var(--radius) consumer is a
-       structural chrome container (.notice, .controls, .cal, #dayPanel,
-       #listView), not an interactive pill/chip/badge, so this doesn't touch
+       structural chrome container (.notice, .controls, #listView), not an
+       interactive pill/chip/badge, so this doesn't touch
        any control's tap-target shape or affordance. */
     --radius:0px;
 
@@ -3535,11 +3535,6 @@
   .nav-group button.navbtn:hover:not(:disabled){background:var(--panel-hover);}
   .nav-group button.navbtn:disabled{opacity:.35;cursor:not-allowed;}
   #monthLabel{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;min-width:170px;text-align:center;}
-  .view-toggle{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
-  .view-toggle button{
-    border:none;background:var(--panel-alt);padding:7px 14px;font-size:13px;cursor:pointer;color:var(--ink-soft);
-  }
-  .view-toggle button.active{background:var(--accent);color:var(--on-accent);font-weight:700;}
   #search{
     border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;
     background:var(--panel-alt);color:var(--ink);
@@ -3547,7 +3542,7 @@
   #search::placeholder{color:var(--ink-dim);}
 
   /* Discovery bar — time-range shortcuts. Deliberately styled like the
-     existing view-toggle/chip controls (ink-on-active, not chartreuse) —
+     existing chip controls (ink-on-active, not chartreuse) —
      the brief is explicit that Signal stays scarce and controls need
      conventional usability, not brand theatrics. */
   .discovery-bar{
@@ -3752,15 +3747,6 @@
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
-  /* Day detail panel */
-  #dayPanel{
-    margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:18px 20px;display:none;
-  }
-  #dayPanel.show{display:block;}
-  #dayPanel h2{margin:0 0 12px;font-size:17px;display:flex;justify-content:space-between;align-items:center;}
-  #dayPanel h2 button{border:none;background:none;font-size:14px;color:var(--ink-soft);cursor:pointer;}
-
   /* Event rows — matches the approved mockup's list treatment directly:
      oversized chartreuse time, plain right-aligned category/price column
      (no pill chips here — those stay in the filter bar/calendar dots),
@@ -3769,8 +3755,7 @@
      deviation from the mock: no street address line under the venue name
      — venue_name_raw/venue_city_raw is all the data model actually has,
      no per-venue street address, so nothing is fabricated to fill that
-     line. Shared by both the List view (renderList()) and the month
-     view's day panel (showDayPanel()), so both get this treatment. */
+     line. */
   .evt-row{
     display:grid;grid-template-columns:98px 1fr auto;gap:18px;align-items:start;
     padding:16px 0;border-top:1px solid var(--line-soft);
@@ -3818,8 +3803,7 @@
   }
 
   /* List view */
-  #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;}
-  #listView.show{display:block;}
+  #listView{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;}
   .list-day-group{padding:14px 0;border-top:1px solid var(--line-soft);}
   .list-day-group:first-child{padding-top:0;border-top:none;}
   .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;}
@@ -4039,26 +4023,13 @@
       <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
     </div>
     <input type="text" id="search" placeholder="Search events, venues&hellip;">
-    <div class="view-toggle">
-      <button id="monthViewBtn">Month</button>
-      <button id="listViewBtn" class="active">List</button>
-    </div>
   </div>
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
   <div class="home-body">
     <div class="home-main">
-      <div class="cal" id="calWrap">
-        <div class="cal-head">
-          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
-
       <div id="listView"></div>
-
-      <div id="dayPanel"></div>
     </div>
 
     <aside class="home-sidebar" id="homeSidebar" aria-label="Calendar shortcuts and highlights">
@@ -4480,10 +4451,9 @@ function isBlockedEvent(e){
 let activeCats = new Set(Object.keys(CATS));
 let freeOnly = false;
 let query = "";
-// Homepage defaults to List (the mockup's primary view) — calendar.html
-// (the dedicated "regular calendar navigation" page, per spec) still
-// defaults to Month; that default lives separately in that file.
-let mode = "list"; // month | list
+// The homepage is List-only (the mockup's primary view) — there is no
+// Month grid here at all. The full Month-grid experience lives on the
+// separate calendar.html page, which keeps its own independent default.
 // Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
 // 'tonight' | 'weekend'. Independent of category/free/search filters — see
 // matchesFilters() below, which combines all of them.
@@ -4492,7 +4462,6 @@ let whenMode = null;
 // currently in scope. Recomputed each time weekend mode is (re)activated,
 // not on every render, since "this weekend" only changes at midnight.
 let cachedWeekendDates = [];
-let selectedDate = null;
 // originLocation: the chosen search-radius origin — {name, type, region,
 // lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
 // null means no location filter is active at all.
@@ -4514,9 +4483,9 @@ let radiusMiles = null;
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 
-// Uses local date components (not toISOString(), which is UTC) — same
-// reasoning as renderMonth()'s own todayISO: Detroit is UTC-4/-5, so late
-// evening through midnight local time would otherwise read as tomorrow.
+// Uses local date components (not toISOString(), which is UTC) — Detroit is
+// UTC-4/-5, so late evening through midnight local time would otherwise
+// read as tomorrow.
 function getTodayISO(){
   const d = new Date();
   return toISO(d.getFullYear(), d.getMonth(), d.getDate());
@@ -4752,7 +4721,6 @@ function clearAllFilters(){
   document.getElementById('search').value = '';
   query = '';
   whenMode = null;
-  selectedDate = null;
   const t = new Date(getTodayISO()+"T12:00:00");
   current = new Date(t.getFullYear(), t.getMonth(), 1);
   clearLocation({skipRender: true});
@@ -4830,107 +4798,13 @@ function renderActiveFilters(){
 }
 
 // Keeps the month label and prev/next disabled state in sync with `current`
-// regardless of which view (month grid or list) is currently rendered.
-// Previously this only ran inside renderMonth(), so switching to List view
-// and paging with next/prev silently left the header showing a stale month
-// while the list content underneath had actually moved on — same events,
-// wrong label. Called once per render() so both views always agree.
+// (the month-pagination header stays above the list even though there's no
+// month grid on this page anymore). Called once per render().
 function updateMonthHeader(){
   const y = current.getFullYear(), m = current.getMonth();
   document.getElementById('monthLabel').textContent = fmtMonth(current);
   document.getElementById('prevBtn').disabled = (y===MIN_MONTH.getFullYear() && m===MIN_MONTH.getMonth());
   document.getElementById('nextBtn').disabled = (y===MAX_MONTH.getFullYear() && m===MAX_MONTH.getMonth());
-}
-
-function renderMonth(){
-  const grid = document.getElementById('calGrid');
-  grid.innerHTML = '';
-  const y = current.getFullYear(), m = current.getMonth();
-
-  const firstDow = new Date(y,m,1).getDay();
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const daysInPrev = new Date(y,m,0).getDate();
-  const totalCells = Math.ceil((firstDow + daysInMonth)/7)*7;
-
-  // Use local date components, not toISOString() (which is UTC) — Detroit is
-  // UTC-4/-5, so from evening through midnight local time, the UTC date has
-  // already rolled to the next day while it's still "today" here. This
-  // matches whatever timezone the visitor's own browser/device is set to.
-  const _now = new Date();
-  const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
-
-  for(let i=0;i<totalCells;i++){
-    const cell = document.createElement('div');
-    let dayNum, cellMonth = m, cellYear = y, iso;
-    if(i < firstDow){
-      dayNum = daysInPrev - firstDow + 1 + i;
-      cellMonth = m-1; if(cellMonth<0){cellMonth=11;cellYear--;}
-      cell.className = 'day-cell otherMonth';
-    } else if(i >= firstDow + daysInMonth){
-      dayNum = i - (firstDow+daysInMonth) + 1;
-      cellMonth = m+1; if(cellMonth>11){cellMonth=0;cellYear++;}
-      cell.className = 'day-cell otherMonth';
-    } else {
-      dayNum = i - firstDow + 1;
-      cell.className = 'day-cell';
-    }
-    iso = toISO(cellYear, cellMonth, dayNum);
-    if(iso === todayISO) cell.classList.add('today');
-    // Subtle-only cue (see .day-cell.past CSS) — past dates stay fully
-    // navigable and their events stay fully visible, nothing is disabled.
-    if(iso < todayISO) cell.classList.add('past');
-
-    const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
-    if(events.length) cell.classList.add('hasEvents');
-
-    const num = document.createElement('div');
-    num.className = 'daynum';
-    num.append(document.createTextNode(dayNum));
-    if(iso === todayISO){
-      const todayLabel = document.createElement('span');
-      todayLabel.className = 'today-label';
-      todayLabel.textContent = '● TODAY';
-      num.appendChild(todayLabel);
-    }
-    cell.appendChild(num);
-
-    if(events.length){
-      const count = document.createElement('div');
-      count.className = 'day-count';
-      count.innerHTML = `<span class="dot"></span>${events.length} EVENT${events.length===1?'':'S'}`;
-      cell.appendChild(count);
-    }
-
-    const showMax = 3;
-    events.slice(0,showMax).forEach(e=>{
-      const pill = document.createElement('div');
-      pill.className = 'pill';
-      pill.innerHTML = `<span class="sw" style="background:${CATS[e.cat].color}"></span><span class="t">${escapeHtml(e.title)}</span>`;
-      cell.appendChild(pill);
-    });
-    if(events.length > showMax){
-      const more = document.createElement('div');
-      more.className = 'more-link';
-      more.textContent = `+${events.length - showMax} more`;
-      cell.appendChild(more);
-    }
-
-    // Keyboard/screen-reader access — previously a plain unfocusable <div>
-    // with only a click handler, so the whole calendar grid was unreachable
-    // by keyboard. Each cell is now a real interactive control: focusable,
-    // labeled with its date + event count, and Enter/Space-operable.
-    cell.tabIndex = 0;
-    cell.setAttribute('role', 'button');
-    const dayLabel = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-    const countLabel = events.length ? `, ${events.length} event${events.length===1?'':'s'}` : ', no events';
-    cell.setAttribute('aria-label', dayLabel + countLabel + (iso===todayISO ? ' (today)' : ''));
-    const openDay = ()=>{ selectedDate = iso; showDayPanel(iso); };
-    cell.onclick = openDay;
-    cell.onkeydown = (e)=>{
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDay(); }
-    };
-    grid.appendChild(cell);
-  }
 }
 
 // Escapes text before it's interpolated into innerHTML. Needed because some
@@ -4980,37 +4854,6 @@ function priceTag(e){
   return '';
 }
 
-function showDayPanel(iso){
-  const panel = document.getElementById('dayPanel');
-  const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
-  const dateObj = new Date(iso+"T12:00:00");
-  const label = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-
-  if(!events.length){
-    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${emptyStateMessage()}</div>`;
-  } else {
-    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
-      events.map(e=>`
-        <div class="evt-row">
-          <div class="evt-time">${escapeHtml(e.time)||''}</div>
-          <div class="evt-main">
-            <div class="evt-title">${escapeHtml(e.title)}</div>
-            <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${e.source?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
-            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-            ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-          </div>
-          <div class="evt-side">
-            <div class="evt-cat" style="color:${CATS[e.cat].color}">${CATS[e.cat].label}</div>
-            ${priceTag(e)}
-          </div>
-        </div>
-      `).join('');
-  }
-  panel.classList.add('show');
-  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-function closeDayPanel(){ document.getElementById('dayPanel').classList.remove('show'); selectedDate=null; }
-
 // dateList, if provided, is an explicit array of ISO date strings to render
 // instead of every day in current's month — needed for "This Weekend", which
 // can span a month boundary (e.g. Fri Jan 30 → Sun Feb 1) that a plain
@@ -5052,7 +4895,7 @@ function renderList(dateList){
 // The homepage's real, always-on stat (approved: homepage defaults to
 // TODAY). Per the mockup, this is a fixed "N things happening this week in
 // the Detroit Orbit" count rather than an inline preview of individual
-// events — deliberately independent of whenMode/selectedDate AND of
+// events — deliberately independent of whenMode AND of
 // activeCats/freeOnly/query, so it reads as a constant pulse of the whole
 // city rather than a number that shrinks as someone narrows their own
 // filters below. Scoped to the current Monday-Sunday week rather than just
@@ -5083,12 +4926,11 @@ function renderHeroToday(){
 // chronologically — so what the user sees lines up with what the number
 // just told them, without touching their category/free/search filters.
 function viewThisWeek(){
-  selectedDate = null;
   whenMode = null;
   const t = new Date(getTodayISO()+"T12:00:00");
   current = new Date(t.getFullYear(), t.getMonth(), 1);
   updateWhenButtons();
-  document.getElementById('listViewBtn').onclick();
+  render();
 }
 
 // ---- Homepage sidebar: View Calendar / Near You / Free Today ----
@@ -5182,7 +5024,7 @@ function viewNearby(){
     radiusMiles = 25;
     updateLocationControlUI();
   }
-  document.getElementById('listViewBtn').onclick();
+  render();
 }
 
 function renderFreeTodayCard(){
@@ -5202,12 +5044,11 @@ function viewFreeToday(){
   freeOnly = true;
   buildFilterBar();
   activateWhen('today');
-  if(mode !== 'list') document.getElementById('listViewBtn').onclick();
 }
 
-// Shared empty-state copy for both the list and day-panel views. Per the
-// brief: never a dead end — always paired with concrete actions to widen
-// the search, not just a flat "nothing here."
+// Shared empty-state copy for the list view. Per the brief: never a dead
+// end — always paired with concrete actions to widen the search, not just
+// a flat "nothing here."
 function emptyStateMessage(scopeLabel){
   const actions = [];
   if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
@@ -5226,42 +5067,19 @@ function render(){
   renderActiveFilters();
   renderHeroToday();
   renderSidebar();
-  if(mode === 'month'){
-    renderMonth();
-    if(selectedDate) showDayPanel(selectedDate);
-  } else {
-    renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
-  }
+  renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
   syncURL();
 }
 
 document.getElementById('prevBtn').onclick = ()=>{
   const p = new Date(current.getFullYear(), current.getMonth()-1, 1);
-  if(p >= MIN_MONTH){ current = p; closeDayPanel(); render(); }
+  if(p >= MIN_MONTH){ current = p; render(); }
 };
 document.getElementById('nextBtn').onclick = ()=>{
   const n = new Date(current.getFullYear(), current.getMonth()+1, 1);
-  if(n <= MAX_MONTH){ current = n; closeDayPanel(); render(); }
+  if(n <= MAX_MONTH){ current = n; render(); }
 };
-document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); closeDayPanel(); render(); });
-
-document.getElementById('monthViewBtn').onclick = ()=>{
-  mode='month';
-  document.getElementById('monthViewBtn').classList.add('active');
-  document.getElementById('listViewBtn').classList.remove('active');
-  document.getElementById('calWrap').style.display='block';
-  document.getElementById('listView').classList.remove('show');
-  render();
-};
-document.getElementById('listViewBtn').onclick = ()=>{
-  mode='list';
-  document.getElementById('listViewBtn').classList.add('active');
-  document.getElementById('monthViewBtn').classList.remove('active');
-  document.getElementById('calWrap').style.display='none';
-  closeDayPanel();
-  document.getElementById('listView').classList.add('show');
-  render();
-};
+document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); render(); });
 
 // ---- Discovery bar (time-range shortcuts) ----
 
@@ -5274,9 +5092,8 @@ function updateWhenButtons(){
 function activateWhen(key){
   if(key === 'date'){
     // "Date" isn't a filter of its own — it just clears any active time
-    // shortcut and returns to ordinary free browsing of the calendar.
+    // shortcut and returns to ordinary free browsing of the list.
     whenMode = null;
-    selectedDate = null;
     updateWhenButtons();
     render();
     closeSheet(); // no-op on desktop / when no sheet is open
@@ -5290,17 +5107,11 @@ function activateWhen(key){
     cachedWeekendDates = getWeekendDates();
     const fri = new Date(cachedWeekendDates[0]+"T12:00:00");
     current = new Date(fri.getFullYear(), fri.getMonth(), 1);
-    selectedDate = null;
-    closeDayPanel();
-    // Weekend spans 3 days — the single-date day panel can't show that, so
-    // this shortcut always switches to List view rather than Month.
-    if(mode !== 'list') document.getElementById('listViewBtn').onclick();
   } else {
-    // now / today / tonight are all "today" — jump there and open its day
-    // panel directly rather than making the user click the highlighted cell.
+    // now / today / tonight are all "today" — jump the list's month cursor
+    // there so the day is in view.
     const t = new Date(todayIso+"T12:00:00");
     current = new Date(t.getFullYear(), t.getMonth(), 1);
-    selectedDate = todayIso;
   }
 
   updateWhenButtons();
@@ -5313,12 +5124,11 @@ document.querySelectorAll('.when-btn').forEach(btn=>{
 });
 
 // BROWSE (header nav) — the unfiltered, see-everything shortcut: clears
-// every narrowing dimension (time range, categories, location, search) and
-// switches to List view, which reads chronologically top-to-bottom — the
-// closest thing this site has to "just show me all of it."
+// every narrowing dimension (time range, categories, location, search) —
+// the list already reads chronologically top-to-bottom, the closest thing
+// this site has to "just show me all of it."
 document.getElementById('browseBtn').onclick = ()=>{
   clearAllFilters();
-  if(mode !== 'list') document.getElementById('listViewBtn').onclick();
 };
 
 // Header search icon (mockup parity) — no separate search field up here;
@@ -5636,14 +5446,13 @@ function syncURL(){
   // param (see dateParam handling), so which exact day gets encoded here is
   // purely cosmetic — it doesn't change what a reloaded/shared URL shows.
   // Still, showing an arbitrary "01" when the real default is today reads as
-  // wrong at a glance. Prefer, in order: the actually-selected day, else
-  // today's real date (while browsing the current month, which is the
-  // homepage default), else just the 1st of whatever other month is showing.
+  // wrong at a glance. Prefer today's real date while browsing the current
+  // month (the homepage default), else just the 1st of whatever other month
+  // is showing.
   const todayIso = getTodayISO();
   const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
-  const dateForUrl = selectedDate || (isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1));
+  const dateForUrl = isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1);
   params.set('date', dateForUrl);
-  if(mode !== 'list') params.set('view', mode); // list is the homepage's default now, so only an explicit month view needs the param
   if(whenMode) params.set('when', whenMode);
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
@@ -5693,35 +5502,14 @@ function readStateFromURL(){
   const qParam = params.get('q');
   if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
 
-  const viewParam = params.get('view');
-  const explicitView = viewParam === 'list' || viewParam === 'month';
-  if(viewParam === 'list') mode = 'list';
-  if(viewParam === 'month') mode = 'month'; // homepage now defaults to list, so an explicit ?view=month request needs to actually say so
-
+  // Note: an old bookmarked link with ?view=month has nothing to restore to
+  // anymore — the homepage is List-only now, so that param is simply ignored.
   const whenParam = params.get('when');
   if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
     whenMode = whenParam;
     if(whenParam === 'weekend'){
       cachedWeekendDates = getWeekendDates();
-      if(!explicitView) mode = 'list';
-    } else {
-      selectedDate = getTodayISO();
     }
-  }
-
-  if(mode === 'list'){
-    document.getElementById('listViewBtn').classList.add('active');
-    document.getElementById('monthViewBtn').classList.remove('active');
-    document.getElementById('calWrap').style.display = 'none';
-    document.getElementById('listView').classList.add('show');
-  } else {
-    // List is the static markup's default now, so an explicit ?view=month
-    // (or a weekend-shortcut link with an explicit view) needs to actively
-    // flip the toggle back to Month rather than relying on the old default.
-    document.getElementById('monthViewBtn').classList.add('active');
-    document.getElementById('listViewBtn').classList.remove('active');
-    document.getElementById('calWrap').style.display = 'block';
-    document.getElementById('listView').classList.remove('show');
   }
 
   // A shared link only restores a NAMED location (a real match in
