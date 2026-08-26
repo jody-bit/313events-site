@@ -3820,7 +3820,6 @@
       <button type="button" class="radius-chip" data-radius="10">10 mi</button>
       <button type="button" class="radius-chip" data-radius="25">25 mi</button>
       <button type="button" class="radius-chip" data-radius="50">50 mi</button>
-      <button type="button" class="radius-chip" data-radius="75">75 mi</button>
       <button type="button" class="radius-chip active" data-radius="all">Detroit Orbit</button>
     </div>
   </div>
@@ -4276,9 +4275,13 @@ let selectedDate = null;
 // lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
 // null means no location filter is active at all.
 let originLocation = null;
-// radiusMiles: 5/10/25/50/75 (number) or 'all' (no distance cutoff, but a
-// location is still set — useful as a reference point without narrowing).
-// Only meaningful while originLocation is set.
+// radiusMiles: 5/10/25/50 (number) or 'all' — labeled "Detroit Orbit" in the
+// UI, this is the widest tier (no additional distance cutoff applied beyond
+// the site's own ~75-mile coverage area, per SERVICE_AREA.md) and the
+// default. A separate literal "75 mi" option used to exist alongside it,
+// which was a redundant way of saying the same boundary twice; removed
+// 2026-08-26 in favor of "Detroit Orbit" being the one 75-mile-equivalent
+// option. Only meaningful while originLocation is set.
 let radiusMiles = null;
 
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
@@ -4398,6 +4401,24 @@ function buildFilterBar(){
   header.appendChild(headerClose);
   bar.appendChild(header);
 
+  // "All types" — a single, explicit way back to the unfiltered Event Type
+  // state, distinct from "Reset filters" below (which also clears When,
+  // Where, and search). Active whenever every category is currently
+  // selected, i.e. nothing has actually been narrowed yet.
+  const allChip = document.createElement('button');
+  allChip.type = 'button';
+  const allActive = activeCats.size === Object.keys(CATS).length;
+  allChip.className = 'chip' + (allActive ? ' active' : '');
+  allChip.id = 'allTypesChip';
+  allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
+  allChip.textContent = 'All types';
+  allChip.onclick = ()=>{
+    activeCats = new Set(Object.keys(CATS));
+    buildFilterBar();
+    render();
+  };
+  bar.appendChild(allChip);
+
   Object.entries(CATS).forEach(([key,c])=>{
     const chip = document.createElement('button');
     chip.type = 'button';
@@ -4442,7 +4463,10 @@ function buildFilterBar(){
 // Resets every discovery dimension at once: categories, free-only, search
 // text, and the when-shortcut. Used by both the category bar's "Reset
 // filters" chip and the active-filter tray's "Clear All", so there's exactly
-// one reset behavior instead of two subtly different ones.
+// one reset behavior instead of two subtly different ones. Also returns the
+// calendar to the current month (today) rather than leaving it wherever the
+// user had navigated to — a reset should feel like coming back to "now",
+// not just clearing filters on whatever month happens to be on screen.
 function clearAllFilters(){
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
@@ -4450,6 +4474,8 @@ function clearAllFilters(){
   query = '';
   whenMode = null;
   selectedDate = null;
+  const t = new Date(getTodayISO()+"T12:00:00");
+  current = new Date(t.getFullYear(), t.getMonth(), 1);
   clearLocation({skipRender: true});
   buildFilterBar();
   render();
@@ -5008,7 +5034,7 @@ function clearLocation(opts){
 }
 
 function expandRadius(){
-  const steps = [5, 10, 25, 50, 75, 'all'];
+  const steps = [5, 10, 25, 50, 'all'];
   const idx = steps.indexOf(radiusMiles);
   radiusMiles = steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)];
   updateRadiusButtons();
@@ -5250,7 +5276,7 @@ function readStateFromURL(){
       if(radiusParam === 'all') radiusMiles = 'all';
       else {
         const n = parseInt(radiusParam, 10);
-        radiusMiles = (!isNaN(n) && [5,10,25,50,75].includes(n)) ? n : 'all';
+        radiusMiles = (!isNaN(n) && [5,10,25,50].includes(n)) ? n : 'all';
       }
     }
   }
