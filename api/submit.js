@@ -19,6 +19,75 @@ function isValidEmail(email) {
   return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+// Only allow http(s) links to be stored at all. Without this, someone could
+// submit ticketUrl/imageUrl as "javascript:..." or another non-http scheme —
+// index.html now escapes and scheme-checks again before rendering (defense
+// in depth), but rejecting it here means it never even reaches the database.
+function isSafeHttpUrl(url) {
+  if (!url) return true; // both fields are optional
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+// Where new-submission alerts go — see the setup note on notifySubmission().
+const NOTIFY_EMAIL = process.env.SUBMISSION_NOTIFY_EMAIL || "jody@sentientproductions.com";
+
+function escapeHtmlForEmail(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Best-effort email alert so a new submission doesn't just sit silently in
+// the moderation queue until someone remembers to open /admin.html. This is
+// a convenience notification, not a required pipeline step: if RESEND_API_KEY
+// isn't set yet, or the send fails, the submission itself still succeeds —
+// notifySubmission() only ever logs and swallows its own errors.
+//
+// One-time setup: sign up free at resend.com using jody@sentientproductions.com
+// as the account's own login/owner email, create an API key, add it to
+// Vercel as RESEND_API_KEY. No domain verification needed as long as alerts
+// keep going to that same address — Resend's shared "onboarding@resend.dev"
+// sender can only send to the account's own verified (signup) email until a
+// custom domain is added. If the Resend account was instead signed up under
+// a different address, alerts to jody@sentientproductions.com will silently
+// fail (notifySubmission() swallows its own errors) until either the
+// account's owner email matches this one, or a custom domain is verified.
+async function notifySubmission(row) {
+  if (!RESEND_API_KEY) return;
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "313.events <onboarding@resend.dev>",
+        to: [NOTIFY_EMAIL],
+        subject: `New event submission: ${row.title}`,
+        html: `
+          <p><b>${escapeHtmlForEmail(row.title)}</b> — ${escapeHtmlForEmail(row.category)}</p>
+          <p>${escapeHtmlForEmail(row.start_date)}${row.time_display ? " · " + escapeHtmlForEmail(row.time_display) : ""}</p>
+          <p>Venue: ${escapeHtmlForEmail(row.venue_name_raw)}</p>
+          <p>Submitted by: ${escapeHtmlForEmail(row.submitter_org_name)} (${escapeHtmlForEmail(row.submitter_email)})</p>
+          ${row.description ? `<p>${escapeHtmlForEmail(row.description)}</p>` : ""}
+          <p><a href="https://313.events/admin.html">Review in the admin queue &rarr;</a></p>
+        `,
+      }),
+    });
+  } catch (err) {
+    console.error("notifySubmission failed:", err.message);
+  }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -50,6 +119,8 @@ module.exports = async (req, res) => {
   if (!venue || typeof venue !== "string" || !venue.trim()) errors.push("venue is required");
   if (!orgName || typeof orgName !== "string" || !orgName.trim()) errors.push("orgName is required");
   if (!isValidEmail(contactEmail)) errors.push("a valid contactEmail is required");
+  if (!isSafeHttpUrl(ticketUrl)) errors.push("ticketUrl must be a valid http(s) link");
+  if (!isSafeHttpUrl(imageUrl)) errors.push("imageUrl must be a valid http(s) link");
 
   if (errors.length) {
     res.status(400).json({ error: "Invalid submission: " + errors.join("; ") });
@@ -97,6 +168,7 @@ module.exports = async (req, res) => {
     }
 
     const [inserted] = await resp.json();
+    await notifySubmission(row);
     res.status(201).json({ ok: true, id: inserted && inserted.id, status: "pending_review" });
   } catch (err) {
     res.status(500).json({ error: "Submission failed: " + err.message });
