@@ -12,7 +12,11 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum",
-  "family", "fest", "food", "film", "nightlife",
+  "family", "fest", "food", "film", "nightlife", "community",
+  // Note: "sports" is a valid category in the database (migration_007) but
+  // was already missing from this list before this edit — a pre-existing
+  // gap, not introduced here. Flagged, not fixed, since it's outside what
+  // this change was asked to do.
 ]);
 
 function isValidEmail(email) {
