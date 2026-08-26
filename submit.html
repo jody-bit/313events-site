@@ -110,6 +110,15 @@
   .checkbox-row input{width:auto;}
   .checkbox-row label{margin:0;font-weight:600;}
 
+  .mode-tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .mode-tab{
+    flex:1;border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
+    border-radius:8px;padding:12px 14px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:center;
+    font-family:inherit;
+  }
+  .mode-tab.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .mode-tab .tab-sub{display:block;font-weight:400;font-size:11.5px;opacity:.75;margin-top:2px;}
+
   .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
   .cat-option{
     border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;cursor:pointer;
@@ -126,18 +135,18 @@
   .btn-primary:hover{background:var(--accent);}
   .btn-secondary{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);}
 
-  #confirmPanel{
+  .confirm-panel{
     display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:26px;text-align:left;
   }
-  #confirmPanel.show{display:block;}
-  #confirmPanel h2{margin:0 0 6px;font-size:20px;}
-  #confirmPanel .sub{color:var(--ink-soft);font-size:13.5px;margin-bottom:18px;}
-  #confirmPanel .checkmark{
+  .confirm-panel.show{display:block;}
+  .confirm-panel h2{margin:0 0 6px;font-size:20px;}
+  .confirm-panel .sub{color:var(--ink-soft);font-size:13.5px;margin-bottom:18px;}
+  .confirm-panel .checkmark{
     width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;
     align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;
   }
-  pre#jsonPreview{
+  .confirm-panel pre{
     background:var(--panel-alt);border:1px solid var(--line-soft);border-radius:8px;padding:14px;
     font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;color:var(--ink-soft);
   }
@@ -162,6 +171,19 @@
     <span><strong>Coming soon:</strong> account sign-in for registered venues/organizers, so submissions are tied to a verified account. For now, every submission is reviewed by hand before it goes live.</span>
     <button type="button" onclick="alert('Account sign-in isn\'t built yet — for now every submission goes through manual review instead.')">Sign in (coming soon)</button>
   </div>
+
+  <div class="mode-tabs" role="tablist" aria-label="Submission type">
+    <button type="button" class="mode-tab active" id="oneEventTab" role="tab" aria-selected="true" aria-controls="oneEventPane">
+      Submit one event
+      <span class="tab-sub">A single date — reviewed once</span>
+    </button>
+    <button type="button" class="mode-tab" id="feedTab" role="tab" aria-selected="false" aria-controls="feedPane">
+      Submit your event feed
+      <span class="tab-sub">An ongoing calendar — reviewed once, then automatic</span>
+    </button>
+  </div>
+
+  <div id="oneEventPane" role="tabpanel">
 
   <div class="notice">
     <b>What this is:</b> a real submission form backed by a database. Your event is saved to a moderation queue and reviewed by hand before it appears on the calendar &mdash; this helps prevent spam and lets us check for duplicates against the other sources already feeding the calendar.
@@ -272,14 +294,83 @@
     </div>
   </form>
 
-  <div id="confirmPanel">
+  <div id="confirmPanel" class="confirm-panel">
     <div class="checkmark">✓</div>
     <h2>Submitted for review</h2>
-    <div class="sub">In production, this would enter a moderation queue and you'd get a confirmation email. Here's exactly what would be sent:</div>
+    <div class="sub">Your event is in the moderation queue and will be reviewed by hand before it appears on the calendar. Here's exactly what was submitted:</div>
     <pre id="jsonPreview"></pre>
     <div class="submit-row" style="margin-top:18px;">
       <button type="button" class="btn btn-secondary" onclick="submitAnother()">Submit another event</button>
     </div>
+  </div>
+
+  </div>
+
+  <div id="feedPane" role="tabpanel" style="display:none;">
+
+    <div class="notice">
+      <b>What this is:</b> if you already publish your own calendar somewhere &mdash; Google Calendar, Eventbrite, WordPress's Events Calendar plugin, or similar &mdash; give us that feed's link once instead of re-entering every event by hand. We review the feed itself before turning it on; after that, your events appear automatically as you publish them, with no need to resubmit anything.
+    </div>
+
+    <form id="feedForm" novalidate>
+      <div class="form-error" id="feedFormError">Please fill in all required fields marked with <span class="req">*</span>.</div>
+
+      <fieldset>
+        <legend>Your feed</legend>
+        <div class="field">
+          <label for="feedUrl">iCalendar (.ics) feed URL <span class="req">*</span></label>
+          <input type="url" id="feedUrl" name="feedUrl" required placeholder="https://…/events.ics">
+          <div class="hint">Most calendar platforms already have one: Google Calendar's "Secret address in iCal format" (Calendar settings &rarr; Integrate calendar), WordPress's Events Calendar plugin (add <code>?ical=1</code> to your calendar's URL), or Eventbrite's organizer-side calendar export. RSS-only feeds aren't parsed automatically yet &mdash; email us instead if that's all you have.</div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Default category <span class="opt" style="text-transform:none;font-weight:400;">&mdash; applied to every event from this feed</span></legend>
+        <div class="cat-grid" id="feedCatGrid"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your venue / organization</legend>
+        <div class="row">
+          <div class="field">
+            <label for="feedVenueName">Venue / organization name <span class="req">*</span></label>
+            <input type="text" id="feedVenueName" name="feedVenueName" required placeholder="e.g. Marble Bar">
+          </div>
+          <div class="field">
+            <label for="feedWebsite">Website <span class="opt">(optional)</span></label>
+            <input type="url" id="feedWebsite" name="feedWebsite" placeholder="https://…">
+          </div>
+        </div>
+        <div class="field">
+          <label for="feedNotes">Anything we should know? <span class="opt">(optional)</span></label>
+          <textarea id="feedNotes" name="feedNotes" placeholder="e.g. this feed also includes private rentals that shouldn't be listed publicly"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your contact <span class="opt" style="text-transform:none;font-weight:400;">(not shown publicly &mdash; for verification only)</span></legend>
+        <div class="field">
+          <label for="feedContactEmail">Contact email <span class="req">*</span></label>
+          <input type="email" id="feedContactEmail" name="feedContactEmail" required placeholder="you@example.com">
+        </div>
+      </fieldset>
+
+      <div class="submit-row">
+        <button type="reset" class="btn btn-secondary">Clear form</button>
+        <button type="submit" class="btn btn-primary">Submit feed for review</button>
+      </div>
+    </form>
+
+    <div id="feedConfirmPanel" class="confirm-panel">
+      <div class="checkmark">✓</div>
+      <h2>Feed submitted for review</h2>
+      <div class="sub">We'll check that it parses cleanly before turning it on. Once approved, your events start appearing automatically &mdash; you won't hear from us again unless something needs attention. Here's exactly what was submitted:</div>
+      <pre id="feedJsonPreview"></pre>
+      <div class="submit-row" style="margin-top:18px;">
+        <button type="button" class="btn btn-secondary" onclick="submitAnotherFeed()">Submit another feed</button>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -295,17 +386,40 @@ const CATS = [
   {key:"fest",      label:"Festivals",         color:"#E63946"},
   {key:"food",      label:"Food & Markets",    color:"#588157"},
   {key:"film",      label:"Film",              color:"#6D4C41"},
-  {key:"nightlife", label:"Nightlife & Club",  color:"#7209B7"}
+  {key:"nightlife", label:"Nightlife & Club",  color:"#7209B7"},
+  {key:"sports",    label:"Sports",            color:"#B8860B"}
 ];
 
-const grid = document.getElementById('catGrid');
-CATS.forEach((c,i)=>{
-  const label = document.createElement('label');
-  label.className = 'cat-option';
-  label.innerHTML = `<input type="radio" name="category" value="${c.key}" ${i===0?'':''}>
-    <span class="sw" style="background:${c.color}"></span>${c.label}`;
-  grid.appendChild(label);
-});
+function buildCatGrid(gridId, radioName){
+  const grid = document.getElementById(gridId);
+  CATS.forEach((c,i)=>{
+    const label = document.createElement('label');
+    label.className = 'cat-option';
+    label.innerHTML = `<input type="radio" name="${radioName}" value="${c.key}" ${i===0?'':''}>
+      <span class="sw" style="background:${c.color}"></span>${c.label}`;
+    grid.appendChild(label);
+  });
+}
+buildCatGrid('catGrid', 'category');
+buildCatGrid('feedCatGrid', 'defaultCategory');
+
+// ---- Mode tabs (one event vs. feed) ----
+const oneEventTab = document.getElementById('oneEventTab');
+const feedTab = document.getElementById('feedTab');
+const oneEventPane = document.getElementById('oneEventPane');
+const feedPane = document.getElementById('feedPane');
+
+function activateTab(which){
+  const isFeed = which === 'feed';
+  oneEventTab.classList.toggle('active', !isFeed);
+  feedTab.classList.toggle('active', isFeed);
+  oneEventTab.setAttribute('aria-selected', String(!isFeed));
+  feedTab.setAttribute('aria-selected', String(isFeed));
+  oneEventPane.style.display = isFeed ? 'none' : 'block';
+  feedPane.style.display = isFeed ? 'block' : 'none';
+}
+oneEventTab.onclick = ()=> activateTab('one');
+feedTab.onclick = ()=> activateTab('feed');
 
 const form = document.getElementById('eventForm');
 const errorBox = document.getElementById('formError');
@@ -388,6 +502,84 @@ function submitAnother(){
   form.style.display = 'block';
   document.getElementById('confirmPanel').classList.remove('show');
   errorBox.classList.remove('show');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---- Feed submission form ----
+const feedForm = document.getElementById('feedForm');
+const feedErrorBox = document.getElementById('feedFormError');
+
+feedForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = new FormData(feedForm);
+  const defaultCategory = data.get('defaultCategory');
+  const required = ['feedUrl','feedVenueName','feedContactEmail'];
+  const missing = required.some(f => !data.get(f)) || !defaultCategory;
+
+  if(missing){
+    feedErrorBox.innerHTML = 'Please fill in all required fields marked with <span class="req">*</span>.';
+    feedErrorBox.classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  feedErrorBox.classList.remove('show');
+
+  const catLabel = CATS.find(c=>c.key===defaultCategory)?.label || defaultCategory;
+  const payload = {
+    feedUrl: data.get('feedUrl'),
+    feedFormat: 'ics', // only format offered in the UI today — see api/cron-feeds.js's v1 scope note
+    defaultCategory,
+    venueName: data.get('feedVenueName'),
+    website: data.get('feedWebsite') || null,
+    notes: data.get('feedNotes') || null,
+    contactEmail: data.get('feedContactEmail'),
+  };
+
+  const submitBtn = feedForm.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+
+  try {
+    const resp = await fetch('/api/submit-feed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(result.error || 'Submission failed — please try again.');
+    }
+
+    const preview = { ...payload, defaultCategory: catLabel, status: 'pending_review' };
+    document.getElementById('feedJsonPreview').textContent = JSON.stringify(preview, null, 2);
+    feedForm.style.display = 'none';
+    document.getElementById('feedConfirmPanel').classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch (err) {
+    const msg = err && err.message || '';
+    if (msg.includes('not configured')) {
+      feedErrorBox.textContent = 'This form isn\'t connected to a database yet — the site owner still needs to finish setup.';
+    } else if (msg.includes('already been submitted')) {
+      feedErrorBox.textContent = msg;
+    } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+      feedErrorBox.textContent = 'Couldn\'t reach the server. Check your connection and try again.';
+    } else {
+      feedErrorBox.textContent = msg || 'Something went wrong submitting your feed. Please try again in a moment.';
+    }
+    feedErrorBox.classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit feed for review';
+  }
+});
+
+function submitAnotherFeed(){
+  feedForm.reset();
+  feedForm.style.display = 'block';
+  document.getElementById('feedConfirmPanel').classList.remove('show');
+  feedErrorBox.classList.remove('show');
   window.scrollTo({top:0, behavior:'smooth'});
 }
 </script>

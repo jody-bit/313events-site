@@ -35,10 +35,17 @@
     {
       "path": "/api/cron-dossin",
       "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron-feeds",
+      "schedule": "0 22 * * *"
     }
   ],
   "functions": {
     "api/cron-metrotimes.js": {
+      "maxDuration": 60
+    },
+    "api/cron-feeds.js": {
       "maxDuration": 60
     }
   }

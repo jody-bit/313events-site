@@ -239,7 +239,7 @@
       <tr><td class="src-name">Painted Lady Lounge (Hamtramck)</td><td class="src-note">Squarespace default AI-bot block. Also moot — the "calendar" link on the page is a malformed/broken URL, not a working embed.</td></tr>
       <tr><td class="src-name">Eastern Market Brewing Co.</td><td class="src-note">Squarespace default AI-bot block.</td></tr>
       <tr><td class="src-name">Senate Theater</td><td class="src-note">Squarespace robots.txt explicitly names and disallows ClaudeBot and anthropic-ai. Their public calendar page also has no usable feed (Squarespace's own iCal/JSON export formats are separately blocked) — respected and skipped either way.</td></tr>
-      <tr><td class="src-name">Scarab Club</td><td class="src-note">Different case from the rest of this table: this one actually has a working per-event ICS feed on its calendar page, which would otherwise be a great source. But its robots.txt carries an explicit, deliberate blocklist of ~150 named bots/scrapers (not just the generic Squarespace AI-bot default). Given that clear signal from a small artist-run nonprofit, the right move is asking them directly for the feed rather than pulling it — not yet done, needs a human to send that email.</td></tr>
+      <tr><td class="src-name">Scarab Club</td><td class="src-note">Different case from the rest of this table: this one actually has a working per-event ICS feed on its calendar page, which would otherwise be a great source. But its robots.txt carries an explicit, deliberate blocklist of ~150 named bots/scrapers (not just the generic Squarespace AI-bot default). Given that clear signal from a small artist-run nonprofit, the right move is asking them directly for the feed rather than pulling it. As of 2026-08-26 there's now a real place to send them: <a href="submit.html">submit.html</a>'s "Submit your event feed" option, reviewed once and then polled automatically — see <code>FEED_SUBMISSIONS.md</code>. Still needs a human to actually reach out; the form existing doesn't send the email by itself.</td></tr>
       <tr><td class="src-name">Mato (ma.to)</td><td class="src-note">A consumer events-discovery app/site (NYC-based, also covers Detroit and a handful of other metros) — its <code>/events/detroit/today</code> page genuinely has ~19 real, current, broad-interest Detroit listings, which would otherwise be a solid source. robots.txt explicitly disallows ClaudeBot, GPTBot, Google-Extended, CCBot, and several other named AI crawlers (generic <code>*</code> allowed, and it even sets a <code>Content-Signal: ai-train=no, use=reference, search=yes</code> header spelling out the distinction) — respected and skipped, same as the rest of this table.</td></tr>
     </table>
   </section>
@@ -271,7 +271,7 @@
       </tr>
       <tr>
         <td class="src-name">thedetroitilove.com</td>
-        <td class="src-note">robots.txt blocks automated fetching — skipped out of respect for that, same as the AI-bot blocks above.</td>
+        <td class="src-note">robots.txt blocks automated fetching — skipped out of respect for that, same as the AI-bot blocks above. If this venue publishes its own calendar feed (Google Calendar, Eventbrite, an .ics export, etc.), they can register it directly at <a href="submit.html">submit.html</a>'s "Submit your event feed" option instead of us pulling from the blocked page — see <code>FEED_SUBMISSIONS.md</code>.</td>
         <td class="src-note">General gap</td>
       </tr>
     </table>
