@@ -5206,7 +5206,17 @@ function updateMobileTriggers(){
 // the URL still updates live and reloading/sharing it reproduces the view.
 function syncURL(){
   const params = new URLSearchParams();
-  params.set('date', toISO(current.getFullYear(), current.getMonth(), 1));
+  // The restore logic below only ever reads the month/year back out of this
+  // param (see dateParam handling), so which exact day gets encoded here is
+  // purely cosmetic — it doesn't change what a reloaded/shared URL shows.
+  // Still, showing an arbitrary "01" when the real default is today reads as
+  // wrong at a glance. Prefer, in order: the actually-selected day, else
+  // today's real date (while browsing the current month, which is the
+  // homepage default), else just the 1st of whatever other month is showing.
+  const todayIso = getTodayISO();
+  const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
+  const dateForUrl = selectedDate || (isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1));
+  params.set('date', dateForUrl);
   if(mode !== 'month') params.set('view', mode);
   if(whenMode) params.set('when', whenMode);
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
