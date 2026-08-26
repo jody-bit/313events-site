@@ -68,6 +68,12 @@
   .status-badge.rejected{background:var(--bad-ink);color:var(--bad);}
   .btn-pause{background:var(--panel-hover);color:var(--ink);border:1px solid var(--line);}
   .btn-resume{background:var(--ok);color:var(--ok-ink);}
+  .btn-hide{background:var(--bad);color:var(--bad-ink);}
+  .btn-hide.confirming{background:var(--ink);color:var(--bg);}
+  .btn-restore{background:var(--ok);color:var(--ok-ink);}
+  .search-row{display:flex;gap:8px;margin-bottom:16px;}
+  .search-row input{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--panel-alt);color:var(--ink);}
+  .search-row button{background:var(--ink);color:var(--bg);border:none;border-radius:8px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -100,6 +106,22 @@
       <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form. Approving one does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. Each feed's own events then land pre-approved, since the feed itself was the thing reviewed.</div>
       <div id="feedList"></div>
     </section>
+
+    <section class="block">
+      <h2>Live events</h2>
+      <div class="sub">Search anything currently live on the site — from any source, including automated feeds — and remove it if it doesn't fit the brand. Removing is reversible from "Recently hidden" below.</div>
+      <div class="search-row">
+        <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
+        <button onclick="searchLiveEvents()">Search</button>
+      </div>
+      <div id="liveResults"></div>
+    </section>
+
+    <section class="block">
+      <h2>Recently hidden</h2>
+      <div class="sub">The last 20 events removed via Reject or Remove from site. Restore brings one back to the live site.</div>
+      <div id="hiddenList"></div>
+    </section>
   </div>
 </main>
 
@@ -112,11 +134,14 @@ function unlock() {
   loadAll();
 }
 
-// Loads both queues under one admin secret entry / one Refresh button —
-// they're logically separate lists (single events vs. ongoing feeds) but
-// there's no reason to make the moderator unlock or refresh them twice.
+// Loads both queues (plus the recently-hidden undo list) under one admin
+// secret entry / one Refresh button — they're logically separate lists
+// (single events vs. ongoing feeds vs. hidden-event history) but there's no
+// reason to make the moderator unlock or refresh them all separately. Live
+// event search is NOT auto-loaded here — it only runs when the moderator
+// actually types a search, since it's a lookup, not a fixed-size queue.
 async function loadAll() {
-  await Promise.all([loadQueue(), loadFeedQueue()]);
+  await Promise.all([loadQueue(), loadFeedQueue(), loadHidden()]);
 }
 
 async function loadQueue() {
@@ -263,6 +288,131 @@ async function reviewFeed(id, action) {
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || 'Action failed');
     await loadFeedQueue(); // re-render so the card moves to its new status group
+  } catch (err) {
+    card.style.opacity = '1';
+    alert(err.message);
+  }
+}
+
+// ---- Live events (search + takedown) ----
+async function searchLiveEvents() {
+  const q = document.getElementById('liveSearchInput').value.trim();
+  const results = document.getElementById('liveResults');
+  if (!q) { results.innerHTML = ''; return; }
+  results.innerHTML = '<div class="empty">Searching…</div>';
+  try {
+    const resp = await fetch('/api/admin-events?search=' + encodeURIComponent(q), {
+      headers: { 'x-admin-secret': SECRET },
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Search failed');
+    renderLiveResults(data.events || []);
+  } catch (err) {
+    results.innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderLiveResults(events) {
+  const results = document.getElementById('liveResults');
+  if (!events.length) {
+    results.innerHTML = '<div class="empty">No live events match that search.</div>';
+    return;
+  }
+  results.innerHTML = events.map(e => `
+    <div class="card" id="live-card-${e.id}">
+      <h3>${escapeHtml(e.title)}</h3>
+      <div class="meta">
+        <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
+        Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b> · Source: <b>${escapeHtml(e.source || 'Manual')}</b>
+      </div>
+      <div class="actions">
+        <button class="btn-hide" id="hide-btn-${e.id}" onclick="hideEvent('${e.id}')">Remove from site</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Two-step confirm, inline (no native confirm() dialogs): first click arms
+// it and relabels the button; a second click within 4 seconds actually
+// hides the event. Any other action outside that window just quietly
+// resets — nothing happens on a single accidental click.
+const _pendingHides = {};
+async function hideEvent(id) {
+  const btn = document.getElementById('hide-btn-' + id);
+  if (!_pendingHides[id]) {
+    _pendingHides[id] = setTimeout(() => {
+      delete _pendingHides[id];
+      if (btn) { btn.textContent = 'Remove from site'; btn.classList.remove('confirming'); }
+    }, 4000);
+    btn.textContent = 'Click again to confirm';
+    btn.classList.add('confirming');
+    return;
+  }
+  clearTimeout(_pendingHides[id]);
+  delete _pendingHides[id];
+
+  const card = document.getElementById('live-card-' + id);
+  card.style.opacity = '0.5';
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id, action: 'hide' }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    card.remove();
+    await loadHidden(); // it now shows up in the undo list
+  } catch (err) {
+    card.style.opacity = '1';
+    alert(err.message);
+  }
+}
+
+// ---- Recently hidden (undo) ----
+async function loadHidden() {
+  try {
+    const resp = await fetch('/api/admin-events?hidden=1', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Failed to load hidden events');
+    renderHiddenList(data.events || []);
+  } catch (err) {
+    document.getElementById('hiddenList').innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderHiddenList(events) {
+  const list = document.getElementById('hiddenList');
+  if (!events.length) {
+    list.innerHTML = '<div class="empty">Nothing hidden recently.</div>';
+    return;
+  }
+  list.innerHTML = events.map(e => `
+    <div class="card" id="hidden-card-${e.id}">
+      <h3>${escapeHtml(e.title)}</h3>
+      <div class="meta">
+        <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
+        Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b> · Source: <b>${escapeHtml(e.source || 'Manual')}</b>
+      </div>
+      <div class="actions">
+        <button class="btn-restore" onclick="restoreEvent('${e.id}')">Restore</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function restoreEvent(id) {
+  const card = document.getElementById('hidden-card-' + id);
+  card.style.opacity = '0.5';
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id, action: 'restore' }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    card.remove();
   } catch (err) {
     card.style.opacity = '1';
     alert(err.message);

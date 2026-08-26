@@ -3,8 +3,19 @@
 // secret is sent as a header from admin.html after the moderator types it
 // into a prompt; it is never hard-coded into any HTML/JS file.
 //
-// GET  /api/admin-events           -> list events with status=pending_review
-// POST /api/admin-events           -> { id, action: "approve"|"reject" }
+// GET  /api/admin-events                    -> list events with status=pending_review
+// GET  /api/admin-events?search=<text>      -> search live (status=approved) events by
+//                                               title, for the "Live events" takedown tool
+// GET  /api/admin-events?hidden=1           -> most recently hidden/rejected events (for undo)
+// POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore" }
+//   approve/reject: pending_review -> approved/rejected (the original submission queue)
+//   hide:           approved -> rejected (takes an already-live event off the site)
+//   restore:        rejected -> approved (undo a hide, or reverse a reject)
+// "hide" and "reject" both land on the same event_status enum value
+// ('rejected') — there's no separate DB status for "was live, then pulled"
+// vs. "a submission we declined." Adding one would need a Postgres enum
+// migration; reusing 'rejected' avoids that and is fine since both mean the
+// same thing to the public site (not shown), and "restore" un-does either.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -38,10 +49,24 @@ module.exports = async (req, res) => {
 
   if (req.method === "GET") {
     try {
-      const resp = await fetch(
-        `${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc`,
-        { headers: sbHeaders }
-      );
+      const search = typeof req.query?.search === "string" ? req.query.search.trim() : "";
+      const hidden = req.query?.hidden === "1";
+
+      let url;
+      if (search) {
+        // Live-event takedown search: only ever searches already-approved
+        // (publicly visible) events — never pending_review or already-hidden
+        // ones, so this can't be used to "approve via search" by accident.
+        const encoded = encodeURIComponent(`%${search}%`);
+        url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&title=ilike.${encoded}&select=*&order=start_date.asc&limit=50`;
+      } else if (hidden) {
+        // Recently hidden/rejected, most recent first — the undo list.
+        url = `${SUPABASE_URL}/rest/v1/events?status=eq.rejected&select=*&order=updated_at.desc&limit=20`;
+      } else {
+        url = `${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc`;
+      }
+
+      const resp = await fetch(url, { headers: sbHeaders });
       const rows = await resp.json();
       res.status(resp.ok ? 200 : 502).json(resp.ok ? { events: rows } : { error: rows });
     } catch (err) {
@@ -58,12 +83,12 @@ module.exports = async (req, res) => {
     body = body || {};
     const { id, action } = body;
 
-    if (!id || !["approve", "reject"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject' }" });
+    if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore' }" });
       return;
     }
 
-    const newStatus = action === "approve" ? "approved" : "rejected";
+    const newStatus = (action === "approve" || action === "restore") ? "approved" : "rejected";
     try {
       const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
         method: "PATCH",
