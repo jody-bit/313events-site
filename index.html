@@ -3760,65 +3760,60 @@
   #dayPanel h2{margin:0 0 12px;font-size:17px;display:flex;justify-content:space-between;align-items:center;}
   #dayPanel h2 button{border:none;background:none;font-size:14px;color:var(--ink-soft);cursor:pointer;}
 
-  /* Event rows, restyled as individual cards per the mockup's row
-     treatment — larger touch targets and clearer visual hierarchy than the
-     previous dense border-separated list. No bookmark/save icon (stays
-     rejected — see FINAL IMPLEMENTATION DIRECTIVE). Shared by both the
-     List view (renderList()) and the month view's day panel
-     (showDayPanel()), so both get this treatment for free. */
+  /* Event rows — matches the approved mockup's list treatment directly:
+     oversized chartreuse time, plain right-aligned category/price column
+     (no pill chips here — those stay in the filter bar/calendar dots),
+     hairline dividers rather than boxed cards. No bookmark/save icon
+     (stays rejected — see FINAL IMPLEMENTATION DIRECTIVE). One real
+     deviation from the mock: no street address line under the venue name
+     — venue_name_raw/venue_city_raw is all the data model actually has,
+     no per-venue street address, so nothing is fabricated to fill that
+     line. Shared by both the List view (renderList()) and the month
+     view's day panel (showDayPanel()), so both get this treatment. */
   .evt-row{
-    display:flex;gap:14px;padding:16px 16px 16px 20px;align-items:flex-start;
-    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
-    margin-bottom:10px;position:relative;
+    display:grid;grid-template-columns:98px 1fr auto;gap:18px;align-items:start;
+    padding:16px 0;border-top:1px solid var(--line-soft);
   }
-  .evt-row:last-child{margin-bottom:0;}
-  .evt-row:hover{background:var(--panel-hover);border-color:var(--ink-dim);}
-  /* Category-color accent bar — a quick-scan cue at a glance, using the
-     same per-category --c-* palette already established for chips/dots/
-     pills. Set per-row via the inline --evt-accent custom property. */
-  .evt-row::before{
-    content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-    border-radius:var(--radius) 0 0 var(--radius);background:var(--evt-accent, var(--line));
-  }
-  /* Time promoted from muted-secondary to primary ink — the design doc's
-     interface priority order is DATE → TIME → EVENT → PLACE → ..., so time
-     leading the row in full-contrast ink (not chartreuse — that's reserved
-     for state, not decoration) is a hierarchy correction, not new styling
-     for its own sake. Boxed as its own small badge for a bigger, clearer
-     touch target; :empty so a time-less event doesn't render an empty box. */
+  .evt-row:first-of-type{border-top:none;}
+  /* Chartreuse + oversized, per the mock — a deliberate reversal of this
+     project's earlier "accent is state-only" rule, made because Jody asked
+     directly to match the mock's row treatment. Plain text rather than a
+     split number/AM-PM (the mock's single "5:00 PM"): real event times
+     here are often ranges ("11:00 AM–3:00 PM") or non-numeric ("Evening",
+     "Varies"), which a stylized split can't safely parse. */
   .evt-time{
-    font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);font-weight:700;
-    background:var(--panel);border:1px solid var(--line);border-radius:6px;
-    padding:7px 10px;text-align:center;flex:0 0 auto;white-space:nowrap;
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:16.5px;line-height:1.3;color:var(--accent);padding-top:1px;
   }
   .evt-time:empty{display:none;}
-  .evt-main{flex:1;min-width:0;}
-  .evt-title{font-size:17px;font-weight:800;margin-bottom:5px;line-height:1.25;}
-  .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:8px;align-items:center;row-gap:6px;}
-  .tag{
-    display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
-    padding:3px 8px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
-  }
-  .tag.free{background:#3fbf6a;}
-  .tag.price{background:var(--panel-hover);color:var(--ink);}
+  .evt-main{min-width:0;}
+  .evt-title{font-size:18px;font-weight:800;margin-bottom:4px;line-height:1.25;}
+  .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
   .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  /* A real button, not an inline text link — bigger touch target, matching
-     the "larger touch targets" ask along with the boxed time above. */
   .evt-link{
-    display:inline-flex;align-items:center;gap:6px;margin-top:12px;
-    font-size:13px;font-weight:700;color:var(--on-accent);background:var(--accent);
-    padding:9px 16px;border-radius:var(--radius);text-decoration:none;
+    display:inline-flex;align-items:center;gap:5px;margin-top:9px;
+    font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;
   }
-  .evt-link:hover{filter:brightness(1.08);}
+  .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
+  /* Right column: category (its own site-wide color, kept from the
+     chip/dot system — the mock's plain gray text was tied to its own
+     placeholder taxonomy, not this project's locked, color-coded one) and
+     price/free stacked underneath, right-aligned. */
+  .evt-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;text-align:right;}
+  .evt-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .evt-price{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
+  .evt-price.free{color:#3fbf6a;}
 
-  @media (max-width:560px){
-    /* Time badge moves above the title instead of sitting beside it — on a
-       narrow column, side-by-side left the title column too cramped and
-       shrank the very touch targets this pass is meant to grow. */
-    .evt-row{flex-direction:column;gap:8px;padding:14px 14px 14px 18px;}
-    .evt-time{align-self:flex-start;}
+  @media (max-width:640px){
+    /* Time + category/price move above the title instead of framing it on
+       either side — a three-column grid gets cramped fast on a narrow
+       phone width. */
+    .evt-row{grid-template-columns:1fr;gap:4px;padding:14px 0;}
+    .evt-time{order:1;}
+    .evt-side{order:2;flex-direction:row;align-items:baseline;gap:8px;text-align:left;}
+    .evt-main{order:3;}
   }
 
   /* List view */
@@ -4969,10 +4964,13 @@ function fmtPrice(n){
   const str = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
   return `$${str}+`;
 }
+// Plain right-aligned label (not a colored pill) — matches the mockup's
+// clean category/price column. Category keeps its own site-wide color
+// (see CATS), price/free stays plain ink so it doesn't visually compete.
 function priceTag(e){
-  if(e.free) return '<span class="tag free">Free</span>';
+  if(e.free) return '<div class="evt-price free">Free</div>';
   if(typeof e.priceFrom === 'number' && isFinite(e.priceFrom) && e.priceFrom > 0){
-    return `<span class="tag price">${escapeHtml(fmtPrice(e.priceFrom))}</span>`;
+    return `<div class="evt-price">${escapeHtml(fmtPrice(e.priceFrom))}</div>`;
   }
   return '';
 }
@@ -4988,18 +4986,17 @@ function showDayPanel(iso){
   } else {
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
-        <div class="evt-row" style="--evt-accent:${CATS[e.cat].color}">
+        <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-title">${escapeHtml(e.title)}</div>
-            <div class="evt-meta">
-              <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-              ${priceTag(e)}
-              <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
-              ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
-            </div>
+            <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${e.source?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+          </div>
+          <div class="evt-side">
+            <div class="evt-cat" style="color:${CATS[e.cat].color}">${CATS[e.cat].label}</div>
+            ${priceTag(e)}
           </div>
         </div>
       `).join('');
@@ -5029,18 +5026,17 @@ function renderList(dateList){
     const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
       events.map(e=>`
-        <div class="evt-row" style="--evt-accent:${CATS[e.cat].color}">
+        <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
             <div class="evt-title">${escapeHtml(e.title)}</div>
-            <div class="evt-meta">
-              <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-              ${priceTag(e)}
-              <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
-              ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
-            </div>
+            <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${e.source?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+          </div>
+          <div class="evt-side">
+            <div class="evt-cat" style="color:${CATS[e.cat].color}">${CATS[e.cat].label}</div>
+            ${priceTag(e)}
           </div>
         </div>
       `).join('') + `</div>`;
