@@ -33,7 +33,11 @@ const CENTER_LON = -83.0458;
 const RADIUS_MILES = 75;
 
 // Ticketmaster segment/genre -> this calendar's category keys.
-// Sports is intentionally excluded — out of scope for an arts/culture/nightlife calendar.
+// Sports was excluded from day one (out of scope for an arts/culture/
+// nightlife calendar) — decision reversed 2026-08-26, now included as its
+// own 'sports' category. Requires migration_007_sports_category.sql to have
+// run first (adds 'sports' to the event_category enum) or every Sports row
+// in a cron run will fail the insert.
 function mapCategory(classifications) {
   const c = (classifications && classifications[0]) || {};
   const segment = (c.segment && c.segment.name) || "";
@@ -52,7 +56,8 @@ function mapCategory(classifications) {
   }
   if (segment === "Film") return "film";
   if (segment === "Miscellaneous" && /family/i.test(genre)) return "family";
-  return null; // includes Sports, and anything else unmapped -> excluded
+  if (segment === "Sports") return "sports";
+  return null; // anything else unmapped (still) -> excluded
 }
 
 function formatTime(dateObj) {
