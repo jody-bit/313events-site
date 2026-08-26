@@ -3761,7 +3761,7 @@
 
   <header class="site">
     <div>
-      <h1><img src="/assets/wordmark.svg" alt="313.events" height="34" style="display:block;"></h1>
+      <h1><a href="/" aria-label="313.events — back to today" style="display:block;text-decoration:none;"><img src="/assets/wordmark.svg" alt="313.events" height="34" style="display:block;"></a></h1>
       <p class="tagline">THE CITY IS ON.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
@@ -4276,12 +4276,17 @@ let selectedDate = null;
 // null means no location filter is active at all.
 let originLocation = null;
 // radiusMiles: 5/10/25/50 (number) or 'all' — labeled "Detroit Orbit" in the
-// UI, this is the widest tier (no additional distance cutoff applied beyond
-// the site's own ~75-mile coverage area, per SERVICE_AREA.md) and the
-// default. A separate literal "75 mi" option used to exist alongside it,
-// which was a redundant way of saying the same boundary twice; removed
-// 2026-08-26 in favor of "Detroit Orbit" being the one 75-mile-equivalent
-// option. Only meaningful while originLocation is set.
+// UI, this is the widest tier and the default. It is NOT narrowed by
+// whatever origin the user searched (that's what makes it the widest tier),
+// but matchesFilters() still hard-caps it at 75 miles from Detroit's own
+// city center specifically — the fixed definition of the Detroit Orbit
+// boundary, per SERVICE_AREA.md — so results can never drift outside the
+// site's real coverage area regardless of the chosen origin. A separate
+// literal "75 mi" option (measured from the user's origin, like the other
+// numeric tiers) used to exist alongside it, which was a redundant way of
+// saying almost the same boundary twice; removed 2026-08-26 in favor of
+// "Detroit Orbit" being the one Detroit-anchored 75-mile option. Only
+// meaningful while originLocation is set.
 let radiusMiles = null;
 
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
@@ -4367,7 +4372,7 @@ function matchesFilters(e, dateOverride){
       }
     }
   }
-  if(originLocation && radiusMiles !== null && radiusMiles !== 'all'){
+  if(originLocation && radiusMiles !== null){
     const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
     // An event whose city isn't in the reference table has no resolvable
     // distance from the chosen origin — excluded rather than guessed at,
@@ -4375,7 +4380,17 @@ function matchesFilters(e, dateOverride){
     // TONIGHT above (this is an active, opt-in radius filter, not a safety
     // net like NOW).
     if(!loc) return false;
-    if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles) return false;
+    if(radiusMiles === 'all'){
+      // Detroit Orbit: not narrowed by the chosen origin location itself
+      // (that's what makes it the widest tier), but still hard-capped at 75
+      // miles from Detroit's own city center — the fixed definition of the
+      // Detroit Orbit boundary — so results never drift outside the site's
+      // real coverage area no matter where the user searched from.
+      const detroit = CITY_LOOKUP.get('detroit');
+      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
+    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
+      return false;
+    }
   }
   return true;
 }
