@@ -3375,7 +3375,14 @@
     --on-accent:#0A0A0A;   /* required dark text/icon color on chartreuse fills */
     --today:rgba(215,255,0,.09);
     --today-ring:#D7FF00;
-    --radius:10px;
+    /* Structural containers use a hard edge (0) rather than a soft rounded
+       corner — a direct, deliberately conservative move toward the Detroit
+       Signal concept board's rectilinear, editorial-broadcast language.
+       Scoped to this single token: every var(--radius) consumer is a
+       structural chrome container (.notice, .controls, .cal, #dayPanel,
+       #listView), not an interactive pill/chip/badge, so this doesn't touch
+       any control's tap-target shape or affordance. */
+    --radius:0px;
 
     --c-music:#4361EE;
     --c-theatre:#F3722C;
@@ -3410,46 +3417,74 @@
   header.site{
     display:flex;justify-content:space-between;align-items:flex-end;
     gap:16px;flex-wrap:wrap;
-    padding-bottom:10px;margin-bottom:12px;border-bottom:2px solid var(--ink);
+    padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
   }
   header.site h1{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
     font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
   }
-  header.site p{margin:0;color:var(--ink-soft);font-size:14px;max-width:560px;}
-  .badge-proto{
-    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
-    text-transform:uppercase;background:var(--ink);color:var(--bg);padding:4px 9px;border-radius:999px;
-    margin-bottom:8px;
+  /* The locked tagline ("THE CITY IS ON.") gets its own oversized display
+     treatment — same approved condensed grotesk already used for the
+     wordmark/headings, no new font. This is a typographic-hierarchy change
+     only: the words are unchanged (previously run into the description
+     sentence in lowercase), just presented at the scale/weight the tagline
+     is meant to carry as a locked brand asset, per the Detroit Signal
+     concept board's typographic energy. */
+  header.site .tagline{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:clamp(30px,4.6vw,50px);line-height:.94;letter-spacing:-0.01em;
+    text-transform:uppercase;margin:2px 0 8px;color:var(--ink);
   }
 
-  .notice{
-    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);
-    padding:9px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:12px;
+  /* ---- Hero: photography + real TODAY data (replaces the removed
+     prototype "What this is" notice — brand + live current-day activity,
+     not explanatory copy). ---- */
+  .hero{
+    display:grid;grid-template-columns:1.5fr 1fr;gap:0;
+    background:var(--panel);border:1px solid var(--line);margin-bottom:10px;
+    min-height:280px;
   }
-  .notice b{color:var(--ink);}
-  .notice a{color:var(--accent);}
+  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
+  .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
+  .hero-today{padding:16px 18px;display:flex;flex-direction:column;min-width:0;}
+  .hero-eyebrow{
+    font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--accent);
+    text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;
+  }
+  .hero-date{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
+    text-transform:uppercase;letter-spacing:-.005em;margin-bottom:2px;
+  }
+  .hero-count{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .hero-rows{flex:1;overflow:hidden;}
+  .hero-rows .evt-row:first-of-type{border-top:none;}
+  .hero-empty{font-size:13px;color:var(--ink-soft);padding:8px 0;}
+  .hero-viewall{margin-top:8px;border:none;background:none;padding:0;font-family:inherit;cursor:pointer;}
+  @media (max-width:820px){
+    .hero{grid-template-columns:1fr;min-height:0;}
+    .hero-photo{aspect-ratio:16/9;}
+  }
 
   .controls{
     display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:12px 14px;margin-bottom:12px;
+    padding:12px 14px;margin-bottom:10px;
   }
   .nav-group{display:flex;align-items:center;gap:10px;}
   .nav-group button.navbtn{
-    border:1px solid var(--line);background:var(--panel-alt);border-radius:8px;width:34px;height:34px;
+    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);width:34px;height:34px;
     font-size:16px;cursor:pointer;color:var(--ink);
   }
   .nav-group button.navbtn:hover:not(:disabled){background:var(--panel-hover);}
   .nav-group button.navbtn:disabled{opacity:.35;cursor:not-allowed;}
   #monthLabel{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;min-width:170px;text-align:center;}
-  .view-toggle{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .view-toggle{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
   .view-toggle button{
     border:none;background:var(--panel-alt);padding:7px 14px;font-size:13px;cursor:pointer;color:var(--ink-soft);
   }
   .view-toggle button.active{background:var(--accent);color:var(--on-accent);font-weight:700;}
   #search{
-    border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13.5px;min-width:200px;
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;
     background:var(--panel-alt);color:var(--ink);
   }
   #search::placeholder{color:var(--ink-dim);}
@@ -3459,11 +3494,11 @@
      the brief is explicit that Signal stays scarce and controls need
      conventional usability, not brand theatrics. */
   .discovery-bar{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
   }
   .when-btn{
     border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
-    border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
   }
   .when-btn:hover{background:var(--panel-hover);}
   .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
@@ -3473,12 +3508,12 @@
      text, a narrowed category set), each independently removable, per the
      brief's "filter state must never be invisible" requirement. */
   .active-filters{
-    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;
   }
   .af-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
   .af-chip{
     display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
-    border-radius:999px;padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
+    border-radius:var(--radius);padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
   }
   .af-chip button{
     border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
@@ -3486,15 +3521,15 @@
   }
   .af-chip button:hover{background:var(--ink);color:var(--bg);}
   .af-clear{
-    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:999px;padding:5px 12px;
+    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
     font-size:12.5px;font-weight:600;cursor:pointer;
   }
 
   .filters{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
   }
   .chip{
-    border:1px solid var(--line);background:var(--panel-alt);border-radius:999px;padding:6px 12px;
+    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
     font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
     user-select:none;
   }
@@ -3507,13 +3542,13 @@
   /* Location + radius bar — Phase 1 Chunk 3. Same restrained styling as the
      discovery bar (ink-on-active, chartreuse reserved for state, not chrome). */
   .location-bar{
-    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;
   }
   .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
   .loc-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
   .loc-combo{position:relative;min-width:200px;}
   #locInput{
-    border:1px solid var(--line);border-radius:8px;padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
     background:var(--panel-alt);color:var(--ink);
   }
   #locInput::placeholder{color:var(--ink-dim);}
@@ -3525,7 +3560,7 @@
   .loc-clear-btn:hover{background:var(--ink);color:var(--bg);}
   .loc-suggestions{
     position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:280px;overflow-y:auto;
-    background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);
   }
   .loc-item{
     padding:8px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
@@ -3537,7 +3572,7 @@
   .loc-item-type{color:var(--ink-dim);font-size:10.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
   .loc-empty{padding:10px 12px;font-size:12.5px;color:var(--ink-dim);}
   .loc-geo-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:8px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:var(--radius);
     padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
   }
   .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);}
@@ -3545,7 +3580,7 @@
   .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .radius-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-right:2px;}
   .radius-chip{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:999px;
+    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:var(--radius);
     padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
   }
   .radius-chip:hover{background:var(--panel-hover);}
@@ -3606,15 +3641,21 @@
     display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;
   }
   .evt-row:first-of-type{border-top:none;}
-  .evt-time{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-soft);min-width:96px;font-weight:600;padding-top:2px;}
+  /* Time promoted from muted-secondary to primary ink — the design doc's
+     interface priority order is DATE → TIME → EVENT → PLACE → ..., so time
+     leading the row in full-contrast ink (not chartreuse — that's reserved
+     for state, not decoration) is a hierarchy correction, not new styling
+     for its own sake. */
+  .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;font-weight:700;padding-top:2px;}
   .evt-main{flex:1;}
-  .evt-title{font-size:14.5px;font-weight:700;margin-bottom:2px;}
+  .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
   .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .tag{
     display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
     padding:2px 7px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
   }
   .tag.free{background:#3fbf6a;}
+  .tag.price{background:var(--panel-hover);color:var(--ink);}
   .note{font-size:12px;color:#d1b34a;margin-top:3px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
   .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
@@ -3630,7 +3671,7 @@
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:8px;
+    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:var(--radius);
     padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
   }
   .es-action:hover{background:var(--panel-hover);}
@@ -3653,6 +3694,18 @@
      as a fixed bottom sheet instead, opened by one of three trigger buttons. */
   .mobile-triggers{display:none;}
   .sheet-backdrop{display:none;}
+  /* Bug fix (found while screenshotting this pass, not part of the visual
+     refinement itself): the mobile sheet-header row (repeats "When"/"Where"
+     as a label next to a ✕ close button) only had display:none scoped
+     *inside* the max-width:720px media query, same pattern as
+     .mobile-triggers/.sheet-backdrop above but missing the base rule those
+     two have — so on desktop it fell back to the browser default (visible),
+     showing a redundant "When ✕ / Where ✕" row above the bars that already
+     have their own "When"/"Where" labels. Adding the base rule here matches
+     the existing pattern exactly; the media query below still reveals it
+     correctly once .sheet-active is present (mobile-only, since nothing on
+     desktop ever adds that class). */
+  .sheet-header{display:none;}
 
   @media (max-width:720px){
     .mobile-triggers{
@@ -3660,7 +3713,7 @@
     }
     .mobile-trigger{
       flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);color:var(--ink);
-      border-radius:8px;padding:9px 8px;font-size:12.5px;font-weight:700;cursor:pointer;
+      border-radius:var(--radius);padding:9px 8px;font-size:12.5px;font-weight:700;cursor:pointer;
       display:flex;flex-direction:column;align-items:center;gap:2px;
     }
     .mobile-trigger .mt-sub{
@@ -3709,17 +3762,23 @@
   <header class="site">
     <div>
       <h1><img src="/assets/wordmark.svg" alt="313.events" height="34" style="display:block;"></h1>
-      <p>The city is on. A comprehensive, filterable month calendar for arts, culture, and nightlife events within 75 miles of Detroit.</p>
+      <p class="tagline">THE CITY IS ON.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-      <a href="submit.html" style="display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;white-space:nowrap;">+ Submit an Event</a>
+      <a href="submit.html" style="display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:var(--radius);white-space:nowrap;">+ Submit an Event</a>
       <a href="sources.html" style="font-size:12.5px;color:var(--ink-soft);text-decoration:none;">Data sources &amp; connection status &rarr;</a>
     </div>
   </header>
 
-  <div class="notice">
-    <b>What this is:</b> a live calendar backed by a real database — hand-curated events plus automated feeds from Ticketmaster, WDET, and several venues' own sites, updated daily. Each listing shows its source so you can verify before you go. See the <a href="sources.html">full data sources &amp; connection status page</a> for exactly what's automated, what's manual, and what we tried and couldn't connect to.
-  </div>
+  <section class="hero" id="heroSection">
+    <div class="hero-photo">
+      <picture>
+        <source media="(max-width:720px)" srcset="/assets/photography/hero/313-events-homepage-hero-D-mobile.webp">
+        <img src="/assets/photography/hero/313-events-homepage-hero-D.webp" width="1536" height="1024" alt="A crowd throwing up rock horns as a silhouetted performer faces them under stage lights" loading="eager" fetchpriority="high">
+      </picture>
+    </div>
+    <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
+  </section>
 
   <div class="mobile-triggers" id="mobileTriggers">
     <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
@@ -3762,7 +3821,7 @@
       <button type="button" class="radius-chip" data-radius="25">25 mi</button>
       <button type="button" class="radius-chip" data-radius="50">50 mi</button>
       <button type="button" class="radius-chip" data-radius="75">75 mi</button>
-      <button type="button" class="radius-chip active" data-radius="all">All</button>
+      <button type="button" class="radius-chip active" data-radius="all">Detroit Orbit</button>
     </div>
   </div>
 
@@ -3795,13 +3854,7 @@
   <div id="dayPanel"></div>
 
   <footer class="site">
-    <b>Sources pulled for this prototype:</b> dia.org, mocadetroit.org, easternmarket.org, livenation.com (Fox Theatre), 313presents.com, detroitoperahouse.org, detroithistorical.org, detroitjazzfest.org, cliffbells.com, 19hz.info, paxahau.com, Dice (El Club listings), and Resident Advisor &mdash; pulled via RA's per-week Detroit listing pages (<code>ra.co/events/us/detroit/week/&hellip;</code>) for every week from Aug 19 through Oct 31, 2026, not just RA's "Popular" homepage picks (which show only ~10 of RA's 160+ regional listings). Always confirm dates/times/venues with the source before making plans, especially "Venue TBA" listings, which many underground/warehouse parties intentionally keep private until day-of.
-    <br><br>
-    <b>Service area: within 75 miles of Detroit.</b> This calendar's coverage area was expanded from the City of Detroit (plus the Hamtramck and Highland Park enclaves) to a 75-mile radius, matching the same regional radius used by the area's music census work. That radius reaches Ann Arbor and Jackson to the west, Flint and Port Huron to the north, Toledo, OH and Monroe to the south, and across the river into Windsor, Chatham, and Sarnia, Ontario to the east — see <code>SERVICE_AREA.md</code> for the full computed boundary and which nearby cities fall just outside it (Lansing, Saginaw, Kalamazoo, London ON).
-    <br><br>
-    <b>Reconsidered under the new radius:</b> Necto (Ann Arbor), 215 West (Ferndale), Pine Knob, Meadow Brook, and Michigan Lottery Amphitheatre (Sterling Heights/Clarkston/Rochester) were previously excluded specifically for being outside city-limits Detroit — all five are well within 75 miles and are candidates to bring back in during the next data pass. One listing, "The House of Tarot" at "MAD Arts," stays dropped either way since its venue location couldn't be confirmed at all.
-    <br><br>
-    <b>Not included:</b> Facebook Events and Partiful have no public, searchable listing pages to pull from automatically (Facebook requires an authenticated app + review process; Partiful events are private invite links by design). Eventbrite and Edmtrain's event search still render via JavaScript in ways this prototype's fetch tool couldn't reliably scrape past their navigation shell &mdash; a production build would use their official APIs/RSS feeds instead of page-scraping. thedetroitilove.com blocks automated fetching via robots.txt and was skipped out of respect for that.
+    <p>Always confirm dates, times, and venues with the source before making plans — especially "Venue TBA" listings. <a href="sources.html">Data sources &amp; connection status</a></p>
   </footer>
 
 </div>
@@ -4257,14 +4310,21 @@ function getWeekendDates(){
   });
 }
 
-function matchesFilters(e){
+// dateOverride: used by the homepage's TODAY strip (renderHeroToday), which
+// always shows today's real events regardless of whatever WHEN shortcut is
+// (or isn't) active — a fixed lens, independent of the global whenMode
+// narrowing below. Every other call site omits it and behaves exactly as
+// before.
+function matchesFilters(e, dateOverride){
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
   if(query){
     const q = query.toLowerCase();
     if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
   }
-  if(whenMode){
+  if(dateOverride){
+    if(e.date !== dateOverride) return false;
+  } else if(whenMode){
     const todayIso = getTodayISO();
     if(whenMode === 'weekend'){
       if(!cachedWeekendDates.includes(e.date)) return false;
@@ -4413,7 +4473,7 @@ function renderActiveFilters(){
     }});
   }
   if(originLocation){
-    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'All' : `${radiusMiles} mi`;
+    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
     chips.push({label: `${radiusLabel} · ${originLocation.name}`, onRemove: ()=> clearLocation()});
   }
 
@@ -4576,6 +4636,25 @@ function safeUrl(url) {
   }
 }
 
+// Real pricing only — never fabricated or inferred (approved: existing
+// price_from data may now be surfaced). FREE keeps rendering exactly as
+// before, from the database's own is_free flag. A price only renders when
+// the event isn't free AND price_from is a genuine positive number —
+// null/undefined/zero-with-not-free is treated as unavailable or
+// ambiguous and simply omitted, never shown as "$0".
+function fmtPrice(n){
+  const rounded = Math.round(n*100)/100;
+  const str = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+  return `$${str}+`;
+}
+function priceTag(e){
+  if(e.free) return '<span class="tag free">Free</span>';
+  if(typeof e.priceFrom === 'number' && isFinite(e.priceFrom) && e.priceFrom > 0){
+    return `<span class="tag price">${escapeHtml(fmtPrice(e.priceFrom))}</span>`;
+  }
+  return '';
+}
+
 function showDayPanel(iso){
   const panel = document.getElementById('dayPanel');
   const events = (byDate[iso]||[]).filter(matchesFilters);
@@ -4593,7 +4672,7 @@ function showDayPanel(iso){
             <div class="evt-title">${escapeHtml(e.title)}</div>
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-              ${e.free?'<span class="tag free">Free</span>':''}
+              ${priceTag(e)}
               <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
               ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
             </div>
@@ -4634,7 +4713,7 @@ function renderList(dateList){
             <div class="evt-title">${escapeHtml(e.title)}</div>
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-              ${e.free?'<span class="tag free">Free</span>':''}
+              ${priceTag(e)}
               <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
               ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
             </div>
@@ -4645,6 +4724,51 @@ function renderList(dateList){
       `).join('') + `</div>`;
   }
   el.innerHTML = any ? html : `<div class="empty-state">${emptyStateMessage(dateList ? null : fmtMonth(current))}</div>`;
+}
+
+// The homepage's real, always-on TODAY view (approved: homepage defaults to
+// TODAY). Deliberately independent of whenMode/selectedDate — it's a fixed
+// lens onto today's real data, not the WHEN shortcut's global narrowing
+// (which still scopes the whole calendar+list when a user actually clicks
+// "Today", unchanged). Respects whatever category/free/search/location
+// filters are active, same as every other view, via matchesFilters'
+// dateOverride param. Same evt-row markup/fields as the day panel and list
+// view — this is a second, prominent place to see the same real data, not a
+// new data shape.
+function renderHeroToday(){
+  const el = document.getElementById('heroToday');
+  if(!el) return;
+  const todayIso = getTodayISO();
+  const events = (byDate[todayIso]||[]).filter(e=>matchesFilters(e, todayIso));
+  const dateLabel = new Date(todayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const showMax = 4;
+
+  let rowsHtml;
+  if(!events.length){
+    rowsHtml = `<div class="hero-empty">${emptyStateMessage()}</div>`;
+  } else {
+    rowsHtml = events.slice(0,showMax).map(e=>`
+      <div class="evt-row">
+        <div class="evt-time">${escapeHtml(e.time)||''}</div>
+        <div class="evt-main">
+          <div class="evt-title">${escapeHtml(e.title)}</div>
+          <div class="evt-meta">
+            <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+            ${priceTag(e)}
+            <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  el.innerHTML = `
+    <div class="hero-eyebrow">Today</div>
+    <div class="hero-date">${dateLabel}</div>
+    ${events.length ? `<div class="hero-count">${events.length} event${events.length===1?'':'s'} today${activeCats.size < Object.keys(CATS).length || freeOnly || query ? ' matching your filters' : ''}</div>` : ''}
+    <div class="hero-rows">${rowsHtml}</div>
+    ${events.length > showMax ? `<button type="button" class="evt-link hero-viewall" onclick="selectedDate='${todayIso}';document.getElementById('monthViewBtn').click();showDayPanel('${todayIso}');">View all ${events.length} events today</button>` : ''}
+  `;
 }
 
 // Shared empty-state copy for both the list and day-panel views. Per the
@@ -4666,6 +4790,7 @@ function render(){
   updateRadiusButtons();
   updateMobileTriggers();
   renderActiveFilters();
+  renderHeroToday();
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
@@ -4999,7 +5124,7 @@ function updateMobileTriggers(){
 
   const whereSub = document.getElementById('whereTriggerSub');
   if(originLocation){
-    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'All' : `${radiusMiles} mi`;
+    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
     whereSub.textContent = `${radiusLabel} · ${originLocation.name}`;
   } else {
     whereSub.textContent = 'Everywhere';
@@ -5188,11 +5313,6 @@ async function loadSupabaseEvents() {
 
     buildFilterBar();
     render();
-
-    const badge = document.createElement('div');
-    badge.style.cssText = 'font-size:11.5px;color:#5b6270;margin-top:6px;';
-    badge.textContent = `Live data — ${EVENTS.length} approved events`;
-    document.querySelector('.notice').appendChild(badge);
   } catch (err) {
     // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
   }

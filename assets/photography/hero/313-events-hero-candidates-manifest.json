@@ -64,5 +64,29 @@
     "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration",
     "photographer": "Jody Tyree",
     "copyright": "Jody Tyree"
+  },
+  {
+    "candidate": "D",
+    "source": "image.png (supplied directly via chat upload; original device filename not provided)",
+    "desktop": {
+      "file": "313-events-homepage-hero-D.webp",
+      "size": [
+        1536,
+        1024
+      ]
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-D-mobile.webp",
+      "size": [
+        900,
+        1200
+      ],
+      "crop": "Center-cropped to a 3:4 portrait region from the 1536x1024 source, then resized to 900x1200 to match the existing mobile hero dimensions."
+    },
+    "treatment": "Supplied directly by Jody Tyree as a finished black-and-white photograph; no additional color, contrast, or tint adjustment applied for this pass. Performer is intentionally non-identifiable (silhouetted against stage backlight) — no performer-identity metadata is recorded, and none should be added.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "usage": "313.events homepage hero (in production use as of 2026-08-26)",
+    "status": "active — currently the live homepage hero image"
   }
 ]
