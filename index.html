@@ -3947,7 +3947,7 @@ function renderMonth(){
     events.slice(0,showMax).forEach(e=>{
       const pill = document.createElement('div');
       pill.className = 'pill';
-      pill.innerHTML = `<span class="sw" style="background:${CATS[e.cat].color}"></span><span class="t">${e.title}</span>`;
+      pill.innerHTML = `<span class="sw" style="background:${CATS[e.cat].color}"></span><span class="t">${escapeHtml(e.title)}</span>`;
       cell.appendChild(pill);
     });
     if(events.length > showMax){
@@ -3959,6 +3959,31 @@ function renderMonth(){
 
     cell.onclick = ()=>{ selectedDate = iso; showDayPanel(iso); };
     grid.appendChild(cell);
+  }
+}
+
+// Escapes text before it's interpolated into innerHTML. Needed because some
+// event fields (title, venue, city, note, source, ticketUrl) can originate
+// from venue/organizer submissions via submit.html — untrusted input that
+// reaches this page after admin approval. Without this, a submitted title
+// like "<img src=x onerror=alert(1)>" would execute in every visitor's
+// browser once approved. Same pattern already used in admin.html.
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+// Only allow http(s) links into href attributes. Blocks javascript: URLs and
+// similar schemes that would otherwise let a submitted "ticket link" execute
+// code on click instead of just navigating.
+function safeUrl(url) {
+  if (!url) return '';
+  try {
+    const u = new URL(url, window.location.href);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+  } catch {
+    return '';
   }
 }
 
@@ -3974,17 +3999,17 @@ function showDayPanel(iso){
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
         <div class="evt-row">
-          <div class="evt-time">${e.time||''}</div>
+          <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${e.title}</div>
+            <div class="evt-title">${escapeHtml(e.title)}</div>
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
               ${e.free?'<span class="tag free">Free</span>':''}
-              <span>${e.venue}${e.city?` — ${e.city}`:''}</span>
-              ${e.source?`<span class="src">via ${e.source}</span>`:''}
+              <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+              ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
             </div>
-            ${e.note?`<div class="note">${e.note}</div>`:''}
-            ${e.ticketUrl?`<a class="evt-link" href="${e.ticketUrl}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
         </div>
       `).join('');
@@ -4009,17 +4034,17 @@ function renderList(){
     html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
       events.map(e=>`
         <div class="evt-row">
-          <div class="evt-time">${e.time||''}</div>
+          <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${e.title}</div>
+            <div class="evt-title">${escapeHtml(e.title)}</div>
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
               ${e.free?'<span class="tag free">Free</span>':''}
-              <span>${e.venue}${e.city?` — ${e.city}`:''}</span>
-              ${e.source?`<span class="src">via ${e.source}</span>`:''}
+              <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+              ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
             </div>
-            ${e.note?`<div class="note">${e.note}</div>`:''}
-            ${e.ticketUrl?`<a class="evt-link" href="${e.ticketUrl}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
         </div>
       `).join('') + `</div>`;
