@@ -1,0 +1,24 @@
+-- Migration 009b: add 'community' to event_category
+--
+-- Context: importing two organizer-compiled .ics feeds (2026-08-26)
+-- surfaced one event — "Black Leaders Detroit Presents: Speak For Yourself"
+-- (a community discussion/networking dinner) — that didn't cleanly fit any
+-- of the 11 previously-locked categories. Decision 2026-08-26: add
+-- "Community" as a real 12th category rather than force-fitting it
+-- elsewhere. This updates the taxonomy lock from the earlier "PRESERVE
+-- EXISTING EVENT TYPE TAXONOMY" amendment — that amendment locked the list
+-- as of its date, not forever; this is a deliberate, explicit expansion of
+-- it, not a violation.
+--
+-- RUN THIS STATEMENT BY ITSELF, as its own separate paste/run in the SQL
+-- Editor, after migration_009a has already succeeded — see the note in
+-- that file for why these are split into two files instead of one:
+-- Postgres will not run ALTER TYPE ... ADD VALUE inside a transaction
+-- block alongside other statements, and most SQL editors (including
+-- Supabase's) submit a multi-statement paste as one batch/transaction,
+-- so combining this with anything else can make the whole batch fail
+-- silently rather than partially succeed.
+--
+-- IF NOT EXISTS makes this safe to re-run regardless.
+
+alter type event_category add value if not exists 'community';
