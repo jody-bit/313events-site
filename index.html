@@ -3534,8 +3534,12 @@
     user-select:none;
   }
   .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  .chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;}
-  .chip.active .dot{outline:1.5px solid var(--bg);}
+  /* Event Type chips (incl. "ALL TYPES") use Signal Chartreuse for the
+     selected state, and ONLY that — no per-category hue, no category-
+     specific branding (2026-08 taxonomy-lock amendment). freeChip below
+     keeps its own distinct green, since "Free only" isn't an Event Type. */
+  .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
+  .chip.active .dot{outline:1.5px solid var(--on-accent);}
   .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
   .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
 
@@ -3678,6 +3682,19 @@
 
   footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
+  footer.site p{margin:0 0 6px;}
+  footer.site p:last-child{margin-bottom:0;}
+  /* Footer + data-transparency amendment: a quiet, editorial link out to the
+     full methodology/status page, styled as a small uppercase label rather
+     than an inline sentence — the homepage stays slick, sources.html stays
+     the transparent one. */
+  footer.site .footer-sources a{
+    text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:700;
+    color:var(--ink-dim);text-decoration:none;
+  }
+  footer.site .footer-sources a:hover{color:var(--ink-soft);text-decoration:underline;}
+  footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
+  footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
 
   @media (max-width:720px){
     .day-cell{min-height:78px;}
@@ -3686,73 +3703,87 @@
     #monthLabel{min-width:0;}
   }
 
-  /* ---- Mobile WHEN/WHERE/FILTER pattern — Phase 1 Chunk 4 ----
-     An architectural swap, not a squeeze: above 720px the discovery bar,
-     location bar, and filter bar render inline exactly as chunks 1-3 built
-     them (these two rules are no-ops on desktop). Below it, those same three
-     bars — same DOM, same IDs, same JS — detach from normal flow and render
-     as a fixed bottom sheet instead, opened by one of three trigger buttons. */
-  .mobile-triggers{display:none;}
+  /* ---- Unified discovery row (Homepage Redesign pass) ----
+     WHEN / WHERE / CATEGORY now render as one compact row of boxed
+     triggers at every breakpoint — each shows its current value and, when
+     clicked, expands the same underlying bar (same DOM/IDs/JS state that
+     powered the old always-open three-row layout) rather than replacing it
+     with new controls. Below 720px that expansion is the original fixed
+     bottom sheet (unchanged, proven mobile pattern). At 721px+ it expands
+     inline, directly under the trigger row, styled like a dropdown panel —
+     no new filtering logic anywhere, purely a presentation change. */
+  .discovery-shell{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 14px;margin-bottom:10px;
+  }
+  .mobile-triggers{display:flex;gap:8px;}
+  .mobile-trigger{
+    flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);
+    border-radius:var(--radius);padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  }
+  .mobile-trigger:hover{background:var(--panel-hover);}
+  .mobile-trigger .mt-label{
+    font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-dim);text-transform:uppercase;
+  }
+  .mobile-trigger .mt-sub{
+    font-size:13px;font-weight:700;color:var(--ink-soft);max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-dim);} /* ▾ */
+  .mobile-trigger.has-value{border-color:var(--accent);}
+  .mobile-trigger.has-value .mt-sub{color:var(--ink);}
+  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);border-color:var(--ink);}
+
   .sheet-backdrop{display:none;}
-  /* Bug fix (found while screenshotting this pass, not part of the visual
-     refinement itself): the mobile sheet-header row (repeats "When"/"Where"
-     as a label next to a ✕ close button) only had display:none scoped
-     *inside* the max-width:720px media query, same pattern as
-     .mobile-triggers/.sheet-backdrop above but missing the base rule those
-     two have — so on desktop it fell back to the browser default (visible),
-     showing a redundant "When ✕ / Where ✕" row above the bars that already
-     have their own "When"/"Where" labels. Adding the base rule here matches
-     the existing pattern exactly; the media query below still reveals it
-     correctly once .sheet-active is present (mobile-only, since nothing on
-     desktop ever adds that class). */
+
+  /* Panels are hidden until their trigger opens them, at every breakpoint —
+     the always-open three-row layout they used to be is gone for good. */
+  .discovery-bar, .location-bar, .filters{display:none;}
   .sheet-header{display:none;}
+  .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
+    display:flex;flex-direction:column;flex-wrap:nowrap;
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-top:10px;
+  }
+  .discovery-bar.sheet-active .sheet-header,
+  .location-bar.sheet-active .sheet-header,
+  .filters.sheet-active .sheet-header{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+  }
+  /* Once inside an open panel, the discovery/location/filter bars go back to
+     being a normal wrapping row of chips — same look they always had. */
+  .discovery-bar.sheet-active, .filters.sheet-active{flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .location-bar.sheet-active{flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center;}
+  .sheet-close{
+    border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
+    width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
+  }
+  .sheet-close:hover{background:var(--ink);color:var(--bg);}
 
   @media (max-width:720px){
-    .mobile-triggers{
-      display:flex;gap:8px;margin-bottom:12px;
-    }
-    .mobile-trigger{
-      flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);color:var(--ink);
-      border-radius:var(--radius);padding:9px 8px;font-size:12.5px;font-weight:700;cursor:pointer;
-      display:flex;flex-direction:column;align-items:center;gap:2px;
-    }
-    .mobile-trigger .mt-sub{
-      font-size:10.5px;font-weight:600;color:var(--ink-soft);max-width:100%;
-      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    }
-    .mobile-trigger.has-value{border-color:var(--accent);}
-    .mobile-trigger.has-value .mt-sub{color:var(--ink);}
+    .discovery-shell{padding:10px 10px 0;background:none;border:none;}
+    .mobile-trigger{align-items:center;text-align:center;}
+    .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
 
     .sheet-backdrop{
       display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
     }
     .sheet-backdrop.show{display:block;}
 
-    .discovery-bar, .location-bar, .filters{display:none;}
     .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
-      display:flex;flex-direction:column;flex-wrap:nowrap;
+      flex-direction:column;flex-wrap:nowrap;
       position:fixed;left:0;right:0;bottom:0;z-index:40;
-      background:var(--panel);border:1px solid var(--line);border-bottom:none;
+      border-bottom:none;
       border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
       padding:16px 16px calc(16px + env(safe-area-inset-bottom));
-      max-height:75vh;overflow-y:auto;margin:0 0 12px;
+      max-height:75vh;overflow-y:auto;margin:10px 0 0;
     }
     /* Radius/location controls stack full-width inside the sheet rather
        than trying to fit the desktop's side-by-side row. */
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
-    .sheet-header{display:none;}
-    .discovery-bar.sheet-active .sheet-header,
-    .location-bar.sheet-active .sheet-header,
-    .filters.sheet-active .sheet-header{
-      display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;
-      font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
-    }
-    .sheet-close{
-      border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
-      width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
-    }
-    .sheet-close:hover{background:var(--ink);color:var(--bg);}
   }
 </style>
 </head>
@@ -3766,7 +3797,6 @@
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
       <a href="submit.html" style="display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:var(--radius);white-space:nowrap;">+ Submit an Event</a>
-      <a href="sources.html" style="font-size:12.5px;color:var(--ink-soft);text-decoration:none;">Data sources &amp; connection status &rarr;</a>
     </div>
   </header>
 
@@ -3780,48 +3810,52 @@
     <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
   </section>
 
-  <div class="mobile-triggers" id="mobileTriggers">
-    <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
-      <span>When</span><span class="mt-sub" id="whenTriggerSub">Anytime</span>
-    </button>
-    <button type="button" class="mobile-trigger" id="whereTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="locationBar">
-      <span>Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
-    </button>
-    <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-      <span>Filter</span><span class="mt-sub" id="filterTriggerSub">All categories</span>
-    </button>
-  </div>
-  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <div class="discovery-shell" id="discoveryShell">
+    <div class="mobile-triggers" id="mobileTriggers">
+      <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
+        <span class="mt-label">When</span><span class="mt-sub" id="whenTriggerSub">Anytime</span>
+      </button>
+      <button type="button" class="mobile-trigger" id="whereTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="locationBar">
+        <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
+      </button>
+      <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
+        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+      </button>
+    </div>
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
 
-  <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
-    <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
-    <button class="when-btn" data-when="now">Now</button>
-    <button class="when-btn" data-when="today">Today</button>
-    <button class="when-btn" data-when="tonight">Tonight</button>
-    <button class="when-btn" data-when="weekend">This Weekend</button>
-    <button class="when-btn" data-when="date">Date</button>
-  </div>
+    <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
+      <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
+      <button class="when-btn" data-when="now">Now</button>
+      <button class="when-btn" data-when="today">Today</button>
+      <button class="when-btn" data-when="tonight">Tonight</button>
+      <button class="when-btn" data-when="weekend">This Weekend</button>
+      <button class="when-btn" data-when="date">Date</button>
+    </div>
 
-  <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
-    <div class="sheet-header"><span>Where</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
-    <div class="loc-control">
-      <span class="loc-label">Where</span>
-      <div class="loc-combo">
-        <input type="text" id="locInput" placeholder="Search city, neighborhood&hellip;" autocomplete="off"
-               role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="locSuggestions" aria-label="Search for a city or neighborhood">
-        <button type="button" id="locClearBtn" class="loc-clear-btn" style="display:none;" aria-label="Clear location">&#10005;</button>
-        <div class="loc-suggestions" id="locSuggestions" role="listbox" style="display:none;"></div>
+    <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
+      <div class="sheet-header"><span>Where</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
+      <div class="loc-control">
+        <span class="loc-label">Where</span>
+        <div class="loc-combo">
+          <input type="text" id="locInput" placeholder="Search city, neighborhood&hellip;" autocomplete="off"
+                 role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="locSuggestions" aria-label="Search for a city or neighborhood">
+          <button type="button" id="locClearBtn" class="loc-clear-btn" style="display:none;" aria-label="Clear location">&#10005;</button>
+          <div class="loc-suggestions" id="locSuggestions" role="listbox" style="display:none;"></div>
+        </div>
+        <button type="button" id="useMyLocationBtn" class="loc-geo-btn">Use my location</button>
       </div>
-      <button type="button" id="useMyLocationBtn" class="loc-geo-btn">Use my location</button>
+      <div class="radius-group" id="radiusGroup" style="display:none;" role="group" aria-label="Distance from selected location">
+        <span class="radius-label">Within</span>
+        <button type="button" class="radius-chip" data-radius="5">5 mi</button>
+        <button type="button" class="radius-chip" data-radius="10">10 mi</button>
+        <button type="button" class="radius-chip" data-radius="25">25 mi</button>
+        <button type="button" class="radius-chip" data-radius="50">50 mi</button>
+        <button type="button" class="radius-chip active" data-radius="all">Detroit Orbit</button>
+      </div>
     </div>
-    <div class="radius-group" id="radiusGroup" style="display:none;" role="group" aria-label="Distance from selected location">
-      <span class="radius-label">Within</span>
-      <button type="button" class="radius-chip" data-radius="5">5 mi</button>
-      <button type="button" class="radius-chip" data-radius="10">10 mi</button>
-      <button type="button" class="radius-chip" data-radius="25">25 mi</button>
-      <button type="button" class="radius-chip" data-radius="50">50 mi</button>
-      <button type="button" class="radius-chip active" data-radius="all">Detroit Orbit</button>
-    </div>
+
+    <div class="filters" id="filterBar"></div>
   </div>
 
   <div class="controls">
@@ -3837,8 +3871,6 @@
     </div>
   </div>
 
-  <div class="filters" id="filterBar"></div>
-
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
   <div class="cal" id="calWrap">
@@ -3853,7 +3885,9 @@
   <div id="dayPanel"></div>
 
   <footer class="site">
-    <p>Always confirm dates, times, and venues with the source before making plans — especially "Venue TBA" listings. <a href="sources.html">Data sources &amp; connection status</a></p>
+    <p>Always confirm dates, times, and venues before making plans.</p>
+    <p class="footer-sources"><a href="sources.html">Data sources</a></p>
+    <p class="footer-credit">313.events is a product of <a href="https://sentientproductions.com" target="_blank" rel="noopener noreferrer">Sentient Productions</a>.</p>
   </footer>
 
 </div>
@@ -4426,6 +4460,10 @@ function buildFilterBar(){
   allChip.className = 'chip' + (allActive ? ' active' : '');
   allChip.id = 'allTypesChip';
   allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
+  // Taxonomy-lock amendment (2026-08-26 clarification): the preserved list is
+  // "All types" (sentence case) plus the 11 categories below, unchanged and
+  // unreordered. The amendment is explicit that it locks the taxonomy only,
+  // not presentation — so this text can still be restyled, just not renamed.
   allChip.textContent = 'All types';
   allChip.onclick = ()=>{
     activeCats = new Set(Object.keys(CATS));
@@ -4443,7 +4481,14 @@ function buildFilterBar(){
     chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
     chip.dataset.cat = key;
     chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
-    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    // No per-category color swatch here — the 2026-08 taxonomy-lock amendment
+    // is explicit: "Do not assign unique colors to individual Event Types. Do
+    // not create category-specific branding." The active/selected state is
+    // Signal Chartreuse only (see .chip.active), same as every other chip.
+    // c.color is still used for the small category tag on individual event
+    // cards elsewhere (list/day views) — that's a separate surface not
+    // covered by this chip, flagged back to Jody rather than changed here.
+    chip.textContent = c.label;
     chip.onclick = ()=>{
       if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
       else { activeCats.add(key); chip.classList.add('active'); }
@@ -5129,6 +5174,16 @@ const SHEETS = {
   filter: {barId: 'filterBar',    triggerId: 'filterTriggerBtn'},
 };
 
+// Below 720px the bar opens as a fixed bottom sheet with a dimming backdrop
+// and the page locked from scrolling behind it. At 720px and up the same
+// bar instead expands inline right under the trigger row (see .sheet-active
+// in the non-mobile branch of the CSS) — there's no overlay to dim and
+// nothing behind it needs to stop scrolling, so those two behaviors are
+// gated on viewport width rather than applied unconditionally.
+function isMobileViewport(){
+  return window.matchMedia('(max-width:720px)').matches;
+}
+
 function openSheet(name){
   if(openSheetName === name){ closeSheet(); return; }
   Object.entries(SHEETS).forEach(([key, {barId, triggerId}])=>{
@@ -5136,8 +5191,10 @@ function openSheet(name){
     document.getElementById(barId).classList.toggle('sheet-active', active);
     document.getElementById(triggerId).setAttribute('aria-expanded', String(active));
   });
-  document.getElementById('sheetBackdrop').classList.add('show');
-  document.body.style.overflow = 'hidden';
+  if(isMobileViewport()){
+    document.getElementById('sheetBackdrop').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
   openSheetName = name;
   // Move focus into the sheet for keyboard/screen-reader users rather than
   // leaving it stranded on a now-background trigger button.
@@ -5170,6 +5227,25 @@ document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && openSheetNa
 document.addEventListener('click', (e)=>{
   if(e.target.closest && e.target.closest('.sheet-close')) closeSheet();
 });
+// Desktop/tablet only: clicking anywhere outside the discovery-shell (the
+// trigger row + whichever bar is open) closes the open panel, same job the
+// backdrop does on mobile. Below 720px this is a no-op — the backdrop
+// already owns outside-click there, and the shell's own click (e.g.
+// switching to a different trigger) is handled by openSheet() itself.
+document.addEventListener('click', (e)=>{
+  if(!openSheetName || isMobileViewport()) return;
+  const shell = document.getElementById('discoveryShell');
+  if(shell && !shell.contains(e.target)) closeSheet();
+});
+// Guards against a stuck-open sheet if the window is resized/rotated across
+// the 720px breakpoint while one is open (e.g. a tablet rotation) — the
+// mobile fixed-sheet and desktop inline-panel styles aren't meant to mix.
+let _wasMobileViewport = isMobileViewport();
+window.addEventListener('resize', ()=>{
+  const nowMobile = isMobileViewport();
+  if(nowMobile !== _wasMobileViewport && openSheetName) closeSheet();
+  _wasMobileViewport = nowMobile;
+});
 
 // Keeps each trigger's subtitle in sync with actual filter state, so
 // collapsing WHEN/WHERE/FILTER into three buttons never hides what's
@@ -5194,7 +5270,7 @@ function updateMobileTriggers(){
   const parts = [];
   if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
   if(freeOnly) parts.push('Free');
-  filterSub.textContent = parts.length ? parts.join(' · ') : 'All categories';
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
