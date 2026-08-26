@@ -3397,12 +3397,12 @@
     color:var(--ink);
     line-height:1.4;
   }
-  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:14px 20px 48px;}
 
   header.site{
     display:flex;justify-content:space-between;align-items:flex-end;
     gap:16px;flex-wrap:wrap;
-    padding-bottom:16px;margin-bottom:18px;border-bottom:2px solid var(--ink);
+    padding-bottom:10px;margin-bottom:12px;border-bottom:2px solid var(--ink);
   }
   header.site h1{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
@@ -3417,7 +3417,7 @@
 
   .notice{
     background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);
-    padding:12px 16px;font-size:13.5px;color:var(--ink-soft);margin-bottom:20px;
+    padding:9px 14px;font-size:13px;color:var(--ink-soft);margin-bottom:12px;
   }
   .notice b{color:var(--ink);}
   .notice a{color:var(--accent);}
@@ -3425,7 +3425,7 @@
   .controls{
     display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px 16px;margin-bottom:16px;
+    padding:12px 14px;margin-bottom:12px;
   }
   .nav-group{display:flex;align-items:center;gap:10px;}
   .nav-group button.navbtn{
@@ -3447,7 +3447,7 @@
   #search::placeholder{color:var(--ink-dim);}
 
   .filters{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
   }
   .chip{
     border:1px solid var(--line);background:var(--panel-alt);border-radius:999px;padding:6px 12px;
@@ -3466,7 +3466,7 @@
   .cal-head div{padding:9px 0;text-align:center;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;}
   .day-cell{
-    min-height:112px;min-width:0;overflow:hidden;
+    min-height:122px;min-width:0;overflow:hidden;
     border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
     padding:6px 6px 8px;position:relative;cursor:pointer;background:var(--panel);
   }
@@ -3475,8 +3475,25 @@
   .day-cell.today{background:var(--today);box-shadow:inset 0 0 0 2px var(--today-ring);}
   .day-cell:hover{background:var(--panel-hover);}
   .day-cell.today:hover{background:var(--today);}
-  .daynum{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);}
+  .daynum{
+    font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);
+    display:flex;align-items:baseline;gap:6px;
+  }
   .day-cell.today .daynum{color:var(--accent);}
+  /* Past dates stay fully clickable/legible — only the day number itself
+     dims slightly as a temporal cue. Events, pills, and counts stay at full
+     opacity so nothing reads as "disabled". Doesn't apply to .today, which
+     has its own treatment, or otherMonth cells (already dimmed via panel-alt). */
+  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.55;}
+  .today-label{
+    font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.05em;
+    color:var(--accent);text-transform:uppercase;
+  }
+  .day-count{
+    font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);
+    margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;
+  }
+  .day-count .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
   .pill{
     font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:5px;padding:2px 5px;margin-bottom:3px;
     display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;
@@ -3527,7 +3544,7 @@
   @media (max-width:720px){
     .day-cell{min-height:78px;}
     .pill{display:none;}
-    .day-cell.hasEvents::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:2px;}
+    .more-link{display:none;} /* redundant once .day-count shows the total */
     #monthLabel{min-width:0;}
   }
 </style>
@@ -3934,14 +3951,30 @@ function renderMonth(){
     }
     iso = toISO(cellYear, cellMonth, dayNum);
     if(iso === todayISO) cell.classList.add('today');
+    // Subtle-only cue (see .day-cell.past CSS) — past dates stay fully
+    // navigable and their events stay fully visible, nothing is disabled.
+    if(iso < todayISO) cell.classList.add('past');
 
     const events = (byDate[iso]||[]).filter(matchesFilters);
     if(events.length) cell.classList.add('hasEvents');
 
     const num = document.createElement('div');
     num.className = 'daynum';
-    num.textContent = dayNum;
+    num.append(document.createTextNode(dayNum));
+    if(iso === todayISO){
+      const todayLabel = document.createElement('span');
+      todayLabel.className = 'today-label';
+      todayLabel.textContent = '● TODAY';
+      num.appendChild(todayLabel);
+    }
     cell.appendChild(num);
+
+    if(events.length){
+      const count = document.createElement('div');
+      count.className = 'day-count';
+      count.innerHTML = `<span class="dot"></span>${events.length} EVENT${events.length===1?'':'S'}`;
+      cell.appendChild(count);
+    }
 
     const showMax = 3;
     events.slice(0,showMax).forEach(e=>{
