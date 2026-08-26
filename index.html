@@ -3431,8 +3431,8 @@
      scoped override just restyles them to match the nav bar visually. */
   .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;}
   .site-nav .when-btn, .site-nav-link{
-    border:none;background:none;padding:0 0 3px;border-radius:0;
-    font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.03em;
+    border:none;background:none;padding:0 0 4px;border-radius:0;
+    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
     text-transform:uppercase;color:var(--ink-soft);text-decoration:none;cursor:pointer;
     border-bottom:2px solid transparent;white-space:nowrap;
   }
@@ -3441,6 +3441,15 @@
   /* Marks whichever nav link is the current page (e.g. Calendar, on
      calendar.html) — same visual treatment as an active time-range chip. */
   .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
+  /* Search icon (mockup parity) — opens/focuses the real search input that
+     already lives in .controls, rather than duplicating a second search
+     field up here. No new search logic, just a shortcut to the existing one. */
+  .nav-search-btn{
+    border:none;background:none;padding:0;color:var(--ink-soft);cursor:pointer;
+    display:flex;align-items:center;
+  }
+  .nav-search-btn:hover{color:var(--ink);}
+  .nav-search-btn svg{display:block;width:18px;height:18px;}
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
@@ -3455,10 +3464,8 @@
      sentence in lowercase), just presented at the scale/weight the tagline
      is meant to carry as a locked brand asset, per the Detroit Signal
      concept board's typographic energy. */
-  /* Small brand mark next to the wordmark, echoing the chartreuse accent —
-     purely decorative (aria-hidden), same idea as the dot after "IS ON."
-     in the hero headline below. */
-  .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;flex:0 0 auto;}
+  /* (No separate brand-dot here — the wordmark SVG itself already has a
+     built-in chartreuse dot; adding another produced a visible double-dot.) */
 
   /* ---- Hero: photography + real TODAY data (replaces the removed
      prototype "What this is" notice — brand + live current-day activity,
@@ -3474,9 +3481,12 @@
     font-size:clamp(34px,4.6vw,58px);line-height:.92;letter-spacing:-0.01em;
     text-transform:uppercase;color:var(--ink);
   }
+  /* A larger accent dot than a typographic period — sits low and to the
+     right of "IS ON.", echoing the mockup's oversized full-stop mark rather
+     than reading as inline punctuation. */
   .hl-dot{
-    display:inline-block;width:.4em;height:.4em;border-radius:50%;background:var(--accent);
-    margin-left:.16em;vertical-align:middle;
+    display:inline-block;width:.62em;height:.62em;border-radius:50%;background:var(--accent);
+    margin-left:.12em;vertical-align:-0.12em;
   }
   .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
@@ -3839,9 +3849,8 @@
 
   <header class="site">
     <div>
-      <h1><a href="/" aria-label="313.events — back to today" style="display:flex;align-items:center;gap:9px;text-decoration:none;">
+      <h1><a href="/" aria-label="313.events — back to today" style="display:flex;align-items:center;text-decoration:none;">
         <img src="/assets/wordmark.svg" alt="313.events" height="26" style="display:block;">
-        <span class="brand-dot" aria-hidden="true"></span>
       </a></h1>
     </div>
     <nav class="site-nav" aria-label="Time range and browse">
@@ -3858,8 +3867,11 @@
       <a class="site-nav-link" href="calendar.html">Calendar</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
     </nav>
-    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-      <a href="submit.html" style="display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-size:13px;font-weight:700;padding:9px 16px;border-radius:var(--radius);white-space:nowrap;">+ Submit an Event</a>
+    <div style="display:flex;align-items:center;gap:18px;">
+      <button type="button" class="nav-search-btn" id="navSearchBtn" aria-label="Search events and venues">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
+      </button>
+      <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
     </div>
   </header>
 
@@ -5074,6 +5086,15 @@ document.querySelectorAll('.when-btn').forEach(btn=>{
 document.getElementById('browseBtn').onclick = ()=>{
   clearAllFilters();
   if(mode !== 'list') document.getElementById('listViewBtn').onclick();
+};
+
+// Header search icon (mockup parity) — no separate search field up here;
+// this just scrolls to and focuses the one real search input already in
+// .controls, rather than duplicating search logic in a second place.
+document.getElementById('navSearchBtn').onclick = ()=>{
+  const input = document.getElementById('search');
+  input.scrollIntoView({behavior:'smooth', block:'center'});
+  input.focus();
 };
 
 // ---- Location + radius (Phase 1 Chunk 3) ----
