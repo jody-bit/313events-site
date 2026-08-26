@@ -3384,17 +3384,22 @@
        any control's tap-target shape or affordance. */
     --radius:0px;
 
-    --c-music:#4361EE;
-    --c-theatre:#F3722C;
-    --c-dance:#B5179E;
-    --c-visual:#0891B2;
-    --c-museum:#2A9D8F;
-    --c-family:#C1740A;
-    --c-fest:#E63946;
-    --c-food:#588157;
-    --c-film:#6D4C41;
-    --c-night:#7209B7;
-    --c-sports:#B8860B;
+    /* Event Type palette — "UV signal" set (2026-08-26): Jody asked to keep
+       per-category color for scanability, restyled as a cohesive family of
+       saturated blacklight-poster neons rather than the old grab-bag of
+       hues, so it reads as on-brand next to the chartreuse accent instead of
+       competing with it. Kept clear of chartreuse's own yellow-green band. */
+    --c-music:#5B3EFF;    /* electric indigo */
+    --c-theatre:#FF6A00;  /* neon orange */
+    --c-dance:#FF2ECC;    /* neon magenta */
+    --c-visual:#00E5FF;   /* electric cyan */
+    --c-museum:#00FFA6;   /* UV spring-teal */
+    --c-family:#FFC400;   /* neon amber */
+    --c-fest:#FF2D55;     /* neon crimson */
+    --c-food:#9D00FF;     /* UV violet */
+    --c-film:#2979FF;     /* electric blue */
+    --c-night:#E100FF;    /* UV fuchsia */
+    --c-sports:#FF3B3B;   /* neon scarlet */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -3534,10 +3539,11 @@
     user-select:none;
   }
   .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  /* Event Type chips (incl. "ALL TYPES") use Signal Chartreuse for the
-     selected state, and ONLY that — no per-category hue, no category-
-     specific branding (2026-08 taxonomy-lock amendment). freeChip below
-     keeps its own distinct green, since "Free only" isn't an Event Type. */
+  /* Selected/active state on every chip (Event Type dots included) is Signal
+     Chartreuse — the one color that always means "this is on," independent
+     of whichever per-category dot color the chip also carries. freeChip
+     below keeps its own distinct green for the same reason "Free only"
+     already had one before this pass. */
   .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
   .chip.active .dot{outline:1.5px solid var(--on-accent);}
   .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
@@ -4481,14 +4487,10 @@ function buildFilterBar(){
     chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
     chip.dataset.cat = key;
     chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
-    // No per-category color swatch here — the 2026-08 taxonomy-lock amendment
-    // is explicit: "Do not assign unique colors to individual Event Types. Do
-    // not create category-specific branding." The active/selected state is
-    // Signal Chartreuse only (see .chip.active), same as every other chip.
-    // c.color is still used for the small category tag on individual event
-    // cards elsewhere (list/day views) — that's a separate surface not
-    // covered by this chip, flagged back to Jody rather than changed here.
-    chip.textContent = c.label;
+    // Per-category dot restored per Jody's 2026-08-26 note: keep the color
+    // variety for scanability, just made cohesive (see the --c-* "UV signal"
+    // palette above). Active/selected state is still Signal Chartreuse only.
+    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
     chip.onclick = ()=>{
       if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
       else { activeCats.add(key); chip.classList.add('active'); }
