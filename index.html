@@ -4558,7 +4558,7 @@ function renderMonth(){
     // navigable and their events stay fully visible, nothing is disabled.
     if(iso < todayISO) cell.classList.add('past');
 
-    const events = (byDate[iso]||[]).filter(matchesFilters);
+    const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
     if(events.length) cell.classList.add('hasEvents');
 
     const num = document.createElement('div');
@@ -4657,7 +4657,7 @@ function priceTag(e){
 
 function showDayPanel(iso){
   const panel = document.getElementById('dayPanel');
-  const events = (byDate[iso]||[]).filter(matchesFilters);
+  const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
   const dateObj = new Date(iso+"T12:00:00");
   const label = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
@@ -4701,7 +4701,7 @@ function renderList(dateList){
   let html = '';
   let any = false;
   for(const iso of isos){
-    const events = (byDate[iso]||[]).filter(matchesFilters);
+    const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
     if(!events.length) continue;
     any = true;
     const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
