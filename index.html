@@ -3425,7 +3425,7 @@
     gap:16px;flex-wrap:wrap;
     padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
   }
-  /* Primary nav (Now/Tonight/This Weekend/Calendar/Browse) — plain uppercase
+  /* Primary nav (Now/Tomorrow/This Weekend/Calendar/Browse) — plain uppercase
      text links, not the bordered-chip look .when-btn has elsewhere on the
      page. The class is still .when-btn for the 3 time-range items (so they
      ride the existing activateWhen()/updateWhenButtons() wiring); this
@@ -3554,6 +3554,20 @@
   }
   .when-btn:hover{background:var(--panel-hover);}
   .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .when-date-picker{
+    display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);
+    color:var(--ink-soft);border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .when-date-picker.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .when-date-picker input[type="date"]{
+    border:none;background:none;color:inherit;font:inherit;cursor:pointer;padding:0;max-width:130px;
+  }
+  .when-date-picker input[type="date"]::-webkit-calendar-picker-indicator{
+    /* The site is dark-themed throughout with no light mode — the browser's
+       default calendar-icon glyph is black and invisible against the dark
+       panel background otherwise. */
+    filter:invert(1);cursor:pointer;
+  }
 
   /* Active-filter tray — one visible summary of whatever is currently
      narrowing the event universe (time-range shortcut, free-only, search
@@ -3778,11 +3792,25 @@
   .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
   .evt-link{
-    display:inline-flex;align-items:center;gap:5px;margin-top:9px;
+    display:inline-flex;align-items:center;gap:5px;
     font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;
   }
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
+  /* Row of secondary actions under the title/venue block — ticket link (if
+     any), Add to Calendar, Share. Wraps on narrow widths rather than
+     truncating or overlapping. */
+  .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:6px;column-gap:14px;margin-top:9px;}
+  .evt-cal{font-size:12px;font-weight:600;}
+  .evt-cal a{color:var(--ink-soft);text-decoration:none;}
+  .evt-cal a:hover{color:var(--ink);text-decoration:underline;}
+  .evt-cal a + a::before{content:'· ';color:var(--ink-dim);}
+  .evt-share{
+    border:none;background:none;padding:0;font:inherit;font-size:12px;font-weight:600;
+    color:var(--ink-soft);cursor:pointer;
+  }
+  .evt-share:hover{color:var(--ink);text-decoration:underline;}
+  .evt-share:disabled{color:#3fbf6a;cursor:default;}
   /* Right column: category (its own site-wide color, kept from the
      chip/dot system — the mock's plain gray text was tied to its own
      placeholder taxonomy, not this project's locked, color-coded one) and
@@ -3933,14 +3961,14 @@
     </div>
     <nav class="site-nav" aria-label="Time range and browse">
       <!-- Reuses the existing .when-btn/data-when/activateWhen() machinery
-           (see the discovery bar's own Now/Today/Tonight/This Weekend/Date
+           (see the discovery bar's own Now/Today/Tomorrow/This Weekend/Date
            buttons below) — clicking these keeps them in sync via the shared
            updateWhenButtons(), since both sets share the .when-btn class.
            "NOW" here maps to whenMode 'today' (all of today, unnarrowed) per
            Jody's definition — distinct from the sheet's own "Now" button,
            which still narrows to the remaining hours today. -->
       <button type="button" class="when-btn" data-when="today">Now</button>
-      <button type="button" class="when-btn" data-when="tonight">Tonight</button>
+      <button type="button" class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
       <a class="site-nav-link" href="calendar.html">Calendar</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
@@ -3971,7 +3999,7 @@
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
       <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
-        <span class="mt-label">When</span><span class="mt-sub" id="whenTriggerSub">Now</span>
+        <span class="mt-label">When</span><span class="mt-sub" id="whenTriggerSub">Anytime</span>
       </button>
       <button type="button" class="mobile-trigger" id="whereTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="locationBar">
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
@@ -3986,9 +4014,12 @@
       <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
       <button class="when-btn" data-when="now">Now</button>
       <button class="when-btn" data-when="today">Today</button>
-      <button class="when-btn" data-when="tonight">Tonight</button>
+      <button class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button class="when-btn" data-when="weekend">This Weekend</button>
-      <button class="when-btn" data-when="date">Date</button>
+      <label class="when-date-picker" for="whenDateInput">
+        <span>Pick a date</span>
+        <input type="date" id="whenDateInput" aria-label="Jump to a specific date">
+      </label>
     </div>
 
     <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
@@ -4423,13 +4454,18 @@ EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> (a.time||"").localeCompare(b.time||"")));
 
 // Navigable range is relative to today's real date, not a hardcoded month —
-// otherwise "back" dead-ends the moment today falls on the earliest allowed
-// month, and the default view goes stale as soon as the calendar page turns.
+// the default view goes stale as soon as the calendar page turns otherwise.
 // Uses local date components (not toISOString(), which is UTC) for the same
 // reason the "today" highlight below does.
 const _navToday = new Date();
 const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth(), 1);
-const MIN_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() - 12, 1);
+// The homepage list never shows a date before today (see matchesFilters()'s
+// floor), so paging earlier than the current month would always land on a
+// guaranteed-empty screen — MIN_MONTH is the current month itself, not some
+// number of months back, and prevBtn is simply disabled at that point (see
+// updateMonthHeader()). Past events are reachable, just via the dedicated
+// calendar.html page, which keeps its own separate, much wider range.
+const MIN_MONTH = new Date(_navTodayMonthStart);
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
 let current = new Date(_navTodayMonthStart);
 
@@ -4455,17 +4491,24 @@ let query = "";
 // Month grid here at all. The full Month-grid experience lives on the
 // separate calendar.html page, which keeps its own independent default.
 // Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
-// 'tonight' | 'weekend'. Independent of category/free/search filters — see
-// matchesFilters() below, which combines all of them.
+// 'tomorrow' | 'weekend' | 'date'. Independent of category/free/search
+// filters — see matchesFilters() below, which combines all of them.
 //
-// Defaults to 'now' rather than null (2026-08-26): the list should always
-// land already scoped to today's date and the current hour forward — see
-// matchesFilters()'s whenMode==='now' branch, which is exactly "today +
-// hour >= now". null ("Anytime"/unfiltered) stays reachable — it's what
-// "Browse" and "Reset filters" explicitly set via clearAllFilters(), and
-// what the "Date" button sets via activateWhen('date') — this only changes
-// what a fresh page load starts on.
-let whenMode = 'now';
+// null ("no shortcut picked") is the resting state — "Browse" and "Reset
+// filters" explicitly return here via clearAllFilters(). It is NOT the same
+// as "no restriction at all": matchesFilters() always applies its own
+// baseline floor+hour narrowing (today onward, and today's own past hours
+// hidden) regardless of whenMode, so the list still "begins with NOW" by
+// default without whenMode itself needing to fake-select a shortcut.
+let whenMode = null;
+// Only meaningful while whenMode === 'date' — the single ISO date chosen
+// via the When sheet's date-picker input.
+let pickedDate = null;
+// Shared between renderActiveFilters() and updateMobileTriggers() — one
+// definition so the two labels never drift out of sync with each other.
+// 'date' isn't listed here since its chip/trigger label is the picked date
+// itself, formatted at display time, not a fixed word.
+const WHEN_LABELS = {now:'Now', today:'Today', tomorrow:'Tomorrow', weekend:'This Weekend'};
 // Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
 // currently in scope. Recomputed each time weekend mode is (re)activated,
 // not on every render, since "this weekend" only changes at midnight.
@@ -4499,9 +4542,16 @@ function getTodayISO(){
   return toISO(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+function getTomorrowISO(){
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
 // Best-effort parse of the free-text time_display field ("7:30 PM",
 // "12:00–3:00 PM", "Evening", "3:00 & 7:00 PM"...) into a 24h hour number.
-// This is a soft convenience signal for the NOW/TONIGHT shortcuts, not
+// This is a soft convenience signal for the NOW shortcut and the page's own
+// baseline hour-narrowing (see matchesFilters()), not
 // authoritative scheduling data — see DISCOVERY_PHASE1_AUDIT.md. For a
 // range like "12:00–3:00 PM" this returns whichever time the regex finds
 // first (often the end of the range, since the start half usually has no
@@ -4560,13 +4610,28 @@ function matchesFilters(e){
     const q = query.toLowerCase();
     if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
   }
+  const todayIso = getTodayISO();
+  // Baseline floor: the homepage list never shows a date before today, no
+  // matter which month is being paged through or which time-range shortcut
+  // (if any) is active — Jody: "I don't want events in the past to show up
+  // as the first thing you see... those should only be available if a user
+  // needs to go back in time," which is exactly what the dedicated
+  // calendar.html page is for (it keeps its own independent month-browsing
+  // and doesn't share this restriction).
+  if(e.date < todayIso) return false;
   if(whenMode){
-    const todayIso = getTodayISO();
     if(whenMode === 'weekend'){
       if(!cachedWeekendDates.includes(e.date)) return false;
+    } else if(whenMode === 'date'){
+      // An arbitrary user-picked date (see the When sheet's date input) —
+      // always today or later, since that input's own min= floor matches
+      // the restriction above.
+      if(e.date !== pickedDate) return false;
     } else {
-      // now / today / tonight are all "today", narrowed further below
-      if(e.date !== todayIso) return false;
+      // now / today / tomorrow all target one specific day, narrowed
+      // further below.
+      const targetIso = whenMode === 'tomorrow' ? getTomorrowISO() : todayIso;
+      if(e.date !== targetIso) return false;
       if(whenMode === 'now'){
         const hr = parseHour(e.time);
         const nowHour = new Date().getHours();
@@ -4574,22 +4639,25 @@ function matchesFilters(e){
         // still ahead"), not a deliberate narrowing, so an unknown time
         // should never silently disappear from it.
         if(hr !== null && hr < nowHour) return false;
-      } else if(whenMode === 'tonight'){
-        // Unlike NOW, TONIGHT *is* a deliberate narrowing — an event with no
-        // parseable time isn't confidently "tonight", so it's excluded here
-        // rather than guessed at.
-        const hr = parseHour(e.time);
-        if(hr === null || hr < 17) return false;
       }
     }
+  } else if(e.date === todayIso){
+    // No explicit time-range shortcut active (the page's own default
+    // state) — still hide today's events that have already ended, so the
+    // list "represents the current hour of the day" out of the box.
+    // Unparseable times stay included (safety net), same as NOW's own
+    // logic above. Explicitly clicking "Today" (whenMode='today') opts
+    // back into seeing all of today, past hours included — that branch
+    // above deliberately doesn't apply this narrowing.
+    const hr = parseHour(e.time);
+    const nowHour = new Date().getHours();
+    if(hr !== null && hr < nowHour) return false;
   }
   if(originLocation && radiusMiles !== null){
     const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
     // An event whose city isn't in the reference table has no resolvable
-    // distance from the chosen origin — excluded rather than guessed at,
-    // the same "deliberate narrowing over silent inclusion" call made for
-    // TONIGHT above (this is an active, opt-in radius filter, not a safety
-    // net like NOW).
+    // distance from the chosen origin — excluded rather than guessed at
+    // (this is an active, opt-in radius filter, not a safety net like NOW).
     if(!loc) return false;
     if(radiusMiles === 'all'){
       // Detroit Orbit: not narrowed by the chosen origin location itself
@@ -4732,6 +4800,8 @@ function clearAllFilters(){
   document.getElementById('search').value = '';
   query = '';
   whenMode = null;
+  pickedDate = null;
+  document.getElementById('whenDateInput').value = '';
   const t = new Date(getTodayISO()+"T12:00:00");
   current = new Date(t.getFullYear(), t.getMonth(), 1);
   clearLocation({skipRender: true});
@@ -4748,8 +4818,10 @@ function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
   const chips = [];
 
-  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
-  if(whenMode && WHEN_LABELS[whenMode]){
+  if(whenMode === 'date' && pickedDate){
+    const label = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    chips.push({label, onRemove: ()=>{ whenMode = null; pickedDate = null; document.getElementById('whenDateInput').value = ''; updateWhenButtons(); render(); }});
+  } else if(whenMode && WHEN_LABELS[whenMode]){
     chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; updateWhenButtons(); render(); }});
   }
   if(freeOnly){
@@ -4865,6 +4937,189 @@ function priceTag(e){
   return '';
 }
 
+// ---- Add to Calendar ----
+// Builds a Google Calendar "quick add" link and a downloadable .ics file for
+// one event, entirely client-side — there's no backend endpoint or build
+// step to generate these ahead of time. The only time data the site has is
+// the free-text time_display string (e.g. "11:00 AM–3:00 PM", "7:00 PM", or
+// a vague "Evening"/"Varies") — parseTimeRange() below pulls a start (and
+// end, if it's a range) out of whatever's actually parseable; an event with
+// no parseable time at all becomes an all-day calendar entry rather than
+// guessing a time. Times are treated as floating/local (America/Detroit,
+// the site's only service area): the .ics intentionally omits any TZID/Z
+// suffix, so every calendar app reads it in the viewer's own local clock —
+// the overwhelming majority of this site's visitors are already in that
+// timezone. Google's link gets an explicit ctz param for the same reason.
+function parseTimeRange(timeStr){
+  if(!timeStr) return null;
+  const re = /(\d{1,2}):(\d{2})\s*(AM|PM)/gi;
+  const matches = [...timeStr.matchAll(re)];
+  if(!matches.length) return null;
+  const to24 = (h,m,ap) => { let hh = parseInt(h,10)%12; if(/PM/i.test(ap)) hh += 12; return {h:hh, m:parseInt(m,10)}; };
+  const start = to24(matches[0][1], matches[0][2], matches[0][3]);
+  const end = matches.length > 1 ? to24(matches[1][1], matches[1][2], matches[1][3]) : null;
+  return {start, end};
+}
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+// Returns {allDay:true, startDate, endDate} (endDate exclusive, per the
+// iCalendar all-day convention) when no time is parseable at all, or
+// {allDay:false, startDate, startTime, endDate, endTime} (YYYYMMDD /
+// HHMMSS, local) otherwise.
+function eventDateTimeParts(e){
+  const [y,m,d] = e.date.split('-').map(Number);
+  const range = parseTimeRange(e.time);
+  const dateStr = `${y}${pad2(m)}${pad2(d)}`;
+  if(!range){
+    const next = new Date(y, m-1, d+1);
+    const nextStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
+    return { allDay:true, startDate:dateStr, endDate:nextStr };
+  }
+  const startTime = `${pad2(range.start.h)}${pad2(range.start.m)}00`;
+  let endDateStr = dateStr;
+  let endTime;
+  if(range.end){
+    endTime = `${pad2(range.end.h)}${pad2(range.end.m)}00`;
+    // An end clock-time earlier than the start (e.g. "10:00 PM–2:00 AM")
+    // means the event actually runs past midnight — roll DTEND to the next
+    // calendar day rather than encoding an end before its own start.
+    if(range.end.h < range.start.h || (range.end.h === range.start.h && range.end.m < range.start.m)){
+      const next = new Date(y, m-1, d+1);
+      endDateStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
+    }
+  } else {
+    // No explicit end in the source data — default to a 2-hour block, a
+    // reasonable middle ground for the kinds of events this site lists
+    // (gallery hours, sets, screenings) without ever calling it "all day."
+    const endDt = new Date(y, m-1, d, range.start.h, range.start.m + 120);
+    endDateStr = `${endDt.getFullYear()}${pad2(endDt.getMonth()+1)}${pad2(endDt.getDate())}`;
+    endTime = `${pad2(endDt.getHours())}${pad2(endDt.getMinutes())}00`;
+  }
+  return { allDay:false, startDate:dateStr, startTime, endDate:endDateStr, endTime };
+}
+
+function icsEscape(str){
+  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+}
+
+// Folds a single logical iCalendar line at 75 octets, per RFC 5545 §3.1 —
+// long SUMMARY/DESCRIPTION/LOCATION values would otherwise produce an
+// invalid file that some calendar apps silently truncate or reject.
+function foldICSLine(line){
+  if(line.length <= 75) return line;
+  let out = line.slice(0,75);
+  let rest = line.slice(75);
+  while(rest.length){
+    out += '\r\n ' + rest.slice(0,74);
+    rest = rest.slice(74);
+  }
+  return out;
+}
+
+function buildEventDescription(e){
+  const parts = [];
+  if(e.note) parts.push(e.note);
+  if(e.source) parts.push(`Via ${e.source}`);
+  if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
+  parts.push('Details: https://313.events/');
+  return parts.join('\n');
+}
+
+function buildEventLocation(e){
+  return e.city ? `${e.venue}, ${e.city}` : e.venue;
+}
+
+function buildICS(e){
+  const parts = eventDateTimeParts(e);
+  const uid = `${e.date}-${e.title}-${e.venue}`.replace(/[^a-zA-Z0-9]+/g,'-').slice(0,150) + '@313.events';
+  const now = new Date();
+  const dtstamp = `${now.getUTCFullYear()}${pad2(now.getUTCMonth()+1)}${pad2(now.getUTCDate())}T${pad2(now.getUTCHours())}${pad2(now.getUTCMinutes())}${pad2(now.getUTCSeconds())}Z`;
+  const dtstart = parts.allDay ? `DTSTART;VALUE=DATE:${parts.startDate}` : `DTSTART:${parts.startDate}T${parts.startTime}`;
+  const dtend = parts.allDay ? `DTEND;VALUE=DATE:${parts.endDate}` : `DTEND:${parts.endDate}T${parts.endTime}`;
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//313.events//Add to Calendar//EN',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${dtstamp}`,
+    dtstart,
+    dtend,
+    `SUMMARY:${icsEscape(e.title)}`,
+    `LOCATION:${icsEscape(buildEventLocation(e))}`,
+    `DESCRIPTION:${icsEscape(buildEventDescription(e))}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ];
+  return lines.map(foldICSLine).join('\r\n');
+}
+
+function buildGoogleCalUrl(e){
+  const parts = eventDateTimeParts(e);
+  const dates = parts.allDay
+    ? `${parts.startDate}/${parts.endDate}`
+    : `${parts.startDate}T${parts.startTime}/${parts.endDate}T${parts.endTime}`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: e.title,
+    dates,
+    details: buildEventDescription(e),
+    location: buildEventLocation(e),
+    ctz: 'America/Detroit',
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+// Rendered inline per event — a plain data: URI .ics link with no
+// `download` attribute, so a tap on mobile opens the OS's native "Add to
+// Calendar" sheet directly (a `download` attribute forces a generic file
+// save instead on iOS in particular). Google Calendar is offered as a
+// second, explicit option since not every visitor's default calendar app
+// picks up a tapped .ics link that way.
+function addToCalendarHtml(e){
+  const icsHref = `data:text/calendar;charset=utf-8,${encodeURIComponent(buildICS(e))}`;
+  const gcalHref = buildGoogleCalUrl(e);
+  return `<span class="evt-cal">
+    <a href="${escapeHtml(gcalHref)}" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}">Apple/Outlook</a>
+  </span>`;
+}
+
+// ---- Share ----
+// No per-event permalink page exists yet (this is a single-page list/
+// calendar, not one detail page per event) — sharing hands off the event's
+// own title/venue/date/time as plain text plus a link back to the site
+// itself, not a URL that reopens this exact event. Good enough for "tell a
+// friend what's happening"; a real deep link would need a dedicated event
+// page, which is a bigger, separate change.
+function shareEvent(btn){
+  const {title, venue, date, time} = btn.dataset;
+  const bits = [title, venue].filter(Boolean).join(' — ');
+  const when = [date, time].filter(Boolean).join(' ');
+  const text = when ? `${bits} (${when})` : bits;
+  const url = 'https://313.events/';
+  if(navigator.share){
+    navigator.share({title, text, url}).catch(()=>{}); // user cancel throws — nothing to do
+    return;
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(`${text}\n${url}`).then(()=>{
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.disabled = true;
+      setTimeout(()=>{ btn.textContent = original; btn.disabled = false; }, 1600);
+    }).catch(()=>{}); // no clipboard permission — nothing else to fall back to
+  }
+}
+
+function shareButtonHtml(e){
+  const dateLabel = new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  return `<button type="button" class="evt-share" onclick="shareEvent(this)"
+    data-title="${escapeHtml(e.title)}" data-venue="${escapeHtml(e.venue)}"
+    data-date="${escapeHtml(dateLabel)}" data-time="${escapeHtml(e.time||'')}">Share</button>`;
+}
+
 // dateList, if provided, is an explicit array of ISO date strings to render
 // instead of every day in current's month — needed for "This Weekend", which
 // can span a month boundary (e.g. Fri Jan 30 → Sun Feb 1) that a plain
@@ -4891,7 +5146,11 @@ function renderList(dateList){
             <div class="evt-title">${escapeHtml(e.title)}</div>
             <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${e.source?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-            ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+            <div class="evt-actions">
+              ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              ${addToCalendarHtml(e)}
+              ${shareButtonHtml(e)}
+            </div>
           </div>
           <div class="evt-side">
             <div class="evt-cat" style="color:${CATS[e.cat].color}">${CATS[e.cat].label}</div>
@@ -4938,6 +5197,8 @@ function renderHeroToday(){
 // just told them, without touching their category/free/search filters.
 function viewThisWeek(){
   whenMode = null;
+  pickedDate = null;
+  document.getElementById('whenDateInput').value = '';
   const t = new Date(getTodayISO()+"T12:00:00");
   current = new Date(t.getFullYear(), t.getMonth(), 1);
   updateWhenButtons();
@@ -5082,12 +5343,16 @@ function render(){
   syncURL();
 }
 
-// Paging to a different month exits the day-scoped Now/Today/Tonight
-// narrowing — those only ever match today's actual date (see
+// Paging to a different month exits the day-scoped Now/Today/Tomorrow/Date
+// narrowing — those only ever match one specific date (see
 // matchesFilters()), so leaving them on while browsing another month would
 // silently show an empty list instead of that month's events.
 function exitDayScopedWhenMode(){
-  if(whenMode === 'now' || whenMode === 'today' || whenMode === 'tonight') whenMode = null;
+  if(whenMode === 'now' || whenMode === 'today' || whenMode === 'tomorrow' || whenMode === 'date'){
+    whenMode = null;
+    pickedDate = null;
+    document.getElementById('whenDateInput').value = '';
+  }
 }
 document.getElementById('prevBtn').onclick = ()=>{
   const p = new Date(current.getFullYear(), current.getMonth()-1, 1);
@@ -5105,29 +5370,25 @@ function updateWhenButtons(){
   document.querySelectorAll('.when-btn').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.when === whenMode);
   });
+  document.getElementById('whenDateInput').closest('.when-date-picker').classList.toggle('active', whenMode === 'date');
 }
 
 function activateWhen(key){
-  if(key === 'date'){
-    // "Date" isn't a filter of its own — it just clears any active time
-    // shortcut and returns to ordinary free browsing of the list.
-    whenMode = null;
-    updateWhenButtons();
-    render();
-    closeSheet(); // no-op on desktop / when no sheet is open
-    return;
-  }
-
   whenMode = key;
+  pickedDate = null;
+  document.getElementById('whenDateInput').value = '';
   const todayIso = getTodayISO();
 
   if(key === 'weekend'){
     cachedWeekendDates = getWeekendDates();
     const fri = new Date(cachedWeekendDates[0]+"T12:00:00");
     current = new Date(fri.getFullYear(), fri.getMonth(), 1);
+  } else if(key === 'tomorrow'){
+    const t = new Date(getTomorrowISO()+"T12:00:00");
+    current = new Date(t.getFullYear(), t.getMonth(), 1);
   } else {
-    // now / today / tonight are all "today" — jump the list's month cursor
-    // there so the day is in view.
+    // now / today — jump the list's month cursor to today's so the day is
+    // in view.
     const t = new Date(todayIso+"T12:00:00");
     current = new Date(t.getFullYear(), t.getMonth(), 1);
   }
@@ -5140,6 +5401,34 @@ function activateWhen(key){
 document.querySelectorAll('.when-btn').forEach(btn=>{
   btn.onclick = ()=> activateWhen(btn.dataset.when);
 });
+
+// Jump to an arbitrary date via the When sheet's date input — always today
+// or later, since the input's own min= (set in initWhenDatePicker()) keeps
+// the browser's native picker from ever offering an earlier one. Past dates
+// stay a calendar.html-only thing, same as everywhere else on this page.
+function activateDatePicker(iso){
+  if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+  whenMode = 'date';
+  pickedDate = iso;
+  const d = new Date(iso+"T12:00:00");
+  current = new Date(d.getFullYear(), d.getMonth(), 1);
+  updateWhenButtons();
+  render();
+  closeSheet();
+}
+
+function initWhenDatePicker(){
+  const input = document.getElementById('whenDateInput');
+  input.min = getTodayISO();
+  // toISO() is a pure formatter, not a date normalizer — day 0 has to be
+  // resolved to "the last day of the previous month" via a real Date first,
+  // then formatted, rather than handed to toISO() directly (that would
+  // format literally as "-00" instead of rolling back a month).
+  const lastDayOfMax = new Date(MAX_MONTH.getFullYear(), MAX_MONTH.getMonth()+1, 0);
+  input.max = toISO(lastDayOfMax.getFullYear(), lastDayOfMax.getMonth(), lastDayOfMax.getDate());
+  input.addEventListener('change', (e)=> activateDatePicker(e.target.value));
+}
+initWhenDatePicker();
 
 // BROWSE (header nav) — the unfiltered, see-everything shortcut: clears
 // every narrowing dimension (time range, categories, location, search) —
@@ -5429,9 +5718,12 @@ window.addEventListener('resize', ()=>{
 // collapsing WHEN/WHERE/FILTER into three buttons never hides what's
 // currently active from someone who hasn't opened a sheet.
 function updateMobileTriggers(){
-  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
   const whenSub = document.getElementById('whenTriggerSub');
-  whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
+  if(whenMode === 'date' && pickedDate){
+    whenSub.textContent = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  } else {
+    whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
+  }
   document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!whenMode);
 
   const whereSub = document.getElementById('whereTriggerSub');
@@ -5471,13 +5763,8 @@ function syncURL(){
   const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
   const dateForUrl = isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1);
   params.set('date', dateForUrl);
-  // Always written, even when null — the page's own default is 'now' (see
-  // that variable's declaration), so a bare/legacy URL with no 'when' param
-  // at all is exactly what should fall back to that default. A link that
-  // was explicitly shared from "Anytime" (whenMode===null) needs its own
-  // marker so reloading it doesn't silently snap back to 'now' instead of
-  // faithfully restoring what was shared.
-  params.set('when', whenMode || 'any');
+  if(whenMode) params.set('when', whenMode);
+  if(whenMode === 'date' && pickedDate) params.set('picked', pickedDate);
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
   if(query) params.set('q', query);
@@ -5528,21 +5815,23 @@ function readStateFromURL(){
 
   // Note: an old bookmarked link with ?view=month has nothing to restore to
   // anymore — the homepage is List-only now, so that param is simply ignored.
+  // Same for a legacy ?when=tonight link — Tonight no longer exists as a
+  // shortcut (replaced with Tomorrow), so it's just ignored rather than
+  // guessed at; whenMode stays at its default (null/baseline).
   const whenParam = params.get('when');
-  if(whenParam === 'any'){
-    // Explicit marker for a link shared from "Anytime" (see syncURL) —
-    // distinct from a plain missing param, which instead falls through to
-    // whenMode's own default ('now').
-    whenMode = null;
-  } else if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
+  if(whenParam === 'date'){
+    const pickedParam = params.get('picked');
+    if(pickedParam && /^\d{4}-\d{2}-\d{2}$/.test(pickedParam) && pickedParam >= getTodayISO()){
+      whenMode = 'date';
+      pickedDate = pickedParam;
+      document.getElementById('whenDateInput').value = pickedParam;
+    }
+  } else if(whenParam && ['now','today','tomorrow','weekend'].includes(whenParam)){
     whenMode = whenParam;
     if(whenParam === 'weekend'){
       cachedWeekendDates = getWeekendDates();
     }
   }
-  // else: no recognized 'when' param at all (e.g. a pre-existing bookmark
-  // from before this param was always written) — leave whenMode at its
-  // declared default of 'now' rather than guessing further.
 
   // A shared link only restores a NAMED location (a real match in
   // LOCATIONS) — a one-off geolocation origin was never put in the URL to
