@@ -3826,22 +3826,25 @@
      real per-event coordinates (0% of venues/events have lat/lng), so this
      never plots real event positions. The count above/below it is real,
      city-level radius math (haversineMiles against CITY_LOOKUP), same method
-     the Where/radius filter already uses. Rings are dashed and fade with
-     distance to read as orbital paths rather than a plain bullseye; the
-     .ny-ping element is a single "you are here" location pulse (radiates
-     outward from the dot and fades, like a map pin ping) — deliberately a
-     DIFFERENT motion (expand-and-fade-out, not scale-in-place) from the hero
-     signal's breathing animation, per that animation's own one-off/no-reuse
-     rule. Fixed at aspect-ratio:1 (rather than the card's own full width vs a
-     flat fixed height, which is what the old "Near You" version did) so the
-     rings render as true circles instead of the squashed ellipses that
-     mismatch produced — width % and height % need the same base to actually
-     look like circular orbit rings. */
+     the Where/radius filter already uses. Rings fade with distance to read
+     as orbital paths rather than a plain bullseye — tinted with the signal
+     accent at low opacity (rather than the barely-there --line gray tried
+     first, which read as too faint against the panel background) since
+     these rings represent the live signal's own reach outward, not plain
+     structural chrome. The .ny-ping element is a single "you are here"
+     location pulse (radiates outward from the dot and fades, like a map pin
+     ping) — deliberately a DIFFERENT motion (expand-and-fade-out, not
+     scale-in-place) from the hero signal's breathing animation, per that
+     animation's own one-off/no-reuse rule. Fixed at aspect-ratio:1 (rather
+     than the card's own full width vs a flat fixed height, which is what
+     the old "Near You" version did) so the rings render as true circles
+     instead of the squashed ellipses that mismatch produced — width % and
+     height % need the same base to actually look like circular orbit rings. */
   .ny-radar{position:relative;width:120px;max-width:100%;aspect-ratio:1;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
-  .ny-ring{position:absolute;border:1px dashed var(--line);border-radius:50%;}
-  .ny-ring-1{width:38%;height:38%;opacity:.9;}
-  .ny-ring-2{width:68%;height:68%;opacity:.6;}
-  .ny-ring-3{width:100%;height:100%;opacity:.35;}
+  .ny-ring{position:absolute;border:1.5px solid var(--line);border-radius:50%;}
+  .ny-ring-1{width:38%;height:38%;border-color:rgba(215,255,0,.55);}
+  .ny-ring-2{width:68%;height:68%;border-color:rgba(215,255,0,.35);}
+  .ny-ring-3{width:100%;height:100%;border-color:rgba(215,255,0,.2);}
   .ny-ping{
     position:absolute;width:38%;height:38%;border-radius:50%;
     background:var(--accent);z-index:1;
@@ -5709,7 +5712,7 @@ function renderNearYouCard(){
     <p class="side-card-sub">Within ${DETROIT_ORBIT_MILES} mi of ${escapeHtml(originLocation.name)}</p>
     <div class="side-card-number">${count}</div>
     <p class="side-card-caption">upcoming event${count === 1 ? '' : 's'}</p>
-    <button type="button" class="side-card-cta" onclick="viewMyOrbit()">View your Orbit &rarr;</button>
+    <button type="button" class="side-card-cta" onclick="viewMyOrbit()">View what's nearby you &rarr;</button>
   `;
 }
 
