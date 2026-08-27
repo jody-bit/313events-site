@@ -3425,9 +3425,9 @@
     gap:16px;flex-wrap:wrap;
     padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
   }
-  /* Primary nav (Now/Tomorrow/This Weekend/Calendar/Browse) — plain uppercase
+  /* Primary nav (Tomorrow/This Weekend/Calendar/Browse) — plain uppercase
      text links, not the bordered-chip look .when-btn has elsewhere on the
-     page. The class is still .when-btn for the 3 time-range items (so they
+     page. The class is still .when-btn for the 2 time-range items (so they
      ride the existing activateWhen()/updateWhenButtons() wiring); this
      scoped override just restyles them to match the nav bar visually. */
   .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;}
@@ -3549,7 +3549,11 @@
   .nav-group button.navbtn:disabled{opacity:.35;cursor:not-allowed;}
   #monthLabel{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;min-width:170px;text-align:center;}
   #search{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;
+    /* flex:1 (not just min-width) because .controls now holds only this one
+       control since month prev/next paging was removed (2026-08-27) — a
+       narrow fixed-width box left floating in an otherwise-empty bar read as
+       broken, not intentional. */
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;flex:1;
     background:var(--panel-alt);color:var(--ink);
   }
   #search::placeholder{color:var(--ink-dim);}
@@ -3580,6 +3584,30 @@
        default calendar-icon glyph is black and invisible against the dark
        panel background otherwise. */
     filter:invert(1);cursor:pointer;
+  }
+  /* From/To pair (2026-08-26 [sic 2026-08-27]): two plain .when-date-picker
+     boxes side by side on desktop. Both are native <input type="date">
+     controls specifically because a touchscreen's own native date wheel/
+     calendar is what someone with "stumpy fingers on a handset" already
+     knows how to drive — a custom range-calendar widget would need much
+     larger deliberately-spaced tap targets to be as usable, for no real
+     gain here. */
+  .when-date-range{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .when-date-optional{color:var(--ink-dim);font-weight:500;text-transform:none;letter-spacing:0;}
+  @media (max-width:480px){
+    /* Stacked full-width rather than shrinking two side-by-side boxes down
+       to where the date text itself gets cramped on a small phone screen. */
+    .when-date-range{flex-direction:column;align-items:stretch;}
+    .when-date-picker{justify-content:space-between;}
+  }
+
+  /* "Showing N events ___" heading above the list — only appears when a
+     specific scope (this week, this weekend, a picked date/range, or a
+     neighborhood) is active, per currentListMeta(); the plain default view
+     has no heading here. */
+  .list-count-heading{
+    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;
+    color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;
   }
 
   /* Active-filter tray — one visible summary of whatever is currently
@@ -4030,13 +4058,13 @@
     </div>
     <nav class="site-nav" aria-label="Time range and browse">
       <!-- Reuses the existing .when-btn/data-when/activateWhen() machinery
-           (see the discovery bar's own Now/Today/Tomorrow/This Weekend/Date
-           buttons below) — clicking these keeps them in sync via the shared
+           (see the discovery bar's own Tomorrow/This Weekend/date-range
+           controls below) — clicking these keeps them in sync via the shared
            updateWhenButtons(), since both sets share the .when-btn class.
-           "NOW" here maps to whenMode 'today' (all of today, unnarrowed) per
-           Jody's definition — distinct from the sheet's own "Now" button,
-           which still narrows to the remaining hours today. -->
-      <button type="button" class="when-btn" data-when="today">Now</button>
+           Now/Today were removed here (2026-08-27, Jody's call): the
+           homepage's own default state already opens on today (see
+           matchesFilters()'s baseline floor), which made an explicit
+           "jump to today" shortcut redundant. -->
       <button type="button" class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
       <a class="site-nav-link" href="calendar.html">Calendar</a>
@@ -4117,14 +4145,28 @@
 
     <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
       <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
-      <button class="when-btn" data-when="now">Now</button>
-      <button class="when-btn" data-when="today">Today</button>
       <button class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button class="when-btn" data-when="weekend">This Weekend</button>
-      <label class="when-date-picker" for="whenDateInput">
-        <span>Pick a date</span>
-        <input type="date" id="whenDateInput" aria-label="Jump to a specific date">
-      </label>
+      <!-- Expanded from a single "Pick a date" input into a From/To pair
+           (Jody, 2026-08-27) so the same control handles both a single date
+           and a date range, without adding a separate mode toggle. "To" is
+           genuinely optional — leaving it blank keeps the old single-date
+           behavior (whenMode 'date'); filling it in switches to a range
+           (whenMode 'range'). Two native <input type="date"> fields stacked
+           in a simple row/column (see .when-date-range CSS) rather than a
+           custom calendar-range widget, on purpose — native date inputs are
+           what a touchscreen keyboard already knows how to drive well, which
+           matters given Jody's "stumpy fingers on a handset" requirement. -->
+      <div class="when-date-range">
+        <label class="when-date-picker" for="whenDateInput">
+          <span>From</span>
+          <input type="date" id="whenDateInput" aria-label="Jump to a specific date, or start of a date range">
+        </label>
+        <label class="when-date-picker" for="whenDateEndInput">
+          <span>To <span class="when-date-optional">(optional)</span></span>
+          <input type="date" id="whenDateEndInput" aria-label="End of date range (optional)">
+        </label>
+      </div>
     </div>
 
     <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
@@ -4152,12 +4194,14 @@
     <div class="filters" id="filterBar"></div>
   </div>
 
+  <!-- Month prev/next paging removed (Jody, 2026-08-27): the list is no
+       longer boxed to one calendar month (see currentDateList()) — its
+       default view is a rolling 30-day window from today, and the When
+       sheet's date-range picker is the way to jump further out. A calendar
+       month to page through no longer matches how the list actually scopes
+       itself, so the control (and the "August 2026" label with it) is gone
+       rather than left showing a scope that isn't real anymore. -->
   <div class="controls">
-    <div class="nav-group">
-      <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
-      <div id="monthLabel">August 2026</div>
-      <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
-    </div>
     <input type="text" id="search" placeholder="Search events, venues, neighborhoods&hellip;">
   </div>
 
@@ -4558,21 +4602,18 @@ let byDate = {};
 EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> (a.time||"").localeCompare(b.time||"")));
 
-// Navigable range is relative to today's real date, not a hardcoded month —
-// the default view goes stale as soon as the calendar page turns otherwise.
-// Uses local date components (not toISOString(), which is UTC) for the same
+// Relative to today's real date, not a hardcoded month — stays correct as
+// soon as the calendar page turns rather than needing a code change. Uses
+// local date components (not toISOString(), which is UTC) for the same
 // reason the "today" highlight below does.
 const _navToday = new Date();
 const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth(), 1);
-// The homepage list never shows a date before today (see matchesFilters()'s
-// floor), so paging earlier than the current month would always land on a
-// guaranteed-empty screen — MIN_MONTH is the current month itself, not some
-// number of months back, and prevBtn is simply disabled at that point (see
-// updateMonthHeader()). Past events are reachable, just via the dedicated
-// calendar.html page, which keeps its own separate, much wider range.
-const MIN_MONTH = new Date(_navTodayMonthStart);
+// Bounds how far out the When sheet's date-range picker will let someone
+// pick (12 months) — see initWhenDatePicker(). The old month-paging system
+// (prevBtn/nextBtn/monthLabel, plus a MIN_MONTH lower bound and a `current`
+// page cursor) was removed 2026-08-27 — see currentDateList() for what
+// replaced it.
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
-let current = new Date(_navTodayMonthStart);
 
 // Hard content block: events matching any name on this list are excluded
 // from every view (calendar, list, Today strip) regardless of source —
@@ -4595,9 +4636,9 @@ let query = "";
 // The homepage is List-only (the mockup's primary view) — there is no
 // Month grid here at all. The full Month-grid experience lives on the
 // separate calendar.html page, which keeps its own independent default.
-// Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
-// 'tomorrow' | 'weekend' | 'date'. Independent of category/free/search
-// filters — see matchesFilters() below, which combines all of them.
+// Active time-range shortcut from the discovery bar: null | 'tomorrow' |
+// 'weekend' | 'date' | 'range' | 'thisweek'. Independent of category/free/
+// search filters — see matchesFilters() below, which combines all of them.
 //
 // null ("no shortcut picked") is the resting state — "Browse" and "Reset
 // filters" explicitly return here via clearAllFilters(). It is NOT the same
@@ -4607,13 +4648,23 @@ let query = "";
 // default without whenMode itself needing to fake-select a shortcut.
 let whenMode = null;
 // Only meaningful while whenMode === 'date' — the single ISO date chosen
-// via the When sheet's date-picker input.
+// via the When sheet's date-picker "From" input.
 let pickedDate = null;
+// Only meaningful while whenMode === 'range' — both set, inclusive, when the
+// From/To pair together form a date range rather than a single day. Kept as
+// two separate globals (rather than reusing pickedDate for the start) so
+// 'date' and 'range' modes can't be confused with each other in
+// matchesFilters()/currentDateList().
+let rangeStart = null;
+let rangeEnd = null;
 // Shared between renderActiveFilters() and updateMobileTriggers() — one
 // definition so the two labels never drift out of sync with each other.
-// 'date' isn't listed here since its chip/trigger label is the picked date
-// itself, formatted at display time, not a fixed word.
-const WHEN_LABELS = {now:'Now', today:'Today', tomorrow:'Tomorrow', weekend:'This Weekend'};
+// 'date' and 'range' aren't listed here since their chip/trigger label is
+// built from the actual picked date(s) at display time, not a fixed word.
+// 'now'/'today' were removed 2026-08-27 (Jody: redundant once the homepage's
+// own default view already opens on today) — 'thisweek' backs the hero's
+// "View all events" link (see viewThisWeek()).
+const WHEN_LABELS = {tomorrow:'Tomorrow', weekend:'This Weekend', thisweek:'This Week'};
 // Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
 // currently in scope. Recomputed each time weekend mode is (re)activated,
 // not on every render, since "this weekend" only changes at midnight.
@@ -4644,7 +4695,6 @@ let radiusMiles = null;
 // proximity search.
 let neighborhoodFilter = null;
 
-function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 
 // Uses local date components (not toISOString(), which is UTC) — Detroit is
@@ -4715,6 +4765,96 @@ function getCalendarWeekDates(){
   });
 }
 
+// All ISO dates from startIso through endIso, inclusive — backs whenMode
+// 'range' (the When sheet's From/To date-range picker).
+function datesInRange(startIso, endIso){
+  const out = [];
+  let d = new Date(startIso+"T12:00:00");
+  // Plain string comparison is safe here since every ISO date is the same
+  // fixed-width YYYY-MM-DD shape — no need to compare as Date objects.
+  // The 3,660-day cap is just a defensive backstop (the date inputs' own
+  // max= already keeps a real range well under a year) so a malformed value
+  // can never turn this into a runaway loop.
+  for(let guard=0; guard<3660; guard++){
+    const iso = toISO(d.getFullYear(), d.getMonth(), d.getDate());
+    if(iso > endIso) break;
+    out.push(iso);
+    d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+
+// The homepage's default resting-state window (no When/neighborhood/range
+// picked) — the next `days` calendar days starting today. Replaces the old
+// "every day in the currently-paged calendar month" behavior (2026-08-27,
+// month prev/next removed): a fixed rolling window means the list always
+// starts exactly at today, regardless of where in a month today happens to
+// fall, and never requires paging to reach next month's events within the
+// window.
+function rollingWindowDates(days){
+  const start = new Date(getTodayISO()+"T12:00:00");
+  return Array.from({length: days}, (_,i)=>{
+    const d = new Date(start); d.setDate(d.getDate()+i);
+    return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+  });
+}
+
+// Every date (today onward) that actually has at least one event on it —
+// deliberately unbounded, not capped to the 30-day default window. Used
+// when a neighborhood is selected, so the list can reach every one of that
+// neighborhood's upcoming events and its count always matches the
+// neighborhood card's own (also-unbounded) count exactly — see
+// computeNeighborhoodCounts() and viewNeighborhood().
+function upcomingDatesWithEvents(){
+  const todayIso = getTodayISO();
+  return Object.keys(byDate).filter(iso => iso >= todayIso).sort();
+}
+
+// Short "Aug 28" / "Aug 28–Sep 3" label for a single date or a date range —
+// used for both the active-filter chip and the list's count heading, so the
+// two always read the same range the same way.
+function formatDateLabel(iso){
+  return new Date(iso+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function formatRangeLabel(startIso, endIso){
+  return startIso === endIso ? formatDateLabel(startIso) : `${formatDateLabel(startIso)}–${formatDateLabel(endIso)}`;
+}
+
+// The single source of truth for "which dates does the list currently
+// show" — every render() call funnels through here instead of each mode
+// scattering its own date-list logic. Order matters: a specific When
+// shortcut/range takes priority over the neighborhood's unbounded window,
+// which in turn takes priority over the plain rolling-window default.
+function currentDateList(){
+  if(whenMode === 'weekend') return cachedWeekendDates;
+  if(whenMode === 'thisweek') return getCalendarWeekDates();
+  if(whenMode === 'range' && rangeStart && rangeEnd) return datesInRange(rangeStart, rangeEnd);
+  if(whenMode === 'date' && pickedDate) return [pickedDate];
+  if(whenMode === 'tomorrow') return [getTomorrowISO()];
+  if(neighborhoodFilter) return upcomingDatesWithEvents();
+  return rollingWindowDates(30);
+}
+
+// Paired with currentDateList() — the human-readable scope behind whatever
+// it just returned, fed to renderList() for the "Showing N events ___"
+// heading and the empty-state copy. null means "the plain default view",
+// which gets neither a count heading nor an "in ___" empty-state suffix.
+function currentListMeta(){
+  if(whenMode === 'thisweek') return {scopeLabel: 'this week', countLabel: 'this week'};
+  if(whenMode === 'weekend') return {scopeLabel: 'this weekend', countLabel: 'this weekend'};
+  if(whenMode === 'range' && rangeStart && rangeEnd){
+    const label = formatRangeLabel(rangeStart, rangeEnd);
+    return {scopeLabel: label, countLabel: label};
+  }
+  if(whenMode === 'date' && pickedDate){
+    const label = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    return {scopeLabel: label, countLabel: label};
+  }
+  if(whenMode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
+  if(neighborhoodFilter) return {scopeLabel: neighborhoodFilter, countLabel: `in ${neighborhoodFilter}`};
+  return {scopeLabel: null, countLabel: null};
+}
+
 function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
@@ -4748,33 +4888,30 @@ function matchesFilters(e){
   if(whenMode){
     if(whenMode === 'weekend'){
       if(!cachedWeekendDates.includes(e.date)) return false;
+    } else if(whenMode === 'thisweek'){
+      // Backs the hero stat's "View all events" link (viewThisWeek()) — the
+      // exact same Monday-Sunday window renderHeroToday() counted, so the
+      // list a visitor lands on always shows precisely the number the hero
+      // just told them, never a different (e.g. 30-day-window) count.
+      if(!getCalendarWeekDates().includes(e.date)) return false;
+    } else if(whenMode === 'range'){
+      // A user-picked From/To range (see the When sheet's date-range
+      // picker) — both ends inclusive, both always today or later since the
+      // inputs' own min= floors match the restriction above.
+      if(e.date < rangeStart || e.date > rangeEnd) return false;
     } else if(whenMode === 'date'){
-      // An arbitrary user-picked date (see the When sheet's date input) —
-      // always today or later, since that input's own min= floor matches
-      // the restriction above.
+      // A single arbitrary user-picked date (the When sheet's "From" input
+      // with no "To") — always today or later, same reasoning as above.
       if(e.date !== pickedDate) return false;
-    } else {
-      // now / today / tomorrow all target one specific day, narrowed
-      // further below.
-      const targetIso = whenMode === 'tomorrow' ? getTomorrowISO() : todayIso;
-      if(e.date !== targetIso) return false;
-      if(whenMode === 'now'){
-        const hr = parseHour(e.time);
-        const nowHour = new Date().getHours();
-        // Unparseable times stay included — NOW is a safety net ("what's
-        // still ahead"), not a deliberate narrowing, so an unknown time
-        // should never silently disappear from it.
-        if(hr !== null && hr < nowHour) return false;
-      }
+    } else if(whenMode === 'tomorrow'){
+      if(e.date !== getTomorrowISO()) return false;
     }
   } else if(e.date === todayIso){
     // No explicit time-range shortcut active (the page's own default
     // state) — still hide today's events that have already ended, so the
     // list "represents the current hour of the day" out of the box.
-    // Unparseable times stay included (safety net), same as NOW's own
-    // logic above. Explicitly clicking "Today" (whenMode='today') opts
-    // back into seeing all of today, past hours included — that branch
-    // above deliberately doesn't apply this narrowing.
+    // Unparseable times stay included (safety net) rather than silently
+    // disappearing from an unknown time.
     const hr = parseHour(e.time);
     const nowHour = new Date().getHours();
     if(hr !== null && hr < nowHour) return false;
@@ -4911,15 +5048,15 @@ function buildFilterBar(){
 }
 
 // Resets every discovery dimension at once: categories, free-only, search
-// text, and the when-shortcut — deliberately to null/Anytime, not back to
-// the page's own 'now' default, since this is also what BROWSE means
-// ("clear every narrowing dimension, see everything"). Used by the category
-// bar's "Reset filters" chip, the active-filter tray's "Clear All", AND the
-// header's Browse button, so there's exactly one reset behavior instead of
-// several subtly different ones. Also returns the calendar to the current
-// month (today) rather than leaving it wherever the user had navigated to —
-// a reset should feel like coming back to today, not just clearing filters
-// on whatever month happens to be on screen.
+// text, and the when-shortcut — deliberately to null/Anytime, which is also
+// what BROWSE means ("clear every narrowing dimension, see everything").
+// Used by the category bar's "Reset filters" chip, the active-filter tray's
+// "Clear All", AND the header's Browse button, so there's exactly one reset
+// behavior instead of several subtly different ones. Since the resting
+// (whenMode null) state's own currentDateList() is a rolling window from
+// today, a reset also naturally lands back on today onward — no separate
+// "jump back to this month" step needed the way the old month-paging system
+// required.
 function clearAllFilters(){
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
@@ -4927,9 +5064,10 @@ function clearAllFilters(){
   query = '';
   whenMode = null;
   pickedDate = null;
+  rangeStart = null;
+  rangeEnd = null;
   document.getElementById('whenDateInput').value = '';
-  const t = new Date(getTodayISO()+"T12:00:00");
-  current = new Date(t.getFullYear(), t.getMonth(), 1);
+  document.getElementById('whenDateEndInput').value = '';
   clearLocation({skipRender: true});
   neighborhoodFilter = null;
   buildFilterBar();
@@ -4949,6 +5087,13 @@ function renderActiveFilters(){
   if(whenMode === 'date' && pickedDate){
     const label = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     chips.push({label, onRemove: ()=>{ whenMode = null; pickedDate = null; document.getElementById('whenDateInput').value = ''; updateWhenButtons(); render(); }});
+  } else if(whenMode === 'range' && rangeStart && rangeEnd){
+    chips.push({label: formatRangeLabel(rangeStart, rangeEnd), onRemove: ()=>{
+      whenMode = null; rangeStart = null; rangeEnd = null;
+      document.getElementById('whenDateInput').value = '';
+      document.getElementById('whenDateEndInput').value = '';
+      updateWhenButtons(); render();
+    }});
   } else if(whenMode && WHEN_LABELS[whenMode]){
     chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; updateWhenButtons(); render(); }});
   }
@@ -5011,15 +5156,6 @@ function renderActiveFilters(){
   tray.appendChild(clearAll);
 }
 
-// Keeps the month label and prev/next disabled state in sync with `current`
-// (the month-pagination header stays above the list even though there's no
-// month grid on this page anymore). Called once per render().
-function updateMonthHeader(){
-  const y = current.getFullYear(), m = current.getMonth();
-  document.getElementById('monthLabel').textContent = fmtMonth(current);
-  document.getElementById('prevBtn').disabled = (y===MIN_MONTH.getFullYear() && m===MIN_MONTH.getMonth());
-  document.getElementById('nextBtn').disabled = (y===MAX_MONTH.getFullYear() && m===MAX_MONTH.getMonth());
-}
 
 // Escapes text before it's interpolated into innerHTML. Needed because some
 // event fields (title, venue, city, note, source, ticketUrl) can originate
@@ -5267,23 +5403,29 @@ function shareButtonHtml(e){
     data-date="${escapeHtml(dateLabel)}" data-time="${escapeHtml(e.time||'')}">Share</button>`;
 }
 
-// dateList, if provided, is an explicit array of ISO date strings to render
-// instead of every day in current's month — needed for "This Weekend", which
-// can span a month boundary (e.g. Fri Jan 30 → Sun Feb 1) that a plain
-// daysInMonth loop over `current` alone wouldn't catch.
-function renderList(dateList){
+// dateList is always an explicit array of ISO date strings to render — see
+// currentDateList() for how it's built for each mode (rolling 30-day
+// default, a single day, a weekend, a this-week window, a user-picked
+// range, or every upcoming date when a neighborhood is selected). Month
+// paging was removed (2026-08-27), so there's no "every day in current's
+// month" fallback left to fall back to.
+// meta (optional) — {scopeLabel, countLabel} from currentListMeta(): when
+// set, a "Showing N events ___" heading is rendered above the list (Jody:
+// clicking "View all events" or a neighborhood card should show a count
+// that visibly matches what the user was just told), and scopeLabel feeds
+// the empty-state copy ("Nothing on the signal here in ___").
+function renderList(dateList, meta){
+  meta = meta || {};
   const el = document.getElementById('listView');
-  const y = current.getFullYear(), m = current.getMonth();
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const isos = dateList && dateList.length
-    ? dateList
-    : Array.from({length: daysInMonth}, (_,i)=> toISO(y,m,i+1));
+  const isos = dateList;
   let html = '';
   let any = false;
+  let matchCount = 0;
   for(const iso of isos){
     const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
     if(!events.length) continue;
     any = true;
+    matchCount += events.length;
     const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
       events.map(e=>`
@@ -5306,7 +5448,10 @@ function renderList(dateList){
         </div>
       `).join('') + `</div>`;
   }
-  el.innerHTML = any ? html : `<div class="empty-state">${emptyStateMessage(dateList ? null : fmtMonth(current))}</div>`;
+  const countHeading = (any && meta.countLabel)
+    ? `<div class="list-count-heading">Showing ${matchCount} event${matchCount===1?'':'s'} ${meta.countLabel}</div>`
+    : '';
+  el.innerHTML = any ? (countHeading + html) : `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
 }
 
 // The homepage's real, always-on stat (approved: homepage defaults to
@@ -5325,8 +5470,15 @@ function renderHeroToday(){
   const el = document.getElementById('heroToday');
   if(!el) return;
   const weekDates = getCalendarWeekDates();
+  const todayIso = getTodayISO();
+  // Excludes any day of this Mon-Sun week that's already past (2026-08-27
+  // fix) — without this, the count could include Monday/Tuesday/etc. events
+  // that already happened by the time someone's looking at this on, say, a
+  // Thursday, which both overstates "happening this week" and used to
+  // silently disagree with what clicking "View all events" (viewThisWeek(),
+  // via the same today-onward floor in matchesFilters()) actually showed.
   const count = weekDates.reduce((total, iso) =>
-    total + (byDate[iso]||[]).filter(e=>!isBlockedEvent(e) && isInDetroitOrbit(e)).length
+    total + (iso < todayIso ? 0 : (byDate[iso]||[]).filter(e=>!isBlockedEvent(e) && isInDetroitOrbit(e)).length)
   , 0);
 
   el.innerHTML = `
@@ -5343,13 +5495,29 @@ function renderHeroToday(){
 // chronologically — so what the user sees lines up with what the number
 // just told them, without touching their category/free/search filters.
 function viewThisWeek(){
-  whenMode = null;
+  // Jody (2026-08-27): clicking this should show "all events we have" for
+  // the week the hero just counted — so every other narrowing dimension
+  // (category, free-only, search, location, neighborhood) is reset here too,
+  // same as clearAllFilters(), rather than just swapping the date scope and
+  // leaving some other filter active to quietly shrink the count below what
+  // the hero stat just told the visitor.
+  activeCats = new Set(Object.keys(CATS));
+  freeOnly = false;
+  document.getElementById('search').value = '';
+  query = '';
+  clearLocation({skipRender: true});
+  neighborhoodFilter = null;
+  whenMode = 'thisweek';
   pickedDate = null;
+  rangeStart = null;
+  rangeEnd = null;
   document.getElementById('whenDateInput').value = '';
-  const t = new Date(getTodayISO()+"T12:00:00");
-  current = new Date(t.getFullYear(), t.getMonth(), 1);
+  document.getElementById('whenDateEndInput').value = '';
+  buildFilterBar();
+  renderNeighborhoodsRail();
   updateWhenButtons();
   render();
+  document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // ---- Homepage sidebar: View Calendar / Near You / Free Today ----
@@ -5462,7 +5630,19 @@ function renderFreeTodayCard(){
 function viewFreeToday(){
   freeOnly = true;
   buildFilterBar();
-  activateWhen('today');
+  // Today/Now were removed as standalone When shortcuts (2026-08-27), so
+  // this reuses the single-day 'date' mechanism directly instead of the
+  // (now-gone) activateWhen('today') — same date-scoping machinery
+  // (matchesFilters()'s whenMode==='date' branch), just invoked
+  // programmatically rather than through the date-picker input.
+  whenMode = 'date';
+  pickedDate = getTodayISO();
+  rangeStart = null;
+  rangeEnd = null;
+  document.getElementById('whenDateInput').value = pickedDate;
+  document.getElementById('whenDateEndInput').value = '';
+  updateWhenButtons();
+  render();
 }
 
 // Explore Neighborhoods rail — real per-neighborhood counts only. Built from
@@ -5512,7 +5692,30 @@ function renderNeighborhoodsRail(){
 // Toggle: clicking the already-active neighborhood clears it, same pattern
 // as re-clicking an active When/category chip elsewhere on the site.
 function viewNeighborhood(name){
-  neighborhoodFilter = (neighborhoodFilter === name) ? null : name;
+  const turningOn = neighborhoodFilter !== name;
+  neighborhoodFilter = turningOn ? name : null;
+  if(turningOn){
+    // Jody (2026-08-27): "if the tile says 50 events, the list should
+    // reflect 50 events and then the user can filter them down from there."
+    // computeNeighborhoodCounts() is a deliberately unfiltered count (today
+    // onward, ignoring category/free/search/date-scope/location) — so
+    // selecting a fresh neighborhood resets every other narrowing dimension
+    // to match it exactly, rather than silently showing fewer than the tile
+    // promised because some other filter was still active from before. The
+    // user can narrow further from that full baseline afterward.
+    activeCats = new Set(Object.keys(CATS));
+    freeOnly = false;
+    document.getElementById('search').value = '';
+    query = '';
+    whenMode = null;
+    pickedDate = null;
+    rangeStart = null;
+    rangeEnd = null;
+    document.getElementById('whenDateInput').value = '';
+    document.getElementById('whenDateEndInput').value = '';
+    clearLocation({skipRender: true});
+    buildFilterBar();
+  }
   renderNeighborhoodsRail();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
@@ -5523,7 +5726,7 @@ function viewNeighborhood(name){
 // a flat "nothing here."
 function emptyStateMessage(scopeLabel){
   const actions = [];
-  if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  if(whenMode || neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
   if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
   if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
   if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
@@ -5532,14 +5735,13 @@ function emptyStateMessage(scopeLabel){
 }
 
 function render(){
-  updateMonthHeader();
   updateWhenButtons();
   updateRadiusButtons();
   updateMobileTriggers();
   renderActiveFilters();
   renderHeroToday();
   renderSidebar();
-  renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
+  renderList(currentDateList(), currentListMeta());
   syncURL();
 }
 
@@ -5547,21 +5749,6 @@ function render(){
 // narrowing — those only ever match one specific date (see
 // matchesFilters()), so leaving them on while browsing another month would
 // silently show an empty list instead of that month's events.
-function exitDayScopedWhenMode(){
-  if(whenMode === 'now' || whenMode === 'today' || whenMode === 'tomorrow' || whenMode === 'date'){
-    whenMode = null;
-    pickedDate = null;
-    document.getElementById('whenDateInput').value = '';
-  }
-}
-document.getElementById('prevBtn').onclick = ()=>{
-  const p = new Date(current.getFullYear(), current.getMonth()-1, 1);
-  if(p >= MIN_MONTH){ current = p; exitDayScopedWhenMode(); render(); }
-};
-document.getElementById('nextBtn').onclick = ()=>{
-  const n = new Date(current.getFullYear(), current.getMonth()+1, 1);
-  if(n <= MAX_MONTH){ current = n; exitDayScopedWhenMode(); render(); }
-};
 document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); render(); });
 
 // ---- Discovery bar (time-range shortcuts) ----
@@ -5570,27 +5757,20 @@ function updateWhenButtons(){
   document.querySelectorAll('.when-btn').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.when === whenMode);
   });
-  document.getElementById('whenDateInput').closest('.when-date-picker').classList.toggle('active', whenMode === 'date');
+  document.getElementById('whenDateInput').closest('.when-date-picker').classList.toggle('active', whenMode === 'date' || whenMode === 'range');
+  document.getElementById('whenDateEndInput').closest('.when-date-picker').classList.toggle('active', whenMode === 'range');
 }
 
 function activateWhen(key){
   whenMode = key;
   pickedDate = null;
+  rangeStart = null;
+  rangeEnd = null;
   document.getElementById('whenDateInput').value = '';
-  const todayIso = getTodayISO();
+  document.getElementById('whenDateEndInput').value = '';
 
   if(key === 'weekend'){
     cachedWeekendDates = getWeekendDates();
-    const fri = new Date(cachedWeekendDates[0]+"T12:00:00");
-    current = new Date(fri.getFullYear(), fri.getMonth(), 1);
-  } else if(key === 'tomorrow'){
-    const t = new Date(getTomorrowISO()+"T12:00:00");
-    current = new Date(t.getFullYear(), t.getMonth(), 1);
-  } else {
-    // now / today — jump the list's month cursor to today's so the day is
-    // in view.
-    const t = new Date(todayIso+"T12:00:00");
-    current = new Date(t.getFullYear(), t.getMonth(), 1);
   }
 
   updateWhenButtons();
@@ -5602,31 +5782,78 @@ document.querySelectorAll('.when-btn').forEach(btn=>{
   btn.onclick = ()=> activateWhen(btn.dataset.when);
 });
 
-// Jump to an arbitrary date via the When sheet's date input — always today
-// or later, since the input's own min= (set in initWhenDatePicker()) keeps
-// the browser's native picker from ever offering an earlier one. Past dates
-// stay a calendar.html-only thing, same as everywhere else on this page.
-function activateDatePicker(iso){
+// The When sheet's From/To date pair (Jody, 2026-08-27 — expanded from a
+// single "pick a date" input to also support a range, while staying two
+// plain native <input type="date"> fields rather than a custom calendar
+// widget, per her "keep it simple, has to work with stumpy fingers on a
+// handset" requirement).
+//
+// "From" alone (no "To") is a single-day pick — whenMode 'date', unchanged
+// from the original single-input behavior. Filling in "To" as well switches
+// to whenMode 'range'. Clearing "To" reverts to the single-day behavior
+// rather than clearing "From" too, since "From" is still a complete,
+// meaningful choice on its own.
+function activateDateFrom(iso){
   if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
-  whenMode = 'date';
-  pickedDate = iso;
-  const d = new Date(iso+"T12:00:00");
-  current = new Date(d.getFullYear(), d.getMonth(), 1);
+  const endInput = document.getElementById('whenDateEndInput');
+  endInput.min = iso; // "To" can never be before "From"
+  const endVal = endInput.value;
+  if(endVal && endVal >= iso){
+    whenMode = 'range';
+    rangeStart = iso;
+    rangeEnd = endVal;
+  } else {
+    // No "To" set, or it's now before the new "From" — a stale "To" from a
+    // previous pick would silently build an invalid/backwards range, so
+    // it's cleared rather than left to produce confusing results.
+    if(endVal && endVal < iso) endInput.value = '';
+    whenMode = 'date';
+    pickedDate = iso;
+    rangeStart = null;
+    rangeEnd = null;
+  }
+  updateWhenButtons();
+  render();
+  closeSheet();
+}
+
+function activateDateTo(iso){
+  const fromInput = document.getElementById('whenDateInput');
+  const fromVal = fromInput.value;
+  if(!iso){
+    // "To" cleared — fall back to whatever "From" alone means.
+    if(fromVal){ whenMode = 'date'; pickedDate = fromVal; }
+    else { whenMode = null; pickedDate = null; }
+    rangeStart = null;
+    rangeEnd = null;
+  } else if(fromVal && iso >= fromVal){
+    whenMode = 'range';
+    rangeStart = fromVal;
+    rangeEnd = iso;
+  } else {
+    return; // "To" before "From" (shouldn't happen given min=, but don't apply an invalid range if it does)
+  }
   updateWhenButtons();
   render();
   closeSheet();
 }
 
 function initWhenDatePicker(){
-  const input = document.getElementById('whenDateInput');
-  input.min = getTodayISO();
+  const fromInput = document.getElementById('whenDateInput');
+  const toInput = document.getElementById('whenDateEndInput');
+  const todayIso = getTodayISO();
   // toISO() is a pure formatter, not a date normalizer — day 0 has to be
   // resolved to "the last day of the previous month" via a real Date first,
   // then formatted, rather than handed to toISO() directly (that would
   // format literally as "-00" instead of rolling back a month).
   const lastDayOfMax = new Date(MAX_MONTH.getFullYear(), MAX_MONTH.getMonth()+1, 0);
-  input.max = toISO(lastDayOfMax.getFullYear(), lastDayOfMax.getMonth(), lastDayOfMax.getDate());
-  input.addEventListener('change', (e)=> activateDatePicker(e.target.value));
+  const maxIso = toISO(lastDayOfMax.getFullYear(), lastDayOfMax.getMonth(), lastDayOfMax.getDate());
+  fromInput.min = todayIso;
+  fromInput.max = maxIso;
+  toInput.min = todayIso;
+  toInput.max = maxIso;
+  fromInput.addEventListener('change', (e)=> activateDateFrom(e.target.value));
+  toInput.addEventListener('change', (e)=> activateDateTo(e.target.value));
 }
 initWhenDatePicker();
 
@@ -5921,6 +6148,8 @@ function updateMobileTriggers(){
   const whenSub = document.getElementById('whenTriggerSub');
   if(whenMode === 'date' && pickedDate){
     whenSub.textContent = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  } else if(whenMode === 'range' && rangeStart && rangeEnd){
+    whenSub.textContent = formatRangeLabel(rangeStart, rangeEnd);
   } else {
     whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
   }
@@ -5952,19 +6181,16 @@ function updateMobileTriggers(){
 // the URL still updates live and reloading/sharing it reproduces the view.
 function syncURL(){
   const params = new URLSearchParams();
-  // The restore logic below only ever reads the month/year back out of this
-  // param (see dateParam handling), so which exact day gets encoded here is
-  // purely cosmetic — it doesn't change what a reloaded/shared URL shows.
-  // Still, showing an arbitrary "01" when the real default is today reads as
-  // wrong at a glance. Prefer today's real date while browsing the current
-  // month (the homepage default), else just the 1st of whatever other month
-  // is showing.
-  const todayIso = getTodayISO();
-  const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
-  const dateForUrl = isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1);
-  params.set('date', dateForUrl);
+  // Always today — the homepage's default view no longer has a separately
+  // browsable "current month" to encode (month paging was removed
+  // 2026-08-27), so there's nothing else meaningful to put here.
+  params.set('date', getTodayISO());
   if(whenMode) params.set('when', whenMode);
   if(whenMode === 'date' && pickedDate) params.set('picked', pickedDate);
+  if(whenMode === 'range' && rangeStart && rangeEnd){
+    params.set('rangeStart', rangeStart);
+    params.set('rangeEnd', rangeEnd);
+  }
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
   if(query) params.set('q', query);
@@ -5994,13 +6220,6 @@ function syncURL(){
 function readStateFromURL(){
   const params = new URLSearchParams(location.search);
 
-  const dateParam = params.get('date');
-  if(dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)){
-    const d = new Date(dateParam+"T12:00:00");
-    const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
-    if(monthStart >= MIN_MONTH && monthStart <= MAX_MONTH) current = monthStart;
-  }
-
   const catsParam = params.get('cats');
   if(catsParam !== null){
     // An empty/invalid list intentionally means "show nothing" — matching
@@ -6018,7 +6237,10 @@ function readStateFromURL(){
   // anymore — the homepage is List-only now, so that param is simply ignored.
   // Same for a legacy ?when=tonight link — Tonight no longer exists as a
   // shortcut (replaced with Tomorrow), so it's just ignored rather than
-  // guessed at; whenMode stays at its default (null/baseline).
+  // guessed at; whenMode stays at its default (null/baseline). Same again
+  // (2026-08-27) for ?when=now / ?when=today — both shortcuts were removed
+  // as redundant once the default view already opens on today, so an old
+  // link using either is just ignored the same way.
   const whenParam = params.get('when');
   if(whenParam === 'date'){
     const pickedParam = params.get('picked');
@@ -6027,7 +6249,16 @@ function readStateFromURL(){
       pickedDate = pickedParam;
       document.getElementById('whenDateInput').value = pickedParam;
     }
-  } else if(whenParam && ['now','today','tomorrow','weekend'].includes(whenParam)){
+  } else if(whenParam === 'range'){
+    const rs = params.get('rangeStart'), re = params.get('rangeEnd');
+    if(rs && re && /^\d{4}-\d{2}-\d{2}$/.test(rs) && /^\d{4}-\d{2}-\d{2}$/.test(re) && rs <= re && rs >= getTodayISO()){
+      whenMode = 'range';
+      rangeStart = rs;
+      rangeEnd = re;
+      document.getElementById('whenDateInput').value = rs;
+      document.getElementById('whenDateEndInput').value = re;
+    }
+  } else if(whenParam && ['tomorrow','weekend','thisweek'].includes(whenParam)){
     whenMode = whenParam;
     if(whenParam === 'weekend'){
       cachedWeekendDates = getWeekendDates();
