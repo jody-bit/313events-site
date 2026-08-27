@@ -4057,14 +4057,20 @@
       </a></h1>
     </div>
     <nav class="site-nav" aria-label="Time range and browse">
-      <!-- Reuses the existing .when-btn/data-when/activateWhen() machinery
-           (see the discovery bar's own Tomorrow/This Weekend/date-range
-           controls below) — clicking these keeps them in sync via the shared
-           updateWhenButtons(), since both sets share the .when-btn class.
-           Now/Today were removed here (2026-08-27, Jody's call): the
-           homepage's own default state already opens on today (see
-           matchesFilters()'s baseline floor), which made an explicit
-           "jump to today" shortcut redundant. -->
+      <!-- Tomorrow/This Weekend reuse the existing .when-btn/data-when/
+           activateWhen() machinery (see the discovery bar's own Tomorrow/
+           This Weekend/date-range controls below) — clicking these keeps
+           them in sync via the shared updateWhenButtons(), since both sets
+           share the .when-btn class.
+           "Now" was removed here (2026-08-27, Jody's call) as redundant with
+           the page's default today-onward view. "Today" was removed at the
+           same time, then explicitly restored (2026-08-27, later same day)
+           top-nav-only, deliberately NOT re-added to the When sheet/filter
+           section — it's a pure "bring the list into focus" jump-to-list
+           shortcut (viewToday(), see script below), not a filter control, so
+           it doesn't use the .when-btn/data-when wiring and never shows as
+           an active-filter chip. -->
+      <button type="button" class="site-nav-link" id="todayNavBtn">Today</button>
       <button type="button" class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
       <a class="site-nav-link" href="calendar.html">Calendar</a>
@@ -5066,7 +5072,7 @@ function clearAllFilters(){
   pickedDate = null;
   rangeStart = null;
   rangeEnd = null;
-  document.getElementById('whenDateInput').value = '';
+  document.getElementById('whenDateInput').value = getTodayISO(); // Anytime's baseline "From" default (Jody, 2026-08-27) — see initWhenDatePicker()
   document.getElementById('whenDateEndInput').value = '';
   clearLocation({skipRender: true});
   neighborhoodFilter = null;
@@ -5086,16 +5092,16 @@ function renderActiveFilters(){
 
   if(whenMode === 'date' && pickedDate){
     const label = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    chips.push({label, onRemove: ()=>{ whenMode = null; pickedDate = null; document.getElementById('whenDateInput').value = ''; updateWhenButtons(); render(); }});
+    chips.push({label, onRemove: ()=>{ whenMode = null; pickedDate = null; document.getElementById('whenDateInput').value = getTodayISO(); updateWhenButtons(); render(); }});
   } else if(whenMode === 'range' && rangeStart && rangeEnd){
     chips.push({label: formatRangeLabel(rangeStart, rangeEnd), onRemove: ()=>{
       whenMode = null; rangeStart = null; rangeEnd = null;
-      document.getElementById('whenDateInput').value = '';
+      document.getElementById('whenDateInput').value = getTodayISO();
       document.getElementById('whenDateEndInput').value = '';
       updateWhenButtons(); render();
     }});
   } else if(whenMode && WHEN_LABELS[whenMode]){
-    chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; updateWhenButtons(); render(); }});
+    chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; document.getElementById('whenDateInput').value = getTodayISO(); updateWhenButtons(); render(); }});
   }
   if(freeOnly){
     chips.push({label: 'Free only', onRemove: ()=>{
@@ -5520,6 +5526,25 @@ function viewThisWeek(){
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
+// Top-nav "Today" shortcut (restored 2026-08-27, top-nav-only per Jody — see
+// the site-nav comment above). Unlike viewThisWeek()/viewNeighborhood(), this
+// deliberately does NOT reset category/free/search/location — it's a peer to
+// the Tomorrow/This Weekend when-shortcuts (same single-day 'date' scoping
+// activateWhen() itself uses), just invoked directly so it can also carry the
+// "bring the list into focus" scroll Jody asked for, without adding a Today
+// button back into the When sheet/filter section.
+function viewToday(){
+  whenMode = 'date';
+  pickedDate = getTodayISO();
+  rangeStart = null;
+  rangeEnd = null;
+  document.getElementById('whenDateInput').value = pickedDate;
+  document.getElementById('whenDateEndInput').value = '';
+  updateWhenButtons();
+  render();
+  document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 // ---- Homepage sidebar: View Calendar / Near You / Free Today ----
 // Approved per-module (see FINAL IMPLEMENTATION DIRECTIVE amendments):
 // bookmark/save stayed rejected; these three were explicitly greenlit,
@@ -5711,7 +5736,7 @@ function viewNeighborhood(name){
     pickedDate = null;
     rangeStart = null;
     rangeEnd = null;
-    document.getElementById('whenDateInput').value = '';
+    document.getElementById('whenDateInput').value = getTodayISO();
     document.getElementById('whenDateEndInput').value = '';
     clearLocation({skipRender: true});
     buildFilterBar();
@@ -5852,10 +5877,24 @@ function initWhenDatePicker(){
   fromInput.max = maxIso;
   toInput.min = todayIso;
   toInput.max = maxIso;
+  // Jody (2026-08-27): the "Anytime" baseline state should default the
+  // "From" field to today's date rather than leaving it blank — so opening
+  // the native date picker starts on today (the same day the default
+  // rolling-window list already opens on) instead of an empty field with no
+  // starting point. This is a DISPLAY default only: it does not set whenMode
+  // or pickedDate (that still requires an actual change event, i.e. the user
+  // confirming a date), and readStateFromURL() below still overwrites it
+  // whenever a shared link actually specifies a date/range/tomorrow/weekend.
+  fromInput.value = todayIso;
   fromInput.addEventListener('change', (e)=> activateDateFrom(e.target.value));
   toInput.addEventListener('change', (e)=> activateDateTo(e.target.value));
 }
 initWhenDatePicker();
+
+// TODAY (header nav only — Jody, 2026-08-27) — see viewToday() above.
+document.getElementById('todayNavBtn').onclick = ()=>{
+  viewToday();
+};
 
 // BROWSE (header nav) — the unfiltered, see-everything shortcut: clears
 // every narrowing dimension (time range, categories, location, search) —
