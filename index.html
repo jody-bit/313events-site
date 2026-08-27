@@ -3778,7 +3778,7 @@
      Detroit photo to the wrong neighborhood, or reusing one photo
      everywhere, these are deliberately photo-less typographic cards for
      now. Real photography can be layered in venue-by-venue later. */
-  .neighborhoods-section{margin-bottom:22px;}
+  .neighborhoods-section{margin:18px 0 22px;}
   .neighborhoods-heading{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
     text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0 0 10px;
@@ -4127,6 +4127,15 @@
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
+  <!-- Moved here (just below the filter/search controls, above the event list) so it reads as a
+       discovery aid people see right away — it used to sit after the entire event list and before
+       the footer, which meant scrolling past every event on the page (thousands of px on a busy
+       day) before ever reaching it. Jody reported not being able to find it; this is why. -->
+  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
+    <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+  </section>
+
   <div class="home-body">
     <div class="home-main">
       <div id="listView"></div>
@@ -4138,11 +4147,6 @@
       <div class="side-card" id="freeTodayCard"></div>
     </aside>
   </div>
-
-  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
-    <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
-    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
-  </section>
 
   <footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
