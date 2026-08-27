@@ -4058,12 +4058,38 @@
     </div>
     <div class="hero-photo">
       <picture>
-        <source media="(max-width:720px)" srcset="/assets/photography/hero/313-events-homepage-hero-D-mobile.webp">
-        <img src="/assets/photography/hero/313-events-homepage-hero-D.webp" width="1536" height="1024" alt="A crowd throwing up rock horns as a silhouetted performer faces them under stage lights" loading="eager" fetchpriority="high">
+        <source id="heroPhotoSourceMobile" media="(max-width:720px)">
+        <img id="heroPhotoImg" alt="" loading="eager" fetchpriority="high">
       </picture>
     </div>
     <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
   </section>
+  <script>
+  (function(){
+    // Rotating hero photography (Jody, 2026-08-27): four of Jody's own photos
+    // (candidates A-D — see assets/photography/hero/...-manifest.json for
+    // provenance), one picked at random each page load. The <source>/<img>
+    // above are deliberately left with no srcset/src at all, so the browser
+    // never starts a fetch until THIS script sets it a few lines down — that
+    // keeps this to exactly one image request per load (same network cost as
+    // the old single fixed photo), rather than loading a default and then
+    // swapping it.
+    var HERO_PHOTOS = [
+      { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
+      { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
+      { file:'C', w:2400, h:1350, alt:'A concert crowd at dusk, backlit by stage lights and video screens.' },
+      { file:'D', w:1536, h:1024, alt:'A crowd throwing up rock horns as a silhouetted performer faces them under stage lights.' }
+    ];
+    var pick = HERO_PHOTOS[Math.floor(Math.random() * HERO_PHOTOS.length)];
+    var base = '/assets/photography/hero/313-events-homepage-hero-' + pick.file;
+    document.getElementById('heroPhotoSourceMobile').srcset = base + '-mobile.webp';
+    var img = document.getElementById('heroPhotoImg');
+    img.src = base + '.webp';
+    img.width = pick.w;
+    img.height = pick.h;
+    img.alt = pick.alt;
+  })();
+  </script>
 
   <!-- Positioned directly under the hero, above the When/Where/Category filter bar. This is a
        discovery/browse aid (a second way in, alongside the hero) rather than a refinement of the
@@ -4132,7 +4158,7 @@
       <div id="monthLabel">August 2026</div>
       <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
     </div>
-    <input type="text" id="search" placeholder="Search events, venues&hellip;">
+    <input type="text" id="search" placeholder="Search events, venues, neighborhoods&hellip;">
   </div>
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
@@ -4695,8 +4721,20 @@ function matchesFilters(e){
   if(freeOnly && !e.free) return false;
   if(neighborhoodFilter && e.neighborhood !== neighborhoodFilter) return false;
   if(query){
+    // Search matches everywhere in the event's metadata, not just title/venue —
+    // Jody: "search should search for anything in the metadata" (2026-08-27).
+    // Covers every text field already loaded client-side: title, venue, city,
+    // category label, neighborhood, source, and any editorial note. Does NOT
+    // reach the events.description column, since that's not fetched by
+    // loadSupabaseEvents() today — adding it would mean pulling extra text for
+    // every one of the (1,275+ and growing) approved rows just for search, so
+    // it's left out until that's worth the payload cost.
     const q = query.toLowerCase();
-    if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
+    const haystack = [
+      e.title, e.venue, e.city, CATS[e.cat] ? CATS[e.cat].label : '',
+      e.neighborhood, e.source, e.note
+    ].filter(Boolean).join(' ').toLowerCase();
+    if(!haystack.includes(q)) return false;
   }
   const todayIso = getTodayISO();
   // Baseline floor: the homepage list never shows a date before today, no
