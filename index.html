@@ -4935,7 +4935,17 @@ function currentListMeta(){
   return {scopeLabel: null, countLabel: null};
 }
 
-function matchesFilters(e){
+// Every "narrow the list" filter EXCEPT date-scoping: category, free-only,
+// neighborhood, search, and location/radius. Split out from matchesFilters()
+// (2026-08-27) because a widget that shows several distinct dates at once —
+// the View Calendar sidebar's Mon-Sun week strip — needs to count each of
+// its own days on its own terms, not through the single-current-scope date
+// logic below. Before this split, that strip called the full matchesFilters()
+// per day and got zeroed out for every already-passed day in the week (today
+// floor) and for every day but one whenever a When shortcut like Tomorrow was
+// active (its date-equality checks) — a real regression Jody caught: past
+// days in "This week" should still show their real counts, always.
+function matchesNonDateFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
@@ -4956,6 +4966,29 @@ function matchesFilters(e){
     ].filter(Boolean).join(' ').toLowerCase();
     if(!haystack.includes(q)) return false;
   }
+  if(originLocation && radiusMiles !== null){
+    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
+    // An event whose city isn't in the reference table has no resolvable
+    // distance from the chosen origin — excluded rather than guessed at
+    // (this is an active, opt-in radius filter, not a safety net like NOW).
+    if(!loc) return false;
+    if(radiusMiles === 'all'){
+      // Detroit Orbit: not narrowed by the chosen origin location itself
+      // (that's what makes it the widest tier), but still hard-capped at 75
+      // miles from Detroit's own city center — the fixed definition of the
+      // Detroit Orbit boundary — so results never drift outside the site's
+      // real coverage area no matter where the user searched from.
+      const detroit = CITY_LOOKUP.get('detroit');
+      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
+    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
+      return false;
+    }
+  }
+  return true;
+}
+
+function matchesFilters(e){
+  if(!matchesNonDateFilters(e)) return false;
   const todayIso = getTodayISO();
   // Baseline floor: the homepage list never shows a date before today, no
   // matter which month is being paged through or which time-range shortcut
@@ -4995,24 +5028,6 @@ function matchesFilters(e){
     const hr = parseHour(e.time);
     const nowHour = new Date().getHours();
     if(hr !== null && hr < nowHour) return false;
-  }
-  if(originLocation && radiusMiles !== null){
-    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
-    // An event whose city isn't in the reference table has no resolvable
-    // distance from the chosen origin — excluded rather than guessed at
-    // (this is an active, opt-in radius filter, not a safety net like NOW).
-    if(!loc) return false;
-    if(radiusMiles === 'all'){
-      // Detroit Orbit: not narrowed by the chosen origin location itself
-      // (that's what makes it the widest tier), but still hard-capped at 75
-      // miles from Detroit's own city center — the fixed definition of the
-      // Detroit Orbit boundary — so results never drift outside the site's
-      // real coverage area no matter where the user searched from.
-      const detroit = CITY_LOOKUP.get('detroit');
-      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
-    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
-      return false;
-    }
   }
   return true;
 }
@@ -5636,9 +5651,15 @@ const VC_DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 // A single real week (Mon-Sun, via getCalendarWeekDates()) — not a full
 // month grid — per "have it focused on the week that we are on... show the
 // same amount of calendar as in the mock." Counts respect the visitor's own
-// active filters (category/free/search/location), same as the month grid
-// cells they mirror, so this reads as a live mini-nav, not a second static
-// stat. Each day links to the dedicated calendar page.
+// active filters (category/free/search/location) via matchesNonDateFilters()
+// — deliberately NOT the full matchesFilters(), whose today-floor and
+// whenMode date-narrowing are meant for the single-scope main list, not a
+// strip that shows all 7 days (past and future) of the current week at once.
+// Using the full matchesFilters() here used to zero out every already-passed
+// day (Mon/Tue/Wed showing 0 once the week was underway) — a real bug Jody
+// caught, since this widget's whole point is showing the real count for
+// every day in the week, not just today-onward. Each day links to the
+// dedicated calendar page.
 function renderViewCalendarCard(){
   const el = document.getElementById('viewCalendarCard');
   if(!el) return;
@@ -5646,7 +5667,7 @@ function renderViewCalendarCard(){
   const weekDates = getCalendarWeekDates();
   const cells = weekDates.map(iso=>{
     const d = new Date(iso+"T12:00:00");
-    const count = (byDate[iso]||[]).filter(e=>matchesFilters(e)).length;
+    const count = (byDate[iso]||[]).filter(e=>matchesNonDateFilters(e)).length;
     const isToday = iso === todayIso;
     return `<a class="vc-day${isToday ? ' today' : ''}" href="calendar.html?date=${iso}" aria-label="${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${count} event${count===1?'':'s'}">
       <span class="vc-dow">${VC_DOW[d.getDay()]}</span>
