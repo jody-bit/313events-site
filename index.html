@@ -4065,6 +4065,16 @@
     <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
   </section>
 
+  <!-- Positioned directly under the hero, above the When/Where/Category filter bar. This is a
+       discovery/browse aid (a second way in, alongside the hero) rather than a refinement of the
+       filters below it — Jody's call, and it matches IA practice for "browse by X" entry points
+       (see 2026-08-27 conversation): they read as a peer to the hero's primary path, not as part
+       of the filter mechanism that acts on the list. -->
+  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
+    <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+  </section>
+
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
       <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
@@ -4126,15 +4136,6 @@
   </div>
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
-
-  <!-- Moved here (just below the filter/search controls, above the event list) so it reads as a
-       discovery aid people see right away — it used to sit after the entire event list and before
-       the footer, which meant scrolling past every event on the page (thousands of px on a busy
-       day) before ever reaching it. Jody reported not being able to find it; this is why. -->
-  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
-    <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
-    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
-  </section>
 
   <div class="home-body">
     <div class="home-main">
