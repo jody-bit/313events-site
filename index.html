@@ -3961,6 +3961,19 @@
   }
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
+  /* "As seen in" press-mention link (2026-08-27) — same shape as .evt-link
+     (inherits the arrow via ::after) but intentionally softer than the
+     accent-colored Tickets/Cal/Share links: it's supplementary credit to the
+     outlet that covered the event, not a primary call-to-action, and
+     shouldn't visually compete with "Tickets & info". Truncates long
+     article titles with an ellipsis rather than wrapping/pushing the row
+     taller — the outlet name (via the arrow-adjacent title) is a bonus, not
+     essential info the row depends on. */
+  .evt-link-editorial{
+    color:var(--ink-soft);font-style:italic;font-weight:600;
+    max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .evt-link-editorial:hover{color:var(--accent);}
   /* Row of secondary actions under the title/venue block — ticket link (if
      any), Add to Calendar, Share. Wraps on narrow widths rather than
      truncating or overlapping. */
@@ -5508,6 +5521,17 @@ function shareButtonHtml(e){
     data-date="${escapeHtml(dateLabel)}" data-time="${escapeHtml(e.time||'')}">Share</button>`;
 }
 
+// "As seen in: [Article title]" — only renders when loadEditorialArticles()
+// has already resolved a match for this specific event (keyed by e.id, see
+// that function). Renders nothing (not a placeholder/skeleton) for every
+// event without a match, which is the large majority — press coverage is
+// the exception, not the norm, for any single listing.
+function editorialLinkHtml(e){
+  const article = e.id != null ? editorialByEvent[e.id] : null;
+  if(!article || !safeUrl(article.url)) return '';
+  return `<a class="evt-link evt-link-editorial" href="${escapeHtml(safeUrl(article.url))}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(article.title)}${article.source?` — ${escapeHtml(article.source)}`:''}">As seen in: ${escapeHtml(article.title)}</a>`;
+}
+
 // dateList is always an explicit array of ISO date strings to render — see
 // currentDateList() for how it's built for each mode (rolling 30-day
 // default, a single day, a weekend, a this-week window, a user-picked
@@ -5544,6 +5568,7 @@ function renderList(dateList, meta){
               ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
               ${addToCalendarHtml(e)}
               ${shareButtonHtml(e)}
+              ${editorialLinkHtml(e)}
             </div>
           </div>
           <div class="evt-side">
@@ -6583,6 +6608,7 @@ async function loadNeighborhoodData() {
 function mapSupabaseRow(row) {
   const venueKey = (row.venue_name_raw || "").trim().toLowerCase();
   return {
+    id: row.id, // 2026-08-27: needed to join editorial_articles.matched_event_id (see loadEditorialArticles()) — nothing on the client referenced an event's own DB identity before this, only field values.
     date: row.start_date,
     title: decodeEntities(row.title),
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
@@ -6626,7 +6652,7 @@ async function loadSupabaseEvents() {
     // site ever needs anything older than "the Monday of the current week"
     // (see loadFloorISO() above), so flooring the query there spends the
     // row budget on relevant dates instead of unbounded history.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -6687,6 +6713,51 @@ async function loadOrbitEventTotal(){
   }
 }
 loadOrbitEventTotal();
+
+// "As seen in" inline press links (2026-08-27, Jody: associate editorial
+// coverage with the specific event it's about). All the actual work —
+// pulling RSS from local outlets, and matching an article to an event by
+// venue/title text — happens server-side in api/cron-editorial.js on a
+// schedule; this just reads the already-matched results. Only rows that
+// already have a matched_event_id are requested (see the RLS policy in
+// migration_011_editorial_articles.sql), and only title/url/source ever
+// leave the server — never full article text — so every "As seen in" link
+// drives the click back to the original outlet instead of reproducing its
+// work. Keyed by event.id (see mapSupabaseRow()'s new id field) rather than
+// by title/venue text, so a coincidental title match elsewhere on the site
+// can't accidentally borrow another event's press mention.
+let editorialByEvent = {};
+async function loadEditorialArticles(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=not.is.null&select=title,url,source,matched_event_id&order=published_at.desc`;
+    const resp = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!resp.ok) return;
+    const rows = await resp.json();
+    if (!Array.isArray(rows)) return;
+    const byEvent = {};
+    rows.forEach(r=>{
+      // order=published_at.desc means the first row seen per event id is
+      // its most recent coverage — a second, older mention of the same
+      // event is intentionally dropped rather than shown as a second link.
+      if(!byEvent[r.matched_event_id]){
+        byEvent[r.matched_event_id] = { title: decodeEntities(r.title), url: r.url, source: r.source };
+      }
+    });
+    editorialByEvent = byEvent;
+    render();
+  } catch (err) {
+    // Silent by design, same convention as loadOrbitEventTotal() — a failed
+    // fetch here just means no "As seen in" links show up, never breaks the
+    // rest of the list.
+  }
+}
+loadEditorialArticles();
 </script>
 </body>
 </html>
