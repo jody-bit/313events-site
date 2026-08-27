@@ -3379,7 +3379,7 @@
        corner — a direct, deliberately conservative move toward the Detroit
        Signal concept board's rectilinear, editorial-broadcast language.
        Scoped to this single token: every var(--radius) consumer is a
-       structural chrome container (.notice, .controls, #listView), not an
+       structural chrome container (.notice, #search, #listView), not an
        interactive pill/chip/badge, so this doesn't touch
        any control's tap-target shape or affordance. */
     --radius:0px;
@@ -3443,8 +3443,9 @@
      calendar.html) — same visual treatment as an active time-range chip. */
   .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
   /* Search icon (mockup parity) — opens/focuses the real search input that
-     already lives in .controls, rather than duplicating a second search
-     field up here. No new search logic, just a shortcut to the existing one. */
+     lives at the end of the When/Where/Category trigger row (moved there
+     2026-08-27), rather than duplicating a second search field up here. No
+     new search logic, just a shortcut to the existing one. */
   .nav-search-btn{
     border:none;background:none;padding:0;color:var(--ink-soft);cursor:pointer;
     display:flex;align-items:center;
@@ -3584,25 +3585,18 @@
     .hero-today{padding:14px 18px 20px;}
   }
 
-  .controls{
-    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:12px 14px;margin-bottom:10px;
-  }
-  .nav-group{display:flex;align-items:center;gap:10px;}
-  .nav-group button.navbtn{
-    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);width:34px;height:34px;
-    font-size:16px;cursor:pointer;color:var(--ink);
-  }
-  .nav-group button.navbtn:hover:not(:disabled){background:var(--panel-hover);}
-  .nav-group button.navbtn:disabled{opacity:.35;cursor:not-allowed;}
-  #monthLabel{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;min-width:170px;text-align:center;}
+  /* Search moved into the When/Where/Category trigger row (Jody,
+     2026-08-27) — it's the same "narrow the list" family as those three, and
+     the separate bordered .controls panel that used to hold it alone was
+     just dead vertical space. On desktop/tablet it sits as a 4th item in the
+     same flex row with extra grow (it needs more room to type in than a
+     fixed-value trigger label does); below 720px, where the three triggers
+     are already squeezed to compact pills, it drops to its own full-width
+     line via flex-basis:100% instead of getting squeezed into a quarter-width
+     sliver too small to comfortably type in on a phone. */
   #search{
-    /* flex:1 (not just min-width) because .controls now holds only this one
-       control since month prev/next paging was removed (2026-08-27) — a
-       narrow fixed-width box left floating in an otherwise-empty bar read as
-       broken, not intentional. */
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;flex:1;
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;
+    min-width:200px;flex:2 1 220px;
     background:var(--panel-alt);color:var(--ink);
   }
   #search::placeholder{color:var(--ink-dim);}
@@ -3827,17 +3821,41 @@
   .vc-num{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
   .vc-count{font-size:10px;font-weight:700;color:var(--accent);}
 
-  /* Near You: decorative-only radar — this project has zero real per-event
-     coordinates (0% of venues/events have lat/lng), so this never plots
-     real event positions. The count above/below it is real, city-level
-     radius math (haversineMiles against CITY_LOOKUP), same method the
-     Where/radius filter already uses. */
-  .ny-radar{position:relative;width:100%;height:84px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
-  .ny-ring{position:absolute;border:1px solid var(--line);border-radius:50%;}
-  .ny-ring-1{width:38%;height:38%;}
-  .ny-ring-2{width:68%;height:68%;}
-  .ny-ring-3{width:100%;height:100%;}
-  .ny-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
+  /* "What's in your Detroit Orbit?" card (redesigned from "Near You", Jody
+     2026-08-27) — decorative-only radar/orbit graphic: this project has zero
+     real per-event coordinates (0% of venues/events have lat/lng), so this
+     never plots real event positions. The count above/below it is real,
+     city-level radius math (haversineMiles against CITY_LOOKUP), same method
+     the Where/radius filter already uses. Rings are dashed and fade with
+     distance to read as orbital paths rather than a plain bullseye; the
+     .ny-ping element is a single "you are here" location pulse (radiates
+     outward from the dot and fades, like a map pin ping) — deliberately a
+     DIFFERENT motion (expand-and-fade-out, not scale-in-place) from the hero
+     signal's breathing animation, per that animation's own one-off/no-reuse
+     rule. Fixed at aspect-ratio:1 (rather than the card's own full width vs a
+     flat fixed height, which is what the old "Near You" version did) so the
+     rings render as true circles instead of the squashed ellipses that
+     mismatch produced — width % and height % need the same base to actually
+     look like circular orbit rings. */
+  .ny-radar{position:relative;width:120px;max-width:100%;aspect-ratio:1;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
+  .ny-ring{position:absolute;border:1px dashed var(--line);border-radius:50%;}
+  .ny-ring-1{width:38%;height:38%;opacity:.9;}
+  .ny-ring-2{width:68%;height:68%;opacity:.6;}
+  .ny-ring-3{width:100%;height:100%;opacity:.35;}
+  .ny-ping{
+    position:absolute;width:38%;height:38%;border-radius:50%;
+    background:var(--accent);z-index:1;
+    animation: ny-orbit-ping 2.8s cubic-bezier(0,0,.2,1) infinite;
+  }
+  @keyframes ny-orbit-ping{
+    0%{transform:scale(.4);opacity:.45;}
+    70%{transform:scale(2.6);opacity:0;}
+    100%{transform:scale(2.6);opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ny-ping{animation:none;opacity:0;}
+  }
+  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
 
   @media (max-width:980px){
     .home-body{grid-template-columns:1fr;}
@@ -4025,7 +4043,7 @@
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:12px 14px;margin-bottom:10px;
   }
-  .mobile-triggers{display:flex;gap:8px;}
+  .mobile-triggers{display:flex;gap:8px;flex-wrap:wrap;}
   .mobile-trigger{
     flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);
     border-radius:var(--radius);padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
@@ -4075,6 +4093,7 @@
     .discovery-shell{padding:10px 10px 0;background:none;border:none;}
     .mobile-trigger{align-items:center;text-align:center;}
     .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
+    #search{flex-basis:100%;min-width:0;}
 
     .sheet-backdrop{
       display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
@@ -4195,6 +4214,7 @@
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
         <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
       </button>
+      <input type="text" id="search" placeholder="Search events, venues, neighborhoods&hellip;">
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
 
@@ -4255,10 +4275,12 @@
        sheet's date-range picker is the way to jump further out. A calendar
        month to page through no longer matches how the list actually scopes
        itself, so the control (and the "August 2026" label with it) is gone
-       rather than left showing a scope that isn't real anymore. -->
-  <div class="controls">
-    <input type="text" id="search" placeholder="Search events, venues, neighborhoods&hellip;">
-  </div>
+       rather than left showing a scope that isn't real anymore.
+       The separate .controls search box that used to live here is gone too
+       (Jody, 2026-08-27) — search moved into the When/Where/Category trigger
+       row above as its own last item, since it's the same kind of "narrow
+       the list" control as those three, and having it in its own bordered
+       panel was just dead vertical space for one input. -->
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
@@ -5639,53 +5661,104 @@ function renderViewCalendarCard(){
   `;
 }
 
-// Defaults to Downtown Detroit + 25mi until the visitor sets a real
-// location via the Where control, then switches to whatever they chose
-// (their radius, or 75mi if they picked "Detroit Orbit"/left it unset).
-function getNearYouOrigin(){
-  if(originLocation){
-    const miles = (radiusMiles === 'all' || radiusMiles === null) ? 75 : radiusMiles;
-    return {name: originLocation.name, lat: originLocation.lat, lng: originLocation.lng, miles};
-  }
-  const downtown = LOCATIONS.find(l => l.name === 'Downtown');
-  return {name: 'Downtown Detroit', lat: downtown.lat, lng: downtown.lng, miles: 25};
-}
+// "What's in your Detroit Orbit?" (redesigned from "Near You", Jody
+// 2026-08-27) — the old version silently defaulted to Downtown Detroit +
+// 25mi without ever asking the visitor anything. This version has exactly
+// two states: no origin yet -> a real "Use my location" CTA (never guesses
+// a location on its own); origin already known (from geolocation here, or
+// picked manually via the Where sheet) -> the real Detroit Orbit radius
+// (75mi, matching the "Detroit Orbit" radius chip everywhere else on the
+// site) around that real point, with a live count.
+const DETROIT_ORBIT_MILES = 75;
 
 function renderNearYouCard(){
   const el = document.getElementById('nearYouCard');
   if(!el) return;
-  const origin = getNearYouOrigin();
+
+  if(!originLocation){
+    el.innerHTML = `
+      <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
+      <div class="ny-radar" aria-hidden="true">
+        <span class="ny-ring ny-ring-1"></span>
+        <span class="ny-ring ny-ring-2"></span>
+        <span class="ny-ring ny-ring-3"></span>
+        <span class="ny-ping"></span>
+        <span class="ny-dot"></span>
+      </div>
+      <p class="side-card-sub">See what's on up to 75 miles out — Detroit, Ann Arbor, Windsor &amp; beyond.</p>
+      <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
+    `;
+    return;
+  }
+
   const todayIso = getTodayISO();
   let count = 0;
   Object.keys(byDate).forEach(iso=>{
     if(iso < todayIso) return;
-    count += byDate[iso].filter(e=>!isBlockedEvent(e) && isWithinRadius(e, origin.lat, origin.lng, origin.miles)).length;
+    count += byDate[iso].filter(e=>!isBlockedEvent(e) && isWithinRadius(e, originLocation.lat, originLocation.lng, DETROIT_ORBIT_MILES)).length;
   });
   el.innerHTML = `
-    <div class="side-card-head"><h2>Near You</h2></div>
+    <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
     <div class="ny-radar" aria-hidden="true">
       <span class="ny-ring ny-ring-1"></span>
       <span class="ny-ring ny-ring-2"></span>
       <span class="ny-ring ny-ring-3"></span>
+      <span class="ny-ping"></span>
       <span class="ny-dot"></span>
     </div>
-    <p class="side-card-sub">Within ${origin.miles} mi of ${escapeHtml(origin.name)}</p>
+    <p class="side-card-sub">Within ${DETROIT_ORBIT_MILES} mi of ${escapeHtml(originLocation.name)}</p>
     <div class="side-card-number">${count}</div>
     <p class="side-card-caption">upcoming event${count === 1 ? '' : 's'}</p>
-    <button type="button" class="side-card-cta" onclick="viewNearby()">View nearby &rarr;</button>
+    <button type="button" class="side-card-cta" onclick="viewMyOrbit()">View your Orbit &rarr;</button>
   `;
 }
 
-// Applies the same default (or the visitor's own chosen origin/radius, if
-// already set) as a real filter and drops into List view — the card's
-// count and the events the visitor lands on are always the same query.
-function viewNearby(){
-  if(!originLocation){
-    originLocation = LOCATIONS.find(l => l.name === 'Downtown');
-    radiusMiles = 25;
+// The card's one and only interaction. No origin yet: request geolocation
+// (same explicit-click-only pattern as the Where sheet's "Use my location"
+// button — never on page load) and, on success, set the real Detroit Orbit
+// radius around it. Origin already known: just (re)apply the 75mi Detroit
+// Orbit radius at that origin, in case a narrower radius was set elsewhere.
+// Either way this ends by dropping the visitor straight into the filtered
+// list, scrolled into view — the CTA IS the whole interaction, no separate
+// second "now view it" step.
+function viewMyOrbit(){
+  if(originLocation){
+    radiusMiles = 'all';
     updateLocationControlUI();
+    render(); // render() -> renderSidebar() -> renderNearYouCard(), so the card refreshes as part of this same call
+    document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+    return;
   }
-  render();
+
+  const card = document.getElementById('nearYouCard');
+  const btn = card ? card.querySelector('.side-card-cta') : null;
+  const original = btn ? btn.textContent : '';
+
+  if(!navigator.geolocation){
+    if(btn){
+      btn.textContent = 'Not supported';
+      setTimeout(()=>{ btn.textContent = original; }, 2500);
+    }
+    return;
+  }
+  if(btn){ btn.textContent = 'Locating…'; btn.disabled = true; }
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      originLocation = {name: 'Your location', type: 'here', region: '', lat: pos.coords.latitude, lng: pos.coords.longitude};
+      radiusMiles = 'all';
+      updateLocationControlUI();
+      render(); // render() -> renderSidebar() -> renderNearYouCard(), so the card refreshes as part of this same call
+      document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+    },
+    ()=>{
+      if(btn){
+        btn.textContent = 'Location unavailable';
+        btn.disabled = false;
+        setTimeout(()=>{ btn.textContent = original; }, 2500);
+      }
+    },
+    {timeout: 8000}
+  );
 }
 
 function renderFreeTodayCard(){
@@ -6218,6 +6291,14 @@ document.addEventListener('click', (e)=>{
   if(!openSheetName || isMobileViewport()) return;
   const shell = document.getElementById('discoveryShell');
   if(shell && !shell.contains(e.target)) closeSheet();
+});
+// #search now lives inside #discoveryShell (moved 2026-08-27, end of the
+// When/Where/Category trigger row), so the outside-click handler above no
+// longer catches a click into it. Focusing search still closes whichever
+// sheet was open, same as before the move — typing a query and an open
+// When/Where/Category panel shouldn't sit on screen at the same time.
+document.getElementById('search').addEventListener('focus', ()=>{
+  if(openSheetName) closeSheet();
 });
 // Guards against a stuck-open sheet if the window is resized/rotated across
 // the 720px breakpoint while one is open (e.g. a tablet rotation) — the
