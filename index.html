@@ -3491,12 +3491,61 @@
     font-size:clamp(40px,26cqw,120px);line-height:.82;letter-spacing:-0.03em;
     text-transform:uppercase;color:var(--ink);
   }
-  /* A real period, not a design flourish — sized and set on the baseline at
-     the same scale as the letters around it (em-based, so it still tracks
-     the headline's own responsive font-size). Not enlarged. */
-  .hl-dot{
-    display:inline-block;width:.16em;height:.16em;border-radius:50%;
-    background:var(--accent);margin-left:.06em;vertical-align:baseline;
+  /* Detroit Signal breathing dot (Jody, 2026-08-27) — this IS the period on
+     "IS ON" — there is deliberately no separate small static dot alongside
+     it (that was tried and explicitly rejected: "no double periods"). This
+     large pulse is the only dot in the headline, and it stays distinct from
+     any small brand/status dot elsewhere in the header — those stay static.
+     This is a deliberate, one-off brand exception representing "the city
+     is on/alive/transmitting"
+     — DO NOT copy this breathing animation onto category colors, filters,
+     CTAs, neighborhood cards, or other small status dots; the site should
+     not become full of pulsing chartreuse elements. Sized off the hero
+     headline's own container width (cqw), same reasoning as .hl-line's
+     font-size above, so it scales with the column rather than the viewport. */
+  .hl-line-signal{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(10px,4cqw,22px);}
+  .hero-signal{
+    --signal-size: clamp(60px, 22cqw, 108px);
+    width:var(--signal-size);
+    aspect-ratio:1;
+    flex:0 0 auto;
+    display:inline-block;
+    background:var(--accent);
+    border-radius:50%;
+    transform-origin:center;
+    box-shadow:
+      0 0 18px rgba(215,255,0,.22),
+      0 0 42px rgba(215,255,0,.12);
+    animation: detroit-signal-breathe 5.2s cubic-bezier(.45,0,.55,1) infinite;
+    will-change: transform, box-shadow;
+  }
+  /* Slow human breathing, not a notification pulse: ~5.2s cycle, peak just
+     past halfway (56%), a slightly slower/asymmetric settle back to rest
+     (72% -> 100%) so it doesn't read as a perfectly mechanical loop. Scale
+     never exceeds ~1.14 — calm and organic, not a heartbeat or strobe. */
+  @keyframes detroit-signal-breathe{
+    0%{
+      transform:scale(1);
+      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
+    }
+    56%{
+      transform:scale(1.14);
+      box-shadow:0 0 30px rgba(215,255,0,.32), 0 0 72px rgba(215,255,0,.16);
+    }
+    72%{
+      transform:scale(1.10);
+    }
+    100%{
+      transform:scale(1);
+      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
+    }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-signal{
+      animation:none;
+      transform:none;
+      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
+    }
   }
   .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
@@ -4088,7 +4137,7 @@
     <div class="hero-headline">
       <div class="hl-line">THE</div>
       <div class="hl-line">CITY</div>
-      <div class="hl-line">IS ON<span class="hl-dot" aria-hidden="true"></span></div>
+      <div class="hl-line hl-line-signal"><span class="hl-text">IS ON</span><span class="hero-signal" aria-hidden="true"></span></div>
     </div>
     <div class="hero-photo">
       <picture>
