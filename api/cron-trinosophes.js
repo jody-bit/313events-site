@@ -157,7 +157,15 @@ module.exports = async (req, res) => {
     category: "music", // Trinosophes is predominantly a music/arts venue; not fine-grained per event
     venue_name_raw: VENUE_NAME,
     start_date: e.date,
-    time_display: null,
+    // Trinosophes' events page never lists a showtime (confirmed 2026-08-26
+    // — every listing is just a date heading + title, no times anywhere).
+    // Per Jody: doors are reliably either 7:00 or 7:30, so default to the
+    // earlier, safer time rather than showing blank/no time at all, and
+    // flag it as approximate via `note` (the site's short-caveat field —
+    // rendered under the venue line) so no one shows up expecting an exact
+    // start.
+    time_display: "7:00 PM",
+    note: "Doors ~7:00 PM (sometimes 7:30) — confirm at trinosophes.com or by calling the venue.",
     is_free: false,
     source: "Trinosophes",
     status: "approved",

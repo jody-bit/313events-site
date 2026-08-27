@@ -3476,10 +3476,19 @@
     background:var(--panel);border:1px solid var(--line);margin-bottom:10px;
     min-height:320px;
   }
-  .hero-headline{padding:22px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  /* container-type here (not vw units) is deliberate: .hero-headline is a
+     narrow slice (~27% at desktop) of a capped 1180px-max page, not the
+     full viewport — sizing off raw viewport width (as the brief's
+     "conceptual" clamp(72px,9vw,150px) literally suggests) overflows the
+     actual column the moment the viewport is wider than ~1300px, since 9vw
+     keeps growing while the column itself is capped. Sizing off the
+     column's OWN inline size (cqw) scales the headline as large as the
+     brief intends while automatically staying inside whatever width the
+     3-col/stacked layout actually gives it at any breakpoint. */
+  .hero-headline{padding:22px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
   .hl-line{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(34px,4.6vw,58px);line-height:.92;letter-spacing:-0.01em;
+    font-size:clamp(40px,26cqw,120px);line-height:.82;letter-spacing:-0.03em;
     text-transform:uppercase;color:var(--ink);
   }
   /* A real period, not a design flourish — sized and set on the baseline at
@@ -3491,13 +3500,17 @@
   }
   .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
-  .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
   /* "N things happening today in the Detroit Orbit" stat panel — a constant,
      site-wide pulse number (see isInDetroitOrbit()), distinct from the
-     filtered calendar/list below it. Real count, never fabricated. */
+     filtered calendar/list below it. Real count, never fabricated. Sized
+     off the column's own inline size (cqw), same reasoning as .hl-line
+     above — digits are narrower than "CITY" so this column has more
+     headroom, but a fixed 4-digit count still needs to fit without
+     overflowing the stat column at any breakpoint. */
   .hero-stat-number{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(46px,6vw,72px);line-height:.88;color:var(--accent);margin-bottom:2px;
+    font-size:clamp(48px,30cqw,116px);line-height:.85;color:var(--accent);margin-bottom:2px;
   }
   .hero-stat-caption{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:16.5px;
@@ -3753,6 +3766,49 @@
     .home-body{grid-template-columns:1fr;}
     .home-sidebar{position:static;}
   }
+
+  /* Explore Neighborhoods — a horizontal, scroll-snapping rail rather than a
+     JS carousel: card width is set per breakpoint below and the browser's
+     native scroll/snap handles "multiple visible on desktop, 2-3 on tablet,
+     partial-next-card peek on mobile" (brief §23/§38) without any extra
+     script. No per-neighborhood photography exists yet (checked
+     /assets/photography — only 4 hero candidates + 7 general Detroit
+     "free-selects", two of which happen to be Eastern Market but nothing
+     for the other 40+ neighborhoods) — rather than mismatching a generic
+     Detroit photo to the wrong neighborhood, or reusing one photo
+     everywhere, these are deliberately photo-less typographic cards for
+     now. Real photography can be layered in venue-by-venue later. */
+  .neighborhoods-section{margin-bottom:22px;}
+  .neighborhoods-heading{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0 0 10px;
+  }
+  .neighborhoods-rail{
+    display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  }
+  .neigh-card{
+    flex:0 0 auto;scroll-snap-align:start;width:168px;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;text-align:left;cursor:pointer;font-family:inherit;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .neigh-card:hover{background:var(--panel-hover);}
+  .neigh-card.active{border-color:var(--accent);}
+  .neigh-name{
+    font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;
+    color:var(--ink);line-height:1.25;margin-bottom:8px;
+  }
+  .neigh-count{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:28px;line-height:1;color:var(--accent);
+  }
+  .neigh-count-label{font-size:11px;color:var(--ink-soft);}
+  @media (max-width:640px){
+    .neigh-card{width:78vw;max-width:280px;}
+    .neighborhoods-rail{scroll-snap-type:x mandatory;}
+  }
+
   .pill{
     font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:5px;padding:2px 5px;margin-bottom:3px;
     display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;
@@ -4082,6 +4138,11 @@
       <div class="side-card" id="freeTodayCard"></div>
     </aside>
   </div>
+
+  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
+    <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+  </section>
 
   <footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
@@ -4544,6 +4605,14 @@ let originLocation = null;
 // meaningful while originLocation is set.
 let radiusMiles = null;
 
+// Set by clicking a card in the Explore Neighborhoods rail. Deliberately an
+// EXACT match against e.neighborhood (the same venues->neighborhoods lookup
+// the rail's own counts are built from) rather than a radius/distance
+// filter — so clicking "23 events in Corktown" always lands on exactly the
+// 23 events that count came from, never a different number from a fuzzy
+// proximity search.
+let neighborhoodFilter = null;
+
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 
@@ -4619,6 +4688,7 @@ function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
+  if(neighborhoodFilter && e.neighborhood !== neighborhoodFilter) return false;
   if(query){
     const q = query.toLowerCase();
     if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
@@ -4818,8 +4888,10 @@ function clearAllFilters(){
   const t = new Date(getTodayISO()+"T12:00:00");
   current = new Date(t.getFullYear(), t.getMonth(), 1);
   clearLocation({skipRender: true});
+  neighborhoodFilter = null;
   buildFilterBar();
   render();
+  renderNeighborhoodsRail();
 }
 
 // Renders the "what am I looking at" summary tray above the calendar/list —
@@ -4861,6 +4933,9 @@ function renderActiveFilters(){
   if(originLocation){
     const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
     chips.push({label: `${radiusLabel} · ${originLocation.name}`, onRemove: ()=> clearLocation()});
+  }
+  if(neighborhoodFilter){
+    chips.push({label: neighborhoodFilter, onRemove: ()=>{ neighborhoodFilter = null; renderNeighborhoodsRail(); render(); }});
   }
 
   if(!chips.length){ tray.style.display = 'none'; tray.innerHTML = ''; return; }
@@ -5347,6 +5422,59 @@ function viewFreeToday(){
   activateWhen('today');
 }
 
+// Explore Neighborhoods rail — real per-neighborhood counts only. Built from
+// VENUE_NEIGHBORHOOD_MAP (venues.neighborhood_id, resolved via the
+// venues/neighborhoods review — see supabase/migration_010), NOT a
+// lat/lng-radius guess: a venue with no confirmed neighborhood contributes
+// to no card here, rather than being force-assigned to the nearest point on
+// a map. Counts are a constant discovery signal like the hero stat / Near
+// You / Free Today — independent of activeCats/freeOnly/query/whenMode —
+// but DO respect neighborhoodFilter's own "today or later" floor, same as
+// everywhere else on the homepage.
+const NEIGHBORHOOD_RAIL_LIMIT = 10;
+
+function computeNeighborhoodCounts(){
+  const todayIso = getTodayISO();
+  const counts = new Map();
+  Object.keys(byDate).forEach(iso=>{
+    if(iso < todayIso) return;
+    (byDate[iso]||[]).forEach(e=>{
+      if(isBlockedEvent(e)) return;
+      if(!e.neighborhood) return;
+      counts.set(e.neighborhood, (counts.get(e.neighborhood)||0) + 1);
+    });
+  });
+  return [...counts.entries()].sort((a,b)=> b[1]-a[1]);
+}
+
+function renderNeighborhoodsRail(){
+  const section = document.getElementById('neighborhoodsSection');
+  const rail = document.getElementById('neighborhoodsRail');
+  if(!section || !rail) return;
+  const counts = computeNeighborhoodCounts().slice(0, NEIGHBORHOOD_RAIL_LIMIT);
+  if(!counts.length){ section.style.display = 'none'; rail.innerHTML = ''; return; }
+  section.style.display = '';
+  rail.innerHTML = counts.map(([name, count])=>`
+    <button type="button" class="neigh-card${neighborhoodFilter===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+      <span class="neigh-name">${escapeHtml(name)}</span>
+      <span class="neigh-count">${count}</span>
+      <span class="neigh-count-label">event${count===1?'':'s'}</span>
+    </button>
+  `).join('');
+  rail.querySelectorAll('.neigh-card').forEach(btn=>{
+    btn.addEventListener('click', ()=> viewNeighborhood(btn.dataset.neighborhood));
+  });
+}
+
+// Toggle: clicking the already-active neighborhood clears it, same pattern
+// as re-clicking an active When/category chip elsewhere on the site.
+function viewNeighborhood(name){
+  neighborhoodFilter = (neighborhoodFilter === name) ? null : name;
+  renderNeighborhoodsRail();
+  render();
+  document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 // Shared empty-state copy for the list view. Per the brief: never a dead
 // end — always paired with concrete actions to widen the search, not just
 // a flat "nothing here."
@@ -5804,6 +5932,7 @@ function syncURL(){
     params.set('loc', originLocation.name);
     if(radiusMiles !== null) params.set('radius', String(radiusMiles));
   }
+  if(neighborhoodFilter) params.set('neighborhood', neighborhoodFilter);
   const qs = params.toString();
   // Wrapped defensively: history.replaceState throws a SecurityError in a
   // sandboxed about:srcdoc context (e.g. an embedded preview iframe, which
@@ -5879,6 +6008,14 @@ function readStateFromURL(){
     }
   }
   updateLocationControlUI();
+
+  // Restored the same way as `loc` above — a real, human-readable name in
+  // the URL, resolved against live data once it loads rather than trusted
+  // blindly (an old link naming a neighborhood that's since been renamed —
+  // see the Fitzgerald/Rivertown renames — just won't match anything and
+  // quietly falls back to unfiltered, same failure mode as `cats`/`loc`).
+  const neighborhoodParam = params.get('neighborhood');
+  if(neighborhoodParam) neighborhoodFilter = neighborhoodParam;
 }
 
 readStateFromURL();
@@ -5913,7 +6050,39 @@ function decodeEntities(str){
   return ta.value;
 }
 
+// venue name (trimmed, lowercased) -> neighborhood name. Populated once by
+// loadNeighborhoodData() before events are mapped, so mapSupabaseRow() can
+// resolve each event's neighborhood the same way Jody's own review
+// spreadsheet did — via the venues table's neighborhood_id, not a guess.
+// Events whose venue never got a neighborhood assignment (still the
+// majority — see the venues/neighborhoods review, 2026-08-27) simply get
+// neighborhood: null and drop out of the Explore Neighborhoods rail, rather
+// than being force-assigned to something nobody confirmed.
+const VENUE_NEIGHBORHOOD_MAP = new Map();
+
+async function loadNeighborhoodData() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+    const [venuesResp, neighResp] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/venues?select=name,neighborhood_id&neighborhood_id=not.is.null&limit=1000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
+    ]);
+    if (!venuesResp.ok || !neighResp.ok) return;
+    const venues = await venuesResp.json();
+    const neighborhoods = await neighResp.json();
+    const idToName = new Map(neighborhoods.map(n => [n.id, n.name]));
+    venues.forEach(v => {
+      const nName = idToName.get(v.neighborhood_id);
+      if (nName && v.name) VENUE_NEIGHBORHOOD_MAP.set(v.name.trim().toLowerCase(), nName);
+    });
+  } catch (err) {
+    // Silent by design — the rail just stays hidden without this data.
+  }
+}
+
 function mapSupabaseRow(row) {
+  const venueKey = (row.venue_name_raw || "").trim().toLowerCase();
   return {
     date: row.start_date,
     title: decodeEntities(row.title),
@@ -5930,12 +6099,14 @@ function mapSupabaseRow(row) {
     note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
     priceFrom: row.price_from ?? undefined,
+    neighborhood: VENUE_NEIGHBORHOOD_MAP.get(venueKey) || null,
   };
 }
 
 async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
   try {
+    await loadNeighborhoodData(); // must resolve before mapSupabaseRow() runs below
     const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
@@ -5954,6 +6125,7 @@ async function loadSupabaseEvents() {
 
     buildFilterBar();
     render();
+    renderNeighborhoodsRail();
   } catch (err) {
     // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
   }
