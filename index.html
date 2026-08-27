@@ -5700,6 +5700,14 @@ function renderNearYouCard(){
   if(!el) return;
 
   if(!originLocation){
+    // Teaser number before the visitor has a location set (Jody,
+    // 2026-08-27): the real, unfiltered count of everything currently loaded
+    // (EVENTS — every approved row loadSupabaseEvents() pulled, no date or
+    // radius narrowing), not a personalized "near you" figure — that's what
+    // the CTA below is for. Gives the widget a real, honest big number to
+    // lead with before asking for anything, the way the old "770" figure
+    // did, rather than the plain sentence-only teaser this state had before.
+    const totalLoaded = EVENTS.filter(e=>!isBlockedEvent(e)).length;
     el.innerHTML = `
       <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
       <div class="ny-radar" aria-hidden="true">
@@ -5709,6 +5717,8 @@ function renderNearYouCard(){
         <span class="ny-ping"></span>
         <span class="ny-dot"></span>
       </div>
+      <div class="side-card-number">${totalLoaded.toLocaleString()}</div>
+      <p class="side-card-caption">events loaded across the Detroit Orbit</p>
       <p class="side-card-sub">See what's on up to 75 miles out — Detroit, Ann Arbor, Windsor &amp; beyond.</p>
       <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
     `;
