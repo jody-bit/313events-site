@@ -4677,6 +4677,16 @@ const FALLBACK_EVENTS = [
 // below replaces its contents with the live database rows once fetched.
 let EVENTS = FALLBACK_EVENTS.slice();
 
+// True current+upcoming event total, straight from Supabase's own exact row
+// count (see loadOrbitEventTotal() near the bottom of this script) — NOT
+// EVENTS.length, which is capped at whatever the main list query's row limit
+// happens to be (PostgREST defaults to 1000 rows per request with no
+// `limit=` set, so EVENTS.length reads as a suspicious flat "1,000" well
+// before the real total is that clean a number). null until that dedicated
+// count request resolves; the Detroit Orbit widget falls back to a
+// today-onward count of EVENTS in the meantime.
+let orbitEventTotal = null;
+
 // index by date
 let byDate = {};
 EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
@@ -5700,14 +5710,19 @@ function renderNearYouCard(){
   if(!el) return;
 
   if(!originLocation){
-    // Teaser number before the visitor has a location set (Jody,
-    // 2026-08-27): the real, unfiltered count of everything currently loaded
-    // (EVENTS — every approved row loadSupabaseEvents() pulled, no date or
-    // radius narrowing), not a personalized "near you" figure — that's what
-    // the CTA below is for. Gives the widget a real, honest big number to
-    // lead with before asking for anything, the way the old "770" figure
-    // did, rather than the plain sentence-only teaser this state had before.
-    const totalLoaded = EVENTS.filter(e=>!isBlockedEvent(e)).length;
+    // Teaser number before the visitor has a location set (Jody, 2026-08-27:
+    // "the total number of current and upcoming events... communicates the
+    // value of this site to users, partners, and advertisers") — not a
+    // personalized "near you" figure, that's what the CTA below is for.
+    // Prefers orbitEventTotal, Postgres's own exact count of current+upcoming
+    // approved rows (see loadOrbitEventTotal()) — it's the real site-wide
+    // total. Falls back to counting today-onward EVENTS client-side only
+    // until that dedicated request resolves (or if it fails); EVENTS.length
+    // alone is never used here since it's capped by the main list query's
+    // own row budget, not a real total.
+    const todayIso = getTodayISO();
+    const fallbackCount = EVENTS.filter(e=>!isBlockedEvent(e) && e.date >= todayIso).length;
+    const totalLoaded = orbitEventTotal !== null ? orbitEventTotal : fallbackCount;
     el.innerHTML = `
       <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
       <div class="ny-radar" aria-hidden="true">
@@ -6580,11 +6595,31 @@ function mapSupabaseRow(row) {
   };
 }
 
+// A small back-buffer (not just "today") so the View Calendar week strip
+// always has data for the whole Mon-Sun week even when today is, say,
+// Saturday — it needs Monday's count too. 8 days covers any day-of-week /
+// timezone edge case with a day to spare.
+function loadFloorISO(){
+  const d = new Date(getTodayISO()+"T12:00:00");
+  d.setDate(d.getDate()-8);
+  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
 async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
   try {
     await loadNeighborhoodData(); // must resolve before mapSupabaseRow() runs below
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    // start_date=gte floor added 2026-08-27: PostgREST defaults to capping a
+    // response at 1000 rows when no `limit=` is set, and this query had
+    // neither a limit nor a date floor — so once total approved rows
+    // (including ones from long-past events that were never pruned) passed
+    // 1000, this `order=start_date.asc` query would silently fill its entire
+    // 1000-row budget with the OLDEST rows first, at risk of pushing
+    // today/upcoming events out of the loaded set entirely. No page of this
+    // site ever needs anything older than "the Monday of the current week"
+    // (see loadFloorISO() above), so flooring the query there spends the
+    // row budget on relevant dates instead of unbounded history.
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -6608,6 +6643,43 @@ async function loadSupabaseEvents() {
   }
 }
 loadSupabaseEvents();
+
+// Dedicated exact count for the Detroit Orbit widget's "events loaded"
+// teaser (Jody, 2026-08-27: "the total number of current and upcoming
+// events... communicates the value of this site to users, partners, and
+// advertisers"). Deliberately NOT EVENTS.length — that array is capped by
+// whatever the main list query's row budget is (see loadFloorISO() above),
+// so it's the wrong source for a number meant to represent the site's real
+// scale. This instead asks Postgres for its own exact row count via
+// `Prefer: count=exact`, reading the total straight off the response's
+// Content-Range header (e.g. "0-0/1423") — `Range: 0-0` keeps the actual
+// transferred payload to a single row's worth of data, so getting an
+// accurate count doesn't mean downloading 1000+ rows twice.
+async function loadOrbitEventTotal(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${getTodayISO()}&select=id`;
+    const resp = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        Prefer: 'count=exact',
+        Range: '0-0',
+      },
+    });
+    if (!resp.ok) return;
+    const contentRange = resp.headers.get('content-range'); // "0-0/1423"
+    if (!contentRange) return;
+    const total = parseInt(contentRange.split('/')[1], 10);
+    if (isNaN(total)) return;
+    orbitEventTotal = total;
+    renderNearYouCard();
+  } catch (err) {
+    // Silent by design — renderNearYouCard()'s own EVENTS-based fallback
+    // count stays on screen if this dedicated request fails.
+  }
+}
+loadOrbitEventTotal();
 </script>
 </body>
 </html>
