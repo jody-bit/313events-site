@@ -5972,6 +5972,13 @@ function activateWhen(key){
   updateWhenButtons();
   render();
   closeSheet(); // each WHEN option is a single, complete choice — dismiss the mobile sheet after picking one, unlike WHERE/FILTER which stay open for further adjustment.
+  // Jody (2026-08-27): picking a When shortcut — whether from the top-nav
+  // (Tomorrow/This Weekend) or from inside the When sheet itself, since both
+  // share this one handler — should bring the results in front of the
+  // visitor's eyes immediately, same as Today/viewThisWeek/viewNeighborhood
+  // already do, rather than leaving them to notice the list changed further
+  // down the page on their own.
+  document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 document.querySelectorAll('.when-btn').forEach(btn=>{
