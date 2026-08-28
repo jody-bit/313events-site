@@ -3826,6 +3826,35 @@
   }
   .side-card-cta:hover{text-decoration:underline;}
 
+  /* "On the Radar" sidebar widget (2026-08-28, Jody: "percolate to the user
+     events that the press has covered") — reuses the same editorialByEvent
+     data the inline "As seen in" links already load (see
+     loadEditorialArticles()), no extra request. A plain list rather than
+     another number/stat tile like the other three sidebar cards — the
+     value here IS the specific events, not a count. Rows bleed to the
+     card's own edges (negative margin canceling .side-card's padding) so
+     each row's divider/hover state spans the full card width. */
+  .radar-list{display:flex;flex-direction:column;margin:0 -16px -16px;}
+  .radar-item{
+    display:flex;gap:10px;align-items:flex-start;padding:10px 16px;
+    text-decoration:none;color:inherit;border-top:1px solid var(--line-soft);
+  }
+  .radar-item:first-child{border-top:none;}
+  .radar-item:hover{background:var(--panel-hover);}
+  .radar-thumb{width:52px;height:52px;flex:0 0 auto;object-fit:cover;background:var(--panel-alt);}
+  .radar-thumb-fallback{
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:20px;
+    color:var(--accent);
+  }
+  .radar-item-body{min-width:0;}
+  .radar-item-title{
+    font-size:13px;font-weight:700;line-height:1.3;margin-bottom:2px;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  }
+  .radar-item-meta{font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
+  .radar-item-src{font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--accent);}
+
   /* View Calendar card: one real week row, not a full month — see the
      "same amount of calendar as in the mock" spec. Links out to the
      dedicated calendar page rather than duplicating month navigation. */
@@ -4389,6 +4418,7 @@
 
     <aside class="home-sidebar" id="homeSidebar" aria-label="Calendar shortcuts and highlights">
       <div class="side-card" id="viewCalendarCard"></div>
+      <div class="side-card" id="onRadarCard" style="display:none;"></div>
       <div class="side-card" id="nearYouCard"></div>
       <div class="side-card" id="freeTodayCard"></div>
     </aside>
@@ -4771,6 +4801,20 @@ const FALLBACK_EVENTS = [
 // Live, mutable working set. Starts as the fallback data; loadSupabaseEvents()
 // below replaces its contents with the live database rows once fetched.
 let EVENTS = FALLBACK_EVENTS.slice();
+
+// Keyed by event id, populated by loadEditorialArticles() near the bottom of
+// this script — declared up here (not next to that function) because the
+// very first render() call happens synchronously during initial script
+// execution, well before loadEditorialArticles() runs, and renderOnRadarCard()
+// (called from every render() via renderSidebar()) reads this variable. A
+// `let` declared down near that function would leave it in the temporal
+// dead zone for every render() call made before the script reaches that
+// line — first-load render() included — which throws, not just "shows an
+// empty widget."
+let editorialByEvent = {};
+// Same TDZ reasoning applies to this constant — renderOnRadarCard() (below)
+// reads it on every render() call, so it must exist before the first one.
+const ON_RADAR_LIMIT = 5;
 
 // True current+upcoming event total, straight from Supabase's own exact row
 // count (see loadOrbitEventTotal() near the bottom of this script) — NOT
@@ -5780,6 +5824,7 @@ function viewToday(){
 
 function renderSidebar(){
   renderViewCalendarCard();
+  renderOnRadarCard();
   renderNearYouCard();
   renderFreeTodayCard();
 }
@@ -6837,11 +6882,17 @@ loadOrbitEventTotal();
 // work. Keyed by event.id (see mapSupabaseRow()'s new id field) rather than
 // by title/venue text, so a coincidental title match elsewhere on the site
 // can't accidentally borrow another event's press mention.
-let editorialByEvent = {};
+// (editorialByEvent itself is declared up near `let EVENTS` — see the
+// comment there for why it can't live down here.)
 async function loadEditorialArticles(){
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
   try {
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=not.is.null&select=title,url,source,matched_event_id&order=published_at.desc`;
+    // thumbnail_url/published_at added 2026-08-28 for the "On the Radar"
+    // sidebar widget (see renderOnRadarCard()) — title/url/source alone,
+    // already selected here for the inline "As seen in" links, weren't
+    // enough to build that widget's thumbnail + freshness-ordering without
+    // a second request, so it rides along on this same one instead.
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=not.is.null&select=title,url,source,matched_event_id,thumbnail_url,published_at&order=published_at.desc`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -6857,7 +6908,10 @@ async function loadEditorialArticles(){
       // its most recent coverage — a second, older mention of the same
       // event is intentionally dropped rather than shown as a second link.
       if(!byEvent[r.matched_event_id]){
-        byEvent[r.matched_event_id] = { title: decodeEntities(r.title), url: r.url, source: r.source };
+        byEvent[r.matched_event_id] = {
+          title: decodeEntities(r.title), url: r.url, source: r.source,
+          thumbnailUrl: r.thumbnail_url || null, publishedAt: r.published_at || null,
+        };
       }
     });
     editorialByEvent = byEvent;
@@ -6869,6 +6923,78 @@ async function loadEditorialArticles(){
   }
 }
 loadEditorialArticles();
+
+// "On the Radar" sidebar widget (2026-08-28, Jody: "percolate to the user
+// events that the press has covered... how can we make this add value to
+// the user better?"). Built from the same editorialByEvent data the inline
+// "As seen in" links already loaded — no extra request — but this is a
+// dedicated discovery surface, not just a per-event footnote:
+//   - Upcoming events ONLY. A press mention for an event that already
+//     happened isn't a "go do this" signal to anyone browsing the sidebar —
+//     it'd just be dead weight next to View Calendar/Orbit/Free Today,
+//     which are all forward-looking.
+//   - Freshest coverage first (publishedAt desc) — reads as a live pulse of
+//     what the local press is covering RIGHT NOW, not a static archive.
+//   - Capped at ON_RADAR_LIMIT so it stays a curated highlight reel, not a
+//     dumping ground that pushes the other three cards below the fold.
+//   - Links straight to this site's own event.html, not out to the article
+//     (the inline "As seen in" link on that same page covers "read the
+//     actual piece") — the point of THIS widget is surfacing which events
+//     to go to, using press coverage as the trust signal that got them
+//     noticed, same framing as e.g. Eater's "as seen on" tags.
+//   - Hides the whole card rather than rendering an empty list when
+//     nothing qualifies yet (a quiet week for press pickup shouldn't leave
+//     an awkward blank box in the sidebar) — same convention already used
+//     by renderNeighborhoodsRail().
+// (ON_RADAR_LIMIT itself is declared up near `let EVENTS` — see the comment
+// there for why it can't live down here.)
+function renderOnRadarCard(){
+  const el = document.getElementById('onRadarCard');
+  if(!el) return;
+  const todayIso = getTodayISO();
+
+  const candidates = Object.keys(editorialByEvent)
+    .map(eventId => {
+      const event = EVENTS.find(e => String(e.id) === String(eventId));
+      return event ? { event, article: editorialByEvent[eventId] } : null;
+    })
+    .filter(c => c && c.event.date >= todayIso && !isBlockedEvent(c.event))
+    .sort((a, b) => (b.article.publishedAt || '').localeCompare(a.article.publishedAt || ''))
+    .slice(0, ON_RADAR_LIMIT);
+
+  if(!candidates.length){
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.style.display = '';
+
+  el.innerHTML = `
+    <div class="side-card-head"><h2>On the Radar</h2></div>
+    <p class="side-card-sub">Upcoming events the local press is already covering.</p>
+    <div class="radar-list">
+      ${candidates.map(({event, article}) => {
+        const dateLabel = new Date(event.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'});
+        const metaBits = [dateLabel, event.venue].filter(Boolean).join(' · ');
+        const thumbHtml = article.thumbnailUrl && safeUrl(article.thumbnailUrl)
+          ? `<img class="radar-thumb" src="${escapeHtml(safeUrl(article.thumbnailUrl))}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;radar-thumb radar-thumb-fallback&quot;>${escapeHtml((article.source||'?').charAt(0))}</div>';">`
+          : `<div class="radar-thumb radar-thumb-fallback">${escapeHtml((article.source||'?').charAt(0))}</div>`;
+        const href = eventUrl(event);
+        const body = `
+          ${thumbHtml}
+          <div class="radar-item-body">
+            <div class="radar-item-title">${escapeHtml(event.title)}</div>
+            <div class="radar-item-meta">${escapeHtml(metaBits)}</div>
+            <div class="radar-item-src">${escapeHtml(article.source || 'Local press')}</div>
+          </div>
+        `;
+        return href
+          ? `<a class="radar-item" href="${escapeHtml(href)}">${body}</a>`
+          : `<div class="radar-item">${body}</div>`;
+      }).join('')}
+    </div>
+  `;
+}
 </script>
 </body>
 </html>
