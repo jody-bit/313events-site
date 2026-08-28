@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name='impact-site-verification' value='8597fd2a-b17d-42b6-a53d-66d15db4baea'>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map — 313.events</title>
+<link rel="canonical" href="https://313.events/map.html">
+<meta name="description" content="Every arts, culture, and nightlife event within 75 miles of Detroit, plotted across the Detroit Orbit — filter by category, free, when, and where.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Map — 313.events">
+<meta property="og:description" content="Every arts, culture, and nightlife event within 75 miles of Detroit, plotted across the Detroit Orbit.">
+<meta property="og:url" content="https://313.events/map.html">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Map — 313.events">
+<meta name="twitter:description" content="Every arts, culture, and nightlife event within 75 miles of Detroit, plotted across the Detroit Orbit.">
+<meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
+<!--
+  New page (2026-08-28, Jody: "let's create a dedicated page for the Detroit
+  Orbit and show where we have events the user can filter by all the same
+  functions"). Built as a third "discovery shell" page alongside index.html
+  and calendar.html — same When/Where/Category/Free/Search filter machinery,
+  copied here rather than shared (no build step exists to bundle a shared
+  module — every page in this project duplicates the small helpers it needs;
+  see radar.html's own comment for the precedent). The one genuinely new
+  piece is the map itself: Leaflet + CARTO's free no-API-key dark basemap
+  tiles (matches the Detroit Signal dark environment; picked over Mapbox/
+  Google specifically to avoid adding a paid API key to the one-time-setup
+  list in README.md).
+
+  Precision note, since this is the kind of thing that's easy to
+  silently overstate: events only carry a free-text venue_name_raw /
+  venue_city_raw today (events.venue_id isn't populated — see
+  AUDIT_AND_ARCHITECTURE.md's gap notes and migration_002's own comment on
+  the same gap), so there is no reliable per-event venue_id to join against
+  venues.lat/lng through. What this page does instead (per Jody, 2026-08-28:
+  "I am okay with a general map vs exact addresses - if we have the exact
+  address, please use it, if we don't just plot it in the middle of that
+  city or sub-burb") is resolve each event's venue by NAME against the
+  venues table, the same client-side name-matching join loadNeighborhoodData()
+  already does in index.html for neighborhood_id — see loadVenueLatLng()
+  below. A venue whose name matches a venues row with real lat/lng gets a
+  precise pin; everything else falls back to its city's centroid from the
+  same LOCATIONS table that already backs the radius filter everywhere else
+  on the site. Approximate pins are visually marked (dashed ring, dimmer
+  fill) and labeled "city center" rather than presented as exact — never
+  fabricated precision, same standard as the price/free tags elsewhere.
+-->
+<style>
+  :root{
+    /* Detroit Signal V2 — locked color architecture (verbatim from
+       calendar.html — see that file for the full token comments). */
+    --bg:#0A0A0A;
+    --panel:#202020;
+    --panel-alt:#161616;
+    --panel-hover:#272727;
+    --ink:#F2F0E8;
+    --ink-soft:#A9AAA3;
+    --ink-dim:#5c5d58;
+    --line:#2c2c2c;
+    --line-soft:#212121;
+    --accent:#D7FF00;
+    --on-accent:#0A0A0A;
+    --today:rgba(215,255,0,.09);
+    --today-ring:#D7FF00;
+    --radius:0px;
+
+    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
+    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
+    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  button{font-family:inherit;}
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:14px 20px 48px;}
+
+  header.site{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:16px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
+  }
+  .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;}
+  .site-nav .when-btn, .site-nav-link{
+    border:none;background:none;padding:0 0 4px;border-radius:0;
+    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
+    text-transform:uppercase;color:var(--ink-soft);text-decoration:none;cursor:pointer;
+    border-bottom:2px solid transparent;white-space:nowrap;
+  }
+  .site-nav .when-btn:hover, .site-nav-link:hover{color:var(--ink);}
+  .site-nav .when-btn.active{background:none;color:var(--accent);border-color:transparent;border-bottom-color:var(--accent);}
+  .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
+  .nav-search-btn{
+    border:none;background:none;padding:0;color:var(--ink-soft);cursor:pointer;
+    display:flex;align-items:center;
+  }
+  .nav-search-btn:hover{color:var(--ink);}
+  .nav-search-btn svg{display:block;width:18px;height:18px;}
+  @media (max-width:900px){
+    .site-nav{gap:14px;order:3;flex-basis:100%;}
+  }
+  header.site h1{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
+  }
+
+  .controls{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 14px;margin-bottom:10px;
+  }
+  #search{
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;flex:1;
+    background:var(--panel-alt);color:var(--ink);
+  }
+  #search::placeholder{color:var(--ink-dim);}
+  .map-stat{
+    font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-soft);white-space:nowrap;
+  }
+  .map-stat strong{color:var(--accent);font-weight:700;}
+
+  .discovery-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .when-btn{
+    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
+    border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .when-btn:hover{background:var(--panel-hover);}
+  .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+  .active-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+  .af-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .af-chip{
+    display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
+    border-radius:var(--radius);padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
+  }
+  .af-chip button{
+    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .af-chip button:hover{background:var(--ink);color:var(--bg);}
+  .af-clear{
+    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
+    font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .chip{
+    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
+    font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
+    user-select:none;
+  }
+  .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
+  .chip.active .dot{outline:1.5px solid var(--on-accent);}
+  .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
+  .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
+
+  .location-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;}
+  .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .loc-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .loc-combo{position:relative;min-width:200px;}
+  #locInput{
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
+    background:var(--panel-alt);color:var(--ink);
+  }
+  #locInput::placeholder{color:var(--ink-dim);}
+  .loc-clear-btn{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    width:20px;height:20px;font-size:11px;line-height:1;cursor:pointer;align-items:center;justify-content:center;display:flex;
+  }
+  .loc-clear-btn:hover{background:var(--ink);color:var(--bg);}
+  .loc-suggestions{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:280px;overflow-y:auto;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .loc-item{
+    padding:8px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .loc-item:last-child{border-bottom:none;}
+  .loc-item:hover, .loc-item.hl{background:var(--panel-hover);}
+  .loc-item-name{color:var(--ink);font-weight:600;}
+  .loc-item-type{color:var(--ink-dim);font-size:10.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+  .loc-empty{padding:10px 12px;font-size:12.5px;color:var(--ink-dim);}
+  .loc-geo-btn{
+    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:var(--radius);
+    padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);}
+  .loc-geo-btn:disabled{opacity:.6;cursor:default;}
+  .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .radius-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-right:2px;}
+  .radius-chip{
+    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:var(--radius);
+    padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .radius-chip:hover{background:var(--panel-hover);}
+  .radius-chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+  /* ---- Map + city rail (net-new) ---- */
+  .map-shell{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:10px;margin-bottom:10px;
+  }
+  #leafletMap{
+    flex:1 1 62%;min-width:0;height:560px;background:var(--panel-alt);
+    border:1px solid var(--line);
+  }
+  .map-unavailable{
+    height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+    padding:24px;color:var(--ink-dim);font-size:13px;line-height:1.5;
+  }
+  /* Dark-match the Leaflet chrome (zoom control, attribution strip) to the
+     Detroit Signal panel colors rather than leaving Leaflet's light default
+     — a bright white zoom box on this page would read as a bug, not a
+     deliberate choice. */
+  .leaflet-container{background:var(--panel-alt);font-family:'Inter',-apple-system,sans-serif;}
+  .leaflet-control-zoom a{
+    background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important;
+  }
+  .leaflet-control-zoom a:hover{background:var(--panel-hover)!important;}
+  .leaflet-control-attribution{
+    background:rgba(10,10,10,.75)!important;color:var(--ink-dim)!important;font-size:10px!important;
+  }
+  .leaflet-control-attribution a{color:var(--ink-soft)!important;}
+  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--ink);border-radius:var(--radius);}
+  .leaflet-popup-tip{background:var(--panel);}
+  .leaflet-popup-content{margin:12px 14px;font-size:12.5px;min-width:200px;max-width:260px;}
+  .popup-place-name{font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;margin-bottom:2px;}
+  .popup-approx{font-size:10.5px;color:var(--ink-dim);font-style:italic;margin-bottom:8px;}
+  .popup-evt{padding:5px 0;border-top:1px solid var(--line-soft);}
+  .popup-evt:first-of-type{border-top:none;}
+  .popup-evt a{color:var(--ink);text-decoration:none;font-weight:700;font-size:12px;}
+  .popup-evt a:hover{color:var(--accent);}
+  .popup-evt .pe-meta{color:var(--ink-soft);font-size:11px;}
+  .popup-more{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+  .popup-more button{border:none;background:none;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;padding:0;}
+
+  .city-rail{
+    flex:1 1 38%;min-width:0;max-width:100%;height:560px;overflow-y:auto;
+    background:var(--panel-alt);border:1px solid var(--line);
+  }
+  .city-rail-empty{padding:24px 16px;color:var(--ink-soft);font-size:13px;text-align:center;}
+  .city-row{border-bottom:1px solid var(--line-soft);}
+  .city-row:last-child{border-bottom:none;}
+  .city-row-head{
+    width:100%;display:flex;align-items:center;gap:10px;padding:11px 14px;
+    border:none;background:none;color:var(--ink);cursor:pointer;text-align:left;font-family:inherit;
+  }
+  .city-row-head:hover{background:var(--panel-hover);}
+  .city-row-head.expanded{background:var(--panel-hover);}
+  .cr-count{
+    flex:0 0 auto;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;
+    background:var(--panel);border:1px solid var(--line);color:var(--accent);
+    min-width:26px;text-align:center;padding:2px 6px;
+  }
+  .cr-name{flex:1;min-width:0;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cr-approx{flex:0 0 auto;font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.03em;}
+  .cr-caret{flex:0 0 auto;font-size:10px;color:var(--ink-dim);transition:transform .15s;}
+  .city-row-head.expanded .cr-caret{transform:rotate(90deg);}
+  .city-row-body{display:none;padding:0 14px 12px;}
+  .city-row-body.show{display:block;}
+
+  /* evt-row event card — same shape as calendar.html/index.html's own event
+     rows, reused verbatim here for the city-rail's expanded event list. */
+  .evt-row{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;}
+  .evt-row:first-of-type{border-top:none;}
+  .evt-time{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);min-width:0;font-weight:700;padding-top:2px;}
+  .evt-main{flex:1;min-width:0;}
+  .evt-title{font-size:13.5px;font-weight:800;margin-bottom:2px;}
+  a.evt-title-link{color:inherit;text-decoration:none;}
+  a.evt-title-link:hover{text-decoration:underline;}
+  .evt-desc{
+    font-size:12px;color:var(--ink-soft);line-height:1.4;margin:3px 0;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .evt-meta{font-size:11.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .tag{
+    display:inline-flex;align-items:center;gap:4px;font-size:10.3px;font-weight:700;
+    padding:2px 7px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
+  }
+  .tag.free{background:#3fbf6a;}
+  .tag.price{background:var(--panel-hover);color:var(--ink);}
+  .note{font-size:11.5px;color:#d1b34a;margin-top:3px;font-style:italic;}
+  .src{font-size:10.5px;color:var(--ink-dim);font-style:italic;}
+  .evt-link{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
+  .evt-link:hover{text-decoration:underline;}
+  .evt-link::after{content:'→';}
+  .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
+  .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+  .es-action{
+    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:var(--radius);
+    padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .es-action:hover{background:var(--panel-hover);}
+
+  footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
+  footer.site a{color:var(--ink-soft);}
+  footer.site p{margin:0 0 6px;}
+  footer.site p:last-child{margin-bottom:0;}
+  footer.site .footer-sources a{
+    text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:700;
+    color:var(--ink-dim);text-decoration:none;
+  }
+  footer.site .footer-sources a:hover{color:var(--ink-soft);text-decoration:underline;}
+  footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
+  footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
+
+  @media (max-width:860px){
+    .map-shell{flex-direction:column;}
+    #leafletMap{width:100%;height:380px;flex:none;}
+    .city-rail{width:100%;height:380px;flex:none;}
+  }
+
+  /* ---- Unified discovery row (verbatim from calendar.html) ---- */
+  .discovery-shell{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 14px;margin-bottom:10px;
+  }
+  .mobile-triggers{display:flex;gap:8px;}
+  .mobile-trigger{
+    flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);
+    border-radius:var(--radius);padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  }
+  .mobile-trigger:hover{background:var(--panel-hover);}
+  .mobile-trigger .mt-label{
+    font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-dim);text-transform:uppercase;
+  }
+  .mobile-trigger .mt-sub{
+    font-size:13px;font-weight:700;color:var(--ink-soft);max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-dim);}
+  .mobile-trigger.has-value{border-color:var(--accent);}
+  .mobile-trigger.has-value .mt-sub{color:var(--ink);}
+  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);border-color:var(--ink);}
+
+  .sheet-backdrop{display:none;}
+  .discovery-bar, .location-bar, .filters{display:none;}
+  .sheet-header{display:none;}
+  .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
+    display:flex;flex-direction:column;flex-wrap:nowrap;
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-top:10px;
+  }
+  .discovery-bar.sheet-active .sheet-header,
+  .location-bar.sheet-active .sheet-header,
+  .filters.sheet-active .sheet-header{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+  }
+  .discovery-bar.sheet-active, .filters.sheet-active{flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .location-bar.sheet-active{flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center;}
+  .sheet-close{
+    border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
+    width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
+  }
+  .sheet-close:hover{background:var(--ink);color:var(--bg);}
+
+  @media (max-width:720px){
+    .discovery-shell{padding:10px 10px 0;background:none;border:none;}
+    .mobile-trigger{align-items:center;text-align:center;}
+    .mobile-trigger .mt-label{display:none;}
+
+    .sheet-backdrop{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
+    }
+    .sheet-backdrop.show{display:block;}
+
+    .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
+      flex-direction:column;flex-wrap:nowrap;
+      position:fixed;left:0;right:0;bottom:0;z-index:40;
+      border-bottom:none;
+      border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
+      padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+      max-height:75vh;overflow-y:auto;margin:10px 0 0;
+    }
+    .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
+    .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site">
+    <div>
+      <h1><a href="/" aria-label="313.events — back to today" style="display:flex;align-items:center;text-decoration:none;">
+        <img src="/assets/wordmark.svg" alt="313.events" height="26" style="display:block;">
+      </a></h1>
+    </div>
+    <nav class="site-nav" aria-label="Time range and browse">
+      <button type="button" class="when-btn" data-when="today">Now</button>
+      <button type="button" class="when-btn" data-when="tonight">Tonight</button>
+      <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
+      <a class="site-nav-link" href="calendar.html">Calendar</a>
+      <a class="site-nav-link current" href="map.html" aria-current="page">Map</a>
+      <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
+    </nav>
+    <div style="display:flex;align-items:center;gap:18px;">
+      <button type="button" class="nav-search-btn" id="navSearchBtn" aria-label="Search events and venues">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
+      </button>
+      <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
+    </div>
+  </header>
+
+  <div class="discovery-shell" id="discoveryShell">
+    <div class="mobile-triggers" id="mobileTriggers">
+      <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
+        <span class="mt-label">When</span><span class="mt-sub" id="whenTriggerSub">Anytime</span>
+      </button>
+      <button type="button" class="mobile-trigger" id="whereTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="locationBar">
+        <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
+      </button>
+      <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
+        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+      </button>
+    </div>
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+
+    <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
+      <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
+      <button class="when-btn" data-when="now">Now</button>
+      <button class="when-btn" data-when="today">Today</button>
+      <button class="when-btn" data-when="tonight">Tonight</button>
+      <button class="when-btn" data-when="weekend">This Weekend</button>
+      <button class="when-btn" data-when="date">Anytime</button>
+    </div>
+
+    <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
+      <div class="sheet-header"><span>Where</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
+      <div class="loc-control">
+        <span class="loc-label">Where</span>
+        <div class="loc-combo">
+          <input type="text" id="locInput" placeholder="Search city, neighborhood&hellip;" autocomplete="off"
+                 role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="locSuggestions" aria-label="Search for a city or neighborhood">
+          <button type="button" id="locClearBtn" class="loc-clear-btn" style="display:none;" aria-label="Clear location">&#10005;</button>
+          <div class="loc-suggestions" id="locSuggestions" role="listbox" style="display:none;"></div>
+        </div>
+        <button type="button" id="useMyLocationBtn" class="loc-geo-btn">Use my location</button>
+      </div>
+      <div class="radius-group" id="radiusGroup" style="display:none;" role="group" aria-label="Distance from selected location">
+        <span class="radius-label">Within</span>
+        <button type="button" class="radius-chip" data-radius="5">5 mi</button>
+        <button type="button" class="radius-chip" data-radius="10">10 mi</button>
+        <button type="button" class="radius-chip" data-radius="25">25 mi</button>
+        <button type="button" class="radius-chip" data-radius="50">50 mi</button>
+        <button type="button" class="radius-chip active" data-radius="all">Detroit Orbit</button>
+      </div>
+    </div>
+
+    <div class="filters" id="filterBar"></div>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search events, venues&hellip;">
+    <div class="map-stat" id="mapStat"></div>
+  </div>
+
+  <div class="active-filters" id="activeFilters" style="display:none;"></div>
+
+  <div class="map-shell">
+    <div id="leafletMap" role="img" aria-label="Map of Detroit-area events"></div>
+    <div class="city-rail" id="cityRail"></div>
+  </div>
+
+  <footer class="site">
+    <p>Always confirm dates, times, and venues before making plans. Pins without a known street address are placed at their city or suburb's center, not an exact venue.</p>
+    <p class="footer-sources"><a href="sources.html">Data sources</a></p>
+    <p class="footer-credit">313.events is a product of <a href="https://sentientproductions.com" target="_blank" rel="noopener noreferrer">Sentient Productions</a>.</p>
+  </footer>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const CATS = {
+  music:    {label:"Music",            color:"var(--c-music)"},
+  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
+  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
+  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
+  museum:   {label:"Museums & History", color:"var(--c-museum)"},
+  family:   {label:"Family",            color:"var(--c-family)"},
+  fest:     {label:"Festivals",         color:"var(--c-fest)"},
+  food:     {label:"Food & Markets",    color:"var(--c-food)"},
+  film:     {label:"Film",              color:"var(--c-film)"},
+  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
+  sports:   {label:"Sports",            color:"var(--c-sports)"},
+  community:{label:"Community",         color:"var(--c-community)"}
+};
+
+// ---- Location reference data — verbatim copy from calendar.html/index.html.
+// See those files for the full sourcing comment. Same two tiers: Detroit's
+// 39 named neighborhoods (origin-only) and every in-scope city (matched
+// against event data).
+const LOCATIONS = [
+  {name:"Detroit", type:"city", region:"Michigan", lat:42.3314, lng:-83.0458},
+  {name:"Downtown", type:"neighborhood", region:"Detroit", lat:42.3316, lng:-83.0466},
+  {name:"Midtown", type:"neighborhood", region:"Detroit", lat:42.3536, lng:-83.0666},
+  {name:"New Center", type:"neighborhood", region:"Detroit", lat:42.3707, lng:-83.0710},
+  {name:"Corktown", type:"neighborhood", region:"Detroit", lat:42.3308, lng:-83.0680},
+  {name:"North Corktown", type:"neighborhood", region:"Detroit", lat:42.3385, lng:-83.0710},
+  {name:"Core City", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-83.0790},
+  {name:"Woodbridge", type:"neighborhood", region:"Detroit", lat:42.3480, lng:-83.0790},
+  {name:"Eastern Market", type:"neighborhood", region:"Detroit", lat:42.3459, lng:-83.0416},
+  {name:"Brush Park", type:"neighborhood", region:"Detroit", lat:42.3435, lng:-83.0530},
+  {name:"Lafayette Park", type:"neighborhood", region:"Detroit", lat:42.3350, lng:-83.0290},
+  {name:"Rivertown", type:"neighborhood", region:"Detroit", lat:42.3395, lng:-83.0180},
+  {name:"Indian Village", type:"neighborhood", region:"Detroit", lat:42.3660, lng:-82.9840},
+  {name:"West Village", type:"neighborhood", region:"Detroit", lat:42.3610, lng:-82.9910},
+  {name:"Islandview", type:"neighborhood", region:"Detroit", lat:42.3630, lng:-82.9950},
+  {name:"Milwaukee Junction", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0570},
+  {name:"North End", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.0660},
+  {name:"Poletown East", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0330},
+  {name:"Jefferson-Chalmers", type:"neighborhood", region:"Detroit", lat:42.4000, lng:-82.9350},
+  {name:"Belle Isle", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-82.9700},
+  {name:"Morningside", type:"neighborhood", region:"Detroit", lat:42.4070, lng:-82.9550},
+  {name:"East English Village", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-82.9420},
+  {name:"Boston-Edison", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.1010},
+  {name:"Arden Park-East Boston", type:"neighborhood", region:"Detroit", lat:42.3830, lng:-83.0900},
+  {name:"University District", type:"neighborhood", region:"Detroit", lat:42.4150, lng:-83.1350},
+  {name:"Palmer Park", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1350},
+  {name:"Palmer Woods", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1400},
+  {name:"Sherwood Forest", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1470},
+  {name:"Bagley", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1500},
+  {name:"Russell Woods", type:"neighborhood", region:"Detroit", lat:42.3860, lng:-83.1450},
+  {name:"Fitzgerald", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.1670},
+  {name:"Grandmont-Rosedale", type:"neighborhood", region:"Detroit", lat:42.4080, lng:-83.2000},
+  {name:"Old Redford", type:"neighborhood", region:"Detroit", lat:42.4090, lng:-83.2260},
+  {name:"Warrendale", type:"neighborhood", region:"Detroit", lat:42.3670, lng:-83.2100},
+  {name:"Brightmoor", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.2350},
+  {name:"Mexicantown / Southwest Detroit", type:"neighborhood", region:"Detroit", lat:42.3210, lng:-83.0940},
+  {name:"Springwells", type:"neighborhood", region:"Detroit", lat:42.3110, lng:-83.1170},
+  {name:"Delray", type:"neighborhood", region:"Detroit", lat:42.2900, lng:-83.1180},
+  {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
+  {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
+  {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
+  {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
+  {name:"Rochester", type:"city", region:"Michigan", lat:42.6806, lng:-83.1341},
+  {name:"Pontiac", type:"city", region:"Michigan", lat:42.6389, lng:-83.2910},
+  {name:"Ypsilanti", type:"city", region:"Michigan", lat:42.2411, lng:-83.6130},
+  {name:"Milford", type:"city", region:"Michigan", lat:42.5926, lng:-83.6002},
+  {name:"Clarkston", type:"city", region:"Michigan", lat:42.7364, lng:-83.4199},
+  {name:"Monroe", type:"city", region:"Michigan", lat:41.9164, lng:-83.3977},
+  {name:"Ann Arbor", type:"city", region:"Michigan", lat:42.2808, lng:-83.7430},
+  {name:"Brighton", type:"city", region:"Michigan", lat:42.5297, lng:-83.7796},
+  {name:"Chatham", type:"city", region:"Ontario", lat:42.4048, lng:-82.1910},
+  {name:"Fenton", type:"city", region:"Michigan", lat:42.7970, lng:-83.7054},
+  {name:"Howell", type:"city", region:"Michigan", lat:42.6072, lng:-83.9294},
+  {name:"Toledo", type:"city", region:"Ohio", lat:41.6528, lng:-83.5379},
+  {name:"Port Huron", type:"city", region:"Michigan", lat:42.9709, lng:-82.4252},
+  {name:"Sarnia", type:"city", region:"Ontario", lat:42.9748, lng:-82.4066},
+  {name:"Flint", type:"city", region:"Michigan", lat:43.0125, lng:-83.6875},
+  {name:"Adrian", type:"city", region:"Michigan", lat:41.8975, lng:-84.0372},
+  {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
+  {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
+  {name:"Hamtramck", type:"city", region:"Michigan", lat:42.3922, lng:-83.0497},
+  {name:"Highland Park", type:"city", region:"Michigan", lat:42.4054, lng:-83.0997},
+  {name:"Dearborn", type:"city", region:"Michigan", lat:42.3223, lng:-83.1763},
+  {name:"Dearborn Heights", type:"city", region:"Michigan", lat:42.3373, lng:-83.2733},
+  {name:"Ferndale", type:"city", region:"Michigan", lat:42.4606, lng:-83.1344},
+  {name:"Royal Oak", type:"city", region:"Michigan", lat:42.4895, lng:-83.1446},
+  {name:"Berkley", type:"city", region:"Michigan", lat:42.5023, lng:-83.1838},
+  {name:"Oak Park", type:"city", region:"Michigan", lat:42.4595, lng:-83.1830},
+  {name:"Southfield", type:"city", region:"Michigan", lat:42.4734, lng:-83.2219},
+  {name:"Birmingham", type:"city", region:"Michigan", lat:42.5467, lng:-83.2113},
+  {name:"Troy", type:"city", region:"Michigan", lat:42.6064, lng:-83.1499},
+  {name:"Sterling Heights", type:"city", region:"Michigan", lat:42.5803, lng:-83.0302},
+  {name:"Warren", type:"city", region:"Michigan", lat:42.5145, lng:-83.0147},
+  {name:"Madison Heights", type:"city", region:"Michigan", lat:42.5292, lng:-83.1057},
+  {name:"Auburn Hills", type:"city", region:"Michigan", lat:42.6875, lng:-83.2341},
+  {name:"Rochester Hills", type:"city", region:"Michigan", lat:42.6583, lng:-83.1499},
+  {name:"Waterford", type:"city", region:"Michigan", lat:42.6892, lng:-83.3585},
+  {name:"Novi", type:"city", region:"Michigan", lat:42.4806, lng:-83.4755},
+  {name:"Farmington Hills", type:"city", region:"Michigan", lat:42.4989, lng:-83.3677},
+  {name:"Livonia", type:"city", region:"Michigan", lat:42.3684, lng:-83.3527},
+  {name:"Westland", type:"city", region:"Michigan", lat:42.3242, lng:-83.4002},
+  {name:"Taylor", type:"city", region:"Michigan", lat:42.2409, lng:-83.2699},
+  {name:"Lincoln Park", type:"city", region:"Michigan", lat:42.2506, lng:-83.1785},
+  {name:"Wyandotte", type:"city", region:"Michigan", lat:42.2142, lng:-83.1499},
+  {name:"Grosse Pointe", type:"city", region:"Michigan", lat:42.3861, lng:-82.9116},
+  {name:"St. Clair Shores", type:"city", region:"Michigan", lat:42.4970, lng:-82.8888},
+  {name:"Roseville", type:"city", region:"Michigan", lat:42.4973, lng:-82.9371},
+  {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
+  {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
+  {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
+  {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
+  {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
+];
+
+const CITY_LOOKUP = new Map(
+  LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
+);
+
+function haversineMiles(lat1, lng1, lat2, lng2){
+  const R = 3958.8;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
+
+// Fallback data — same dataset calendar.html/index.html ship (kept in sync
+// by hand, same as those two already are with each other; no shared module,
+// see the file-header comment). Used only if the live Supabase fetch fails.
+const FALLBACK_EVENTS = [
+  {date:"2026-08-19", title:"Be My Neighbor Day", venue:"Eastern Market", cat:"family", time:"12:00–3:00 PM", free:true},
+  {date:"2026-08-20", title:"Trivia Night", venue:"Beacon Park", cat:"community", time:"7:00 PM", free:true},
+  {date:"2026-08-21", title:"Jazz at the Shed", venue:"Chene Park", cat:"music", time:"7:00–9:00 PM", free:false, priceFrom:15},
+  {date:"2026-08-22", title:"Detroit Grand Prix Weekend Kickoff", venue:"Belle Isle", cat:"sports", time:"All day", free:false, priceFrom:45},
+  {date:"2026-08-23", title:"Eastern Market Sunday Flower Day", venue:"Eastern Market", cat:"fest", time:"7:00 AM–4:00 PM", free:true},
+  {date:"2026-08-28", title:"Cinema Detroit — Late Show", venue:"Cinema Detroit", cat:"film", time:"9:30 PM", free:false, priceFrom:12},
+  {date:"2026-08-29", title:"Dally in the Alley", venue:"Cass Corridor", cat:"fest", time:"11:00 AM–10:00 PM", free:true},
+  {date:"2026-08-30", title:"DIA After Hours", venue:"Detroit Institute of Arts", cat:"museum", time:"6:00–9:00 PM", free:false, priceFrom:14},
+  {date:"2026-09-04", title:"Trinosophes Live Set", venue:"Trinosophes", cat:"music", time:"8:00 PM", free:false, priceFrom:18},
+  {date:"2026-09-12", title:"MOCAD Opening Reception", venue:"MOCAD", cat:"visual", time:"7:00–10:00 PM", free:true},
+];
+
+// Live, mutable working set. Starts as the fallback data; loadSupabaseEvents()
+// below replaces its contents with the live database rows once fetched.
+let EVENTS = FALLBACK_EVENTS.slice();
+
+let byDate = {};
+EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
+
+const _navToday0 = new Date();
+void _navToday0; // no month navigation on this page — kept only for parity with the other pages' init order, harmless no-op.
+
+const BLOCKED_NAMES = ["Augustus Williams"];
+function isBlockedEvent(e){
+  return BLOCKED_NAMES.some(name => {
+    const n = name.toLowerCase();
+    return (e.title && e.title.toLowerCase().includes(n)) ||
+           (e.note && e.note.toLowerCase().includes(n));
+  });
+}
+
+const FEATURE_CHIPS = [
+  { key: 'tickets', label: 'Tickets available' },
+  { key: 'photo', label: 'Has photo' },
+  { key: 'submitted', label: 'Community submitted' },
+];
+
+let activeCats = new Set(Object.keys(CATS));
+let freeOnly = false;
+let activeFeatures = new Set();
+let query = "";
+// Active time-range shortcut: null | 'now' | 'today' | 'tonight' | 'weekend'.
+let whenMode = null;
+let cachedWeekendDates = [];
+// originLocation / radiusMiles — same "Detroit Orbit" radius filter as
+// calendar.html/index.html; see those files for the full comment.
+let originLocation = null;
+let radiusMiles = null;
+// Which place (city-rail row / map marker) is currently expanded — null
+// means none. Single-open accordion, same "one thing expanded at a time"
+// model as calendar.html's dayPanel.
+let selectedPlaceKey = null;
+
+function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function getTodayISO(){
+  const d = new Date();
+  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function parseHour(timeStr){
+  if(!timeStr) return null;
+  if(/evening/i.test(timeStr)) return 19;
+  const m = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if(!m) return null;
+  let hour = parseInt(m[1],10) % 12;
+  if(/PM/i.test(m[3])) hour += 12;
+  return hour;
+}
+function parseTimeRange(timeStr){
+  if(!timeStr) return null;
+  const re = /(\d{1,2}):(\d{2})\s*(AM|PM)/gi;
+  const matches = [...timeStr.matchAll(re)];
+  if(!matches.length) return null;
+  const to24 = (h,m,ap) => { let hh = parseInt(h,10)%12; if(/PM/i.test(ap)) hh += 12; return {h:hh, m:parseInt(m,10)}; };
+  const start = to24(matches[0][1], matches[0][2], matches[0][3]);
+  const end = matches.length > 1 ? to24(matches[1][1], matches[1][2], matches[1][3]) : null;
+  return {start, end};
+}
+function timeSortMinutes(timeStr){
+  const range = parseTimeRange(timeStr);
+  return range ? range.start.h*60 + range.start.m : Infinity;
+}
+function getWeekendDates(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  const dow = d.getDay();
+  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
+  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  return [0,1,2].map(off=>{
+    const x = new Date(fri); x.setDate(fri.getDate()+off);
+    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+  });
+}
+
+// Same filter combination as calendar.html's matchesFilters() — copied
+// verbatim (including its comments) since filter *parity* across pages is
+// the entire point of this page existing. Unlike calendar.html this page
+// has no month to browse, so it's always evaluated against the live
+// EVENTS set as a whole, not one day/list slice at a time.
+function matchesFilters(e){
+  if(isBlockedEvent(e)) return false;
+  if(!activeCats.has(e.cat)) return false;
+  if(freeOnly && !e.free) return false;
+  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('photo') && !e.imageUrl) return false;
+  if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
+  if(query){
+    const q = query.toLowerCase();
+    if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
+  }
+  if(whenMode){
+    const todayIso = getTodayISO();
+    if(whenMode === 'weekend'){
+      if(!cachedWeekendDates.includes(e.date)) return false;
+    } else {
+      if(e.date !== todayIso) return false;
+      if(whenMode === 'now'){
+        const range = parseTimeRange(e.time);
+        if(range && range.end && range.end.h >= range.start.h){
+          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const endHour = range.end.h + range.end.m/60;
+          if(endHour < nowHour) return false;
+        }
+      } else if(whenMode === 'tonight'){
+        const hr = parseHour(e.time);
+        if(hr === null || hr < 17) return false;
+      }
+    }
+  }
+  if(originLocation && radiusMiles !== null){
+    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
+    if(!loc) return false;
+    if(radiusMiles === 'all'){
+      const detroit = CITY_LOOKUP.get('detroit');
+      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
+    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
+      return false;
+    }
+  }
+  return true;
+}
+
+function buildFilterBar(){
+  const bar = document.getElementById('filterBar');
+  bar.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'sheet-header';
+  const headerLabel = document.createElement('span');
+  headerLabel.textContent = 'Filter';
+  const headerClose = document.createElement('button');
+  headerClose.type = 'button';
+  headerClose.className = 'sheet-close';
+  headerClose.setAttribute('aria-label', 'Close');
+  headerClose.innerHTML = '&#10005;';
+  header.appendChild(headerLabel);
+  header.appendChild(headerClose);
+  bar.appendChild(header);
+
+  const allChip = document.createElement('button');
+  allChip.type = 'button';
+  const allActive = activeCats.size === Object.keys(CATS).length;
+  allChip.className = 'chip' + (allActive ? ' active' : '');
+  allChip.id = 'allTypesChip';
+  allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
+  allChip.textContent = 'All types';
+  allChip.onclick = ()=>{
+    activeCats = new Set(Object.keys(CATS));
+    buildFilterBar();
+    render();
+  };
+  bar.appendChild(allChip);
+
+  Object.entries(CATS).forEach(([key,c])=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
+    chip.dataset.cat = key;
+    chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
+    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    chip.onclick = ()=>{
+      if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
+      else { activeCats.add(key); chip.classList.add('active'); }
+      chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
+      render();
+    };
+    bar.appendChild(chip);
+  });
+  const freeChip = document.createElement('button');
+  freeChip.type = 'button';
+  freeChip.className = 'chip' + (freeOnly ? ' active' : '');
+  freeChip.id = 'freeChip';
+  freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
+  freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
+  freeChip.onclick = ()=>{
+    freeOnly = !freeOnly;
+    freeChip.classList.toggle('active');
+    freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
+    render();
+  };
+  bar.appendChild(freeChip);
+
+  FEATURE_CHIPS.forEach(({key, label})=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip' + (activeFeatures.has(key) ? ' active' : '');
+    chip.dataset.feature = key;
+    chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+    chip.textContent = label;
+    chip.onclick = ()=>{
+      if(activeFeatures.has(key)){ activeFeatures.delete(key); chip.classList.remove('active'); }
+      else { activeFeatures.add(key); chip.classList.add('active'); }
+      chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+      render();
+    };
+    bar.appendChild(chip);
+  });
+
+  const clearChip = document.createElement('button');
+  clearChip.type = 'button';
+  clearChip.className = 'chip';
+  clearChip.id = 'clearChip';
+  clearChip.textContent = 'Reset filters';
+  clearChip.onclick = ()=>{ clearAllFilters(); };
+  bar.appendChild(clearChip);
+}
+
+function clearAllFilters(){
+  activeCats = new Set(Object.keys(CATS));
+  freeOnly = false;
+  activeFeatures = new Set();
+  document.getElementById('search').value = '';
+  query = '';
+  whenMode = null;
+  selectedPlaceKey = null;
+  clearLocation({skipRender: true});
+  buildFilterBar();
+  render();
+}
+
+function renderActiveFilters(){
+  const tray = document.getElementById('activeFilters');
+  const chips = [];
+
+  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
+  if(whenMode && WHEN_LABELS[whenMode]){
+    chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; updateWhenButtons(); render(); }});
+  }
+  if(freeOnly){
+    chips.push({label: 'Free only', onRemove: ()=>{
+      freeOnly = false;
+      document.getElementById('freeChip').classList.remove('active');
+      render();
+    }});
+  }
+  FEATURE_CHIPS.forEach(({key, label})=>{
+    if(!activeFeatures.has(key)) return;
+    chips.push({label, onRemove: ()=>{
+      activeFeatures.delete(key);
+      buildFilterBar();
+      render();
+    }});
+  });
+  if(query){
+    chips.push({label: `"${query}"`, onRemove: ()=>{
+      query = '';
+      document.getElementById('search').value = '';
+      render();
+    }});
+  }
+  if(activeCats.size < Object.keys(CATS).length){
+    chips.push({label: `${activeCats.size} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
+      activeCats = new Set(Object.keys(CATS));
+      buildFilterBar();
+      render();
+    }});
+  }
+  if(originLocation){
+    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
+    chips.push({label: `${radiusLabel} · ${originLocation.name}`, onRemove: ()=> clearLocation()});
+  }
+
+  if(!chips.length){ tray.style.display = 'none'; tray.innerHTML = ''; return; }
+
+  tray.style.display = 'flex';
+  tray.innerHTML = '';
+  const label = document.createElement('span');
+  label.className = 'af-label';
+  label.textContent = 'Showing:';
+  tray.appendChild(label);
+  chips.forEach(({label: text, onRemove})=>{
+    const chip = document.createElement('div');
+    chip.className = 'af-chip';
+    const span = document.createElement('span');
+    span.textContent = text;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', `Remove ${text} filter`);
+    btn.textContent = '✕';
+    btn.onclick = onRemove;
+    chip.appendChild(span);
+    chip.appendChild(btn);
+    tray.appendChild(chip);
+  });
+  const clearAll = document.createElement('button');
+  clearAll.type = 'button';
+  clearAll.className = 'af-clear';
+  clearAll.textContent = 'Clear all';
+  clearAll.onclick = ()=>{ clearAllFilters(); };
+  tray.appendChild(clearAll);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function truncateText(str, maxLen){
+  if(!str) return '';
+  const flat = str.replace(/\s+/g, ' ').trim();
+  if(flat.length <= maxLen) return flat;
+  const cut = flat.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + '…';
+}
+function eventUrl(e){
+  return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
+}
+function safeUrl(url) {
+  if (!url) return '';
+  try {
+    const u = new URL(url, window.location.href);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+  } catch {
+    return '';
+  }
+}
+function fmtPrice(n){
+  const rounded = Math.round(n*100)/100;
+  const str = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+  return `$${str}+`;
+}
+function priceTag(e){
+  if(e.free) return '<span class="tag free">Free</span>';
+  if(typeof e.priceFrom === 'number' && isFinite(e.priceFrom) && e.priceFrom > 0){
+    return `<span class="tag price">${escapeHtml(fmtPrice(e.priceFrom))}</span>`;
+  }
+  return '';
+}
+function evtRowHtml(e){
+  return `
+    <div class="evt-row">
+      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-main">
+        <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+        <div class="evt-meta">
+          <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+          ${priceTag(e)}
+          <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
+          ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
+        </div>
+        ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+        ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+        ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+      </div>
+    </div>
+  `;
+}
+
+function emptyStateMessage(){
+  const actions = [];
+  if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
+  if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
+  if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
+  return `Nothing on the signal here.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
+}
+
+// ---- Places (net-new) ----
+// A "place" is where a marker/city-rail row actually lives: one real venue
+// (precise pin, from VENUE_LATLNG_MAP below) or one city centroid (fallback,
+// from CITY_LOOKUP) when the venue has no resolvable coordinates. Multiple
+// events at the same venue/city collapse into the same place, per Jody's
+// framing — "plot it in the middle of that city or sub-burb" when there's no
+// real address, not one guessed pin per event.
+//
+// venue name (trimmed, lowercased) -> {lat, lng}. Populated once by
+// loadVenueLatLng() (further down, near the Supabase fetch code) before
+// events are mapped — same client-side name-match join index.html's
+// loadNeighborhoodData()/VENUE_NEIGHBORHOOD_MAP already does for
+// neighborhood_id — see the file-header comment for why this can't be a real
+// venue_id join yet. A venue with no lat/lng in the venues table (most of
+// them, today — see AUDIT_AND_ARCHITECTURE.md) simply isn't in this map, and
+// resolvePlace() falls back to that event's city centroid. Declared here
+// (rather than down by loadVenueLatLng) because resolvePlace() below runs on
+// the very first render(), long before that later code executes — a `const`
+// declared after that first render() call would be in its temporal dead
+// zone and throw, taking the whole page down with it.
+const VENUE_LATLNG_MAP = new Map();
+
+const venueKeyOf = (e) => (e.venue || "").trim().toLowerCase();
+
+function resolvePlace(e){
+  const vKey = venueKeyOf(e);
+  const precise = VENUE_LATLNG_MAP.get(vKey);
+  if(precise){
+    return { key: `v:${vKey}`, lat: precise.lat, lng: precise.lng, label: e.venue, precise: true };
+  }
+  const cityName = e.city || "Detroit";
+  const loc = CITY_LOOKUP.get(cityName.toLowerCase());
+  if(!loc) return null; // no resolvable location at all — excluded from the map (never guessed)
+  return { key: `c:${cityName.toLowerCase()}`, lat: loc.lat, lng: loc.lng, label: cityName, precise: false };
+}
+
+// Rebuilt on every render() from whatever currently matches the active
+// filters — same "cheap to refilter over an in-memory array" posture as
+// calendar.html's own matchesFilters() calls.
+function buildPlaces(){
+  const places = new Map();
+  EVENTS.filter(matchesFilters).forEach(e=>{
+    const place = resolvePlace(e);
+    if(!place) return;
+    if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
+    places.get(place.key).events.push(e);
+  });
+  places.forEach(p => p.events.sort((a,b)=> a.date === b.date ? timeSortMinutes(a.time)-timeSortMinutes(b.time) : a.date.localeCompare(b.date)));
+  return places;
+}
+
+let leafletMap = null;
+let markersByKey = new Map();
+
+function initLeaflet(){
+  // Leaflet loads from a CDN (unpkg for the library, CARTO for tiles), so a
+  // blocked/ad-blocked/offline network shouldn't be able to take the whole
+  // page down with it — the city rail and every filter below are plain data
+  // rendering with no Leaflet dependency, so they should keep working even
+  // if `L` never showed up. Guard the one spot that touches `L` directly.
+  try{
+    if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
+    leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(leafletMap);
+    // Scroll-zoom is off by default (a map embedded in a normal page shouldn't
+    // hijack the page's own scroll) — enabled only once the visitor has
+    // deliberately interacted with the map itself.
+    leafletMap.on('focus', ()=> leafletMap.scrollWheelZoom.enable());
+    leafletMap.on('blur', ()=> leafletMap.scrollWheelZoom.disable());
+  } catch(err){
+    leafletMap = null;
+    const el = document.getElementById('leafletMap');
+    if(el) el.innerHTML = `<div class="map-unavailable">Map tiles didn't load — you can still browse every event in the list below.</div>`;
+  }
+}
+
+function placePopupHtml(place){
+  const shown = place.events.slice(0, 6);
+  const rows = shown.map(e => `
+    <div class="popup-evt">
+      ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+    </div>
+  `).join('');
+  const more = place.events.length > shown.length
+    ? `<div class="popup-more"><button type="button" onclick="selectPlace('${place.key.replace(/'/g,"\\'")}')">+${place.events.length - shown.length} more — see full list</button></div>`
+    : '';
+  return `
+    <div class="popup-place-name">${escapeHtml(place.label)}</div>
+    ${!place.precise ? `<div class="popup-approx">Approximate — city center, exact venue unknown</div>` : ''}
+    ${rows}
+    ${more}
+  `;
+}
+
+function renderMap(places){
+  if(!leafletMap) return;
+  markersByKey.forEach(m => leafletMap.removeLayer(m));
+  markersByKey = new Map();
+  places.forEach(place=>{
+    const count = place.events.length;
+    const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
+    const marker = L.circleMarker([place.lat, place.lng], {
+      radius: r,
+      color: place.precise ? '#D7FF00' : '#8a9600',
+      weight: place.precise ? 2 : 1.5,
+      dashArray: place.precise ? null : '3,3',
+      fillColor: '#D7FF00',
+      fillOpacity: place.precise ? 0.55 : 0.3,
+    }).addTo(leafletMap);
+    marker.bindPopup(placePopupHtml(place), {maxWidth: 260});
+    marker.on('click', ()=> selectPlace(place.key));
+    markersByKey.set(place.key, marker);
+  });
+}
+
+function renderCityRail(places){
+  const rail = document.getElementById('cityRail');
+  const sorted = [...places.values()].sort((a,b)=> b.events.length - a.events.length || a.label.localeCompare(b.label));
+
+  if(!sorted.length){
+    rail.innerHTML = `<div class="city-rail-empty">${emptyStateMessage()}</div>`;
+    return;
+  }
+
+  rail.innerHTML = sorted.map(place => {
+    const expanded = place.key === selectedPlaceKey;
+    return `
+      <div class="city-row">
+        <button type="button" class="city-row-head${expanded ? ' expanded' : ''}" data-key="${escapeHtml(place.key)}" aria-expanded="${expanded ? 'true' : 'false'}">
+          <span class="cr-count">${place.events.length}</span>
+          <span class="cr-name">${escapeHtml(place.label)}</span>
+          ${!place.precise ? '<span class="cr-approx">City center</span>' : ''}
+          <span class="cr-caret">&#9656;</span>
+        </button>
+        <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(evtRowHtml).join('') : ''}</div>
+      </div>
+    `;
+  }).join('');
+
+  rail.querySelectorAll('.city-row-head').forEach(btn=>{
+    btn.addEventListener('click', ()=> selectPlace(btn.dataset.key, {fromRail:true}));
+  });
+}
+
+// Single entry point for both a marker click and a city-rail row click —
+// keeps the map and the rail in sync with each other (one open place at a
+// time, same accordion model as calendar.html's dayPanel), rather than two
+// separate, driftable selection states.
+function selectPlace(key, opts){
+  selectedPlaceKey = (selectedPlaceKey === key) ? null : key;
+  const places = buildPlaces();
+  renderCityRail(places);
+  if(selectedPlaceKey){
+    const marker = markersByKey.get(selectedPlaceKey);
+    if(marker){
+      marker.openPopup();
+      leafletMap.panTo(marker.getLatLng());
+    }
+    if(!(opts && opts.fromRail)){
+      const row = document.querySelector(`.city-row-head[data-key="${CSS.escape(selectedPlaceKey)}"]`);
+      if(row) row.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  }
+}
+
+function updateMapStat(places){
+  const totalEvents = [...places.values()].reduce((sum,p)=> sum + p.events.length, 0);
+  const stat = document.getElementById('mapStat');
+  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${places.size.toLocaleString()}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`;
+}
+
+function render(){
+  updateWhenButtons();
+  updateRadiusButtons();
+  updateMobileTriggers();
+  renderActiveFilters();
+  const places = buildPlaces();
+  updateMapStat(places);
+  renderMap(places);
+  renderCityRail(places);
+  syncURL();
+}
+
+document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); render(); });
+
+// ---- Discovery bar (time-range shortcuts) ----
+function updateWhenButtons(){
+  document.querySelectorAll('.when-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.when === whenMode);
+  });
+}
+function activateWhen(key){
+  if(key === 'date'){
+    whenMode = null;
+    updateWhenButtons();
+    render();
+    closeSheet();
+    return;
+  }
+  whenMode = key;
+  if(key === 'weekend') cachedWeekendDates = getWeekendDates();
+  updateWhenButtons();
+  render();
+  closeSheet();
+}
+document.querySelectorAll('.when-btn').forEach(btn=>{
+  btn.onclick = ()=> activateWhen(btn.dataset.when);
+});
+
+document.getElementById('browseBtn').onclick = ()=>{ clearAllFilters(); };
+
+document.getElementById('navSearchBtn').onclick = ()=>{
+  const input = document.getElementById('search');
+  input.scrollIntoView({behavior:'smooth', block:'center'});
+  input.focus();
+};
+
+// ---- Location + radius — verbatim from calendar.html ----
+function updateRadiusButtons(){
+  document.querySelectorAll('.radius-chip').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.radius === String(radiusMiles));
+  });
+}
+function updateLocationControlUI(){
+  const input = document.getElementById('locInput');
+  const clearBtn = document.getElementById('locClearBtn');
+  const radiusGroup = document.getElementById('radiusGroup');
+  if(originLocation){
+    input.value = originLocation.name;
+    clearBtn.style.display = 'flex';
+    radiusGroup.style.display = 'flex';
+  } else {
+    clearBtn.style.display = 'none';
+    radiusGroup.style.display = 'none';
+  }
+  updateRadiusButtons();
+}
+let locHighlightIndex = -1;
+function renderLocationSuggestions(q){
+  const box = document.getElementById('locSuggestions');
+  const input = document.getElementById('locInput');
+  box.innerHTML = '';
+  locHighlightIndex = -1;
+  input.removeAttribute('aria-activedescendant');
+  if(!q || !q.trim()){
+    box.style.display = 'none';
+    input.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  const ql = q.trim().toLowerCase();
+  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
+  if(!matches.length){
+    box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
+  } else {
+    matches.forEach((loc, i)=>{
+      const item = document.createElement('div');
+      item.className = 'loc-item';
+      item.id = `locItem${i}`;
+      item.setAttribute('role', 'option');
+      item.setAttribute('aria-selected', 'false');
+      item.tabIndex = -1;
+      const nameEl = document.createElement('span');
+      nameEl.className = 'loc-item-name';
+      nameEl.textContent = loc.name;
+      const typeEl = document.createElement('span');
+      typeEl.className = 'loc-item-type';
+      typeEl.textContent = `${loc.type.toUpperCase()} · ${loc.region.toUpperCase()}`;
+      item.appendChild(nameEl);
+      item.appendChild(typeEl);
+      item.onclick = ()=> selectLocation(loc);
+      item.onmouseenter = ()=> setLocHighlight(i);
+      box.appendChild(item);
+    });
+  }
+  box.style.display = 'block';
+  input.setAttribute('aria-expanded', 'true');
+}
+function setLocHighlight(i){
+  const items = document.querySelectorAll('#locSuggestions .loc-item');
+  const input = document.getElementById('locInput');
+  items.forEach(el => { el.classList.remove('hl'); el.setAttribute('aria-selected', 'false'); });
+  if(i >= 0 && i < items.length){
+    items[i].classList.add('hl');
+    items[i].setAttribute('aria-selected', 'true');
+    items[i].scrollIntoView({block: 'nearest'});
+    input.setAttribute('aria-activedescendant', items[i].id);
+    locHighlightIndex = i;
+  } else {
+    input.removeAttribute('aria-activedescendant');
+    locHighlightIndex = -1;
+  }
+}
+function selectLocation(loc){
+  originLocation = loc;
+  if(radiusMiles === null) radiusMiles = 'all';
+  document.getElementById('locSuggestions').style.display = 'none';
+  document.getElementById('locSuggestions').innerHTML = '';
+  updateLocationControlUI();
+  render();
+}
+function clearLocation(opts){
+  originLocation = null;
+  radiusMiles = null;
+  document.getElementById('locInput').value = '';
+  document.getElementById('locSuggestions').style.display = 'none';
+  updateLocationControlUI();
+  if(!(opts && opts.skipRender)) render();
+}
+function expandRadius(){
+  const steps = [5, 10, 25, 50, 'all'];
+  const idx = steps.indexOf(radiusMiles);
+  radiusMiles = steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)];
+  updateRadiusButtons();
+  render();
+}
+function useMyLocation(){
+  const btn = document.getElementById('useMyLocationBtn');
+  const original = btn.textContent;
+  if(!navigator.geolocation){
+    btn.textContent = 'Not supported';
+    setTimeout(()=>{ btn.textContent = original; }, 2500);
+    return;
+  }
+  btn.textContent = 'Locating…';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    (pos)=>{
+      selectLocation({name: 'Your location', type: 'here', region: '', lat: pos.coords.latitude, lng: pos.coords.longitude});
+      btn.textContent = original;
+      btn.disabled = false;
+    },
+    ()=>{
+      btn.textContent = 'Location unavailable';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.textContent = original; }, 2500);
+    },
+    {timeout: 8000}
+  );
+}
+const locInputEl = document.getElementById('locInput');
+locInputEl.addEventListener('input', (e)=> renderLocationSuggestions(e.target.value));
+locInputEl.addEventListener('focus', (e)=>{ if(e.target.value) renderLocationSuggestions(e.target.value); });
+locInputEl.addEventListener('keydown', (e)=>{
+  const items = document.querySelectorAll('#locSuggestions .loc-item');
+  if(e.key === 'Escape'){
+    document.getElementById('locSuggestions').style.display = 'none';
+  } else if(e.key === 'ArrowDown'){
+    if(items.length){ e.preventDefault(); setLocHighlight((locHighlightIndex + 1) % items.length); }
+  } else if(e.key === 'ArrowUp'){
+    if(items.length){ e.preventDefault(); setLocHighlight((locHighlightIndex - 1 + items.length) % items.length); }
+  } else if(e.key === 'Enter'){
+    e.preventDefault();
+    const target = items[locHighlightIndex] || items[0];
+    if(target) target.click();
+  }
+});
+document.addEventListener('click', (e)=>{
+  const combo = document.querySelector('.loc-combo');
+  if(combo && !combo.contains(e.target)) document.getElementById('locSuggestions').style.display = 'none';
+});
+document.getElementById('locClearBtn').onclick = ()=> clearLocation();
+document.getElementById('useMyLocationBtn').onclick = useMyLocation;
+document.querySelectorAll('.radius-chip').forEach(btn=>{
+  btn.onclick = ()=>{
+    radiusMiles = btn.dataset.radius === 'all' ? 'all' : parseInt(btn.dataset.radius, 10);
+    updateRadiusButtons();
+    render();
+  };
+});
+
+// ---- Mobile WHEN/WHERE/FILTER sheets — verbatim from calendar.html ----
+let openSheetName = null;
+const SHEETS = {
+  when:   {barId: 'discoveryBar', triggerId: 'whenTriggerBtn'},
+  where:  {barId: 'locationBar',  triggerId: 'whereTriggerBtn'},
+  filter: {barId: 'filterBar',    triggerId: 'filterTriggerBtn'},
+};
+function isMobileViewport(){
+  return window.matchMedia('(max-width:720px)').matches;
+}
+function openSheet(name){
+  if(openSheetName === name){ closeSheet(); return; }
+  Object.entries(SHEETS).forEach(([key, {barId, triggerId}])=>{
+    const active = key === name;
+    document.getElementById(barId).classList.toggle('sheet-active', active);
+    document.getElementById(triggerId).setAttribute('aria-expanded', String(active));
+  });
+  if(isMobileViewport()){
+    document.getElementById('sheetBackdrop').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  openSheetName = name;
+  const bar = document.getElementById(SHEETS[name].barId);
+  const focusable = bar.querySelector('button, input, [tabindex]');
+  if(focusable) focusable.focus();
+}
+function closeSheet(){
+  if(!openSheetName) return;
+  const prevName = openSheetName;
+  Object.values(SHEETS).forEach(({barId, triggerId})=>{
+    document.getElementById(barId).classList.remove('sheet-active');
+    document.getElementById(triggerId).setAttribute('aria-expanded', 'false');
+  });
+  document.getElementById('sheetBackdrop').classList.remove('show');
+  document.body.style.overflow = '';
+  openSheetName = null;
+  const trigger = document.getElementById(SHEETS[prevName].triggerId);
+  if(trigger) trigger.focus();
+}
+document.getElementById('whenTriggerBtn').onclick = ()=> openSheet('when');
+document.getElementById('whereTriggerBtn').onclick = ()=> openSheet('where');
+document.getElementById('filterTriggerBtn').onclick = ()=> openSheet('filter');
+document.getElementById('sheetBackdrop').onclick = closeSheet;
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && openSheetName) closeSheet(); });
+document.addEventListener('click', (e)=>{
+  if(e.target.closest && e.target.closest('.sheet-close')) closeSheet();
+});
+document.addEventListener('click', (e)=>{
+  if(!openSheetName || isMobileViewport()) return;
+  const shell = document.getElementById('discoveryShell');
+  if(shell && !shell.contains(e.target)) closeSheet();
+});
+let _wasMobileViewport = isMobileViewport();
+window.addEventListener('resize', ()=>{
+  const nowMobile = isMobileViewport();
+  if(nowMobile !== _wasMobileViewport && openSheetName) closeSheet();
+  _wasMobileViewport = nowMobile;
+});
+function updateMobileTriggers(){
+  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
+  const whenSub = document.getElementById('whenTriggerSub');
+  whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
+  document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!whenMode);
+
+  const whereSub = document.getElementById('whereTriggerSub');
+  if(originLocation){
+    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
+    whereSub.textContent = `${radiusLabel} · ${originLocation.name}`;
+  } else {
+    whereSub.textContent = 'Everywhere';
+  }
+  document.getElementById('whereTriggerBtn').classList.toggle('has-value', !!originLocation);
+
+  const filterSub = document.getElementById('filterTriggerSub');
+  const totalCats = Object.keys(CATS).length;
+  const parts = [];
+  if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
+  if(freeOnly) parts.push('Free');
+  if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
+  document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
+}
+
+// ---- URL state ----
+// Same "bookmarkable filter state" contract as calendar.html/index.html —
+// no date/view/month params here (this page has neither), otherwise the
+// same params so a link built by one page's syncURL() logic isn't a
+// foreign shape to this one.
+function syncURL(){
+  const params = new URLSearchParams();
+  if(whenMode) params.set('when', whenMode);
+  if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
+  if(freeOnly) params.set('free', '1');
+  if(activeFeatures.size) params.set('features', Array.from(activeFeatures).join(','));
+  if(query) params.set('q', query);
+  if(originLocation && originLocation.type !== 'here'){
+    params.set('loc', originLocation.name);
+    if(radiusMiles !== null) params.set('radius', String(radiusMiles));
+  }
+  const qs = params.toString();
+  try {
+    history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
+  } catch (err) {
+    // Silently skip — nothing else depends on this succeeding.
+  }
+}
+function readStateFromURL(){
+  const params = new URLSearchParams(location.search);
+
+  const catsParam = params.get('cats');
+  if(catsParam !== null){
+    activeCats = new Set(catsParam.split(',').filter(k=>CATS[k]));
+  }
+  if(params.get('free') === '1') freeOnly = true;
+
+  const featuresParam = params.get('features');
+  if(featuresParam){
+    const validKeys = new Set(FEATURE_CHIPS.map(f=>f.key));
+    activeFeatures = new Set(featuresParam.split(',').filter(k=>validKeys.has(k)));
+  }
+
+  const qParam = params.get('q');
+  if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
+
+  const whenParam = params.get('when');
+  if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
+    whenMode = whenParam;
+    if(whenParam === 'weekend') cachedWeekendDates = getWeekendDates();
+  }
+
+  const locParam = params.get('loc');
+  if(locParam){
+    const found = LOCATIONS.find(l => l.name.toLowerCase() === locParam.toLowerCase());
+    if(found){
+      originLocation = found;
+      const radiusParam = params.get('radius');
+      if(radiusParam === 'all') radiusMiles = 'all';
+      else {
+        const n = parseInt(radiusParam, 10);
+        radiusMiles = (!isNaN(n) && [5,10,25,50].includes(n)) ? n : 'all';
+      }
+    }
+  }
+  updateLocationControlUI();
+}
+
+initLeaflet();
+readStateFromURL();
+buildFilterBar();
+render();
+
+// ---- Live database (Supabase) ----
+const SUPABASE_URL = "https://afvyfjfqukptnfmgshzn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5"; // publishable key — safe for client code, read-only via RLS
+
+function decodeEntities(str){
+  if(!str) return str;
+  const ta = document.createElement('textarea');
+  ta.innerHTML = str;
+  return ta.value;
+}
+
+// Populates VENUE_LATLNG_MAP (declared up near resolvePlace(), see the
+// comment there for why it has to live before the first render() call).
+async function loadVenueLatLng(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/venues?select=name,lat,lng&lat=not.is.null&lng=not.is.null&limit=1000`;
+    const resp = await fetch(url, {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+    });
+    if(!resp.ok) return;
+    const rows = await resp.json();
+    if(!Array.isArray(rows)) return;
+    rows.forEach(v=>{
+      if(v.name && typeof v.lat === 'number' && typeof v.lng === 'number'){
+        VENUE_LATLNG_MAP.set(v.name.trim().toLowerCase(), {lat: v.lat, lng: v.lng});
+      }
+    });
+  } catch (err) {
+    // Silent by design — every place just falls back to its city centroid.
+  }
+}
+
+function mapSupabaseRow(row) {
+  return {
+    id: row.id,
+    date: row.start_date,
+    title: decodeEntities(row.title),
+    description: row.description ? decodeEntities(row.description) : undefined,
+    imageUrl: row.image_url || undefined,
+    venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city_raw) : undefined,
+    cat: row.category,
+    time: row.time_display || "",
+    free: !!row.is_free,
+    source: row.source || "Manual",
+    note: row.note ? decodeEntities(row.note) : undefined,
+    ticketUrl: row.ticket_url || undefined,
+    priceFrom: row.price_from ?? undefined,
+  };
+}
+
+// Same 8-day back-buffer floor as index.html's loadFloorISO() (not
+// calendar.html's — that page intentionally loads the full, unbounded
+// history for month-by-month browsing; a map of "where things are
+// happening" has no reason to plot events that already happened).
+function loadFloorISO(){
+  const d = new Date(getTodayISO()+"T12:00:00");
+  d.setDate(d.getDate()-8);
+  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+async function loadSupabaseEvents() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    await loadVenueLatLng(); // must resolve before mapSupabaseRow()/resolvePlace() run below
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc&limit=2000`;
+    const resp = await fetch(url, {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+    });
+    if (!resp.ok) return;
+    const rows = await resp.json();
+    if (!Array.isArray(rows) || !rows.length) return;
+
+    EVENTS = rows.map(mapSupabaseRow);
+    byDate = {};
+    EVENTS.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+
+    buildFilterBar();
+    render();
+  } catch (err) {
+    // Silent by design — FALLBACK_EVENTS keeps the map usable regardless.
+  }
+}
+loadSupabaseEvents();
+</script>
+</body>
+</html>

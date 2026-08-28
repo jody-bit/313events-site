@@ -4278,6 +4278,7 @@
       <button type="button" class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
       <a class="site-nav-link" href="calendar.html">Calendar</a>
+      <a class="site-nav-link" href="map.html">Map</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
     </nav>
     <div style="display:flex;align-items:center;gap:18px;">
@@ -4467,6 +4468,7 @@
 
     <aside class="home-sidebar" id="homeSidebar" aria-label="Calendar shortcuts and highlights">
       <div class="side-card" id="viewCalendarCard"></div>
+      <div class="side-card" id="mapCard"></div>
       <div class="side-card" id="onRadarCard" style="display:none;"></div>
       <div class="side-card" id="nearYouCard"></div>
       <div class="side-card" id="freeTodayCard"></div>
@@ -6011,6 +6013,7 @@ function viewToday(){
 
 function renderSidebar(){
   renderViewCalendarCard();
+  renderMapCard();
   renderOnRadarCard();
   renderNearYouCard();
   renderFreeTodayCard();
@@ -6052,6 +6055,35 @@ function renderViewCalendarCard(){
     </div>
     <p class="side-card-sub">This week</p>
     <div class="vc-week">${cells}</div>
+  `;
+}
+
+// "Detroit Orbit Map" sidebar widget (2026-08-28, Jody: "add another widget
+// to the side rail that shows where the events are on a map"). Lightweight
+// teaser only — same posture as every other sidebar card, never a live
+// embedded Leaflet map — one real stat (how many distinct places currently
+// match the visitor's own filters) plus a link out to the dedicated
+// map.html page, which is where the actual map lives. Counts respect the
+// visitor's active filters via matchesNonDateFilters(), same as
+// renderViewCalendarCard() above, and fall back to "Detroit" for any event
+// with no venue_city_raw — same convention map.html itself uses.
+function renderMapCard(){
+  const el = document.getElementById('mapCard');
+  if(!el) return;
+  const places = new Set();
+  EVENTS.filter(e => matchesNonDateFilters(e)).forEach(e=>{
+    places.add(((e.city || 'Detroit')).toLowerCase());
+  });
+  const count = places.size;
+  el.innerHTML = `
+    <div class="side-card-head">
+      <h2>Detroit Orbit Map</h2>
+      <a class="side-card-link" href="map.html">See the map &rarr;</a>
+    </div>
+    <div class="side-card-number">${count}</div>
+    <p class="side-card-caption">place${count === 1 ? '' : 's'} with events across the Detroit Orbit</p>
+    <p class="side-card-sub">Pinned by venue where we have the address, by city center where we don't.</p>
+    <a class="side-card-cta" href="map.html">Open the map &rarr;</a>
   `;
 }
 
