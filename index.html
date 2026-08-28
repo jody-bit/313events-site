@@ -4950,16 +4950,6 @@ function getTomorrowISO(){
 // AM/PM of its own) — good enough to classify "roughly when", not precise
 // enough for anything that needs a real start time. Returns null when
 // nothing parseable is found; callers decide how to treat that.
-function parseHour(timeStr){
-  if(!timeStr) return null;
-  if(/evening/i.test(timeStr)) return 19;
-  const m = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-  if(!m) return null;
-  let hour = parseInt(m[1],10) % 12;
-  if(/PM/i.test(m[3])) hour += 12;
-  return hour;
-}
-
 // "This weekend" = the Friday/Saturday/Sunday currently in progress or the
 // next upcoming one — never a weekend that's already fully over. Returns 3
 // ISO date strings.
@@ -5170,13 +5160,28 @@ function matchesFilters(e){
     }
   } else if(e.date === todayIso){
     // No explicit time-range shortcut active (the page's own default
-    // state) — still hide today's events that have already ended, so the
-    // list "represents the current hour of the day" out of the box.
-    // Unparseable times stay included (safety net) rather than silently
-    // disappearing from an unknown time.
-    const hr = parseHour(e.time);
-    const nowHour = new Date().getHours();
-    if(hr !== null && hr < nowHour) return false;
+    // state). Previously hid a today event the moment its START hour
+    // passed — Jody, 2026-08-28: "just because it began already doesn't
+    // mean the user cannot still go or be interested," which is exactly
+    // right: that rule dropped an event from the list while it was still
+    // actively happening (a 6pm show vanished at 7pm). Now it only hides
+    // once the event's own parsed END time has passed — "still happening
+    // or midnight, whichever happens first." An event with no parseable
+    // end time (a bare start time with no range, or a vague string like
+    // "Evening") has no early cutoff at all and stays visible the rest of
+    // the day; the date-floor check above is what drops it once the
+    // calendar date itself rolls over to tomorrow — that's the "midnight"
+    // half of the rule.
+    const range = parseTimeRange(e.time);
+    if(range && range.end && range.end.h >= range.start.h){
+      // The >= guard skips a range that crosses midnight (e.g. 10pm-2am):
+      // it's still legitimately "today" all the way through, so there's
+      // nothing to cut off early — the date-floor check handles it
+      // naturally once the date itself moves to tomorrow.
+      const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+      const endHour = range.end.h + range.end.m/60;
+      if(endHour < nowHour) return false;
+    }
   }
   return true;
 }
