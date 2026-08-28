@@ -119,7 +119,19 @@
     border-bottom:2px solid transparent;white-space:nowrap;
   }
   .site-nav .when-btn:hover, .site-nav-link:hover{color:var(--ink);}
-  .site-nav .when-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  /* 2026-08-28 fix: .when-btn.active (below, ~line 194) sets background +
+     border-color for the boxy discovery-bar chip treatment elsewhere on
+     this page. This nav-scoped rule only ever overrode color/border-bottom
+     -color, so on a nav item (This Weekend/etc.) the chip's cream
+     background (var(--ink)) and full border-color leaked through untouched
+     — same specificity fight, but background/border-color have no
+     competing declaration here, so the cascade doesn't even need to
+     resolve specificity; whichever rule sets a property wins by default.
+     Result: a solid pale box behind chartreuse text in the nav, instead of
+     the plain text-link look .site-nav-link.current already has correctly.
+     Explicitly resetting background/border-color here makes this rule
+     fully self-contained, matching .site-nav-link.current's treatment. */
+  .site-nav .when-btn.active{background:none;color:var(--accent);border-color:transparent;border-bottom-color:var(--accent);}
   /* Marks whichever nav link is the current page (e.g. Calendar, on
      calendar.html) — same visual treatment as an active time-range chip. */
   .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
@@ -344,6 +356,14 @@
   .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;font-weight:700;padding-top:2px;}
   .evt-main{flex:1;}
   .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
+  /* 2026-08-28: same title-link + description-excerpt treatment added to
+     index.html — see that file's comments for the full reasoning. */
+  a.evt-title-link{color:inherit;text-decoration:none;}
+  a.evt-title-link:hover{text-decoration:underline;}
+  .evt-desc{
+    font-size:12.5px;color:var(--ink-soft);line-height:1.4;margin:3px 0;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
   .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .tag{
     display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
@@ -1418,6 +1438,23 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Short list-view excerpt of a longer description — same helper as
+// index.html's own copy (see that file for the full comment).
+function truncateText(str, maxLen){
+  if(!str) return '';
+  const flat = str.replace(/\s+/g, ' ').trim();
+  if(flat.length <= maxLen) return flat;
+  const cut = flat.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + '…';
+}
+
+// Canonical per-event permalink — undefined when the event has no real DB
+// id (FALLBACK_EVENTS, if this page's fallback dataset ever needs one).
+function eventUrl(e){
+  return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
+}
+
 // Only allow http(s) links into href attributes. Blocks javascript: URLs and
 // similar schemes that would otherwise let a submitted "ticket link" execute
 // code on click instead of just navigating.
@@ -1464,13 +1501,14 @@ function showDayPanel(iso){
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${escapeHtml(e.title)}</div>
+            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
               ${priceTag(e)}
               <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
               ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
             </div>
+            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
@@ -1505,13 +1543,14 @@ function renderList(dateList){
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${escapeHtml(e.title)}</div>
+            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
             <div class="evt-meta">
               <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
               ${priceTag(e)}
               <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
               ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
             </div>
+            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
@@ -2083,8 +2122,11 @@ function decodeEntities(str){
 
 function mapSupabaseRow(row) {
   return {
+    id: row.id, // 2026-08-28: needed to link into event.html — see eventUrl() below
     date: row.start_date,
     title: decodeEntities(row.title),
+    description: row.description ? decodeEntities(row.description) : undefined,
+    imageUrl: row.image_url || undefined,
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
@@ -2104,7 +2146,7 @@ function mapSupabaseRow(row) {
 async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,

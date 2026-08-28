@@ -3972,7 +3972,23 @@
      regardless of which items are present. */
   .evt-main{grid-column:2;min-width:0;}
   .evt-title{font-size:18px;font-weight:800;margin-bottom:4px;line-height:1.25;}
+  /* Only wraps the title when the event has a real DB id — see
+     editorialLinkHtml()'s comment for why FALLBACK_EVENTS (no id) can't
+     link anywhere. Deliberately inherits the surrounding text color rather
+     than looking like a conventional blue link — this is a title that
+     happens to be clickable, not a navigation link in running text. */
+  a.evt-title-link{color:inherit;text-decoration:none;}
+  a.evt-title-link:hover{text-decoration:underline;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+  /* Short description excerpt (2026-08-28) — plain secondary text, not a
+     link (the title above it is already the click target into event.html).
+     line-clamp is a belt-and-suspenders visual safety net; truncateText()
+     in JS already caps the string length before it ever reaches here, so
+     this never depends on line-clamp support alone. */
+  .evt-desc{
+    font-size:13px;color:var(--ink-soft);line-height:1.4;margin-top:5px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
   .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
   .evt-link{
@@ -5341,6 +5357,25 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Short list-view excerpt of a longer description — collapses newlines
+// (the full text's paragraph breaks matter on event.html, not squeezed into
+// a 2-line list row) and cuts at a word boundary near maxLen rather than
+// mid-word, then adds an ellipsis so it visibly reads as "more below."
+function truncateText(str, maxLen){
+  if(!str) return '';
+  const flat = str.replace(/\s+/g, ' ').trim();
+  if(flat.length <= maxLen) return flat;
+  const cut = flat.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + '…';
+}
+
+// Canonical per-event permalink — undefined when the event has no real DB
+// id (FALLBACK_EVENTS), same guard editorialLinkHtml() uses.
+function eventUrl(e){
+  return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
+}
+
 // Some submitted/imported rows have `source` set to a placeholder ("Manual")
 // or literally repeat the venue name (e.g. a venue's own listing page —
 // venue_name_raw "Trinosophes", source "Trinosophes"), which renders as a
@@ -5474,10 +5509,12 @@ function foldICSLine(line){
 
 function buildEventDescription(e){
   const parts = [];
+  if(e.description) parts.push(truncateText(e.description, 300));
   if(e.note) parts.push(e.note);
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
-  parts.push('Details: https://313.events/');
+  const permalink = eventUrl(e);
+  parts.push(`Details: ${permalink ? 'https://313.events/'+permalink : 'https://313.events/'}`);
   return parts.join('\n');
 }
 
@@ -5542,18 +5579,15 @@ function addToCalendarHtml(e){
 }
 
 // ---- Share ----
-// No per-event permalink page exists yet (this is a single-page list/
-// calendar, not one detail page per event) — sharing hands off the event's
-// own title/venue/date/time as plain text plus a link back to the site
-// itself, not a URL that reopens this exact event. Good enough for "tell a
-// friend what's happening"; a real deep link would need a dedicated event
-// page, which is a bigger, separate change.
+// 2026-08-28: now that event.html exists, sharing hands off a real deep
+// link that reopens this exact event (falls back to the homepage only for
+// FALLBACK_EVENTS, which have no DB id to link to — see eventUrl()).
 function shareEvent(btn){
-  const {title, venue, date, time} = btn.dataset;
+  const {title, venue, date, time, url: permalink} = btn.dataset;
   const bits = [title, venue].filter(Boolean).join(' — ');
   const when = [date, time].filter(Boolean).join(' ');
   const text = when ? `${bits} (${when})` : bits;
-  const url = 'https://313.events/';
+  const url = permalink || 'https://313.events/';
   if(navigator.share){
     navigator.share({title, text, url}).catch(()=>{}); // user cancel throws — nothing to do
     return;
@@ -5570,9 +5604,11 @@ function shareEvent(btn){
 
 function shareButtonHtml(e){
   const dateLabel = new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const permalink = eventUrl(e);
   return `<button type="button" class="evt-share" onclick="shareEvent(this)"
     data-title="${escapeHtml(e.title)}" data-venue="${escapeHtml(e.venue)}"
-    data-date="${escapeHtml(dateLabel)}" data-time="${escapeHtml(e.time||'')}">Share</button>`;
+    data-date="${escapeHtml(dateLabel)}" data-time="${escapeHtml(e.time||'')}"
+    ${permalink?`data-url="https://313.events/${escapeHtml(permalink)}"`:''}>Share</button>`;
 }
 
 // "As seen in: [Article title]" — only renders when loadEditorialArticles()
@@ -5615,8 +5651,9 @@ function renderList(dateList, meta){
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${escapeHtml(e.title)}</div>
+            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
             <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             <div class="evt-actions">
               ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
@@ -6665,6 +6702,14 @@ function mapSupabaseRow(row) {
     id: row.id, // 2026-08-27: needed to join editorial_articles.matched_event_id (see loadEditorialArticles()) — nothing on the client referenced an event's own DB identity before this, only field values.
     date: row.start_date,
     title: decodeEntities(row.title),
+    // 2026-08-28 (Jody: "i just submit an event and the description is
+    // nowhere to be seen"): description/image_url were always accepted by
+    // submit.html/api/submit.js and stored in the database — they just
+    // never made it into the client's event objects, so nothing on the
+    // page could ever have shown them. See event.html for the full
+    // description + image; the list view below only gets a short excerpt.
+    description: row.description ? decodeEntities(row.description) : undefined,
+    imageUrl: row.image_url || undefined,
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
@@ -6706,7 +6751,7 @@ async function loadSupabaseEvents() {
     // site ever needs anything older than "the Monday of the current week"
     // (see loadFloorISO() above), so flooring the query there spends the
     // row budget on relevant dates instead of unbounded history.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
