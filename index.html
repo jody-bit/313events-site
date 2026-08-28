@@ -6970,7 +6970,7 @@ function renderOnRadarCard(){
   el.style.display = '';
 
   el.innerHTML = `
-    <div class="side-card-head"><h2>On the Radar</h2></div>
+    <div class="side-card-head"><h2>On the Radar</h2><a class="side-card-link" href="radar.html">See all &rarr;</a></div>
     <p class="side-card-sub">Upcoming events the local press is already covering.</p>
     <div class="radar-list">
       ${candidates.map(({event, article}) => {
