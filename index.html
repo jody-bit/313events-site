@@ -3665,13 +3665,26 @@
   }
 
   /* "Showing N events ___" heading above the list — only appears when a
-     specific scope (this week, this weekend, a picked date/range, or a
-     neighborhood) is active, per currentListMeta(); the plain default view
-     has no heading here. */
+     specific scope (this week, this weekend, a picked date/range, a
+     neighborhood, or All Upcoming) is active, per currentListMeta(); the
+     plain default view has no heading here — see .list-scope-note below for
+     what it gets instead. */
   .list-count-heading{
     font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;
     color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;
   }
+  /* The plain default view's own boundary disclosure (P0, 2026-08-28
+     product audit Gap 2/8: the 30-day rolling window used to be silent —
+     nothing told a visitor there even WAS a cutoff, let alone how to see
+     past it). Deliberately a plain inline note, not another .es-action
+     chip — this isn't an empty-state recovery action, it's a standing,
+     always-there disclosure on an otherwise-populated list. */
+  .list-scope-note{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .list-scope-note button{
+    font:inherit;background:none;border:none;color:var(--accent);font-weight:700;
+    cursor:pointer;padding:0;
+  }
+  .list-scope-note button:hover{text-decoration:underline;}
 
   /* Active-filter tray — one visible summary of whatever is currently
      narrowing the event universe (time-range shortcut, free-only, search
@@ -4182,6 +4195,32 @@
   }
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
 
+  /* Category (What) promoted back to default-visible on desktop — 2026-08-28
+     P0 product-audit fix (Gap 1 / Finding 4: a visible filter widget got
+     roughly 77% of filtering interactions vs. ~2% for a functionally
+     identical hidden one in the cited research; the trigger-button pattern
+     below is real, always-visible-labeled progress over a generic buried
+     "Advanced Search" link, but it still hides the twelve category chips
+     behind a click at every width). When/Where stay trigger-gated — a
+     date-range picker and a location autocomplete genuinely need room, and
+     reopening the old always-open three-row layout for all three would be a
+     real redesign, not this targeted fix. Category is the one compact
+     enough (chips only, no text input) to promote outright: it's shown as a
+     plain wrapping row, not the boxed/bordered sheet-active panel treatment
+     When/Where use, so it reads as "chips that were always there" rather
+     than a dropdown left open. The matching Category trigger button is
+     hidden in the same breakpoint below, since there's nothing left for it
+     to open. Mobile (<=720px) is untouched — the sheet pattern is still
+     right where a persistent chip row would cost too much space above the
+     fold. */
+  @media (min-width:721px){
+    .filters{
+      display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;
+      margin-top:10px;
+    }
+    #filterTriggerBtn{display:none;}
+  }
+
   @media (max-width:720px){
     .discovery-shell{padding:10px 10px 0;background:none;border:none;}
     .mobile-trigger{align-items:center;text-align:center;}
@@ -4230,8 +4269,12 @@
            section — it's a pure "bring the list into focus" jump-to-list
            shortcut (viewToday(), see script below), not a filter control, so
            it doesn't use the .when-btn/data-when wiring and never shows as
-           an active-filter chip. -->
+           an active-filter chip.
+           "Tonight" was also removed 2026-08-27 (swapped for Tomorrow), then
+           restored 2026-08-28 as a P0 product-audit fix — see the
+           WHEN_LABELS comment in the script below for the full reasoning. -->
       <button type="button" class="site-nav-link" id="todayNavBtn">Today</button>
+      <button type="button" class="when-btn" data-when="tonight">Tonight</button>
       <button type="button" class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
       <a class="site-nav-link" href="calendar.html">Calendar</a>
@@ -4347,8 +4390,14 @@
 
     <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
       <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
+      <button class="when-btn" data-when="tonight">Tonight</button>
       <button class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button class="when-btn" data-when="weekend">This Weekend</button>
+      <!-- All Upcoming (P0, 2026-08-28 product audit Gap 2) — the one
+           explicit, one-click way to see the complete unfiltered catalog
+           beyond the page's silent 30-day default window; see
+           currentDateList()/matchesFilters() for what it actually changes. -->
+      <button class="when-btn" data-when="all">All Upcoming</button>
       <!-- Expanded from a single "Pick a date" input into a From/To pair
            (Jody, 2026-08-27) so the same control handles both a single date
            and a date range, without adding a separate mode toggle. "To" is
@@ -4892,8 +4941,19 @@ let rangeEnd = null;
 // built from the actual picked date(s) at display time, not a fixed word.
 // 'now'/'today' were removed 2026-08-27 (Jody: redundant once the homepage's
 // own default view already opens on today) — 'thisweek' backs the hero's
-// "View all events" link (see viewThisWeek()).
-const WHEN_LABELS = {tomorrow:'Tomorrow', weekend:'This Weekend', thisweek:'This Week'};
+// "View all events" link (see viewThisWeek()). 'tonight' was ALSO removed
+// that same day (replaced with Tomorrow) but restored 2026-08-28 as part of
+// the product audit's P0 list (Finding 2/15 — "what's on tonight" is a
+// high-intent, time-sensitive question the homepage otherwise couldn't
+// answer in one tap; only calendar.html had it). Worth reconsidering now
+// specifically because the "hides too soon" bug that made the page's own
+// default view unreliable for evening plans (an event vanishing from the
+// list the moment its start hour passed, fixed earlier 2026-08-28) is what
+// made a dedicated Tonight shortcut feel most redundant with the default
+// view in the first place — that's fixed now, so Tonight earns its slot
+// back. 'all' is the new P0 "All Upcoming" shortcut (Gap 2) — see
+// currentDateList()/matchesFilters() for what it actually does.
+const WHEN_LABELS = {tomorrow:'Tomorrow', tonight:'Tonight', weekend:'This Weekend', thisweek:'This Week', all:'All Upcoming'};
 // Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
 // currently in scope. Recomputed each time weekend mode is (re)activated,
 // not on every render, since "this weekend" only changes at midnight.
@@ -5050,6 +5110,13 @@ function currentDateList(){
   if(whenMode === 'range' && rangeStart && rangeEnd) return datesInRange(rangeStart, rangeEnd);
   if(whenMode === 'date' && pickedDate) return [pickedDate];
   if(whenMode === 'tomorrow') return [getTomorrowISO()];
+  if(whenMode === 'tonight') return [getTodayISO()];
+  // "All Upcoming" (P0, 2026-08-28 product audit Gap 2) — the same
+  // deliberately-unbounded "every date that actually has an event" function
+  // the neighborhood rail already relies on, reused rather than duplicated.
+  // This is what makes "show me everything" a real, one-click, zero-query
+  // answer instead of the silent 30-day default below.
+  if(whenMode === 'all') return upcomingDatesWithEvents();
   if(neighborhoodFilter) return upcomingDatesWithEvents();
   return rollingWindowDates(30);
 }
@@ -5070,6 +5137,8 @@ function currentListMeta(){
     return {scopeLabel: label, countLabel: label};
   }
   if(whenMode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
+  if(whenMode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
+  if(whenMode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
   if(neighborhoodFilter) return {scopeLabel: neighborhoodFilter, countLabel: `in ${neighborhoodFilter}`};
   return {scopeLabel: null, countLabel: null};
 }
@@ -5126,6 +5195,20 @@ function matchesNonDateFilters(e){
   return true;
 }
 
+// Evening classifier for the Tonight quick filter (restored 2026-08-28 —
+// see WHEN_LABELS above for why). A bare "Evening" string in time_display
+// counts directly, same vocabulary calendar.html's own time parsing already
+// treats as evening; otherwise the event needs a parseable start time of
+// 5pm or later. Unparseable/blank times are excluded — TONIGHT is a
+// deliberate narrowing (unlike the default view's "still happening" safety
+// net below), so an unknown time shouldn't silently qualify.
+function isEveningTime(timeStr){
+  if(!timeStr) return false;
+  if(/evening/i.test(timeStr)) return true;
+  const range = parseTimeRange(timeStr);
+  return !!(range && range.start.h >= 17);
+}
+
 function matchesFilters(e){
   if(!matchesNonDateFilters(e)) return false;
   const todayIso = getTodayISO();
@@ -5137,7 +5220,15 @@ function matchesFilters(e){
   // calendar.html page is for (it keeps its own independent month-browsing
   // and doesn't share this restriction).
   if(e.date < todayIso) return false;
-  if(whenMode){
+  // 'all' (All Upcoming, P0 2026-08-28) deliberately has NO branch of its
+  // own here — currentDateList() already scopes it to every date with an
+  // event, unbounded, so nothing here needs to narrow by date again. It
+  // still falls through to the today-only "hide once ended" block below
+  // (grouped with the plain default state, not the whenMode chain), so
+  // "show me everything" doesn't include a today event that's already
+  // completely over — same "still happening or midnight" rule as the
+  // default view, just without the 30-day ceiling.
+  if(whenMode && whenMode !== 'all'){
     if(whenMode === 'weekend'){
       if(!cachedWeekendDates.includes(e.date)) return false;
     } else if(whenMode === 'thisweek'){
@@ -5157,10 +5248,13 @@ function matchesFilters(e){
       if(e.date !== pickedDate) return false;
     } else if(whenMode === 'tomorrow'){
       if(e.date !== getTomorrowISO()) return false;
+    } else if(whenMode === 'tonight'){
+      if(e.date !== todayIso || !isEveningTime(e.time)) return false;
     }
-  } else if(e.date === todayIso){
+  } else if((!whenMode || whenMode === 'all') && e.date === todayIso){
     // No explicit time-range shortcut active (the page's own default
-    // state). Previously hid a today event the moment its START hour
+    // state), OR "All Upcoming" — both share this same today-only
+    // narrowing. Previously hid a today event the moment its START hour
     // passed — Jody, 2026-08-28: "just because it began already doesn't
     // mean the user cannot still go or be interested," which is exactly
     // right: that rule dropped an event from the list while it was still
@@ -5730,10 +5824,19 @@ function renderList(dateList, meta){
         </div>
       `).join('') + `</div>`;
   }
+  // The true default view (no When shortcut, no neighborhood) gets its own
+  // boundary disclosure instead of a count heading — see .list-scope-note
+  // above and Gap 2/8 in the 2026-08-28 product audit. Every other scope
+  // (including "All Upcoming" itself, and the neighborhood rail) already
+  // states its own scope via meta.countLabel, so this only applies to the
+  // one silent case.
+  const scopeNote = (any && !whenMode && !neighborhoodFilter)
+    ? `<div class="list-scope-note">Showing the next 30 days — <button type="button" onclick="activateWhen('all')">see everything &rarr;</button></div>`
+    : '';
   const countHeading = (any && meta.countLabel)
     ? `<div class="list-count-heading">Showing ${matchCount} event${matchCount===1?'':'s'} ${meta.countLabel}</div>`
     : '';
-  el.innerHTML = any ? (countHeading + html) : `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+  el.innerHTML = any ? (scopeNote + countHeading + html) : `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
 }
 
 // The homepage's real, always-on stat (approved: homepage defaults to
@@ -6101,6 +6204,12 @@ function viewNeighborhood(name){
 function emptyStateMessage(scopeLabel){
   const actions = [];
   if(whenMode || neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  // Nothing in the next 30 days doesn't mean nothing at all — offer the
+  // same All Upcoming escape hatch here as the populated default view gets
+  // (see .list-scope-note / renderList()) rather than leaving an empty
+  // 30-day window looking like a dead end (P0, 2026-08-28 product audit
+  // Gap 2/8).
+  if(!whenMode && !neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="activateWhen('all')">See all upcoming events</button>`);
   if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
   if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
   if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
@@ -6638,12 +6747,12 @@ function readStateFromURL(){
 
   // Note: an old bookmarked link with ?view=month has nothing to restore to
   // anymore — the homepage is List-only now, so that param is simply ignored.
-  // Same for a legacy ?when=tonight link — Tonight no longer exists as a
-  // shortcut (replaced with Tomorrow), so it's just ignored rather than
-  // guessed at; whenMode stays at its default (null/baseline). Same again
-  // (2026-08-27) for ?when=now / ?when=today — both shortcuts were removed
-  // as redundant once the default view already opens on today, so an old
-  // link using either is just ignored the same way.
+  // Same (2026-08-27) for ?when=now / ?when=today — both shortcuts were
+  // removed as redundant once the default view already opens on today, so
+  // an old link using either is just ignored. ?when=tonight, briefly in the
+  // same "ignored" category after Tonight was removed 2026-08-27, is back
+  // to being a real, restorable value again as of 2026-08-28 (Tonight was
+  // restored — see WHEN_LABELS above) — same for the new ?when=all.
   const whenParam = params.get('when');
   if(whenParam === 'date'){
     const pickedParam = params.get('picked');
@@ -6661,7 +6770,7 @@ function readStateFromURL(){
       document.getElementById('whenDateInput').value = rs;
       document.getElementById('whenDateEndInput').value = re;
     }
-  } else if(whenParam && ['tomorrow','weekend','thisweek'].includes(whenParam)){
+  } else if(whenParam && ['tomorrow','tonight','weekend','thisweek','all'].includes(whenParam)){
     whenMode = whenParam;
     if(whenParam === 'weekend'){
       cachedWeekendDates = getWeekendDates();
