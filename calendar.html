@@ -380,6 +380,85 @@
   /* List view */
   #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
   #listView.show{display:block;}
+
+  /* Map view (added 2026-08-28, Jody: "what if map was also a choice on the
+     list/calendar option?" — a third view-toggle tab alongside Month/List,
+     rather than only living on its own dedicated map.html page. This CSS
+     block, and the matching JS further down, is ported from map.html —
+     same class names on purpose, so both pages render identically. */
+  #mapView{display:none;}
+  #mapView.show{display:block;}
+  .map-stat-line{font-size:12px;color:var(--ink-soft);margin:0 0 8px;}
+  .map-stat-line strong{color:var(--accent);font-weight:700;}
+  .map-shell{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:10px;margin-bottom:10px;
+  }
+  #leafletMap{
+    flex:1 1 62%;min-width:0;height:560px;background:var(--panel-alt);
+    border:1px solid var(--line);
+  }
+  .map-unavailable{
+    height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+    padding:24px;color:var(--ink-dim);font-size:13px;line-height:1.5;
+  }
+  /* Dark-match the Leaflet chrome (zoom control, attribution strip) to the
+     Detroit Signal panel colors rather than leaving Leaflet's light default
+     — a bright white zoom box on this page would read as a bug, not a
+     deliberate choice. */
+  .leaflet-container{background:var(--panel-alt);font-family:'Inter',-apple-system,sans-serif;}
+  .leaflet-control-zoom a{
+    background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important;
+  }
+  .leaflet-control-zoom a:hover{background:var(--panel-hover)!important;}
+  .leaflet-control-attribution{
+    background:rgba(10,10,10,.75)!important;color:var(--ink-dim)!important;font-size:10px!important;
+  }
+  .leaflet-control-attribution a{color:var(--ink-soft)!important;}
+  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--ink);border-radius:var(--radius);}
+  .leaflet-popup-tip{background:var(--panel);}
+  .leaflet-popup-content{margin:12px 14px;font-size:12.5px;min-width:200px;max-width:260px;}
+  .popup-place-name{font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;margin-bottom:2px;}
+  .popup-approx{font-size:10.5px;color:var(--ink-dim);font-style:italic;margin-bottom:8px;}
+  .popup-evt{padding:5px 0;border-top:1px solid var(--line-soft);}
+  .popup-evt:first-of-type{border-top:none;}
+  .popup-evt a{color:var(--ink);text-decoration:none;font-weight:700;font-size:12px;}
+  .popup-evt a:hover{color:var(--accent);}
+  .popup-evt .pe-meta{color:var(--ink-soft);font-size:11px;}
+  .popup-more{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+  .popup-more button{border:none;background:none;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;padding:0;}
+
+  .city-rail{
+    flex:1 1 38%;min-width:0;max-width:100%;height:560px;overflow-y:auto;
+    background:var(--panel-alt);border:1px solid var(--line);
+  }
+  .city-rail-empty{padding:24px 16px;color:var(--ink-soft);font-size:13px;text-align:center;}
+  .city-row{border-bottom:1px solid var(--line-soft);}
+  .city-row:last-child{border-bottom:none;}
+  .city-row-head{
+    width:100%;display:flex;align-items:center;gap:10px;padding:11px 14px;
+    border:none;background:none;color:var(--ink);cursor:pointer;text-align:left;font-family:inherit;
+  }
+  .city-row-head:hover{background:var(--panel-hover);}
+  .city-row-head.expanded{background:var(--panel-hover);}
+  .cr-count{
+    flex:0 0 auto;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;
+    background:var(--panel);border:1px solid var(--line);color:var(--accent);
+    min-width:26px;text-align:center;padding:2px 6px;
+  }
+  .cr-name{flex:1;min-width:0;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cr-approx{flex:0 0 auto;font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.03em;}
+  .cr-caret{flex:0 0 auto;font-size:10px;color:var(--ink-dim);transition:transform .15s;}
+  .city-row-head.expanded .cr-caret{transform:rotate(90deg);}
+  .city-row-body{display:none;padding:0 14px 12px;}
+  .city-row-body.show{display:block;}
+
+  @media (max-width:860px){
+    .map-shell{flex-direction:column;}
+    #leafletMap{width:100%;height:380px;flex:none;}
+    .city-rail{width:100%;height:380px;flex:none;}
+  }
   .list-day-group{padding:12px 0;border-top:1px solid var(--line-soft);}
   .list-day-group:first-child{border-top:none;}
   .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
@@ -497,6 +576,9 @@
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
 </style>
+<!-- Leaflet (Map view, added 2026-08-28 — see the "Detroit Orbit Map" view-toggle
+     button below). Hash verified against the real leaflet@1.9.4 npm package. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
 <div class="wrap">
@@ -579,7 +661,7 @@
   </div>
 
   <div class="controls">
-    <div class="nav-group">
+    <div class="nav-group" id="monthNavGroup">
       <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
       <div id="monthLabel">August 2026</div>
       <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
@@ -588,6 +670,7 @@
     <div class="view-toggle">
       <button id="monthViewBtn" class="active">Month</button>
       <button id="listViewBtn">List</button>
+      <button id="mapViewBtn">Map</button>
     </div>
   </div>
 
@@ -602,6 +685,21 @@
 
   <div id="listView"></div>
 
+  <!-- Map view (2026-08-28) — same #leafletMap/#cityRail structure as the
+       dedicated map.html page, reused verbatim so a visitor sees the exact
+       same map whether they arrive here or from that page's own link. Month
+       is deliberately NOT scoped here (unlike Month/List) — the map shows
+       everywhere something's happening across the whole loaded range, same
+       as map.html; the month prev/next controls hide while this tab is
+       active (see mapViewBtn's click handler) since they'd do nothing. -->
+  <div id="mapView">
+    <div class="map-stat-line" id="mapStat"></div>
+    <div class="map-shell">
+      <div id="leafletMap" role="img" aria-label="Map of Detroit-area events"></div>
+      <div class="city-rail" id="cityRail"></div>
+    </div>
+  </div>
+
   <div id="dayPanel"></div>
 
   <footer class="site">
@@ -612,6 +710,7 @@
 
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const CATS = {
   music:    {label:"Music",            color:"var(--c-music)"},
@@ -1669,6 +1768,192 @@ function emptyStateMessage(scopeLabel){
   return `Nothing on the signal here${scope}.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
 }
 
+// ---- Map view (net-new, 2026-08-28) ----
+// Ported from map.html's own "Places" section — see that file's header
+// comment for the full reasoning. A "place" is where a marker/city-rail row
+// actually lives: one real venue (precise pin, from VENUE_LATLNG_MAP) or one
+// city centroid (fallback, from CITY_LOOKUP, already defined above) when the
+// venue has no resolvable coordinates. Deliberately NOT scoped to the
+// browsed month (current) — unlike Month/List, the map shows everywhere
+// something's happening across the whole loaded range, same as the
+// dedicated map.html page it mirrors.
+//
+// venue name (trimmed, lowercased) -> {lat, lng}. Populated once by
+// loadVenueLatLng() (further down, alongside the Supabase fetch) before
+// events are mapped. Declared here — well before the first possible
+// render() call in map mode (e.g. a URL restoring view=map) — rather than
+// down by loadVenueLatLng(), so a `const` in that later position can't be
+// in its temporal dead zone when resolvePlace() below is called; that
+// exact bug, caught while testing map.html, took the whole page down with
+// an uncaught ReferenceError.
+const VENUE_LATLNG_MAP = new Map();
+
+const venueKeyOf = (e) => (e.venue || "").trim().toLowerCase();
+
+function resolvePlace(e){
+  const vKey = venueKeyOf(e);
+  const precise = VENUE_LATLNG_MAP.get(vKey);
+  if(precise){
+    return { key: `v:${vKey}`, lat: precise.lat, lng: precise.lng, label: e.venue, precise: true };
+  }
+  const cityName = e.city || "Detroit";
+  const loc = CITY_LOOKUP.get(cityName.toLowerCase());
+  if(!loc) return null; // no resolvable location at all — excluded from the map (never guessed)
+  return { key: `c:${cityName.toLowerCase()}`, lat: loc.lat, lng: loc.lng, label: cityName, precise: false };
+}
+
+function buildPlaces(){
+  const places = new Map();
+  EVENTS.filter(matchesFilters).forEach(e=>{
+    const place = resolvePlace(e);
+    if(!place) return;
+    if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
+    places.get(place.key).events.push(e);
+  });
+  places.forEach(p => p.events.sort((a,b)=> a.date === b.date ? timeSortMinutes(a.time)-timeSortMinutes(b.time) : a.date.localeCompare(b.date)));
+  return places;
+}
+
+let leafletMap = null;
+let markersByKey = new Map();
+let selectedPlaceKey = null;
+let mapInitTried = false;
+
+function initLeaflet(){
+  mapInitTried = true;
+  // See map.html's own initLeaflet() for why this is wrapped: a blocked
+  // CDN (ad blocker, offline, network policy) shouldn't be able to take the
+  // whole page down with it — the city rail and every filter are plain data
+  // rendering with no Leaflet dependency and should keep working either way.
+  try{
+    if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
+    leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(leafletMap);
+    leafletMap.on('focus', ()=> leafletMap.scrollWheelZoom.enable());
+    leafletMap.on('blur', ()=> leafletMap.scrollWheelZoom.disable());
+  } catch(err){
+    leafletMap = null;
+    const el = document.getElementById('leafletMap');
+    if(el) el.innerHTML = `<div class="map-unavailable">Map tiles didn't load — you can still browse every event in the list below.</div>`;
+  }
+}
+
+function placePopupHtml(place){
+  const shown = place.events.slice(0, 6);
+  const rows = shown.map(e => `
+    <div class="popup-evt">
+      ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
+      <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+    </div>
+  `).join('');
+  const more = place.events.length > shown.length
+    ? `<div class="popup-more">+${place.events.length - shown.length} more — <button type="button" onclick="selectPlace('${place.key.replace(/'/g,"\\'")}')">see all</button></div>`
+    : '';
+  return `
+    <div class="popup-place-name">${escapeHtml(place.label)}</div>
+    ${!place.precise ? `<div class="popup-approx">Approximate — city center, not an exact address</div>` : ''}
+    ${rows}
+    ${more}
+  `;
+}
+
+function renderMap(places){
+  if(!leafletMap) return;
+  markersByKey.forEach(m => leafletMap.removeLayer(m));
+  markersByKey = new Map();
+  places.forEach(place=>{
+    const count = place.events.length;
+    const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
+    const marker = L.circleMarker([place.lat, place.lng], {
+      radius: r,
+      color: place.precise ? '#D7FF00' : '#8a9600',
+      weight: place.precise ? 2 : 1.5,
+      dashArray: place.precise ? null : '3,3',
+      fillColor: '#D7FF00',
+      fillOpacity: place.precise ? 0.55 : 0.3,
+    }).addTo(leafletMap);
+    marker.bindPopup(placePopupHtml(place), {maxWidth: 260});
+    marker.on('click', ()=> selectPlace(place.key));
+    markersByKey.set(place.key, marker);
+  });
+}
+
+function renderCityRail(places){
+  const rail = document.getElementById('cityRail');
+  if(!rail) return;
+  const sorted = [...places.values()].sort((a,b)=> b.events.length - a.events.length || a.label.localeCompare(b.label));
+
+  if(!sorted.length){
+    rail.innerHTML = `<div class="city-rail-empty">${emptyStateMessage()}</div>`;
+    return;
+  }
+
+  rail.innerHTML = sorted.map(place => {
+    const expanded = place.key === selectedPlaceKey;
+    return `
+      <div class="city-row">
+        <button type="button" class="city-row-head${expanded ? ' expanded' : ''}" data-key="${escapeHtml(place.key)}" aria-expanded="${expanded ? 'true' : 'false'}">
+          <span class="cr-count">${place.events.length}</span>
+          <span class="cr-name">${escapeHtml(place.label)}</span>
+          ${!place.precise ? '<span class="cr-approx">City center</span>' : ''}
+          <span class="cr-caret">&#9656;</span>
+        </button>
+        <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(e=>`
+          <div class="evt-row">
+            <div class="evt-time">${escapeHtml(e.time)||''}</div>
+            <div class="evt-main">
+              <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+              <div class="evt-meta">
+                <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+                ${priceTag(e)}
+                <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
+              </div>
+            </div>
+          </div>
+        `).join('') : ''}</div>
+      </div>
+    `;
+  }).join('');
+
+  rail.querySelectorAll('.city-row-head').forEach(btn=>{
+    btn.addEventListener('click', ()=> selectPlace(btn.dataset.key, {fromRail:true}));
+  });
+}
+
+// Single entry point for both a marker click and a city-rail row click —
+// keeps the map and the rail in sync with each other (one open place at a
+// time), same accordion model as this page's own day panel.
+function selectPlace(key, opts){
+  selectedPlaceKey = (selectedPlaceKey === key) ? null : key;
+  const places = buildPlaces();
+  renderCityRail(places);
+  if(selectedPlaceKey){
+    const marker = markersByKey.get(selectedPlaceKey);
+    if(marker){
+      marker.openPopup();
+      leafletMap.panTo(marker.getLatLng());
+    }
+    if(!(opts && opts.fromRail)){
+      const row = document.querySelector(`.city-row-head[data-key="${CSS.escape(selectedPlaceKey)}"]`);
+      if(row) row.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  }
+}
+
+function updateMapStat(places){
+  const el = document.getElementById('mapStat');
+  if(!el) return;
+  let total = 0;
+  places.forEach(p => total += p.events.length);
+  el.innerHTML = total
+    ? `<strong>${total}</strong> event${total===1?'':'s'} across <strong>${places.size}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`
+    : '';
+}
+
 function render(){
   updateMonthHeader();
   updateWhenButtons();
@@ -1679,6 +1964,11 @@ function render(){
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
+  } else if(mode === 'map'){
+    const places = buildPlaces();
+    updateMapStat(places);
+    renderMap(places);
+    renderCityRail(places);
   } else {
     renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
   }
@@ -1699,17 +1989,45 @@ document.getElementById('monthViewBtn').onclick = ()=>{
   mode='month';
   document.getElementById('monthViewBtn').classList.add('active');
   document.getElementById('listViewBtn').classList.remove('active');
+  document.getElementById('mapViewBtn').classList.remove('active');
+  document.getElementById('monthNavGroup').style.display='flex';
   document.getElementById('calWrap').style.display='block';
   document.getElementById('listView').classList.remove('show');
+  document.getElementById('mapView').classList.remove('show');
   render();
 };
 document.getElementById('listViewBtn').onclick = ()=>{
   mode='list';
   document.getElementById('listViewBtn').classList.add('active');
   document.getElementById('monthViewBtn').classList.remove('active');
+  document.getElementById('mapViewBtn').classList.remove('active');
+  document.getElementById('monthNavGroup').style.display='flex';
   document.getElementById('calWrap').style.display='none';
   closeDayPanel();
   document.getElementById('listView').classList.add('show');
+  document.getElementById('mapView').classList.remove('show');
+  render();
+};
+document.getElementById('mapViewBtn').onclick = ()=>{
+  mode='map';
+  document.getElementById('mapViewBtn').classList.add('active');
+  document.getElementById('monthViewBtn').classList.remove('active');
+  document.getElementById('listViewBtn').classList.remove('active');
+  // The month prev/next controls are meaningless here — the map isn't
+  // scoped to the browsed month (see buildPlaces()'s comment) — so they
+  // hide entirely rather than sitting there doing nothing if clicked.
+  document.getElementById('monthNavGroup').style.display='none';
+  document.getElementById('calWrap').style.display='none';
+  closeDayPanel();
+  document.getElementById('listView').classList.remove('show');
+  document.getElementById('mapView').classList.add('show');
+  // Leaflet needs its container to actually be visible (non-zero size) to
+  // lay itself out correctly — init on first real switch to this tab
+  // rather than at page load, when #mapView is still display:none. On a
+  // later switch back, invalidateSize() re-checks the container in case
+  // anything about the layout changed while it was hidden.
+  if(!mapInitTried) initLeaflet();
+  else if(leafletMap) setTimeout(()=> leafletMap.invalidateSize(), 40);
   render();
 };
 
@@ -2152,8 +2470,9 @@ function readStateFromURL(){
   if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
 
   const viewParam = params.get('view');
-  const explicitView = viewParam === 'list' || viewParam === 'month';
+  const explicitView = viewParam === 'list' || viewParam === 'month' || viewParam === 'map';
   if(viewParam === 'list') mode = 'list';
+  if(viewParam === 'map') mode = 'map';
 
   const whenParam = params.get('when');
   if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
@@ -2171,6 +2490,18 @@ function readStateFromURL(){
     document.getElementById('monthViewBtn').classList.remove('active');
     document.getElementById('calWrap').style.display = 'none';
     document.getElementById('listView').classList.add('show');
+  }
+
+  if(mode === 'map'){
+    document.getElementById('mapViewBtn').classList.add('active');
+    document.getElementById('monthViewBtn').classList.remove('active');
+    document.getElementById('monthNavGroup').style.display = 'none';
+    document.getElementById('calWrap').style.display = 'none';
+    document.getElementById('mapView').classList.add('show');
+    // Same reasoning as mapViewBtn's own click handler: Leaflet needs its
+    // container visible before init, which is now true since the classList
+    // toggle above already happened.
+    initLeaflet();
   }
 
   // A shared link only restores a NAMED location (a real match in
@@ -2247,9 +2578,39 @@ function mapSupabaseRow(row) {
   };
 }
 
+// Populates VENUE_LATLNG_MAP (declared up near resolvePlace() — see the
+// comment there for why it has to live before the first render() call).
+// Same client-side name-match join index.html's loadNeighborhoodData() /
+// VENUE_NEIGHBORHOOD_MAP already does for neighborhood_id — see map.html's
+// header comment for why this can't be a real venue_id join yet.
+async function loadVenueLatLng(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/venues?select=name,lat,lng&lat=not.is.null&lng=not.is.null&limit=1000`;
+    const resp = await fetch(url, {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+    });
+    if(!resp.ok) return;
+    const rows = await resp.json();
+    if(!Array.isArray(rows)) return;
+    rows.forEach(v=>{
+      if(v.name && typeof v.lat === 'number' && typeof v.lng === 'number'){
+        VENUE_LATLNG_MAP.set(v.name.trim().toLowerCase(), {lat: v.lat, lng: v.lng});
+      }
+    });
+  } catch (err) {
+    // Silent by design — every place just falls back to its city centroid.
+  }
+}
+
 async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
   try {
+    // Venue coordinates load first so the very first map render (if the
+    // visitor is already on the Map tab, e.g. from a shared view=map link)
+    // has precise pins available rather than showing city centroids and
+    // then silently re-pinning underneath the visitor a moment later.
+    await loadVenueLatLng();
     const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
     const resp = await fetch(url, {
       headers: {
