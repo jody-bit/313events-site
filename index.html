@@ -4878,7 +4878,7 @@ let orbitEventTotal = null;
 // index by date
 let byDate = {};
 EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
-Object.values(byDate).forEach(list=>list.sort((a,b)=> (a.time||"").localeCompare(b.time||"")));
+Object.values(byDate).forEach(list=>list.sort((a,b)=> timeSortMinutes(a.time) - timeSortMinutes(b.time)));
 
 // Relative to today's real date, not a hardcoded month — stays correct as
 // soon as the calendar page turns rather than needing a code change. Uses
@@ -5604,6 +5604,20 @@ function parseTimeRange(timeStr){
   const start = to24(matches[0][1], matches[0][2], matches[0][3]);
   const end = matches.length > 1 ? to24(matches[1][1], matches[1][2], matches[1][3]) : null;
   return {start, end};
+}
+
+// Sortable minutes-since-midnight for a time_display string, via
+// parseTimeRange() above — the same "what time does this start" parsing
+// used everywhere else on the site, not a second definition that could
+// drift from it. Added 2026-08-28: the byDate sort below used to compare
+// e.time as plain text (localeCompare), which sorts "10:00 PM" before
+// "3:00 PM" because the character '1' is less than '3' — a 10pm event was
+// landing at the top of today's list, ahead of everything from noon
+// through 9pm. Events with no parseable start time ("Evening", "Varies",
+// blank) sort to the end of the day rather than colliding at position 0.
+function timeSortMinutes(timeStr){
+  const range = parseTimeRange(timeStr);
+  return range ? range.start.h*60 + range.start.m : Infinity;
 }
 
 function pad2(n){ return String(n).padStart(2,'0'); }
@@ -6936,7 +6950,7 @@ async function loadSupabaseEvents() {
     EVENTS = rows.map(mapSupabaseRow);
     byDate = {};
     EVENTS.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
-    Object.values(byDate).forEach(list => list.sort((a,b) => (a.time||"").localeCompare(b.time||"")));
+    Object.values(byDate).forEach(list => list.sort((a,b) => timeSortMinutes(a.time) - timeSortMinutes(b.time)));
 
     buildFilterBar();
     render();
