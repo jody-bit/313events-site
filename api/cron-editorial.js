@@ -83,6 +83,60 @@ const MIN_MATCHABLE_LENGTH = 6;
 // near the full article, which is the point (see migration_011's header).
 const EXCERPT_MAX_LENGTH = 280;
 
+// 2026-08-28 (Jody, after radar.html started showing every unmatched
+// article as a "General coverage" card): outlets like WDET publish a single
+// general news/arts RSS feed that mixes real event previews in with daily
+// news-show segments and recurring music columns — see this file's own
+// OUTLETS comment, "WDET's general news/arts feed" — and this project had
+// no topical filter before this point, only the event-MATCHING step above.
+// That was a reasonable design as long as an unmatched row was stored but
+// never shown to a visitor; once radar.html started rendering every
+// unmatched row as its own card, that same daily-news content started
+// reading as if 313.events considered "Wayne County Reports First Human
+// West Nile Virus Case" or "Dolly Parton, Queen of Country, Has Died" to be
+// event coverage. These two lists exist to stop that at the source, before
+// a non-event row is even stored, rather than trying to filter it back out
+// on the display side.
+//
+// NON_EVENT_SEGMENT_PREFIXES: known recurring news-show/column names these
+// outlets publish that are NEVER about one specific event, matched against
+// the start of the normalize()'d title (every one of these follows a
+// "Segment Name: topic" or "Segment Name (dates)" convention). An article
+// that already matched a real event (see matchArticleToEvent() above)
+// always bypasses this — a "Visions:" segment that happens to preview a
+// real, matchable event (e.g. "Visions: Detroit Jazz Festival preview",
+// seen live 2026-08-28) still gets through and is correctly shown as that
+// event's own coverage; this list only affects articles nothing already
+// matched. Extend as new noisy recurring segments turn up.
+const NON_EVENT_SEGMENT_PREFIXES = [
+  "the metro", "detroit evening report", "in the groove", "big sonic heaven",
+  "mi local", "the shake out", "visions", "acoustic caf", "rob reinhart",
+  "container on the metro", "free will astrology", "michmash",
+  "metro events guide",
+];
+
+// EVENT_SIGNAL_RE: for any unmatched article NOT caught by the denylist
+// above, require at least one loose event-indicating word in its title or
+// excerpt before it's stored at all. Deliberately loose/keyword-based
+// rather than another attempt at precise matching — the bar here is much
+// lower than matchArticleToEvent()'s ("is this even plausibly about an
+// event," not "which one"). Verified against every unmatched article live
+// on radar.html on 2026-08-28: correctly keeps genuine misses ("Colors Wine
+// Fest Returns to Detroit," "Comedian Jim Gaffigan Adds Second Fox Theatre
+// Show," "Michigan Renaissance Festival Returns...") while excluding
+// ordinary news, politics, and community journalism. False negatives (a
+// real event preview that happens to avoid all of these words) are an
+// accepted cost — same "no match beats a wrong match" posture as
+// matchArticleToEvent() itself, extended here to "no display beats
+// irrelevant display."
+const EVENT_SIGNAL_RE = /\b(festival|fest|concert|tour|screening|exhibit(ion)?|showcase|matinee|gala|expo|parade|market days?|art fair|open mic|trivia night|ticket|opening reception)\b/i;
+
+function looksLikeEventCoverage(item) {
+  const title = normalize(item.title);
+  if (NON_EVENT_SEGMENT_PREFIXES.some((prefix) => title.startsWith(prefix))) return false;
+  return EVENT_SIGNAL_RE.test(`${item.title} ${item.excerpt || ""}`);
+}
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -289,34 +343,46 @@ module.exports = async (req, res) => {
       if (!items.length) {
         outletResult = "Fetched OK — 0 items parsed (feed may be empty or in an unsupported shape)";
       } else {
-        const rows = items.map((item) => {
-          const match = matchArticleToEvent(item, candidateEvents);
-          if (match) totalMatched++;
-          return {
-            source: outlet.source,
-            feed_url: outlet.feedUrl,
-            title: item.title,
-            excerpt: item.excerpt || null,
-            url: item.url,
-            thumbnail_url: item.thumbnailUrl || null,
-            published_at: item.publishedAt,
-            matched_event_id: match ? match.event.id : null,
-            match_type: match ? match.matchType : null,
-          };
-        });
+        // Match every item first, then only keep ones that either matched a
+        // real event or pass looksLikeEventCoverage() — see that function's
+        // header for why. A matched item always survives regardless (it's
+        // definitionally event coverage); an unmatched one has to look like
+        // event coverage on its own to be worth storing at all.
+        const withMatches = items.map((item) => ({ item, match: matchArticleToEvent(item, candidateEvents) }));
+        const skippedNonEvent = withMatches.filter(({ item, match }) => !match && !looksLikeEventCoverage(item)).length;
+        const rows = withMatches
+          .filter(({ match, item }) => match || looksLikeEventCoverage(item))
+          .map(({ item, match }) => {
+            if (match) totalMatched++;
+            return {
+              source: outlet.source,
+              feed_url: outlet.feedUrl,
+              title: item.title,
+              excerpt: item.excerpt || null,
+              url: item.url,
+              thumbnail_url: item.thumbnailUrl || null,
+              published_at: item.publishedAt,
+              matched_event_id: match ? match.event.id : null,
+              match_type: match ? match.matchType : null,
+            };
+          });
 
-        const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/editorial_articles?on_conflict=url`, {
-          method: "POST",
-          headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-          body: JSON.stringify(rows),
-        });
-        if (!upsertResp.ok) {
-          const errText = await upsertResp.text();
-          outletResult = `Parsed ${rows.length} item${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`;
+        if (!rows.length) {
+          outletResult = `Fetched OK — ${items.length} item${items.length === 1 ? "" : "s"} parsed, all ${skippedNonEvent} skipped as non-event coverage`;
         } else {
-          totalUpserted += rows.length;
-          const matchedHere = rows.filter((r) => r.matched_event_id).length;
-          outletResult = `${rows.length} item${rows.length === 1 ? "" : "s"} found, ${matchedHere} matched to an event`;
+          const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/editorial_articles?on_conflict=url`, {
+            method: "POST",
+            headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
+            body: JSON.stringify(rows),
+          });
+          if (!upsertResp.ok) {
+            const errText = await upsertResp.text();
+            outletResult = `Parsed ${rows.length} item${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`;
+          } else {
+            totalUpserted += rows.length;
+            const matchedHere = rows.filter((r) => r.matched_event_id).length;
+            outletResult = `${rows.length} item${rows.length === 1 ? "" : "s"} found, ${matchedHere} matched to an event, ${skippedNonEvent} skipped as non-event coverage`;
+          }
         }
       }
     } catch (err) {

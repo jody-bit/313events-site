@@ -1,0 +1,43 @@
+-- Migration 015: Clear out already-stored non-event editorial_articles rows
+--
+-- Context (Jody, 2026-08-28): radar.html was showing 85 "General coverage"
+-- cards, and most of them turned out to be ordinary news/politics/community
+-- journalism and recurring music columns (WDET's "The Metro"/"Detroit
+-- Evening Report" daily segments, "In The Groove", "Free Will Astrology",
+-- etc.) with nothing to do with any specific event — not a display bug, but
+-- a missing topical filter in api/cron-editorial.js, which used to store
+-- every item from each outlet's general RSS feed regardless of whether it
+-- was event coverage at all, relying only on the (separate, and rightly
+-- conservative) event-MATCHING step to decide what showed as "As seen in"
+-- on an event's own page. That was fine as long as an unmatched row was
+-- stored but never shown to a visitor; it stopped being fine once
+-- radar.html started rendering every unmatched row as its own card.
+--
+-- cron-editorial.js has since been fixed to stop STORING new non-event rows
+-- (looksLikeEventCoverage() — see that file for the exact logic: a
+-- denylist of known recurring non-event segment names, plus a loose
+-- event-keyword requirement for everything else). That fix only prevents
+-- new noise going forward — it does nothing to the 80-some rows already
+-- sitting in the table from before the fix shipped, since the cron's
+-- upsert (on_conflict=url) only touches a row when that same URL is fetched
+-- again; it never deletes what's already there.
+--
+-- This migration clears that backlog in one shot: delete every row that
+-- never matched a real event. This is safe to do outright (rather than
+-- trying to replicate the JS denylist/keyword logic in SQL row-by-row)
+-- because editorial_articles is entirely cron-managed, re-fetchable content
+-- — nothing here is user-submitted or otherwise irreplaceable — and the
+-- next scheduled cron-editorial.js run will re-populate the table from
+-- scratch under the new, filtered logic, keeping only rows that either
+-- match a real event or look like event coverage on their own. A few
+-- genuine (if unmatched) event-preview articles get deleted here too and
+-- will only reappear once the outlet's feed serves them again on a future
+-- run — an acceptable, temporary gap, not a data-loss concern.
+--
+-- Preview first:
+--   select id, source, title, published_at from editorial_articles
+--   where matched_event_id is null
+--   order by published_at desc;
+
+delete from editorial_articles
+where matched_event_id is null;
