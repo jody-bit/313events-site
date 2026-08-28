@@ -130,12 +130,28 @@
   .evt-qr-hint a{color:var(--accent);text-decoration:none;}
   .evt-qr-hint a:hover{text-decoration:underline;}
 
+  /* Redesigned 2026-08-28 per Jody: on the dedicated event page this read
+     as a footnote (small, italic, muted) below the description — same fix
+     as index.html's list view got the same day: a full-width tinted callout
+     with an accent left-border and the outlet name shown in visible text,
+     not just a hover tooltip. */
   .evt-editorial{
-    display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
-    color:var(--ink-soft);text-decoration:none;font-style:italic;margin-bottom:20px;
+    display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;
+    background:rgba(215,255,0,.07);border-left:3px solid var(--accent);
+    text-decoration:none;max-width:100%;
   }
-  .evt-editorial::after{content:'→';}
-  .evt-editorial:hover{color:var(--accent);}
+  .evt-editorial:hover{background:rgba(215,255,0,.14);}
+  .evt-editorial .ei-tag{
+    font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--accent);flex-shrink:0;
+  }
+  .evt-editorial .ei-title{
+    color:var(--ink);font-weight:600;font-size:14px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+  }
+  .evt-editorial .ei-src{
+    color:var(--ink-soft);font-weight:600;font-size:12.5px;flex-shrink:0;
+  }
 </style>
 </head>
 <body>
@@ -386,9 +402,18 @@ function renderEvent(e){
   document.getElementById('twitterImage').setAttribute('content', ogImg);
 
   // ---- image ----
+  // onerror hides the box entirely rather than leaving a bare border/
+  // background with a broken-image icon and alt text poking out of the
+  // corner — a submitted link that isn't a direct image URL (a Google
+  // Drive/Photos share link, an Instagram or Facebook post URL, anything
+  // that serves an HTML page instead of raw image bytes) will always fail
+  // to load as an <img> src, and that's more common than a truly broken
+  // link, so failing invisibly beats failing loudly here.
   if(e.imageUrl && safeUrl(e.imageUrl)){
-    document.getElementById('evtImageWrap').style.display = 'block';
+    const wrap = document.getElementById('evtImageWrap');
     const img = document.getElementById('evtImage');
+    img.onerror = () => { wrap.style.display = 'none'; };
+    wrap.style.display = 'block';
     img.src = safeUrl(e.imageUrl);
     img.alt = e.title;
   }
@@ -467,8 +492,8 @@ async function loadEditorialLink(id){
     if(!safeUrl(article.url)) return;
     const el = document.getElementById('evtEditorial');
     el.href = safeUrl(article.url);
-    el.textContent = `As seen in: ${decodeEntities(article.title)}`;
-    el.style.display = 'inline-flex';
+    el.innerHTML = `<span class="ei-tag">As seen in</span><span class="ei-title">${escapeHtml(decodeEntities(article.title))}</span>${article.source?`<span class="ei-src">— ${escapeHtml(article.source)}</span>`:''}`;
+    el.style.display = 'flex';
   } catch (err) {
     // Silent by design, same convention as index.html's own editorial fetch.
   }

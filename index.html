@@ -3997,19 +3997,31 @@
   }
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
-  /* "As seen in" press-mention link (2026-08-27) — same shape as .evt-link
-     (inherits the arrow via ::after) but intentionally softer than the
-     accent-colored Tickets/Cal/Share links: it's supplementary credit to the
-     outlet that covered the event, not a primary call-to-action, and
-     shouldn't visually compete with "Tickets & info". Truncates long
-     article titles with an ellipsis rather than wrapping/pushing the row
-     taller — the outlet name (via the arrow-adjacent title) is a bonus, not
-     essential info the row depends on. */
-  .evt-link-editorial{
-    color:var(--ink-soft);font-style:italic;font-weight:600;
-    max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  /* "As seen in" press-mention callout (2026-08-27, redesigned 2026-08-28
+     per Jody: "you barely notice it is there"). Originally a tiny italic
+     link crammed into .evt-actions next to Tickets/Cal/Share — too subtle to
+     notice. Now its own full-width line with a tinted background and accent
+     left-border so it reads as a distinct piece of content (press coverage)
+     rather than a buried secondary action, while still sitting below the
+     description/note and above the actions row so it doesn't compete with
+     the primary "Tickets & info" CTA for attention. */
+  .evt-editorial-mention{
+    display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:7px 10px;
+    background:rgba(215,255,0,.07);border-left:3px solid var(--accent);
+    text-decoration:none;max-width:100%;
   }
-  .evt-link-editorial:hover{color:var(--accent);}
+  .evt-editorial-mention:hover{background:rgba(215,255,0,.14);}
+  .evt-editorial-mention .ei-tag{
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--accent);flex-shrink:0;
+  }
+  .evt-editorial-mention .ei-title{
+    color:var(--ink);font-weight:600;font-size:13px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+  }
+  .evt-editorial-mention .ei-src{
+    color:var(--ink-soft);font-weight:600;font-size:12px;flex-shrink:0;
+  }
   /* Row of secondary actions under the title/venue block — ticket link (if
      any), Add to Calendar, Share. Wraps on narrow widths rather than
      truncating or overlapping. */
@@ -5619,7 +5631,7 @@ function shareButtonHtml(e){
 function editorialLinkHtml(e){
   const article = e.id != null ? editorialByEvent[e.id] : null;
   if(!article || !safeUrl(article.url)) return '';
-  return `<a class="evt-link evt-link-editorial" href="${escapeHtml(safeUrl(article.url))}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(article.title)}${article.source?` — ${escapeHtml(article.source)}`:''}">As seen in: ${escapeHtml(article.title)}</a>`;
+  return `<a class="evt-editorial-mention" href="${escapeHtml(safeUrl(article.url))}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(article.title)}${article.source?` — ${escapeHtml(article.source)}`:''}"><span class="ei-tag">As seen in</span><span class="ei-title">${escapeHtml(article.title)}</span>${article.source?`<span class="ei-src">— ${escapeHtml(article.source)}</span>`:''}</a>`;
 }
 
 // dateList is always an explicit array of ISO date strings to render — see
@@ -5655,11 +5667,11 @@ function renderList(dateList, meta){
             <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${editorialLinkHtml(e)}
             <div class="evt-actions">
               ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
               ${addToCalendarHtml(e)}
               ${shareButtonHtml(e)}
-              ${editorialLinkHtml(e)}
             </div>
           </div>
           <div class="evt-side">
