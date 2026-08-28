@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://313.events/sitemap.xml

@@ -116,6 +116,20 @@
   .evt-detail-note{font-size:13.5px;color:#d1b34a;font-style:italic;margin-bottom:20px;}
   .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;}
 
+  /* QR code (2026-08-28, Jody: printed flyers linking straight to an
+     event's own page). Built on demand via api.qrserver.com — a free,
+     no-key image API — rather than always loading it: most visitors never
+     click this, and once a code IS generated and printed, the flyer itself
+     has no further dependency on that service (a QR code just encodes this
+     page's URL as pixels; nothing about reading it later calls qrserver.com
+     again). No local QR-generation library needed for that reason. */
+  .evt-qr-section{margin-bottom:24px;}
+  .evt-qr-box{margin-top:14px;padding:16px;background:var(--panel-alt);border:1px solid var(--line);display:inline-block;}
+  .evt-qr-box img{display:block;background:#fff;padding:8px;width:220px;height:220px;}
+  .evt-qr-hint{font-size:12.5px;color:var(--ink-soft);margin:10px 0 0;max-width:240px;line-height:1.4;}
+  .evt-qr-hint a{color:var(--accent);text-decoration:none;}
+  .evt-qr-hint a:hover{text-decoration:underline;}
+
   .evt-editorial{
     display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
     color:var(--ink-soft);text-decoration:none;font-style:italic;margin-bottom:20px;
@@ -154,6 +168,14 @@
       <div class="evt-detail-note" id="evtNote" style="display:none;"></div>
       <a class="evt-editorial" id="evtEditorial" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-detail-source" id="evtSource" style="display:none;"></div>
+
+      <div class="evt-qr-section">
+        <button type="button" class="btn-secondary" id="evtQrToggleBtn" onclick="toggleQrCode()">Get QR code</button>
+        <div class="evt-qr-box" id="evtQrBox" style="display:none;">
+          <img id="evtQrImage" alt="QR code linking to this event's page" width="220" height="220">
+          <p class="evt-qr-hint">Right-click (or press and hold) to save this image for a flyer or poster. <a id="evtQrOpenLink" href="#" target="_blank" rel="noopener noreferrer">Open full size →</a></p>
+        </div>
+      </div>
     </article>
   </div>
 
@@ -449,6 +471,24 @@ async function loadEditorialLink(id){
     el.style.display = 'inline-flex';
   } catch (err) {
     // Silent by design, same convention as index.html's own editorial fetch.
+  }
+}
+
+// Generated the first time it's opened, not on page load — see the CSS
+// comment above for why loading it eagerly for every visitor isn't worth it.
+function toggleQrCode(){
+  const box = document.getElementById('evtQrBox');
+  const btn = document.getElementById('evtQrToggleBtn');
+  const opening = box.style.display === 'none';
+  if(opening){
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(window.location.href)}`;
+    document.getElementById('evtQrImage').src = qrUrl;
+    document.getElementById('evtQrOpenLink').href = qrUrl;
+    box.style.display = 'block';
+    btn.textContent = 'Hide QR code';
+  } else {
+    box.style.display = 'none';
+    btn.textContent = 'Get QR code';
   }
 }
 
