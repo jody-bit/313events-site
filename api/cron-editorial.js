@@ -68,12 +68,41 @@
 //     ordinary news, obituaries, and real estate features, which is exactly
 //     what looksLikeEventCoverage() below already exists to sort out, same
 //     as WDET's mixed general feed.
-//     Of the other 19 outlets from that same list, none were added — see
-//     sources.html's new "Editorial & News Coverage Sources" section for
-//     the full outcome of each (explicit ToS/robots.txt blocks, confirmed
-//     wrong content type, or — for most of the remainder — a real feed
-//     this project's sandbox simply couldn't independently confirm, which
-//     is a tooling gap, not a finding that they don't work).
+//     Of the other 19 outlets from that same list, most weren't added — see
+//     sources.html's "Editorial & news coverage" section for the full
+//     outcome of each (explicit ToS/robots.txt blocks, confirmed wrong
+//     content type, or a real feed this project's sandbox simply couldn't
+//     independently confirm, which is a tooling gap, not a finding that
+//     they don't work).
+//   - C&G Newspapers, Grosse Pointe News, Michigan Chronicle: added
+//     2026-08-28, same batch as Ann Arbor Observer above but on a SECOND
+//     pass — Jody pushed back ("could we really find NOTHING in all of
+//     those media outlet feeds?") after the first pass only added one
+//     outlet, and she was right to: the first pass leaned on subagents
+//     whose own sandboxes couldn't reliably reach these sites and reported
+//     "no feed found" for two of these three, when a direct browser fetch
+//     (this project's one tool with real, unrestricted network access)
+//     shows all three have real, live, standard WordPress RSS 2.0 feeds at
+//     the standard /feed/ path — genuine local news with real event
+//     coverage mixed in (Michigan Chronicle: "40 Under 40" honoree
+//     coverage; C&G/Grosse Pointe News: municipal news plus real
+//     Life & Leisure / community-event pieces). robots.txt checked live for
+//     all three: C&G and Grosse Pointe News are fully permissive (only the
+//     standard wp-admin disallow). Michigan Chronicle's is also permissive
+//     of the /feed/ path itself, but sets `Request-rate: 1/20`,
+//     `Crawl-delay: 22`, and `Visit-time: 0700-1300` (UTC) — a courtesy
+//     window this project doesn't currently enforce per-outlet (every cron
+//     just runs on Vercel's own schedule); flagged here rather than quietly
+//     ignored. A single once-daily fetch is a trivial load either way, but
+//     if this outlet's cron schedule is ever tuned specifically, keep it
+//     inside that window.
+//     This second pass also caught the inverse mistake: El Central Hispanic
+//     News (elcentralmedia.com) DOES have a real, content-rich feed, but
+//     its own robots.txt explicitly disallows /feed/ (a default Yoast SEO
+//     block, not clearly deliberate anti-scraping — but this project
+//     respects robots.txt regardless of the site's apparent intent, same
+//     posture as every other entry in sources.html's robots.txt-blocked
+//     section) — NOT added, despite the feed working. See sources.html.
 const OUTLETS = [
   { source: "Metro Times", feedUrl: "https://www.metrotimes.com/feed/?partner-feed=arts-culture" },
   { source: "BridgeDetroit", feedUrl: "https://www.bridgedetroit.com/feed" },
@@ -85,6 +114,9 @@ const OUTLETS = [
   { source: "Eater Detroit", feedUrl: "https://detroit.eater.com/rss/index.xml" },
   { source: "Hip In Detroit", feedUrl: "https://www.hipindetroit.com/feeds/posts/default?alt=rss" },
   { source: "Ann Arbor Observer", feedUrl: "https://annarborobserver.com/feed/" },
+  { source: "C&G Newspapers", feedUrl: "https://www.candgnews.com/feed/" },
+  { source: "Grosse Pointe News", feedUrl: "https://www.grossepointenews.com/feed/" },
+  { source: "Michigan Chronicle", feedUrl: "https://michiganchronicle.com/feed/" },
 ];
 
 // Matching window: how far an event's start_date can be from "now" to even

@@ -74,6 +74,28 @@
   .search-row{display:flex;gap:8px;margin-bottom:16px;}
   .search-row input{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--panel-alt);color:var(--ink);}
   .search-row button{background:var(--ink);color:var(--bg);border:none;border-radius:8px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer;}
+
+  /* ---- Press coverage (editorial review) ---- */
+  .article-card{display:flex;gap:14px;}
+  .ac-thumb{width:84px;height:84px;flex:0 0 auto;border-radius:8px;object-fit:cover;background:var(--panel-alt);}
+  .ac-thumb-fallback{width:84px;height:84px;flex:0 0 auto;border-radius:8px;background:var(--panel-alt);display:flex;align-items:center;justify-content:center;color:var(--ink-dim);font-size:11px;text-align:center;}
+  .ac-body{flex:1;min-width:0;}
+  .ac-excerpt{color:var(--ink-soft);font-size:13px;margin:6px 0;}
+  .btn-dismiss{background:var(--panel-hover);color:var(--ink);border:1px solid var(--line);}
+  .btn-create{background:var(--accent);color:var(--on-accent);}
+  .btn-cancel{background:var(--panel-hover);color:var(--ink);border:1px solid var(--line);}
+  .event-form{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .event-form.open{display:block;}
+  .ef-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+  .ef-grid label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:4px;}
+  .ef-grid input, .ef-grid select, .ef-grid textarea{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13.5px;
+    background:var(--panel-alt);color:var(--ink);font-family:inherit;
+  }
+  .ef-full{grid-column:1/-1;}
+  .ef-checkbox{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-soft);margin-top:22px;}
+  .ef-checkbox input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
+  .ef-err{color:var(--bad);font-size:12.5px;margin-top:8px;display:none;}
 </style>
 </head>
 <body>
@@ -105,6 +127,12 @@
       <h2>Feed sources</h2>
       <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form. Approving one does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. Each feed's own events then land pre-approved, since the feed itself was the thing reviewed.</div>
       <div id="feedList"></div>
+    </section>
+
+    <section class="block">
+      <h2>Press coverage</h2>
+      <div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically, so radar.html immediately shows it as matched instead of "Not yet linked"); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div>
+      <div id="editorialList"></div>
     </section>
 
     <section class="block">
@@ -141,7 +169,7 @@ function unlock() {
 // event search is NOT auto-loaded here — it only runs when the moderator
 // actually types a search, since it's a lookup, not a fixed-size queue.
 async function loadAll() {
-  await Promise.all([loadQueue(), loadFeedQueue(), loadHidden()]);
+  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden()]);
 }
 
 async function loadQueue() {
@@ -290,6 +318,207 @@ async function reviewFeed(id, action) {
     await loadFeedQueue(); // re-render so the card moves to its new status group
   } catch (err) {
     card.style.opacity = '1';
+    alert(err.message);
+  }
+}
+
+// ---- Press coverage (editorial review) ----
+// Category options mirror radar.html's CATS / schema.sql's event_category
+// enum exactly (see api/admin-editorial.js's own VALID_CATEGORIES comment
+// for why this couldn't just reuse api/submit.js's older, incomplete list).
+const EDITORIAL_CATEGORIES = [
+  ['music', 'Music'], ['theatre', 'Theatre & Comedy'], ['dance', 'Dance & Opera'],
+  ['visual', 'Visual Arts'], ['museum', 'Museums & History'], ['family', 'Family'],
+  ['fest', 'Festivals'], ['food', 'Food & Markets'], ['film', 'Film'],
+  ['nightlife', 'Nightlife & Club'], ['sports', 'Sports'], ['community', 'Community'],
+];
+
+// Attribute-safe escaper — distinct from escapeHtml() at the bottom of this
+// file, which round-trips through textContent/innerHTML and is only safe
+// for placing a value inside TEXT content (every existing use in this file
+// is `<h3>${escapeHtml(...)}</h3>`-shaped). This form's prefilled inputs
+// need values inside `value="..."` attributes instead, where an
+// unescaped `"` in an article title would silently truncate the attribute
+// and corrupt the markup — this also escapes quotes for that context.
+function escapeAttr(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+async function loadEditorial() {
+  try {
+    const resp = await fetch('/api/admin-editorial', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Failed to load press coverage');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('queue').style.display = 'block';
+    renderEditorialList(data.articles || []);
+  } catch (err) {
+    document.getElementById('editorialList').innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function renderEditorialList(articles) {
+  const list = document.getElementById('editorialList');
+  if (!articles.length) {
+    list.innerHTML = '<div class="empty">Nothing waiting for review. 🎉</div>';
+    return;
+  }
+  list.innerHTML = articles.map(a => {
+    const initial = escapeHtml((a.source || '?').charAt(0));
+    const thumb = a.thumbnail_url
+      ? `<img class="ac-thumb" src="${escapeAttr(a.thumbnail_url)}" alt="" onerror="this.outerHTML='<div class=&quot;ac-thumb-fallback&quot;>${initial}</div>';">`
+      : `<div class="ac-thumb-fallback">${initial}</div>`;
+    const published = a.published_at ? new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    return `
+      <div class="card article-card" id="article-card-${a.id}">
+        ${thumb}
+        <div class="ac-body">
+          <h3>${escapeHtml(a.title)}</h3>
+          <div class="meta"><b>${escapeHtml(a.source)}</b>${published ? ' · ' + escapeHtml(published) : ''} · <a href="${escapeAttr(a.url)}" target="_blank" rel="noopener">read the article</a></div>
+          ${a.excerpt ? `<div class="ac-excerpt">${escapeHtml(a.excerpt)}</div>` : ''}
+          <div class="actions">
+            <button class="btn-create" onclick="toggleEventForm('${a.id}')">Create event from this article</button>
+            <button class="btn-dismiss" onclick="dismissArticle('${a.id}')">Not an event</button>
+          </div>
+          ${eventFormHtml(a)}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Prefilled from the article: title carries over as a starting point (the
+// admin edits it — an article's headline is rarely the right event title
+// verbatim), image from the article's own thumbnail, description from its
+// excerpt. Date/venue/category are deliberately left blank rather than
+// guessed — the article's publish date is NOT the event date, and neither
+// this form nor the article text reliably names a specific venue, so
+// guessing either would risk exactly the kind of silently-wrong data this
+// project has avoided everywhere else (see cron-editorial.js's own "no
+// match beats a wrong match"). The moderator fills those in from actually
+// reading the article.
+function eventFormHtml(a) {
+  const catOptions = EDITORIAL_CATEGORIES.map(([v, label]) => `<option value="${v}">${escapeHtml(label)}</option>`).join('');
+  return `
+    <div class="event-form" id="event-form-${a.id}">
+      <div class="ef-grid">
+        <div class="ef-full">
+          <label>Event title</label>
+          <input type="text" id="ef-title-${a.id}" value="${escapeAttr(a.title)}">
+        </div>
+        <div>
+          <label>Category</label>
+          <select id="ef-category-${a.id}"><option value="">Choose…</option>${catOptions}</select>
+        </div>
+        <div>
+          <label>Venue</label>
+          <input type="text" id="ef-venue-${a.id}" placeholder="e.g. Fox Theatre">
+        </div>
+        <div>
+          <label>Start date</label>
+          <input type="date" id="ef-startdate-${a.id}">
+        </div>
+        <div>
+          <label>End date (optional)</label>
+          <input type="date" id="ef-enddate-${a.id}">
+        </div>
+        <div>
+          <label>Time (optional)</label>
+          <input type="text" id="ef-time-${a.id}" placeholder="e.g. 7:00 PM">
+        </div>
+        <div>
+          <label>City (optional — blank assumes Detroit)</label>
+          <input type="text" id="ef-city-${a.id}" placeholder="e.g. Ann Arbor">
+        </div>
+        <div>
+          <label>Ticket URL (optional)</label>
+          <input type="url" id="ef-ticketurl-${a.id}" placeholder="https://…">
+        </div>
+        <div>
+          <label>Image URL (optional)</label>
+          <input type="url" id="ef-imageurl-${a.id}" value="${escapeAttr(a.thumbnail_url || '')}" placeholder="https://…">
+        </div>
+        <div class="ef-checkbox">
+          <input type="checkbox" id="ef-free-${a.id}">
+          <label style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;">Free event</label>
+        </div>
+        <div>
+          <label>Price from (optional)</label>
+          <input type="number" step="0.01" min="0" id="ef-price-${a.id}" placeholder="e.g. 25">
+        </div>
+        <div class="ef-full">
+          <label>Description (optional)</label>
+          <textarea id="ef-description-${a.id}" rows="3">${escapeHtml(a.excerpt || '')}</textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-approve" onclick="submitEditorialEvent('${a.id}')">Publish event</button>
+        <button class="btn-cancel" onclick="toggleEventForm('${a.id}')">Cancel</button>
+      </div>
+      <div class="ef-err" id="ef-err-${a.id}"></div>
+    </div>
+  `;
+}
+
+function toggleEventForm(id) {
+  const form = document.getElementById('event-form-' + id);
+  if (form) form.classList.toggle('open');
+}
+
+async function submitEditorialEvent(id) {
+  const val = (suffix) => { const el = document.getElementById(`ef-${suffix}-${id}`); return el ? el.value.trim() : ''; };
+  const errEl = document.getElementById('ef-err-' + id);
+  errEl.style.display = 'none';
+
+  const event = {
+    title: val('title'),
+    category: val('category'),
+    venue: val('venue'),
+    city: val('city'),
+    startDate: val('startdate'),
+    endDate: val('enddate'),
+    timeDisplay: val('time'),
+    ticketUrl: val('ticketurl'),
+    imageUrl: val('imageurl'),
+    description: val('description'),
+    isFree: document.getElementById(`ef-free-${id}`).checked,
+    priceFrom: val('price'),
+  };
+
+  try {
+    const resp = await fetch('/api/admin-editorial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ articleId: id, action: 'create_event', event }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Failed to create event');
+    const card = document.getElementById('article-card-' + id);
+    if (card) card.remove();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function dismissArticle(id) {
+  const card = document.getElementById('article-card-' + id);
+  if (card) card.style.opacity = '0.5';
+  try {
+    const resp = await fetch('/api/admin-editorial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ articleId: id, action: 'dismiss' }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    if (card) card.remove();
+  } catch (err) {
+    if (card) card.style.opacity = '1';
     alert(err.message);
   }
 }
