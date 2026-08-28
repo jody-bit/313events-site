@@ -178,6 +178,70 @@
         <td class="src-note">The Dossin's own "events-listing" page is a Drupal lazy-loaded block that returns nothing to a plain fetch — this reads the general <code>/events</code> page instead and keeps only Dossin-tagged rows. Drupal's JSON:API exists at <code>/jsonapi/node/event</code> but denies anonymous reads of individual events. <code>api/cron-dossin.js</code></td>
       </tr>
     </table>
+    <p class="group-desc" style="margin-top:16px;">Separately, these outlets' own general-news RSS/Atom feeds are polled for editorial coverage to match against events already in the database (rendered as "As seen in" on the matching event, and as standalone cards on <a href="radar.html">radar.html</a> when nothing matches but the article still looks like event coverage — see <code>looksLikeEventCoverage()</code>). This is a different data model from the event-listing sources above: no new events are created from these, only coverage of events that already exist.</p>
+    <table>
+      <tr><th>Source</th><th>Method</th><th>Confidence</th><th>Notes</th></tr>
+      <tr>
+        <td class="src-name">Metro Times (arts &amp; culture)</td>
+        <td>Outlet's own partner RSS feed</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">metrotimes.com/syndication/'s documented <code>?partner-feed=arts-culture</code> path — real, valid RSS 2.0, verified live. This is Metro Times' own editorial writing, separate from the community-calendar sitemap <code>api/cron-metrotimes.js</code> already (unsuccessfully) scrapes for event listings above — no overlap.</td>
+      </tr>
+      <tr>
+        <td class="src-name">BridgeDetroit (editorial)</td>
+        <td>Outlet's own RSS feed</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">bridgedetroit.com/feed, linked from the site's own footer — real, valid RSS 2.0, verified live. Separate from this same outlet's "no events calendar" entry in "Checked — Nothing to Connect To" below, which was about event listings, not general news coverage.</td>
+      </tr>
+      <tr>
+        <td class="src-name">WDET (general news/arts)</td>
+        <td>Outlet's own RSS feed</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">wdet.org/feed/ — real, valid RSS 2.0, verified live. Mixes real event previews (including WDET's own "Metro Events Guide" roundups) with daily news segments; <code>looksLikeEventCoverage()</code> filters the latter out before storage.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Model D Media</td>
+        <td>Feedburner-hosted RSS feed</td>
+        <td><span class="badge badge-warn">Unconfirmed</span></td>
+        <td class="src-note">feeds.feedburner.com/ModelDMedia, found via a third-party RSS directory — this project's sandbox couldn't fetch feedburner.com directly to independently confirm it. First live cron run's result will confirm or refute. Note Model D's own site has a separate, unrelated ToS block against scraping its (nonexistent) events calendar — see "Blocked — Terms of Service" above; that's about event listings, not this general-content RSS feed.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Detroit Music Magazine</td>
+        <td>Outlet's own Atom feed</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">detroitmusicmag.com/feed/atom/ — real, valid Atom (not RSS 2.0), verified live. Detroit techno/electronic coverage including Movement Festival reviews.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Hour Detroit (editorial)</td>
+        <td>Outlet's own RSS feed (guessed path)</td>
+        <td><span class="badge badge-warn">Unconfirmed</span></td>
+        <td class="src-note">hourdetroit.com/feed/, standard WordPress path — not independently hit-tested. Separate concern from this same outlet's "Investigated — Inconclusive" entry below, which found the live site's firewall 403s automated requests to <code>/events/</code> specifically — this general <code>/feed/</code> path wasn't checked and may behave differently.</td>
+      </tr>
+      <tr>
+        <td class="src-name">PLAYGROUND DETROIT</td>
+        <td>Outlet's own RSS feed (guessed path)</td>
+        <td><span class="badge badge-warn">Unconfirmed</span></td>
+        <td class="src-note">playgrounddetroit.com/feed/, standard WordPress path — not independently hit-tested.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Eater Detroit</td>
+        <td>Vox Media network RSS feed (guessed path)</td>
+        <td><span class="badge badge-warn">Unconfirmed</span></td>
+        <td class="src-note">detroit.eater.com/rss/index.xml, standard Vox Media path — not independently hit-tested.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Hip In Detroit</td>
+        <td>Blogger-hosted RSS feed (guessed path)</td>
+        <td><span class="badge badge-warn">Unconfirmed</span></td>
+        <td class="src-note">hipindetroit.com/feeds/posts/default?alt=rss, standard Blogger path — not independently hit-tested.</td>
+      </tr>
+      <tr>
+        <td class="src-name">Ann Arbor Observer</td>
+        <td>Outlet's own RSS feed</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">Added 2026-08-28 from Jody's Metro Detroit outlet-research list. annarborobserver.com/feed/ — real, live WordPress RSS 2.0, verified via a real browser fetch, most recent items dated same-day. robots.txt permissive (only standard WordPress <code>/wp-login.php</code>/<code>/wp-admin/</code> disallows, no AI-crawler block) but sets <code>Crawl-delay: 600</code> — comfortably respected by a Cron running far less than every 10 minutes. No Terms of Service page found at either standard path to check for a scraping restriction. General feed mixes real event previews ("Event Reviews" category — UMMA, Hill Auditorium, etc.) with news/obituaries/real estate; <code>looksLikeEventCoverage()</code> sorts these the same as WDET's mixed feed. Ann Arbor is 36mi from Detroit — in scope per <code>SERVICE_AREA.md</code>.</td>
+      </tr>
+    </table>
   </section>
 
   <section class="group">
@@ -223,6 +287,11 @@
         <td class="src-note">Different question than the API row below — this is about the human-facing <code>eventbrite.com/d/mi--&lt;city&gt;/events/</code> browse pages. Technically these ARE scrapeable (real event data renders server-side in plain HTML, and robots.txt doesn't block the <code>/d/</code> path) — but Eventbrite's Terms of Service §13, "Scraping or Commercial Use of Site Content is Prohibited," explicitly states: "You have no right to, and you agree not to, scrape, crawl, or employ any automated means to extract data from the Sites." That's an unconditional contractual ban regardless of what robots.txt allows, so this stays off-limits.</td>
         <td class="src-note">Checked for Detroit, Hamtramck, and Highland Park city-discovery pages — same platform, same ToS, same verdict for all three.</td>
       </tr>
+      <tr>
+        <td class="src-name">Detroit Jewish News</td>
+        <td class="src-note">thejewishnews.com's Terms of Service, and separately its parent company Lee Enterprises' own Terms of Use, both explicitly ban automated collection and redistribution of site content. Researched 2026-08-28 from Jody's Metro Detroit outlet list.</td>
+        <td class="src-note">n/a — general-news RSS candidate for radar.html, not an event-listing source</td>
+      </tr>
     </table>
   </section>
 
@@ -241,6 +310,7 @@
       <tr><td class="src-name">Senate Theater</td><td class="src-note">Squarespace robots.txt explicitly names and disallows ClaudeBot and anthropic-ai. Their public calendar page also has no usable feed (Squarespace's own iCal/JSON export formats are separately blocked) — respected and skipped either way.</td></tr>
       <tr><td class="src-name">Scarab Club</td><td class="src-note">Different case from the rest of this table: this one actually has a working per-event ICS feed on its calendar page, which would otherwise be a great source. But its robots.txt carries an explicit, deliberate blocklist of ~150 named bots/scrapers (not just the generic Squarespace AI-bot default). Given that clear signal from a small artist-run nonprofit, the right move is asking them directly for the feed rather than pulling it. As of 2026-08-26 there's now a real place to send them: <a href="submit.html">submit.html</a>'s "Submit your event feed" option, reviewed once and then polled automatically — see <code>FEED_SUBMISSIONS.md</code>. Still needs a human to actually reach out; the form existing doesn't send the email by itself.</td></tr>
       <tr><td class="src-name">Mato (ma.to)</td><td class="src-note">A consumer events-discovery app/site (NYC-based, also covers Detroit and a handful of other metros) — its <code>/events/detroit/today</code> page genuinely has ~19 real, current, broad-interest Detroit listings, which would otherwise be a solid source. robots.txt explicitly disallows ClaudeBot, GPTBot, Google-Extended, CCBot, and several other named AI crawlers (generic <code>*</code> allowed, and it even sets a <code>Content-Signal: ai-train=no, use=reference, search=yes</code> header spelling out the distinction) — respected and skipped, same as the rest of this table.</td></tr>
+      <tr><td class="src-name">The Michigan Daily</td><td class="src-note">michigandaily.com's robots.txt confirmed live (2026-08-28, from Jody's Metro Detroit outlet list) to disallow a <code>/feed/</code>-pattern path specifically. General-news RSS candidate for radar.html, not an event-listing source — skipped either way.</td></tr>
     </table>
   </section>
 
@@ -281,7 +351,7 @@
     <h2><span class="badge badge-warn">Investigated — Inconclusive</span></h2>
     <p class="group-desc">Real attempts were made; the result wasn't clean enough to build against yet. Worth another pass.</p>
     <table>
-      <tr><th>Venue</th><th>What happened</th></tr>
+      <tr><th>Source</th><th>What happened</th></tr>
       <tr><td class="src-name">New Dodge Lounge (Hamtramck)</td><td class="src-note">Their own site's events page rate-limited our fetch attempts (HTTP 429) twice in a row — couldn't confirm page structure. Ticketing via Ticketleap.</td></tr>
       <tr><td class="src-name">Planet Ant Theatre (Hamtramck)</td><td class="src-note">Fetch tool returned rendered season-subscription text rather than the actual show listing structure — inconclusive.</td></tr>
       <tr><td class="src-name">Michigan Science Center</td><td class="src-note">calendar page (mi-sci.org/calendar/) is plain scrapeable HTML, robots.txt is permissive — but every date visible at check time was already in the past relative to that day, suggesting stale or cached page content. Didn't want to build a scraper against data we can't confirm is current — worth another pass with fresh eyes.</td></tr>
@@ -291,13 +361,33 @@
       <tr><td class="src-name">Visit Detroit (DMCVB)</td><td class="src-note">The official Detroit Metro Convention &amp; Visitors Bureau site. Its <code>/events/annual-events/</code> page only lists a handful of flagship destination events (Auto Show, Movement, Detroit Jazz Fest, Grand Prix, Thanksgiving Parade, Dream Cruise) with no dates shown — marketing copy, not a real database. robots.txt is permissive, but individual event pages (<code>/event/&lt;slug&gt;/</code>) return infinite redirect loops to an automated fetch — a bot-mitigation signal independent of robots.txt. Their Terms also claim a narrow "limited license... solely for authorized uses" without an explicit scraping clause either way. Between the thin content and the real technical block, not worth pursuing right now.</td></tr>
       <tr><td class="src-name">Cosm Detroit</td><td class="src-note">Real, confirmed venue — an immersive-dome sports/entertainment space opening September 10, 2026 at Cadillac Square, downtown Detroit. Squarely in scope by location. But the site is a JS-rendered Next.js app with no feed, API, or JSON-LD in the static HTML a plain scraper sees — content only appears after client-side rendering. robots.txt is permissive (explicitly allows the relevant paths), so this isn't a permissions problem, just a bigger technical lift: every other source on this page is read with a plain <code>fetch()</code>, and this would be the first one needing an actual headless browser. Worth revisiting once it opens and there's real programming to check against — either as a manual-curation entry or as the case for adding headless-browser scraping to this project.</td></tr>
     </table>
+    <p class="group-desc" style="margin-top:16px;">Metro Detroit outlet research, 2026-08-28 (Jody-supplied list of ~29 outlets, cross-referenced against <code>SERVICE_AREA.md</code>'s 75-mile boundary) — these are all editorial/news RSS candidates for <code>api/cron-editorial.js</code>, not event-listing sources, except where noted.</p>
+    <table>
+      <tr><th>Source</th><th>What happened</th></tr>
+      <tr><td class="src-name">C&amp;G Newspapers</td><td class="src-note">candgnews.com — confirmed real "Friday Five" events roundup plus an embedded CitySpark community calendar; no ToS restriction against automated collection found. No RSS feed exists to poll, and the CitySpark calendar would need its own scraper (similar to how <code>api/cron-halo.js</code> reads a venue's page directly) rather than fitting <code>cron-editorial.js</code>'s feed-pull model. Worth a follow-up as a dedicated event-listing source, not just editorial coverage.</td></tr>
+      <tr><td class="src-name">Grosse Pointe News</td><td class="src-note">grossepointenews.com — confirmed real Life &amp; Entertainment / Area Activities content; no ToS restriction found. Articles are paywalled but titles/teasers are open. No RSS feed found at a standard path.</td></tr>
+      <tr><td class="src-name">El Central Hispanic News</td><td class="src-note">elcentralmedia.com — confirmed real, strong Culture/Events coverage of Detroit's Latino community. No RSS feed found at a standard path.</td></tr>
+      <tr><td class="src-name">The South End (Wayne State University)</td><td class="src-note">thesouthend.wayne.edu — confirmed real campus Arts &amp; Entertainment coverage. Runs on BLOX CMS, which doesn't expose a standard RSS path.</td></tr>
+      <tr><td class="src-name">Between the Lines / Pride Source</td><td class="src-note">pridesource.com — outlet's own site claims to publish RSS, but its <code>/feed/</code> path returns HTML, not XML. Real LGBTQ+ community/culture coverage otherwise.</td></tr>
+      <tr><td class="src-name">Michigan Chronicle</td><td class="src-note">michiganchronicle.com — <code>/feed/</code> returned HTTP 403; the site's Terms of Service page also 403'd, so that couldn't be checked either. Unclear whether this is a real access block or this session's tooling; worth a manual browser re-check before ruling out.</td></tr>
+      <tr><td class="src-name">The Arab American News</td><td class="src-note">arabamericannews.com — the only feed URLs found live on an unofficial-looking <code>new.arabamericannews.com</code> dev subdomain with SSL errors; not trustworthy enough to add as-is. Worth checking whether the outlet's main domain has its own feed via a direct browser visit.</td></tr>
+      <tr><td class="src-name">Windsor Star</td><td class="src-note">windsorstar.com (Postmedia) — Windsor is 1mi from Detroit per <code>SERVICE_AREA.md</code>, squarely in scope. This session's research tooling couldn't reach the site at all to check for a feed, robots.txt, or ToS — genuinely unchecked, not a negative finding.</td></tr>
+      <tr><td class="src-name">The Eastern Echo (Eastern Michigan University)</td><td class="src-note">Campus paper — tooling couldn't reach the site to check. Genuinely unchecked.</td></tr>
+      <tr><td class="src-name">Oakland Press</td><td class="src-note">theoaklandpress.com (MediaNews Group) — tooling couldn't reach the site to check. Genuinely unchecked.</td></tr>
+      <tr><td class="src-name">Macomb Daily</td><td class="src-note">macombdaily.com (MediaNews Group) — tooling couldn't reach the site to check. Genuinely unchecked.</td></tr>
+      <tr><td class="src-name">Observer &amp; Eccentric</td><td class="src-note">hometownlife.com (Gannett) — same corporate family as the Free Press/Detroit News, whose domains this session's network already can't reach (see those two outlets' entries above). Likely the same block; not independently confirmed for this specific domain.</td></tr>
+      <tr><td class="src-name">Monroe News</td><td class="src-note">monroenews.com (Gannett) — Monroe is 34mi from Detroit per <code>SERVICE_AREA.md</code>, in scope. Same Gannett network-block pattern as above; not independently confirmed.</td></tr>
+      <tr><td class="src-name">Daily Press &amp; Argus / Livingston Daily</td><td class="src-note">livingstondaily.com (Gannett) — Howell is 49mi from Detroit, in scope. Same Gannett network-block pattern as above; not independently confirmed.</td></tr>
+      <tr><td class="src-name">The Daily Telegram (Adrian)</td><td class="src-note">lenconnect.com (Gannett, via the 2019 GateHouse merger) — Adrian is 59mi from Detroit, in scope. Same Gannett network-block pattern as above; not independently confirmed.</td></tr>
+      <tr><td class="src-name">Flint Journal / MLive</td><td class="src-note">mlive.com — Flint is 57mi from Detroit, in scope, and MLive is a large regional network with real arts/events coverage. Tooling couldn't reach the site to check for a feed, robots.txt, or ToS. Worth a manual browser check given the outlet's size — a real feed here would likely be a strong source.</td></tr>
+    </table>
   </section>
 
   <section class="group">
     <h2><span class="badge badge-neutral">Checked — Nothing to Connect To</span></h2>
     <p class="group-desc">robots.txt allows crawling these, and they're not on any blocked platform — but as of the last check, there's no actual event content on the page to pull. A scraper here would reliably return zero results, so nothing was built. Worth a periodic re-check rather than a one-time build.</p>
     <table>
-      <tr><th>Venue</th><th>City</th><th>What we found</th></tr>
+      <tr><th>Source</th><th>City</th><th>What we found</th></tr>
       <tr><td class="src-name">Batch Brewing Company</td><td>Detroit</td><td class="src-note">Events page just reads "email us to host an event" — no listings. Wix site, no JSON-LD.</td></tr>
       <tr><td class="src-name">Grand Trunk Pub</td><td>Detroit</td><td class="src-note">Exactly one entry on the page, and it's a Labor Day hours notice, not a show.</td></tr>
       <tr><td class="src-name">Baker's Keyboard Lounge</td><td>Detroit</td><td class="src-note">Events page is a genuinely empty template — nav and contact info only.</td></tr>
@@ -310,6 +400,7 @@
       <tr><td class="src-name">Detroit Public Library (Main Branch)</td><td>Detroit</td><td class="src-note">Real, current, scrapeable listings exist (events-search?location=main) — but the content is overwhelmingly community/workforce programming (resume workshops, basic computer skills classes), not arts/culture/nightlife. Skipped as a scope mismatch rather than a technical one; worth reconsidering if the calendar's scope ever broadens to general community events.</td></tr>
       <tr><td class="src-name">City of Detroit official calendar</td><td>Detroit</td><td class="src-note">detroitmi.gov/Calendar-and-Events is real and live, but the content sampled was entirely civic/government business — Planning Commission and Board of Police Commissioners meetings, an Ombudsman office-hours notice, a vehicle auction, an Election Dept. item. No parks/rec, festival, or arts programming showed up. No feed/API/JSON-LD either way. Out of scope, not a technical problem — worth a periodic re-check in case that changes.</td></tr>
       <tr><td class="src-name">City of Highland Park official calendar</td><td>Highland Park</td><td class="src-note">highlandparkmi.gov/community/calendar/ is a thin hub page that mostly links out to City Council/Planning Commission/Police &amp; Fire Commission meeting pages — no dated public event listings found, no feed/API. Small-municipality site (runs a CMS called MuniCMS/Muniweb), doesn't appear to maintain a real public events database.</td></tr>
+      <tr><td class="src-name">Bridge Michigan</td><td>Statewide (Ann Arbor-based)</td><td class="src-note">bridgemi.com confirmed via direct fetch (2026-08-28, from Jody's Metro Detroit outlet list) to be a statewide policy/politics nonprofit newsroom — no community events, arts, or culture coverage. Its own "Events" section is internal panels/webinars, not local listings. Wrong content type, not a technical or access problem.</td></tr>
     </table>
   </section>
 

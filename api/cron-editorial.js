@@ -47,6 +47,33 @@
 //     question, not new evidence it exists — if results.source="Hour
 //     Detroit" comes back 404/error on the first run, that's this guess
 //     being wrong, not a new bug.
+//   - Ann Arbor Observer: added 2026-08-28 from a Jody-supplied list of ~29
+//     Metro Detroit media outlets, researched against the 75-mile Detroit
+//     Orbit boundary in SERVICE_AREA.md (Ann Arbor is 36mi — in scope).
+//     Independently hit-tested live via a real browser fetch (this
+//     project's own sandbox can't reach most outside hosts directly, see
+//     sources.html's "Investigated — Inconclusive" entries for outlets that
+//     couldn't get this same confirmation): annarborobserver.com/feed/ is a
+//     real, live WordPress RSS 2.0 feed, most recent items dated the same
+//     day as the check. robots.txt is permissive (only disallows
+//     /wp-login.php and /wp-admin/, standard WordPress defaults; no
+//     AI-crawler blocklist) but does set `Crawl-delay: 600` — a Vercel Cron
+//     firing far less often than every 10 minutes already respects that, so
+//     no special handling was needed. No Terms of Service page could be
+//     found at either of this site's two standard paths (/terms/,
+//     /terms-of-service/ both 404) to check for a scraping restriction the
+//     way Model D's or Eventbrite's explicitly do (see sources.html) — its
+//     general feed mixes real event previews (tagged "Event Reviews" —
+//     concert/exhibit coverage at UMMA, Hill Auditorium, etc.) in with
+//     ordinary news, obituaries, and real estate features, which is exactly
+//     what looksLikeEventCoverage() below already exists to sort out, same
+//     as WDET's mixed general feed.
+//     Of the other 19 outlets from that same list, none were added — see
+//     sources.html's new "Editorial & News Coverage Sources" section for
+//     the full outcome of each (explicit ToS/robots.txt blocks, confirmed
+//     wrong content type, or — for most of the remainder — a real feed
+//     this project's sandbox simply couldn't independently confirm, which
+//     is a tooling gap, not a finding that they don't work).
 const OUTLETS = [
   { source: "Metro Times", feedUrl: "https://www.metrotimes.com/feed/?partner-feed=arts-culture" },
   { source: "BridgeDetroit", feedUrl: "https://www.bridgedetroit.com/feed" },
@@ -57,6 +84,7 @@ const OUTLETS = [
   { source: "PLAYGROUND DETROIT", feedUrl: "https://playgrounddetroit.com/feed/" },
   { source: "Eater Detroit", feedUrl: "https://detroit.eater.com/rss/index.xml" },
   { source: "Hip In Detroit", feedUrl: "https://www.hipindetroit.com/feeds/posts/default?alt=rss" },
+  { source: "Ann Arbor Observer", feedUrl: "https://annarborobserver.com/feed/" },
 ];
 
 // Matching window: how far an event's start_date can be from "now" to even
