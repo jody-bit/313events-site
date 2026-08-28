@@ -3438,7 +3438,18 @@
     border-bottom:2px solid transparent;white-space:nowrap;
   }
   .site-nav .when-btn:hover, .site-nav-link:hover{color:var(--ink);}
-  .site-nav .when-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+  /* 2026-08-28 fix: same nav-highlight bug found and fixed on calendar.html
+     — .when-btn.active (below, ~line 3616) sets background/border-color for
+     the boxy discovery-bar chip treatment elsewhere on the page. This
+     nav-scoped rule only overrode color/border-bottom-color, so a nav item
+     (Today/Tomorrow/This Weekend) picked up that chip's cream background
+     and full border-color with nothing here to stop it — no specificity
+     fight even needed, since whichever rule sets a given property wins by
+     default when only one of them sets it. Result: a solid pale box behind
+     chartreuse text in the nav, instead of the plain text-link look
+     .site-nav-link.current already has correctly. Explicitly resetting
+     background/border-color here makes this rule fully self-contained. */
+  .site-nav .when-btn.active{background:none;color:var(--accent);border-color:transparent;border-bottom-color:var(--accent);}
   /* Marks whichever nav link is the current page (e.g. Calendar, on
      calendar.html) — same visual treatment as an active time-range chip. */
   .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
@@ -3550,6 +3561,15 @@
   }
   .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
+  /* Auto-rotating crossfade carousel (2026-08-28, Jody: "anyway to create a
+     carousel that auto rotates?") — replaces the old one-random-photo-per-
+     load version, which never changed again once a visit had loaded. All 4
+     slides are stacked directly on top of each other via position:absolute
+     so the fade is a pure opacity cross-dissolve with zero layout shift;
+     see the script below the markup for the rotation logic and the
+     preload-all-4 / prefers-reduced-motion reasoning. */
+  .hero-photo-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;}
+  .hero-photo-slide.is-active{opacity:1;z-index:1;}
   .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
   /* "N things happening today in the Detroit Orbit" stat panel — a constant,
      site-wide pulse number (see isInDetroitOrbit()), distinct from the
@@ -4174,38 +4194,72 @@
       <div class="hl-line">CITY</div>
       <div class="hl-line hl-line-signal"><span class="hl-text">IS ON</span><span class="hero-signal" aria-hidden="true"></span></div>
     </div>
-    <div class="hero-photo">
-      <picture>
-        <source id="heroPhotoSourceMobile" media="(max-width:720px)">
-        <img id="heroPhotoImg" alt="" loading="eager" fetchpriority="high">
-      </picture>
-    </div>
+    <div class="hero-photo" id="heroPhoto"><!-- populated by the carousel script below --></div>
     <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
   </section>
   <script>
   (function(){
-    // Rotating hero photography (Jody, 2026-08-27): four of Jody's own photos
-    // (candidates A-D — see assets/photography/hero/...-manifest.json for
-    // provenance), one picked at random each page load. The <source>/<img>
-    // above are deliberately left with no srcset/src at all, so the browser
-    // never starts a fetch until THIS script sets it a few lines down — that
-    // keeps this to exactly one image request per load (same network cost as
-    // the old single fixed photo), rather than loading a default and then
-    // swapping it.
+    // Auto-rotating hero photo carousel (2026-08-28, Jody: "anyway to create
+    // a carousel that auto rotates?"). The previous version picked ONE of
+    // these four photos at random per page load and left it static for the
+    // rest of the visit — this instead rotates through all four on a slow
+    // crossfade while the page stays open. Jody's calls: preload all 4 up
+    // front (smoother crossfades are worth the extra initial bandwidth vs.
+    // lazy-loading each one right before its turn) and an ~8s, slow-fade
+    // rotation rather than a hard cut.
     var HERO_PHOTOS = [
       { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
       { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
       { file:'C', w:2400, h:1350, alt:'A concert crowd at dusk, backlit by stage lights and video screens.' },
       { file:'D', w:1536, h:1024, alt:'A crowd throwing up rock horns as a silhouetted performer faces them under stage lights.' }
     ];
-    var pick = HERO_PHOTOS[Math.floor(Math.random() * HERO_PHOTOS.length)];
-    var base = '/assets/photography/hero/313-events-homepage-hero-' + pick.file;
-    document.getElementById('heroPhotoSourceMobile').srcset = base + '-mobile.webp';
-    var img = document.getElementById('heroPhotoImg');
-    img.src = base + '.webp';
-    img.width = pick.w;
-    img.height = pick.h;
-    img.alt = pick.alt;
+    var ROTATE_MS = 8000;
+    var container = document.getElementById('heroPhoto');
+    if(!container) return;
+
+    // Random starting photo, same as the old behavior (a different photo
+    // greets each fresh visit) — rotation then proceeds through all 4 in
+    // order from there.
+    var startIndex = Math.floor(Math.random() * HERO_PHOTOS.length);
+    var slides = HERO_PHOTOS.map(function(photo, i){
+      var picture = document.createElement('picture');
+      picture.className = 'hero-photo-slide' + (i === startIndex ? ' is-active' : '');
+      // Only the currently-visible slide is exposed to assistive tech —
+      // aria-hidden on the rest keeps a screen reader from announcing 4
+      // stacked photos as if they were all present at once.
+      picture.setAttribute('aria-hidden', i === startIndex ? 'false' : 'true');
+      var base = '/assets/photography/hero/313-events-homepage-hero-' + photo.file;
+      var source = document.createElement('source');
+      source.media = '(max-width:720px)';
+      source.srcset = base + '-mobile.webp';
+      picture.appendChild(source);
+      var img = document.createElement('img');
+      img.src = base + '.webp'; // all 4 requested immediately — preload-up-front is deliberate, see header note
+      img.width = photo.w;
+      img.height = photo.h;
+      img.alt = photo.alt;
+      img.loading = 'eager';
+      if(i === startIndex) img.fetchPriority = 'high'; // only the first-visible slide competes for LCP priority
+      picture.appendChild(img);
+      container.appendChild(picture);
+      return picture;
+    });
+
+    // Reduced-motion visitors get the old static-photo behavior (one random
+    // photo, never rotating) rather than an auto-playing crossfade — same
+    // posture already established for the hero signal dot and the Detroit
+    // Orbit ping's own @media (prefers-reduced-motion: reduce) handling.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var current = startIndex;
+    setInterval(function(){
+      var next = (current + 1) % slides.length;
+      slides[current].classList.remove('is-active');
+      slides[current].setAttribute('aria-hidden', 'true');
+      slides[next].classList.add('is-active');
+      slides[next].setAttribute('aria-hidden', 'false');
+      current = next;
+    }, ROTATE_MS);
   })();
   </script>
 
