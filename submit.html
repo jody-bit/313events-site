@@ -155,6 +155,26 @@
     padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;
   }
   .form-error.show{display:block;}
+
+  /* Event flyer/photo upload (2026-08-28, Jody: "there was no option to
+     upload an image when it was input into the system") — file input is now
+     the primary path; the old plain-text Image URL field survives as a
+     collapsed fallback for anyone who already has the image hosted
+     elsewhere, toggled open by the link button below the file input rather
+     than shown by default, since 99% of submitters will use the file. */
+  input[type=file]{
+    width:100%;border:1px dashed var(--line);border-radius:8px;padding:9px 11px;
+    font-size:13px;font-family:inherit;color:var(--ink-soft);background:var(--panel-alt);
+  }
+  .image-preview{display:flex;align-items:center;gap:12px;margin-top:10px;}
+  .image-preview img{
+    width:120px;height:80px;object-fit:cover;border-radius:8px;
+    border:1px solid var(--line);background:var(--panel-alt);
+  }
+  .link-btn{
+    background:none;border:none;padding:0;color:var(--accent);font-size:11.5px;
+    font-weight:700;cursor:pointer;text-decoration:underline;font-family:inherit;
+  }
 </style>
 </head>
 <body>
@@ -207,8 +227,19 @@
         <textarea id="description" name="description" placeholder="What should attendees know? Lineup, dress code, age restriction, accessibility info, etc."></textarea>
       </div>
       <div class="field">
-        <label for="imageUrl">Image URL <span class="opt">(optional)</span></label>
-        <input type="url" id="imageUrl" name="imageUrl" placeholder="https://…">
+        <label for="imageFile">Event flyer / photo <span class="opt">(optional)</span></label>
+        <input type="file" id="imageFile" name="imageFile" accept="image/jpeg,image/png,image/webp,image/gif">
+        <div class="hint">JPG, PNG, WEBP, or GIF — max 4MB.</div>
+        <div class="image-preview" id="imagePreview" style="display:none;">
+          <img id="imagePreviewImg" alt="">
+          <button type="button" class="btn btn-secondary" id="imageRemoveBtn">Remove</button>
+        </div>
+        <div class="hint" style="margin-top:8px;">
+          Already have it hosted somewhere? <button type="button" class="link-btn" id="imageUrlToggleBtn">Paste an image link instead</button>
+        </div>
+        <div class="field" id="imageUrlField" style="display:none;margin-top:8px;margin-bottom:0;">
+          <input type="url" id="imageUrl" name="imageUrl" placeholder="https://… (must link directly to the image file itself, not a webpage that shows it)">
+        </div>
       </div>
     </fieldset>
 
@@ -425,6 +456,65 @@ feedTab.onclick = ()=> activateTab('feed');
 const form = document.getElementById('eventForm');
 const errorBox = document.getElementById('formError');
 
+// ---- Event flyer/photo upload ----
+const imageFileInput = document.getElementById('imageFile');
+const imagePreview = document.getElementById('imagePreview');
+const imagePreviewImg = document.getElementById('imagePreviewImg');
+const imageRemoveBtn = document.getElementById('imageRemoveBtn');
+const imageUrlToggleBtn = document.getElementById('imageUrlToggleBtn');
+const imageUrlField = document.getElementById('imageUrlField');
+const imageUrlInput = document.getElementById('imageUrl');
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg','image/png','image/webp','image/gif']);
+
+function clearImageFile(){
+  imageFileInput.value = '';
+  imagePreview.style.display = 'none';
+  if(imagePreviewImg.src) URL.revokeObjectURL(imagePreviewImg.src);
+  imagePreviewImg.src = '';
+}
+
+imageFileInput.addEventListener('change', () => {
+  const file = imageFileInput.files && imageFileInput.files[0];
+  if(!file) { clearImageFile(); return; }
+  if(!ALLOWED_IMAGE_TYPES.has(file.type)){
+    errorBox.textContent = 'That file type isn\'t supported — please use JPG, PNG, WEBP, or GIF.';
+    errorBox.classList.add('show');
+    clearImageFile();
+    return;
+  }
+  if(file.size > MAX_IMAGE_BYTES){
+    errorBox.textContent = 'That image is too large — max 4MB.';
+    errorBox.classList.add('show');
+    clearImageFile();
+    return;
+  }
+  errorBox.classList.remove('show');
+  imagePreviewImg.src = URL.createObjectURL(file);
+  imagePreview.style.display = 'flex';
+  // A chosen file takes priority over the pasted-link fallback — hide and
+  // clear that field so it's unambiguous which one wins on submit.
+  imageUrlField.style.display = 'none';
+  imageUrlInput.value = '';
+});
+imageRemoveBtn.addEventListener('click', clearImageFile);
+imageUrlToggleBtn.addEventListener('click', () => {
+  const opening = imageUrlField.style.display === 'none';
+  imageUrlField.style.display = opening ? 'block' : 'none';
+  if(opening) clearImageFile();
+});
+
+async function uploadFlyerImage(file){
+  const resp = await fetch('/api/upload-image', {
+    method: 'POST',
+    headers: { 'Content-Type': file.type },
+    body: file,
+  });
+  const result = await resp.json().catch(() => ({}));
+  if(!resp.ok) throw new Error(result.error || 'Photo upload failed — please try again.');
+  return result.url;
+}
+
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const data = new FormData(form);
@@ -440,12 +530,31 @@ form.addEventListener('submit', async (e)=>{
   }
   errorBox.classList.remove('show');
 
+  const submitBtn = form.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+
+  let imageUrl = data.get('imageUrl') || null;
+  const chosenFile = imageFileInput.files && imageFileInput.files[0];
+  if(chosenFile){
+    submitBtn.textContent = 'Uploading photo…';
+    try {
+      imageUrl = await uploadFlyerImage(chosenFile);
+    } catch (err) {
+      errorBox.textContent = (err && err.message) || 'Couldn\'t upload your photo — please try again, or remove it and submit without one.';
+      errorBox.classList.add('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit event for review';
+      return;
+    }
+  }
+
   const catLabel = CATS.find(c=>c.key===category)?.label || category;
   const payload = {
     title: data.get('title'),
     category, // CATS key, e.g. "music" — matches the event_category enum in Supabase
     description: data.get('description') || null,
-    imageUrl: data.get('imageUrl') || null,
+    imageUrl,
     startDate: data.get('startDate'),
     endDate: data.get('endDate') || null,
     startTime: data.get('startTime') || null,
@@ -460,8 +569,6 @@ form.addEventListener('submit', async (e)=>{
     contactEmail: data.get('contactEmail'),
   };
 
-  const submitBtn = form.querySelector('button[type=submit]');
-  submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting…';
 
   try {
@@ -500,6 +607,8 @@ form.addEventListener('submit', async (e)=>{
 
 function submitAnother(){
   form.reset();
+  clearImageFile();
+  imageUrlField.style.display = 'none';
   form.style.display = 'block';
   document.getElementById('confirmPanel').classList.remove('show');
   errorBox.classList.remove('show');
