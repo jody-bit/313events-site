@@ -4908,8 +4908,36 @@ function isBlockedEvent(e){
   });
 }
 
+// Secondary "Features" filters (added 2026-08-28, from the Product Strategy
+// & UX Audit doc's own data-completeness table in Section 7) — 313.events'
+// own scoped, on-brand answer to the kind of Category/Region/Features
+// filter set competitors like Metro Times expose. Deliberately NOT a
+// wholesale copy of that: the audit's "Things We Should Not Build" section
+// warns against a big always-visible filter expansion (Finding 5: most
+// visitors touch only one or two filters), and its own Gap 6 reasoning
+// gates any new filter on whether the underlying data can actually support
+// it honestly. Each of these four maps to a column the audit's Section 7
+// table already calls "solid" — ticket_url, image_url, and source are all
+// populated reliably today, unlike cancellation status or a recurrence
+// field, which the same table flags as incomplete/nonexistent and are
+// deliberately left out of this set rather than filtering over mostly-null
+// data. 'radar' (On the Radar) doubles as the audit's Gap 5/8 push to make
+// the editorial-coverage integration more visible, not just a filter.
+const FEATURE_CHIPS = [
+  { key: 'tickets', label: 'Tickets available' },
+  { key: 'photo', label: 'Has photo' },
+  { key: 'submitted', label: 'Community submitted' },
+  { key: 'radar', label: 'On the Radar' },
+];
+
 let activeCats = new Set(Object.keys(CATS));
 let freeOnly = false;
+// Zero or more of FEATURE_CHIPS' keys — AND'd together with every other
+// filter dimension, same as freeOnly, rather than OR'd against each other:
+// at the "one or two filters touched" usage level Finding 5 describes,
+// AND-narrowing is simpler to reason about than a mixed AND/OR model and
+// matches how freeOnly already behaves.
+let activeFeatures = new Set();
 let query = "";
 // The homepage is List-only (the mockup's primary view) — there is no
 // Month grid here at all. The full Month-grid experience lives on the
@@ -5157,6 +5185,14 @@ function matchesNonDateFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
+  // FEATURE_CHIPS filters (see their declaration above for the reasoning).
+  // 'radar' reads editorialByEvent directly, the same lookup
+  // editorialLinkHtml()/renderOnRadarCard() already use, rather than a
+  // second copy of "is this event on the radar" logic.
+  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('photo') && !e.imageUrl) return false;
+  if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
+  if(activeFeatures.has('radar') && !(e.id != null && editorialByEvent[e.id])) return false;
   if(neighborhoodFilter && e.neighborhood !== neighborhoodFilter) return false;
   if(query){
     // Search matches everywhere in the event's metadata, not just title/venue —
@@ -5381,6 +5417,25 @@ function buildFilterBar(){
   };
   bar.appendChild(freeChip);
 
+  // FEATURE_CHIPS row — plain text chips (no color dot), same treatment as
+  // allChip/clearChip below rather than the category dots, since these
+  // aren't part of the locked category palette.
+  FEATURE_CHIPS.forEach(({key, label})=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip' + (activeFeatures.has(key) ? ' active' : '');
+    chip.dataset.feature = key;
+    chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+    chip.textContent = label;
+    chip.onclick = ()=>{
+      if(activeFeatures.has(key)){ activeFeatures.delete(key); chip.classList.remove('active'); }
+      else { activeFeatures.add(key); chip.classList.add('active'); }
+      chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+      render();
+    };
+    bar.appendChild(chip);
+  });
+
   const clearChip = document.createElement('button');
   clearChip.type = 'button';
   clearChip.className = 'chip';
@@ -5403,6 +5458,7 @@ function buildFilterBar(){
 function clearAllFilters(){
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
+  activeFeatures = new Set();
   document.getElementById('search').value = '';
   query = '';
   whenMode = null;
@@ -5447,6 +5503,14 @@ function renderActiveFilters(){
       render();
     }});
   }
+  FEATURE_CHIPS.forEach(({key, label})=>{
+    if(!activeFeatures.has(key)) return;
+    chips.push({label, onRemove: ()=>{
+      activeFeatures.delete(key);
+      buildFilterBar();
+      render();
+    }});
+  });
   if(query){
     chips.push({label: `"${query}"`, onRemove: ()=>{
       query = '';
@@ -5902,6 +5966,7 @@ function viewThisWeek(){
   // the hero stat just told the visitor.
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
+  activeFeatures = new Set();
   document.getElementById('search').value = '';
   query = '';
   clearLocation({skipRender: true});
@@ -6196,6 +6261,7 @@ function viewNeighborhood(name){
     // user can narrow further from that full baseline afterward.
     activeCats = new Set(Object.keys(CATS));
     freeOnly = false;
+    activeFeatures = new Set();
     document.getElementById('search').value = '';
     query = '';
     whenMode = null;
@@ -6695,6 +6761,7 @@ function updateMobileTriggers(){
   const parts = [];
   if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
   if(freeOnly) parts.push('Free');
+  if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
   filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
@@ -6719,6 +6786,7 @@ function syncURL(){
   }
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
+  if(activeFeatures.size) params.set('features', Array.from(activeFeatures).join(','));
   if(query) params.set('q', query);
   // A geolocation-derived origin (type:'here') has no stable name to
   // round-trip through a URL — omitted rather than encoding raw coordinates,
@@ -6755,6 +6823,12 @@ function readStateFromURL(){
   }
 
   if(params.get('free') === '1') freeOnly = true;
+
+  const featuresParam = params.get('features');
+  if(featuresParam){
+    const validKeys = new Set(FEATURE_CHIPS.map(f=>f.key));
+    activeFeatures = new Set(featuresParam.split(',').filter(k=>validKeys.has(k)));
+  }
 
   const qParam = params.get('q');
   if(qParam){ query = qParam; document.getElementById('search').value = qParam; }

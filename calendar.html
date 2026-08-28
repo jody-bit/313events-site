@@ -1012,8 +1012,26 @@ function isBlockedEvent(e){
   });
 }
 
+// Secondary "Features" filters — ported from index.html's own FEATURE_CHIPS
+// (added 2026-08-28, see that file's comment for the full reasoning: a
+// scoped, on-brand answer to Metro Times-style Category/Region/Features
+// filters, limited to fields the audit doc's Section 7 data table already
+// calls "solid"). Deliberately 3 of index.html's 4 here, not 4 — 'radar'
+// (On the Radar) depends on editorialByEvent, which only index.html builds
+// (the "As seen in" / On the Radar sidebar integration doesn't exist on
+// this page); porting that whole fetch+widget just to support one filter
+// chip is out of scope for this change.
+const FEATURE_CHIPS = [
+  { key: 'tickets', label: 'Tickets available' },
+  { key: 'photo', label: 'Has photo' },
+  { key: 'submitted', label: 'Community submitted' },
+];
+
 let activeCats = new Set(Object.keys(CATS));
 let freeOnly = false;
+// Zero or more of FEATURE_CHIPS' keys, AND'd with every other filter
+// dimension — same semantics as index.html's activeFeatures.
+let activeFeatures = new Set();
 let query = "";
 let mode = "month"; // month | list
 // Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
@@ -1125,6 +1143,10 @@ function matchesFilters(e){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
+  // FEATURE_CHIPS filters — see their declaration above for the reasoning.
+  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
+  if(activeFeatures.has('photo') && !e.imageUrl) return false;
+  if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
     const q = query.toLowerCase();
     if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
@@ -1269,6 +1291,24 @@ function buildFilterBar(){
   };
   bar.appendChild(freeChip);
 
+  // FEATURE_CHIPS row — plain text chips (no color dot), same treatment as
+  // the category chips' allChip/clearChip rather than the per-category dots.
+  FEATURE_CHIPS.forEach(({key, label})=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip' + (activeFeatures.has(key) ? ' active' : '');
+    chip.dataset.feature = key;
+    chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+    chip.textContent = label;
+    chip.onclick = ()=>{
+      if(activeFeatures.has(key)){ activeFeatures.delete(key); chip.classList.remove('active'); }
+      else { activeFeatures.add(key); chip.classList.add('active'); }
+      chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+      render();
+    };
+    bar.appendChild(chip);
+  });
+
   const clearChip = document.createElement('button');
   clearChip.type = 'button';
   clearChip.className = 'chip';
@@ -1288,6 +1328,7 @@ function buildFilterBar(){
 function clearAllFilters(){
   activeCats = new Set(Object.keys(CATS));
   freeOnly = false;
+  activeFeatures = new Set();
   document.getElementById('search').value = '';
   query = '';
   whenMode = null;
@@ -1319,6 +1360,14 @@ function renderActiveFilters(){
       render();
     }});
   }
+  FEATURE_CHIPS.forEach(({key, label})=>{
+    if(!activeFeatures.has(key)) return;
+    chips.push({label, onRemove: ()=>{
+      activeFeatures.delete(key);
+      buildFilterBar();
+      render();
+    }});
+  });
   if(query){
     chips.push({label: `"${query}"`, onRemove: ()=>{
       query = '';
@@ -2020,6 +2069,7 @@ function updateMobileTriggers(){
   const parts = [];
   if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
   if(freeOnly) parts.push('Free');
+  if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
   filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
@@ -2047,6 +2097,7 @@ function syncURL(){
   if(whenMode) params.set('when', whenMode);
   if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
   if(freeOnly) params.set('free', '1');
+  if(activeFeatures.size) params.set('features', Array.from(activeFeatures).join(','));
   if(query) params.set('q', query);
   // A geolocation-derived origin (type:'here') has no stable name to
   // round-trip through a URL — omitted rather than encoding raw coordinates,
@@ -2089,6 +2140,12 @@ function readStateFromURL(){
   }
 
   if(params.get('free') === '1') freeOnly = true;
+
+  const featuresParam = params.get('features');
+  if(featuresParam){
+    const validKeys = new Set(FEATURE_CHIPS.map(f=>f.key));
+    activeFeatures = new Set(featuresParam.split(',').filter(k=>validKeys.has(k)));
+  }
 
   const qParam = params.get('q');
   if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
