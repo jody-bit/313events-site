@@ -226,10 +226,27 @@ let upcomingOnly = false;
 // object is still subject to events' own RLS (only status='approved' rows
 // are visible to the anon key), so an article matched to an event that's
 // since been unpublished or rejected just comes back with events:null —
-// filtered out below rather than shown as a dead link.
+// treated the same as "never matched" below (see the filter), not shown as
+// a dead link to a hidden event.
+//
+// 2026-08-28 (Jody: "why is it only showing 5? let's show everything we
+// have!") — this used to hard-filter to matched_event_id=not.is.null. That
+// wasn't a display-limit bug: api/cron-editorial.js's title/venue matching
+// is deliberately conservative (it only sets matched_event_id when it's
+// confident), so most fetched articles were being stored with no match at
+// all and this page was silently only showing the confidently-matched
+// sliver. Removed that filter — every article with a usable URL is now
+// included, matched or not — and radarCardHtml() below branches on
+// item.event being present to render an "unmatched" card that links out to
+// the article itself instead of a (nonexistent) event page. limit raised
+// from 500 to 2000 to match: this query used to scale with only the small
+// matched subset, now it scales with the whole (unbounded-growth, no
+// retention/pruning) editorial_articles table — revisit with real
+// pagination if that ever gets close, same as sitemap.js's own MAX_EVENTS
+// comment.
 async function loadArticles(){
   try {
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=not.is.null&select=title,url,source,thumbnail_url,published_at,matched_event_id,events(id,title,start_date,venue_name_raw,venue_city_raw,category,status)&order=published_at.desc&limit=500`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events(id,title,start_date,venue_name_raw,venue_city_raw,category,status)&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
@@ -238,21 +255,26 @@ async function loadArticles(){
     if(!Array.isArray(rows)) throw new Error('unexpected shape');
 
     ALL_ITEMS = rows
-      .filter(r => r.events && r.events.status === 'approved' && safeUrl(r.url))
+      // Keep a row if: it has a usable URL, AND either it was never matched
+      // to an event at all, OR it was matched and that event is still a
+      // live, approved, publicly-visible one (an article matched to an
+      // event that's since been hidden/rejected comes back as events:null
+      // per the RLS note above — drop those rather than show a dead link).
+      .filter(r => safeUrl(r.url) && (!r.matched_event_id || (r.events && r.events.status === 'approved')))
       .map(r => ({
         articleTitle: decodeEntities(r.title),
         articleUrl: safeUrl(r.url),
         source: r.source || 'Local press',
         thumbnailUrl: r.thumbnail_url || null,
         publishedAt: r.published_at || null,
-        event: {
+        event: (r.matched_event_id && r.events) ? {
           id: r.events.id,
           title: decodeEntities(r.events.title),
           date: r.events.start_date,
           venue: decodeEntities(r.events.venue_name_raw) || 'Venue TBA',
           city: (r.events.venue_city_raw && r.events.venue_city_raw.toLowerCase() !== 'detroit') ? decodeEntities(r.events.venue_city_raw) : undefined,
           cat: r.events.category,
-        },
+        } : null,
       }));
 
     document.getElementById('loadingState').style.display = 'none';
@@ -292,30 +314,62 @@ function getTodayISO(){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
+// Two card layouts, branching on item.event:
+// - matched (item.event present): the original design — event is the
+//   headline, thumbnail/title link to the event's own page, article is a
+//   secondary "Read the article" link out.
+// - unmatched (item.event null, added 2026-08-28 — see loadArticles()):
+//   there's no internal event page to send anyone to, so the article
+//   itself becomes the headline and the whole card points out to it
+//   instead. The meta line is replaced with a "General coverage" tag plus
+//   the article's own publish date, since there's no event date/venue to
+//   show.
 function radarCardHtml(item){
-  const todayIso = getTodayISO();
-  const isPast = item.event.date < todayIso;
-  const dateLabel = new Date(item.event.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
-  const metaBits = [dateLabel, item.event.venue].filter(Boolean).join(' · ');
-  const cat = CATS[item.event.cat];
+  const cat = item.event ? CATS[item.event.cat] : null;
   const thumbHtml = item.thumbnailUrl && safeUrl(item.thumbnailUrl)
     ? `<img src="${escapeHtml(safeUrl(item.thumbnailUrl))}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;rc-thumb-fallback&quot;>${escapeHtml(item.source.charAt(0))}</div>';">`
     : `<div class="rc-thumb-fallback">${escapeHtml(item.source.charAt(0))}</div>`;
 
-  const eventHref = `event.html?id=${encodeURIComponent(item.event.id)}`;
+  if(item.event){
+    const todayIso = getTodayISO();
+    const isPast = item.event.date < todayIso;
+    const dateLabel = new Date(item.event.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
+    const metaBits = [dateLabel, item.event.venue].filter(Boolean).join(' · ');
+    const eventHref = `event.html?id=${encodeURIComponent(item.event.id)}`;
+    return `
+      <div class="radar-card">
+        <a class="rc-thumb-wrap" href="${escapeHtml(eventHref)}">
+          ${thumbHtml}
+          ${isPast ? '<div class="rc-past-badge">Past event</div>' : ''}
+        </a>
+        <div class="rc-body">
+          <div class="rc-outlet" style="${cat ? `color:${cat.color};` : ''}">${escapeHtml(item.source)}</div>
+          <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
+            <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
+          </a>
+          <div class="rc-meta">${escapeHtml(metaBits)}${item.event.city ? ` — ${escapeHtml(item.event.city)}` : ''}</div>
+          <div class="rc-article-title">"${escapeHtml(item.articleTitle)}"</div>
+          <a class="rc-article-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">Read the article</a>
+        </div>
+      </div>
+    `;
+  }
+
+  const publishedLabel = item.publishedAt
+    ? new Date(item.publishedAt).toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'})
+    : null;
   return `
     <div class="radar-card">
-      <a class="rc-thumb-wrap" href="${escapeHtml(eventHref)}">
+      <a class="rc-thumb-wrap" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">
         ${thumbHtml}
-        ${isPast ? '<div class="rc-past-badge">Past event</div>' : ''}
+        <div class="rc-past-badge">General coverage</div>
       </a>
       <div class="rc-body">
-        <div class="rc-outlet" style="${cat ? `color:${cat.color};` : ''}">${escapeHtml(item.source)}</div>
-        <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
-          <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
+        <div class="rc-outlet">${escapeHtml(item.source)}</div>
+        <a class="rc-event-title-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">
+          <h2 class="rc-event-title">${escapeHtml(item.articleTitle)}</h2>
         </a>
-        <div class="rc-meta">${escapeHtml(metaBits)}${item.event.city ? ` — ${escapeHtml(item.event.city)}` : ''}</div>
-        <div class="rc-article-title">"${escapeHtml(item.articleTitle)}"</div>
+        <div class="rc-meta">${publishedLabel ? escapeHtml(publishedLabel) + ' · ' : ''}Not yet linked to a listed event</div>
         <a class="rc-article-link" href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer">Read the article</a>
       </div>
     </div>
@@ -326,7 +380,10 @@ function render(){
   const todayIso = getTodayISO();
   let items = ALL_ITEMS;
   if(selectedOutlets.size) items = items.filter(i => selectedOutlets.has(i.source));
-  if(upcomingOnly) items = items.filter(i => i.event.date >= todayIso);
+  // Unmatched articles have no event date to evaluate, so "upcoming only"
+  // excludes them along with past-event matches rather than crashing on
+  // i.event being null.
+  if(upcomingOnly) items = items.filter(i => i.event && i.event.date >= todayIso);
 
   const grid = document.getElementById('radarGrid');
   const empty = document.getElementById('emptyState');

@@ -1073,6 +1073,25 @@ function parseHour(timeStr){
   return hour;
 }
 
+// Parses ALL AM/PM clock times out of time_display, not just the first —
+// used by the NOW quick filter below to find an event's actual END time
+// (parseHour() above only ever returns one number, so it can't tell start
+// from end). Ported from index.html's own parseTimeRange() (added
+// 2026-08-28 for the same "hides too soon" fix there) rather than
+// duplicated-and-drifted — same regex, same {start,end} shape, same
+// "second match, if any, is the end" convention as every other time string
+// on this site.
+function parseTimeRange(timeStr){
+  if(!timeStr) return null;
+  const re = /(\d{1,2}):(\d{2})\s*(AM|PM)/gi;
+  const matches = [...timeStr.matchAll(re)];
+  if(!matches.length) return null;
+  const to24 = (h,m,ap) => { let hh = parseInt(h,10)%12; if(/PM/i.test(ap)) hh += 12; return {h:hh, m:parseInt(m,10)}; };
+  const start = to24(matches[0][1], matches[0][2], matches[0][3]);
+  const end = matches.length > 1 ? to24(matches[1][1], matches[1][2], matches[1][3]) : null;
+  return {start, end};
+}
+
 // "This weekend" = the Friday/Saturday/Sunday currently in progress or the
 // next upcoming one — never a weekend that's already fully over. Returns 3
 // ISO date strings.
@@ -1104,12 +1123,25 @@ function matchesFilters(e){
       // now / today / tonight are all "today", narrowed further below
       if(e.date !== todayIso) return false;
       if(whenMode === 'now'){
-        const hr = parseHour(e.time);
-        const nowHour = new Date().getHours();
-        // Unparseable times stay included — NOW is a safety net ("what's
-        // still ahead"), not a deliberate narrowing, so an unknown time
-        // should never silently disappear from it.
-        if(hr !== null && hr < nowHour) return false;
+        // Same fix applied to index.html's default list view (Jody,
+        // 2026-08-28: "just because it began already doesn't mean the user
+        // cannot still go or be interested"). This used to hide an event
+        // the moment its START hour passed, even if it was still ongoing
+        // (a 6-10pm show vanished from NOW at 7pm). Now it only excludes
+        // once the event's own parsed END time has passed. An event with
+        // no parseable end (a bare start time, or a vague string like
+        // "Evening") has no cutoff at all and stays included — NOW is a
+        // safety net ("what's still ahead / still happening"), not a
+        // deliberate narrowing, so an unknown time should never silently
+        // disappear from it.
+        const range = parseTimeRange(e.time);
+        if(range && range.end && range.end.h >= range.start.h){
+          // The >= guard skips a range that crosses midnight (e.g.
+          // 10pm-2am): still legitimately "now" all the way through.
+          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const endHour = range.end.h + range.end.m/60;
+          if(endHour < nowHour) return false;
+        }
       } else if(whenMode === 'tonight'){
         // Unlike NOW, TONIGHT *is* a deliberate narrowing — an event with no
         // parseable time isn't confidently "tonight", so it's excluded here
