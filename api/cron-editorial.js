@@ -28,17 +28,35 @@
 //     it; if it 404s, this row's next run just reports that plainly rather
 //     than silently doing nothing, same "fail soft, document honestly"
 //     convention as every other cron here.
-//   - Hour Detroit was asked for but is NOT included: no public RSS feed
-//     could be confirmed for hourdetroit.com by any means available while
-//     writing this (no <link rel="alternate"> found, no third-party
-//     directory listing, no working /feed/ guess). Guessing a feed URL
-//     that might not exist isn't worth silently failing every run — add it
-//     here once a real feed URL is confirmed.
+//   - Detroit Music Magazine: hit-tested live (2026-08-28) at
+//     detroitmusicmag.com/feed/atom/ — real, valid, but ATOM not RSS 2.0
+//     (<entry>/<link href=".."/>/<published>/<summary>, not <item>/<link>
+//     text/<pubDate>/<description>). This is the outlet with real Detroit
+//     techno/electronic coverage (Movement Festival reviews, etc.) plus its
+//     own Events section — parseFeedItems() below was extended to handle
+//     both shapes so this one isn't left out just because of format.
+//   - Hour Detroit, PLAYGROUND DETROIT, Eater Detroit, Hip In Detroit: added
+//     on their platform's own standard feed path (WordPress /feed/, Vox
+//     Media /rss/index.xml, Blogger /feeds/posts/default) but NOT
+//     independently hit-tested against the live feed the way the four
+//     outlets above were — same "couldn't fetch it directly, add it and let
+//     the run report the truth" situation already documented for Model D
+//     below, not a claim these definitely work. Hour Detroit specifically
+//     was investigated once before and excluded for lack of any confirmable
+//     feed at all; this is a second attempt on the same unresolved
+//     question, not new evidence it exists — if results.source="Hour
+//     Detroit" comes back 404/error on the first run, that's this guess
+//     being wrong, not a new bug.
 const OUTLETS = [
   { source: "Metro Times", feedUrl: "https://www.metrotimes.com/feed/?partner-feed=arts-culture" },
   { source: "BridgeDetroit", feedUrl: "https://www.bridgedetroit.com/feed" },
   { source: "WDET", feedUrl: "https://wdet.org/feed/" },
   { source: "Model D", feedUrl: "https://feeds.feedburner.com/ModelDMedia" },
+  { source: "Detroit Music Magazine", feedUrl: "https://www.detroitmusicmag.com/feed/atom/" },
+  { source: "Hour Detroit", feedUrl: "https://www.hourdetroit.com/feed/" },
+  { source: "PLAYGROUND DETROIT", feedUrl: "https://playgrounddetroit.com/feed/" },
+  { source: "Eater Detroit", feedUrl: "https://detroit.eater.com/rss/index.xml" },
+  { source: "Hip In Detroit", feedUrl: "https://www.hipindetroit.com/feeds/posts/default?alt=rss" },
 ];
 
 // Matching window: how far an event's start_date can be from "now" to even
@@ -97,10 +115,12 @@ function normalize(str) {
 }
 
 // ---- RSS/Atom parsing ----
-// Every outlet in OUTLETS above is a plain RSS 2.0 <item> feed (verified
-// live per the header note) — this does not attempt full generic Atom
-// support, matching this project's "verify live before writing" convention
-// rather than writing speculative code for a feed shape not actually in use.
+// The original four outlets are all plain RSS 2.0 <item> feeds; Detroit
+// Music Magazine (added 2026-08-28) is Atom <entry> instead — same
+// information, different tag names (<link href=".."/> not <link>text</link>,
+// <published>/<updated> not <pubDate>, <summary>/<content> not
+// <description>). parseFeedItems() below detects which shape a feed is in
+// and extracts accordingly, rather than maintaining two separate call paths.
 
 function extractTag(xml, tag) {
   const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i");
@@ -128,18 +148,39 @@ function extractThumbnail(itemXml) {
   return null;
 }
 
-function parseRssItems(xml) {
+// Atom's <link> is a self-closing, attribute-only tag — often more than one
+// per entry (rel="alternate" is the actual article; feeds sometimes also
+// carry a rel="self"/rel="edit" link pointing at the feed/API, not the
+// article). Prefers rel="alternate", falls back to the first href found so
+// a feed that omits rel entirely on a single <link> still resolves.
+function extractAtomLink(entryXml) {
+  const linkRe = /<link\b[^>]*\/?>/gi;
+  let m, firstHref = null;
+  while ((m = linkRe.exec(entryXml))) {
+    const hrefMatch = m[0].match(/href=["']([^"']+)["']/i);
+    if (!hrefMatch) continue;
+    if (!firstHref) firstHref = hrefMatch[1];
+    const relMatch = m[0].match(/rel=["']([^"']+)["']/i);
+    if (!relMatch || relMatch[1] === "alternate") return hrefMatch[1];
+  }
+  return firstHref;
+}
+
+function parseFeedItems(xml) {
+  const isAtom = /<entry[\s>]/i.test(xml);
   const items = [];
-  const itemRe = /<item[^>]*>([\s\S]*?)<\/item>/gi;
+  const blockRe = isAtom ? /<entry[^>]*>([\s\S]*?)<\/entry>/gi : /<item[^>]*>([\s\S]*?)<\/item>/gi;
   let m;
-  while ((m = itemRe.exec(xml))) {
+  while ((m = blockRe.exec(xml))) {
     const itemXml = m[1];
     const rawTitle = extractTag(itemXml, "title");
-    const link = extractTag(itemXml, "link");
+    const link = isAtom ? extractAtomLink(itemXml) : extractTag(itemXml, "link");
     if (!rawTitle || !link) continue;
-    const pubDateRaw = extractTag(itemXml, "pubDate") || extractTag(itemXml, "dc:date");
+    const pubDateRaw = extractTag(itemXml, "pubDate") || extractTag(itemXml, "dc:date")
+      || extractTag(itemXml, "published") || extractTag(itemXml, "updated");
     const pubDate = pubDateRaw ? new Date(pubDateRaw) : null;
-    const description = extractTag(itemXml, "description") || extractTag(itemXml, "content:encoded");
+    const description = extractTag(itemXml, "description") || extractTag(itemXml, "content:encoded")
+      || extractTag(itemXml, "summary") || extractTag(itemXml, "content");
     items.push({
       title: decodeEntities(rawTitle),
       url: link.trim(),
@@ -244,7 +285,7 @@ module.exports = async (req, res) => {
     let outletResult;
     try {
       const xml = await fetchText(outlet.feedUrl);
-      const items = parseRssItems(xml);
+      const items = parseFeedItems(xml);
       if (!items.length) {
         outletResult = "Fetched OK — 0 items parsed (feed may be empty or in an unsupported shape)";
       } else {
