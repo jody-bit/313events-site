@@ -21,6 +21,66 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const SITE_URL = "https://313.events";
+
+function escapeHtmlForEmail(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// "Your event is live" email to the submitter (Jody, 2026-08-28) — fired
+// only on the "approve" action, never "restore". Both set status to
+// 'approved', but this project's events table has no separate status for
+// "was live, then hidden" vs "was pending, then rejected" (see this file's
+// header comment) — a "restore" can equally mean un-hiding an event that
+// already got this email once (don't send it again) or reversing a reject
+// that never got one (arguably should). Since there's no way to tell those
+// apart from the data alone, this only fires on the unambiguous first-time
+// path rather than risk double-emailing a submitter.
+//
+// Same fail-soft-and-swallow convention as this project's other best-effort
+// email, api/submit.js's notifySubmission() — a failed send here must never
+// turn an otherwise-successful approve action into an error response.
+//
+// IMPORTANT — deliverability: this reuses the same shared
+// onboarding@resend.dev sender notifySubmission() already uses for Jody's
+// own new-submission alert. Resend restricts that shared sender to only
+// deliver to the account's OWN verified signup email until a custom domain
+// is added — so as written, this email is a no-op for every real submitter
+// except Jody's own address. To actually reach submitters: verify a domain
+// (e.g. 313.events) in the Resend dashboard, then change the "from" address
+// below to send from it. Flagged here rather than shipped as if it already
+// worked for real submitters — it doesn't yet.
+async function notifyEventLive(row) {
+  if (!RESEND_API_KEY || !row.submitter_email) return;
+  try {
+    const eventUrl = `${SITE_URL}/event.html?id=${encodeURIComponent(row.id)}`;
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "313.events <onboarding@resend.dev>",
+        to: [row.submitter_email],
+        subject: `Your event "${row.title}" is live on 313.events`,
+        html: `
+          <p>Good news — <b>${escapeHtmlForEmail(row.title)}</b> is now live on 313.events.</p>
+          <p><a href="${eventUrl}">${eventUrl}</a></p>
+          <p>That's your event's own page — share it directly, or find it anytime from the calendar.</p>
+        `,
+      }),
+    });
+  } catch (err) {
+    console.error("notifyEventLive failed:", err.message);
+  }
+}
+
 function checkAuth(req, res) {
   if (!ADMIN_SECRET) {
     res.status(500).json({ error: "ADMIN_SECRET not configured on the server." });
@@ -96,6 +156,9 @@ module.exports = async (req, res) => {
         body: JSON.stringify({ status: newStatus }),
       });
       const rows = await resp.json();
+      if (resp.ok && action === "approve" && rows[0]) {
+        await notifyEventLive(rows[0]);
+      }
       res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: rows[0] } : { error: rows });
     } catch (err) {
       res.status(500).json({ error: err.message });

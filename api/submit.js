@@ -23,6 +23,27 @@ function isValidEmail(email) {
   return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+// <input type="time">'s value attribute is always 24-hour "HH:MM" (browser-
+// native, locale-independent — that's per the HTML spec, not a user choice),
+// and this was being stored as time_display completely unconverted, showing
+// as "18:00" on event.html/index.html instead of "6:00 PM" like every other
+// source on this site (RSS/scraper crons already format their own times
+// this way). Jody, 2026-08-28: "why is this showing the time in army time?"
+// Unrecognized input passes through as-is rather than being dropped, so a
+// shape this doesn't expect fails visibly (a weird string) instead of
+// silently losing the time entirely.
+function formatTimeDisplay(rawTime) {
+  if (!rawTime || typeof rawTime !== "string") return null;
+  const m = rawTime.match(/^(\d{1,2}):(\d{2})/);
+  if (!m) return rawTime;
+  let hour = parseInt(m[1], 10);
+  const minute = m[2];
+  const ampm = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12;
+  if (hour === 0) hour = 12;
+  return `${hour}:${minute} ${ampm}`;
+}
+
 // Only allow http(s) links to be stored at all. Without this, someone could
 // submit ticketUrl/imageUrl as "javascript:..." or another non-http scheme —
 // index.html now escapes and scheme-checks again before rendering (defense
@@ -141,7 +162,7 @@ module.exports = async (req, res) => {
     venue_name_raw: venueTba ? `${venue.trim()} (address TBA)` : venue.trim(),
     start_date: startDate,
     end_date: endDate || null,
-    time_display: startTime || null,
+    time_display: formatTimeDisplay(startTime),
     is_recurring: !!recurring,
     is_free: isFree,
     price_from: Number.isFinite(priceFrom) ? priceFrom : null,
