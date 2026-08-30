@@ -453,6 +453,14 @@
   .city-row-head.expanded .cr-caret{transform:rotate(90deg);}
   .city-row-body{display:none;padding:0 14px 12px;}
   .city-row-body.show{display:block;}
+  /* Brief flash so jumping here from a popup's "Full details" link reads as
+     a real destination even when the row was already visible on-screen
+     (side-by-side desktop layout) — see jumpToPlaceList(). */
+  .city-row-head.cr-flash{animation:crFlash 1.2s ease;}
+  @keyframes crFlash{
+    0%{background:var(--accent);}
+    100%{background:var(--panel-hover);}
+  }
 
   @media (max-width:860px){
     .map-shell{flex-direction:column;}
@@ -1843,22 +1851,45 @@ function initLeaflet(){
 }
 
 function placePopupHtml(place){
-  const shown = place.events.slice(0, 6);
-  const rows = shown.map(e => `
+  // No hard cap on how many events render here — the popup's own maxHeight
+  // + Leaflet's auto-added scrollbar (see bindPopup() below) let a many-event
+  // place scroll in place instead of truncating to a fixed number with a
+  // "see all" click that used to have nowhere real to go (Jody, 2026-08-30:
+  // "where does the user go when they click to see all/ right now it goes
+  // nowhere"). The link below is now a genuine jump to a richer view
+  // (description, price, ticket link) in the city-rail list, not the only
+  // way to see the rest of what's happening at this place.
+  const rows = place.events.map(e => `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
       <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
     </div>
   `).join('');
-  const more = place.events.length > shown.length
-    ? `<div class="popup-more">+${place.events.length - shown.length} more — <button type="button" onclick="selectPlace('${place.key.replace(/'/g,"\\'")}')">see all</button></div>`
+  const jump = place.events.length > 1
+    ? `<div class="popup-more"><button type="button" onclick="jumpToPlaceList('${place.key.replace(/'/g,"\\'")}')">Full details for all ${place.events.length} &rarr;</button></div>`
     : '';
   return `
     <div class="popup-place-name">${escapeHtml(place.label)}</div>
     ${!place.precise ? `<div class="popup-approx">Approximate — city center, not an exact address</div>` : ''}
     ${rows}
-    ${more}
+    ${jump}
   `;
+}
+
+// The popup link's actual destination: close the popup (it was sitting on
+// top of the very row it's about to expand) and open + scroll to that
+// place's row in the city rail, with a brief flash so the jump is visible
+// even when the row was already on-screen (side-by-side desktop layout).
+function jumpToPlaceList(key){
+  if(leafletMap) leafletMap.closePopup();
+  selectedPlaceKey = key;
+  renderCityRail(buildPlaces());
+  const row = document.querySelector(`.city-row-head[data-key="${CSS.escape(key)}"]`);
+  if(row){
+    row.scrollIntoView({behavior:'smooth', block:'center'});
+    row.classList.add('cr-flash');
+    setTimeout(()=> row.classList.remove('cr-flash'), 1200);
+  }
 }
 
 function renderMap(places){
@@ -1876,7 +1907,14 @@ function renderMap(places){
       fillColor: '#D7FF00',
       fillOpacity: place.precise ? 0.55 : 0.3,
     }).addTo(leafletMap);
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260});
+    // maxHeight caps a many-event place's popup so it scrolls internally
+    // (Leaflet's own CSS adds the scrollbar once this is set) instead of
+    // growing taller than the map and spilling off the top/bottom of the
+    // window with no way to see the rest of it — a real bug hit on the
+    // live site (2026-08-30) with a 40-event cluster near Rochester.
+    // autoPanPadding gives real breathing room from the window edge (the
+    // 5px Leaflet default was letting the popup sit flush against it).
+    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: 320, autoPanPadding: [24, 24], keepInView: true});
     marker.on('click', ()=> selectPlace(place.key));
     markersByKey.set(place.key, marker);
   });
@@ -1928,7 +1966,17 @@ function renderCityRail(places){
 // keeps the map and the rail in sync with each other (one open place at a
 // time), same accordion model as this page's own day panel.
 function selectPlace(key, opts){
-  selectedPlaceKey = (selectedPlaceKey === key) ? null : key;
+  // Toggle-closed only applies when the click came from the rail row itself
+  // — that's the one place a visitor has explicitly asked to collapse what
+  // they opened. A marker click always opens/re-centers on its place; Leaflet
+  // opens that marker's popup on every click regardless (it's not a toggle),
+  // so letting a second marker click collapse the rail used to leave the
+  // popup open with the rail already collapsed under it — a state desync.
+  if(opts && opts.fromRail){
+    selectedPlaceKey = (selectedPlaceKey === key) ? null : key;
+  } else {
+    selectedPlaceKey = key;
+  }
   const places = buildPlaces();
   renderCityRail(places);
   if(selectedPlaceKey){
@@ -1966,6 +2014,12 @@ function render(){
     if(selectedDate) showDayPanel(selectedDate);
   } else if(mode === 'map'){
     const places = buildPlaces();
+    // A place that was expanded can drop out of the filtered set entirely
+    // (search text changes, a category gets unchecked, radius shrinks) —
+    // without this, a stale selectedPlaceKey could later re-match a
+    // different place that happens to reuse the same key and show it as
+    // already-expanded even though the visitor never clicked it this time.
+    if(selectedPlaceKey && !places.has(selectedPlaceKey)) selectedPlaceKey = null;
     updateMapStat(places);
     renderMap(places);
     renderCityRail(places);
