@@ -442,6 +442,7 @@
   }
   .city-row-head:hover{background:var(--panel-hover);}
   .city-row-head.expanded{background:var(--panel-hover);}
+  .cr-cat-dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;display:inline-block;}
   .cr-count{
     flex:0 0 auto;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;
     background:var(--panel);border:1px solid var(--line);color:var(--accent);
@@ -461,6 +462,15 @@
     0%{background:var(--accent);}
     100%{background:var(--panel-hover);}
   }
+
+  .map-legend{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+    font-size:11.5px;color:var(--ink-soft);margin-bottom:8px;
+  }
+  .ml-item{display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .ml-swatch{width:11px;height:11px;border-radius:50%;display:inline-block;flex:0 0 auto;}
+  .ml-swatch.precise{background:var(--ink-soft);}
+  .ml-swatch.approx{background:transparent;border:1.5px dashed var(--ink-dim);}
 
   @media (max-width:860px){
     .map-shell{flex-direction:column;}
@@ -702,6 +712,11 @@
        active (see mapViewBtn's click handler) since they'd do nothing. -->
   <div id="mapView">
     <div class="map-stat-line" id="mapStat"></div>
+    <div class="map-legend">
+      <span class="ml-item"><span class="ml-swatch precise"></span>Exact venue</span>
+      <span class="ml-item"><span class="ml-swatch approx"></span>City center (exact venue unknown)</span>
+      <span class="ml-item">Marker color = most common event type there</span>
+    </div>
     <div class="map-shell">
       <div id="leafletMap" role="img" aria-label="Map of Detroit-area events"></div>
       <div class="city-rail" id="cityRail"></div>
@@ -734,6 +749,36 @@ const CATS = {
   sports:   {label:"Sports",            color:"var(--c-sports)"},
   community:{label:"Community",         color:"var(--c-community)"}
 };
+
+// Literal-hex mirror of the --c-* tokens above, for the one spot that can't
+// use a CSS var(): Leaflet's SVG renderer sets marker color as a raw
+// attribute value, and var() resolution through that path is inconsistent
+// across browsers — so markers get real hex here while every other UI
+// element keeps using CATS[key].color's var() as usual. Keep this in sync
+// with the :root token block by hand (same non-build-step constraint as
+// everywhere else on the site).
+const CAT_HEX = {
+  music:"#5B3EFF", theatre:"#FF6A00", dance:"#FF2ECC", visual:"#00E5FF",
+  museum:"#00FFA6", family:"#FFC400", fest:"#FF2D55", food:"#9D00FF",
+  film:"#2979FF", nightlife:"#E100FF", sports:"#FF3B3B", community:"#3DFF6E",
+};
+
+// A place's marker/rail-row color reflects whichever category has the most
+// events there (ties broken by CATS' own declared order, for determinism) —
+// giving an at-a-glance sense of "what kind of place is this" without
+// opening every popup, the same job category color already does in the
+// filter chips and every event card (Jody, 2026-08-30 map review: markers
+// were all one flat color regardless of category).
+function dominantCategory(events){
+  const counts = {};
+  events.forEach(e => { counts[e.cat] = (counts[e.cat] || 0) + 1; });
+  let best = null, bestCount = -1;
+  Object.keys(CATS).forEach(key => {
+    const c = counts[key] || 0;
+    if(c > bestCount){ bestCount = c; best = key; }
+  });
+  return best;
+}
 
 // ---- Location reference data (Phase 1 Chunk 3) ----
 // Static, hand-curated dataset backing predictive location search and
@@ -1899,13 +1944,14 @@ function renderMap(places){
   places.forEach(place=>{
     const count = place.events.length;
     const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
+    const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
     const marker = L.circleMarker([place.lat, place.lng], {
       radius: r,
-      color: place.precise ? '#D7FF00' : '#8a9600',
+      color: hex,
       weight: place.precise ? 2 : 1.5,
       dashArray: place.precise ? null : '3,3',
-      fillColor: '#D7FF00',
-      fillOpacity: place.precise ? 0.55 : 0.3,
+      fillColor: hex,
+      fillOpacity: place.precise ? 0.6 : 0.35,
     }).addTo(leafletMap);
     // maxHeight caps a many-event place's popup so it scrolls internally
     // (Leaflet's own CSS adds the scrollbar once this is set) instead of
@@ -1932,9 +1978,11 @@ function renderCityRail(places){
 
   rail.innerHTML = sorted.map(place => {
     const expanded = place.key === selectedPlaceKey;
+    const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
     return `
       <div class="city-row">
         <button type="button" class="city-row-head${expanded ? ' expanded' : ''}" data-key="${escapeHtml(place.key)}" aria-expanded="${expanded ? 'true' : 'false'}">
+          <span class="cr-cat-dot" style="background:${hex}" aria-hidden="true"></span>
           <span class="cr-count">${place.events.length}</span>
           <span class="cr-name">${escapeHtml(place.label)}</span>
           ${!place.precise ? '<span class="cr-approx">City center</span>' : ''}
