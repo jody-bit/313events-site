@@ -1,0 +1,29 @@
+-- Migration 018: add 'vendor' to event_category
+--
+-- Context: Jody, 2026-08-30, on the "Fleatroit Junk City" listing (a flea/
+-- vendor market she'd had filed under "Food & Markets"): "what is fleatroit?
+-- ... it is not food - it is just a place to sell stuff by the community -
+-- craft shows really pick up around cristmans time and there is an oddities
+-- 'show' that is just people selling creepy stuff." Decision: add "Vendor
+-- Markets" as a real 13th category (name confirmed with Jody) rather than
+-- force-fitting flea markets, craft/holiday markets, and oddities markets
+-- into Food & Markets. Same taxonomy-expansion precedent as migration_007
+-- ("sports") and migration_009b ("community") — the taxonomy lock amendment
+-- fixes the list as of its date, not forever.
+--
+-- RUN THIS STATEMENT BY ITSELF, as its own separate paste/run in the SQL
+-- Editor. Postgres will not run ALTER TYPE ... ADD VALUE inside a
+-- transaction block alongside other statements, and most SQL editors
+-- (including Supabase's) submit a multi-statement paste as one batch/
+-- transaction, so combining this with anything else can make the whole
+-- batch fail silently rather than partially succeed. See migration_009a/
+-- migration_009b's own notes for the same caveat.
+--
+-- IF NOT EXISTS makes this safe to re-run regardless.
+--
+-- After this runs, the "Fleatroit Junk City" row itself still needs its
+-- category changed by hand from 'family' to 'vendor' in the Supabase table
+-- editor — this migration only adds the new enum value, it doesn't touch
+-- any existing rows.
+
+alter type event_category add value if not exists 'vendor';

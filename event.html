@@ -50,6 +50,7 @@
     --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
     --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
     --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
+    --c-vendor:#39FF14; /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -211,7 +212,8 @@ const CATS = {
   film:     {label:"Film",              color:"var(--c-film)"},
   nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
   sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"}
+  community:{label:"Community",         color:"var(--c-community)"},
+  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"}
 };
 
 function decodeEntities(str) {

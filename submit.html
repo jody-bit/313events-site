@@ -433,7 +433,15 @@ const CATS = [
   {key:"film",      label:"Film",              color:"#6D4C41"},
   {key:"nightlife", label:"Nightlife & Club",  color:"#7209B7"},
   {key:"sports",    label:"Sports",            color:"#B8860B"},
-  {key:"community", label:"Community",         color:"#8AC926"}
+  {key:"community", label:"Community",         color:"#8AC926"},
+  // "Vendor Markets" (2026-08-30): flea markets, craft/holiday markets,
+  // oddities markets — a place to sell stuff by the community, not food.
+  // Same muted-palette convention as the rest of this file's swatches
+  // (this form's own palette has always been a softer set than the neon
+  // --c-* tokens the rest of the site uses — pre-existing, not something
+  // this change tries to reconcile). #3D8361 sits in the widest open gap
+  // in that palette, between Food & Markets' green and Museums' teal.
+  {key:"vendor",    label:"Vendor Markets",    color:"#3D8361"}
 ];
 
 function buildCatGrid(gridId, radioName){

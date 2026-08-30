@@ -45,17 +45,16 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
-// Same 12-category taxonomy as radar.html's CATS / schema.sql's
+// Same 13-category taxonomy as radar.html's CATS / schema.sql's
 // event_category enum (music/theatre/dance/visual/museum/family/fest/food/
-// film/nightlife/community/sports) — kept as its own literal list rather
-// than imported, same one-file-per-endpoint convention as every other
-// api/*.js in this project. Includes "sports", unlike api/submit.js's older
-// VALID_CATEGORIES list, which that file's own comment already flags as
-// missing it — not fixed there as part of this change (out of scope), but
-// not repeated here either.
+// film/nightlife/community/sports/vendor) — kept as its own literal list
+// rather than imported, same one-file-per-endpoint convention as every other
+// api/*.js in this project. api/submit.js's own VALID_CATEGORIES list was
+// separately missing "sports" (a pre-existing gap noted in that file); now
+// fixed there too as of the same 2026-08-30 change that added "vendor" here.
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum", "family",
-  "fest", "food", "film", "nightlife", "community", "sports",
+  "fest", "food", "film", "nightlife", "community", "sports", "vendor",
 ]);
 
 function isSafeHttpUrl(url) {

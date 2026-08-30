@@ -82,6 +82,7 @@
     --c-night:#E100FF;    /* UV fuchsia */
     --c-sports:#FF3B3B;   /* neon scarlet */
     --c-community:#3DFF6E; /* neon green */
+    --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -747,7 +748,8 @@ const CATS = {
   film:     {label:"Film",              color:"var(--c-film)"},
   nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
   sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"}
+  community:{label:"Community",         color:"var(--c-community)"},
+  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"}
 };
 
 // Literal-hex mirror of the --c-* tokens above, for the one spot that can't
@@ -761,6 +763,7 @@ const CAT_HEX = {
   music:"#5B3EFF", theatre:"#FF6A00", dance:"#FF2ECC", visual:"#00E5FF",
   museum:"#00FFA6", family:"#FFC400", fest:"#FF2D55", food:"#9D00FF",
   film:"#2979FF", nightlife:"#E100FF", sports:"#FF3B3B", community:"#3DFF6E",
+  vendor:"#39FF14",
 };
 
 // A place's marker/rail-row color reflects whichever category has the most
