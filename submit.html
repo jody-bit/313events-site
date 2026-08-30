@@ -93,6 +93,12 @@
   }
   .field{margin-bottom:16px;}
   .field:last-child{margin-bottom:0;}
+  /* Live "here's exactly what this will show as" readback — see
+     #timePreview's usage further down. Quiet by default (empty/no time
+     picked yet); only takes on real content once there's something to
+     confirm. */
+  .field-hint{font-size:12px;color:var(--ink-soft);margin:5px 0 0;min-height:1.2em;}
+  .field-hint.warn{color:#e07a72;font-weight:600;}
   .row{display:flex;gap:14px;flex-wrap:wrap;}
   .row .field{flex:1 1 200px;}
   label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;}
@@ -257,6 +263,14 @@
         <div class="field">
           <label for="startTime">Start time <span class="opt">(optional)</span></label>
           <input type="time" id="startTime" name="startTime">
+          <!-- Live readback of how this time will actually show up on the
+               site (2026-08-29, after "Fleatroit Junk City" went out with a
+               bare "12:00" that read as ambiguous — noon or midnight?). The
+               native time input's own picker UI doesn't always make AM/PM
+               obvious, especially on 24-hour-locale devices, so this closes
+               the loop with the exact wording a visitor will see, using the
+               same conversion api/submit.js applies server-side. -->
+          <p class="field-hint" id="timePreview"></p>
         </div>
       </div>
       <div class="field checkbox-row">
@@ -456,6 +470,59 @@ feedTab.onclick = ()=> activateTab('feed');
 const form = document.getElementById('eventForm');
 const errorBox = document.getElementById('formError');
 
+// ---- Date & time gaps closed 2026-08-29 ----
+// "Fleatroit Junk City" shipped with two silent data problems: end_date one
+// day before start_date (nothing tied the two date pickers together), and a
+// bare, ambiguous "12:00" for its time (the native time picker's own UI
+// doesn't always make AM/PM obvious, and there was no server-side check
+// catching either shape before it hit the database). Both get a real
+// guardrail here — this mirrors, on the client, the same two checks
+// api/submit.js now enforces server-side; this layer exists so a submitter
+// sees the problem immediately instead of only after a rejected submit.
+const startDateInput = document.getElementById('startDate');
+const endDateInput = document.getElementById('endDate');
+const startTimeInput = document.getElementById('startTime');
+const timePreview = document.getElementById('timePreview');
+
+// Same conversion as api/submit.js's formatTimeDisplay() — duplicated
+// on purpose, per this site's own no-shared-modules convention (every
+// page/form carries the small helpers it needs rather than importing a
+// shared file). Keep this in sync with that function if either changes.
+function formatTimeDisplay12h(rawTime){
+  if(!rawTime || typeof rawTime !== 'string') return null;
+  const m = rawTime.match(/^(\d{1,2}):(\d{2})/);
+  if(!m) return null;
+  let hour = parseInt(m[1], 10);
+  const minute = m[2];
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  if(hour === 0) hour = 12;
+  return `${hour}:${minute} ${ampm}`;
+}
+
+function updateTimePreview(){
+  const formatted = formatTimeDisplay12h(startTimeInput.value);
+  timePreview.textContent = formatted ? `Will show on the site as: ${formatted}` : '';
+}
+startTimeInput.addEventListener('input', updateTimePreview);
+updateTimePreview();
+
+// Keeps the End date picker from ever offering a day before Start date in
+// the first place, rather than only catching the mistake after it's made.
+// Re-applied whenever Start date changes so the constraint tracks it.
+function syncEndDateMin(){
+  if(startDateInput.value) endDateInput.min = startDateInput.value;
+  else endDateInput.removeAttribute('min');
+  // If an already-chosen End date is now invalid under the new Start date,
+  // clear it rather than silently leaving a now-inverted pair sitting in
+  // the field — the same class of bug this whole guardrail exists to stop.
+  if(endDateInput.value && startDateInput.value && endDateInput.value < startDateInput.value){
+    endDateInput.value = '';
+  }
+}
+startDateInput.addEventListener('change', syncEndDateMin);
+syncEndDateMin();
+
 // ---- Event flyer/photo upload ----
 const imageFileInput = document.getElementById('imageFile');
 const imagePreview = document.getElementById('imagePreview');
@@ -524,6 +591,21 @@ form.addEventListener('submit', async (e)=>{
 
   if(missing){
     errorBox.innerHTML = 'Please fill in all required fields marked with <span class="req">*</span>.';
+    errorBox.classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+
+  // Belt-and-suspenders on top of the min-attribute/auto-clear wiring above
+  // (syncEndDateMin()) — that keeps the picker itself from offering a bad
+  // date, but a manually-typed value or an edge case in that wiring
+  // shouldn't be able to slip an inverted pair past this form the way
+  // "Fleatroit Junk City" did. api/submit.js enforces the same check
+  // server-side regardless — this is just so the submitter sees it here,
+  // immediately, instead of via a rejected request.
+  const endDateVal = data.get('endDate');
+  if(endDateVal && endDateVal < data.get('startDate')){
+    errorBox.textContent = 'End date can\'t be before Start date.';
     errorBox.classList.add('show');
     window.scrollTo({top:0, behavior:'smooth'});
     return;

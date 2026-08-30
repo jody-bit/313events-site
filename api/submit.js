@@ -141,6 +141,24 @@ module.exports = async (req, res) => {
   if (!title || typeof title !== "string" || !title.trim()) errors.push("title is required");
   if (!VALID_CATEGORIES.has(category)) errors.push("a valid category is required");
   if (!startDate || !/^\d{4}-\d{2}-\d{2}$/.test(startDate)) errors.push("a valid startDate (YYYY-MM-DD) is required");
+  // endDate is optional (single-day events leave it blank) but if it's set
+  // it has to be a real date on or after startDate — the submit.html picker
+  // for it is a totally independent field with no built-in tie to startDate,
+  // so nothing stopped a submitter from landing on the wrong day before this
+  // check existed. Caught 2026-08-29: "Fleatroit Junk City" got submitted
+  // with end_date one day *before* its own start_date, sitting silently in
+  // the database (see migration_017, which cleans up that specific row and
+  // any others like it — this check is what stops new ones from happening).
+  // ISO "YYYY-MM-DD" strings compare correctly with plain < on purpose —
+  // lexical order matches chronological order for this format, no Date
+  // parsing needed.
+  if (endDate) {
+    if (typeof endDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+      errors.push("endDate must be a valid date (YYYY-MM-DD)");
+    } else if (startDate && /^\d{4}-\d{2}-\d{2}$/.test(startDate) && endDate < startDate) {
+      errors.push("endDate can't be before startDate");
+    }
+  }
   if (!venue || typeof venue !== "string" || !venue.trim()) errors.push("venue is required");
   if (!orgName || typeof orgName !== "string" || !orgName.trim()) errors.push("orgName is required");
   if (!isValidEmail(contactEmail)) errors.push("a valid contactEmail is required");
