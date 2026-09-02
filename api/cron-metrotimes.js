@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 // Vercel Cron job — pulls Metro Times' community calendar (Gyrobase CMS).
 //
 // Metro Times' own EventSearch/listing UI is blocked by robots.txt, but its
@@ -35,6 +36,26 @@
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
+
+// Timing-safe secret comparison — a plain `!==` string compare leaks how
+// many leading characters matched via response timing, since JS's string
+// equality short-circuits at the first mismatched character. That's a real,
+// if narrow, side channel against CRON_SECRET / ADMIN_SECRET. Buffers of
+// different lengths still get run through timingSafeEqual (against
+// themselves) rather than returning immediately, so a length mismatch takes
+// the same code path as a same-length mismatch instead of returning early.
+// Added 2026-09-02 site audit.
+function timingSafeStringEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const aBuf = Buffer.from(a, "utf8");
+  const bBuf = Buffer.from(b, "utf8");
+  if (aBuf.length !== bBuf.length) {
+    crypto.timingSafeEqual(aBuf, aBuf);
+    return false;
+  }
+  return crypto.timingSafeEqual(aBuf, bBuf);
+}
+
 
 const SITEMAP_URL = "https://community.metrotimes.com/detroit/Sitemap.xml?id=Event&view=recent";
 const EVENT_PAGE_LIMIT = 40; // bounded batch per run — see VOLUME CAP note above
@@ -174,7 +195,7 @@ async function mapLimit(items, limit, fn) {
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
-    if (auth !== `Bearer ${CRON_SECRET}`) {
+    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }

@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 // Vercel Cron job — pulls a fixed, curated list of local Detroit outlets'
 // own RSS/Atom feeds, stores just enough to point back to each article
 // (title/excerpt/url/source/thumbnail — NEVER the full article body, see
@@ -201,6 +202,26 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
 
+// Timing-safe secret comparison — a plain `!==` string compare leaks how
+// many leading characters matched via response timing, since JS's string
+// equality short-circuits at the first mismatched character. That's a real,
+// if narrow, side channel against CRON_SECRET / ADMIN_SECRET. Buffers of
+// different lengths still get run through timingSafeEqual (against
+// themselves) rather than returning immediately, so a length mismatch takes
+// the same code path as a same-length mismatch instead of returning early.
+// Added 2026-09-02 site audit.
+function timingSafeStringEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const aBuf = Buffer.from(a, "utf8");
+  const bBuf = Buffer.from(b, "utf8");
+  if (aBuf.length !== bBuf.length) {
+    crypto.timingSafeEqual(aBuf, aBuf);
+    return false;
+  }
+  return crypto.timingSafeEqual(aBuf, bBuf);
+}
+
+
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
 
 // Same generic numeric/named entity decoder used across every other cron in
@@ -360,7 +381,7 @@ function toISO(d) {
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
-    if (auth !== `Bearer ${CRON_SECRET}`) {
+    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
@@ -403,6 +424,37 @@ module.exports = async (req, res) => {
       if (!items.length) {
         outletResult = "Fetched OK — 0 items parsed (feed may be empty or in an unsupported shape)";
       } else {
+        // PRESERVE MANUAL LINKS — admin.html's "create event from this
+        // article" action (api/admin-editorial.js) sets matched_event_id +
+        // match_type='manual' by hand for an article the auto-matcher
+        // couldn't place. Without this lookup, the very next run of this
+        // cron recomputes matchArticleToEvent() for every article again
+        // (including that one) and the upsert below always writes
+        // matched_event_id/match_type from that fresh computation — which
+        // silently un-links the admin's manual connection the moment the
+        // heuristic doesn't reproduce it (a near-certainty, since it's a
+        // different admin-created event the auto-matcher has no special
+        // knowledge of). Scoped to this outlet's feed_url since match_type
+        // is only ever 'manual' for a handful of articles at most — same
+        // "look up what already exists before overwriting it" pattern as
+        // api/cron-lagerhouse.js's status-preserving upsert. 2026-09-02 audit fix.
+        let manualByUrl = new Map();
+        try {
+          const lookupUrl = `${SUPABASE_URL}/rest/v1/editorial_articles?feed_url=eq.${encodeURIComponent(outlet.feedUrl)}&match_type=eq.manual&select=url,matched_event_id`;
+          const lookupResp = await fetch(lookupUrl, { headers: sbHeaders });
+          if (lookupResp.ok) {
+            const existingManual = await lookupResp.json();
+            if (Array.isArray(existingManual)) {
+              existingManual.forEach((row) => manualByUrl.set(row.url, row.matched_event_id));
+            }
+          }
+          // If the lookup fails, fall through with an empty map — same
+          // "not silently worse than before this fix existed" fallback as
+          // cron-lagerhouse.js's status lookup.
+        } catch (_) {
+          // network/parse error on the lookup itself — same fallback as above
+        }
+
         // Match every item first, then only keep ones that either matched a
         // real event or pass looksLikeEventCoverage() — see that function's
         // header for why. A matched item always survives regardless (it's
@@ -414,6 +466,22 @@ module.exports = async (req, res) => {
           .filter(({ match, item }) => match || looksLikeEventCoverage(item))
           .map(({ item, match }) => {
             if (match) totalMatched++;
+            const manualEventId = manualByUrl.get(item.url);
+            if (manualEventId !== undefined) {
+              // An admin manually linked this exact article — keep it linked
+              // regardless of what this run's auto-matcher decided.
+              return {
+                source: outlet.source,
+                feed_url: outlet.feedUrl,
+                title: item.title,
+                excerpt: item.excerpt || null,
+                url: item.url,
+                thumbnail_url: item.thumbnailUrl || null,
+                published_at: item.publishedAt,
+                matched_event_id: manualEventId,
+                match_type: "manual",
+              };
+            }
             return {
               source: outlet.source,
               feed_url: outlet.feedUrl,

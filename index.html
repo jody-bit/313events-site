@@ -4880,8 +4880,34 @@ const ON_RADAR_LIMIT = 5;
 let orbitEventTotal = null;
 
 // index by date
+// expandDateRange (2026-09-02 audit fix): a multi-day event needs to appear
+// in every day's list it actually spans, not just its start_date — see the
+// endDate comment on mapSupabaseRow() for the bug this closes. Capped at
+// MAX_SPAN_DAYS as a defensive guard against a garbage/typo end_date (e.g. a
+// year pasted into the wrong field) silently exploding this into thousands
+// of entries; a same-day event (the overwhelming majority) always takes the
+// 1-iteration fast path.
+const MAX_EVENT_SPAN_DAYS = 60;
+function expandDateRange(startIso, endIso){
+  if(!endIso || endIso <= startIso) return [startIso];
+  const dates = [];
+  let cur = new Date(startIso+"T12:00:00");
+  const end = new Date(endIso+"T12:00:00");
+  let guard = 0;
+  while(cur <= end && guard < MAX_EVENT_SPAN_DAYS){
+    const y = cur.getFullYear(), m = String(cur.getMonth()+1).padStart(2,'0'), d = String(cur.getDate()).padStart(2,'0');
+    dates.push(`${y}-${m}-${d}`);
+    cur.setDate(cur.getDate()+1);
+    guard++;
+  }
+  return dates;
+}
+function addToByDate(target, e){
+  expandDateRange(e.date, e.endDate).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+}
+
 let byDate = {};
-EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
+EVENTS.forEach(e=>{ addToByDate(byDate, e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> timeSortMinutes(a.time) - timeSortMinutes(b.time)));
 
 // Relative to today's real date, not a hardcoded month — stays correct as
@@ -5129,6 +5155,17 @@ function formatDateLabel(iso){
 }
 function formatRangeLabel(startIso, endIso){
   return startIso === endIso ? formatDateLabel(startIso) : `${formatDateLabel(startIso)}–${formatDateLabel(endIso)}`;
+}
+// Multi-day indicator for an event card (2026-09-02 audit fix) — cards are
+// already grouped under a single day heading (see renderList()), so without
+// this, a festival or exhibit's card looks identical to a one-day event no
+// matter which day of its run you're looking at. Only renders when endDate
+// is a real, later date than the card's own day — day 1 of a 3-day event
+// shows "Through Aug 24", day 2 shows the same, so it's never ambiguous
+// whether an event card belongs to a range still in progress.
+function multiDayNoteHtml(e){
+  if(!e.endDate || e.endDate <= e.date) return '';
+  return `<div class="note">Through ${escapeHtml(formatDateLabel(e.endDate))}</div>`;
 }
 
 // The single source of truth for "which dates does the list currently
@@ -5892,6 +5929,7 @@ function renderList(dateList, meta){
             <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${multiDayNoteHtml(e)}
             ${editorialLinkHtml(e)}
             <div class="evt-actions">
               ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
@@ -6994,6 +7032,15 @@ function mapSupabaseRow(row) {
   return {
     id: row.id, // 2026-08-27: needed to join editorial_articles.matched_event_id (see loadEditorialArticles()) — nothing on the client referenced an event's own DB identity before this, only field values.
     date: row.start_date,
+    // end_date (2026-09-02 audit fix): submit.html/api/submit.js have
+    // accepted and stored this since day one, but no page ever selected it
+    // back out, so a multi-day event (a festival, an exhibit "running
+    // through" a date) only ever appeared on its first day and vanished
+    // from every later day's list even while it was still happening — and
+    // nothing distinguished it as multi-day even on that first day. Falls
+    // back to start_date (i.e. "just one day") when unset, so every other
+    // reference to endDate below can skip a null check.
+    endDate: row.end_date || row.start_date,
     title: decodeEntities(row.title),
     // 2026-08-28 (Jody: "i just submit an event and the description is
     // nowhere to be seen"): description/image_url were always accepted by
@@ -7044,7 +7091,12 @@ async function loadSupabaseEvents() {
     // site ever needs anything older than "the Monday of the current week"
     // (see loadFloorISO() above), so flooring the query there spends the
     // row budget on relevant dates instead of unbounded history.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    // Explicit limit= (2026-09-02 audit fix): without one, PostgREST silently
+    // applies its own default row cap, and this query — same risk this
+    // file's own comment above already flags for the date floor — could get
+    // silently truncated as the table grows past that cap with no error and
+    // no visible sign anything was cut off. 2000 matches map.html's query.
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -7057,7 +7109,7 @@ async function loadSupabaseEvents() {
 
     EVENTS = rows.map(mapSupabaseRow);
     byDate = {};
-    EVENTS.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+    EVENTS.forEach(e => { addToByDate(byDate, e); });
     Object.values(byDate).forEach(list => list.sort((a,b) => timeSortMinutes(a.time) - timeSortMinutes(b.time)));
 
     buildFilterBar();

@@ -1150,8 +1150,29 @@ const FALLBACK_EVENTS = [
 let EVENTS = FALLBACK_EVENTS.slice();
 
 // index by date
+// expandDateRange/addToByDate (2026-09-02 audit fix) — see index.html's
+// identical helpers for the multi-day bug this closes.
+const MAX_EVENT_SPAN_DAYS = 60;
+function expandDateRange(startIso, endIso){
+  if(!endIso || endIso <= startIso) return [startIso];
+  const dates = [];
+  let cur = new Date(startIso+"T12:00:00");
+  const end = new Date(endIso+"T12:00:00");
+  let guard = 0;
+  while(cur <= end && guard < MAX_EVENT_SPAN_DAYS){
+    const y = cur.getFullYear(), m = String(cur.getMonth()+1).padStart(2,'0'), d = String(cur.getDate()).padStart(2,'0');
+    dates.push(`${y}-${m}-${d}`);
+    cur.setDate(cur.getDate()+1);
+    guard++;
+  }
+  return dates;
+}
+function addToByDate(target, e){
+  expandDateRange(e.date, e.endDate).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+}
+
 let byDate = {};
-EVENTS.forEach(e=>{ (byDate[e.date] = byDate[e.date]||[]).push(e); });
+EVENTS.forEach(e=>{ addToByDate(byDate, e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> timeSortMinutes(a.time) - timeSortMinutes(b.time)));
 
 // Navigable range is relative to today's real date, not a hardcoded month —
@@ -1773,6 +1794,7 @@ function showDayPanel(iso){
             </div>
             ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
             ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
         </div>
@@ -1815,6 +1837,7 @@ function renderList(dateList){
             </div>
             ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
             ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
         </div>
@@ -2676,6 +2699,9 @@ function mapSupabaseRow(row) {
   return {
     id: row.id, // 2026-08-28: needed to link into event.html — see eventUrl() below
     date: row.start_date,
+    // end_date (2026-09-02 audit fix) — see index.html's identical
+    // mapSupabaseRow() comment for the multi-day bug this closes.
+    endDate: row.end_date || row.start_date,
     title: decodeEntities(row.title),
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
@@ -2728,7 +2754,14 @@ async function loadSupabaseEvents() {
     // has precise pins available rather than showing city centroids and
     // then silently re-pinning underneath the visitor a moment later.
     await loadVenueLatLng();
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc`;
+    // Explicit limit= (2026-09-02 audit fix): this query has no start_date
+    // floor (unlike index.html/map.html's loadFloorISO()), so it's the most
+    // exposed of the three to PostgREST's default row cap — without an
+    // explicit limit, growth in old/past rows could silently push
+    // today/upcoming events out of the loaded set with no error. 5000 gives
+    // more headroom than index.html/map.html's 2000 since this query also
+    // covers historical rows those two don't.
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc&limit=5000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -2741,7 +2774,7 @@ async function loadSupabaseEvents() {
 
     EVENTS = rows.map(mapSupabaseRow);
     byDate = {};
-    EVENTS.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+    EVENTS.forEach(e => { addToByDate(byDate, e); });
     Object.values(byDate).forEach(list => list.sort((a,b) => timeSortMinutes(a.time) - timeSortMinutes(b.time)));
 
     buildFilterBar();

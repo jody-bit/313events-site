@@ -271,7 +271,19 @@ function eventDateTimeParts(e){
   const range = parseTimeRange(e.time);
   const dateStr = `${y}${pad2(m)}${pad2(d)}`;
   if(!range){
-    const next = new Date(y, m-1, d+1);
+    // All-day: honor the event's real end_date when it spans multiple days
+    // (2026-09-02 audit fix — this used to always assume a single day
+    // regardless of end_date, so Add to Calendar on a multi-day festival or
+    // exhibit silently created a 1-day entry). ICS/Google Calendar's
+    // all-day DTEND is EXCLUSIVE (the day after the event's real last day),
+    // so a genuine multi-day end_date still needs +1 day, same as the
+    // single-day fallback always did.
+    let endY = y, endM = m, endD = d + 1;
+    if(e.endDate && e.endDate > e.date){
+      const [ey, em, ed] = e.endDate.split('-').map(Number);
+      endY = ey; endM = em; endD = ed + 1;
+    }
+    const next = new Date(endY, endM-1, endD);
     const nextStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
     return { allDay:true, startDate:dateStr, endDate:nextStr };
   }
@@ -335,7 +347,7 @@ function buildGoogleCalUrl(e){
 }
 
 function shareEvent(e){
-  const dateLabel = new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const dateLabel = dateRangeLabel(e, 'short');
   const bits = [e.title, e.venue].filter(Boolean).join(' — ');
   const when = [dateLabel, e.time].filter(Boolean).join(' ');
   const text = when ? `${bits} (${when})` : bits;
@@ -356,6 +368,11 @@ function mapRow(row){
   return {
     id: row.id,
     date: row.start_date,
+    // end_date (2026-09-02 audit fix) — see index.html's mapSupabaseRow()
+    // comment for the multi-day bug this closes; on this page specifically
+    // it also fixes Add to Calendar (eventDateTimeParts()) always creating
+    // a 1-day entry for a multi-day event regardless of its real span.
+    endDate: row.end_date || row.start_date,
     title: decodeEntities(row.title),
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
@@ -369,6 +386,20 @@ function mapRow(row){
     ticketUrl: row.ticket_url || undefined,
     priceFrom: row.price_from ?? undefined,
   };
+}
+
+// Range-aware date label (2026-09-02 audit fix) — a plain single-date label
+// was the only option anywhere on this page even for an event with a real,
+// later end_date, which read as flatly wrong for a multi-day festival or
+// exhibit ("Aug 21" on something that's actually Aug 21-24). weekdayStyle
+// picks the same two formats already used on this page: 'long' for the
+// prominent evtWhen heading, 'short' for the share-sheet text.
+function dateRangeLabel(e, weekdayStyle){
+  const opts = {weekday: weekdayStyle, month: weekdayStyle === 'long' ? 'long' : 'short', day: 'numeric'};
+  const start = new Date(e.date+"T12:00:00").toLocaleDateString('en-US', opts);
+  if(!e.endDate || e.endDate <= e.date) return start;
+  const end = new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US', opts);
+  return `${start} – ${end}`;
 }
 
 function priceHtml(e){
@@ -388,7 +419,7 @@ function renderEvent(e){
   // server-side per-page rendering, so a crawler that doesn't execute JS
   // won't see these; still worth setting for the browser tab, for sharing
   // tools that do run JS, and for the JSON-LD block below). ----
-  const dateLabel = new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const dateLabel = dateRangeLabel(e, 'long');
   const pageTitle = `${e.title} — ${dateLabel} — 313.events`;
   const metaDesc = truncateText(e.description || `${e.title} at ${e.venue}${e.city ? ', '+e.city : ''} on ${dateLabel}.`, 155);
   document.getElementById('pageTitle').textContent = pageTitle;
@@ -466,6 +497,11 @@ function renderEvent(e){
     "@type": "Event",
     "name": e.title,
     "startDate": e.date,
+    // endDate (2026-09-02 audit fix): only set when genuinely later than
+    // startDate — schema.org treats a present-but-equal endDate as fine
+    // either way, but omitting it for the common single-day case keeps this
+    // block matching what it always emitted before for those events.
+    ...(e.endDate && e.endDate > e.date ? { "endDate": e.endDate } : {}),
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
     "eventStatus": "https://schema.org/EventScheduled",
     "location": { "@type": "Place", "name": e.venue, "address": e.city || "Detroit, MI" },
@@ -529,7 +565,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();

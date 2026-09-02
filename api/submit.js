@@ -48,6 +48,29 @@ function formatTimeDisplay(rawTime) {
   return `${hour}:${minute} ${ampm}`;
 }
 
+// submit.html's price field is free text (placeholder literally suggests
+// "e.g. $15–25, or 18+"), but a bare `parseFloat(price)` chokes on almost
+// every shape that placeholder itself invites: parseFloat("$15–25") is NaN
+// because parseFloat requires the string to START with a valid number — a
+// leading "$" (or an en-dash range, "18+", "$15 - $25", etc.) breaks it
+// outright. NaN then silently serializes to `null` in the JSON body sent to
+// Supabase, so a submitter who typed a price by following the field's own
+// example had it silently discarded. This pulls the first numeric amount
+// out of the string instead (so "$15–25" and "15-25" both correctly become
+// 15, the "from" price), same low price-from-a-range as
+// api/cron-lagerhouse.js's own parsePrice() already does for scraped prices.
+// Genuinely unparseable text (e.g. "TBD") still correctly falls through to
+// null rather than guessing. 2026-09-02 audit fix.
+function parsePriceFrom(input) {
+  if (input === null || input === undefined) return null;
+  const str = String(input).trim();
+  if (!str) return null;
+  const m = str.match(/(\d+(?:\.\d{1,2})?)/);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  return Number.isFinite(n) ? n : null;
+}
+
 // Only allow http(s) links to be stored at all. Without this, someone could
 // submit ticketUrl/imageUrl as "javascript:..." or another non-http scheme —
 // index.html now escapes and scheme-checks again before rendering (defense
@@ -137,8 +160,37 @@ module.exports = async (req, res) => {
   const {
     title, category, description, imageUrl, startDate, endDate, startTime,
     recurring, venue, address, venueTba, admission, price, ticketUrl,
-    orgName, contactEmail,
+    orgName, contactEmail, companyWebsite, elapsedMs,
   } = body;
+
+  // ---- Basic spam/abuse protection (2026-09-02 audit fix) ----
+  // No Redis/KV in this stack for real per-IP rate limiting, so this is two
+  // lightweight, no-infrastructure checks instead of nothing at all:
+  //
+  // 1. Honeypot: companyWebsite is a hidden field on submit.html that no
+  //    real visitor can see or reach (off-screen, aria-hidden, no tab stop)
+  //    — a form-filling bot that blindly populates every input on the page
+  //    fills it anyway. Any value here means this is essentially certainly
+  //    a bot, so we respond as if it succeeded (skip the DB insert and the
+  //    email alert) rather than returning an error that would tell an
+  //    automated client what tripped it and invite it to adapt.
+  if (companyWebsite) {
+    res.status(200).json({ ok: true, id: null });
+    return;
+  }
+  // 2. Elapsed time: pageLoadedAt is recorded in submit.html the moment the
+  //    page loads; elapsedMs is how long the visitor's browser says it took
+  //    from then until this exact submit. Filling in a title, category,
+  //    date, venue, and contact email cannot happen in a few hundred
+  //    milliseconds — a script that finds the form and posts straight to it
+  //    can. Unlike the honeypot, a real (if very fast) human could
+  //    plausibly trip this, so this gets a genuine, retryable error instead
+  //    of a silent fake-success — a real submitter who hits it can just
+  //    submit again a moment later.
+  if (typeof elapsedMs === "number" && elapsedMs >= 0 && elapsedMs < 1200) {
+    res.status(400).json({ error: "That went through a little too fast to be a real submission — please wait a moment and try again." });
+    return;
+  }
 
   // Server-side validation — never trust the client, even our own form.
   const errors = [];
@@ -175,7 +227,7 @@ module.exports = async (req, res) => {
   }
 
   const isFree = admission === "free";
-  const priceFrom = admission === "paid" && price ? parseFloat(price) : null;
+  const priceFrom = admission === "paid" && price ? parsePriceFrom(price) : null;
 
   const row = {
     title: title.trim(),

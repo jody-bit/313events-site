@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 // Vercel serverless function powering admin.html's "Press coverage" section
 // — the review queue for editorial_articles rows cron-editorial.js stored
 // but couldn't confidently match to an existing event (matched_event_id is
@@ -45,6 +46,40 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
+// Timing-safe secret comparison — a plain `!==` string compare leaks how
+// many leading characters matched via response timing, since JS's string
+// equality short-circuits at the first mismatched character. That's a real,
+// if narrow, side channel against CRON_SECRET / ADMIN_SECRET. Buffers of
+// different lengths still get run through timingSafeEqual (against
+// themselves) rather than returning immediately, so a length mismatch takes
+// the same code path as a same-length mismatch instead of returning early.
+// Added 2026-09-02 site audit.
+function timingSafeStringEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const aBuf = Buffer.from(a, "utf8");
+  const bBuf = Buffer.from(b, "utf8");
+  if (aBuf.length !== bBuf.length) {
+    crypto.timingSafeEqual(aBuf, aBuf);
+    return false;
+  }
+  return crypto.timingSafeEqual(aBuf, bBuf);
+}
+
+// Same free-text-price problem as api/submit.js's priceFrom field: a bare
+// parseFloat() chokes on a leading "$" or a "15-25" range, silently
+// serializing to null. Same fix — pull the first numeric amount out of the
+// string rather than requiring the whole string to already be a clean
+// number. 2026-09-02 audit fix.
+function parsePriceFrom(input) {
+  if (input === null || input === undefined) return null;
+  const str = String(input).trim();
+  if (!str) return null;
+  const m = str.match(/(\d+(?:\.\d{1,2})?)/);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  return Number.isFinite(n) ? n : null;
+}
+
 // Same 13-category taxonomy as radar.html's CATS / schema.sql's
 // event_category enum (music/theatre/dance/visual/museum/family/fest/food/
 // film/nightlife/community/sports/vendor) — kept as its own literal list
@@ -73,7 +108,7 @@ function checkAuth(req, res) {
     return false;
   }
   const provided = req.headers["x-admin-secret"];
-  if (provided !== ADMIN_SECRET) {
+  if (!timingSafeStringEqual(provided || "", ADMIN_SECRET)) {
     res.status(401).json({ error: "Unauthorized" });
     return false;
   }
@@ -158,7 +193,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const parsedPrice = priceFrom ? parseFloat(priceFrom) : null;
+    const parsedPrice = priceFrom ? parsePriceFrom(priceFrom) : null;
     const row = {
       title: title.trim(),
       description: description || null,

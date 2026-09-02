@@ -218,6 +218,19 @@
   <form id="eventForm" novalidate>
     <div class="form-error" id="formError">Please fill in all required fields marked with <span class="req">*</span>.</div>
 
+    <!-- Honeypot (2026-09-02 audit fix): invisible to a real visitor (off-
+         screen, no tab stop, aria-hidden), but a form-filling bot that
+         blindly populates every input on the page will fill this one too.
+         Any value here means the submission gets silently discarded
+         server-side (api/submit.js) instead of hitting the moderation
+         queue. Not a CAPTCHA and won't stop a targeted human spammer, but
+         this plus the elapsed-time check below covers the much more common
+         case: generic bot traffic hitting every public form it finds. -->
+    <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+      <label for="companyWebsite">Leave this field blank</label>
+      <input type="text" id="companyWebsite" name="companyWebsite" tabindex="-1" autocomplete="off">
+    </div>
+
     <fieldset>
       <legend>Event details</legend>
       <div class="field">
@@ -360,6 +373,12 @@
     <form id="feedForm" novalidate>
       <div class="form-error" id="feedFormError">Please fill in all required fields marked with <span class="req">*</span>.</div>
 
+      <!-- Honeypot — see eventForm's identical field above for why. -->
+      <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+        <label for="feedCompanyWebsite">Leave this field blank</label>
+        <input type="text" id="feedCompanyWebsite" name="companyWebsite" tabindex="-1" autocomplete="off">
+      </div>
+
       <fieldset>
         <legend>Your feed</legend>
         <div class="field">
@@ -474,6 +493,14 @@ function activateTab(which){
 }
 oneEventTab.onclick = ()=> activateTab('one');
 feedTab.onclick = ()=> activateTab('feed');
+
+// Elapsed-time spam check (2026-09-02 audit fix, pairs with the honeypot
+// fields above): a real person filling out either form — reading labels,
+// picking a category, typing a title/venue/email — takes several seconds
+// at an absolute minimum. A script that finds the form and POSTs straight
+// to it does it near-instantly. Recorded once at page load rather than per-
+// form since both forms are already in the DOM together.
+const pageLoadedAt = Date.now();
 
 const form = document.getElementById('eventForm');
 const errorBox = document.getElementById('formError');
@@ -657,6 +684,8 @@ form.addEventListener('submit', async (e)=>{
     ticketUrl: data.get('ticketUrl') || null,
     orgName: data.get('orgName'),
     contactEmail: data.get('contactEmail'),
+    companyWebsite: data.get('companyWebsite') || '', // honeypot — see the field's own comment
+    elapsedMs: Date.now() - pageLoadedAt, // spam check — see pageLoadedAt's comment
   };
 
   submitBtn.textContent = 'Submitting…';
@@ -733,6 +762,8 @@ feedForm.addEventListener('submit', async (e)=>{
     website: data.get('feedWebsite') || null,
     notes: data.get('feedNotes') || null,
     contactEmail: data.get('feedContactEmail'),
+    companyWebsite: data.get('companyWebsite') || '', // honeypot — see the field's own comment
+    elapsedMs: Date.now() - pageLoadedAt, // spam check — see pageLoadedAt's comment
   };
 
   const submitBtn = feedForm.querySelector('button[type=submit]');

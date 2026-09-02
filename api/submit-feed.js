@@ -20,6 +20,12 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum",
   "family", "fest", "food", "film", "nightlife", "sports",
+  // "community" and "vendor" were missing here even after api/submit.js got
+  // both (see that file's own comment on "sports"/"vendor") — a feed source
+  // registering with either default category would fail this validation
+  // even though both are valid values in the database. Fixed 2026-09-02
+  // audit, mirroring api/submit.js's whitelist exactly.
+  "community", "vendor",
 ]);
 
 function isValidEmail(email) {
@@ -102,7 +108,19 @@ module.exports = async (req, res) => {
   }
   body = body || {};
 
-  const { venueName, contactEmail, website, feedUrl, feedFormat, defaultCategory, notes } = body;
+  const { venueName, contactEmail, website, feedUrl, feedFormat, defaultCategory, notes, companyWebsite, elapsedMs } = body;
+
+  // Basic spam/abuse protection — see api/submit.js's identical checks for
+  // the full reasoning (2026-09-02 audit fix). Same honeypot field and
+  // elapsed-time signal, submitted from this same page's feedForm.
+  if (companyWebsite) {
+    res.status(200).json({ ok: true, id: null });
+    return;
+  }
+  if (typeof elapsedMs === "number" && elapsedMs >= 0 && elapsedMs < 1200) {
+    res.status(400).json({ error: "That went through a little too fast to be a real submission — please wait a moment and try again." });
+    return;
+  }
 
   // Server-side validation — never trust the client, even our own form.
   const errors = [];
