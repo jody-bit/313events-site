@@ -177,6 +177,12 @@
         <td><span class="badge badge-warn">Moderate</span></td>
         <td class="src-note">The Dossin's own "events-listing" page is a Drupal lazy-loaded block that returns nothing to a plain fetch — this reads the general <code>/events</code> page instead and keeps only Dossin-tagged rows. Drupal's JSON:API exists at <code>/jsonapi/node/event</code> but denies anonymous reads of individual events. <code>api/cron-dossin.js</code></td>
       </tr>
+      <tr>
+        <td class="src-name">Lager House</td>
+        <td>HTML scrape of the venue's own site (Angular, server-rendered)</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">No robots.txt on the domain. Each show is a clean, consistent <code>&lt;app-event-card&gt;</code> block with the date and a stable slug right in the URL, so this parses more reliably than most of the other HTML-scrape sources above. Also captures the venue's own published doors time separately from the set time. Listings for the venue's sister room ("After Hours @ Brooklyn Detroit") are detected and labeled as such rather than credited to the main room. <code>api/cron-lagerhouse.js</code></td>
+      </tr>
     </table>
     <p class="group-desc" style="margin-top:16px;">Separately, these outlets' own general-news RSS/Atom feeds are polled for editorial coverage to match against events already in the database (rendered as "As seen in" on the matching event, and as standalone cards on <a href="radar.html">radar.html</a> when nothing matches but the article still looks like event coverage — see <code>looksLikeEventCoverage()</code>). This is a different data model from the event-listing sources above: no new events are created from these, only coverage of events that already exist.</p>
     <table>

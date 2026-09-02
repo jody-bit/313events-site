@@ -43,6 +43,10 @@
     {
       "path": "/api/cron-editorial",
       "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/cron-lagerhouse",
+      "schedule": "0 0 * * *"
     }
   ],
   "functions": {
