@@ -47,6 +47,10 @@
     {
       "path": "/api/cron-lagerhouse",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron-detroitmonthofdesign",
+      "schedule": "0 1 * * *"
     }
   ],
   "functions": {
@@ -57,6 +61,9 @@
       "maxDuration": 60
     },
     "api/cron-editorial.js": {
+      "maxDuration": 60
+    },
+    "api/cron-detroitmonthofdesign.js": {
       "maxDuration": 60
     }
   },

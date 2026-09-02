@@ -183,6 +183,12 @@
         <td><span class="badge badge-ok">High</span></td>
         <td class="src-note">No robots.txt on the domain. Each show is a clean, consistent <code>&lt;app-event-card&gt;</code> block with the date and a stable slug right in the URL, so this parses more reliably than most of the other HTML-scrape sources above. Also captures the venue's own published doors time separately from the set time. Listings for the venue's sister room ("After Hours @ Brooklyn Detroit") are detected and labeled as such rather than credited to the main room. <code>api/cron-lagerhouse.js</code></td>
       </tr>
+      <tr>
+        <td class="src-name">Detroit Month of Design</td>
+        <td>XML sitemap + schema.org JSON-LD on each event's own page (Wix)</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">The site's own /events list widget only ever exposes ~20 of its 300+ events to a plain fetch (the rest load via client-side "Load More" interaction this project can't drive without a headless browser); <code>event-pages-sitemap.xml</code>, linked from robots.txt, lists every event page regardless, and each one carries a clean schema.org Event block with exact start/end datetimes and a full address — meaningfully more precise than most sources here. Real multi-day spans (week-plus installations) populate end_date properly, and a same-day event's start/end time becomes a real "7:00 PM–11:00 PM"-style range. <code>api/cron-detroitmonthofdesign.js</code></td>
+      </tr>
     </table>
     <p class="group-desc" style="margin-top:16px;">Separately, these outlets' own general-news RSS/Atom feeds are polled for editorial coverage to match against events already in the database (rendered as "As seen in" on the matching event, and as standalone cards on <a href="radar.html">radar.html</a> when nothing matches but the article still looks like event coverage — see <code>looksLikeEventCoverage()</code>). This is a different data model from the event-listing sources above: no new events are created from these, only coverage of events that already exist.</p>
     <table>
