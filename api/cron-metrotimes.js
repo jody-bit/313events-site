@@ -39,6 +39,7 @@ const CRON_SECRET = process.env.CRON_SECRET;
 const SITEMAP_URL = "https://community.metrotimes.com/detroit/Sitemap.xml?id=Event&view=recent";
 const EVENT_PAGE_LIMIT = 40; // bounded batch per run — see VOLUME CAP note above
 const CONCURRENCY = 5;
+const DEFAULT_STATUS = "pending_review"; // see SCOPE NOTE above — unfiltered general calendar, needs human triage
 // A standard browser UA, not a self-identifying one — Metro Times' own
 // robots.txt already permits crawling this sitemap and its event pages, so
 // there's nothing improper about this; a UA string that announces itself as
@@ -220,7 +221,6 @@ module.exports = async (req, res) => {
     ticket_url: e.ticket_url,
     note: e.note,
     source: "Metro Times",
-    status: "pending_review", // see SCOPE NOTE above — unfiltered general calendar, needs human triage
   }));
 
   if (!rows.length) {
@@ -229,6 +229,35 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Look up each row's current status before writing, so an admin's
+    // approve/reject decision on an existing row isn't reset to
+    // DEFAULT_STATUS by this merge-duplicates upsert — for this cron
+    // specifically, that meant an admin-approved event getting yanked back
+    // into pending_review on the very next run. 2026-09-02 fix for the
+    // status-clobbering bug — see cron-lagerhouse.js's header comment for
+    // the full story.
+    const idList = rows.map((r) => r.external_id).join(",");
+    const existingStatusByExternalId = new Map();
+    try {
+      const lookupResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
+        { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+      );
+      if (lookupResp.ok) {
+        const existingRows = await lookupResp.json();
+        if (Array.isArray(existingRows)) {
+          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+        }
+      }
+    } catch {
+      // Lookup failed — fall through with an empty map, same as this
+      // scraper's first-ever run.
+    }
+    const rowsWithStatus = rows.map((row) => ({
+      ...row,
+      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+    }));
+
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
       method: "POST",
       headers: {
@@ -237,14 +266,14 @@ module.exports = async (req, res) => {
         Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
         Prefer: "resolution=merge-duplicates,return=minimal",
       },
-      body: JSON.stringify(rows),
+      body: JSON.stringify(rowsWithStatus),
     });
     if (!resp.ok) {
       const errText = await resp.text();
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
-    res.status(200).json({ upserted: rows.length, checked: urls.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, checked: urls.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
     res.status(500).json({ upserted: 0, error: err.message });
   }

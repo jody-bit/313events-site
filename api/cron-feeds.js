@@ -31,6 +31,7 @@
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
+const DEFAULT_STATUS = "approved";
 
 // Same generic numeric-entity decoder used across the other crons (see e.g.
 // cron-wdet.js) — applied defensively here too, since an organizer's feed
@@ -194,7 +195,6 @@ function icsEventsToRows(icsEvents, feedSource) {
       // Trinosophes/HALO/Redford/etc.'s single-venue crons. Contrast Metro
       // Times, which lands pending_review because IT is an unvetted general
       // calendar, not a single approved venue.
-      status: "approved",
       feed_source_id: feedSource.id,
     });
   }
@@ -269,10 +269,37 @@ module.exports = async (req, res) => {
           if (!rows.length) {
             pollResult = "Fetched OK — 0 events found (feed may be empty, all-past, or in an unsupported shape)";
           } else {
+            // Look up each row's current status before writing, so an
+            // admin's approve/reject decision on an existing row isn't reset
+            // to DEFAULT_STATUS by this merge-duplicates upsert. 2026-09-02
+            // fix for the status-clobbering bug — see cron-lagerhouse.js's
+            // header comment for the full story.
+            const idList = rows.map((r) => r.external_id).join(",");
+            const existingStatusByExternalId = new Map();
+            try {
+              const lookupResp = await fetch(
+                `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
+                { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+              );
+              if (lookupResp.ok) {
+                const existingRows = await lookupResp.json();
+                if (Array.isArray(existingRows)) {
+                  existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+                }
+              }
+            } catch {
+              // Lookup failed — fall through with an empty map, same as this
+              // feed's first-ever poll.
+            }
+            const rowsWithStatus = rows.map((row) => ({
+              ...row,
+              status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+            }));
+
             const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
               method: "POST",
               headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-              body: JSON.stringify(rows),
+              body: JSON.stringify(rowsWithStatus),
             });
             if (!upsertResp.ok) {
               const errText = await upsertResp.text();

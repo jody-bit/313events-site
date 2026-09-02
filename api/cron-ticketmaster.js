@@ -130,9 +130,10 @@ function shapeForDb(e) {
     price_from: priceRange ? priceRange.min : null,
     ticket_url: e.url || null,
     source: "Ticketmaster",
-    status: "approved",
   };
 }
+
+const DEFAULT_STATUS = "approved";
 
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
@@ -167,6 +168,33 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Look up each row's current status before writing, so an admin's
+    // approve/reject decision on an existing row isn't reset to
+    // DEFAULT_STATUS by this merge-duplicates upsert. 2026-09-02 fix for the
+    // status-clobbering bug — see cron-lagerhouse.js's header comment for
+    // the full story.
+    const idList = rows.map((r) => r.external_id).join(",");
+    const existingStatusByExternalId = new Map();
+    try {
+      const lookupResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
+        { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+      );
+      if (lookupResp.ok) {
+        const existingRows = await lookupResp.json();
+        if (Array.isArray(existingRows)) {
+          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+        }
+      }
+    } catch {
+      // Lookup failed — fall through with an empty map, same as this
+      // scraper's first-ever run.
+    }
+    const rowsWithStatus = rows.map((row) => ({
+      ...row,
+      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+    }));
+
     // Upsert on external_id — see the unique index in supabase/schema.sql.
     // merge-duplicates updates existing rows (e.g. a venue/time change)
     // instead of erroring or duplicating on re-runs.
@@ -178,7 +206,7 @@ module.exports = async (req, res) => {
         Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
         Prefer: "resolution=merge-duplicates,return=minimal",
       },
-      body: JSON.stringify(rows),
+      body: JSON.stringify(rowsWithStatus),
     });
 
     if (!resp.ok) {
@@ -187,7 +215,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    res.status(200).json({ upserted: rows.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
     res.status(500).json({ upserted: 0, error: err.message });
   }

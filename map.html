@@ -418,13 +418,25 @@
     .mobile-trigger .mt-label{display:none;}
 
     .sheet-backdrop{
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
+      /* z-index 900+ (not the old 39/40) — Leaflet's own panes go up to
+         z-index:700 (tooltipPane) internally, and .leaflet-container never
+         establishes its own stacking context (Leaflet only sets
+         position:relative on it, no z-index), so those pane z-indices were
+         being compared directly against this sheet's old z-index:39/40 in
+         the shared root stacking context and winning. On a phone (this
+         media query), opening the When/Where/Category sheet while the map
+         was on screen (map.html, or calendar.html's Map tab) let the map
+         render on top of the sheet instead of under it — unreadable,
+         functionally broken. Confirmed live 2026-09-02. Comfortably above
+         Leaflet's max (700) with headroom for anything else layered later.
+      */
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;
     }
     .sheet-backdrop.show{display:block;}
 
     .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
       flex-direction:column;flex-wrap:nowrap;
-      position:fixed;left:0;right:0;bottom:0;z-index:40;
+      position:fixed;left:0;right:0;bottom:0;z-index:901;
       border-bottom:none;
       border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
       padding:16px 16px calc(16px + env(safe-area-inset-bottom));
