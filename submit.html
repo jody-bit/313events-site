@@ -52,7 +52,35 @@
     --line-soft:#212121;
     --accent:#D7FF00;      /* signal chartreuse — state only */
     --on-accent:#0A0A0A;
-    --radius:10px;
+    /* --radius (2026-09-02 color-unification fix): was 10px, the one page
+       on the site still using rounded structural containers — every other
+       page (index/calendar/map/event/radar) deliberately uses 0 per the
+       "Detroit Signal V2... rectilinear, editorial-broadcast language"
+       decision documented in index.html's own :root. Flipped to match; see
+       the hardcoded 8px radii further down in this file for the rest of
+       that same fix. */
+    --radius:0px;
+
+    /* Event Type palette — "UV signal" set, same values as every other
+       page's :root (index.html/calendar.html/map.html/event.html/
+       radar.html). This file used to hardcode its own separate, muted
+       13-color palette instead (2026-09-02 color-unification fix) — a
+       submitter picking a category here saw a dull, desaturated swatch
+       that then turned into a completely different, much more vivid neon
+       color the moment their event actually appeared on the calendar. */
+    --c-music:#5B3EFF;    /* electric indigo */
+    --c-theatre:#FF6A00;  /* neon orange */
+    --c-dance:#FF2ECC;    /* neon magenta */
+    --c-visual:#00E5FF;   /* electric cyan */
+    --c-museum:#00FFA6;   /* UV spring-teal */
+    --c-family:#FFC400;   /* neon amber */
+    --c-fest:#FF2D55;     /* neon crimson */
+    --c-food:#9D00FF;     /* UV violet */
+    --c-film:#2979FF;     /* electric blue */
+    --c-night:#E100FF;    /* UV fuchsia */
+    --c-sports:#FF3B3B;   /* neon scarlet */
+    --c-community:#3DFF6E; /* neon green */
+    --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -80,7 +108,7 @@
     display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
   }
   .login-mock button{
-    border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:8px;
+    border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:var(--radius);
     font-size:12.5px;font-weight:600;cursor:pointer;
   }
 
@@ -105,7 +133,7 @@
   label .opt{font-weight:400;color:var(--ink-soft);text-transform:none;}
   label .req{color:#e07a72;}
   input[type=text], input[type=email], input[type=url], input[type=date], input[type=time], input[type=number], select, textarea{
-    width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;
+    width:100%;border:1px solid var(--line);border-radius:var(--radius);padding:9px 11px;font-size:14px;
     font-family:inherit;color:var(--ink);background:var(--panel-alt);
   }
   input::placeholder, textarea::placeholder{color:var(--ink-dim);}
@@ -119,7 +147,7 @@
   .mode-tabs{display:flex;gap:8px;margin-bottom:20px;}
   .mode-tab{
     flex:1;border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
-    border-radius:8px;padding:12px 14px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:center;
+    border-radius:var(--radius);padding:12px 14px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:center;
     font-family:inherit;
   }
   .mode-tab.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
@@ -127,7 +155,7 @@
 
   .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
   .cat-option{
-    border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;cursor:pointer;
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px 10px;font-size:12.5px;cursor:pointer;
     display:flex;align-items:center;gap:7px;user-select:none;color:var(--ink-soft);
   }
   .cat-option input{width:auto;margin:0;}
@@ -135,7 +163,7 @@
 
   .submit-row{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
   .btn{
-    border:none;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;
+    border:none;border-radius:var(--radius);padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;
   }
   .btn-primary{background:var(--ink);color:var(--bg);}
   .btn-primary:hover{background:var(--accent);}
@@ -153,11 +181,11 @@
     align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;
   }
   .confirm-panel pre{
-    background:var(--panel-alt);border:1px solid var(--line-soft);border-radius:8px;padding:14px;
+    background:var(--panel-alt);border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px;
     font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;color:var(--ink-soft);
   }
   .form-error{
-    background:#3a1f1f;border:1px solid #6b3232;color:#f0a8a8;border-radius:8px;
+    background:#3a1f1f;border:1px solid #6b3232;color:#f0a8a8;border-radius:var(--radius);
     padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;
   }
   .form-error.show{display:block;}
@@ -169,12 +197,12 @@
      elsewhere, toggled open by the link button below the file input rather
      than shown by default, since 99% of submitters will use the file. */
   input[type=file]{
-    width:100%;border:1px dashed var(--line);border-radius:8px;padding:9px 11px;
+    width:100%;border:1px dashed var(--line);border-radius:var(--radius);padding:9px 11px;
     font-size:13px;font-family:inherit;color:var(--ink-soft);background:var(--panel-alt);
   }
   .image-preview{display:flex;align-items:center;gap:12px;margin-top:10px;}
   .image-preview img{
-    width:120px;height:80px;object-fit:cover;border-radius:8px;
+    width:120px;height:80px;object-fit:cover;border-radius:var(--radius);
     border:1px solid var(--line);background:var(--panel-alt);
   }
   .link-btn{
@@ -440,27 +468,24 @@
 </div>
 
 <script>
+// Colors now reference the site's real --c-* neon tokens (2026-09-02
+// color-unification fix) instead of this file's own separate, muted hex
+// set — see the :root comment above. Keys/labels/order unchanged; matches
+// index.html/calendar.html/map.html/event.html/radar.html's CATS exactly.
 const CATS = [
-  {key:"music",     label:"Music",            color:"#4361EE"},
-  {key:"theatre",   label:"Theatre & Comedy",  color:"#F3722C"},
-  {key:"dance",     label:"Dance & Opera",     color:"#B5179E"},
-  {key:"visual",    label:"Visual Arts",       color:"#0891B2"},
-  {key:"museum",    label:"Museums & History", color:"#2A9D8F"},
-  {key:"family",    label:"Family",            color:"#C1740A"},
-  {key:"fest",      label:"Festivals",         color:"#E63946"},
-  {key:"food",      label:"Food & Markets",    color:"#588157"},
-  {key:"film",      label:"Film",              color:"#6D4C41"},
-  {key:"nightlife", label:"Nightlife & Club",  color:"#7209B7"},
-  {key:"sports",    label:"Sports",            color:"#B8860B"},
-  {key:"community", label:"Community",         color:"#8AC926"},
-  // "Vendor Markets" (2026-08-30): flea markets, craft/holiday markets,
-  // oddities markets — a place to sell stuff by the community, not food.
-  // Same muted-palette convention as the rest of this file's swatches
-  // (this form's own palette has always been a softer set than the neon
-  // --c-* tokens the rest of the site uses — pre-existing, not something
-  // this change tries to reconcile). #3D8361 sits in the widest open gap
-  // in that palette, between Food & Markets' green and Museums' teal.
-  {key:"vendor",    label:"Vendor Markets",    color:"#3D8361"}
+  {key:"music",     label:"Music",            color:"var(--c-music)"},
+  {key:"theatre",   label:"Theatre & Comedy",  color:"var(--c-theatre)"},
+  {key:"dance",     label:"Dance & Opera",     color:"var(--c-dance)"},
+  {key:"visual",    label:"Visual Arts",       color:"var(--c-visual)"},
+  {key:"museum",    label:"Museums & History", color:"var(--c-museum)"},
+  {key:"family",    label:"Family",            color:"var(--c-family)"},
+  {key:"fest",      label:"Festivals",         color:"var(--c-fest)"},
+  {key:"food",      label:"Food & Markets",    color:"var(--c-food)"},
+  {key:"film",      label:"Film",              color:"var(--c-film)"},
+  {key:"nightlife", label:"Nightlife & Club",  color:"var(--c-night)"},
+  {key:"sports",    label:"Sports",            color:"var(--c-sports)"},
+  {key:"community", label:"Community",         color:"var(--c-community)"},
+  {key:"vendor",    label:"Vendor Markets",    color:"var(--c-vendor)"}
 ];
 
 function buildCatGrid(gridId, radioName){

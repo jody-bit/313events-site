@@ -37,7 +37,7 @@
   :root{
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
     --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
-    --line:#2c2c2c; --line-soft:#212121; --radius:10px;
+    --line:#2c2c2c; --line-soft:#212121; --radius:0px; /* Detroit Signal V2: rectilinear, editorial-broadcast — sharp corners everywhere, matching every other page (2026-09-02 color/shape unification) */
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --ok:#3fbf6a; --ok-ink:#06210f;
     --info:#7c9bff; --info-ink:#0c1230;
@@ -99,7 +99,7 @@
   tr:last-child td{border-bottom:none;}
   td.src-name{font-weight:700;white-space:nowrap;}
   td.src-note{color:var(--ink-soft);font-size:12.5px;}
-  code{background:var(--panel-alt);color:var(--ink-soft);padding:1px 5px;border-radius:4px;font-size:12px;font-family:'Space Mono',monospace;}
+  code{background:var(--panel-alt);color:var(--ink-soft);padding:1px 5px;border-radius:var(--radius);font-size:12px;font-family:'Space Mono',monospace;}
   a{color:var(--accent);}
 
   footer.site{margin-top:30px;font-size:12px;color:var(--ink-soft);line-height:1.6;padding-top:16px;border-top:1px solid var(--line);}
