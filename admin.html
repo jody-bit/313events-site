@@ -236,7 +236,7 @@ async function loadQueue() {
   try {
     const resp = await fetch('/api/admin-events', { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Failed to load queue');
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load queue'));
 
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
@@ -282,7 +282,7 @@ async function review(id, action) {
       body: JSON.stringify({ id, action }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     card.remove();
   } catch (err) {
     card.style.opacity = '1';
@@ -308,7 +308,7 @@ async function loadFeedQueue() {
   try {
     const resp = await fetch('/api/admin-feeds', { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Failed to load feed sources');
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load feed sources'));
 
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
@@ -372,7 +372,7 @@ async function reviewFeed(id, action) {
       body: JSON.stringify({ id, action }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     await loadFeedQueue(); // re-render so the card moves to its new status group
   } catch (err) {
     card.style.opacity = '1';
@@ -399,6 +399,24 @@ const EDITORIAL_CATEGORIES = [
 // need values inside `value="..."` attributes instead, where an
 // unescaped `"` in an article title would silently truncate the attribute
 // and corrupt the markup — this also escapes quotes for that context.
+// Turns an API response's `error` field into a readable string. Several
+// endpoints (admin-events.js, admin-feeds.js, admin-editorial.js) forward
+// Supabase's own error body verbatim on a failed query — `{ error: rows }`
+// where `rows` is Supabase's parsed JSON object ({message, code, ...}), not
+// a plain string. Every `throw new Error(errText(data, 'fallback'))` call
+// site in this file used to hand that object straight to `new Error(...)`,
+// which silently stringifies an object to the literal, useless
+// "[object Object]" (2026-09-04, Jody: "does this mean anything in the
+// admin panel? ... [object Object]"). This normalizes whatever shape
+// `error` comes in as into something a person can actually read.
+function errText(data, fallback) {
+  const e = data && data.error;
+  if (!e) return fallback;
+  if (typeof e === 'string') return e;
+  if (typeof e === 'object') return e.message || e.error || JSON.stringify(e);
+  return String(e);
+}
+
 function escapeAttr(str) {
   return String(str == null ? '' : str)
     .replace(/&/g, '&amp;')
@@ -411,7 +429,7 @@ async function loadEditorial() {
   try {
     const resp = await fetch('/api/admin-editorial', { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Failed to load press coverage');
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load press coverage'));
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
     renderEditorialList(data.articles || []);
@@ -555,7 +573,7 @@ async function submitEditorialEvent(id) {
       body: JSON.stringify({ articleId: id, action: 'create_event', event }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Failed to create event');
+    if (!resp.ok) throw new Error(errText(data, 'Failed to create event'));
     const card = document.getElementById('article-card-' + id);
     if (card) card.remove();
   } catch (err) {
@@ -574,7 +592,7 @@ async function dismissArticle(id) {
       body: JSON.stringify({ articleId: id, action: 'dismiss' }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     if (card) card.remove();
   } catch (err) {
     if (card) card.style.opacity = '1';
@@ -593,7 +611,7 @@ async function searchLiveEvents() {
       headers: { 'x-admin-secret': SECRET },
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Search failed');
+    if (!resp.ok) throw new Error(errText(data, 'Search failed'));
     renderLiveResults(data.events || []);
   } catch (err) {
     results.innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
@@ -648,7 +666,7 @@ async function hideEvent(id) {
       body: JSON.stringify({ id, action: 'hide' }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     card.remove();
     await loadHidden(); // it now shows up in the undo list
   } catch (err) {
@@ -662,7 +680,7 @@ async function loadHidden() {
   try {
     const resp = await fetch('/api/admin-events?hidden=1', { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Failed to load hidden events');
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load hidden events'));
     renderHiddenList(data.events || []);
   } catch (err) {
     document.getElementById('hiddenList').innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
@@ -699,7 +717,7 @@ async function restoreEvent(id) {
       body: JSON.stringify({ id, action: 'restore' }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Action failed');
+    if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     card.remove();
   } catch (err) {
     card.style.opacity = '1';
