@@ -50,6 +50,20 @@
   .btn-reject{background:var(--bad);color:var(--bad-ink);}
   .empty{color:var(--ink-soft);text-align:center;padding:60px 0;}
   .err{color:var(--bad);font-size:13.5px;margin-top:8px;}
+
+  /* Health check banner (2026-09-03) — surfaces api/cron-healthcheck.js's
+     latest run right where Jody already looks (this page), instead of a
+     separate notification channel. .ok/.fail reuse the same --ok/--bad
+     tokens the approve/reject buttons already use, so a passing vs failing
+     run reads the same "good/bad" way as everything else on this page. */
+  .health-banner{border-radius:10px;padding:12px 16px;font-size:13.5px;margin-bottom:20px;display:none;}
+  .health-banner.ok{background:var(--ok-ink);border:1px solid var(--ok);color:var(--ok);}
+  .health-banner.fail{background:var(--bad-ink);border:1px solid var(--bad);color:var(--bad);}
+  .health-banner b{color:inherit;}
+  .health-banner .fail-list{margin:6px 0 0;padding-left:18px;color:var(--ink-soft);}
+  .health-banner .fail-list li{margin-bottom:2px;}
+  .health-banner .checked-at{color:var(--ink-soft);font-weight:400;}
+
   .refresh{margin-bottom:16px;}
   .refresh button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
 
@@ -115,6 +129,8 @@
   </div>
 
   <div id="queue" style="display:none;">
+    <div id="healthBanner" class="health-banner"></div>
+
     <div class="refresh"><button onclick="loadAll()">↻ Refresh</button></div>
 
     <section class="block">
@@ -169,7 +185,49 @@ function unlock() {
 // event search is NOT auto-loaded here — it only runs when the moderator
 // actually types a search, since it's a lookup, not a fixed-size queue.
 async function loadAll() {
-  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden()]);
+  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck()]);
+}
+
+// ---- Health check banner ----
+// Reads api/cron-healthcheck.js's latest run (via api/admin-healthcheck.js).
+// Deliberately silent (no banner at all) if the check has simply never run
+// yet or the fetch itself fails — a missing/broken banner about the site's
+// health shouldn't itself look like a scary red error to Jody; it just
+// falls back to no news, same as before this existed.
+async function loadHealthcheck() {
+  const banner = document.getElementById('healthBanner');
+  try {
+    const resp = await fetch('/api/admin-healthcheck', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok || !data.latest) {
+      banner.style.display = 'none';
+      return;
+    }
+    renderHealthcheck(data);
+  } catch (err) {
+    banner.style.display = 'none';
+  }
+}
+
+function renderHealthcheck(data) {
+  const banner = document.getElementById('healthBanner');
+  const { latest, streakOk } = data;
+  const checkedAt = new Date(latest.run_at).toLocaleString();
+  const failing = (latest.checks || []).filter(c => !c.ok);
+
+  if (latest.overall === 'ok') {
+    banner.className = 'health-banner ok';
+    banner.innerHTML = `✓ <b>All ${latest.checks.length} smoke checks passing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>`;
+  } else {
+    banner.className = 'health-banner fail';
+    banner.innerHTML = `
+      ✗ <b>${failing.length} of ${latest.checks.length} smoke check${latest.checks.length === 1 ? '' : 's'} failing</b> <span class="checked-at">— last checked ${escapeHtml(checkedAt)}</span>
+      <ul class="fail-list">
+        ${failing.map(c => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.detail || '')}</li>`).join('')}
+      </ul>
+    `;
+  }
+  banner.style.display = 'block';
 }
 
 async function loadQueue() {

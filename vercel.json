@@ -51,6 +51,10 @@
     {
       "path": "/api/cron-detroitmonthofdesign",
       "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron-healthcheck",
+      "schedule": "0 12 * * *"
     }
   ],
   "functions": {
@@ -65,6 +69,9 @@
     },
     "api/cron-detroitmonthofdesign.js": {
       "maxDuration": 60
+    },
+    "api/cron-healthcheck.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
