@@ -175,7 +175,7 @@ module.exports = async (req, res) => {
     // action === "create_event"
     const ev = body.event || {};
     const {
-      title, category, description, venue, city, startDate, endDate,
+      title, category, description, venue, address, city, startDate, endDate,
       timeDisplay, isFree, priceFrom, ticketUrl, imageUrl,
     } = ev;
 
@@ -199,6 +199,7 @@ module.exports = async (req, res) => {
       description: description || null,
       category,
       venue_name_raw: venue.trim(),
+      venue_address_raw: address && address.trim() ? address.trim() : null,
       venue_city_raw: city && city.trim() ? city.trim() : null,
       start_date: startDate,
       end_date: endDate || null,

@@ -496,6 +496,10 @@ function eventFormHtml(a) {
           <input type="text" id="ef-venue-${a.id}" placeholder="e.g. Fox Theatre">
         </div>
         <div>
+          <label>Street address (optional)</label>
+          <input type="text" id="ef-address-${a.id}" placeholder="e.g. 2211 Woodward Ave, Detroit, MI 48201">
+        </div>
+        <div>
           <label>Start date</label>
           <input type="date" id="ef-startdate-${a.id}">
         </div>
@@ -555,6 +559,7 @@ async function submitEditorialEvent(id) {
     title: val('title'),
     category: val('category'),
     venue: val('venue'),
+    address: val('address'),
     city: val('city'),
     startDate: val('startdate'),
     endDate: val('enddate'),

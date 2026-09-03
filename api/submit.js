@@ -234,6 +234,11 @@ module.exports = async (req, res) => {
     description: description || null,
     category,
     venue_name_raw: venueTba ? `${venue.trim()} (address TBA)` : venue.trim(),
+    // 2026-09-04 fix — this form has always had a "Street address" field,
+    // but this row never actually saved it: `address` was destructured
+    // from the request body above and then silently discarded. See
+    // migration_020_venue_address_raw.sql for the full story.
+    venue_address_raw: address && address.trim() ? address.trim() : null,
     start_date: startDate,
     end_date: endDate || null,
     time_display: formatTimeDisplay(startTime),

@@ -97,6 +97,13 @@
   }
   .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
+  /* Street address (2026-09-04) — a plain "Get directions" link, distinct
+     from evtWhere's venue/city line: smaller and link-colored rather than
+     another same-weight meta line, since this is a bonus for people who
+     already know the venue name and just want the address, not a repeat of
+     the same information at the same visual weight. */
+  .evt-address{display:block;font-size:13px;color:var(--accent);text-decoration:none;margin-bottom:10px;}
+  .evt-address:hover{text-decoration:underline;}
   .evt-detail-price{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:18px;}
   .evt-detail-price.free{color:#3fbf6a;}
 
@@ -177,6 +184,7 @@
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
       <div class="evt-detail-meta" id="evtWhere"></div>
+      <a class="evt-address" id="evtAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
 
       <div class="evt-detail-actions" id="evtActions"></div>
@@ -377,6 +385,7 @@ function mapRow(row){
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    address: row.venue_address_raw ? decodeEntities(row.venue_address_raw) : undefined,
     city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city_raw) : undefined,
     cat: row.category,
     time: row.time_display || "",
@@ -459,6 +468,15 @@ function renderEvent(e){
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time?` · ${escapeHtml(e.time)}`:''}`;
   document.getElementById('evtWhere').innerHTML = `${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}`;
+
+  const addrEl = document.getElementById('evtAddress');
+  if(e.address){
+    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.address)}`;
+    addrEl.textContent = `📍 ${e.address} — Get directions`;
+    addrEl.style.display = 'block';
+  } else {
+    addrEl.style.display = 'none';
+  }
   priceHtml(e);
 
   // ---- actions ----
@@ -565,7 +583,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();
