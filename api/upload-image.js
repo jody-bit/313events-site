@@ -16,13 +16,34 @@
 // This is a plain Vercel Node.js Serverless Function (this project has no
 // Next.js/build step — see README), NOT a Next.js API route, so the
 // Next.js-only `config.api.bodyParser` escape hatch doesn't apply here.
-// Vercel's own Node runtime already buffers a request body it doesn't
-// recognize (anything other than json/urlencoded/text) into req.body as a
-// raw Buffer before the handler runs — submit.html POSTs the File object
-// directly with its real image Content-Type, so req.body arrives as
-// exactly that Buffer, no manual stream-reading needed.
+//
+// 2026-09-05 CRITICAL FIX — Jody's friend hit "No image data received." on
+// every attempt to add a flyer image, and it turns out this broke EVERY
+// image upload since this endpoint shipped, not an edge case: the original
+// comment here assumed Vercel's Node runtime auto-buffers any request body
+// it doesn't recognize (i.e. anything other than json/urlencoded/text)
+// into req.body as a raw Buffer. Reproduced live against production
+// (submitted a synthetic in-memory file straight through submit.html's own
+// uploadFlyerImage()): req.body came back empty for a plain
+// "image/jpeg" POST, every single time — that assumption was wrong for
+// this content type on this runtime. Fixed by reading the raw request
+// stream directly (readRawBody() below) instead of trusting req.body for
+// anything — the standard, runtime-independent way to receive a raw binary
+// upload in a Vercel Node Function. Falls back to req.body first only for
+// the (currently untested) case some other runtime version DOES pre-buffer
+// it — never assume it's empty without checking, but never assume it's
+// populated either.
 
 const crypto = require("crypto");
+
+function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -59,7 +80,16 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const buffer = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body || []);
+  let buffer;
+  try {
+    // Prefer req.body only if some runtime already gave us real bytes;
+    // otherwise read the raw stream ourselves — see the file-header
+    // comment for why req.body can't be trusted to be populated here.
+    buffer = Buffer.isBuffer(req.body) && req.body.length ? req.body : await readRawBody(req);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to read the upload: " + err.message });
+    return;
+  }
   if (!buffer.length) {
     res.status(400).json({ error: "No image data received." });
     return;
