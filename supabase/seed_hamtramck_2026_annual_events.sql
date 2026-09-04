@@ -84,10 +84,10 @@ insert into events (
  'City of Hamtramck (2026 Annual Events flyer)', null, 'approved'),
 
 ('hamtramck-2026-labor-day-festival', 'Hamtramck Labor Day Festival',
- '46th Annual Hamtramck Labor Day Festival — historic festival with rides, live shows, and food.', 'fest',
+ '46th annual free festival along Joseph Campau: two stages of live music, carnival rides, food vendors, wrestling, and the city''s homemade-wheeled-boat yacht races, wrapping up with the Hamtramck Labor Day Parade on Monday. Runs noon-10pm each day.', 'fest',
  'Joseph Campau, Hamtramck', '2026-09-05', '2026-09-07', true,
- 'https://hamtownfest.com', 'City of Hamtramck (2026 Annual Events flyer)',
- 'ticket_url verified live: hamtownfest.com is the festival''s own official site, dates confirmed matching (Sept 5-7, 2026). Admission is free per that site.', 'approved'),
+ 'https://hamtownfest.com', 'City of Hamtramck (2026 Annual Events flyer; description enriched 2026-09-04 from a Jody-provided writeup)',
+ 'ticket_url verified live: hamtownfest.com is the festival''s own official site, dates confirmed matching (Sept 5-7, 2026). Admission is free per that site. Hours (noon-10pm) per the 2026-09-04 writeup — spot-check against hamtownfest.com closer to the date.', 'approved'),
 
 ('hamtramck-2026-night-bazaar-sep', 'Hamtramck Night Bazaar',
  'Market with food & local vendors. Run by the City of Hamtramck.', 'food',
