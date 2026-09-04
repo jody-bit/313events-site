@@ -3923,6 +3923,45 @@
   }
   .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
 
+  /* "Detroit Orbit Map" card redesign (2026-09-05, Jody: "it needs to be
+     more visually interesting, i need more context as a user for what 30
+     means... show the number of events in their immediate orbit as it
+     relates to the detroit orbit — if we can't do that then just promote
+     the map itself"). Decorative scattered-pin SVG — same "teaser only,
+     never a live embedded map, never real per-event coordinates" rule as
+     the ny-radar graphic above (see its own comment: 0% of venues have
+     lat/lng) — gives the card map-flavored texture it never had. This
+     card never asks for location itself (that's the neighboring "What's
+     in your Detroit Orbit?" card's job, and one "Use my location" prompt
+     on the page is enough); it just checks whether originLocation is
+     already set and, if so, adds a highlighted "you" dot and switches the
+     copy to a real near-you vs. whole-Orbit comparison — see
+     renderMapCard(). The pulse on that dot deliberately reuses ny-ping's
+     own keyframe shape (same scale/opacity curve) rather than inventing a
+     third animation style, for visual consistency between the two cards
+     that both mark "you are here" — just retimed for SVG's transform-box
+     model instead of a plain HTML div. */
+  .map-scatter{width:100%;aspect-ratio:2.75;margin:0 0 10px;}
+  .map-scatter svg{width:100%;height:100%;display:block;overflow:visible;}
+  .map-you-ping{
+    transform-origin:center;transform-box:fill-box;
+    animation: map-you-ping 2.8s cubic-bezier(0,0,.2,1) infinite;
+  }
+  @keyframes map-you-ping{
+    0%{transform:scale(.5);opacity:.5;}
+    70%{transform:scale(3);opacity:0;}
+    100%{transform:scale(3);opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .map-you-ping{animation:none;opacity:0;}
+  }
+  .map-card-cta{
+    display:block;text-align:center;margin-top:2px;padding:10px 14px;
+    border-radius:var(--radius);background:var(--accent);color:var(--on-accent);
+    font-size:13px;font-weight:800;text-decoration:none;
+  }
+  .map-card-cta:hover{filter:brightness(1.08);text-decoration:none;}
+
   @media (max-width:980px){
     .home-body{grid-template-columns:1fr;}
     .home-sidebar{position:static;}
@@ -6227,31 +6266,103 @@ function renderViewCalendarCard(){
 }
 
 // "Detroit Orbit Map" sidebar widget (2026-08-28, Jody: "add another widget
-// to the side rail that shows where the events are on a map"). Lightweight
-// teaser only — same posture as every other sidebar card, never a live
-// embedded Leaflet map — one real stat (how many distinct places currently
-// match the visitor's own filters) plus a link out to the dedicated
-// map.html page, which is where the actual map lives. Counts respect the
-// visitor's active filters via matchesNonDateFilters(), same as
-// renderViewCalendarCard() above, and fall back to "Detroit" for any event
-// with no venue_city_raw — same convention map.html itself uses.
+// to the side rail that shows where the events are on a map"; redesigned
+// 2026-09-05 — Jody: "it needs to be more visually interesting, i need more
+// context as a user for what 30 means... show the number of events in
+// their immediate orbit as it relates to the detroit orbit — if we can't
+// do that then just promote the map itself"). The original version counted
+// distinct CITY NAMES matching the visitor's active type/date filters —
+// technically a real number, but it didn't match either its own caption
+// ("places with events", which reads like venues/pins) or map.html's own
+// "X events across Y places" stat (a different, venue-aware count) one
+// click away, so "30" never actually meant anything a visitor could relate
+// to. This version leads with an EVENT count instead (the thing both
+// map.html and every other sidebar card already count), and does what
+// Jody asked for in order of preference:
+//   1. If the visitor already has a location set (originLocation — from
+//      the neighboring "What's in your Detroit Orbit?" card, or the Where
+//      sheet; this card never prompts for location itself, one "Use my
+//      location" ask on the page is enough) — show real "immediate orbit"
+//      context: events within IMMEDIATE_ORBIT_MILES of them vs. the whole
+//      Detroit Orbit total, with a highlighted "you" dot on the scatter
+//      graphic below.
+//   2. Otherwise, per Jody's own fallback, just promote the map: the
+//      site-wide upcoming-event total (same orbitEventTotal every other
+//      card uses, not a filter-scoped subset) plus a strong CTA button.
+// Same "teaser only, never real per-event coordinates" rule as the
+// ny-radar graphic (see its comment above) governs mapScatterSvg() below —
+// its dots are fixed decorative texture, not a plot of actual events.
+const IMMEDIATE_ORBIT_MILES = 10;
+
+function mapScatterSvg(showYou){
+  // Fixed, hand-placed dot layout — decoration evoking "activity scattered
+  // across a region," never real coordinates (see renderMapCard()'s own
+  // comment on why: 0% of venues/events have lat/lng today, same fact the
+  // ny-radar graphic's comment documents). Denser cluster left-of-center
+  // stands in for Detroit proper; sparser dots toward the right edge stand
+  // in for the outlying cities map.html's own city rail lists.
+  const dots = [
+    [12,32,3.2,.55],[22,16,2.2,.4],[26,46,2.6,.5],[36,12,2,.35],
+    [40,30,3,.6],[34,50,2.2,.4],[54,18,2.6,.5],[58,40,2,.4],
+    [70,14,2.4,.35],[76,44,3,.5],[90,26,2,.4],[98,42,2.4,.3],
+    [108,16,2,.3],[18,48,2,.35]
+  ];
+  const dotSvg = dots.map(([x,y,r,o]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--accent)" opacity="${o}"/>`).join('');
+  const youSvg = showYou ? `
+    <circle cx="48" cy="30" r="7" fill="var(--accent)" opacity=".3" class="map-you-ping"/>
+    <circle cx="48" cy="30" r="4.5" fill="var(--accent)"/>
+    <circle cx="48" cy="30" r="4.5" fill="none" stroke="var(--bg)" stroke-width="1.5"/>
+  ` : '';
+  return `
+    <div class="map-scatter" aria-hidden="true">
+      <svg viewBox="0 0 120 64" preserveAspectRatio="xMidYMid meet">
+        <rect x="1" y="1" width="118" height="62" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+        ${dotSvg}${youSvg}
+      </svg>
+    </div>
+  `;
+}
+
 function renderMapCard(){
   const el = document.getElementById('mapCard');
   if(!el) return;
-  const places = new Set();
-  EVENTS.filter(e => matchesNonDateFilters(e)).forEach(e=>{
-    places.add(((e.city || 'Detroit')).toLowerCase());
-  });
-  const count = places.size;
-  el.innerHTML = `
+  const todayIso = getTodayISO();
+  // Same source/fallback pattern as renderNearYouCard()'s teaser state:
+  // orbitEventTotal is Postgres's own exact current+upcoming count, loaded
+  // separately (see loadOrbitEventTotal()) since EVENTS itself is capped by
+  // the main list query's row budget; fall back to counting EVENTS
+  // client-side only until that resolves (or if it fails).
+  const fallbackTotal = EVENTS.filter(e=>!isBlockedEvent(e) && e.date >= todayIso).length;
+  const total = orbitEventTotal !== null ? orbitEventTotal : fallbackTotal;
+  const head = `
     <div class="side-card-head">
       <h2>Detroit Orbit Map</h2>
       <a class="side-card-link" href="map.html">See the map &rarr;</a>
     </div>
-    <div class="side-card-number">${count}</div>
-    <p class="side-card-caption">place${count === 1 ? '' : 's'} with events across the Detroit Orbit</p>
-    <p class="side-card-sub">Pinned by venue where we have the address, by city center where we don't.</p>
-    <a class="side-card-cta" href="map.html">Open the map &rarr;</a>
+  `;
+
+  if(originLocation){
+    let nearCount = 0;
+    Object.keys(byDate).forEach(iso=>{
+      if(iso < todayIso) return;
+      nearCount += byDate[iso].filter(e=>!isBlockedEvent(e) && isWithinRadius(e, originLocation.lat, originLocation.lng, IMMEDIATE_ORBIT_MILES)).length;
+    });
+    el.innerHTML = `
+      ${head}
+      ${mapScatterSvg(true)}
+      <div class="side-card-number">${nearCount.toLocaleString()}</div>
+      <p class="side-card-caption">event${nearCount === 1 ? '' : 's'} within ${IMMEDIATE_ORBIT_MILES} mi of you &middot; ${total.toLocaleString()} across the whole Detroit Orbit</p>
+      <a class="map-card-cta" href="map.html">Open the interactive map &rarr;</a>
+    `;
+    return;
+  }
+
+  el.innerHTML = `
+    ${head}
+    ${mapScatterSvg(false)}
+    <div class="side-card-number">${total.toLocaleString()}</div>
+    <p class="side-card-caption">event${total === 1 ? '' : 's'} happening across the Detroit Orbit right now</p>
+    <a class="map-card-cta" href="map.html">Open the interactive map &rarr;</a>
   `;
 }
 
@@ -7279,6 +7390,7 @@ async function loadOrbitEventTotal(){
     if (isNaN(total)) return;
     orbitEventTotal = total;
     renderNearYouCard();
+    renderMapCard(); // shares this same total now — see its 2026-09-05 redesign comment
   } catch (err) {
     // Silent by design — renderNearYouCard()'s own EVENTS-based fallback
     // count stays on screen if this dedicated request fails.
