@@ -535,16 +535,26 @@ function renderEvent(e){
 }
 
 // "As seen in" — same source of truth as index.html's editorialByEvent,
-// just a single-row lookup scoped to this one event id instead of loading
-// the whole table.
+// just a lookup scoped to this one event id instead of loading the whole
+// table. Reads through editorial_article_events (migration_021, 2026-09-04)
+// rather than editorial_articles.matched_event_id directly, so this shows up
+// even when this event was one of SEVERAL a roundup article covered, not
+// just when it was that article's first/only match — see that migration's
+// header comment. limit=5 rather than 1 since ordering by an embedded
+// resource's column isn't reliable over PostgREST — freshest is picked
+// client-side instead; a single event realistically has at most a handful
+// of press mentions, so this is never actually fetching much.
 async function loadEditorialLink(id){
   try {
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=eq.${encodeURIComponent(id)}&select=title,url,source&order=published_at.desc&limit=1`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(id)}&select=editorial_articles(title,url,source,published_at)&limit=5`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) return;
     const rows = await resp.json();
     if(!Array.isArray(rows) || !rows.length) return;
-    const article = rows[0];
+    const articles = rows.map(r => r.editorial_articles).filter(Boolean);
+    if(!articles.length) return;
+    articles.sort((a, b) => (b.published_at || '').localeCompare(a.published_at || ''));
+    const article = articles[0];
     if(!safeUrl(article.url)) return;
     const el = document.getElementById('evtEditorial');
     el.href = safeUrl(article.url);

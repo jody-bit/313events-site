@@ -195,16 +195,45 @@ module.exports = async (req, res) => {
         return;
       }
       try {
-        const resp = await fetch(`${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(articleId)}`, {
-          method: "PATCH",
-          headers: { ...sbHeaders, Prefer: "return=minimal" },
-          // `matched_event_id` is a foreign key to events(id) — an eventId
-          // that doesn't actually exist gets rejected by Postgres itself
-          // right here, no separate existence check needed.
-          body: JSON.stringify({ matched_event_id: eventId, match_type: "manual" }),
-        });
-        if (!resp.ok) {
-          const errBody = await resp.text();
+        // Set matched_event_id only if this article doesn't already have a
+        // primary match. A roundup article can legitimately get link_event
+        // called on it more than once (see migration_021, added 2026-09-04
+        // after Jody asked how to associate one multi-festival article with
+        // EACH festival it covers) — the second and third calls must not
+        // clobber whichever event got there first. The
+        // `matched_event_id=is.null` filter makes this PATCH match 0 rows
+        // (a harmless no-op) instead of overwriting when one's already set.
+        // `matched_event_id` is a foreign key to events(id) — an eventId
+        // that doesn't actually exist gets rejected by Postgres itself
+        // right here, no separate existence check needed.
+        const patchResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(articleId)}&matched_event_id=is.null`,
+          {
+            method: "PATCH",
+            headers: { ...sbHeaders, Prefer: "return=minimal" },
+            body: JSON.stringify({ matched_event_id: eventId, match_type: "manual" }),
+          }
+        );
+        if (!patchResp.ok) {
+          const errBody = await patchResp.text();
+          res.status(502).json({ error: "Database rejected the link: " + errBody });
+          return;
+        }
+        // Every link — the first one and any later ones for the same
+        // article — also gets its own row in the many-to-many join table
+        // (migration_021), so an event shows this article's "As seen in"
+        // mention whether it was that article's first match or its third.
+        // on_conflict makes re-linking the same pair a harmless no-op.
+        const joinResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`,
+          {
+            method: "POST",
+            headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
+            body: JSON.stringify({ article_id: articleId, event_id: eventId }),
+          }
+        );
+        if (!joinResp.ok) {
+          const errBody = await joinResp.text();
           res.status(502).json({ error: "Database rejected the link: " + errBody });
           return;
         }
@@ -291,6 +320,24 @@ module.exports = async (req, res) => {
         body: JSON.stringify({ matched_event_id: inserted.id, match_type: "manual" }),
       });
       const linked = linkResp.ok;
+
+      // Also record this link in the many-to-many join table (migration_021)
+      // so it reads back the same way a link_event-created link does —
+      // every "As seen in" reader (index.html/event.html) queries that table
+      // exclusively, not matched_event_id directly. Best-effort: a failure
+      // here still leaves the more important half (the new live event, and
+      // matched_event_id above) intact.
+      if (linked) {
+        try {
+          await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
+            method: "POST",
+            headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
+            body: JSON.stringify({ article_id: articleId, event_id: inserted.id }),
+          });
+        } catch {
+          // Best-effort — see comment above.
+        }
+      }
 
       res.status(201).json({ ok: true, event: inserted, linked });
     } catch (err) {

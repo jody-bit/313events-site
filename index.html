@@ -7181,7 +7181,16 @@ async function loadEditorialArticles(){
     // already selected here for the inline "As seen in" links, weren't
     // enough to build that widget's thumbnail + freshness-ordering without
     // a second request, so it rides along on this same one instead.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=not.is.null&select=title,url,source,matched_event_id,thumbnail_url,published_at&order=published_at.desc`;
+    //
+    // Reads through editorial_article_events (migration_021, 2026-09-04)
+    // rather than straight off editorial_articles' own matched_event_id —
+    // that join table can hold MORE than one event per article (a roundup
+    // piece covering several festivals), which a single matched_event_id
+    // foreign key can't represent. Backfilled at migration time, so every
+    // link that existed before this change still comes through here too.
+    // No server-side order= here since PostgREST can't reliably order by an
+    // embedded resource's column — sorted client-side below instead.
+    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?select=event_id,editorial_articles(title,url,source,thumbnail_url,published_at)`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -7191,15 +7200,19 @@ async function loadEditorialArticles(){
     if (!resp.ok) return;
     const rows = await resp.json();
     if (!Array.isArray(rows)) return;
+    // Freshest coverage first, same "most recent wins per event" rule as
+    // before — just sorted here instead of relying on server-side order=.
+    rows.sort((a, b) => ((b.editorial_articles && b.editorial_articles.published_at) || '').localeCompare((a.editorial_articles && a.editorial_articles.published_at) || ''));
     const byEvent = {};
     rows.forEach(r=>{
-      // order=published_at.desc means the first row seen per event id is
-      // its most recent coverage — a second, older mention of the same
-      // event is intentionally dropped rather than shown as a second link.
-      if(!byEvent[r.matched_event_id]){
-        byEvent[r.matched_event_id] = {
-          title: decodeEntities(r.title), url: r.url, source: r.source,
-          thumbnailUrl: r.thumbnail_url || null, publishedAt: r.published_at || null,
+      const a = r.editorial_articles;
+      if(!a || r.event_id == null) return;
+      // A second, older mention of the same event is intentionally dropped
+      // rather than shown as a second link — same rule as before.
+      if(!byEvent[r.event_id]){
+        byEvent[r.event_id] = {
+          title: decodeEntities(a.title), url: a.url, source: a.source,
+          thumbnailUrl: a.thumbnail_url || null, publishedAt: a.published_at || null,
         };
       }
     });

@@ -696,17 +696,26 @@ function renderMatchResults(articleId, events) {
     return;
   }
   resultsEl.innerHTML = events.map(e => `
-    <div class="ms-result">
+    <div class="ms-result" id="ms-result-${articleId}-${e.id}">
       <div>
         <b>${escapeHtml(e.title)}</b> <span class="status-badge ${escapeHtml(e.status)}">${escapeHtml(e.status.replace('_',' '))}</span><br>
         <span class="ms-result-meta">${escapeHtml(e.venue_name_raw || 'TBA')} · ${escapeHtml(e.start_date)}</span>
       </div>
-      <button type="button" class="btn-approve" onclick="linkArticleToEvent('${articleId}','${e.id}')">Link this article</button>
+      <button type="button" class="btn-approve" onclick="linkArticleToEvent('${articleId}','${e.id}',this)">Link this article</button>
     </div>
   `).join('');
 }
 
-async function linkArticleToEvent(articleId, eventId) {
+// A single article can genuinely belong to more than one event — a roundup
+// piece covering several festivals (Jody, 2026-09-04) — so linking no
+// longer removes the whole card after the first click. api/admin-editorial's
+// link_event action already supports calling it more than once for the same
+// article (each call adds another row to the editorial_article_events join
+// table, migration_021); this just lets the moderator do that from the UI —
+// search again, link another match, repeat. The card still naturally drops
+// out of the queue on the NEXT page load/refresh once matched_event_id is
+// set (the GET's own query filters on that), same as before.
+async function linkArticleToEvent(articleId, eventId, btn) {
   try {
     const resp = await fetch('/api/admin-editorial', {
       method: 'POST',
@@ -715,8 +724,10 @@ async function linkArticleToEvent(articleId, eventId) {
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Failed to link'));
-    const card = document.getElementById('article-card-' + articleId);
-    if (card) card.remove();
+    if (btn) {
+      btn.textContent = '✓ Linked';
+      btn.disabled = true;
+    }
   } catch (err) {
     alert(err.message);
   }
