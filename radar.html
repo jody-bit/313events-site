@@ -162,7 +162,7 @@
       <div class="filter-chips" id="outletChips"></div>
       <div class="filter-sep"></div>
       <label class="upcoming-toggle">
-        <input type="checkbox" id="upcomingOnlyToggle">
+        <input type="checkbox" id="upcomingOnlyToggle" checked>
         Upcoming only
       </label>
       <div class="result-count" id="resultCount"></div>
@@ -217,7 +217,11 @@ function safeUrl(url) {
 
 let ALL_ITEMS = [];         // every article+event pair with a resolvable event
 let selectedOutlets = new Set(); // empty = no filter (show all)
-let upcomingOnly = false;
+// 2026-09-04 (Jody: "if an event is happening in the past, I don't need the
+// article that goes with it") — defaults to true now, matching the toggle's
+// checked attribute above; a visitor can still switch it off to browse past
+// coverage. See getTodayISO()/render()'s filter below for how this is used.
+let upcomingOnly = true;
 
 // One request, using PostgREST's FK embed (editorial_articles.matched_event_id
 // -> events.id, see migration_011) instead of this page loading the whole
@@ -248,7 +252,18 @@ let upcomingOnly = false;
 // comment.
 async function loadArticles(){
   try {
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events(id,title,start_date,venue_name_raw,venue_city_raw,category,status)&order=published_at.desc&limit=2000`;
+    // events!editorial_articles_matched_event_id_fkey — NOT bare "events(...)"
+    // — 2026-09-04 breakage: migration_021's new editorial_article_events
+    // join table gave PostgREST a SECOND path from editorial_articles to
+    // events (the many-to-many junction, on top of the original direct
+    // matched_event_id FK), so an unqualified "events(...)" embed became
+    // ambiguous the moment that migration was applied — confirmed live via
+    // Supabase's own error: PGRST201 "more than one relationship was found
+    // for 'editorial_articles' and 'events'", which is exactly what was
+    // making this page's fetch fail and show "Couldn't load press coverage
+    // right now." The explicit !constraint-name hint pins this embed to the
+    // original single-match FK, same relationship this page always used.
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events!editorial_articles_matched_event_id_fkey(id,title,start_date,venue_name_raw,venue_city_raw,category,status)&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });

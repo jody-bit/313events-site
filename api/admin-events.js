@@ -156,10 +156,23 @@ module.exports = async (req, res) => {
         // and also searches venue_name_raw alongside title — a moderator
         // reading an article often recognizes the venue name with more
         // confidence than guessing the exact event title wording.
+        // encodeURIComponent already turns the literal "%" wildcards (and any
+        // comma/parens that could otherwise be mistaken for or()-filter
+        // syntax, e.g. searching "Arts, Beats & Eats") into safe percent-
+        // escapes. A previous version of this code re-escaped the already-
+        // escaped "%25" into "%2525" before embedding it in the or=(...)
+        // filter below, which after PostgREST's single decode pass left a
+        // literal "%25...%25" (real percent signs + the digits "25") as the
+        // ilike pattern instead of "%...%" — so it only matched titles that
+        // literally contained "25" next to the search term, i.e. effectively
+        // nothing. That's why searching "Renaissance" or "Nicolas" in Press
+        // Coverage's "Check for a match" found zero results even though the
+        // events genuinely existed and were approved. Just use `encoded`
+        // as-is here, same as the working title=ilike.${encoded} branch below.
         const encoded = encodeURIComponent(`%${search}%`);
         const statusFilter = includePending ? "status=in.(approved,pending_review)" : "status=eq.approved";
         const matchFilter = includePending
-          ? `or=(title.ilike.${encoded.replace(/%25/g, "%2525")},venue_name_raw.ilike.${encoded.replace(/%25/g, "%2525")})`
+          ? `or=(title.ilike.${encoded},venue_name_raw.ilike.${encoded})`
           : `title=ilike.${encoded}`;
         url = `${SUPABASE_URL}/rest/v1/events?${statusFilter}&${matchFilter}&select=*&order=start_date.asc&limit=50`;
       } else if (hidden) {

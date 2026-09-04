@@ -160,6 +160,12 @@
   .evt-editorial .ei-src{
     color:var(--ink-soft);font-weight:600;font-size:12.5px;flex-shrink:0;
   }
+  /* "+N more articles" (2026-09-04) — see index.html's own .evt-editorial-also
+     comment for the full reasoning: a quiet coverage-count line, not a
+     second row of clickable links. */
+  .evt-editorial-also{
+    font-size:12px;color:var(--ink-soft);margin:-14px 0 20px 17px;
+  }
 </style>
 </head>
 <body>
@@ -192,6 +198,7 @@
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
       <div class="evt-detail-note" id="evtNote" style="display:none;"></div>
       <a class="evt-editorial" id="evtEditorial" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
+      <div class="evt-editorial-also" id="evtEditorialAlso" style="display:none;"></div>
       <div class="evt-detail-source" id="evtSource" style="display:none;"></div>
 
       <div class="evt-qr-section">
@@ -263,15 +270,37 @@ function truncateText(str, maxLen){
 // ---- Add to Calendar (identical logic to index.html's own copy — see that
 // file's comments for the full timezone/parsing reasoning; not repeated
 // here to keep this page focused). ----
+// Rewritten 2026-09-04 — see index.html's own parseTimeRange() for the full
+// reasoning (Jody: a bare-start range like "5:30–11:00 PM" or "Noon–11:00
+// PM" was silently parsed as starting at the END time, since the old regex
+// only recognized a time when AM/PM immediately followed it).
 function parseTimeRange(timeStr){
   if(!timeStr) return null;
-  const re = /(\d{1,2}):(\d{2})\s*(AM|PM)/gi;
-  const matches = [...timeStr.matchAll(re)];
-  if(!matches.length) return null;
-  const to24 = (h,m,ap) => { let hh = parseInt(h,10)%12; if(/PM/i.test(ap)) hh += 12; return {h:hh, m:parseInt(m,10)}; };
-  const start = to24(matches[0][1], matches[0][2], matches[0][3]);
-  const end = matches.length > 1 ? to24(matches[1][1], matches[1][2], matches[1][3]) : null;
-  return {start, end};
+  const NOON = {h:12, m:0}, MIDNIGHT = {h:0, m:0};
+  const tokens = [];
+  for(const m of timeStr.matchAll(/(\d{1,2}):(\d{2})\s*(AM|PM)/gi)){
+    let hh = parseInt(m[1],10)%12; if(/PM/i.test(m[3])) hh += 12;
+    tokens.push({index:m.index, time:{h:hh, m:parseInt(m[2],10)}, hasMeridiem:true});
+  }
+  for(const m of timeStr.matchAll(/\b(\d{1,2}):(\d{2})\b(?!\s*(?:AM|PM))/gi)){
+    tokens.push({index:m.index, h12:parseInt(m[1],10)%12, m:parseInt(m[2],10), hasMeridiem:false});
+  }
+  for(const m of timeStr.matchAll(/\bnoon\b/gi)) tokens.push({index:m.index, time:NOON, hasMeridiem:true});
+  for(const m of timeStr.matchAll(/\bmidnight\b/gi)) tokens.push({index:m.index, time:MIDNIGHT, hasMeridiem:true});
+  if(!tokens.length) return null;
+  tokens.sort((a,b)=>a.index-b.index);
+  tokens.forEach((tok,i)=>{
+    if(tok.hasMeridiem) return;
+    const next = tokens.slice(i+1).find(t=>t.hasMeridiem);
+    if(next){
+      let hh = tok.h12; if(next.time.h>=12) hh += 12;
+      tok.time = {h:hh, m:tok.m};
+      tok.hasMeridiem = true;
+    }
+  });
+  const resolved = tokens.filter(t=>t.hasMeridiem);
+  if(!resolved.length) return null;
+  return {start: resolved[0].time, end: resolved.length>1 ? resolved[1].time : null};
 }
 function pad2(n){ return String(n).padStart(2,'0'); }
 function eventDateTimeParts(e){
@@ -565,6 +594,20 @@ async function loadEditorialLink(id){
     el.href = safeUrl(article.url);
     el.innerHTML = `<span class="ei-tag">As seen in</span><span class="ei-title">${escapeHtml(decodeEntities(article.title))}</span>${article.source?`<span class="ei-src">— ${escapeHtml(article.source)}</span>`:''}`;
     el.style.display = 'flex';
+    // 2026-09-04 (Jody: "let an event have as many articles associated to it
+    // as needed so the user can see which... are getting more coverage") —
+    // same quiet, non-clickable coverage-count line as index.html's
+    // editorialLinkHtml(); see that function's comment for the reasoning.
+    const others = articles.slice(1);
+    if(others.length){
+      const otherSources = [...new Set(others.map(a => a.source).filter(Boolean))];
+      const countLabel = `+${others.length} more article${others.length===1?'':'s'}`;
+      const sourcesTitle = others.map(a => `${decodeEntities(a.title)}${a.source?` — ${a.source}`:''}`).join('\n');
+      const alsoEl = document.getElementById('evtEditorialAlso');
+      alsoEl.title = sourcesTitle;
+      alsoEl.textContent = countLabel + (otherSources.length ? ` (${otherSources.join(', ')})` : '');
+      alsoEl.style.display = 'block';
+    }
   } catch (err) {
     // Silent by design, same convention as index.html's own editorial fetch.
   }

@@ -145,6 +145,24 @@ const VENUE_MATCH_MAX_DAY_GAP = 21;
 // just a narrow window around "now".
 const RETRY_CANDIDATE_DAYS_BACK = 90;
 
+// 2026-09-04 (Jody: "if an event is happening in the past, I don't need the
+// article that goes with it") — an unmatched article that's still sitting in
+// admin.html's Press Coverage queue this long after publication has already
+// had its shot at matching a real event through every wider-window pass this
+// file runs (including RETRY_CANDIDATE_DAYS_BACK above, itself already wider
+// than this). At that point it's essentially certain the event it covered
+// has come and gone without ever making it into 313.events, and there's no
+// realistic future event left for it to match — so retryUnmatchedArticles()
+// below auto-dismisses it (admin_dismissed=true, same reversible flag the
+// "Not a fit" button sets — never a hard delete) rather than leaving it to
+// clutter the queue forever. Set comfortably past RETRY_CANDIDATE_DAYS_BACK
+// so an article isn't dismissed while it might still have a plausible match
+// pending. One-time cleanup of the pre-existing backlog (the three 2018
+// Detroit Music Magazine articles Jody's screenshot showed) is handled
+// separately by supabase/update_2026-09-04_dismiss_stale_editorial.sql,
+// since this only runs going forward on the cron schedule.
+const STALE_ARTICLE_DISMISS_DAYS = 120;
+
 // A title (or venue name) shorter than this is too generic to trust as a
 // substring match on its own (e.g. "Live", "Detroit", "Show") — skipped
 // rather than risk a false positive.
@@ -440,9 +458,34 @@ async function retryUnmatchedArticles(sbHeaders) {
   }
 
   let matchedCount = 0;
+  let dismissedStaleCount = 0;
+  const staleFloor = new Date(now); staleFloor.setDate(staleFloor.getDate() - STALE_ARTICLE_DISMISS_DAYS);
   for (const article of unmatched) {
     const match = matchArticleToEvent(article, wideCandidates);
-    if (!match) continue;
+    if (!match) {
+      // See STALE_ARTICLE_DISMISS_DAYS above — an old article that still
+      // isn't matching anything gets auto-dismissed instead of sitting in
+      // the queue forever. published_at can be missing on some feeds' items
+      // (see cron-editorial.js's own item-shape comments elsewhere); treat
+      // "no published_at at all" as not-stale rather than guessing, so it
+      // stays visible for a human to look at instead of silently vanishing.
+      if (article.published_at && new Date(article.published_at) < staleFloor) {
+        try {
+          const dismissResp = await fetch(
+            `${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(article.id)}&matched_event_id=is.null`,
+            {
+              method: "PATCH",
+              headers: { ...sbHeaders, Prefer: "return=minimal" },
+              body: JSON.stringify({ admin_dismissed: true }),
+            }
+          );
+          if (dismissResp.ok) dismissedStaleCount++;
+        } catch {
+          // Same "one bad write never aborts the pass" convention as below.
+        }
+      }
+      continue;
+    }
     try {
       // is.null guard — same belt-and-suspenders reasoning as
       // api/admin-editorial.js's link_event action: never overwrite a match
@@ -467,7 +510,7 @@ async function retryUnmatchedArticles(sbHeaders) {
       // never aborts the whole run" convention as every other cron here.
     }
   }
-  return { checked: unmatched.length, matched: matchedCount };
+  return { checked: unmatched.length, matched: matchedCount, dismissedStale: dismissedStaleCount };
 }
 
 module.exports = async (req, res) => {
