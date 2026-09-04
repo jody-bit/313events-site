@@ -1,28 +1,64 @@
--- Set the Detroit Jazz Festival's daily hours, requested by Jody 2026-09-04.
--- Sourced from the Detroit Jazz Festival's own FAQ (detroitjazzfest.org/faq/),
--- Fox 2 Detroit's festival guide, and The Perna Team's festival guide:
+-- Detroit Jazz Festival: split into per-day-group rows so each day shows
+-- its own correct hours — same fix, same reasoning, as
+-- update_2026-09-04_mistatefair_hours.sql (see that file's header).
 --
---   Friday, Sep 4:                5:30 PM - 11:00 PM
---   Saturday, Sep 5 & Sunday, Sep 6: 12:30 PM - 11:00 PM
---   Monday, Sep 7 (Labor Day):     12:30 PM - 8:00 PM
+-- Hours (detroitjazzfest.org/faq/, Fox 2 Detroit, The Perna Team):
+--   Friday, Sep 4:                    5:30 PM - 11:00 PM
+--   Saturday-Sunday, Sep 5-6:         12:30 PM - 11:00 PM
+--   Monday, Sep 7 (Labor Day):        12:30 PM - 8:00 PM
 --
--- Same "one row spans the whole run" situation as
--- update_2026-09-04_mistatefair_hours.sql (see that file's header for the
--- full reasoning) — this event is stored as ONE row spanning 2026-09-04
--- through 2026-09-07, shown on every date it spans with the same
--- time_display string each day, so the string below spells out the whole
--- day-by-day schedule at once rather than picking one day's hours.
+-- 3 distinct hours blocks (Friday, Sat/Sun, and Monday all differ), so 3
+-- rows — one per block.
 --
--- note is extended (not overwritten) to keep the existing VIP-packages
--- caveat visible alongside the new sourcing note — see
--- seed_2026-09-04_more_annual_events.sql's detroitjazzfest-2026 row, kept
--- in sync with this text so a future re-run of that seed file doesn't
--- revert it.
+-- Deletes the old single spanning row ('detroitjazzfest-2026') first — see
+-- seed_2026-09-04_more_annual_events.sql, which no longer seeds it.
 --
 -- Idempotent: safe to re-run.
 
-update events
-set
-  time_display = '5:30–11 PM Fri, 12:30–11 PM Sat–Sun, 12:30–8 PM Mon (Labor Day)',
-  note = 'VIP concert packages are ticketed separately (detroitjazzfest.org/vip-experience-packages/) — main-stage admission itself is free.'
-where external_id = 'detroitjazzfest-2026';
+delete from events where external_id = 'detroitjazzfest-2026';
+
+insert into events (
+  external_id, title, description, category,
+  venue_name_raw, venue_address_raw, venue_city_raw,
+  start_date, end_date, time_display, is_free, price_from, ticket_url,
+  source, note, status
+) values
+
+('detroitjazzfest-2026-fri', 'Detroit Jazz Festival',
+ 'Annual free four-day jazz festival on Hart Plaza featuring national and international artists across multiple outdoor stages, plus additional shows at the Gretchen C. Valade Jazz Center and Wayne State University.',
+ 'music', 'Hart Plaza', null, 'Detroit',
+ '2026-09-04', '2026-09-04', '5:30–11:00 PM', true, null,
+ 'https://www.detroitjazzfest.org',
+ 'Detroit Jazz Festival Foundation (detroitjazzfest.org, researched 2026-09-04)',
+ 'VIP concert packages are ticketed separately (detroitjazzfest.org/vip-experience-packages/) — main-stage admission itself is free.', 'approved'),
+
+('detroitjazzfest-2026-sat-sun', 'Detroit Jazz Festival',
+ 'Annual free four-day jazz festival on Hart Plaza featuring national and international artists across multiple outdoor stages, plus additional shows at the Gretchen C. Valade Jazz Center and Wayne State University.',
+ 'music', 'Hart Plaza', null, 'Detroit',
+ '2026-09-05', '2026-09-06', '12:30–11:00 PM', true, null,
+ 'https://www.detroitjazzfest.org',
+ 'Detroit Jazz Festival Foundation (detroitjazzfest.org, researched 2026-09-04)',
+ 'VIP concert packages are ticketed separately (detroitjazzfest.org/vip-experience-packages/) — main-stage admission itself is free.', 'approved'),
+
+('detroitjazzfest-2026-mon', 'Detroit Jazz Festival',
+ 'Annual free four-day jazz festival on Hart Plaza featuring national and international artists across multiple outdoor stages, plus additional shows at the Gretchen C. Valade Jazz Center and Wayne State University.',
+ 'music', 'Hart Plaza', null, 'Detroit',
+ '2026-09-07', '2026-09-07', '12:30–8:00 PM (Labor Day)', true, null,
+ 'https://www.detroitjazzfest.org',
+ 'Detroit Jazz Festival Foundation (detroitjazzfest.org, researched 2026-09-04)',
+ 'VIP concert packages are ticketed separately (detroitjazzfest.org/vip-experience-packages/) — main-stage admission itself is free.', 'approved')
+
+on conflict (external_id) do update set
+  title = excluded.title,
+  description = excluded.description,
+  category = excluded.category,
+  venue_name_raw = excluded.venue_name_raw,
+  venue_address_raw = excluded.venue_address_raw,
+  venue_city_raw = excluded.venue_city_raw,
+  start_date = excluded.start_date,
+  end_date = excluded.end_date,
+  time_display = excluded.time_display,
+  is_free = excluded.is_free,
+  price_from = excluded.price_from,
+  ticket_url = excluded.ticket_url,
+  note = excluded.note;

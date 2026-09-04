@@ -484,9 +484,15 @@
     #leafletMap{width:100%;height:380px;flex:none;}
     .city-rail{width:100%;height:380px;flex:none;}
   }
-  .list-day-group{padding:12px 0;border-top:1px solid var(--line-soft);}
-  .list-day-group:first-child{border-top:none;}
-  .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
+  .list-day-group{padding:18px 0 12px;border-top:2px solid var(--line);}
+  .list-day-group:first-child{border-top:none;padding-top:0;}
+  /* Sized up + brightened 2026-09-04 — same fix, same reasoning, as
+     index.html's .list-day-heading (see its comment there): a 13px dim
+     heading was too easy to scroll past unnoticed. */
+  .list-day-heading{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px;}
+  @media (max-width:640px){
+    .list-day-heading{font-size:17px;}
+  }
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
@@ -1927,6 +1933,15 @@ let markersByKey = new Map();
 let selectedPlaceKey = null;
 let mapInitTried = false;
 
+// See map.html's own CARTO_API_KEY comment for the full story: CARTO's
+// free anonymous basemap tiles stopped working late August 2026 and now
+// watermark every tile "API KEY REQUIRED" instead of failing outright,
+// which is why the try/catch fallback below never caught it. Get a free
+// key at https://carto.com/basemaps/apikey/ and paste it here — kept as a
+// separate constant from map.html's copy since this file duplicates its
+// own full page (no shared JS module between pages on this site).
+const CARTO_API_KEY = ""; // <-- paste the key CARTO emails you here
+
 function initLeaflet(){
   mapInitTried = true;
   // See map.html's own initLeaflet() for why this is wrapped: a blocked
@@ -1936,7 +1951,9 @@ function initLeaflet(){
   try{
     if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
     leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      + (CARTO_API_KEY ? `?api_key=${encodeURIComponent(CARTO_API_KEY)}` : '');
+    L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 19,

@@ -4122,9 +4122,18 @@
 
   /* List view */
   #listView{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;}
-  .list-day-group{padding:14px 0;border-top:1px solid var(--line-soft);}
+  .list-day-group{padding:22px 0 14px;border-top:2px solid var(--line);}
   .list-day-group:first-child{padding-top:0;border-top:none;}
-  .list-day-heading{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;}
+  /* Sized up + brightened 2026-09-04 (Jody: scrolling a multi-day list —
+     "All Upcoming", a weekend, a range — made it too easy to lose track of
+     which day you were looking at; the old 13px var(--ink-soft) heading
+     read as just another piece of metadata, not a boundary). Bumped well
+     past every card's own text (title is 16px) so it reads as a section
+     break at a glance, not something you have to stop and parse. */
+  .list-day-heading{font-family:'Space Mono',monospace;font-size:21px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.02em;margin-bottom:14px;}
+  @media (max-width:640px){
+    .list-day-heading{font-size:18px;}
+  }
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{

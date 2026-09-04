@@ -1165,6 +1165,29 @@ function buildPlaces(){
 let leafletMap = null;
 let markersByKey = new Map();
 
+// CARTO's free anonymous basemap tiles (basemaps.cartocdn.com, no key) —
+// which is what this page was built on (see the "no-API-key dark basemap"
+// comment near the top of this file) — stopped working late August 2026:
+// CARTO now requires a free API key on every tile request and, without one,
+// serves a "API KEY REQUIRED" watermark baked into the tile images
+// themselves rather than failing the request outright (confirmed live
+// 2026-09-04: the old anonymous URL now 403s; this is a documented CARTO
+// platform change hitting the exact 'dark_all'/'light_all' basemap paths
+// this site uses, not something specific to 313.events). Since Leaflet gets
+// a normal-looking 200/tile-image back either way, the existing
+// try/catch("Map tiles didn't load...") fallback below never fires — the
+// map "works," it just has a watermark stamped across it.
+//
+// Fix: request a free key at https://carto.com/basemaps/apikey/ (no CARTO
+// account needed, no cost — CARTO emails the key back directly) and paste
+// it in below. Free tier is 5M tile requests/month, requires keeping the
+// CARTO+OpenStreetMap attribution visible (already is, see the tileLayer
+// attribution string below), and per CARTO's own terms is meant for
+// non-commercial/personal/research use — worth a quick read of the terms
+// on that page given 313.events carries affiliate ticket links, before
+// relying on the free tier long-term.
+const CARTO_API_KEY = ""; // <-- paste the key CARTO emails you here
+
 function initLeaflet(){
   // Leaflet loads from a CDN (unpkg for the library, CARTO for tiles), so a
   // blocked/ad-blocked/offline network shouldn't be able to take the whole
@@ -1174,7 +1197,9 @@ function initLeaflet(){
   try{
     if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
     leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      + (CARTO_API_KEY ? `?api_key=${encodeURIComponent(CARTO_API_KEY)}` : '');
+    L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 19,
