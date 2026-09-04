@@ -1,0 +1,26 @@
+-- Resolves the one cluster left OUT of update_2026-09-04_dedupe_common_events.sql
+-- for manual review ("Mojo Brookzz — Outta Pocket Tour" — 3 rows, not a clean
+-- 1-Manual-vs-1-Ticketmaster pair like the other 21). Checked live now that
+-- the rest of that sweep has been applied: this was never actually
+-- ambiguous, just four rows that needed a closer look than a same-title/
+-- same-date match alone could give it —
+--
+--   - Manual row, 2026-09-11, time_display '7:00 & 10:00 PM' (both shows
+--     combined into one row)
+--   - Ticketmaster row, 7:00 PM show (external_id vvG1OZ_1LAQ5eO)
+--   - Ticketmaster row, 10:00 PM show (external_id vvG1OZ_5k21dX2)
+--   - Ticketmaster row, "Mojo Brookzz - Suite Rental" (external_id
+--     vvG1OZ_1DqpBZN) — a different product (a venue suite booking, not a
+--     GA ticket to the show itself, and links out to gofevo.com rather than
+--     Ticketmaster's own checkout) — not a duplicate of anything, leave as-is.
+--
+-- So there's exactly one real duplicate here: the Manual row restates both
+-- Ticketmaster showtimes as a single combined listing. Same resolution as
+-- every other pair in the site-wide sweep — delete the weaker Manual row,
+-- keep the automated Ticketmaster rows (real ticket_url, upserted going
+-- forward). Checked live: this Manual row has no editorial_article_events
+-- press links, so nothing needs re-pointing first.
+--
+-- Idempotent: safe to re-run (deleting an already-deleted id is a no-op).
+
+delete from events where id = '5ad33a48-b261-4e7d-93ea-355600aeaa88';
