@@ -103,14 +103,40 @@ function decodeEntities(str) {
     .trim();
 }
 
+// Shared by mapCategory() and stripCategoryPrefix() below — CrowdWork's own
+// "CATEGORY l Title" naming convention (e.g. "FILM l Nicolas Uncaged 11",
+// "COMEDY l The Thursday Show w/ The Planet Ant Home Team") puts the same
+// prefix to two different uses here: mapCategory() reads it to pick this
+// project's category, stripCategoryPrefix() removes it so the prefix itself
+// never ends up as part of a public-facing event title.
+const CATEGORY_PREFIX_RE = /^([A-Z][A-Z '&]+?)\s+l\s+/;
+
 function mapCategory(name) {
-  const m = (name || "").match(/^([A-Z][A-Z '&]+?)\s+l\s+/);
+  const m = (name || "").match(CATEGORY_PREFIX_RE);
   const prefix = m ? m[1].trim().toUpperCase() : "";
   if (/COMEDY|IMPROV|GAME SHOW/.test(prefix)) return "theatre";
   if (/THEATRE/.test(prefix)) return "theatre";
   if (/FILM/.test(prefix)) return "film";
   if (/BURLESQUE/.test(prefix)) return "nightlife";
   return "community"; // no recognized prefix — e.g. a one-off fundraiser/tour
+}
+
+// 2026-09-04 audit fix (caught while diagnosing why "Nicolas Uncaged 11"
+// hadn't shown up yet — this cron simply hadn't had its first scheduled run
+// since being added, not a bug — but this WAS a real bug found along the
+// way): shapeRowsForShow() below was writing show.name straight into
+// events.title, so every show with the "CATEGORY l " naming prefix would
+// have gone live on the site as "FILM l Nicolas Uncaged 11", "COMEDY l The
+// Thursday Show w/ The Planet Ant Home Team", "GAME SHOW l Buck's
+// Funhouse", etc. — the internal box-office categorization tag leaking into
+// a public-facing title. Strips exactly the prefix mapCategory() itself
+// already parses out for the SAME reason it's being removed here (it's not
+// part of the show's actual name), leaving titles that don't happen to use
+// this convention (e.g. "Shortbus 20th Anniversary Live Commentary
+// Screening w/ John Cameron Mitchell") untouched.
+function stripCategoryPrefix(name) {
+  if (!name) return name;
+  return name.replace(CATEGORY_PREFIX_RE, "").trim();
 }
 
 // "Black Box - 2357 Caniff Hamtramck, MI 48212 - Entrance in the rear" ->
@@ -171,7 +197,7 @@ function shapeRowsForShow(show) {
     .filter(Boolean)
     .map((dateIso) => ({
       external_id: `crowdwork-${VENUE_SLUG}-${show.id}-${isoDatePortion(dateIso)}`.slice(0, 250),
-      title: decodeEntities(show.name),
+      title: decodeEntities(stripCategoryPrefix(show.name)),
       description,
       category,
       venue_name_raw: venueName,
