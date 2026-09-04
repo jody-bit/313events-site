@@ -147,6 +147,51 @@ async function checkUploadImageValidation() {
   return "400 as expected";
 }
 
+// 2026-09-05, added after Jody's friend hit "No image data received." on
+// EVERY real image upload attempt — a bug that reproduced 100% of the
+// time, yet this suite had already been reporting "ok" the whole time.
+// Why: checkUploadImageValidation() above only ever proved BAD input gets
+// rejected (a non-image body → 400) — it never once proved a real image
+// succeeds. The actual bug also returned 400, for the wrong reason (see
+// api/upload-image.js's fix comment), so that check kept passing right
+// through it. This closes that blind spot: uploads a small but genuinely
+// valid image/jpeg body through the real endpoint and requires success —
+// a 201 with a usable url — then deletes the test file straight out of
+// Storage (service role, not through any public endpoint) so this doesn't
+// leave junk behind on every scheduled run. BUCKET must stay in sync with
+// api/upload-image.js's own bucket name — duplicated rather than shared,
+// same one-file-per-endpoint convention as every constant like this
+// elsewhere in this project (e.g. VALID_CATEGORIES in admin-editorial.js).
+const UPLOAD_BUCKET = "event-flyers";
+
+async function checkUploadImageSuccess() {
+  const bytes = new Uint8Array(256).fill(1); // real non-empty bytes, real image/jpeg content-type
+  const resp = await fetch(`${BASE_URL}/api/upload-image`, {
+    method: "POST",
+    headers: { "Content-Type": "image/jpeg" },
+    body: bytes,
+  });
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => "");
+    throw new Error(`expected 201 for a real image upload, got ${resp.status}: ${body}`);
+  }
+  const data = await resp.json().catch(() => ({}));
+  if (!data.url) throw new Error("upload reported success but returned no url");
+  try {
+    const path = data.url.split(`/${UPLOAD_BUCKET}/`).pop();
+    if (path) {
+      await fetch(`${SUPABASE_URL}/storage/v1/object/${UPLOAD_BUCKET}/${path}`, {
+        method: "DELETE",
+        headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
+      });
+    }
+  } catch (_) {
+    // Best-effort cleanup — a leftover test file is harmless clutter, never
+    // worth failing an otherwise-successful check over.
+  }
+  return "201, real upload succeeded and test file cleaned up";
+}
+
 async function checkSitemap() {
   const resp = await fetch(`${BASE_URL}/sitemap.xml`);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -192,6 +237,7 @@ module.exports = async (req, res) => {
     runCheck("submit validation", () => checkJsonValidation("/api/submit")),
     runCheck("submit-feed validation", () => checkJsonValidation("/api/submit-feed")),
     runCheck("upload-image validation", checkUploadImageValidation),
+    runCheck("upload-image: real upload succeeds", checkUploadImageSuccess),
     runCheck("sitemap.xml", checkSitemap),
   ]);
 
