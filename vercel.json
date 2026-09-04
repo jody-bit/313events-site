@@ -74,6 +74,9 @@
     "api/cron-detroitmonthofdesign.js": {
       "maxDuration": 60
     },
+    "api/cron-planetanttheatre.js": {
+      "maxDuration": 60
+    },
     "api/cron-healthcheck.js": {
       "maxDuration": 30
     }
