@@ -1200,15 +1200,17 @@ let markersByKey = new Map();
 // try/catch("Map tiles didn't load...") fallback below never fires — the
 // map "works," it just has a watermark stamped across it.
 //
-// Fix: request a free key at https://carto.com/basemaps/apikey/ (no CARTO
-// account needed, no cost — CARTO emails the key back directly) and paste
-// it in below. Free tier is 5M tile requests/month, requires keeping the
-// CARTO+OpenStreetMap attribution visible (already is, see the tileLayer
-// attribution string below), and per CARTO's own terms is meant for
-// non-commercial/personal/research use — worth a quick read of the terms
-// on that page given 313.events carries affiliate ticket links, before
-// relying on the free tier long-term.
-const CARTO_API_KEY = ""; // <-- paste the key CARTO emails you here
+// Fixed 2026-09-05: Jody requested and received a free key from CARTO
+// (5M tile requests/month across raster+vector combined, no cost — CARTO's
+// own email says they'll reach out rather than cut access off if that's
+// ever exceeded). Per that same email the query param is named `key`, not
+// `api_key` as originally guessed here — corrected below. Their raster
+// tile service is the one that needed this; vector doesn't require a key
+// yet (CARTO says that's coming later, and this key will cover it when it
+// does — nothing to change here for that). Keep the CARTO+OpenStreetMap
+// attribution visible in the tileLayer options below — that's what the
+// free tier is in exchange for, per carto.com/attributions.
+const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
 
 function initLeaflet(){
   // Leaflet loads from a CDN (unpkg for the library, CARTO for tiles), so a
@@ -1220,7 +1222,7 @@ function initLeaflet(){
     if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
     leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
     const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      + (CARTO_API_KEY ? `?api_key=${encodeURIComponent(CARTO_API_KEY)}` : '');
+      + (CARTO_API_KEY ? `?key=${encodeURIComponent(CARTO_API_KEY)}` : '');
     L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',

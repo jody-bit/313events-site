@@ -1959,11 +1959,13 @@ let mapInitTried = false;
 // See map.html's own CARTO_API_KEY comment for the full story: CARTO's
 // free anonymous basemap tiles stopped working late August 2026 and now
 // watermark every tile "API KEY REQUIRED" instead of failing outright,
-// which is why the try/catch fallback below never caught it. Get a free
-// key at https://carto.com/basemaps/apikey/ and paste it here — kept as a
+// which is why the try/catch fallback below never caught it. Fixed
+// 2026-09-05 with the free key CARTO emailed Jody back — kept as a
 // separate constant from map.html's copy since this file duplicates its
-// own full page (no shared JS module between pages on this site).
-const CARTO_API_KEY = ""; // <-- paste the key CARTO emails you here
+// own full page (no shared JS module between pages on this site). Param
+// is `key`, not `api_key` (corrected from the original guess once CARTO's
+// email confirmed the actual name).
+const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
 
 function initLeaflet(){
   mapInitTried = true;
@@ -1975,7 +1977,7 @@ function initLeaflet(){
     if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
     leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
     const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      + (CARTO_API_KEY ? `?api_key=${encodeURIComponent(CARTO_API_KEY)}` : '');
+      + (CARTO_API_KEY ? `?key=${encodeURIComponent(CARTO_API_KEY)}` : '');
     L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',
