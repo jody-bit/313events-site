@@ -87,7 +87,7 @@ insert into events (
  '2026-09-04', '2026-09-07', true, null,
  'https://www.detroitjazzfest.org',
  'Detroit Jazz Festival Foundation (detroitjazzfest.org, researched 2026-09-04)',
- 'VIP concert packages are ticketed separately (detroitjazzfest.org/vip-experience-packages/) — main-stage admission itself is free.', 'approved'),
+ 'VIP concert packages are ticketed separately (detroitjazzfest.org/vip-experience-packages/) — main-stage admission itself is free. Daily hours (time_display) confirmed/updated 2026-09-04 via update_2026-09-04_detroitjazzfest_hours.sql — kept in sync here so a re-run of this seed file doesn''t revert that note text.', 'approved'),
 
 ('dallyinthealley-2026', 'Dally in the Alley',
  'Annual free outdoor music and arts street festival in Detroit''s Cass Corridor near Wayne State, with 50+ artists across five stages running 11am-10pm.',
@@ -111,7 +111,7 @@ insert into events (
  '2026-09-04', '2026-09-07', false, 15,
  'https://www.showpass.com/2026abe/',
  'visitdetroit.com / showpass.com / clickondetroit.com (researched 2026-09-04)',
- 'Official festival site (artsbeatseats.com) wasn''t directly fetchable this session (redirect loop) — price/dates cross-checked via its Showpass ticketing page and ClickOnDetroit''s 2026 coverage instead.', 'approved'),
+ 'Official festival site (artsbeatseats.com) wasn''t directly fetchable this session (redirect loop) — price/dates cross-checked via its Showpass ticketing page and ClickOnDetroit''s 2026 coverage instead. Friday''s official opening was delayed to noon (from a scheduled 11 AM) due to storm/wind delays — freep.com, 2026-09-03. The fine arts fair runs on its own slightly different schedule: 2:00-9:00 PM Friday, 11:00 AM-9:00 PM Saturday-Sunday, 11:00 AM-5:00 PM Monday. Daily hours (time_display) confirmed/updated 2026-09-04 via update_2026-09-04_artsbeatseats_hours.sql — kept in sync here so a re-run of this seed file doesn''t revert that note text.', 'approved'),
 
 ('mistatefair-2026', 'Michigan State Fair',
  'Five-day Labor Day weekend state fair at the Vibe Credit Union Showplace in Novi, featuring carnival rides, agricultural exhibits, and family entertainment.',
@@ -119,7 +119,7 @@ insert into events (
  '2026-09-03', '2026-09-07', false, 10,
  'https://michiganstatefairllc.ticketspice.com/michigan-state-fair-2026',
  'Michigan State Fair LLC (michiganstatefairllc.com, researched 2026-09-04)',
- 'price_from is base "Fair Admission" ($10); an "Ultimate Admission" tier ($42, includes rides/shows) also exists.', 'approved'),
+ 'price_from is base "Fair Admission" ($10); an "Ultimate Admission" tier ($42, includes rides/shows) also exists. Entrance and box office close at 7:00 PM nightly, even though the fair itself runs until 8:00 PM. Daily hours (time_display) confirmed/updated 2026-09-04 via update_2026-09-04_mistatefair_hours.sql — kept in sync here so a re-run of this seed file doesn''t revert that note text.', 'approved'),
 
 ('easternmarketafterdark-2026', 'Eastern Market After Dark',
  'Free one-night design and arts festival in Detroit''s Eastern Market during Detroit Month of Design, with installations, vendors, and live entertainment across the district.',
