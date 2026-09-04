@@ -34,6 +34,37 @@ function timingSafeStringEqual(a, b) {
   return crypto.timingSafeEqual(aBuf, bBuf);
 }
 
+// Ticketmaster affiliate link wrapping (2026-09-04) — Jody has a live
+// Ticketmaster affiliate account through Impact Radius (account id
+// 7676879, confirmed directly from her own dashboard-issued link).
+// Researched as a revenue idea in _revenue_research_2026-08-27.md but never
+// actually wired up until now — every ticket_url from this source was a
+// plain, untracked Ticketmaster link.
+//
+// Wraps the real per-event URL in Impact's redirect domain
+// (ticketmaster.evyy.net) carrying the same query-string template
+// Ticketmaster hands out for feed/API integrations — the exact shape of
+// Jody's own account link, just with the destination swapped from
+// ticketmaster.com's bare homepage to this specific event's real URL. The
+// {clickid}/{irpid}/{irmpname}/{ircid} tokens are Impact's own macros,
+// resolved by evyy.net itself at click time — passed through literally,
+// never filled in here. 264167/4272 are Ticketmaster's own program/
+// campaign ids on Impact (the same for every affiliate, confirmed by
+// matching a competitor's own such link seen during separate research) —
+// only the account id segment is Jody-specific.
+const TM_AFFILIATE_ACCOUNT_ID = "7676879";
+const TM_AFFILIATE_PROGRAM_PATH = "264167/4272";
+
+function affiliateTicketUrl(eventUrl) {
+  if (!eventUrl) return null;
+  const sep = eventUrl.includes("?") ? "&" : "?";
+  const destination =
+    `${eventUrl}${sep}irgwc=1&clickid={clickid}&camefrom=CFC_BUYAT_{irpid}&impradid={irpid}` +
+    `&REFERRAL_ID=tmfeedbuyat{irpid}&wt.mc_id=aff_BUYAT_{irpid}&utm_source={irpid}-{irmpname}` +
+    `&impradname={irmpname}&utm_medium=affiliate&ircid={ircid}`;
+  return `https://ticketmaster.evyy.net/c/${TM_AFFILIATE_ACCOUNT_ID}/${TM_AFFILIATE_PROGRAM_PATH}?u=${encodeURIComponent(destination)}`;
+}
+
 
 // Geographic radius search, not a city allowlist — 313.events' coverage area
 // is a 75-mile radius from Detroit's center (see SERVICE_AREA.md), which pulls
@@ -149,7 +180,7 @@ function shapeForDb(e) {
     time_display: formatTime(start),
     is_free: false,
     price_from: priceRange ? priceRange.min : null,
-    ticket_url: e.url || null,
+    ticket_url: affiliateTicketUrl(e.url),
     source: "Ticketmaster",
   };
 }
