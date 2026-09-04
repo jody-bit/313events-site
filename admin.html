@@ -180,6 +180,7 @@
       <div id="hiddenList"></div>
     </section>
   </div>
+  <datalist id="venueDatalist"></datalist>
 </main>
 
 <script>
@@ -198,7 +199,49 @@ function unlock() {
 // event search is NOT auto-loaded here — it only runs when the moderator
 // actually types a search, since it's a lookup, not a fixed-size queue.
 async function loadAll() {
-  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck()]);
+  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues()]);
+}
+
+// ---- Venue autofill (2026-09-04) ----
+// Speeds up "create event from article": known venues (from the curated
+// venues table, plus any venue any event has ever carried a street address
+// for — see api/admin-venues.js) populate a shared <datalist> so typing a
+// venue name already used before shows it as a suggestion, and picking or
+// exactly retyping one auto-fills Street address / City so the moderator
+// isn't retyping the same gallery's address every time it comes up in press
+// coverage. Silent on failure — same convention as loadHealthcheck() — a
+// missing autofill list shouldn't itself look like an error.
+let VENUE_BY_NAME = new Map();
+
+async function loadVenues() {
+  try {
+    const resp = await fetch('/api/admin-venues', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) return;
+    const venues = data.venues || [];
+    VENUE_BY_NAME = new Map(venues.map(v => [v.name.trim().toLowerCase(), v]));
+    const datalist = document.getElementById('venueDatalist');
+    if (datalist) {
+      datalist.innerHTML = venues.map(v => `<option value="${escapeAttr(v.name)}">`).join('');
+    }
+  } catch (err) {
+    // Silent by design — autofill is a convenience, not core functionality.
+  }
+}
+
+// Fired on the Venue field's `input` event (typing a suggestion's exact name,
+// or picking one from the datalist both trigger it). Only fills Street
+// address / City when they're currently empty, so it never overwrites
+// something the moderator already typed by hand.
+function autofillVenue(id) {
+  const venueEl = document.getElementById('ef-venue-' + id);
+  if (!venueEl) return;
+  const match = VENUE_BY_NAME.get(venueEl.value.trim().toLowerCase());
+  if (!match) return;
+  const addrEl = document.getElementById('ef-address-' + id);
+  const cityEl = document.getElementById('ef-city-' + id);
+  if (addrEl && !addrEl.value.trim() && match.address) addrEl.value = match.address;
+  if (cityEl && !cityEl.value.trim() && match.city) cityEl.value = match.city;
 }
 
 // ---- Health check banner ----
@@ -513,7 +556,7 @@ function eventFormHtml(a) {
         </div>
         <div>
           <label>Venue</label>
-          <input type="text" id="ef-venue-${a.id}" placeholder="e.g. Fox Theatre">
+          <input type="text" id="ef-venue-${a.id}" list="venueDatalist" oninput="autofillVenue('${a.id}')" placeholder="e.g. Fox Theatre">
         </div>
         <div>
           <label>Street address (optional)</label>
