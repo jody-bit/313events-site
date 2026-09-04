@@ -91,6 +91,19 @@
 
   /* ---- Press coverage (editorial review) ---- */
   .article-card{display:flex;gap:14px;}
+  /* Search-for-a-match box (2026-09-04) — Jody asked whether the system
+     already checks for a matching event before suggesting a moderator
+     create one from an article. It does (cron-editorial.js's own
+     matchArticleToEvent()), but that auto-matcher is deliberately narrow
+     (exact-substring title/venue matching, a tight day-window, approved
+     events only) — this box lets a moderator run a broader, human-judgment
+     search right from the article card, reusing the "Live events" search
+     row's own look (.search-row) so it doesn't read as a new UI pattern. */
+  .match-search{margin:12px 0;}
+  .ms-results{margin-top:6px;}
+  .ms-result{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line-soft);font-size:13px;}
+  .ms-result-meta{color:var(--ink-soft);font-size:12px;}
+  .ms-status{color:var(--ink-soft);font-size:13px;padding:4px 0;}
   .ac-thumb{width:84px;height:84px;flex:0 0 auto;border-radius:8px;object-fit:cover;background:var(--panel-alt);}
   .ac-thumb-fallback{width:84px;height:84px;flex:0 0 auto;border-radius:8px;background:var(--panel-alt);display:flex;align-items:center;justify-content:center;color:var(--ink-dim);font-size:11px;text-align:center;}
   .ac-body{flex:1;min-width:0;}
@@ -457,6 +470,13 @@ function renderEditorialList(articles) {
           <h3>${escapeHtml(a.title)}</h3>
           <div class="meta"><b>${escapeHtml(a.source)}</b>${published ? ' · ' + escapeHtml(published) : ''} · <a href="${escapeAttr(a.url)}" target="_blank" rel="noopener">read the article</a></div>
           ${a.excerpt ? `<div class="ac-excerpt">${escapeHtml(a.excerpt)}</div>` : ''}
+          <div class="match-search">
+            <div class="search-row">
+              <input type="text" id="ms-query-${a.id}" placeholder="Search existing events by title or venue…" onkeydown="if(event.key==='Enter') searchForMatch('${a.id}')">
+              <button type="button" onclick="searchForMatch('${a.id}')">Check for a match</button>
+            </div>
+            <div class="ms-results" id="ms-results-${a.id}"></div>
+          </div>
           <div class="actions">
             <button class="btn-create" onclick="toggleEventForm('${a.id}')">Create event from this article</button>
             <button class="btn-dismiss" onclick="dismissArticle('${a.id}')">Not an event</button>
@@ -601,6 +621,60 @@ async function dismissArticle(id) {
     if (card) card.remove();
   } catch (err) {
     if (card) card.style.opacity = '1';
+    alert(err.message);
+  }
+}
+
+// ---- Press coverage: search for a matching event ----
+// Reuses api/admin-events.js's search endpoint with includePending=1 (also
+// matches venue_name_raw, also includes pending_review — see that file's
+// comment for why those are opt-in rather than the takedown tool's default).
+async function searchForMatch(articleId) {
+  const q = document.getElementById(`ms-query-${articleId}`).value.trim();
+  const resultsEl = document.getElementById(`ms-results-${articleId}`);
+  if (!q) { resultsEl.innerHTML = ''; return; }
+  resultsEl.innerHTML = '<div class="ms-status">Searching…</div>';
+  try {
+    const resp = await fetch(`/api/admin-events?search=${encodeURIComponent(q)}&includePending=1`, {
+      headers: { 'x-admin-secret': SECRET },
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Search failed'));
+    renderMatchResults(articleId, data.events || []);
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="ms-status err">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function renderMatchResults(articleId, events) {
+  const resultsEl = document.getElementById(`ms-results-${articleId}`);
+  if (!events.length) {
+    resultsEl.innerHTML = '<div class="ms-status">No matching events found — go ahead and create one.</div>';
+    return;
+  }
+  resultsEl.innerHTML = events.map(e => `
+    <div class="ms-result">
+      <div>
+        <b>${escapeHtml(e.title)}</b> <span class="status-badge ${escapeHtml(e.status)}">${escapeHtml(e.status.replace('_',' '))}</span><br>
+        <span class="ms-result-meta">${escapeHtml(e.venue_name_raw || 'TBA')} · ${escapeHtml(e.start_date)}</span>
+      </div>
+      <button type="button" class="btn-approve" onclick="linkArticleToEvent('${articleId}','${e.id}')">Link this article</button>
+    </div>
+  `).join('');
+}
+
+async function linkArticleToEvent(articleId, eventId) {
+  try {
+    const resp = await fetch('/api/admin-editorial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ articleId, action: 'link_event', eventId }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Failed to link'));
+    const card = document.getElementById('article-card-' + articleId);
+    if (card) card.remove();
+  } catch (err) {
     alert(err.message);
   }
 }

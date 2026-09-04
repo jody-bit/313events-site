@@ -7,6 +7,18 @@ const crypto = require("crypto");
 // GET  /api/admin-events                    -> list events with status=pending_review
 // GET  /api/admin-events?search=<text>      -> search live (status=approved) events by
 //                                               title, for the "Live events" takedown tool
+// GET  /api/admin-events?search=<text>&includePending=1
+//                                            -> same search, but also matches
+//                                               status=pending_review — used only by
+//                                               Press coverage's "search for a matching
+//                                               event" box (api/admin-editorial.js's
+//                                               link_event action), where a real match
+//                                               sitting in the submission queue is exactly
+//                                               what a moderator is trying to find. Kept
+//                                               opt-in rather than the default so the
+//                                               existing takedown tool's "only ever
+//                                               searches already-approved events" guarantee
+//                                               (see below) doesn't change for it.
 // GET  /api/admin-events?hidden=1           -> most recently hidden/rejected events (for undo)
 // POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore" }
 //   approve/reject: pending_review -> approved/rejected (the original submission queue)
@@ -132,14 +144,24 @@ module.exports = async (req, res) => {
     try {
       const search = typeof req.query?.search === "string" ? req.query.search.trim() : "";
       const hidden = req.query?.hidden === "1";
+      const includePending = req.query?.includePending === "1";
 
       let url;
       if (search) {
         // Live-event takedown search: only ever searches already-approved
         // (publicly visible) events — never pending_review or already-hidden
         // ones, so this can't be used to "approve via search" by accident.
+        // includePending=1 (Press coverage's match-search only) widens that
+        // to also catch a real match still sitting in the submission queue,
+        // and also searches venue_name_raw alongside title — a moderator
+        // reading an article often recognizes the venue name with more
+        // confidence than guessing the exact event title wording.
         const encoded = encodeURIComponent(`%${search}%`);
-        url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&title=ilike.${encoded}&select=*&order=start_date.asc&limit=50`;
+        const statusFilter = includePending ? "status=in.(approved,pending_review)" : "status=eq.approved";
+        const matchFilter = includePending
+          ? `or=(title.ilike.${encoded.replace(/%25/g, "%2525")},venue_name_raw.ilike.${encoded.replace(/%25/g, "%2525")})`
+          : `title=ilike.${encoded}`;
+        url = `${SUPABASE_URL}/rest/v1/events?${statusFilter}&${matchFilter}&select=*&order=start_date.asc&limit=50`;
       } else if (hidden) {
         // Recently hidden/rejected, most recent first — the undo list.
         url = `${SUPABASE_URL}/rest/v1/events?status=eq.rejected&select=*&order=updated_at.desc&limit=20`;

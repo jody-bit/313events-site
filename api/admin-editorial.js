@@ -148,8 +148,8 @@ module.exports = async (req, res) => {
     body = body || {};
     const { articleId, action } = body;
 
-    if (!articleId || !["create_event", "dismiss"].includes(action)) {
-      res.status(400).json({ error: "Body must include { articleId, action: 'create_event'|'dismiss' }" });
+    if (!articleId || !["create_event", "dismiss", "link_event"].includes(action)) {
+      res.status(400).json({ error: "Body must include { articleId, action: 'create_event'|'dismiss'|'link_event' }" });
       return;
     }
 
@@ -163,6 +163,49 @@ module.exports = async (req, res) => {
         if (!resp.ok) {
           const errText = await resp.text();
           res.status(502).json({ error: "Database rejected the dismiss: " + errText });
+          return;
+        }
+        res.status(200).json({ ok: true });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
+    // action === "link_event" — the moderator found an existing event (via
+    // the search box below each article, 2026-09-04: Jody asked whether the
+    // system already checks the database for a matching event before
+    // suggesting a moderator create one — it does, in cron-editorial.js's
+    // own matchArticleToEvent(), but that auto-matcher is deliberately
+    // conservative: exact-substring title/venue matching only, a narrow
+    // -5/+60 day window around whenever the cron last ran, and it only ever
+    // looks at status='approved' events — a real match sitting in
+    // pending_review, outside that window, or just phrased differently
+    // wouldn't be found automatically) that this article is actually about,
+    // rather than one this project doesn't have yet. Reuses the exact same
+    // matched_event_id/match_type='manual' fields create_event sets below —
+    // from cron-editorial.js's point of view, an article linked this way
+    // and one linked by creating a fresh event look identical: both are a
+    // human-confirmed match it should never silently overwrite on its next
+    // run (see that file's own "preserve manual links" lookup).
+    if (action === "link_event") {
+      const { eventId } = body;
+      if (!eventId || typeof eventId !== "string") {
+        res.status(400).json({ error: "Body must include { articleId, action: 'link_event', eventId }" });
+        return;
+      }
+      try {
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(articleId)}`, {
+          method: "PATCH",
+          headers: { ...sbHeaders, Prefer: "return=minimal" },
+          // `matched_event_id` is a foreign key to events(id) — an eventId
+          // that doesn't actually exist gets rejected by Postgres itself
+          // right here, no separate existence check needed.
+          body: JSON.stringify({ matched_event_id: eventId, match_type: "manual" }),
+        });
+        if (!resp.ok) {
+          const errBody = await resp.text();
+          res.status(502).json({ error: "Database rejected the link: " + errBody });
           return;
         }
         res.status(200).json({ ok: true });
