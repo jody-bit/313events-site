@@ -56,9 +56,9 @@ const CRON_ENDPOINTS = [
   "cron-ticketmaster", "cron-trinosophes", "cron-wdet", "cron-halo",
   "cron-belle-isle-nature-center", "cron-metrotimes", "cron-redford-theatre",
   "cron-cinema-detroit", "cron-dossin", "cron-feeds", "cron-editorial",
-  "cron-lagerhouse", "cron-detroitmonthofdesign",
+  "cron-lagerhouse", "cron-detroitmonthofdesign", "cron-planetanttheatre",
 ];
-const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial"];
+const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial", "admin-venues"];
 const PAGES = ["/", "/calendar.html", "/map.html", "/submit.html", "/sources.html", "/event.html", "/admin.html"];
 
 function timingSafeStringEqual(a, b) {

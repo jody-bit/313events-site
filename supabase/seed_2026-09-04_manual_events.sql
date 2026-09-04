@@ -1,7 +1,12 @@
--- Manually-researched one-off events, added 2026-09-04 at Jody's request:
---   1) Michigan Renaissance Festival (michrenfest.com) — seven themed
---      weekends, Aug 22-Oct 4, 2026, Holly, MI.
---   2) "FILM l Nicolas Uncaged 11" at Ant Hall (crowdwork.com), Sept 11, 2026.
+-- Manually-researched one-off event, added 2026-09-04 at Jody's request:
+--   Michigan Renaissance Festival (michrenfest.com) — seven themed
+--   weekends, Aug 22-Oct 4, 2026, Holly, MI.
+--
+-- (Ant Hall's "FILM l Nicolas Uncaged 11" was also added this same day, but
+-- as a one-off row here first, then superseded a few minutes later by
+-- api/cron-planetanttheatre.js once Jody asked for that whole venue's
+-- calendar — that cron's own external_id scheme now owns this show, so it's
+-- deliberately NOT duplicated below. See that file's header comment.)
 --
 -- REQUIRES migration_020_venue_address_raw.sql to have already been run —
 -- these rows use venue_address_raw, which doesn't exist on the events table
@@ -107,19 +112,7 @@ insert into events (
  '2026-10-02', '2026-10-04', '9:00 AM–7:00 PM', false, 29.95,
  'https://www.etix.com/ticket/v/18452/michigan-renaissance-festival',
  'Michigan Renaissance Festival (michrenfest.com, researched 2026-09-04)',
- '"Festival Friday" (Oct 2) is a bonus day the site adds onto the final weekend, per its own stated schedule.', 'approved'),
-
--- ---------------------------------------------------------------------------
--- ANT HALL — "FILM l Nicolas Uncaged 11" — sourced from crowdwork.com
--- (the event's own ticketing page), fetched 2026-09-04.
--- ---------------------------------------------------------------------------
-('crowdwork-film-nicolas-uncaged-11', 'FILM l Nicolas Uncaged 11',
- 'Planet Ant Theatre''s Y2K-themed Nicolas Cage double-feature night, with period-appropriate dress or Cage cosplay encouraged alongside era-specific music and drink specials.',
- 'film', 'Ant Hall', '2320 Caniff', 'Hamtramck',
- '2026-09-11', null, '8:00 PM', false, 32.85,
- 'https://www.crowdwork.com/e/film-l-nicolas-uncaged-11',
- 'crowdwork.com (event''s own ticketing page, researched 2026-09-04)',
- 'Ticket price includes fees per the ticketing page ($32.85 all-in).', 'approved')
+ '"Festival Friday" (Oct 2) is a bonus day the site adds onto the final weekend, per its own stated schedule.', 'approved')
 
 on conflict (external_id) do update set
   title = excluded.title,
