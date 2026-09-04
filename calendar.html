@@ -356,6 +356,12 @@
      for its own sake. */
   .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;font-weight:700;padding-top:2px;}
   .evt-main{flex:1;}
+  /* Thumbnail (2026-09-04) — same "flex row inside .evt-main, only when an
+     image exists" approach as index.html's identical addition; see that
+     file's comment for the full reasoning. */
+  .evt-main-body{display:flex;gap:10px;align-items:flex-start;min-width:0;}
+  .evt-thumb{flex:0 0 auto;width:52px;height:52px;object-fit:cover;border-radius:var(--radius);background:var(--panel-alt);}
+  .evt-text{min-width:0;flex:1 1 auto;}
   .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
   /* 2026-08-28: same title-link + description-excerpt treatment added to
      index.html — see that file's comments for the full reasoning. */
@@ -1786,17 +1792,22 @@ function showDayPanel(iso){
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-            <div class="evt-meta">
-              <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-              ${priceTag(e)}
-              <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
-              ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
+            <div class="evt-main-body">
+              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
+              <div class="evt-text">
+                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+                <div class="evt-meta">
+                  <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+                  ${priceTag(e)}
+                  <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
+                </div>
+                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+                ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
+                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              </div>
             </div>
-            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-            ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-            ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
         </div>
       `).join('');
@@ -1829,17 +1840,22 @@ function renderList(dateList){
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-            <div class="evt-meta">
-              <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-              ${priceTag(e)}
-              <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
-              ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
+            <div class="evt-main-body">
+              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
+              <div class="evt-text">
+                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+                <div class="evt-meta">
+                  <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+                  ${priceTag(e)}
+                  <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
+                </div>
+                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+                ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
+                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              </div>
             </div>
-            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-            ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-            ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
           </div>
         </div>
       `).join('') + `</div>`;

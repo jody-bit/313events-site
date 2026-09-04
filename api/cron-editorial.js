@@ -134,6 +134,17 @@ const CANDIDATE_DAYS_AHEAD = 60;
 // days of the event's own start_date (see match_type='venue_date').
 const VENUE_MATCH_MAX_DAY_GAP = 21;
 
+// Retroactive re-match window for ALREADY-STORED unmatched articles (see
+// retryUnmatchedArticles() below) — deliberately much wider than the -5/+60
+// day window above, which is tuned for freshly-fetched articles against
+// near-term events. An old article sitting unmatched in the queue may only
+// find its event MONTHS after ingestion — e.g. a roundup article already
+// mentioning a festival before that festival's full season of dates ever got
+// added to the database (exactly what happened the week this was built,
+// 2026-09-04) — so this pass checks against every current/future event, not
+// just a narrow window around "now".
+const RETRY_CANDIDATE_DAYS_BACK = 90;
+
 // A title (or venue name) shorter than this is too generic to trust as a
 // substring match on its own (e.g. "Live", "Detroit", "Show") — skipped
 // rather than risk a false positive.
@@ -378,6 +389,87 @@ function toISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// ---- Retroactive re-match (2026-09-04) ----
+// Jody: "can we re-crawl the media to automatically associate the press to
+// the event so I don't have to do it by hand?" The per-outlet loop below
+// only ever re-evaluates whatever's CURRENTLY in each outlet's live RSS feed
+// — an article that aged out of the feed (the normal case; feeds only carry
+// recent items) never gets its match re-attempted, even after a new event
+// gets added that it would now match. This pass closes that gap: it reloads
+// every still-unmatched, non-dismissed article already in the table
+// (exactly what shows in admin.html's Press Coverage queue) and re-runs the
+// same matchArticleToEvent() against a much wider candidate window than the
+// per-outlet loop uses (see RETRY_CANDIDATE_DAYS_BACK above) — wide enough to
+// cover events that didn't exist yet when the article was first ingested.
+// Runs on every scheduled invocation of this cron from now on, so this
+// self-heals going forward without a one-off manual trigger every time new
+// events get added — though Jody can still trigger this cron on-demand from
+// Vercel's dashboard to apply it immediately rather than waiting for the
+// next scheduled run. Writes the same two places api/admin-editorial.js's
+// link_event action does (matched_event_id, guarded to only ever set it once
+// per article, plus a row in the editorial_article_events join table —
+// migration_021) so an auto-found match reads back identically to a manual
+// one everywhere on the site.
+async function retryUnmatchedArticles(sbHeaders) {
+  const now = new Date();
+  const floor = new Date(now); floor.setDate(floor.getDate() - RETRY_CANDIDATE_DAYS_BACK);
+
+  let unmatched;
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=is.null&admin_dismissed=eq.false&select=id,title,excerpt,url,published_at`;
+    const r = await fetch(url, { headers: sbHeaders });
+    unmatched = await r.json();
+    if (!Array.isArray(unmatched)) throw new Error("Unexpected response shape loading unmatched articles");
+  } catch (err) {
+    return { checked: 0, matched: 0, error: "Failed to load unmatched articles: " + err.message };
+  }
+  if (!unmatched.length) return { checked: 0, matched: 0 };
+
+  let wideCandidates;
+  try {
+    // status=in.(approved,pending_review) — same "check pending too" call
+    // api/admin-events.js's includePending search already makes: a real
+    // match still sitting in the submission queue is exactly what this pass
+    // is for, not just already-live events.
+    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${toISO(floor)}&select=id,title,venue_name_raw,start_date`;
+    const r = await fetch(evUrl, { headers: sbHeaders });
+    wideCandidates = await r.json();
+    if (!Array.isArray(wideCandidates)) throw new Error("Unexpected response shape loading candidate events");
+  } catch (err) {
+    return { checked: unmatched.length, matched: 0, error: "Failed to load candidate events: " + err.message };
+  }
+
+  let matchedCount = 0;
+  for (const article of unmatched) {
+    const match = matchArticleToEvent(article, wideCandidates);
+    if (!match) continue;
+    try {
+      // is.null guard — same belt-and-suspenders reasoning as
+      // api/admin-editorial.js's link_event action: never overwrite a match
+      // a moderator set by hand between the load above and this write.
+      const patchResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(article.id)}&matched_event_id=is.null`,
+        {
+          method: "PATCH",
+          headers: { ...sbHeaders, Prefer: "return=minimal" },
+          body: JSON.stringify({ matched_event_id: match.event.id, match_type: match.matchType }),
+        }
+      );
+      if (!patchResp.ok) continue;
+      await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
+        method: "POST",
+        headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: JSON.stringify({ article_id: article.id, event_id: match.event.id }),
+      });
+      matchedCount++;
+    } catch {
+      // One bad write never aborts the rest of the pass — same "one bad item
+      // never aborts the whole run" convention as every other cron here.
+    }
+  }
+  return { checked: unmatched.length, matched: matchedCount };
+}
+
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
@@ -508,8 +600,48 @@ module.exports = async (req, res) => {
             outletResult = `Parsed ${rows.length} item${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`;
           } else {
             totalUpserted += rows.length;
-            const matchedHere = rows.filter((r) => r.matched_event_id).length;
-            outletResult = `${rows.length} item${rows.length === 1 ? "" : "s"} found, ${matchedHere} matched to an event, ${skippedNonEvent} skipped as non-event coverage`;
+            const matchedRows = rows.filter((r) => r.matched_event_id);
+            // The upsert above only writes editorial_articles.matched_event_id
+            // — it has no article id to write with (on_conflict upserts don't
+            // return rows), so a freshly-matched article never gets its
+            // editorial_article_events join-table row here. Since
+            // index.html/event.html read exclusively through that join table
+            // (migration_021, 2026-09-04), a match made on this first pass
+            // would otherwise never actually show up anywhere on the site —
+            // and retryUnmatchedArticles() below wouldn't catch it either,
+            // since its is.null filter skips rows that already have
+            // matched_event_id set. Re-fetch just this outlet's rows by URL to
+            // get their ids, then upsert the join rows the same way
+            // retryUnmatchedArticles() and admin-editorial.js's link_event do.
+            if (matchedRows.length) {
+              try {
+                const urlList = matchedRows.map((r) => `"${r.url.replace(/"/g, '\\"')}"`).join(",");
+                const idLookupResp = await fetch(
+                  `${SUPABASE_URL}/rest/v1/editorial_articles?url=in.(${urlList})&select=id,url`,
+                  { headers: sbHeaders }
+                );
+                if (idLookupResp.ok) {
+                  const withIds = await idLookupResp.json();
+                  const idByUrl = new Map(withIds.map((r) => [r.url, r.id]));
+                  const joinRows = matchedRows
+                    .map((r) => ({ article_id: idByUrl.get(r.url), event_id: r.matched_event_id }))
+                    .filter((jr) => jr.article_id);
+                  if (joinRows.length) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
+                      method: "POST",
+                      headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
+                      body: JSON.stringify(joinRows),
+                    });
+                  }
+                }
+              } catch {
+                // Join-row write failing never aborts ingestion — the next
+                // scheduled run's retryUnmatchedArticles pass can't recover
+                // this one (matched_event_id is already set), but a moderator
+                // can still see and re-link it manually from admin.html.
+              }
+            }
+            outletResult = `${rows.length} item${rows.length === 1 ? "" : "s"} found, ${matchedRows.length} matched to an event, ${skippedNonEvent} skipped as non-event coverage`;
           }
         }
       }
@@ -519,12 +651,18 @@ module.exports = async (req, res) => {
     results.push({ source: outlet.source, feedUrl: outlet.feedUrl, result: outletResult });
   }
 
+  // Retroactive pass — re-checks every still-unmatched article (not just this
+  // run's fresh RSS items) against a much wider candidate window. See
+  // retryUnmatchedArticles()'s own header comment for why this exists.
+  const retryResult = await retryUnmatchedArticles(sbHeaders);
+
   res.status(200).json({
     upserted: totalUpserted,
     matched: totalMatched,
     candidateEvents: candidateEvents.length,
     outletsChecked: OUTLETS.length,
     results,
+    retroactiveRematch: retryResult,
     fetchedAt: new Date().toISOString(),
   });
 };

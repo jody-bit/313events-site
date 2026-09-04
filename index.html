@@ -4014,6 +4014,25 @@
      cramming the actions row too. Pinning columns keeps layout stable
      regardless of which items are present. */
   .evt-main{grid-column:2;min-width:0;}
+  /* Thumbnail (2026-09-04, Jody: "add a thumbnail view of any images
+     associated to the events") — image_url has been loaded and available
+     on every event since day one (used for the "photo" filter chip and
+     event.html's own hero image + social-share tags) but was never actually
+     shown anywhere in the list view itself. Lives INSIDE .evt-main as a
+     small flex row (thumb + text), rather than as a 4th outer grid column —
+     that keeps the existing 3-column [time/main/side] grid, and its mobile
+     single-column fallback, completely untouched; only rows that actually
+     have an image gain the extra flex wrapper, so image-less rows (still
+     the majority of sources) don't carry a blank reserved gutter. */
+  .evt-main-body{display:flex;gap:12px;align-items:flex-start;min-width:0;}
+  .evt-thumb{
+    flex:0 0 auto;width:64px;height:64px;object-fit:cover;
+    border-radius:var(--radius);background:var(--panel-alt);
+  }
+  .evt-text{min-width:0;flex:1 1 auto;}
+  @media (max-width:640px){
+    .evt-thumb{width:52px;height:52px;}
+  }
   .evt-title{font-size:18px;font-weight:800;margin-bottom:4px;line-height:1.25;}
   /* Only wraps the title when the event has a real DB id — see
      editorialLinkHtml()'s comment for why FALLBACK_EVENTS (no id) can't
@@ -4397,8 +4416,9 @@
       <button class="when-btn" data-when="weekend">This Weekend</button>
       <!-- All Upcoming (P0, 2026-08-28 product audit Gap 2) — the one
            explicit, one-click way to see the complete unfiltered catalog
-           beyond the page's silent 30-day default window; see
-           currentDateList()/matchesFilters() for what it actually changes. -->
+           beyond the page's today-only default view (narrowed from a 30-day
+           rolling window 2026-09-04); see currentDateList()/matchesFilters()
+           for what it actually changes. -->
       <button class="when-btn" data-when="all">All Upcoming</button>
       <!-- Expanded from a single "Pick a date" input into a From/To pair
            (Jody, 2026-08-27) so the same control handles both a single date
@@ -4449,8 +4469,10 @@
 
   <!-- Month prev/next paging removed (Jody, 2026-08-27): the list is no
        longer boxed to one calendar month (see currentDateList()) — its
-       default view is a rolling 30-day window from today, and the When
-       sheet's date-range picker is the way to jump further out. A calendar
+       default view is today only (narrowed from a rolling 30-day window
+       2026-09-04, so the page's own scroll doesn't bury the right-hand
+       column), and the When sheet's date-range picker or "All Upcoming" is
+       the way to jump further out. A calendar
        month to page through no longer matches how the list actually scopes
        itself, so the control (and the "August 2026" label with it) is gone
        rather than left showing a scope that isn't real anymore.
@@ -5188,7 +5210,15 @@ function currentDateList(){
   // answer instead of the silent 30-day default below.
   if(whenMode === 'all') return upcomingDatesWithEvents();
   if(neighborhoodFilter) return upcomingDatesWithEvents();
-  return rollingWindowDates(30);
+  // Default resting state: today only, not a rolling multi-week window.
+  // Jody, 2026-09-04: a 30-day list made the page's own scroll so long that
+  // a visitor would never actually reach whatever lives in the layout's
+  // right-hand column (Explore Neighborhoods, View Calendar, etc.) — they'd
+  // have scrolled past dozens of days of cards long before getting there.
+  // "See everything" (All Upcoming, one tap away via the scope note below)
+  // is still the full unbounded list; this just keeps the FIRST thing a
+  // visitor sees short enough that the rest of the page is still reachable.
+  return [getTodayISO()];
 }
 
 // Paired with currentDateList() — the human-readable scope behind whatever
@@ -5839,17 +5869,30 @@ function buildGoogleCalUrl(e){
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-// Rendered inline per event — a plain data: URI .ics link with no
-// `download` attribute, so a tap on mobile opens the OS's native "Add to
-// Calendar" sheet directly (a `download` attribute forces a generic file
-// save instead on iOS in particular). Google Calendar is offered as a
-// second, explicit option since not every visitor's default calendar app
-// picks up a tapped .ics link that way.
+// Rendered inline per event. Was a plain `data:text/calendar` URI with no
+// `download` attribute (the theory being that a tap on mobile would open
+// the OS's native "Add to Calendar" sheet directly, and `download` would
+// force a generic file save instead). In practice (Jody, 2026-09-04: broken
+// on Mac Safari AND iPhone) that theory didn't hold — Safari restricts
+// top-level navigation to `data:` URIs for security reasons and, on both
+// desktop and iOS, a tap/click on a bare `data:` link just does nothing
+// visible or dumps raw ICS text into the tab instead of invoking Calendar.
+// Fixed by switching to a `Blob` + `URL.createObjectURL()` with an explicit
+// `download` attribute — Safari (both platforms, and every other browser)
+// handles Blob-URL downloads reliably; tapping the resulting downloaded
+// .ics file in Safari's own download UI is what actually opens it in
+// Calendar on iOS. One known, accepted tradeoff: each render() call creates
+// a new object URL per event without revoking the previous one, a small
+// per-render memory footprint (each blob is a few hundred bytes of ICS
+// text) — not worth the added bookkeeping to eliminate given how small it
+// is, and it's cleared on page reload regardless.
 function addToCalendarHtml(e){
-  const icsHref = `data:text/calendar;charset=utf-8,${encodeURIComponent(buildICS(e))}`;
+  const icsBlob = new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'});
+  const icsHref = URL.createObjectURL(icsBlob);
+  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
   const gcalHref = buildGoogleCalUrl(e);
   return `<span class="evt-cal">
-    <a href="${escapeHtml(gcalHref)}" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}">Apple/Outlook</a>
+    <a href="${escapeHtml(gcalHref)}" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>
   </span>`;
 }
 
@@ -5926,16 +5969,21 @@ function renderList(dateList, meta){
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-            <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
-            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-            ${multiDayNoteHtml(e)}
-            ${editorialLinkHtml(e)}
-            <div class="evt-actions">
-              ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-              ${addToCalendarHtml(e)}
-              ${shareButtonHtml(e)}
+            <div class="evt-main-body">
+              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
+              <div class="evt-text">
+                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+                <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+                ${multiDayNoteHtml(e)}
+                ${editorialLinkHtml(e)}
+                <div class="evt-actions">
+                  ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+                  ${addToCalendarHtml(e)}
+                  ${shareButtonHtml(e)}
+                </div>
+              </div>
             </div>
           </div>
           <div class="evt-side">
@@ -5950,9 +5998,12 @@ function renderList(dateList, meta){
   // above and Gap 2/8 in the 2026-08-28 product audit. Every other scope
   // (including "All Upcoming" itself, and the neighborhood rail) already
   // states its own scope via meta.countLabel, so this only applies to the
-  // one silent case.
+  // one silent case. Narrowed from "the next 30 days" to just "today"
+  // 2026-09-04 (Jody: the old 30-day list scrolled so long that visitors
+  // never reached the page's right-hand column) — the "see everything" tap
+  // target stays the same one-click escape hatch to the full unbounded list.
   const scopeNote = (any && !whenMode && !neighborhoodFilter)
-    ? `<div class="list-scope-note">Showing the next 30 days — <button type="button" onclick="activateWhen('all')">see everything &rarr;</button></div>`
+    ? `<div class="list-scope-note">Showing today — <button type="button" onclick="activateWhen('all')">see everything &rarr;</button></div>`
     : '';
   const countHeading = (any && meta.countLabel)
     ? `<div class="list-count-heading">Showing ${matchCount} event${matchCount===1?'':'s'} ${meta.countLabel}</div>`
@@ -6357,11 +6408,11 @@ function viewNeighborhood(name){
 function emptyStateMessage(scopeLabel){
   const actions = [];
   if(whenMode || neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
-  // Nothing in the next 30 days doesn't mean nothing at all — offer the
-  // same All Upcoming escape hatch here as the populated default view gets
-  // (see .list-scope-note / renderList()) rather than leaving an empty
-  // 30-day window looking like a dead end (P0, 2026-08-28 product audit
-  // Gap 2/8).
+  // Nothing today doesn't mean nothing at all — offer the same All Upcoming
+  // escape hatch here as the populated default view gets (see
+  // .list-scope-note / renderList()) rather than leaving a quiet today
+  // looking like a dead end (P0, 2026-08-28 product audit Gap 2/8; default
+  // view narrowed from a 30-day window to today-only 2026-09-04).
   if(!whenMode && !neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="activateWhen('all')">See all upcoming events</button>`);
   if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
   if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);

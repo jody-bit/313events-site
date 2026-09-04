@@ -486,7 +486,12 @@ function renderEvent(e){
     actionsHtml += `<a class="btn-primary" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets & info'}</a>`;
   }
   actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
-  actionsHtml += `<a class="btn-secondary" href="data:text/calendar;charset=utf-8,${encodeURIComponent(buildICS(e))}">Apple/Outlook</a>`;
+  // Blob + download, not a bare `data:` URI — see index.html's identical
+  // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
+  // and iPhone with the old data: URI approach).
+  const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
+  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
 
