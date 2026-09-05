@@ -189,6 +189,12 @@
         <td><span class="badge badge-ok">High</span></td>
         <td class="src-note">The site's own /events list widget only ever exposes ~20 of its 300+ events to a plain fetch (the rest load via client-side "Load More" interaction this project can't drive without a headless browser); <code>event-pages-sitemap.xml</code>, linked from robots.txt, lists every event page regardless, and each one carries a clean schema.org Event block with exact start/end datetimes and a full address — meaningfully more precise than most sources here. Real multi-day spans (week-plus installations) populate end_date properly, and a same-day event's start/end time becomes a real "7:00 PM–11:00 PM"-style range. <code>api/cron-detroitmonthofdesign.js</code></td>
       </tr>
+      <tr>
+        <td class="src-name">PLAYGROUND DETROIT</td>
+        <td>WordPress core REST API (event titles/tags/images) + the Modern Events Calendar plugin's own "Add to Google Calendar" export link on each event page (real dates/venue address)</td>
+        <td><span class="badge badge-ok">High</span></td>
+        <td class="src-note">Added 2026-09-05 (Jody: "did we crawl this events page yet?"). Not the same thing as this outlet's other row below in the editorial-coverage table — that's a general /feed/ RSS poll for press-coverage matching, this is a real events-calendar crawl. The plugin's own public REST API (<code>/wp-json/mec/v1/events</code>) is a dead end — the route exists but always returns an empty array — so structured date/time/venue instead comes from parsing the query string of each event page's calendar-export link, the same "borrow the calendar-export link" trick used elsewhere on this project. Category is read per-event from the plugin's own tags (Live Music, Film, Workshop, etc.) rather than defaulting the whole venue to one bucket. This site's own robots.txt sets <code>Crawl-delay: 3</code>, honored literally with a real pause between each of this cron's per-event fetches — see <code>api/cron-playgrounddetroit.js</code>'s header comment for the full reasoning, including a caveat that a handful of events are presented by the gallery but held elsewhere (so venue_name_raw always reads "PLAYGROUND DETROIT" even though venue_address_raw is the real, different location).</td>
+      </tr>
     </table>
     <p class="group-desc" style="margin-top:16px;">Separately, these outlets' own general-news RSS/Atom feeds are polled for editorial coverage to match against events already in the database (rendered as "As seen in" on the matching event, and as standalone cards on <a href="radar.html">radar.html</a> when nothing matches but the article still looks like event coverage — see <code>looksLikeEventCoverage()</code>). This is a different data model from the event-listing sources above: no new events are created from these, only coverage of events that already exist.</p>
     <table>
@@ -233,7 +239,7 @@
         <td class="src-name">PLAYGROUND DETROIT</td>
         <td>Outlet's own RSS feed (guessed path)</td>
         <td><span class="badge badge-warn">Unconfirmed</span></td>
-        <td class="src-note">playgrounddetroit.com/feed/, standard WordPress path — not independently hit-tested.</td>
+        <td class="src-note">playgrounddetroit.com/feed/, standard WordPress path — not independently hit-tested. Separate from this outlet's own events-calendar crawl in the "Live &amp; Automated" table above (added 2026-09-05) — that one creates new events directly; this row is only about matching this outlet's general blog posts to events already on the site.</td>
       </tr>
       <tr>
         <td class="src-name">Eater Detroit</td>

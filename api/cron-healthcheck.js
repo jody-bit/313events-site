@@ -57,6 +57,7 @@ const CRON_ENDPOINTS = [
   "cron-belle-isle-nature-center", "cron-metrotimes", "cron-redford-theatre",
   "cron-cinema-detroit", "cron-dossin", "cron-feeds", "cron-editorial",
   "cron-lagerhouse", "cron-detroitmonthofdesign", "cron-planetanttheatre",
+  "cron-playgrounddetroit",
 ];
 const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial", "admin-venues"];
 const PAGES = ["/", "/calendar.html", "/map.html", "/submit.html", "/sources.html", "/event.html", "/admin.html"];

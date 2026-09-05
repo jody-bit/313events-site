@@ -57,6 +57,10 @@
       "schedule": "0 2 * * *"
     },
     {
+      "path": "/api/cron-playgrounddetroit",
+      "schedule": "0 3 * * *"
+    },
+    {
       "path": "/api/cron-healthcheck",
       "schedule": "0 12 * * *"
     }
@@ -76,6 +80,9 @@
     },
     "api/cron-planetanttheatre.js": {
       "maxDuration": 60
+    },
+    "api/cron-playgrounddetroit.js": {
+      "maxDuration": 120
     },
     "api/cron-healthcheck.js": {
       "maxDuration": 30
