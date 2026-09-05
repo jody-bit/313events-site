@@ -112,6 +112,33 @@ function mapCategory(classifications) {
   return null; // anything else unmapped (still) -> excluded
 }
 
+// 2026-09-05 fix — Jody asked to re-crawl for images across every upcoming
+// event; auditing the live database first showed 981 of 981 upcoming
+// Ticketmaster-sourced events (81% of every upcoming approved event on the
+// whole site) had no image_url at all. Root cause: shapeForDb() below never
+// read the API's own `images` array in the first place — not a data gap on
+// Ticketmaster's end. Confirmed via Ticketmaster's own Discovery API docs
+// (2026-09-05): every event's `images` array is always populated (falls back
+// to the event's major-category stock image if it has no photo of its own),
+// with entries shaped { ratio: "16_9"|"3_2"|"4_3", url, width, height,
+// fallback }. Picks the largest real (non-fallback) 16_9 image up to 1024px
+// wide — big enough for a sharp card image without pulling a multi-MB
+// original — falling back to the largest available 16_9 image (even a
+// fallback stock one beats no image at all), then to literally any image in
+// the array as a last resort. Only returns null if the array is missing or
+// empty outright, which per the docs above should never actually happen.
+function pickImage(images) {
+  if (!Array.isArray(images) || !images.length) return null;
+  const ratio16x9 = images.filter((img) => img && img.ratio === "16_9" && img.url);
+  const pool = ratio16x9.length ? ratio16x9 : images.filter((img) => img && img.url);
+  if (!pool.length) return null;
+  const real = pool.filter((img) => !img.fallback);
+  const candidates = real.length ? real : pool;
+  const withinCap = candidates.filter((img) => !img.width || img.width <= 1024);
+  const chosenFrom = withinCap.length ? withinCap : candidates;
+  return chosenFrom.reduce((best, img) => ((img.width || 0) > (best.width || 0) ? img : best), chosenFrom[0]).url;
+}
+
 function formatTime(dateObj) {
   if (!dateObj || !dateObj.localTime) return "Evening";
   const [h, m] = dateObj.localTime.split(":");
@@ -181,6 +208,7 @@ function shapeForDb(e) {
     is_free: false,
     price_from: priceRange ? priceRange.min : null,
     ticket_url: affiliateTicketUrl(e.url),
+    image_url: pickImage(e.images),
     source: "Ticketmaster",
   };
 }
