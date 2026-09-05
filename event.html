@@ -160,12 +160,28 @@
   .evt-editorial .ei-src{
     color:var(--ink-soft);font-weight:600;font-size:12.5px;flex-shrink:0;
   }
-  /* "+N more articles" (2026-09-04) — see index.html's own .evt-editorial-also
-     comment for the full reasoning: a quiet coverage-count line, not a
-     second row of clickable links. */
+  /* Additional coverage links (redesigned 2026-09-05 per Jody: "I want all
+     articles about an event accessible from the dedicated event page" — the
+     2026-09-04 version below this comment used to render these as a quiet,
+     non-clickable "+N more articles" count with just a hover tooltip, which
+     meant every article past the first was effectively unreachable (no link
+     at all, and a title="" tooltip doesn't work on touch anyway). Now each
+     additional article gets its own real <a> — still visually secondary
+     to the primary "As seen in" callout above, but every one is genuinely
+     clickable. */
   .evt-editorial-also{
-    font-size:12px;color:var(--ink-soft);margin:-14px 0 20px 17px;
+    margin:-14px 0 20px 17px;
   }
+  .evt-editorial-also .ei-more-label{
+    display:block;font-size:11px;font-weight:800;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;
+  }
+  .evt-editorial-also a{
+    display:block;font-size:12.5px;color:var(--ink-soft);text-decoration:none;
+    padding:2px 0;
+  }
+  .evt-editorial-also a:hover{color:var(--accent);text-decoration:underline;}
+  .evt-editorial-also a .ei-more-src{color:var(--ink-soft);font-weight:600;}
 </style>
 </head>
 <body>
@@ -602,18 +618,17 @@ async function loadEditorialLink(id){
     el.href = safeUrl(article.url);
     el.innerHTML = `<span class="ei-tag">As seen in</span><span class="ei-title">${escapeHtml(decodeEntities(article.title))}</span>${article.source?`<span class="ei-src">— ${escapeHtml(article.source)}</span>`:''}`;
     el.style.display = 'flex';
-    // 2026-09-04 (Jody: "let an event have as many articles associated to it
-    // as needed so the user can see which... are getting more coverage") —
-    // same quiet, non-clickable coverage-count line as index.html's
-    // editorialLinkHtml(); see that function's comment for the reasoning.
-    const others = articles.slice(1);
+    // 2026-09-05 (Jody: "I want all articles about an event accessible from
+    // the dedicated event page") — every additional article past the first
+    // is now a real link, not just a hover-tooltip count (see the CSS
+    // comment above for why that changed). Same safeUrl() gate as the
+    // primary link above — an article whose url fails that check is simply
+    // skipped rather than rendered unclickable-but-visible.
+    const others = articles.slice(1).filter(a => safeUrl(a.url));
     if(others.length){
-      const otherSources = [...new Set(others.map(a => a.source).filter(Boolean))];
-      const countLabel = `+${others.length} more article${others.length===1?'':'s'}`;
-      const sourcesTitle = others.map(a => `${decodeEntities(a.title)}${a.source?` — ${a.source}`:''}`).join('\n');
       const alsoEl = document.getElementById('evtEditorialAlso');
-      alsoEl.title = sourcesTitle;
-      alsoEl.textContent = countLabel + (otherSources.length ? ` (${otherSources.join(', ')})` : '');
+      const links = others.map(a => `<a href="${safeUrl(a.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(decodeEntities(a.title))}${a.source?` <span class="ei-more-src">— ${escapeHtml(a.source)}</span>`:''}</a>`).join('');
+      alsoEl.innerHTML = `<span class="ei-more-label">Also covered by</span>${links}`;
       alsoEl.style.display = 'block';
     }
   } catch (err) {
