@@ -65,9 +65,27 @@ const crypto = require("crypto");
 // writing and reuses it, only defaulting brand-new rows to DEFAULT_STATUS.
 //
 // ** BEST-EFFORT ** — built from real fetched HTML and JSON-LD, spot-check
-// the first live run. 317 detail-page fetches (at build time) run with
-// limited concurrency to stay well inside this function's maxDuration —
-// see vercel.json's functions block.
+// the first live run. ~318 detail-page fetches run with limited
+// concurrency to stay well inside this function's maxDuration — see
+// vercel.json's functions block.
+//
+// 2026-09-05 fix — this route 502'd on a real scheduled run (Vercel log:
+// 38.55s execution, no obvious timeout). Live reproduction (re-running
+// this scraper's own fetch pattern against all ~318 current detail URLs)
+// found two real, separate problems: (1) Wix rate-limits this site hard —
+// about a third of detail-page fetches came back HTTP 429 at the original
+// concurrency of 12, silently dropping a third of the festival's events on
+// every run, 502 or not; (2) this is the only source in the project that
+// has ever run several hundred rows through the status-lookup-then-upsert
+// pattern (the next largest, cron-planetanttheatre, tops out around 50) —
+// large enough that the status lookup's `external_id=in.(...)` id list and
+// the upsert's JSON body were both unprecedented sizes for this codebase,
+// though the exact Postgres/PostgREST error text from the failed run
+// itself wasn't visible in the log. Fixed both: fetchWithRetry() backs off
+// and retries 429/502/503/504 instead of treating them as a hard skip, and
+// both Supabase calls are now chunked (SUPABASE_BATCH_SIZE) so a problem
+// with one batch can't zero out the whole run and — if a batch does fail —
+// the response now says which rows and why, instead of one opaque 502.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -89,8 +107,49 @@ function timingSafeStringEqual(a, b) {
 const SITEMAP_URL = "https://www.detroitmonthofdesign.org/event-pages-sitemap.xml";
 const DEFAULT_CATEGORY = "visual";
 const DEFAULT_STATUS = "approved"; // official festival's own site, same trust tier as cron-dossin.js/cron-lagerhouse.js
-const FETCH_CONCURRENCY = 12;
+// 2026-09-05 fix — a live reproduction (fetching this run's own 318 detail
+// URLs the same way this scraper does) found Wix rate-limiting ~1/3 of
+// requests with HTTP 429 at the original concurrency of 12 — not a fluke:
+// reproduced consistently. That alone silently drops a third of the
+// festival's events on every "successful" (200) run, and independently
+// this cron process a couple hundred rows through Supabase — a scale no
+// other cron here has hit before (cron-planetanttheatre tops out at ~50) —
+// which is the other change below.
+const FETCH_CONCURRENCY = 6; // lower than before specifically to reduce how often Wix 429s us
+const RETRY_STATUSES = new Set([429, 502, 503, 504]);
+const MAX_FETCH_ATTEMPTS = 4;
+const SUPABASE_BATCH_SIZE = 75; // keeps both the status-lookup GET's id list and each upsert POST well under any request-size/URL-length ceiling as this source's event count grows
 const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313events.com event calendar)" };
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Wraps a single fetch with retry + exponential backoff specifically for
+// transient statuses (429 rate-limit chief among them, per the finding
+// above) — a fetch that still fails after MAX_FETCH_ATTEMPTS returns
+// whatever response it last got (or throws, for a network-level failure),
+// same as before this fix, so callers' existing "skip what doesn't parse"
+// handling is unchanged.
+async function fetchWithRetry(url, options, attempts = MAX_FETCH_ATTEMPTS) {
+  let lastResponse;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const r = await fetch(url, options);
+    if (r.ok || !RETRY_STATUSES.has(r.status) || attempt === attempts) return r;
+    lastResponse = r;
+    await sleep(400 * attempt); // 400ms, 800ms, 1200ms...
+  }
+  return lastResponse;
+}
+
+// Splits `items` into chunks of at most `size` — used to keep both the
+// status-lookup GET's id list and each upsert POST body a bounded size
+// regardless of how many events this source has in a given run.
+function chunk(items, size) {
+  const out = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
 
 function decodeEntities(str) {
   if (!str) return str;
@@ -104,7 +163,7 @@ function decodeEntities(str) {
 }
 
 async function fetchDetailUrls() {
-  const r = await fetch(SITEMAP_URL, { headers: REQUEST_HEADERS });
+  const r = await fetchWithRetry(SITEMAP_URL, { headers: REQUEST_HEADERS });
   if (!r.ok) throw new Error(`Sitemap fetch failed: HTTP ${r.status}`);
   const xml = await r.text();
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => decodeEntities(m[1]));
@@ -131,7 +190,7 @@ function isoDatePortion(isoString) {
 }
 
 async function fetchEventFromDetailPage(url) {
-  const r = await fetch(url, { headers: REQUEST_HEADERS });
+  const r = await fetchWithRetry(url, { headers: REQUEST_HEADERS });
   if (!r.ok) return null;
   const html = await r.text();
   const m = html.match(/<script type="application\/ld\+json">(\{"@context":"https:\/\/schema\.org","@type":"Event".*?\})<\/script>/s);
@@ -247,43 +306,71 @@ module.exports = async (req, res) => {
   const rows = Array.from(seen.values());
 
   try {
-    const idList = rows.map((r) => r.external_id).join(",");
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
+    // Status-preserving lookup, chunked (see SUPABASE_BATCH_SIZE's comment
+    // above) — this source alone can run into the hundreds of rows, and an
+    // `external_id=in.(...)` id list that long risks a URL-length ceiling
+    // no other cron here has ever approached.
     const existingStatusByExternalId = new Map();
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+    for (const idsChunk of chunk(rows.map((r) => r.external_id), SUPABASE_BATCH_SIZE)) {
+      const lookupResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idsChunk.join(",")})&select=external_id,status`,
+        { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+      );
+      if (lookupResp.ok) {
+        const existingRows = await lookupResp.json();
+        if (Array.isArray(existingRows)) {
+          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+        }
       }
+      // A single chunk's lookup failing just leaves those rows' statuses
+      // out of the map (they fall back to DEFAULT_STATUS below) — same
+      // "not silently worse than no status-preserving lookup at all"
+      // reasoning as the unchunked version had, now scoped per chunk
+      // instead of being all-or-nothing for the whole run.
     }
-    // Lookup failure falls through with an empty map — every row defaults
-    // to DEFAULT_STATUS, same as this scraper's first-ever run. Not
-    // silently worse than the old (non-status-preserving) behavior.
 
     const rowsWithStatus = rows.map((row) => ({
       ...row,
       status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
     }));
 
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(rowsWithStatus),
-    });
-    if (!resp.ok) {
-      const errText = await resp.text();
-      res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
+    // Upsert in the same chunk size — besides staying under any request
+    // size limit, this means one bad batch (e.g. one row Postgres rejects)
+    // no longer zeroes out the whole run's ~300 rows: every other chunk
+    // still lands, and the response below says exactly which chunk failed
+    // and why, closing the "502 with no visible cause" gap that made
+    // today's incident hard to diagnose from the Vercel log alone.
+    let upserted = 0;
+    const chunkErrors = [];
+    for (const rowsChunk of chunk(rowsWithStatus, SUPABASE_BATCH_SIZE)) {
+      const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          Prefer: "resolution=merge-duplicates,return=minimal",
+        },
+        body: JSON.stringify(rowsChunk),
+      });
+      if (!resp.ok) {
+        const errText = await resp.text();
+        chunkErrors.push({ externalIds: rowsChunk.map((r) => r.external_id), error: errText });
+        continue; // one bad chunk doesn't abort the rest — see comment above
+      }
+      upserted += rowsChunk.length;
+    }
+
+    if (chunkErrors.length) {
+      // Partial failure: still 502 (something genuinely went wrong and
+      // needs a look) but now with the actual per-chunk Postgres/PostgREST
+      // error text and which rows were in the failing chunk(s), plus how
+      // many rows DID make it in, instead of an opaque all-or-nothing
+      // failure.
+      res.status(502).json({ upserted, upsertErrors: chunkErrors, checkedUrls: detailUrls.length, fetchedAt: new Date().toISOString() });
       return;
     }
-    res.status(200).json({ upserted: rowsWithStatus.length, checkedUrls: detailUrls.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted, checkedUrls: detailUrls.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
     res.status(500).json({ upserted: 0, error: err.message });
   }
