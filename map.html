@@ -1119,6 +1119,7 @@ function evtRowHtml(e){
         ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
         ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
         ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+        ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
       </div>
     </div>
   `;
@@ -1786,6 +1787,11 @@ function mapSupabaseRow(row) {
     source: row.source || "Manual",
     note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
+    // Named eventPageUrl, not eventUrl — this file already has a function
+    // called eventUrl(e) (the internal event.html permalink); keeping this
+    // field's name distinct avoids colliding with that. See
+    // migration_022_event_url.sql.
+    eventPageUrl: row.event_url || undefined,
     priceFrom: row.price_from ?? undefined,
   };
 }
@@ -1804,7 +1810,7 @@ async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
   try {
     await loadVenueLatLng(); // must resolve before mapSupabaseRow()/resolvePlace() run below
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });

@@ -159,7 +159,7 @@ module.exports = async (req, res) => {
 
   const {
     title, category, description, imageUrl, startDate, endDate, startTime,
-    recurring, venue, address, venueTba, admission, price, ticketUrl,
+    recurring, venue, address, venueTba, admission, price, ticketUrl, eventUrl,
     orgName, contactEmail, companyWebsite, elapsedMs,
   } = body;
 
@@ -219,6 +219,7 @@ module.exports = async (req, res) => {
   if (!orgName || typeof orgName !== "string" || !orgName.trim()) errors.push("orgName is required");
   if (!isValidEmail(contactEmail)) errors.push("a valid contactEmail is required");
   if (!isSafeHttpUrl(ticketUrl)) errors.push("ticketUrl must be a valid http(s) link");
+  if (!isSafeHttpUrl(eventUrl)) errors.push("eventUrl must be a valid http(s) link");
   if (!isSafeHttpUrl(imageUrl)) errors.push("imageUrl must be a valid http(s) link");
 
   if (errors.length) {
@@ -246,6 +247,11 @@ module.exports = async (req, res) => {
     is_free: isFree,
     price_from: Number.isFinite(priceFrom) ? priceFrom : null,
     ticket_url: ticketUrl || null,
+    // Separate from ticket_url on purpose — see migration_022_event_url.sql.
+    // A submitter who pastes the exact same link into both boxes shouldn't
+    // get it stored twice just to be de-duped again at render time, so drop
+    // it here if it's identical to what's already going into ticket_url.
+    event_url: eventUrl && eventUrl !== ticketUrl ? eventUrl : null,
     image_url: imageUrl || null,
     source: "Venue Submission",
     status: "pending_review",

@@ -248,7 +248,7 @@ module.exports = async (req, res) => {
     const ev = body.event || {};
     const {
       title, category, description, venue, address, city, startDate, endDate,
-      timeDisplay, isFree, priceFrom, ticketUrl, imageUrl,
+      timeDisplay, isFree, priceFrom, ticketUrl, eventUrl, imageUrl,
     } = ev;
 
     const errors = [];
@@ -257,6 +257,7 @@ module.exports = async (req, res) => {
     if (!startDate || !/^\d{4}-\d{2}-\d{2}$/.test(startDate)) errors.push("a valid startDate (YYYY-MM-DD) is required");
     if (!venue || typeof venue !== "string" || !venue.trim()) errors.push("venue is required");
     if (!isSafeHttpUrl(ticketUrl)) errors.push("ticketUrl must be a valid http(s) link");
+    if (!isSafeHttpUrl(eventUrl)) errors.push("eventUrl must be a valid http(s) link");
     if (!isSafeHttpUrl(imageUrl)) errors.push("imageUrl must be a valid http(s) link");
     if (endDate && !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) errors.push("endDate must be YYYY-MM-DD if provided");
 
@@ -279,6 +280,8 @@ module.exports = async (req, res) => {
       is_free: !!isFree,
       price_from: Number.isFinite(parsedPrice) ? parsedPrice : null,
       ticket_url: ticketUrl || null,
+      // Separate field from ticket_url — see migration_022_event_url.sql.
+      event_url: eventUrl && eventUrl !== ticketUrl ? eventUrl : null,
       image_url: imageUrl || null,
       // Distinct from cron-editorial.js's own `source` field on
       // editorial_articles (the outlet name, e.g. "Metro Times") — this is

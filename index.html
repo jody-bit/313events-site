@@ -5912,6 +5912,7 @@ function buildEventDescription(e){
   if(e.note) parts.push(e.note);
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl) parts.push(safeUrl(e.eventPageUrl));
   const permalink = eventUrl(e);
   parts.push(`Details: ${permalink ? 'https://313.events/'+permalink : 'https://313.events/'}`);
   return parts.join('\n');
@@ -6095,6 +6096,7 @@ function renderList(dateList, meta){
                 ${editorialLinkHtml(e)}
                 <div class="evt-actions">
                   ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+                  ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
                   ${addToCalendarHtml(e)}
                   ${shareButtonHtml(e)}
                 </div>
@@ -7301,6 +7303,11 @@ function mapSupabaseRow(row) {
     source: row.source || "Manual",
     note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
+    // Named eventPageUrl, not eventUrl — this file already has a function
+    // called eventUrl(e) (the internal event.html permalink, below); keeping
+    // this field's name distinct avoids colliding with that. See
+    // migration_022_event_url.sql.
+    eventPageUrl: row.event_url || undefined,
     priceFrom: row.price_from ?? undefined,
     neighborhood: VENUE_NEIGHBORHOOD_MAP.get(venueKey) || null,
   };
@@ -7335,7 +7342,7 @@ async function loadSupabaseEvents() {
     // file's own comment above already flags for the date floor — could get
     // silently truncated as the table grows past that cap with no error and
     // no visible sign anything was cut off. 2000 matches map.html's query.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from&order=start_date.asc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,

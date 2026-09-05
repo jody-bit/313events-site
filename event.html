@@ -422,6 +422,11 @@ function mapRow(row){
     source: row.source || "Manual",
     note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
+    // Named eventPageUrl, not eventUrl — index.html/calendar.html/map.html
+    // each already have a function called eventUrl(e) (the internal
+    // event.html permalink); keeping this field's name distinct everywhere
+    // avoids colliding with that. See migration_022_event_url.sql.
+    eventPageUrl: row.event_url || undefined,
     priceFrom: row.price_from ?? undefined,
   };
 }
@@ -513,6 +518,9 @@ function renderEvent(e){
   let actionsHtml = '';
   if(e.ticketUrl && safeUrl(e.ticketUrl)){
     actionsHtml += `<a class="btn-primary" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets & info'}</a>`;
+  }
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl){
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`;
   }
   actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
   // Blob + download, not a bare `data:` URI — see index.html's identical
@@ -641,7 +649,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,price_from`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,event_url,price_from`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();

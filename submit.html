@@ -357,6 +357,10 @@
           <label for="ticketUrl">Ticket / RSVP link <span class="opt">(optional)</span></label>
           <input type="url" id="ticketUrl" name="ticketUrl" placeholder="https://…">
         </div>
+        <div class="field">
+          <label for="eventUrl">Event page link <span class="opt">(optional)</span></label>
+          <input type="url" id="eventUrl" name="eventUrl" placeholder="Facebook event, Resident Advisor, Eventbrite, etc.">
+        </div>
       </div>
     </fieldset>
 
@@ -707,6 +711,7 @@ form.addEventListener('submit', async (e)=>{
     admission: data.get('admission'),
     price: data.get('price') || null,
     ticketUrl: data.get('ticketUrl') || null,
+    eventUrl: data.get('eventUrl') || null,
     orgName: data.get('orgName'),
     contactEmail: data.get('contactEmail'),
     companyWebsite: data.get('companyWebsite') || '', // honeypot — see the field's own comment

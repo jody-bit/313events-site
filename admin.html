@@ -316,7 +316,8 @@ function renderList(events) {
         <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
         Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b><br>
         ${e.is_free ? 'Free' : (e.price_from ? 'From $' + e.price_from : 'Paid')}
-        ${e.ticket_url ? ' · <a href="' + escapeHtml(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a>' : ''}<br>
+        ${e.ticket_url ? ' · <a href="' + escapeHtml(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a>' : ''}
+        ${e.event_url && e.event_url !== e.ticket_url ? ' · <a href="' + escapeHtml(e.event_url) + '" target="_blank" rel="noopener">event page</a>' : ''}<br>
         Submitted by: <b>${escapeHtml(e.submitter_org_name || '—')}</b> (${escapeHtml(e.submitter_email || '—')})
         ${e.description ? '<br><br>' + escapeHtml(e.description) : ''}
       </div>
@@ -583,6 +584,10 @@ function eventFormHtml(a) {
           <input type="url" id="ef-ticketurl-${a.id}" placeholder="https://…">
         </div>
         <div>
+          <label>Event page link (optional)</label>
+          <input type="url" id="ef-eventurl-${a.id}" placeholder="Facebook event, Resident Advisor, Eventbrite, etc.">
+        </div>
+        <div>
           <label>Image URL (optional)</label>
           <input type="url" id="ef-imageurl-${a.id}" value="${escapeAttr(a.thumbnail_url || '')}" placeholder="https://…">
         </div>
@@ -628,6 +633,7 @@ async function submitEditorialEvent(id) {
     endDate: val('enddate'),
     timeDisplay: val('time'),
     ticketUrl: val('ticketurl'),
+    eventUrl: val('eventurl'),
     imageUrl: val('imageurl'),
     description: val('description'),
     isFree: document.getElementById(`ef-free-${id}`).checked,
