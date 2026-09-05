@@ -88,7 +88,34 @@ function timingSafeStringEqual(a, b) {
 
 const VENUE_SLUG = "planetanttheatre";
 const DEFAULT_STATUS = "approved"; // the venue's own official box office, same trust tier as cron-lagerhouse.js
-const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313events.com event calendar)" };
+
+// 2026-09-05 fix attempt: the first live scheduled run (2026-09-04 22:01 ET,
+// confirmed via Vercel's request log — real vercel-cron/1.0 trigger, so the
+// cron itself is firing fine) got a 403 back from this fetch. Checked live in
+// a real browser: the identical GET to this same endpoint returns a normal
+// 200 with a full JSON body (confirmed via the browser's own network
+// inspector), and crowdwork.com's robots.txt is fully permissive (`User-agent:
+// * / Disallow:` — no bot policy being violated here at all). The response
+// headers show `server: cloudflare`, so this is Cloudflare's bot/WAF layer at
+// the edge, not a deliberate CrowdWork API policy — and it's specifically
+// scoring Vercel's serverless egress IPs differently from a real browser's.
+// Added the standard Accept / Accept-Language / Referer headers a real
+// browser sends (a plain server-side fetch omits all three by default, which
+// is itself a common WAF "looks automated" signal) to see if that alone
+// clears it. Deliberately NOT spoofing the User-Agent to impersonate a real
+// browser — every other cron in this project identifies itself honestly as
+// "313events.com event calendar", and that convention is kept here even
+// though robots.txt would technically allow disguising it. If this doesn't
+// clear the 403 on the next scheduled run, the block is almost certainly
+// IP/network-level (Cloudflare bot-managing the whole Vercel ASN) rather than
+// header-based, and not fixable from serverless code — see sources.html for
+// what that means for this source.
+const REQUEST_HEADERS = {
+  "User-Agent": "Mozilla/5.0 (313events.com event calendar)",
+  Accept: "application/json, text/plain, */*",
+  "Accept-Language": "en-US,en;q=0.9",
+  Referer: `https://www.crowdwork.com/v/${VENUE_SLUG}/shows`,
+};
 
 function decodeEntities(str) {
   if (!str) return str;
