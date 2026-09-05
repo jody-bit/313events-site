@@ -39,6 +39,22 @@ const API_URL = "https://belleislenaturecenter.org/wp-json/tribe/events/v1/event
 const VENUE_NAME = "Belle Isle Nature Center";
 const DEFAULT_STATUS = "approved";
 
+// 2026-09-05 fix — this crawler never read the Tribe Events API's own
+// `image` field at all (same confirmed bug as cron-wdet.js — the two sites
+// run the same WordPress plugin, same field). `image` is `false` when an
+// event has no featured image set (this venue's own listings turned out to
+// mostly be image-less at the time this was checked — small venue, not every
+// event gets a poster), or an object with a top-level full-size `url` plus a
+// `sizes` map. Prefers a mid-size real image; falls back to the full-size
+// url if the expected size keys aren't present.
+function pickTribeImage(image) {
+  if (!image || typeof image !== "object") return null;
+  const sizes = image.sizes || {};
+  const preferred = sizes.medium_large || sizes.medium || sizes.large || sizes.thumbnail;
+  if (preferred && preferred.url) return preferred.url;
+  return image.url || null;
+}
+
 function formatTimeRange(startDate, endDate) {
   try {
     const start = new Date(startDate.replace(" ", "T"));
@@ -119,6 +135,7 @@ module.exports = async (req, res) => {
       time_display: formatTimeRange(e.start_date, e.end_date),
       is_free: !e.cost || /free/i.test(e.cost),
       ticket_url: e.url || null,
+      image_url: pickTribeImage(e.image),
       source: "Belle Isle Nature Center",
     }));
 

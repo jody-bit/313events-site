@@ -118,7 +118,17 @@ function parseLagerHouseEvents(html) {
     const descMatch = chunk.match(/line-clamp-2">\s*([^<]+?)\s*</);
     const description = descMatch ? stripTags(descMatch[1]) : null;
 
-    events.push({ date, slug, title, startTime, doorsSpan, priceText, description });
+    // 2026-09-05 fix — this scraper parses each <app-event-card> chunk for
+    // title/time/price/description but never for its poster image, even
+    // though one is right there at the top of every card (confirmed live:
+    // <img src="https://lager-house-images.s3.amazonaws.com/..."> as the
+    // first element inside the card, before the title). The fallback-icon
+    // SVG shown when a card has no real photo isn't an <img> tag at all, so
+    // this only ever matches a real uploaded image.
+    const imageMatch = chunk.match(/<img[^>]+src="([^"]+)"/);
+    const imageUrl = imageMatch ? imageMatch[1] : null;
+
+    events.push({ date, slug, title, startTime, doorsSpan, priceText, description, imageUrl });
   }
 
   return events;
@@ -182,6 +192,7 @@ module.exports = async (req, res) => {
         note: e.doorsSpan || undefined, // e.g. "Doors: 7:00 PM" — kept out of time_display so parseTimeRange() on every reading page isn't fed a second time it doesn't expect
         is_free: isFree,
         price_from: priceFrom ?? undefined,
+        image_url: e.imageUrl || undefined,
         source: "Lager House",
         ticket_url: `https://thelagerhouse.com/events/${e.date}/${e.slug}`,
       };

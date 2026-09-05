@@ -155,6 +155,13 @@ function parseEventPage(html, url) {
   const venueMatch = html.match(/<a[^>]+href="[^"]*\/location\/[^"]*"[^>]*>([^<]+)<\/a>/i);
   const venueName = venueMatch ? decodeEntities(venueMatch[1].trim()) : (getMeta(html, "og:site_name") || "Detroit Metro Times");
 
+  // 2026-09-05 fix — this crawler read every other og: meta tag on the page
+  // (address, city, region, lat/long) but never og:image, which confirmed
+  // live is populated on every event page sampled (Gyrobase/Metro Times'
+  // CMS always sets one, even a generic placeholder when the listing has no
+  // real photo — still better than no image at all).
+  const imageUrl = getMeta(html, "og:image");
+
   const idMatch = url.match(/-(\d+)$/);
   const id = idMatch ? idMatch[1] : url;
 
@@ -165,6 +172,7 @@ function parseEventPage(html, url) {
     start_date: first.date,
     time_display: first.time || null,
     ticket_url: url,
+    image_url: imageUrl,
     note: occurrences.length > 1 ? "Metro Times lists multiple dates for this listing — only the first was captured." : null,
   };
 }
@@ -240,6 +248,7 @@ module.exports = async (req, res) => {
     start_date: e.start_date,
     time_display: e.time_display,
     ticket_url: e.ticket_url,
+    image_url: e.image_url,
     note: e.note,
     source: "Metro Times",
   }));

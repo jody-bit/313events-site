@@ -128,6 +128,16 @@ function parseIcsEvents(icsText) {
     else if (prop.name === "DESCRIPTION") current.description = decodeEntities(unescapeIcsText(prop.value));
     else if (prop.name === "URL") current.url = prop.value;
     else if (prop.name === "UID") current.uid = prop.value;
+    // 2026-09-05 addition — RFC 7986 §5.10 defines an IMAGE property for
+    // exactly this ("a graphic image associated with the calendar or a
+    // calendar component"). No organizer feed has been seen using it yet in
+    // this project (v1 scope is small), but it's a real, specified property —
+    // not a guess — and worth reading defensively now rather than silently
+    // dropping it whenever the first feed that does set it shows up. A bare
+    // URI value (the common case) reads straight into current.image; a
+    // BINARY-encoded inline image (params.VALUE === "BINARY") is skipped —
+    // this project stores image URLs, not raw bytes, and does not decode one.
+    else if (prop.name === "IMAGE" && prop.params.VALUE !== "BINARY" && prop.value) current.image = prop.value;
   }
   return events;
 }
@@ -206,6 +216,7 @@ function icsEventsToRows(icsEvents, feedSource) {
       end_date: (end && end.date && end.date !== start.date && start.hour === null) ? end.date : null,
       time_display: timeDisplay,
       ticket_url: ev.url || null,
+      image_url: ev.image || null,
       // Just the venue name, matching every other single-venue cron's
       // convention (e.g. cron-trinosophes.js's source:"Trinosophes") — the
       // site renders this as "via {source}", so a value like "Feed: X"

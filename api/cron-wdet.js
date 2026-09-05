@@ -74,6 +74,24 @@ function decodeEntities(str) {
     .replace(/&nbsp;/g, " ");
 }
 
+// 2026-09-05 fix — this crawler never read the Tribe Events API's own
+// `image` field at all (confirmed live: 5/5 sampled WDET events had a
+// populated `image` object, none of it ever reaching image_url). Same class
+// of bug as cron-ticketmaster.js's missing images, just a different API
+// shape: Tribe's `image` is `false` when an event has no featured image, or
+// an object with a top-level full-size `url` plus a `sizes` map (WP's
+// standard image-size names — `medium_large`, `medium`, `large`, etc., which
+// vary a little by site/theme). Prefers a mid-size real image (sharp enough
+// for a card, not a multi-MB original); falls back to the full-size url if
+// none of the expected size keys are present rather than dropping the image.
+function pickTribeImage(image) {
+  if (!image || typeof image !== "object") return null;
+  const sizes = image.sizes || {};
+  const preferred = sizes.medium_large || sizes.medium || sizes.large || sizes.thumbnail;
+  if (preferred && preferred.url) return preferred.url;
+  return image.url || null;
+}
+
 function mapCategory(categories) {
   if (!Array.isArray(categories)) return null;
   for (const c of categories) {
@@ -156,6 +174,7 @@ module.exports = async (req, res) => {
         is_free: /free/i.test(e.cost || "") || !e.cost,
         price_from: null,
         ticket_url: e.url || null,
+        image_url: pickTribeImage(e.image),
         source: "WDET",
       };
     })
