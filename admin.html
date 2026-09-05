@@ -136,8 +136,20 @@
   <div id="gate" class="gate">
     <div style="font-weight:600;margin-bottom:4px;">Admin access</div>
     <div style="color:var(--ink-soft);font-size:13.5px;">Enter the admin secret configured in Vercel (ADMIN_SECRET).</div>
-    <input type="password" id="secretInput" placeholder="Admin secret">
-    <button onclick="unlock()">Enter</button>
+    <!-- A real <form> (not just inputs + a button) so (a) hitting Enter in
+         either field submits natively — no custom keydown handler needed —
+         and (b) the browser's own password manager (Apple Passwords/
+         Keychain, Chrome, etc.) recognizes this as a login form worth
+         offering to save. There's only one shared secret here (ADMIN_SECRET
+         in Vercel — no real per-person accounts), so "username" isn't
+         checked by the server at all; it exists purely so the saved
+         Keychain entry has a name/password pair to remember instead of a
+         lone unlabeled password. Type whatever you'll recognize it by. -->
+    <form id="loginForm" autocomplete="on" onsubmit="return unlock(event)">
+      <input type="text" id="adminUsername" name="username" autocomplete="username" placeholder="Admin username">
+      <input type="password" id="secretInput" name="password" autocomplete="current-password" placeholder="Admin secret">
+      <button type="submit">Enter</button>
+    </form>
     <div class="err" id="gateErr" style="display:none;"></div>
   </div>
 
@@ -186,10 +198,17 @@
 <script>
 let SECRET = "";
 
-function unlock() {
+function unlock(event) {
+  // event is the form's submit event (native Enter-to-submit or clicking
+  // the button both fire it) — preventDefault stops an actual page
+  // navigation/reload, but the submit event itself still having fired is
+  // exactly what tells the browser's password manager this was a real
+  // login attempt worth offering to save.
+  if (event) event.preventDefault();
   SECRET = document.getElementById('secretInput').value.trim();
-  if (!SECRET) return;
+  if (!SECRET) return false;
   loadAll();
+  return false;
 }
 
 // Loads both queues (plus the recently-hidden undo list) under one admin
