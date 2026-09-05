@@ -123,6 +123,16 @@
   .ef-checkbox{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-soft);margin-top:22px;}
   .ef-checkbox input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
   .ef-err{color:var(--bad);font-size:12.5px;margin-top:8px;display:none;}
+
+  /* "Needs follow-up" inline edit fields (2026-09-05, Jody: "how do I get
+     to edit these fields?") — reuses .ef-grid's input/label look so this
+     doesn't read as a third distinct form style on the same page. */
+  .incomplete-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-top:10px;}
+  .incomplete-fields label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:4px;}
+  .incomplete-fields input, .incomplete-fields textarea{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13.5px;
+    background:var(--panel-alt);color:var(--ink);font-family:inherit;
+  }
 </style>
 </head>
 <body>
@@ -264,6 +274,20 @@ async function loadIncomplete() {
   }
 }
 
+// Which <input>(s) each missing-field label collects, and how they map back
+// onto api/admin-events.js's EDITABLE_FIELDS. "venue address/city" and
+// "ticket/event link" each cover two real columns but Jody only needs to
+// fill in whichever one she actually has — the other stays blank and
+// update_fields' own "only fill a gap in" rule (see that file) means
+// submitting a blank input never clobbers anything.
+const INCOMPLETE_FIELD_INPUTS = {
+  'description':        [{ key: 'description',       label: 'Description',        type: 'textarea' }],
+  'venue address/city':  [{ key: 'venue_address_raw', label: 'Street address',     type: 'text' },
+                          { key: 'venue_city_raw',     label: 'City',               type: 'text' }],
+  'ticket/event link':   [{ key: 'ticket_url',         label: 'Ticket/event link',  type: 'text', placeholder: 'https://…' }],
+  'start time':          [{ key: 'time_display',       label: 'Start time',        type: 'text', placeholder: 'e.g. 7:00 PM, or Noon – 10 PM' }],
+};
+
 function renderIncompleteList(flagged) {
   const list = document.getElementById('incompleteList');
   if (!list) return;
@@ -271,7 +295,15 @@ function renderIncompleteList(flagged) {
     list.innerHTML = '<div class="empty">Nothing missing critical info right now. 🎉</div>';
     return;
   }
-  list.innerHTML = flagged.map(({ e, missing }) => `
+  list.innerHTML = flagged.map(({ e, missing }) => {
+    const inputs = missing.flatMap(m => INCOMPLETE_FIELD_INPUTS[m] || []);
+    const inputsHtml = inputs.map(f => {
+      const id = `inc-${f.key}-${e.id}`;
+      return f.type === 'textarea'
+        ? `<label for="${id}">${escapeHtml(f.label)}</label><textarea id="${id}" rows="2" placeholder="${escapeAttr(f.placeholder || '')}"></textarea>`
+        : `<label for="${id}">${escapeHtml(f.label)}</label><input type="text" id="${id}" placeholder="${escapeAttr(f.placeholder || '')}">`;
+    }).join('');
+    return `
     <div class="card" id="incomplete-${e.id}">
       <h3>${escapeHtml(e.title)} <span class="status-badge ${escapeHtml(e.status)}">${escapeHtml(e.status.replace('_', ' '))}</span></h3>
       <div class="meta">
@@ -281,8 +313,50 @@ function renderIncompleteList(flagged) {
         ${e.submitter_email ? '<br>Submitted by: <b>' + escapeHtml(e.submitter_org_name || '—') + '</b> (' + escapeHtml(e.submitter_email) + ')' : ''}
         <br><br><b>Missing:</b> ${missing.map(m => `<span class="status-badge pending_review">${escapeHtml(m)}</span>`).join(' ')}
       </div>
+      <div class="incomplete-fields" data-fields="${escapeAttr(inputs.map(f => f.key).join(','))}">
+        ${inputsHtml}
+      </div>
+      <div class="actions">
+        <button class="btn-approve" onclick="saveIncompleteFields('${e.id}')">Save</button>
+      </div>
+      <div class="err" id="incomplete-err-${e.id}" style="display:none;"></div>
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+
+async function saveIncompleteFields(id) {
+  const card = document.getElementById('incomplete-' + id);
+  const fieldsEl = card.querySelector('.incomplete-fields');
+  const keys = (fieldsEl.dataset.fields || '').split(',').filter(Boolean);
+  const fields = {};
+  for (const key of keys) {
+    const el = document.getElementById(`inc-${key}-${id}`);
+    if (el && el.value.trim()) fields[key] = el.value.trim();
+  }
+  const errEl = document.getElementById('incomplete-err-' + id);
+  errEl.style.display = 'none';
+  if (!Object.keys(fields).length) {
+    errEl.textContent = 'Fill in at least one field before saving.';
+    errEl.style.display = 'block';
+    return;
+  }
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id, action: 'update_fields', fields }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Save failed'));
+    // Simplest correct thing to do after a save: just reload the whole
+    // queue — recomputes which fields (if any) are still actually missing
+    // for every card, same as a fresh page load would show.
+    await loadIncomplete();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
 }
 
 // ---- Venue autofill (2026-09-04) ----

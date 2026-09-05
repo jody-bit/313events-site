@@ -200,6 +200,18 @@ function shapeForDb(e) {
   return {
     external_id: e.id,
     title: e.name,
+    // 2026-09-05 (Jody: "any way to automate the missing details?", asked
+    // after every single Ticketmaster event turned up in admin.html's
+    // "Needs follow-up" queue for a missing description) — this field was
+    // simply never read before. Ticketmaster's own docs describe `info` as
+    // "event's information" — the closest thing their API has to a real
+    // description — as opposed to `pleaseNote`, which is ticketing/box-
+    // office logistics ("no tickets delivered before...", etc.), not a
+    // description of the event itself, so that one is deliberately left
+    // out here rather than mislabeled as one. BEST-EFFORT, not a full fix:
+    // `info` is optional and, in practice, absent on most events — expect
+    // this to shrink the queue, not empty it.
+    description: e.info || undefined,
     category: cat,
     venue_name_raw: venueName,
     venue_city_raw: venueCity,

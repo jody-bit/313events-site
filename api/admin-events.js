@@ -37,10 +37,14 @@ const crypto = require("crypto");
 //                                               a PostgREST filter here — deliberately, so the
 //                                               definition of "missing" can be tweaked in one place
 //                                               without touching this endpoint's query shape.
-// POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore" }
+// POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore"|"update_fields" }
 //   approve/reject: pending_review -> approved/rejected (the original submission queue)
 //   hide:           approved -> rejected (takes an already-live event off the site)
 //   restore:        rejected -> approved (undo a hide, or reverse a reject)
+//   update_fields:  { id, action: "update_fields", fields: { description?, venue_address_raw?,
+//                     venue_city_raw?, ticket_url?, event_url?, time_display? } } — fills in a
+//                     gap the "Needs follow-up" section flagged. Only ever fills a blank field
+//                     in, never blanks or overwrites one that already has a value from here.
 // "hide" and "reject" both land on the same event_status enum value
 // ('rejected') — there's no separate DB status for "was live, then pulled"
 // vs. "a submission we declined." Adding one would need a Postgres enum
@@ -70,6 +74,18 @@ function timingSafeStringEqual(a, b) {
   return crypto.timingSafeEqual(aBuf, bBuf);
 }
 
+// Same check api/submit.js uses for ticketUrl/eventUrl on the public form —
+// duplicated rather than shared, per this project's one-file-per-endpoint
+// convention (no shared JS modules).
+function isSafeHttpUrl(url) {
+  if (!url) return true; // both fields are optional
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = "https://313.events";
@@ -220,8 +236,74 @@ module.exports = async (req, res) => {
     body = body || {};
     const { id, action } = body;
 
+    // update_fields (2026-09-05, Jody: "how do I get to edit these fields?"
+    // — asked right after the "Needs follow-up" section shipped as a
+    // read-only heads-up) — lets admin.html actually fix a flagged gap in
+    // place instead of sending Jody to Supabase's own SQL editor for every
+    // single one. Deliberately its own small whitelist rather than a
+    // generic "PATCH any column" endpoint: only the fields the follow-up
+    // queue actually checks for are editable here, each validated the same
+    // way api/submit.js validates the same fields on the public form.
+    if (action === "update_fields") {
+      const EDITABLE_FIELDS = ["description", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display"];
+      const fields = body.fields && typeof body.fields === "object" ? body.fields : {};
+      const requested = {};
+      for (const key of EDITABLE_FIELDS) {
+        if (!(key in fields)) continue;
+        const val = typeof fields[key] === "string" ? fields[key].trim() : fields[key];
+        if (val == null || val === "") continue;
+        if ((key === "ticket_url" || key === "event_url") && !isSafeHttpUrl(val)) {
+          res.status(400).json({ error: `${key} must be a valid http(s) link` });
+          return;
+        }
+        requested[key] = val;
+      }
+      if (!id || !Object.keys(requested).length) {
+        res.status(400).json({ error: "Body must include { id, action: 'update_fields', fields: { <at least one editable field> } }" });
+        return;
+      }
+      try {
+        // Re-check the row's CURRENT values server-side rather than trusting
+        // whatever admin.html last rendered — this tool only ever fills a
+        // gap in, never overwrites a field that already has something in it
+        // (even if that got filled in by another tab, or a cron re-run,
+        // between page load and clicking Save).
+        const currentResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=${Object.keys(requested).join(",")}`,
+          { headers: sbHeaders }
+        );
+        const currentRows = await currentResp.json();
+        if (!currentResp.ok || !currentRows[0]) {
+          res.status(404).json({ error: "Event not found" });
+          return;
+        }
+        const current = currentRows[0];
+        const patch = {};
+        for (const key of Object.keys(requested)) {
+          const existing = current[key];
+          if (existing == null || (typeof existing === "string" && !existing.trim())) {
+            patch[key] = requested[key];
+          }
+        }
+        if (!Object.keys(patch).length) {
+          res.status(200).json({ ok: true, event: current, note: "Nothing to fill in — every requested field already had a value." });
+          return;
+        }
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { ...sbHeaders, Prefer: "return=representation" },
+          body: JSON.stringify(patch),
+        });
+        const rows = await resp.json();
+        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: rows[0] } : { error: rows });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields' }" });
       return;
     }
 
