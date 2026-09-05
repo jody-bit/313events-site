@@ -163,7 +163,7 @@
 
     <section class="block">
       <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
-      <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
+      <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
       <div id="incompleteList"></div>
     </section>
 
@@ -238,6 +238,13 @@ function getMissingFields(e) {
   }
   if (!(e.ticket_url && e.ticket_url.trim()) && !(e.event_url && e.event_url.trim())) {
     missing.push('ticket/event link');
+  }
+  // 2026-09-05: Jody flagged the Hamtramck Labor Day Festival showing up
+  // with no start time at all and asked for start time to be treated as
+  // critical too — a missing time_display is exactly as much a "check this"
+  // signal as a missing venue or link, not a lesser cosmetic gap.
+  if (!(e.time_display && e.time_display.trim())) {
+    missing.push('start time');
   }
   return missing;
 }
