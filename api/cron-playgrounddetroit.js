@@ -122,7 +122,7 @@ const CRAWL_DELAY_MS = 3000; // this site's robots.txt Crawl-delay — see heade
 const RETRY_STATUSES = new Set([429, 502, 503, 504]);
 const MAX_FETCH_ATTEMPTS = 4;
 const SUPABASE_BATCH_SIZE = 75;
-const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313events.com event calendar)" };
+const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313.events event calendar)" };
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

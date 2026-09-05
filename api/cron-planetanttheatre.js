@@ -104,14 +104,14 @@ const DEFAULT_STATUS = "approved"; // the venue's own official box office, same 
 // is itself a common WAF "looks automated" signal) to see if that alone
 // clears it. Deliberately NOT spoofing the User-Agent to impersonate a real
 // browser — every other cron in this project identifies itself honestly as
-// "313events.com event calendar", and that convention is kept here even
+// "313.events event calendar", and that convention is kept here even
 // though robots.txt would technically allow disguising it. If this doesn't
 // clear the 403 on the next scheduled run, the block is almost certainly
 // IP/network-level (Cloudflare bot-managing the whole Vercel ASN) rather than
 // header-based, and not fixable from serverless code — see sources.html for
 // what that means for this source.
 const REQUEST_HEADERS = {
-  "User-Agent": "Mozilla/5.0 (313events.com event calendar)",
+  "User-Agent": "Mozilla/5.0 (313.events event calendar)",
   Accept: "application/json, text/plain, */*",
   "Accept-Language": "en-US,en;q=0.9",
   Referer: `https://www.crowdwork.com/v/${VENUE_SLUG}/shows`,

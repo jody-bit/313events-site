@@ -278,7 +278,7 @@ module.exports = async (req, res) => {
         pollResult = "Skipped — only .ics feeds are polled in this version (see cron-feeds.js header note)";
       } else {
         const r = await fetch(feedSource.feed_url, {
-          headers: { "User-Agent": "313events.com event calendar (feed submitted directly by this venue/organizer)" },
+          headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
         });
         if (!r.ok) {
           pollResult = `Fetch failed: HTTP ${r.status}`;

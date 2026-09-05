@@ -116,7 +116,7 @@ module.exports = async (req, res) => {
 
   let data;
   try {
-    const r = await fetch(API_URL, { headers: { "User-Agent": "313events.com event calendar" } });
+    const r = await fetch(API_URL, { headers: { "User-Agent": "313.events event calendar" } });
     if (!r.ok) {
       res.status(200).json({ upserted: 0, error: `WDET API fetch failed: HTTP ${r.status}` });
       return;

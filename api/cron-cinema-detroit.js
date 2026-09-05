@@ -116,7 +116,7 @@ module.exports = async (req, res) => {
 
   let pages;
   try {
-    const r = await fetch(API_URL, { headers: { "User-Agent": "313events.com event calendar" } });
+    const r = await fetch(API_URL, { headers: { "User-Agent": "313.events event calendar" } });
     if (!r.ok) {
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;

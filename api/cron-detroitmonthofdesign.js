@@ -119,7 +119,7 @@ const FETCH_CONCURRENCY = 6; // lower than before specifically to reduce how oft
 const RETRY_STATUSES = new Set([429, 502, 503, 504]);
 const MAX_FETCH_ATTEMPTS = 4;
 const SUPABASE_BATCH_SIZE = 75; // keeps both the status-lookup GET's id list and each upsert POST well under any request-size/URL-length ceiling as this source's event count grows
-const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313events.com event calendar)" };
+const REQUEST_HEADERS = { "User-Agent": "Mozilla/5.0 (313.events event calendar)" };
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
