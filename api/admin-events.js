@@ -20,6 +20,23 @@ const crypto = require("crypto");
 //                                               searches already-approved events" guarantee
 //                                               (see below) doesn't change for it.
 // GET  /api/admin-events?hidden=1           -> most recently hidden/rejected events (for undo)
+// GET  /api/admin-events?incomplete=1       -> upcoming pending_review/approved events missing
+//                                               a "critical field" (see admin.html's
+//                                               getMissingFields() for the exact definition) —
+//                                               the "Needs follow-up" section. Added 2026-09-05
+//                                               at Jody's request: an approved event from a
+//                                               trusted crawler source currently goes straight
+//                                               to the live site even if a field failed to parse
+//                                               (e.g. venue address regex didn't match), with
+//                                               nobody ever looking at it the way a pending_review
+//                                               submission gets looked at. This surfaces both
+//                                               pending AND already-approved events with a gap,
+//                                               past events excluded (start_date >= today) since
+//                                               a stale one isn't worth chasing. Filtering itself
+//                                               happens client-side in admin.html rather than via
+//                                               a PostgREST filter here — deliberately, so the
+//                                               definition of "missing" can be tweaked in one place
+//                                               without touching this endpoint's query shape.
 // POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore" }
 //   approve/reject: pending_review -> approved/rejected (the original submission queue)
 //   hide:           approved -> rejected (takes an already-live event off the site)
@@ -145,9 +162,13 @@ module.exports = async (req, res) => {
       const search = typeof req.query?.search === "string" ? req.query.search.trim() : "";
       const hidden = req.query?.hidden === "1";
       const includePending = req.query?.includePending === "1";
+      const incomplete = req.query?.incomplete === "1";
 
       let url;
-      if (search) {
+      if (incomplete) {
+        const todayISO = new Date().toISOString().slice(0, 10);
+        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,venue_name_raw,venue_address_raw,venue_city_raw,description,ticket_url,event_url,submitter_org_name,submitter_email,source&order=start_date.asc`;
+      } else if (search) {
         // Live-event takedown search: only ever searches already-approved
         // (publicly visible) events — never pending_review or already-hidden
         // ones, so this can't be used to "approve via search" by accident.

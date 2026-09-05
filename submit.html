@@ -476,6 +476,13 @@
 // color-unification fix) instead of this file's own separate, muted hex
 // set — see the :root comment above. Keys/labels/order unchanged; matches
 // index.html/calendar.html/map.html/event.html/radar.html's CATS exactly.
+//
+// 2026-09-05: Jody decided parades fold into "fest" rather than getting a
+// dedicated 14th category (no parade events exist yet — this is purely
+// forward-looking taxonomy). Relabeled "Festivals" -> "Festivals & Parades"
+// here and in every other file listed above so a submitter/moderator
+// entering a parade sees where it's supposed to go, without touching the
+// stored category KEY ("fest") anywhere — no migration, no data to update.
 const CATS = [
   {key:"music",     label:"Music",            color:"var(--c-music)"},
   {key:"theatre",   label:"Theatre & Comedy",  color:"var(--c-theatre)"},
@@ -483,7 +490,7 @@ const CATS = [
   {key:"visual",    label:"Visual Arts",       color:"var(--c-visual)"},
   {key:"museum",    label:"Museums & History", color:"var(--c-museum)"},
   {key:"family",    label:"Family",            color:"var(--c-family)"},
-  {key:"fest",      label:"Festivals",         color:"var(--c-fest)"},
+  {key:"fest",      label:"Festivals & Parades", color:"var(--c-fest)"},
   {key:"food",      label:"Food & Markets",    color:"var(--c-food)"},
   {key:"film",      label:"Film",              color:"var(--c-film)"},
   {key:"nightlife", label:"Nightlife & Club",  color:"var(--c-night)"},

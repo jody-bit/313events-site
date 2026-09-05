@@ -162,6 +162,12 @@
     </section>
 
     <section class="block">
+      <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
+      <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
+      <div id="incompleteList"></div>
+    </section>
+
+    <section class="block">
       <h2>Feed sources</h2>
       <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form. Approving one does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. Each feed's own events then land pre-approved, since the feed itself was the thing reviewed.</div>
       <div id="feedList"></div>
@@ -215,7 +221,61 @@ function unlock(event) {
 // event search is NOT auto-loaded here — it only runs when the moderator
 // actually types a search, since it's a lookup, not a fixed-size queue.
 async function loadAll() {
-  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues()]);
+  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues(), loadIncomplete()]);
+}
+
+// ---- Needs follow-up (missing critical fields) — 2026-09-05 ----
+// Single source of truth for what counts as "incomplete" — tweak the
+// definition here only; api/admin-events.js's incomplete=1 mode fetches a
+// broader candidate set (any upcoming pending_review/approved event) and
+// leaves the actual judgment call to this function, on purpose, so the
+// definition can change without touching the endpoint.
+function getMissingFields(e) {
+  const missing = [];
+  if (!e.description || !e.description.trim()) missing.push('description');
+  if (!(e.venue_address_raw && e.venue_address_raw.trim()) && !(e.venue_city_raw && e.venue_city_raw.trim())) {
+    missing.push('venue address/city');
+  }
+  if (!(e.ticket_url && e.ticket_url.trim()) && !(e.event_url && e.event_url.trim())) {
+    missing.push('ticket/event link');
+  }
+  return missing;
+}
+
+async function loadIncomplete() {
+  try {
+    const resp = await fetch('/api/admin-events?incomplete=1', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) return; // silent — same "don't scare Jody over a fetch hiccup" convention as loadHealthcheck()
+    const flagged = (data.events || [])
+      .map(e => ({ e, missing: getMissingFields(e) }))
+      .filter(x => x.missing.length > 0);
+    renderIncompleteList(flagged);
+  } catch (err) {
+    // Silent by design, same reasoning as loadHealthcheck() — this is a
+    // heads-up feature, not core moderation functionality.
+  }
+}
+
+function renderIncompleteList(flagged) {
+  const list = document.getElementById('incompleteList');
+  if (!list) return;
+  if (!flagged.length) {
+    list.innerHTML = '<div class="empty">Nothing missing critical info right now. 🎉</div>';
+    return;
+  }
+  list.innerHTML = flagged.map(({ e, missing }) => `
+    <div class="card" id="incomplete-${e.id}">
+      <h3>${escapeHtml(e.title)} <span class="status-badge ${escapeHtml(e.status)}">${escapeHtml(e.status.replace('_', ' '))}</span></h3>
+      <div class="meta">
+        <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
+        Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b><br>
+        Source: ${escapeHtml(e.source || '—')}
+        ${e.submitter_email ? '<br>Submitted by: <b>' + escapeHtml(e.submitter_org_name || '—') + '</b> (' + escapeHtml(e.submitter_email) + ')' : ''}
+        <br><br><b>Missing:</b> ${missing.map(m => `<span class="status-badge pending_review">${escapeHtml(m)}</span>`).join(' ')}
+      </div>
+    </div>
+  `).join('');
 }
 
 // ---- Venue autofill (2026-09-04) ----
