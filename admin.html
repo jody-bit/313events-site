@@ -136,17 +136,14 @@
   <div id="gate" class="gate">
     <div style="font-weight:600;margin-bottom:4px;">Admin access</div>
     <div style="color:var(--ink-soft);font-size:13.5px;">Enter the admin secret configured in Vercel (ADMIN_SECRET).</div>
-    <!-- A real <form> (not just inputs + a button) so (a) hitting Enter in
-         either field submits natively — no custom keydown handler needed —
+    <!-- A real <form> (not just an input + a button) so (a) hitting Enter
+         in the field submits natively — no custom keydown handler needed —
          and (b) the browser's own password manager (Apple Passwords/
-         Keychain, Chrome, etc.) recognizes this as a login form worth
-         offering to save. There's only one shared secret here (ADMIN_SECRET
-         in Vercel — no real per-person accounts), so "username" isn't
-         checked by the server at all; it exists purely so the saved
-         Keychain entry has a name/password pair to remember instead of a
-         lone unlabeled password. Type whatever you'll recognize it by. -->
+         Keychain, Chrome, etc.) recognizes this as a login worth offering
+         to save. Password-only on purpose (2026-09-05: Jody didn't want a
+         username field after all — just one shared ADMIN_SECRET, so
+         there's nothing else to remember). -->
     <form id="loginForm" autocomplete="on" onsubmit="return unlock(event)">
-      <input type="text" id="adminUsername" name="username" autocomplete="username" placeholder="Admin username">
       <input type="password" id="secretInput" name="password" autocomplete="current-password" placeholder="Admin secret">
       <button type="submit">Enter</button>
     </form>
