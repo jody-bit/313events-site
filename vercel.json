@@ -63,6 +63,10 @@
     {
       "path": "/api/cron-healthcheck",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron-oldmiami",
+      "schedule": "0 4 * * *"
     }
   ],
   "functions": {
@@ -86,6 +90,9 @@
     },
     "api/cron-healthcheck.js": {
       "maxDuration": 30
+    },
+    "api/cron-oldmiami.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
