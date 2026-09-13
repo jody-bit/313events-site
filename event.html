@@ -276,6 +276,25 @@ function shouldShowSource(e){
   if(e.venue && norm(e.venue) === src) return false;
   return true;
 }
+// Fallback action link (2026-09-13, Jody: a "Venue TBA" event sourced from
+// Resident Advisor with no ticket_url/event_url is a dead end — "posts like
+// this do not make any sense"). Most of the early Resident Advisor rows
+// (see supabase/seed.sql) were hand-transcribed before this project had any
+// real RA ingestion and never got a real per-event URL — and per
+// api/cron-halo.js's own header, RA scraping stays off entirely ("remains
+// off limits per its Terms of Use"), so there's no way to look up or
+// generate the real listing URL for any specific one of these. Rather than
+// leave the page with nothing clickable, link out to RA's own real,
+// general Detroit events index — honestly labeled as a browse link, not
+// implied to be this exact event's page. Only covers sources this project
+// has actually verified a real, working general-listing URL for; add more
+// only when a source is confirmed the same way.
+function sourceSearchUrl(source){
+  if(!source) return null;
+  const s = String(source).toLowerCase();
+  if(s.includes('resident advisor')) return 'https://ra.co/events/us/detroit';
+  return null;
+}
 function truncateText(str, maxLen){
   if(!str) return '';
   const flat = str.replace(/\s+/g, ' ').trim();
@@ -544,6 +563,16 @@ function renderEvent(e){
   }
   if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl){
     actionsHtml += `<a class="btn-secondary" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`;
+  }
+  // Fallback when neither a real ticket link nor an event page link exists
+  // — see sourceSearchUrl()'s comment above. Never shown alongside a real
+  // link; only fills the gap when there'd otherwise be nothing to click
+  // through to at all.
+  if(!(e.ticketUrl && safeUrl(e.ticketUrl)) && !(e.eventPageUrl && safeUrl(e.eventPageUrl))){
+    const fallbackUrl = sourceSearchUrl(e.source);
+    if(fallbackUrl){
+      actionsHtml += `<a class="btn-secondary" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener noreferrer">Browse on Resident Advisor &rarr;</a>`;
+    }
   }
   actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
   // Blob + download, not a bare `data:` URI — see index.html's identical
