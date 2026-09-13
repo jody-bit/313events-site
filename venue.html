@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Venue — 313.events</title>
+<link rel="canonical" id="canonicalLink" href="https://313.events/venue.html">
+<meta name="description" id="metaDescription" content="Venue details on 313.events — Detroit's arts, culture, and nightlife calendar.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" id="ogTitle" content="Venue — 313.events">
+<meta property="og:description" id="ogDescription" content="Venue details on 313.events — Detroit's arts, culture, and nightlife calendar.">
+<meta property="og:url" id="ogUrl" content="https://313.events/venue.html">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" id="twitterTitle" content="Venue — 313.events">
+<meta name="twitter:description" id="twitterDescription" content="Venue details on 313.events — Detroit's arts, culture, and nightlife calendar.">
+<meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
+<!--
+  New page (2026-09-13) — the first real per-venue permalink this project
+  has had. AUDIT_AND_ARCHITECTURE.md flagged "real venue/organizer/event
+  permalinks" as the single largest net-new engineering lift in the whole
+  redesign brief, blocked specifically on events.venue_id never being
+  populated (every cron/submission wrote venue_name_raw as free text only —
+  see FOUNDATIONAL_ITEMS.md §4/§5). That gap closed today
+  (update_2026-09-13_backfill_venue_id_matched_venues.sql +
+  api/_lib/venue-lookup.js), so this page is now buildable: same
+  self-contained, no-build-step, own-copy-of-every-helper convention as
+  event.html (this file's own header explains why — no bundler exists to
+  share one module across pages).
+
+  A venue with no venue_id on any event, or a venue_id that doesn't resolve
+  to a `venues` row, simply never gets a link pointed at this page anywhere
+  else on the site (see index.html/event.html/calendar.html's own
+  conditional linkification) — this page is never reached with a bad id
+  except by someone hand-editing the URL, which is what notFoundState is
+  for. Upcoming events lists only `status='approved'` rows, same trust gate
+  as every other public-facing list on this site.
+-->
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --radius:0px;
+    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
+    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
+    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
+    --c-vendor:#39FF14;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;
+  }
+  a{color:inherit;}
+  button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .wrap{max-width:820px;margin:0 auto;padding:14px 20px 64px;}
+  header.site{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
+  }
+  .wordmark{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
+    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
+  }
+  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
+  .back-link:hover{color:var(--accent);}
+  .back-link::before{content:'← ';}
+
+  #loadingState, #notFoundState{padding:60px 0;text-align:center;color:var(--ink-soft);}
+  #notFoundState{display:none;}
+  #notFoundState a{color:var(--accent);font-weight:700;text-decoration:none;}
+  #notFoundState a:hover{text-decoration:underline;}
+
+  #venueContent{display:none;}
+  .venue-tag{
+    display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
+    padding:5px 12px;background:var(--panel);color:var(--ink-soft);margin-bottom:12px;
+  }
+  h1.venue-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
+    text-transform:uppercase;margin:0 0 14px;
+  }
+  .venue-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
+  .venue-address{display:block;font-size:13px;color:var(--accent);text-decoration:none;margin:10px 0;}
+  .venue-address:hover{text-decoration:underline;}
+  .venue-website{display:block;font-size:13.5px;color:var(--ink);text-decoration:none;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:18px;}
+  .venue-website:hover{color:var(--accent);}
+
+  .venue-upcoming-heading{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:14px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:28px 0 12px;
+  }
+  .venue-empty{font-size:14px;color:var(--ink-dim);padding:12px 0;}
+  .venue-event-row{
+    display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);
+  }
+  .venue-event-row:last-child{border-bottom:none;}
+  .venue-event-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+  .venue-event-body{min-width:0;flex:1;}
+  .venue-event-date{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em;}
+  .venue-event-title{display:block;font-size:15.5px;font-weight:600;color:var(--ink);text-decoration:none;margin-top:2px;}
+  .venue-event-title:hover{color:var(--accent);}
+  .venue-event-time{font-size:13px;color:var(--ink-dim);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="back-link" href="/">All events</a>
+    </header>
+
+    <div id="loadingState">Loading venue…</div>
+
+    <div id="notFoundState">
+      <p>We couldn't find that venue — it may not be in our directory yet, or the link is incomplete.</p>
+      <a href="/">Back to the full calendar →</a>
+    </div>
+
+    <article id="venueContent">
+      <div class="venue-tag" id="venueTag" style="display:none;"></div>
+      <h1 class="venue-title" id="venueTitle"></h1>
+      <div class="venue-meta" id="venueWhere"></div>
+      <a class="venue-address" id="venueAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
+      <a class="venue-website" id="venueWebsite" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
+
+      <h2 class="venue-upcoming-heading">Upcoming events</h2>
+      <div id="venueEvents"></div>
+    </article>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://afvyfjfqukptnfmgshzn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5"; // publishable key — safe for client code, read-only via RLS
+
+const CATS = {
+  music:    {label:"Music",            color:"var(--c-music)"},
+  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
+  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
+  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
+  museum:   {label:"Museums & History", color:"var(--c-museum)"},
+  family:   {label:"Family",            color:"var(--c-family)"},
+  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
+  food:     {label:"Food & Markets",    color:"var(--c-food)"},
+  film:     {label:"Film",              color:"var(--c-film)"},
+  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
+  sports:   {label:"Sports",            color:"var(--c-sports)"},
+  community:{label:"Community",         color:"var(--c-community)"},
+  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"}
+};
+
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&nbsp;/g, " ");
+}
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function safeUrl(url) {
+  if (!url) return '';
+  try {
+    const u = new URL(url, window.location.href);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+  } catch { return ''; }
+}
+function truncateText(str, maxLen){
+  if(!str) return '';
+  const flat = str.replace(/\s+/g, ' ').trim();
+  if(flat.length <= maxLen) return flat;
+  const cut = flat.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + '…';
+}
+function shortDateLabel(dateStr){
+  return new Date(dateStr+"T12:00:00").toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+
+function renderVenue(v, events){
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('venueContent').style.display = 'block';
+
+  const pageTitle = `${v.name}${v.city ? ` — ${v.city}` : ''} — 313.events`;
+  const metaDesc = truncateText(
+    `${v.name}${v.address ? `, ${v.address}` : ''}${v.city ? `, ${v.city}` : ''} — upcoming events on 313.events, Detroit's arts, culture, and nightlife calendar.`,
+    155
+  );
+  document.getElementById('pageTitle').textContent = pageTitle;
+  document.getElementById('metaDescription').setAttribute('content', metaDesc);
+  document.getElementById('ogTitle').setAttribute('content', pageTitle);
+  document.getElementById('ogDescription').setAttribute('content', metaDesc);
+  document.getElementById('ogUrl').setAttribute('content', window.location.href);
+  document.getElementById('twitterTitle').setAttribute('content', pageTitle);
+  document.getElementById('twitterDescription').setAttribute('content', metaDesc);
+  document.getElementById('canonicalLink').setAttribute('href', window.location.href);
+
+  if(v.neighborhood){
+    const tag = document.getElementById('venueTag');
+    tag.textContent = v.neighborhood;
+    tag.style.display = 'inline-block';
+  }
+  document.getElementById('venueTitle').textContent = v.name;
+  document.getElementById('venueWhere').textContent = v.city || 'Detroit';
+
+  const addrEl = document.getElementById('venueAddress');
+  if(v.address){
+    const fullAddr = `${v.address}, ${v.city || 'Detroit'}`;
+    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddr)}`;
+    addrEl.textContent = `📍 ${v.address} — Get directions`;
+    addrEl.style.display = 'block';
+  }
+  const webEl = document.getElementById('venueWebsite');
+  if(v.website && safeUrl(v.website)){
+    webEl.href = safeUrl(v.website);
+    webEl.textContent = `🔗 ${v.website.replace(/^https?:\/\//,'').replace(/\/$/,'')}`;
+    webEl.style.display = 'block';
+  }
+
+  const listEl = document.getElementById('venueEvents');
+  if(!events.length){
+    // Honest empty state — this project doesn't fabricate activity to make
+    // a page look more populated than the data actually supports (same
+    // "don't invent it" convention as every other gap in this codebase).
+    listEl.innerHTML = `<p class="venue-empty">No upcoming events listed for this venue right now.</p>`;
+  } else {
+    listEl.innerHTML = events.map(e => {
+      const cat = CATS[e.category] || {color:'var(--accent)'};
+      return `
+        <div class="venue-event-row">
+          <span class="venue-event-dot" style="background:${cat.color}"></span>
+          <div class="venue-event-body">
+            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span>
+            <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
+            ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ---- JSON-LD Place schema — same organic-traffic rationale as
+  // event.html's Event schema: individual, structured, shareable pages are
+  // a real SEO lever this project is deliberately building toward. ----
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "name": v.name,
+    "url": window.location.href,
+  };
+  if(v.address || v.city){
+    ld.address = { "@type": "PostalAddress", "addressLocality": v.city || "Detroit", "addressRegion": "MI" };
+    if(v.address) ld.address.streetAddress = v.address;
+  }
+  const ldScript = document.createElement('script');
+  ldScript.type = 'application/ld+json';
+  ldScript.textContent = JSON.stringify(ld);
+  document.head.appendChild(ldScript);
+}
+
+async function init(){
+  const id = new URLSearchParams(window.location.search).get('id');
+  if(!id){
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('notFoundState').style.display = 'block';
+    return;
+  }
+  const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+  try {
+    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,website,neighborhood_id`;
+    const venueResp = await fetch(venueUrl, { headers });
+    if(!venueResp.ok) throw new Error('fetch failed');
+    const venueRows = await venueResp.json();
+    if(!Array.isArray(venueRows) || !venueRows.length) throw new Error('not found');
+    const row = venueRows[0];
+
+    let neighborhoodName = null;
+    if(row.neighborhood_id){
+      try {
+        const nResp = await fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?id=eq.${encodeURIComponent(row.neighborhood_id)}&select=name`, { headers });
+        if(nResp.ok){
+          const nRows = await nResp.json();
+          if(Array.isArray(nRows) && nRows[0]) neighborhoodName = nRows[0].name;
+        }
+      } catch { /* neighborhood tag just doesn't render — not fatal */ }
+    }
+
+    const venue = {
+      id: row.id,
+      name: decodeEntities(row.name),
+      address: row.address ? decodeEntities(row.address) : undefined,
+      city: row.city ? decodeEntities(row.city) : undefined,
+      website: row.website || undefined,
+      neighborhood: neighborhoodName,
+    };
+
+    const todayISO = new Date().toISOString().slice(0,10);
+    const eventsUrl = `${SUPABASE_URL}/rest/v1/events?venue_id=eq.${encodeURIComponent(id)}&status=eq.approved&start_date=gte.${todayISO}&select=id,title,category,start_date,time_display&order=start_date.asc&limit=100`;
+    const eventsResp = await fetch(eventsUrl, { headers });
+    const events = eventsResp.ok ? await eventsResp.json() : [];
+
+    renderVenue(venue, Array.isArray(events) ? events : []);
+  } catch (err) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('notFoundState').style.display = 'block';
+  }
+}
+init();
+</script>
+</body>
+</html>

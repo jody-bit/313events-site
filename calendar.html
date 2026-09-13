@@ -367,6 +367,8 @@
      index.html — see that file's comments for the full reasoning. */
   a.evt-title-link{color:inherit;text-decoration:none;}
   a.evt-title-link:hover{text-decoration:underline;}
+  a.evt-venue-link{color:inherit;text-decoration:none;}
+  a.evt-venue-link:hover{text-decoration:underline;}
   .evt-desc{
     font-size:12.5px;color:var(--ink-soft);line-height:1.4;margin:3px 0;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
@@ -1775,6 +1777,13 @@ function eventUrl(e){
   return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
 }
 
+// 2026-09-13: same conditional-link convention as eventUrl() above — only
+// events matched to a real venues row (venue_id) get a link; unmatched/
+// Venue TBA rows stay plain text rather than linking to a guessed page.
+function venueUrl(e){
+  return e.venueId != null ? `venue.html?id=${encodeURIComponent(e.venueId)}` : null;
+}
+
 // Only allow http(s) links into href attributes. Blocks javascript: URLs and
 // similar schemes that would otherwise let a submitted "ticket link" execute
 // code on click instead of just navigating.
@@ -1828,7 +1837,7 @@ function showDayPanel(iso){
                 <div class="evt-meta">
                   <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
                   ${priceTag(e)}
-                  <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
@@ -1877,7 +1886,7 @@ function renderList(dateList){
                 <div class="evt-meta">
                   <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
                   ${priceTag(e)}
-                  <span>${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
@@ -2767,6 +2776,7 @@ function mapSupabaseRow(row) {
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    venueId: row.venue_id || null,
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
@@ -2827,7 +2837,7 @@ async function loadSupabaseEvents() {
     // today/upcoming events out of the loaded set with no error. 5000 gives
     // more headroom than index.html/map.html's 2000 since this query also
     // covers historical rows those two don't.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=5000`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=5000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,

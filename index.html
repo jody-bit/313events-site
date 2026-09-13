@@ -3582,6 +3582,17 @@
   .hero-stat-number{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
     font-size:clamp(48px,30cqw,116px);line-height:.85;color:var(--accent);margin-bottom:2px;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+  }
+  /* Count-up tally (2026-09-13, Jody: "kinda like a gameshow") — see
+     animateHeroCount() below. A live glow while digits are still climbing
+     from the initial small/fallback number up to the real one, so the
+     motion itself reads as "still tallying" rather than a value that just
+     happened to change. Purely additive to the base style above; the
+     number's color/size never change, so this can't shift layout. */
+  .hero-stat-number.is-counting{text-shadow:0 0 18px var(--accent), 0 0 4px var(--accent);}
+  @media (prefers-reduced-motion: reduce){
+    .hero-stat-number.is-counting{text-shadow:none;}
   }
   .hero-stat-caption{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:16.5px;
@@ -4080,6 +4091,8 @@
      happens to be clickable, not a navigation link in running text. */
   a.evt-title-link{color:inherit;text-decoration:none;}
   a.evt-title-link:hover{text-decoration:underline;}
+  a.evt-venue-link{color:inherit;text-decoration:none;}
+  a.evt-venue-link:hover{text-decoration:underline;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
   /* Short description excerpt (2026-08-28) — plain secondary text, not a
      link (the title above it is already the click target into event.html).
@@ -5725,6 +5738,15 @@ function eventUrl(e){
   return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
 }
 
+// 2026-09-13: venue_id only exists on events matched to a real `venues` row
+// (see supabase/update_2026-09-13_backfill_venue_id_matched_venues.sql and
+// the new-venues follow-up) — most events have one now, but plenty of
+// unmatched/venue-TBA rows still don't. Returns null rather than a guessed
+// link for those, same honest-gap convention as eventUrl() above.
+function venueUrl(e){
+  return e.venueId != null ? `venue.html?id=${encodeURIComponent(e.venueId)}` : null;
+}
+
 // Some submitted/imported rows have `source` set to a placeholder ("Manual")
 // or literally repeat the venue name (e.g. a venue's own listing page —
 // venue_name_raw "Trinosophes", source "Trinosophes"), which renders as a
@@ -6089,7 +6111,7 @@ function renderList(dateList, meta){
               ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-                <div class="evt-venue">${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+                <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
                 ${multiDayNoteHtml(e)}
@@ -6140,6 +6162,57 @@ function renderList(dateList, meta){
 // today once daily volume no longer needs the wider window). Real count,
 // from real data (byDate + isInDetroitOrbit + getCalendarWeekDates) — never
 // fabricated.
+// Hero stat count-up (2026-09-13, Jody: the hero number starts small on
+// FALLBACK_EVENTS, then a few seconds later loadSupabaseEvents() replaces it
+// with the real (larger) count — previously an abrupt jump, which read as
+// broken/flickery rather than "still loading". Animating the digits
+// climbing from whatever's currently on screen up to the new count instead
+// makes that same delay read as an intentional tally — "kinda like a
+// gameshow", per Jody's own framing.
+//
+// heroDisplayedCount tracks the last count an animation was actually
+// started toward (not just "last count computed") so that render() being
+// re-invoked for an unrelated reason (search input, a filter chip, paging
+// the calendar — none of which change this count, since it deliberately
+// ignores every filter, see the isInDetroitOrbit()-only calc below) doesn't
+// re-trigger the animation against an unchanged number. heroCountFrame
+// holds the in-flight requestAnimationFrame id so a second call arriving
+// mid-animation (e.g. two quick successive loads) cancels the first cleanly
+// instead of two rAF loops fighting over the same element.
+let heroDisplayedCount = null;
+let heroCountFrame = null;
+
+function animateHeroCount(el, from, to){
+  cancelAnimationFrame(heroCountFrame);
+  if(from === to){ el.textContent = to; return; }
+  // Respect the OS-level motion preference — jump straight to the final
+  // number rather than forcing the climb on someone who's asked for
+  // reduced motion (same guard this file's hero-photo rotation already
+  // uses elsewhere).
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    el.textContent = to;
+    return;
+  }
+  const duration = 900; // ms — quick enough not to feel like a wait of its own
+  const start = performance.now();
+  const range = to - from;
+  el.classList.add('is-counting');
+  function step(now){
+    const progress = Math.min((now - start) / duration, 1);
+    // ease-out cubic — fast climb that settles rather than a mechanical
+    // linear tick, closer to the "gameshow" feel Jody described.
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(from + range * eased);
+    if(progress < 1){
+      heroCountFrame = requestAnimationFrame(step);
+    } else {
+      el.textContent = to; // guarantees the exact final value, not a rounding artifact
+      el.classList.remove('is-counting');
+    }
+  }
+  heroCountFrame = requestAnimationFrame(step);
+}
+
 function renderHeroToday(){
   const el = document.getElementById('heroToday');
   if(!el) return;
@@ -6154,13 +6227,39 @@ function renderHeroToday(){
   const count = weekDates.reduce((total, iso) =>
     total + (iso < todayIso ? 0 : (byDate[iso]||[]).filter(e=>!isBlockedEvent(e) && isInDetroitOrbit(e)).length)
   , 0);
+  const caption = `${count === 1 ? 'Thing' : 'Things'} happening this week in the Detroit Orbit.`;
 
-  el.innerHTML = `
-    <div class="hero-stat-number">${count}</div>
-    <div class="hero-stat-caption">${count === 1 ? 'Thing' : 'Things'} happening this week in the Detroit Orbit.</div>
-    <button type="button" class="hero-stat-cta" onclick="viewThisWeek()">View all events &rarr;</button>
-    <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries</div>
-  `;
+  const numberEl = document.getElementById('heroStatNumber');
+  if(!numberEl){
+    // First paint only — build the block once, starting the visible number
+    // at 0 so the very first thing a visitor sees is the tally climbing up
+    // to the fallback count, not a static number. Every later call (once
+    // this element already exists) only ever touches the number/caption
+    // text below, so the button/orbit line and their listeners are never
+    // torn down and rebuilt on every render().
+    el.innerHTML = `
+      <div class="hero-stat-number" id="heroStatNumber">0</div>
+      <div class="hero-stat-caption" id="heroStatCaption">${caption}</div>
+      <button type="button" class="hero-stat-cta" onclick="viewThisWeek()">View all events &rarr;</button>
+      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries</div>
+    `;
+    animateHeroCount(document.getElementById('heroStatNumber'), 0, count);
+    heroDisplayedCount = count;
+    return;
+  }
+
+  document.getElementById('heroStatCaption').textContent = caption;
+  if(count !== heroDisplayedCount){
+    // Animate from whatever's actually on screen right now, not just the
+    // last target — if a prior animation gets interrupted mid-climb (e.g.
+    // Supabase responds fast, before the fallback count-up even finishes),
+    // heroDisplayedCount alone would jump the visible number straight to
+    // the old target before climbing again. Reading the live text avoids
+    // that hiccup.
+    const shown = parseInt(numberEl.textContent, 10);
+    animateHeroCount(numberEl, Number.isFinite(shown) ? shown : 0, count);
+    heroDisplayedCount = count;
+  }
 }
 
 // "View all events" from the hero stat: rather than jumping to a single
@@ -7292,6 +7391,7 @@ function mapSupabaseRow(row) {
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    venueId: row.venue_id || null,
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
@@ -7342,7 +7442,7 @@ async function loadSupabaseEvents() {
     // file's own comment above already flags for the date floor — could get
     // silently truncated as the table grows past that cap with no error and
     // no visible sign anything was cut off. 2000 matches map.html's query.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,

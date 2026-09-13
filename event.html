@@ -97,6 +97,8 @@
   }
   .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
+  a.evt-venue-link{color:inherit;text-decoration:none;}
+  a.evt-venue-link:hover{text-decoration:underline;}
   /* Street address (2026-09-04) — a plain "Get directions" link, distinct
      from evtWhere's venue/city line: smaller and link-colored rather than
      another same-weight meta line, since this is a bonus for people who
@@ -430,6 +432,7 @@ function mapRow(row){
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
     venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    venueId: row.venue_id || null,
     address: row.venue_address_raw ? decodeEntities(row.venue_address_raw) : undefined,
     city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city_raw) : undefined,
     cat: row.category,
@@ -517,7 +520,11 @@ function renderEvent(e){
   badge.style.background = cat.color;
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time?` · ${escapeHtml(e.time)}`:''}`;
-  document.getElementById('evtWhere').innerHTML = `${escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}`;
+  // 2026-09-13: link the venue name to its own permalink page when this
+  // event resolved to a real venues row (venue_id) — stays plain text for
+  // the "Venue TBA"/unmatched cases rather than linking to a guessed page.
+  const venueHref = e.venueId != null ? `venue.html?id=${encodeURIComponent(e.venueId)}` : null;
+  document.getElementById('evtWhere').innerHTML = `${venueHref?`<a class="evt-venue-link" href="${escapeHtml(venueHref)}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}`;
 
   const addrEl = document.getElementById('evtAddress');
   if(e.address){
@@ -664,7 +671,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,category,time_display,is_free,source,note,ticket_url,event_url,price_from`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();

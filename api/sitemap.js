@@ -1,11 +1,13 @@
 // Vercel serverless function — generates an XML sitemap listing every
-// static page plus every approved event's own dedicated page
-// (event.html?id=...), so search engines can discover and index individual
-// events directly rather than only ever seeing them buried inside the
-// single big list page. Wired up at the real /sitemap.xml URL via the
-// rewrite in vercel.json (search engines expect that exact path — a
-// sitemap living only at /api/sitemap would never be found by convention),
-// and referenced from robots.txt.
+// static page, every approved event's own dedicated page
+// (event.html?id=...), and (2026-09-13, now that the venue_id gap is
+// closed — see supabase/update_2026-09-13_backfill_venue_id_matched_venues.sql)
+// every venue's own dedicated page (venue.html?id=...), so search engines
+// can discover and index individual events and venues directly rather than
+// only ever seeing them buried inside the single big list page. Wired up
+// at the real /sitemap.xml URL via the rewrite in vercel.json (search
+// engines expect that exact path — a sitemap living only at /api/sitemap
+// would never be found by convention), and referenced from robots.txt.
 //
 // Regenerated fresh on every request rather than written to disk at build
 // time — this project has no build step (see README.md: "Static HTML +
@@ -75,7 +77,40 @@ module.exports = async (req, res) => {
       priority: "0.7",
     }));
 
-  const allUrls = [...staticUrls, ...eventUrls];
+  // Every venue gets its own sitemap entry too, not just events with a
+  // venue_id set (a venue page is useful/indexable on its own — address,
+  // upcoming events list — even independent of any one event). No
+  // start_date-style floor applies here since venues aren't time-scoped;
+  // the full table is small (~100 rows as of 2026-09-13) so no separate
+  // MAX cap is needed. `venues` has no updated_at column (see schema.sql),
+  // so lastmod is simply omitted for these, same as any event row missing
+  // updated_at above.
+  let venueRows = [];
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    try {
+      const url = `${SUPABASE_URL}/rest/v1/venues?select=id&order=name.asc&limit=5000`;
+      const resp = await fetch(url, {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      });
+      if (resp.ok) {
+        const rows = await resp.json();
+        if (Array.isArray(rows)) venueRows = rows;
+      }
+    } catch (err) {
+      // Same fail-soft behavior as the event fetch above — a sitemap
+      // missing venue rows this run is far better than a 500.
+    }
+  }
+
+  const venueUrls = venueRows
+    .filter((r) => r.id)
+    .map((r) => ({
+      loc: `${SITE_URL}/venue.html?id=${encodeURIComponent(r.id)}`,
+      changefreq: "weekly",
+      priority: "0.6",
+    }));
+
+  const allUrls = [...staticUrls, ...eventUrls, ...venueUrls];
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
