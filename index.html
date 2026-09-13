@@ -4370,6 +4370,7 @@
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
       <a class="site-nav-link" href="calendar.html">Calendar</a>
       <a class="site-nav-link" href="map.html">Map</a>
+      <a class="site-nav-link" href="venues.html">Venues</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
     </nav>
     <div style="display:flex;align-items:center;gap:18px;">
@@ -4566,6 +4567,7 @@
       <div class="side-card" id="onRadarCard" style="display:none;"></div>
       <div class="side-card" id="nearYouCard"></div>
       <div class="side-card" id="freeTodayCard"></div>
+      <div class="side-card" id="venuesCard"></div>
     </aside>
   </div>
 
@@ -4972,6 +4974,13 @@ const ON_RADAR_LIMIT = 5;
 // count request resolves; the Detroit Orbit widget falls back to a
 // today-onward count of EVENTS in the meantime.
 let orbitEventTotal = null;
+
+// Exact total row count in `venues` (2026-09-13, venue directory feature) —
+// same "ask Postgres for the real count, don't rely on a capped client-side
+// array" approach as orbitEventTotal just above. null until
+// loadVenueDirectoryTotal() resolves; the sidebar card just omits the number
+// until then rather than guessing.
+let venueDirectoryTotal = null;
 
 // index by date
 // expandDateRange (2026-09-02 audit fix): a multi-day event needs to appear
@@ -6337,6 +6346,7 @@ function renderSidebar(){
   renderOnRadarCard();
   renderNearYouCard();
   renderFreeTodayCard();
+  renderExploreVenuesCard();
 }
 
 const VC_DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -6623,6 +6633,28 @@ function viewFreeToday(){
   document.getElementById('whenDateEndInput').value = '';
   updateWhenButtons();
   render();
+}
+
+// "Explore Venues" sidebar card (2026-09-13, Jody: "where can we manifest
+// the venue directory? Would it make sense to allow people to search by
+// venue?"). Same honest-number convention as every other card here: the
+// count is venueDirectoryTotal (Postgres's own exact `venues` row count, via
+// loadVenueDirectoryTotal() below), not a guess — the card just omits the
+// number until that dedicated request resolves. Links to the new venues.html
+// directory page, which is where the actual "search by venue" ask lives.
+function renderExploreVenuesCard(){
+  const el = document.getElementById('venuesCard');
+  if(!el) return;
+  const hasCount = venueDirectoryTotal !== null;
+  el.innerHTML = `
+    <div class="side-card-head">
+      <h2>Explore Venues</h2>
+      <a class="side-card-link" href="venues.html">Full directory &rarr;</a>
+    </div>
+    ${hasCount ? `<div class="side-card-number">${venueDirectoryTotal}</div>` : ''}
+    <p class="side-card-caption">${hasCount ? `venue${venueDirectoryTotal === 1 ? '' : 's'} across the Detroit Orbit` : 'Browse every venue on 313.events'}</p>
+    <a class="side-card-cta" href="venues.html">Search by venue &rarr;</a>
+  `;
 }
 
 // Explore Neighborhoods rail — real per-neighborhood counts only. Built from
@@ -7516,6 +7548,35 @@ async function loadOrbitEventTotal(){
   }
 }
 loadOrbitEventTotal();
+
+// Exact `venues` row count for the Explore Venues sidebar card (2026-09-13)
+// — same `Prefer: count=exact` / `Range: 0-0` approach as
+// loadOrbitEventTotal() just above, for the same reason: a real total, not
+// however many rows happen to come back from some other capped query.
+async function loadVenueDirectoryTotal(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/venues?select=id`;
+    const resp = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        Prefer: 'count=exact',
+        Range: '0-0',
+      },
+    });
+    if (!resp.ok) return;
+    const contentRange = resp.headers.get('content-range'); // "0-0/101"
+    if (!contentRange) return;
+    const total = parseInt(contentRange.split('/')[1], 10);
+    if (isNaN(total)) return;
+    venueDirectoryTotal = total;
+    renderExploreVenuesCard();
+  } catch (err) {
+    // Silent by design — the card just stays in its no-number state.
+  }
+}
+loadVenueDirectoryTotal();
 
 // "As seen in" inline press links (2026-08-27, Jody: associate editorial
 // coverage with the specific event it's about). All the actual work —

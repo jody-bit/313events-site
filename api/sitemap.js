@@ -58,6 +58,11 @@ module.exports = async (req, res) => {
   const staticUrls = [
     { loc: `${SITE_URL}/`, changefreq: "hourly", priority: "1.0" },
     { loc: `${SITE_URL}/calendar.html`, changefreq: "hourly", priority: "0.9" },
+    // Venue directory (2026-09-13) — the directory *listing* page itself,
+    // distinct from the individual venue.html?id=... permalinks generated
+    // in venueUrls below (those have been in the sitemap since the venue
+    // pages feature shipped; this is the new index page pointing at them).
+    { loc: `${SITE_URL}/venues.html`, changefreq: "daily", priority: "0.6" },
     { loc: `${SITE_URL}/submit.html`, changefreq: "monthly", priority: "0.5" },
     { loc: `${SITE_URL}/sources.html`, changefreq: "monthly", priority: "0.3" },
     { loc: `${SITE_URL}/radar.html`, changefreq: "daily", priority: "0.6" },

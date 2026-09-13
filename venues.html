@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venue Directory — 313.events</title>
+<link rel="canonical" href="https://313.events/venues.html">
+<meta name="description" content="Every venue on 313.events — Detroit's arts, culture, and nightlife calendar. Search and browse by name, city, or neighborhood.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Venue Directory — 313.events">
+<meta property="og:description" content="Every venue on 313.events — Detroit's arts, culture, and nightlife calendar. Search and browse by name, city, or neighborhood.">
+<meta property="og:url" content="https://313.events/venues.html">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Venue Directory — 313.events">
+<meta name="twitter:description" content="Every venue on 313.events — Detroit's arts, culture, and nightlife calendar. Search and browse by name, city, or neighborhood.">
+<meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
+<!--
+  New page (2026-09-13) — Jody: "where can we manifest the venue directory?
+  Would it make sense to allow people to search by venue?" Scoped via
+  AskUserQuestion to "Full directory + nav link + homepage teaser," of which
+  this page is the foundational piece. Same self-contained, own-copy-of-
+  every-helper convention as venue.html/event.html (no bundler exists to
+  share one module across pages, so every page keeps its own copy).
+
+  Lists every `venues` row (not just ones with a resolved venue_id on some
+  event — a venue can exist in the directory before any event references
+  it), grouped by city, with Detroit additionally sub-grouped by
+  neighborhood (same "only Detroit gets neighborhood-level detail" scope
+  rule as everywhere else — see update_2026-09-13_popps-packing-venue.sql's
+  header). Each venue links to its own venue.html?id=... permalink. The
+  "N upcoming" badge is a real Postgres count of approved, future-or-today
+  events per venue_id — never fabricated — same honest-empty-state
+  convention as venue.html's own "No upcoming events listed" state.
+-->
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --radius:0px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;
+  }
+  a{color:inherit;}
+  button:focus-visible, a:focus-visible, input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .wrap{max-width:820px;margin:0 auto;padding:14px 20px 64px;}
+  header.site{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
+  }
+  .wordmark{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
+    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
+  }
+  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
+  .back-link:hover{color:var(--accent);}
+  .back-link::before{content:'← ';}
+
+  h1.dir-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:clamp(28px,5vw,40px);line-height:1.08;letter-spacing:-.01em;
+    text-transform:uppercase;margin:0 0 8px;
+  }
+  .dir-sub{font-size:14px;color:var(--ink-soft);margin:0 0 20px;}
+
+  .dir-search-row{margin-bottom:28px;}
+  .dir-search{
+    width:100%;padding:12px 14px;background:var(--panel);border:1px solid var(--line);
+    color:var(--ink);font-family:inherit;font-size:15px;border-radius:var(--radius);
+  }
+  .dir-search::placeholder{color:var(--ink-dim);}
+  .dir-search:focus{border-color:var(--accent);}
+
+  .dir-group{margin-bottom:30px;}
+  .dir-group-heading{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
+    text-transform:uppercase;letter-spacing:.03em;color:var(--ink);margin:0 0 4px;
+    padding-bottom:8px;border-bottom:1px solid var(--line);
+  }
+  .dir-subgroup{margin:14px 0 0;}
+  .dir-subgroup-heading{
+    font-family:'Inter',-apple-system,sans-serif;font-weight:700;font-size:12px;
+    text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin:0 0 6px;
+  }
+  .dir-venue-row{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding:10px 0;border-bottom:1px solid var(--line-soft);
+  }
+  .dir-venue-row:last-child{border-bottom:none;}
+  .dir-venue-main{min-width:0;}
+  .dir-venue-name{font-size:15.5px;font-weight:600;color:var(--ink);text-decoration:none;}
+  .dir-venue-name:hover{color:var(--accent);}
+  .dir-venue-addr{display:block;font-size:12.5px;color:var(--ink-dim);margin-top:1px;}
+  .dir-venue-count{
+    flex-shrink:0;font-size:11.5px;font-weight:700;color:var(--ink-soft);
+    background:var(--panel);padding:3px 9px;white-space:nowrap;
+  }
+  .dir-venue-count.has-events{color:var(--on-accent);background:var(--accent);}
+
+  #dirEmpty, #dirLoading{padding:40px 0;text-align:center;color:var(--ink-soft);font-size:14px;}
+  #dirEmpty{display:none;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="back-link" href="/">All events</a>
+    </header>
+
+    <h1 class="dir-title">Venue Directory</h1>
+    <p class="dir-sub" id="dirSub">Loading venues…</p>
+
+    <div class="dir-search-row">
+      <input type="search" id="venueSearch" class="dir-search" placeholder="Search venues by name, city, or neighborhood…" aria-label="Search venues">
+    </div>
+
+    <div id="dirLoading">Loading venue directory…</div>
+    <div id="dirEmpty">No venues match "<span id="dirEmptyQuery"></span>".</div>
+    <div id="dirContent"></div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://afvyfjfqukptnfmgshzn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5"; // publishable key — safe for client code, read-only via RLS
+
+function decodeEntities(str) {
+  if (!str) return str;
+  return str
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&nbsp;/g, " ");
+}
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+let ALL_VENUES = []; // [{id, name, address, city, neighborhood}]
+let filterQuery = '';
+
+function getTodayISO(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function matchesQuery(v, q){
+  if(!q) return true;
+  const hay = [v.name, v.city, v.neighborhood].filter(Boolean).join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+function renderDirectory(){
+  const q = filterQuery.trim().toLowerCase();
+  const matched = ALL_VENUES.filter(v => matchesQuery(v, q));
+
+  document.getElementById('dirLoading').style.display = 'none';
+  const emptyEl = document.getElementById('dirEmpty');
+  const contentEl = document.getElementById('dirContent');
+
+  if(!matched.length){
+    document.getElementById('dirEmptyQuery').textContent = filterQuery.trim();
+    emptyEl.style.display = 'block';
+    contentEl.innerHTML = '';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  // Group by city; Detroit additionally sub-grouped by neighborhood — same
+  // "only Detroit gets neighborhood-level detail" scope rule used across
+  // this project (see venues/neighborhoods review, supabase/migration_010).
+  const cityGroups = new Map();
+  matched.forEach(v=>{
+    const city = v.city || 'Detroit';
+    if(!cityGroups.has(city)) cityGroups.set(city, []);
+    cityGroups.get(city).push(v);
+  });
+
+  const cityNames = [...cityGroups.keys()].sort((a,b)=>{
+    if(a === 'Detroit') return -1;
+    if(b === 'Detroit') return 1;
+    return a.localeCompare(b);
+  });
+
+  contentEl.innerHTML = cityNames.map(city=>{
+    const venues = cityGroups.get(city);
+    let body;
+    if(city === 'Detroit'){
+      const neighGroups = new Map();
+      venues.forEach(v=>{
+        const n = v.neighborhood || 'Other Detroit';
+        if(!neighGroups.has(n)) neighGroups.set(n, []);
+        neighGroups.get(n).push(v);
+      });
+      const neighNames = [...neighGroups.keys()].sort((a,b)=>{
+        if(a === 'Other Detroit') return 1;
+        if(b === 'Other Detroit') return -1;
+        return a.localeCompare(b);
+      });
+      body = neighNames.map(n=>`
+        <div class="dir-subgroup">
+          <p class="dir-subgroup-heading">${escapeHtml(n)}</p>
+          ${renderVenueRows(neighGroups.get(n))}
+        </div>
+      `).join('');
+    } else {
+      body = renderVenueRows(venues);
+    }
+    return `
+      <div class="dir-group">
+        <h2 class="dir-group-heading">${escapeHtml(city)} <span style="color:var(--ink-dim);font-weight:400;">(${venues.length})</span></h2>
+        ${body}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderVenueRows(venues){
+  const sorted = [...venues].sort((a,b)=> a.name.localeCompare(b.name));
+  return sorted.map(v=>{
+    const count = v.upcomingCount || 0;
+    return `
+      <div class="dir-venue-row">
+        <div class="dir-venue-main">
+          <a class="dir-venue-name" href="venue.html?id=${encodeURIComponent(v.id)}">${escapeHtml(v.name)}</a>
+          ${v.address ? `<span class="dir-venue-addr">${escapeHtml(v.address)}</span>` : ''}
+        </div>
+        <span class="dir-venue-count${count > 0 ? ' has-events' : ''}">${count} upcoming</span>
+      </div>
+    `;
+  }).join('');
+}
+
+async function init(){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){
+    document.getElementById('dirLoading').textContent = 'Venue directory is temporarily unavailable.';
+    return;
+  }
+  const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+  try {
+    const [venuesResp, neighResp, eventsResp] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,neighborhood_id&order=name.asc&limit=2000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${getTodayISO()}&venue_id=not.is.null&select=venue_id&limit=2000`, { headers }),
+    ]);
+    if(!venuesResp.ok) throw new Error('venues fetch failed');
+    const venueRows = await venuesResp.json();
+    const neighRows = neighResp.ok ? await neighResp.json() : [];
+    const eventRows = eventsResp.ok ? await eventsResp.json() : [];
+
+    const neighIdToName = new Map((Array.isArray(neighRows) ? neighRows : []).map(n => [n.id, n.name]));
+    const countByVenueId = new Map();
+    (Array.isArray(eventRows) ? eventRows : []).forEach(e=>{
+      if(!e.venue_id) return;
+      countByVenueId.set(e.venue_id, (countByVenueId.get(e.venue_id) || 0) + 1);
+    });
+
+    ALL_VENUES = (Array.isArray(venueRows) ? venueRows : []).map(row => ({
+      id: row.id,
+      name: decodeEntities(row.name),
+      address: row.address ? decodeEntities(row.address) : undefined,
+      city: row.city ? decodeEntities(row.city) : undefined,
+      neighborhood: row.neighborhood_id ? (neighIdToName.get(row.neighborhood_id) || null) : null,
+      upcomingCount: countByVenueId.get(row.id) || 0,
+    }));
+
+    document.getElementById('dirSub').textContent =
+      `${ALL_VENUES.length} venue${ALL_VENUES.length === 1 ? '' : 's'} across the Detroit Orbit.`;
+
+    // JSON-LD ItemList — same organic-traffic rationale as venue.html's
+    // Place schema and event.html's Event schema.
+    const ld = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Venue Directory — 313.events",
+      "itemListElement": ALL_VENUES.slice(0, 200).map((v, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "url": `https://313.events/venue.html?id=${encodeURIComponent(v.id)}`,
+        "name": v.name,
+      })),
+    };
+    const ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.textContent = JSON.stringify(ld);
+    document.head.appendChild(ldScript);
+
+    renderDirectory();
+  } catch (err) {
+    document.getElementById('dirLoading').textContent = 'Venue directory is temporarily unavailable — please try again shortly.';
+  }
+}
+
+document.getElementById('venueSearch').addEventListener('input', (e)=>{
+  filterQuery = e.target.value;
+  renderDirectory();
+});
+
+init();
+</script>
+</body>
+</html>
