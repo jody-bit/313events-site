@@ -66,6 +66,7 @@ module.exports = async (req, res) => {
     { loc: `${SITE_URL}/submit.html`, changefreq: "monthly", priority: "0.5" },
     { loc: `${SITE_URL}/sources.html`, changefreq: "monthly", priority: "0.3" },
     { loc: `${SITE_URL}/radar.html`, changefreq: "daily", priority: "0.6" },
+    { loc: `${SITE_URL}/install.html`, changefreq: "monthly", priority: "0.3" },
   ];
 
   let eventRows = [];

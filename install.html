@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add to Home Screen — 313.events</title>
+<link rel="canonical" href="https://313.events/install.html">
+<meta name="description" content="How to add 313.events to your iPhone or Android home screen for one-tap access to the calendar.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Add 313.events to Your Home Screen">
+<meta property="og:description" content="How to add 313.events to your iPhone or Android home screen for one-tap access to the calendar.">
+<meta property="og:url" content="https://313.events/install.html">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<!--
+  New page (2026-09-13, Jody: "instructions on how to save the site to
+  their phone for both iOS and android users"). The app icon / manifest /
+  apple-touch-icon this page's instructions rely on were already built and
+  wired into every page's <head> (see assets/icons/ + site.webmanifest) —
+  this page was the only actually-missing piece: nowhere on the site
+  explained HOW to use them. Plain instructions, no platform-detection
+  trickery (no JS "smart" showing/hiding one column over the other) — both
+  iOS and Android sections are just always visible, since a visitor might
+  be looking this up on a laptop to relay to someone, or bookmarking it to
+  send to a friend on the other platform.
+-->
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --radius:0px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;
+  }
+  a{color:inherit;}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .wrap{max-width:720px;margin:0 auto;padding:14px 20px 64px;}
+  header.site{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
+  }
+  .wordmark{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
+    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
+  }
+  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
+  .back-link:hover{color:var(--accent);}
+  .back-link::before{content:'← ';}
+
+  .intro-icon{
+    width:56px;height:56px;border-radius:14px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+  }
+  .intro-icon-dot{width:26px;height:26px;border-radius:50%;background:var(--bg);}
+
+  h1.install-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:clamp(26px,5vw,38px);line-height:1.1;letter-spacing:-.01em;
+    text-transform:uppercase;margin:0 0 10px;
+  }
+  .install-sub{font-size:15px;color:var(--ink-soft);margin:0 0 36px;max-width:52ch;}
+
+  .platform-block{margin-bottom:36px;}
+  .platform-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .platform-badge{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:18px;
+    text-transform:uppercase;letter-spacing:.02em;
+  }
+  .platform-note{font-size:12.5px;color:var(--ink-dim);margin:0 0 14px;}
+
+  ol.steps{list-style:none;margin:0;padding:0;counter-reset:step;}
+  ol.steps li{
+    counter-increment:step;position:relative;padding:0 0 16px 40px;
+    border-left:1px solid var(--line);margin-left:15px;
+  }
+  ol.steps li:last-child{border-left-color:transparent;padding-bottom:0;}
+  ol.steps li::before{
+    content:counter(step);position:absolute;left:-15px;top:-2px;
+    width:30px;height:30px;border-radius:50%;background:var(--panel);border:1px solid var(--line);
+    color:var(--accent);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;
+    font-family:'Archivo Narrow',-apple-system,sans-serif;
+  }
+  ol.steps .step-text{font-size:15px;padding-top:2px;}
+  ol.steps .step-icon{
+    display:inline-flex;vertical-align:-6px;margin:0 3px;width:20px;height:20px;
+    align-items:center;justify-content:center;background:var(--panel-hover);border-radius:4px;
+  }
+  ol.steps .step-icon svg{width:13px;height:13px;}
+
+  .install-note{
+    background:var(--panel-alt);border:1px solid var(--line);padding:14px 16px;
+    font-size:13.5px;color:var(--ink-soft);margin-top:8px;
+  }
+  .install-note strong{color:var(--ink);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="back-link" href="/">All events</a>
+    </header>
+
+    <div class="intro-icon"><span class="intro-icon-dot"></span></div>
+    <h1 class="install-title">Add 313.events to Your Home Screen</h1>
+    <p class="install-sub">Get one-tap access to the calendar, right from your phone's home screen — no app store needed. It opens full-screen, just like any other app.</p>
+
+    <div class="platform-block">
+      <div class="platform-head">
+        <span class="platform-badge">iPhone &amp; iPad</span>
+      </div>
+      <p class="platform-note">Works in Safari. Add to Home Screen isn't available from Chrome or other browsers on iOS — that's an Apple restriction, not a 313.events limitation.</p>
+      <ol class="steps">
+        <li><span class="step-text">Open <strong>313.events</strong> in Safari.</span></li>
+        <li><span class="step-text">Tap the <strong>Share</strong> icon <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/></svg></span> in the toolbar (on iPhone, it's along the bottom; on iPad, the top).</span></li>
+        <li><span class="step-text">Scroll down the share sheet and tap <strong>Add to Home Screen</strong>.</span></li>
+        <li><span class="step-text">Tap <strong>Add</strong> in the top right corner.</span></li>
+      </ol>
+      <p class="install-note">The chartreuse dot icon will now sit on your home screen like any other app.</p>
+    </div>
+
+    <div class="platform-block">
+      <div class="platform-head">
+        <span class="platform-badge">Android</span>
+      </div>
+      <p class="platform-note">Works in Chrome, which is the default browser on most Android phones.</p>
+      <ol class="steps">
+        <li><span class="step-text">Open <strong>313.events</strong> in Chrome.</span></li>
+        <li><span class="step-text">Tap the <strong>&#8942;</strong> menu <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></span> in the top right corner.</span></li>
+        <li><span class="step-text">Tap <strong>Add to Home screen</strong> (some phones show <strong>Install app</strong> instead — either works the same way).</span></li>
+        <li><span class="step-text">Confirm by tapping <strong>Add</strong> / <strong>Install</strong>.</span></li>
+      </ol>
+      <p class="install-note">Chrome sometimes shows an <strong>Install</strong> banner on its own at the bottom of the screen — tap that instead if you see it, it does the same thing.</p>
+    </div>
+  </div>
+</body>
+</html>

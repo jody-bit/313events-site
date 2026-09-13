@@ -74,6 +74,9 @@
     }
   ],
   "functions": {
+    "api/event-meta.js": {
+      "includeFiles": "event.html"
+    },
     "api/cron-metrotimes.js": {
       "maxDuration": 60
     },
@@ -103,6 +106,10 @@
     {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
+    },
+    {
+      "source": "/event.html",
+      "destination": "/api/event-meta"
     }
   ]
 }
