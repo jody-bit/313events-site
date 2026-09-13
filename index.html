@@ -6193,6 +6193,14 @@ function animateHeroCount(el, from, to){
     el.textContent = to;
     return;
   }
+  // 2026-09-13 smoke test: a tab opened in the background (middle-click/
+  // "open in new tab") has requestAnimationFrame throttled to a stop by the
+  // browser until it's actually viewed, which would otherwise leave the
+  // number frozen at its starting value (with the glow class stuck on)
+  // for however long the tab sits unseen. Skip straight to the final value
+  // here — there's no one watching the climb anyway — rather than starting
+  // an animation that can't run.
+  if(document.hidden){ el.textContent = to; return; }
   const duration = 900; // ms — quick enough not to feel like a wait of its own
   const start = performance.now();
   const range = to - from;

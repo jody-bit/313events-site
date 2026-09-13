@@ -23,8 +23,22 @@
 // limit; revisit with real pagination (a sitemap index file referencing
 // several child sitemaps) only if approved-event volume ever gets close.
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+// 2026-09-13 smoke test finding: sitemap.js is the only server-side file in
+// this codebase that ever referenced SUPABASE_ANON_KEY — every other
+// function uses SUPABASE_SERVICE_ROLE_KEY (see admin-events.js/
+// admin-editorial.js/every cron). Vercel's project env vars were never
+// actually set up with a SUPABASE_ANON_KEY entry, since nothing else needed
+// one — so process.env.SUPABASE_ANON_KEY was undefined in production the
+// whole time, the `if (SUPABASE_URL && SUPABASE_ANON_KEY)` guard below
+// silently skipped both fetches, and event.html URLs never actually made
+// it into the live sitemap despite the code intending to add them. Falling
+// back to the same publishable/anon key every client-facing page already
+// hardcodes (venue.html, event.html, index.html, calendar.html, map.html —
+// explicitly documented there as "safe for client code, read-only via
+// RLS") fixes this without depending on a Vercel dashboard change; an
+// explicitly-configured env var (if one's ever added later) still wins.
+const SUPABASE_URL = process.env.SUPABASE_URL || "https://afvyfjfqukptnfmgshzn.supabase.co";
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5";
 const SITE_URL = "https://313.events";
 const MAX_EVENTS = 5000;
 
