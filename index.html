@@ -6235,7 +6235,11 @@ function renderHeroToday(){
   const count = weekDates.reduce((total, iso) =>
     total + (iso < todayIso ? 0 : (byDate[iso]||[]).filter(e=>!isBlockedEvent(e) && isInDetroitOrbit(e)).length)
   , 0);
-  const caption = `${count === 1 ? 'Thing' : 'Things'} happening this week in the Detroit Orbit.`;
+  // 2026-09-13 (Jody): make clear this is a countdown, not just a tally —
+  // "left" instead of "happening" signals the number only shrinks as the
+  // week goes on, which is what the "new week starts Monday" note on the
+  // line below is explaining the reset of.
+  const caption = `${count === 1 ? 'Thing' : 'Things'} left this week in the Detroit Orbit.`;
 
   const numberEl = document.getElementById('heroStatNumber');
   if(!numberEl){
@@ -6249,7 +6253,7 @@ function renderHeroToday(){
       <div class="hero-stat-number" id="heroStatNumber">0</div>
       <div class="hero-stat-caption" id="heroStatCaption">${caption}</div>
       <button type="button" class="hero-stat-cta" onclick="viewThisWeek()">View all events &rarr;</button>
-      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries</div>
+      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries &middot; new week starts Monday</div>
     `;
     animateHeroCount(document.getElementById('heroStatNumber'), 0, count);
     heroDisplayedCount = count;
