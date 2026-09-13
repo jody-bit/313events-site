@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Detroit-area events from WDET's public events
 // calendar (wdet.org), which runs on the WordPress "The Events Calendar"
 // plugin and exposes a real, documented JSON REST API — no HTML scraping
@@ -147,6 +148,12 @@ module.exports = async (req, res) => {
 
   const events = Array.isArray(data.events) ? data.events : [];
 
+  // See api/_lib/venue-lookup.js — WDET's feed spans many different venues,
+  // so venue_id is resolved per-row against each row's own venue_name_raw.
+  // Links to an existing venues row if one matches; never creates or
+  // guesses a fuzzy one.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
   const rows = events
     .map((e) => {
       const venue = e.venue && e.venue.venue ? e.venue : null; // Tribe nests venue fields inside e.venue
@@ -164,11 +171,13 @@ module.exports = async (req, res) => {
       if (!e.start_date) return null;
       const startDate = e.start_date.slice(0, 10); // "YYYY-MM-DD HH:MM:SS" -> date part
 
+      const rowVenueName = decodeEntities(venueName);
       return {
         external_id: `wdet-${e.id}`,
         title: decodeEntities(e.title),
         category: cat,
-        venue_name_raw: decodeEntities(venueName),
+        venue_name_raw: rowVenueName,
+        venue_id: resolveVenueId(venueMap, rowVenueName),
         start_date: startDate,
         time_display: formatTimeRange(e.start_date, e.end_date),
         is_free: /free/i.test(e.cost || "") || !e.cost,

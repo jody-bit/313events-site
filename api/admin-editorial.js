@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel serverless function powering admin.html's "Press coverage" section
 // — the review queue for editorial_articles rows cron-editorial.js stored
 // but couldn't confidently match to an existing event (matched_event_id is
@@ -272,6 +273,9 @@ module.exports = async (req, res) => {
       description: description || null,
       category,
       venue_name_raw: venue.trim(),
+      // See api/_lib/venue-lookup.js — links to the existing venues row if
+      // one matches; never creates or guesses a fuzzy one.
+      venue_id: resolveVenueId(await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY), venue.trim()),
       venue_address_raw: address && address.trim() ? address.trim() : null,
       venue_city_raw: city && city.trim() ? city.trim() : null,
       start_date: startDate,

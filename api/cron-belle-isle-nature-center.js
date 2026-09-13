@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Belle Isle Nature Center's own programming from
 // the WordPress "The Events Calendar" plugin's public JSON REST API.
 // Verified live before writing: belleislenaturecenter.org/wp-json/tribe/events/v1/events
@@ -131,6 +132,7 @@ module.exports = async (req, res) => {
       description: decodeEntities(stripHtml(e.description)).slice(0, 500) || null,
       category: "family",
       venue_name_raw: VENUE_NAME,
+      venue_id: venueId,
       start_date: e.start_date.slice(0, 10),
       time_display: formatTimeRange(e.start_date, e.end_date),
       is_free: !e.cost || /free/i.test(e.cost),

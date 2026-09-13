@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Cinema Detroit's screenings from WordPress's core
 // REST API (wp/v2/pages). Cinema Detroit (cinemadetroit.org) runs Divi, not
 // a calendar plugin — there's no /wp-json/tribe/* namespace and no `event`
@@ -140,11 +141,17 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rawRows = parsed.map((e) => ({
     external_id: e.external_id,
     title: e.title,
     category: "film",
     venue_name_raw: VENUE_NAME,
+    venue_id: venueId,
     start_date: e.start_date,
     time_display: e.time_display,
     is_free: false,

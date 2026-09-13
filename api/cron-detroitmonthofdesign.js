@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls the full Detroit Month of Design festival program
 // (September 2026) from detroitmonthofdesign.org. Added 2026-09-02 at
 // Jody's request ("let's add this calendar feed to the database").
@@ -303,7 +304,16 @@ module.exports = async (req, res) => {
   for (const row of parsed) {
     if (!seen.has(row.external_id)) seen.set(row.external_id, row);
   }
-  const rows = Array.from(seen.values());
+  // See api/_lib/venue-lookup.js — this cron spans many different venues
+  // (each detail page names its own), so venue_id is resolved per-row
+  // against each row's own venue_name_raw rather than a single constant.
+  // Links to an existing venues row if one matches; never creates or
+  // guesses a fuzzy one.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const rows = Array.from(seen.values()).map((row) => ({
+    ...row,
+    venue_id: resolveVenueId(venueMap, row.venue_name_raw),
+  }));
 
   try {
     // Status-preserving lookup, chunked (see SUPABASE_BATCH_SIZE's comment

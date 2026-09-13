@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — scrapes HALO Detroit's own events page
 // (thehalodetroit.com/currentevents). robots.txt for this site places no
 // restrictions on crawling it. The site is built on Wix, has no JSON-LD or
@@ -168,11 +169,17 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rawRows = parsed.map((e) => ({
     external_id: `halo-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "nightlife", // best-effort default — HALO's own page doesn't distinguish cabaret/DJ/social events
     venue_name_raw: VENUE_NAME,
+    venue_id: venueId,
     start_date: e.date,
     time_display: e.time,
     is_free: false,

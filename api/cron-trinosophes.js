@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — scrapes Trinosophes' own events page (trinosophes.com/Events)
 // and upserts parsed shows into Supabase as status='approved'.
 //
@@ -173,11 +174,17 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rawRows = parsed.map((e) => ({
     external_id: `trinosophes-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "music", // Trinosophes is predominantly a music/arts venue; not fine-grained per event
     venue_name_raw: VENUE_NAME,
+    venue_id: venueId,
     start_date: e.date,
     // Trinosophes' events page never lists a showtime (confirmed 2026-08-26
     // — every listing is just a date heading + title, no times anywhere).

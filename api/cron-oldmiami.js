@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls The Old Miami (Cass Corridor, Detroit) shows from
 // rockindetroit.com/venue/old-miami/. Added 2026-09-12 at Jody's request,
 // after asking me to "crawl" that venue page.
@@ -277,6 +278,12 @@ module.exports = async (req, res) => {
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
+  // See api/_lib/venue-lookup.js — links to the existing `venues` row for
+  // "The Old Miami" (already assigned a real neighborhood) if one exists;
+  // never creates a new venue or guesses a fuzzy match.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rawRows = parsedEvents
     .filter((e) => e.dateISO >= todayISO) // the venue page shouldn't list past shows, but don't trust that blindly
     .map((e) => ({
@@ -285,6 +292,7 @@ module.exports = async (req, res) => {
       description: e.bands.length ? `Live music: ${e.bands.join(", ")}` : undefined,
       category: "music",
       venue_name_raw: VENUE_NAME,
+      venue_id: venueId,
       venue_address_raw: e.address,
       venue_city_raw: e.city,
       start_date: e.dateISO,

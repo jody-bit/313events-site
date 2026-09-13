@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
 // Discovery API and upserts them straight into Supabase as status='approved'
@@ -177,7 +178,7 @@ async function fetchTicketmasterEvents() {
   return allEvents;
 }
 
-function shapeForDb(e) {
+function shapeForDb(e, venueMap) {
   const cat = mapCategory(e.classifications);
   if (!cat) return null;
 
@@ -214,6 +215,13 @@ function shapeForDb(e) {
     description: e.info || undefined,
     category: cat,
     venue_name_raw: venueName,
+    // See api/_lib/venue-lookup.js — this cron spans the whole 75-mile
+    // radius, so venue_id is resolved per-event against its own venue name.
+    // Links to an existing venues row if one matches; never creates or
+    // guesses a fuzzy one (most Ticketmaster venues outside the original
+    // 83 stay unlinked until researched — see NEW_SOURCES_RESEARCH.md's
+    // don't-guess-at-geography precedent).
+    venue_id: resolveVenueId(venueMap, venueName),
     venue_city_raw: venueCity,
     start_date: start.localDate,
     time_display: formatTime(start),
@@ -253,7 +261,8 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const rows = raw.map(shapeForDb).filter(Boolean);
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const rows = raw.map((e) => shapeForDb(e, venueMap)).filter(Boolean);
   if (!rows.length) {
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;

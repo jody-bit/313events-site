@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Planet Ant Theatre's full show calendar (Ant Hall
 // and its Black Box room, both in Hamtramck) from CrowdWork, the box-office
 // platform crowdwork.com/v/planetanttheatre/shows is built on. Added
@@ -290,7 +291,15 @@ module.exports = async (req, res) => {
   for (const row of allRows) {
     if (!seen.has(row.external_id)) seen.set(row.external_id, row);
   }
-  const rows = Array.from(seen.values());
+  // See api/_lib/venue-lookup.js — this CrowdWork calendar spans several
+  // venues (Planet Ant Theatre, Black Box, etc.), so venue_id is resolved
+  // per-row against each row's own venue_name_raw. Links to an existing
+  // venues row if one matches; never creates or guesses a fuzzy one.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const rows = Array.from(seen.values()).map((row) => ({
+    ...row,
+    venue_id: resolveVenueId(venueMap, row.venue_name_raw),
+  }));
 
   try {
     // Look up each row's current status before writing, so an admin's

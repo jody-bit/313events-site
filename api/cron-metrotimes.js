@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Metro Times' community calendar (Gyrobase CMS).
 //
 // Metro Times' own EventSearch/listing UI is blocked by robots.txt, but its
@@ -240,11 +241,18 @@ module.exports = async (req, res) => {
     }
   });
 
+  // See api/_lib/venue-lookup.js — Metro Times' calendar spans many venues,
+  // so venue_id is resolved per-row against each row's own venue_name_raw.
+  // Links to an existing venues row if one matches; never creates or
+  // guesses a fuzzy one.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
   const rows = pages.filter(Boolean).map((e) => ({
     external_id: e.external_id,
     title: e.title,
     category: "music", // placeholder — Metro Times' calendar spans every category; a human sets the real one during moderation
     venue_name_raw: e.venue_name_raw,
+    venue_id: resolveVenueId(venueMap, e.venue_name_raw),
     start_date: e.start_date,
     time_display: e.time_display,
     ticket_url: e.ticket_url,

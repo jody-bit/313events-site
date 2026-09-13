@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
 // admin.html/api/admin-feeds.js) and upserts what it finds into `events`.
@@ -186,7 +187,7 @@ function formatIcsTime(hour, minute) {
 // scoped to one feed_source (which supplies venue name + default category —
 // v1 assumes one feed = one venue, same assumption every single-venue cron
 // in this project already makes, e.g. cron-cinema-detroit.js's VENUE_NAME).
-function icsEventsToRows(icsEvents, feedSource) {
+function icsEventsToRows(icsEvents, feedSource, venueMap) {
   const rows = [];
   for (const ev of icsEvents) {
     if (!ev.dtstart) continue; // no start date at all — can't place this on the calendar
@@ -209,6 +210,10 @@ function icsEventsToRows(icsEvents, feedSource) {
       description: ev.description ? ev.description.slice(0, 1000) : null,
       category: feedSource.default_category,
       venue_name_raw: feedSource.venue_name,
+      // See api/_lib/venue-lookup.js — links to the existing venues row if
+      // this feed's self-reported venue_name happens to match one already
+      // in the database; never creates or guesses a fuzzy one.
+      venue_id: resolveVenueId(venueMap, feedSource.venue_name),
       start_date: start.date,
       // All-day multi-day spans only (start.hour === null) — a timed event's
       // DTEND is just its own end time, already folded into time_display
@@ -282,6 +287,10 @@ module.exports = async (req, res) => {
   let totalUpserted = 0;
   const results = [];
 
+  // See api/_lib/venue-lookup.js — one lookup for the whole run, reused
+  // across every approved feed source below.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
   for (const feedSource of feedSources) {
     let pollResult;
     try {
@@ -296,7 +305,7 @@ module.exports = async (req, res) => {
         } else {
           const text = await r.text();
           const icsEvents = parseIcsEvents(text);
-          const rows = icsEventsToRows(icsEvents, feedSource);
+          const rows = icsEventsToRows(icsEvents, feedSource, venueMap);
 
           if (!rows.length) {
             pollResult = "Fetched OK — 0 events found (feed may be empty, all-past, or in an unsupported shape)";

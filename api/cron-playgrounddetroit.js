@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls PLAYGROUND DETROIT's own event calendar. Added
 // 2026-09-05 after Jody asked "did we crawl this events page yet?" pointing
 // at playgrounddetroit.com/category/events/.
@@ -385,7 +386,13 @@ module.exports = async (req, res) => {
   for (const row of parsed) {
     if (!seen.has(row.external_id)) seen.set(row.external_id, row);
   }
-  const rows = Array.from(seen.values());
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match. Attached here (not in
+  // fetchEventDetail) since VENUE_NAME is constant for every row this cron
+  // produces — one lookup for the whole run.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+  const rows = Array.from(seen.values()).map((row) => ({ ...row, venue_id: venueId }));
 
   try {
     const existingStatusByExternalId = new Map();

@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — scrapes the Redford Theatre's own events archive page
 // (redfordtheatre.com/events/). WordPress + Elementor, no calendar plugin
 // REST API (confirmed: no /wp-json/tribe/* namespace, no `event` post type
@@ -155,11 +156,17 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rawRows = parsed.map((e) => ({
     external_id: `redford-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "film",
     venue_name_raw: VENUE_NAME,
+    venue_id: venueId,
     start_date: e.date,
     time_display: e.time,
     is_free: false,

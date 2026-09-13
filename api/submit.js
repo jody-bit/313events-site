@@ -9,6 +9,7 @@
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum",
@@ -235,6 +236,13 @@ module.exports = async (req, res) => {
     description: description || null,
     category,
     venue_name_raw: venueTba ? `${venue.trim()} (address TBA)` : venue.trim(),
+    // See api/_lib/venue-lookup.js — matched against the plain venue name
+    // (not the "(address TBA)"-suffixed display value above), since that
+    // suffix would never match a real venues.name. Links to an existing
+    // venues row if one matches; never creates or guesses a fuzzy one — a
+    // self-submitted venue this project doesn't already know about just
+    // stays unlinked, same as an unmatched cron-sourced event.
+    venue_id: resolveVenueId(await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY), venue.trim()),
     // 2026-09-04 fix — this form has always had a "Street address" field,
     // but this row never actually saved it: `address` was destructured
     // from the request body above and then silently discarded. See

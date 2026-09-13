@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Dossin Great Lakes Museum events from the Detroit
 // Historical Society's combined events page (detroithistorical.org/events,
 // which covers both the Detroit Historical Museum — already in this
@@ -160,11 +161,17 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rawRows = parsed.map((e) => ({
     external_id: `dossin-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
     category: "museum",
     venue_name_raw: VENUE_NAME,
+    venue_id: venueId,
     start_date: e.date,
     time_display: e.time,
     is_free: false,

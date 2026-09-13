@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Lager House (Corktown, Detroit) shows straight from
 // thelagerhouse.com/events. Added 2026-09-02 at Jody's request ("We must add
 // in Lager house events to the database").
@@ -175,17 +176,24 @@ module.exports = async (req, res) => {
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
+  // See api/_lib/venue-lookup.js — resolved per-row (not once for the whole
+  // run) since this cron can write either of two different venue names
+  // (Sister Room vs. Lager House proper).
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
   const rawRows = parsed
     .filter((e) => e.date >= todayISO) // the page also lists recently-past shows; nothing downstream needs those written every run
     .map((e) => {
       const { isFree, priceFrom } = parsePrice(e.priceText);
       const isSisterRoom = SISTER_ROOM_MATCH.test(e.title) || (e.description && SISTER_ROOM_MATCH.test(e.description));
+      const rowVenueName = isSisterRoom ? SISTER_ROOM_NAME : VENUE_NAME;
       return {
         external_id: `lagerhouse-${e.date}-${e.slug}`.slice(0, 250),
         title: e.title,
         description: e.description || undefined,
         category: "music",
-        venue_name_raw: isSisterRoom ? SISTER_ROOM_NAME : VENUE_NAME,
+        venue_name_raw: rowVenueName,
+        venue_id: resolveVenueId(venueMap, rowVenueName),
         venue_city_raw: "Detroit",
         start_date: e.date,
         time_display: e.startTime || undefined,
