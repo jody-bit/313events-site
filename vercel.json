@@ -67,6 +67,10 @@
     {
       "path": "/api/cron-oldmiami",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron-poppspacking",
+      "schedule": "0 5 * * *"
     }
   ],
   "functions": {
