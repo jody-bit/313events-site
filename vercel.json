@@ -75,6 +75,10 @@
     {
       "path": "/api/cron-visitdetroit",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron-post-to-facebook",
+      "schedule": "0 7 * * *"
     }
   ],
   "functions": {
