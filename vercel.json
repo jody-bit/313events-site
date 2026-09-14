@@ -71,6 +71,10 @@
     {
       "path": "/api/cron-poppspacking",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron-visitdetroit",
+      "schedule": "0 6 * * *"
     }
   ],
   "functions": {

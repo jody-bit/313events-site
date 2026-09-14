@@ -3982,13 +3982,16 @@
      JS carousel: card width is set per breakpoint below and the browser's
      native scroll/snap handles "multiple visible on desktop, 2-3 on tablet,
      partial-next-card peek on mobile" (brief §23/§38) without any extra
-     script. No per-neighborhood photography exists yet (checked
+     script. Originally NO per-neighborhood photography existed (checked
      /assets/photography — only 4 hero candidates + 7 general Detroit
      "free-selects", two of which happen to be Eastern Market but nothing
      for the other 40+ neighborhoods) — rather than mismatching a generic
      Detroit photo to the wrong neighborhood, or reusing one photo
-     everywhere, these are deliberately photo-less typographic cards for
-     now. Real photography can be layered in venue-by-venue later. */
+     everywhere, these were deliberately photo-less typographic cards.
+     2026-09-14: real, correctly-geotagged photography started landing (see
+     NEIGHBORHOOD_PHOTOS in the JS below) — a card only gets a photo once
+     one actually exists for that specific neighborhood; every other card
+     still renders exactly as before. */
   .neighborhoods-section{margin:18px 0 22px;}
   .neighborhoods-heading{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
@@ -4006,6 +4009,10 @@
   }
   .neigh-card:hover{background:var(--panel-hover);}
   .neigh-card.active{border-color:var(--accent);}
+  .neigh-photo{
+    width:calc(100% + 28px);margin:-14px -14px 10px;height:88px;
+    object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;display:block;
+  }
   .neigh-name{
     font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;
     color:var(--ink);line-height:1.25;margin-bottom:8px;
@@ -4394,17 +4401,24 @@
   (function(){
     // Auto-rotating hero photo carousel (2026-08-28, Jody: "anyway to create
     // a carousel that auto rotates?"). The previous version picked ONE of
-    // these four photos at random per page load and left it static for the
-    // rest of the visit — this instead rotates through all four on a slow
-    // crossfade while the page stays open. Jody's calls: preload all 4 up
+    // these photos at random per page load and left it static for the
+    // rest of the visit — this instead rotates through all of them on a slow
+    // crossfade while the page stays open. Jody's calls: preload every one up
     // front (smoother crossfades are worth the extra initial bandwidth vs.
     // lazy-loading each one right before its turn) and an ~8s, slow-fade
-    // rotation rather than a hard cut.
+    // rotation rather than a hard cut. 5 candidates as of 2026-09-14 (added
+    // 'E' — see HERO_PHOTOS below).
     var HERO_PHOTOS = [
       { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
       { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
       { file:'C', w:2400, h:1350, alt:'A concert crowd at dusk, backlit by stage lights and video screens.' },
-      { file:'D', w:1536, h:1024, alt:'A crowd throwing up rock horns as a silhouetted performer faces them under stage lights.' }
+      { file:'D', w:1536, h:1024, alt:'A crowd throwing up rock horns as a silhouetted performer faces them under stage lights.' },
+      // 2026-09-14 addition — source photo is a portrait 665x1182 crop (much
+      // lower resolution than candidates A-C), so this one leans softer at
+      // full 2400px desktop width than the others; documented honestly in
+      // the manifest rather than silently shipped as if it matched their
+      // sharpness. Fine at mobile size (900w), where the upscale is minor.
+      { file:'E', w:2400, h:1350, alt:'A crowd gathered at dusk near a small outdoor stage and event tents, with hand-lettered signs visible in the foreground.' }
     ];
     var ROTATE_MS = 8000;
     var container = document.getElementById('heroPhoto');
@@ -6682,6 +6696,23 @@ function computeNeighborhoodCounts(){
   return [...counts.entries()].sort((a,b)=> b[1]-a[1]);
 }
 
+// Real per-neighborhood photography, added as it exists (2026-09-14: Jody's
+// own photos, geotagged and confirmed against her own knowledge of where
+// they were actually taken — not guessed from the image alone; see e.g. the
+// stone-bridge photo, which reads visually like Belle Isle but is actually
+// Elmwood Cemetery, per Jody). Deliberately a sparse allow-list, not a
+// fallback/placeholder system — the original design call here (see the
+// .neighborhoods-section CSS comment) was "photo-less typographic cards"
+// specifically to avoid mismatching a generic Detroit photo to the wrong
+// neighborhood or reusing one photo everywhere; a neighborhood with no entry
+// below still renders as a plain typographic card, exactly as before.
+const NEIGHBORHOOD_PHOTOS = {
+  "Midtown": {
+    file: '313-events-neighborhood-midtown.webp',
+    alt: 'A dense street-festival crowd at dusk in Midtown Detroit, tents and Victorian houses along the block behind them.'
+  }
+};
+
 function renderNeighborhoodsRail(){
   const section = document.getElementById('neighborhoodsSection');
   const rail = document.getElementById('neighborhoodsRail');
@@ -6689,13 +6720,20 @@ function renderNeighborhoodsRail(){
   const counts = computeNeighborhoodCounts().slice(0, NEIGHBORHOOD_RAIL_LIMIT);
   if(!counts.length){ section.style.display = 'none'; rail.innerHTML = ''; return; }
   section.style.display = '';
-  rail.innerHTML = counts.map(([name, count])=>`
-    <button type="button" class="neigh-card${neighborhoodFilter===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+  rail.innerHTML = counts.map(([name, count])=>{
+    const photo = NEIGHBORHOOD_PHOTOS[name];
+    const photoHtml = photo
+      ? `<img class="neigh-photo" src="/assets/photography/neighborhoods/${photo.file}" alt="${escapeHtml(photo.alt)}" loading="lazy" width="720" height="405">`
+      : '';
+    return `
+    <button type="button" class="neigh-card${photo?' has-photo':''}${neighborhoodFilter===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+      ${photoHtml}
       <span class="neigh-name">${escapeHtml(name)}</span>
       <span class="neigh-count">${count}</span>
       <span class="neigh-count-label">event${count===1?'':'s'}</span>
     </button>
-  `).join('');
+  `;
+  }).join('');
   rail.querySelectorAll('.neigh-card').forEach(btn=>{
     btn.addEventListener('click', ()=> viewNeighborhood(btn.dataset.neighborhood));
   });

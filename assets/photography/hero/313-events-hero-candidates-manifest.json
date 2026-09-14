@@ -88,5 +88,26 @@
     "copyright": "Jody Tyree",
     "usage": "313.events homepage hero (in production use as of 2026-08-26)",
     "status": "active — currently the live homepage hero image"
+  },
+  {
+    "candidate": "E",
+    "source": "image.jpg (supplied directly via chat upload; original device filename not provided)",
+    "source_resolution": [665, 1182],
+    "strength": "PRESENCE",
+    "desktop": {
+      "file": "313-events-homepage-hero-E.webp",
+      "size": [2400, 1350],
+      "note": "Upscaled ~3.6x from the 665px-wide source (cover-cropped, Lanczos resample) — visibly softer than candidates A-C at full desktop width. Shipped anyway per Jody's explicit go-ahead (2026-09-14), documented here rather than silently passed off as matching sharpness. Revisit if a higher-resolution original becomes available."
+    },
+    "mobile": {
+      "file": "313-events-homepage-hero-E-mobile.webp",
+      "size": [900, 1200],
+      "note": "Only ~1.35x upscale at this size — no meaningful quality loss."
+    },
+    "treatment": "Cover-cropped to fit each target aspect ratio (focus biased toward the upper portion of the frame, away from the nearest foreground figures); resized with Lanczos resampling; no color/contrast grading, no tint, no generative alteration.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "Crowd scene with hand-lettered advocacy/rally signage visible in the foreground — flagged to Jody before use since it reads differently in tone than the concert/festival crowds in A-D; she confirmed using it (2026-09-14).",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
   }
 ]

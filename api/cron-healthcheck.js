@@ -57,7 +57,7 @@ const CRON_ENDPOINTS = [
   "cron-belle-isle-nature-center", "cron-metrotimes", "cron-redford-theatre",
   "cron-cinema-detroit", "cron-dossin", "cron-feeds", "cron-editorial",
   "cron-lagerhouse", "cron-detroitmonthofdesign", "cron-planetanttheatre",
-  "cron-playgrounddetroit",
+  "cron-playgrounddetroit", "cron-visitdetroit",
 ];
 const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial", "admin-venues"];
 const PAGES = ["/", "/calendar.html", "/map.html", "/submit.html", "/sources.html", "/event.html", "/admin.html"];
@@ -93,6 +93,136 @@ async function checkPage(path) {
   const body = await resp.text();
   if (!body || body.length < 500) throw new Error(`suspiciously short response (${body.length} bytes)`);
   return `HTTP ${resp.status}, ${body.length} bytes`;
+}
+
+// 2026-09-14, added after Jody asked "if the visitdetroit feed breaks will
+// it come up in the automated smoke tests?" — the honest answer at the time
+// was no. Every check above (checkCronAuth) only proves a cron's auth
+// boundary is alive; it deliberately never invokes a source's real fetch
+// logic (see the header comment's "PROBING THE AUTH BOUNDARY" note), so a
+// source whose upstream silently changed shape — Algolia index renamed, feed
+// URL 404ing, field names shifted — would keep returning a passing "401 as
+// expected" auth check forever while quietly upserting nothing. This closes
+// that gap for real, by checking the one thing that actually matters: did
+// this source's own rows get touched recently.
+//
+// WHY "updated_at recently touched" IS A MEANINGFUL SIGNAL AT ALL — verified
+// against schema.sql's events_set_updated_at trigger (before update on events,
+// sets updated_at = now() unconditionally): every cron here upserts with
+// Prefer: resolution=merge-duplicates, which is a real UPDATE against any
+// row whose external_id already exists — so as long as a source's calendar
+// still lists ANY of the same upcoming event(s) it listed yesterday, a
+// healthy cron re-touches updated_at on every single run, whether or not
+// anything actually changed. This check isn't asking "did new content
+// appear" — it's asking "is this cron still reaching Supabase and finding
+// its own rows to touch," which is exactly the failure mode that matters.
+//
+// 2026-09-14, generalized from VisitDetroit-only to every single-source
+// cron, per Jody's follow-up ("does the freshness check need to be applied
+// elsewhere?" → "yes, build it for all of them now"). Two sources initially
+// looked like they might share one `events.source` value ("Metro Times",
+// used by both cron-metrotimes.js and a string in cron-editorial.js's
+// OUTLET_LIST) — checked before assuming: cron-editorial.js never writes to
+// `events` at all (it writes editorial_articles/editorial_article_events,
+// a separate citation-matching feature — see its own header), so
+// cron-metrotimes.js is the only actual writer of source="Metro Times" into
+// `events`. No real collision; every source below maps to exactly one cron.
+//
+// WINDOW LENGTH — a single missed run (a transient Vercel hiccup, a slow
+// upstream) shouldn't page anyone, so every window here is several times
+// this cron's own daily cadence, not 1 day. High-volume sources (hundreds of
+// events, near-certain to have at least one upcoming row re-touched daily)
+// use SOURCE_FRESHNESS_DAYS_DEFAULT (3d). Small single-venue calendars can
+// legitimately go a stretch with nothing new — not a failure, just a quiet
+// venue — so they get a longer 7-day window (SOURCE_FRESHNESS_DAYS_QUIET) to
+// avoid paging over a normal quiet week. This is a judgment call without
+// hard per-venue cadence data behind it; if a specific source starts firing
+// false positives, loosen that source's own window rather than every one.
+const SOURCE_FRESHNESS_DAYS_DEFAULT = 3;
+const SOURCE_FRESHNESS_DAYS_QUIET = 7;
+
+// One entry per single-source cron whose `source` string is fixed and
+// unique in `events` (confirmed above) — deliberately excludes cron-feeds.js
+// (no fixed source string; see checkFeedSourcesFreshness below instead) and
+// cron-editorial.js (writes to editorial_articles, not events, so this
+// events-table check doesn't apply to it at all).
+const SOURCE_FRESHNESS_TARGETS = [
+  { source: "Ticketmaster", days: SOURCE_FRESHNESS_DAYS_DEFAULT },
+  { source: "WDET", days: SOURCE_FRESHNESS_DAYS_DEFAULT },
+  { source: "Metro Times", days: SOURCE_FRESHNESS_DAYS_DEFAULT },
+  { source: "VisitDetroit", days: SOURCE_FRESHNESS_DAYS_DEFAULT },
+  { source: "HALO Detroit", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Belle Isle Nature Center", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Redford Theatre", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Cinema Detroit", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Detroit Historical Society", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Lager House", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Detroit Month of Design", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Planet Ant Theatre", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "PLAYGROUND DETROIT", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Rock In Detroit (rockindetroit.com/venue/old-miami)", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Popps Packing", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  { source: "Trinosophes", days: SOURCE_FRESHNESS_DAYS_QUIET },
+];
+
+async function checkSourceFreshness(sourceName, days) {
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const url = `${SUPABASE_URL}/rest/v1/events?select=id&source=eq.${encodeURIComponent(sourceName)}&updated_at=gte.${encodeURIComponent(cutoff)}&limit=1`;
+  const resp = await fetch(url, {
+    headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
+  });
+  if (!resp.ok) throw new Error(`Supabase REST HTTP ${resp.status}`);
+  const rows = await resp.json();
+  if (!Array.isArray(rows) || rows.length < 1) {
+    throw new Error(`no ${sourceName} row updated in the last ${days} day(s) — this source's cron may be failing silently`);
+  }
+  return `${rows.length} row(s) updated within ${days}d`;
+}
+
+// cron-feeds.js has no fixed source string — it polls whatever's currently
+// approved in the organizer-submitted feed_sources registry (see
+// migration_008_feed_sources.sql: venue_name/feed_url/status, status enum
+// 'pending_review'|'approved'|'rejected'|'paused'), writing each feed's own
+// venue_name as that row's events.source AND stamping events.feed_source_id
+// — so "one static source name" doesn't apply the way it does to every cron
+// above. This instead asks the same underlying question per currently-
+// approved registered feed, joined on the real feed_source_id key (not a
+// venue_name text match, which two different feeds could coincidentally
+// share): did THIS feed's own events get touched recently. A feed with zero
+// rows ever successfully pulled (brand new, or broken since the day it was
+// approved) is excluded here rather than flagged — that's cron-feeds.js's
+// own admin-facing last_poll_result's job to surface, not this suite's;
+// this check is only about a previously-working feed going quiet.
+async function checkFeedSourcesFreshness(days) {
+  const feedsResp = await fetch(
+    `${SUPABASE_URL}/rest/v1/feed_sources?select=id,venue_name&status=eq.approved`,
+    { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+  );
+  if (!feedsResp.ok) throw new Error(`feed_sources REST HTTP ${feedsResp.status}`);
+  const feeds = await feedsResp.json();
+  if (!Array.isArray(feeds) || !feeds.length) return "no approved registered feeds to check";
+
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const stale = [];
+  for (const feed of feeds) {
+    const everResp = await fetch(
+      `${SUPABASE_URL}/rest/v1/events?select=id&feed_source_id=eq.${encodeURIComponent(feed.id)}&limit=1`,
+      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    );
+    const everRows = everResp.ok ? await everResp.json() : [];
+    if (!Array.isArray(everRows) || !everRows.length) continue; // never pulled anything — not this check's concern
+
+    const freshResp = await fetch(
+      `${SUPABASE_URL}/rest/v1/events?select=id&feed_source_id=eq.${encodeURIComponent(feed.id)}&updated_at=gte.${encodeURIComponent(cutoff)}&limit=1`,
+      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    );
+    const freshRows = freshResp.ok ? await freshResp.json() : [];
+    if (!Array.isArray(freshRows) || !freshRows.length) stale.push(feed.venue_name || feed.id);
+  }
+  if (stale.length) {
+    throw new Error(`previously-active feed(s) gone quiet ${days}d+: ${stale.join(", ")}`);
+  }
+  return `${feeds.length} approved feed(s) checked, none stale`;
 }
 
 async function checkSupabaseData() {
@@ -233,6 +363,12 @@ module.exports = async (req, res) => {
   const checks = await Promise.all([
     ...PAGES.map((p) => runCheck(`page: ${p}`, () => checkPage(p))),
     runCheck("supabase: approved events reachable", checkSupabaseData),
+    ...SOURCE_FRESHNESS_TARGETS.map((t) =>
+      runCheck(`source freshness: ${t.source}`, () => checkSourceFreshness(t.source, t.days))
+    ),
+    runCheck("source freshness: registered feeds (cron-feeds)", () =>
+      checkFeedSourcesFreshness(SOURCE_FRESHNESS_DAYS_QUIET)
+    ),
     ...CRON_ENDPOINTS.map((name) => runCheck(`cron auth: ${name}`, () => checkCronAuth(name))),
     ...ADMIN_ENDPOINTS.map((name) => runCheck(`admin auth: ${name}`, () => checkAdminAuth(name))),
     runCheck("submit validation", () => checkJsonValidation("/api/submit")),
