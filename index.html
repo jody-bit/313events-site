@@ -6680,13 +6680,15 @@ function renderExploreVenuesCard(){
 }
 
 // Explore Neighborhoods rail — real per-neighborhood counts only. Built from
-// VENUE_NEIGHBORHOOD_MAP (venues.neighborhood_id, resolved via the
-// venues/neighborhoods review — see supabase/migration_010), NOT a
-// lat/lng-radius guess: a venue with no confirmed neighborhood contributes
-// to no card here, rather than being force-assigned to the nearest point on
-// a map. Counts are a constant discovery signal like the hero stat / Near
-// You / Free Today — independent of activeCats/freeOnly/query/whenMode —
-// but DO respect neighborhoodFilter's own "today or later" floor, same as
+// each event's own `neighborhood` field (resolved server-side by the
+// events_public view via venues.neighborhood_id — see migration_010 for the
+// underlying venues/neighborhoods review, and migration_025 for the view
+// that resolves it), NOT a lat/lng-radius guess: a venue with no confirmed
+// neighborhood contributes to no card here, rather than being force-assigned
+// to the nearest point on a map. Counts are a constant discovery signal like
+// the hero stat / Near You / Free Today — independent of
+// activeCats/freeOnly/query/whenMode — but DO respect neighborhoodFilter's
+// own "today or later" floor, same as
 // everywhere else on the homepage.
 const NEIGHBORHOOD_RAIL_LIMIT = 10;
 
@@ -7432,39 +7434,28 @@ function decodeEntities(str){
   return ta.value;
 }
 
-// venue name (trimmed, lowercased) -> neighborhood name. Populated once by
-// loadNeighborhoodData() before events are mapped, so mapSupabaseRow() can
-// resolve each event's neighborhood the same way Jody's own review
-// spreadsheet did — via the venues table's neighborhood_id, not a guess.
-// Events whose venue never got a neighborhood assignment (still the
-// majority — see the venues/neighborhoods review, 2026-08-27) simply get
-// neighborhood: null and drop out of the Explore Neighborhoods rail, rather
-// than being force-assigned to something nobody confirmed.
-const VENUE_NEIGHBORHOOD_MAP = new Map();
-
-async function loadNeighborhoodData() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
-  try {
-    const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
-    const [venuesResp, neighResp] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/venues?select=name,neighborhood_id&neighborhood_id=not.is.null&limit=1000`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
-    ]);
-    if (!venuesResp.ok || !neighResp.ok) return;
-    const venues = await venuesResp.json();
-    const neighborhoods = await neighResp.json();
-    const idToName = new Map(neighborhoods.map(n => [n.id, n.name]));
-    venues.forEach(v => {
-      const nName = idToName.get(v.neighborhood_id);
-      if (nName && v.name) VENUE_NEIGHBORHOOD_MAP.set(v.name.trim().toLowerCase(), nName);
-    });
-  } catch (err) {
-    // Silent by design — the rail just stays hidden without this data.
-  }
-}
+// 2026-09-14 (migration_025_events_public_view.sql): this used to be a
+// second, separate fetch — ALL venues + ALL neighborhoods, downloaded on
+// every single page load, just to build a client-side venue-name-text ->
+// neighborhood-name lookup Map, which mapSupabaseRow() then matched against
+// each event's own venue_name_raw text a second time. Two real problems
+// with that: it doesn't scale (the fetch grows with total venues/
+// neighborhoods regardless of how many events are actually on screen), and
+// it re-matched by NAME TEXT rather than the real venue_id foreign key —
+// the same fragile pattern this project has already been burned by
+// elsewhere (the "Majestic Theater" vs "Majestic Theatre" split,
+// migration_002). loadSupabaseEvents() below now selects straight from the
+// events_public VIEW, which does this exact join server-side via the real
+// venue_id FK and hands back a `neighborhood` field already resolved — so
+// there's no separate fetch and no text-matching left to do here at all.
+// KNOWN GAP, not fixed by this change: map.html, calendar.html, event.html,
+// venue.html, and venues.html each still query the raw `events` table
+// directly with their own independent fetch logic — they were NOT updated
+// as part of this pass (a broader, riskier change than what was asked for
+// this round) and don't yet benefit from this view. Worth the same
+// treatment as a deliberate follow-up.
 
 function mapSupabaseRow(row) {
-  const venueKey = (row.venue_name_raw || "").trim().toLowerCase();
   return {
     id: row.id, // 2026-08-27: needed to join editorial_articles.matched_event_id (see loadEditorialArticles()) — nothing on the client referenced an event's own DB identity before this, only field values.
     date: row.start_date,
@@ -7486,13 +7477,17 @@ function mapSupabaseRow(row) {
     // description + image; the list view below only gets a short excerpt.
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
-    venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    // 2026-09-14: reads from events_public's venue_name/venue_city, which
+    // are themselves coalesce(venues.name, events.venue_name_raw) server-
+    // side — same fallback behavior as before, just resolved in Postgres
+    // instead of here.
+    venue: decodeEntities(row.venue_name) || "Venue TBA",
     venueId: row.venue_id || null,
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
     // shows, since that's exactly the info that was silently missing before.
-    city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city_raw) : undefined,
+    city: (row.venue_city && row.venue_city.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city) : undefined,
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
@@ -7505,7 +7500,11 @@ function mapSupabaseRow(row) {
     // migration_022_event_url.sql.
     eventPageUrl: row.event_url || undefined,
     priceFrom: row.price_from ?? undefined,
-    neighborhood: VENUE_NEIGHBORHOOD_MAP.get(venueKey) || null,
+    // 2026-09-14: resolved server-side by events_public via the real
+    // venue_id -> venues.neighborhood_id -> neighborhoods.name join — see
+    // migration_025_events_public_view.sql. No client-side text-matching
+    // left to do.
+    neighborhood: row.neighborhood || null,
   };
 }
 
@@ -7522,7 +7521,6 @@ function loadFloorISO(){
 async function loadSupabaseEvents() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
   try {
-    await loadNeighborhoodData(); // must resolve before mapSupabaseRow() runs below
     // start_date=gte floor added 2026-08-27: PostgREST defaults to capping a
     // response at 1000 rows when no `limit=` is set, and this query had
     // neither a limit nor a date floor — so once total approved rows
@@ -7538,7 +7536,15 @@ async function loadSupabaseEvents() {
     // file's own comment above already flags for the date floor — could get
     // silently truncated as the table grows past that cap with no error and
     // no visible sign anything was cut off. 2000 matches map.html's query.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
+    // 2026-09-14: queries events_public (migration_025_events_public_view.sql)
+    // instead of the raw `events` table — the view already restricts to
+    // status='approved' internally (so that filter isn't passed here, and
+    // isn't a column on the view at all), already resolves venue_name/
+    // venue_city from the linked venues row, and already resolves
+    // neighborhood via the real venue_id -> neighborhoods join. This
+    // replaces what used to be a separate loadNeighborhoodData() fetch of
+    // every venue and every neighborhood on every page load.
+    const url = `${SUPABASE_URL}/rest/v1/events_public?start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
