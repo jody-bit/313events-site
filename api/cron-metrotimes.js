@@ -178,8 +178,43 @@ function parseEventPage(html, url) {
   };
 }
 
+// 2026-09-14 — root cause of the "200 but zero rows" bug found: Vercel's own
+// Function Log for a real scheduled invocation showed an "External APIs"
+// entry of GET .../Sitemap.xml -> 403 in ~200ms (confirmed again by Jody
+// directly off the [cron-metrotimes] sitemap fetch threw: HTTP 403 log line
+// this file's diagnostic logging now prints). That's the very first request
+// this function makes, failing near-instantly, every single run — the
+// signature of an edge/WAF block (most likely Cloudflare, which fronts a lot
+// of sites including probably this one) rejecting requests from Vercel's
+// hosting/datacenter IP ranges specifically, not a missing-header issue and
+// not something a real browser hitting the same URL from a home IP would
+// ever see. The header comment at the top of this file ("verified live
+// before writing") was almost certainly checked from a laptop, not from
+// Vercel's own servers — the two get treated very differently by bot
+// mitigation that fingerprints network origin, not just headers.
+//
+// Added the fuller browser-shaped headers below as a real, if modest,
+// attempt at a fix — some WAF configurations do key partly on header
+// completeness (Accept-Language, sec-fetch-*) and this costs nothing to
+// try. But if the block is IP/ASN-based (the likelier read of an instant,
+// every-single-time 403), no header combination fixes it — the real options
+// at that point are routing through a residential/rotating proxy service
+// (ongoing cost + complexity for one source out of ~19), asking Metro Times
+// directly for an approved feed/API, or accepting this source stays manual
+// rather than automated. Don't sink more engineering time into header
+// tweaking beyond this if the 403 persists after this change ships — that
+// would be treating a network-origin block like a parsing bug.
 async function fetchText(url) {
-  const r = await fetch(url, { headers: { "User-Agent": UA, Accept: "*/*" } });
+  const r = await fetch(url, {
+    headers: {
+      "User-Agent": UA,
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-Dest": "document",
+    },
+  });
   if (!r.ok) {
     const err = new Error(`HTTP ${r.status}`);
     err.status = r.status;
