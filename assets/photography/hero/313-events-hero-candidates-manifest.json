@@ -109,5 +109,83 @@
     "copyright": "Jody Tyree",
     "content_note": "Crowd scene with hand-lettered advocacy/rally signage visible in the foreground — flagged to Jody before use since it reads differently in tone than the concert/festival crowds in A-D; she confirmed using it (2026-09-14).",
     "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "F",
+    "source": "IMG_8385.HEIC (uploaded directly via chat earlier in this project; never added to the rotation until this pass)",
+    "source_resolution": [5712, 4284],
+    "strength": "PRESENCE",
+    "desktop": { "file": "313-events-homepage-hero-F.webp", "size": [2400, 1350] },
+    "mobile": { "file": "313-events-homepage-hero-F-mobile.webp", "size": [900, 1200] },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration. Center cover-crop from the high-resolution landscape original.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "Live band on stage at Small's (Hamtramck) — venue signage visible in frame, matches this project's existing venue records.",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "G",
+    "source": "IMG_0694.HEIC (uploaded directly via chat earlier in this project; never added to the rotation until this pass)",
+    "source_resolution": [3024, 4032],
+    "strength": "PRESENCE",
+    "desktop": { "file": "313-events-homepage-hero-G.webp", "size": [2400, 1350] },
+    "mobile": { "file": "313-events-homepage-hero-G-mobile.webp", "size": [900, 1200] },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration. Center cover-crop from a portrait original.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "Legendary Detroit hardcore band Negative Approach performing live — band's own backdrop banner visible in frame.",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "H",
+    "source": "IMG_1460.HEIC (uploaded directly via chat earlier in this project; never added to the rotation until this pass)",
+    "source_resolution": [4032, 3024],
+    "strength": "PRESENCE",
+    "desktop": { "file": "313-events-homepage-hero-H.webp", "size": [2400, 1350] },
+    "mobile": { "file": "313-events-homepage-hero-H-mobile.webp", "size": [900, 1200] },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration. Center cover-crop from a landscape original.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "Packed crowd at a venue called The Sound — venue signage visible in frame.",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "I",
+    "source": "IMG_0719.HEIC (uploaded directly via chat earlier in this project; never added to the rotation until this pass)",
+    "source_resolution": [6048, 8064],
+    "strength": "BALANCE",
+    "desktop": { "file": "313-events-homepage-hero-I.webp", "size": [2400, 1350] },
+    "mobile": { "file": "313-events-homepage-hero-I-mobile.webp", "size": [900, 1200] },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration. Center cover-crop from a very high-resolution portrait original — no upscaling needed.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "A downtown plaza/streetscape with an outdoor stage set up for a show. Exact city/venue not confirmed — no signage identifying the location was visible in the source photo; revisit the alt text if Jody can identify it.",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "J",
+    "source": "IMG_1195.HEIC (uploaded directly via chat earlier in this project; never added to the rotation until this pass)",
+    "source_resolution": [3024, 4032],
+    "strength": "SCALE",
+    "desktop": { "file": "313-events-homepage-hero-J.webp", "size": [2400, 1350], "note": "Top-biased cover-crop (not centered) so the book's title stays legible instead of being cropped out." },
+    "mobile": { "file": "313-events-homepage-hero-J-mobile.webp", "size": [900, 1200] },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "IMPORTANT: this is a photo OF a printed book/brochure cover for The Yard Graffiti Museum (Southwest Detroit), not a photo of the museum itself — alt text says so explicitly so it isn't mistaken for on-site photography.",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "K",
+    "source": "64714051239__B2AA7DAE-0A09-4805-A387-8113F4FE2275.HEIC (uploaded directly via chat earlier in this project; never added to the rotation until this pass)",
+    "source_resolution": [3024, 4032],
+    "strength": "PRESENCE",
+    "desktop": { "file": "313-events-homepage-hero-K.webp", "size": [2400, 1350] },
+    "mobile": { "file": "313-events-homepage-hero-K-mobile.webp", "size": [900, 1200] },
+    "treatment": "Detroit Signal Documentary: restrained contrast/color/exposure/sharpening; no tint; no generative alteration. Center cover-crop from a portrait original.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "Backyard concert crowd — Jody confirmed (2026-09-14) this is a public show at Outer Limits, not a private gathering, after an earlier draft of this pass held it back over an identifiability concern.",
+    "usage": "313.events homepage hero rotation, added 2026-09-14"
   }
 ]

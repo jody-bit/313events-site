@@ -4406,8 +4406,8 @@
     // crossfade while the page stays open. Jody's calls: preload every one up
     // front (smoother crossfades are worth the extra initial bandwidth vs.
     // lazy-loading each one right before its turn) and an ~8s, slow-fade
-    // rotation rather than a hard cut. 5 candidates as of 2026-09-14 (added
-    // 'E' — see HERO_PHOTOS below).
+    // rotation rather than a hard cut. 11 candidates as of 2026-09-14 (F-K
+    // added this pass — see HERO_PHOTOS below and the manifest for sourcing).
     var HERO_PHOTOS = [
       { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
       { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
@@ -4418,7 +4418,17 @@
       // full 2400px desktop width than the others; documented honestly in
       // the manifest rather than silently shipped as if it matched their
       // sharpness. Fine at mobile size (900w), where the upscale is minor.
-      { file:'E', w:2400, h:1350, alt:'A crowd gathered at dusk near a small outdoor stage and event tents, with hand-lettered signs visible in the foreground.' }
+      { file:'E', w:2400, h:1350, alt:'A crowd gathered at dusk near a small outdoor stage and event tents, with hand-lettered signs visible in the foreground.' },
+      // F-K added 2026-09-14 from Jody's own camera-roll uploads earlier in
+      // this project (14 HEIC photos had been uploaded but never made it
+      // into the rotation — only these 6 were a fit; see the manifest for
+      // why the rest were left out).
+      { file:'F', w:2400, h:1350, alt:'A band performing on a small club stage lit in red and green, with a neon "Small\'s" sign visible behind them.' },
+      { file:'G', w:2400, h:1350, alt:'A singer performing into a microphone in front of a large "Negative Approach" backdrop, band members and amps around him.' },
+      { file:'H', w:2400, h:1350, alt:'A packed crowd under blue stage lighting inside a venue, with a neon "The Sound" sign glowing on the wall behind them.' },
+      { file:'I', w:2400, h:1350, alt:'A brick-paved downtown plaza with a two-story storefront building and a covered outdoor stage set up for a show.' },
+      { file:'J', w:2400, h:1350, alt:'The cover of a book titled "The Yard Graffiti Museum, Southwest Detroit, MI," showing a photograph of a graffiti-covered wall.' },
+      { file:'K', w:2400, h:1350, alt:'A backyard concert crowd at dusk seated at picnic tables strung with string lights, with a musician performing on a small stage.' }
     ];
     var ROTATE_MS = 8000;
     var container = document.getElementById('heroPhoto');
