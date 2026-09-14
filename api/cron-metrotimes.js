@@ -218,28 +218,48 @@ module.exports = async (req, res) => {
   try {
     sitemapXml = await fetchText(SITEMAP_URL);
     if (!sitemapXml) {
+      console.error("[cron-metrotimes] sitemap fetch returned empty body");
       res.status(200).json({ upserted: 0, error: "Sitemap fetch failed" });
       return;
     }
   } catch (err) {
+    console.error(`[cron-metrotimes] sitemap fetch threw: ${err.message}`);
     res.status(200).json({ upserted: 0, error: "Sitemap fetch failed: " + err.message });
     return;
   }
 
   const urls = extractSitemapUrls(sitemapXml).slice(0, EVENT_PAGE_LIMIT);
+  console.log(`[cron-metrotimes] sitemap bytes=${sitemapXml.length} urlsExtracted=${urls.length}`);
   if (!urls.length) {
     res.status(200).json({ upserted: 0, note: "Sitemap returned no event URLs — layout may have changed.", fetchedAt: new Date().toISOString() });
     return;
   }
 
+  // 2026-09-14 diagnostic instrumentation — this cron was returning HTTP 200
+  // on every scheduled run but silently writing zero rows, and since it had
+  // no console.log calls at all, Vercel's log viewer showed nothing beyond
+  // the bare status code for those invocations, making it impossible to
+  // tell "zero events found/parsed" apart from "found N, upsert failed
+  // silently" apart from "misconfigured" without this. Counts below show up
+  // in Vercel's Runtime Logs for every future invocation.
+  let fetchFailures = 0;
+  let parseFailures = 0;
   const pages = await mapLimit(urls, CONCURRENCY, async (url) => {
+    let html;
     try {
-      const html = await fetchText(url);
-      return html ? parseEventPage(html, url) : null;
-    } catch {
+      html = await fetchText(url);
+    } catch (err) {
+      fetchFailures++;
+      console.error(`[cron-metrotimes] fetch failed for ${url}: ${err.message}`);
       return null;
     }
+    const parsed = html ? parseEventPage(html, url) : null;
+    if (!parsed) parseFailures++;
+    return parsed;
   });
+  console.log(
+    `[cron-metrotimes] checked=${urls.length} fetchFailures=${fetchFailures} parseFailures=${parseFailures} parsedOk=${pages.filter(Boolean).length}`
+  );
 
   // See api/_lib/venue-lookup.js — Metro Times' calendar spans many venues,
   // so venue_id is resolved per-row against each row's own venue_name_raw.
@@ -262,6 +282,9 @@ module.exports = async (req, res) => {
   }));
 
   if (!rows.length) {
+    console.warn(
+      `[cron-metrotimes] zero rows to upsert — checked=${urls.length} fetchFailures=${fetchFailures} parseFailures=${parseFailures}. This is the "200 but nothing written" case; if fetchFailures/parseFailures is close to checked, Metro Times' page HTML likely changed and the title/When:/venue regexes in parseEventPage() no longer match.`
+    );
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString(), checked: urls.length });
     return;
   }
@@ -308,11 +331,14 @@ module.exports = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      console.error(`[cron-metrotimes] Supabase upsert failed (status ${resp.status}): ${errText}`);
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    console.log(`[cron-metrotimes] upserted=${rowsWithStatus.length} checked=${urls.length}`);
     res.status(200).json({ upserted: rowsWithStatus.length, checked: urls.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    console.error(`[cron-metrotimes] unhandled error: ${err.message}`);
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
