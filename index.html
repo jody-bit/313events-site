@@ -4676,6 +4676,13 @@ const LOCATIONS = [
   {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
   {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
 
+  // Added 2026-09-14: renamed from an earlier placeholder ("Elmwood Park") —
+  // see supabase/update_2026-09-14_eastside-historic-cemetery-district.sql.
+  // Coordinates are the NRHP-listed centroid (Wikipedia, "Eastside Historic
+  // Cemetery District", ref #82000550), not a hand estimate like most of
+  // the list above.
+  {name:"Eastside Historic Cemetery District", type:"neighborhood", region:"Detroit", lat:42.3497, lng:-83.0181},
+
   // --- SERVICE_AREA.md cities (75-mile boundary), nearest to farthest ---
   {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
   {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
@@ -4731,6 +4738,7 @@ const LOCATIONS = [
   {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
   {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
   {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
+  {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.9200},
   {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
   {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
 ];
@@ -6700,16 +6708,22 @@ function computeNeighborhoodCounts(){
 // own photos, geotagged and confirmed against her own knowledge of where
 // they were actually taken — not guessed from the image alone; see e.g. the
 // stone-bridge photo, which reads visually like Belle Isle but is actually
-// Elmwood Cemetery, per Jody). Deliberately a sparse allow-list, not a
-// fallback/placeholder system — the original design call here (see the
-// .neighborhoods-section CSS comment) was "photo-less typographic cards"
-// specifically to avoid mismatching a generic Detroit photo to the wrong
-// neighborhood or reusing one photo everywhere; a neighborhood with no entry
-// below still renders as a plain typographic card, exactly as before.
+// Elmwood Cemetery, per Jody — see "Eastside Historic Cemetery District"
+// below, the neighborhood's real, official name). Deliberately a sparse
+// allow-list, not a fallback/placeholder system — the original design call
+// here (see the .neighborhoods-section CSS comment) was "photo-less
+// typographic cards" specifically to avoid mismatching a generic Detroit
+// photo to the wrong neighborhood or reusing one photo everywhere; a
+// neighborhood with no entry below still renders as a plain typographic
+// card, exactly as before.
 const NEIGHBORHOOD_PHOTOS = {
   "Midtown": {
     file: '313-events-neighborhood-midtown.webp',
     alt: 'A dense street-festival crowd at dusk in Midtown Detroit, tents and Victorian houses along the block behind them.'
+  },
+  "Eastside Historic Cemetery District": {
+    file: '313-events-neighborhood-eastside-historic-cemetery-district.webp',
+    alt: 'A stone bridge over a quiet pond at Elmwood Cemetery in Detroit, framed by mature trees.'
   }
 };
 
