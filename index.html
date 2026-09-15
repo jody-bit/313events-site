@@ -5322,6 +5322,14 @@ function currentDateList(){
   // answer instead of the silent 30-day default below.
   if(whenMode === 'all') return upcomingDatesWithEvents();
   if(neighborhoodFilter) return upcomingDatesWithEvents();
+  // Search should look across every upcoming date, not just today's — with
+  // no When/neighborhood scope active, the plain default below collapses
+  // to "today only," which silently hid every non-today match no matter
+  // how exact the query was. Fixed 2026-09-16 after Jody reported "search
+  // never works for me" (searching "bahamas" found nothing even though
+  // the Bahamas @ El Club show, 2026-09-30, was loaded and a correct
+  // match — it just wasn't on today's date list).
+  if(query) return upcomingDatesWithEvents();
   // Default resting state: today only, not a rolling multi-week window.
   // Jody, 2026-09-04: a 30-day list made the page's own scroll so long that
   // a visitor would never actually reach whatever lives in the layout's
@@ -5352,6 +5360,12 @@ function currentListMeta(){
   if(whenMode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
   if(whenMode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
   if(neighborhoodFilter) return {scopeLabel: neighborhoodFilter, countLabel: `in ${neighborhoodFilter}`};
+  // Paired with the currentDateList() search-widening fix above (2026-09-16)
+  // — once a query expands the date list to every upcoming date, it should
+  // say so, the same way every other non-default scope does: a "Showing N
+  // events matching ___" heading, and "matching ___" appended to the
+  // empty-state copy when a search genuinely comes up empty.
+  if(query) return {scopeLabel: `matching "${query}"`, countLabel: `matching "${query}"`};
   return {scopeLabel: null, countLabel: null};
 }
 
