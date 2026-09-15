@@ -2658,7 +2658,18 @@ function readStateFromURL(){
   if(dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)){
     const d = new Date(dateParam+"T12:00:00");
     const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
-    if(monthStart >= MIN_MONTH && monthStart <= MAX_MONTH) current = monthStart;
+    if(monthStart >= MIN_MONTH && monthStart <= MAX_MONTH){
+      current = monthStart;
+      // 2026-09-15 fix: a ?date= link (e.g. the homepage's right-rail mini
+      // calendar) used to only move the visible month, leaving the actual
+      // day unselected — the visitor landed on the right month but saw
+      // "today" highlighted instead of the day they clicked, and no event
+      // list opened at all. Selecting the date here means the existing
+      // `if(selectedDate) showDayPanel(selectedDate)` in render() (a few
+      // hundred lines down) does the rest: opens that day's event list and
+      // scrolls it into view, same as clicking the cell by hand would.
+      selectedDate = dateParam;
+    }
   }
 
   const catsParam = params.get('cats');
