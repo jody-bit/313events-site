@@ -243,7 +243,24 @@ async function loadAll() {
 function getMissingFields(e) {
   const missing = [];
   if (!e.description || !e.description.trim()) missing.push('description');
-  if (!(e.venue_address_raw && e.venue_address_raw.trim()) && !(e.venue_city_raw && e.venue_city_raw.trim())) {
+  // Satisfied either by the event's own raw fields (the fallback path for
+  // when there's no venue_id match at all — see schema.sql's own comment
+  // on venue_name_raw) or, when this event IS linked to a real venues row,
+  // by that venue's own street address. A linked venue's `city` is always
+  // populated (schema.sql: not null default 'Detroit'), so once venue_id
+  // resolves to a venue with a real street address there's nothing left to
+  // chase here — flagging it anyway was surfacing well-matched events (e.g.
+  // Paris Bar, which has a real address on file) for a gap that was never
+  // real, just because nobody had also copied that address onto the event
+  // row's own venue_address_raw. 2026-09-16 fix, after the Julez and The
+  // Rollerz listing kept showing "Missing: VENUE ADDRESS/CITY" despite
+  // being correctly linked to Paris Bar's venues row. Doesn't touch the
+  // genuinely-unknown-venue cases (Resident Advisor's "secret loft"/"Venue
+  // TBA" rows) — those stay flagged, because the linked venue itself has no
+  // address on file either.
+  const hasRawAddress = !!(e.venue_address_raw && e.venue_address_raw.trim()) || !!(e.venue_city_raw && e.venue_city_raw.trim());
+  const hasLinkedVenueAddress = !!(e.venues && e.venues.address && e.venues.address.trim());
+  if (!hasRawAddress && !hasLinkedVenueAddress) {
     missing.push('venue address/city');
   }
   if (!(e.ticket_url && e.ticket_url.trim()) && !(e.event_url && e.event_url.trim())) {

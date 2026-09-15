@@ -183,7 +183,13 @@ module.exports = async (req, res) => {
       let url;
       if (incomplete) {
         const todayISO = new Date().toISOString().slice(0, 10);
-        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,venue_name_raw,venue_address_raw,venue_city_raw,description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note&order=start_date.asc`;
+        // venue_id + the embedded venues(address,city) let admin.html's
+        // getMissingFields() credit an event that's genuinely linked to a
+        // known venue with a real street address — see that function's own
+        // comment (2026-09-16) for why venue_address_raw/venue_city_raw
+        // alone was flagging well-matched events (e.g. Paris Bar) as
+        // missing an address they don't actually lack.
+        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note&order=start_date.asc`;
       } else if (search) {
         // Live-event takedown search: only ever searches already-approved
         // (publicly visible) events — never pending_review or already-hidden
