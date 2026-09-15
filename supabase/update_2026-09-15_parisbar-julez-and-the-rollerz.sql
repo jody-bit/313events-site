@@ -41,7 +41,12 @@ insert into events (
  'music', 'Paris Bar',
  '2026-09-17', '2026-09-17', 'Doors 8:00 PM', false, 15.00,
  'https://www.instagram.com/p/DcMvYQdDn16/',
- 'Manual', 'Image not yet attached — see cropped flyer sent in chat; upload it through the usual flyer path and set image_url once hosted.', 'approved')
+ 'Manual', null, 'approved') -- 2026-09-16: note cleared here — the flyer's uploaded now (see
+ -- update_2026-09-16_parisbar-rollerz-image-url.sql), and the original bookkeeping text in this
+ -- spot is exactly what leaked onto the public event page twice (see migration_029's header
+ -- comment) — this file's own on_conflict clause re-applies note on every re-run, so the fix
+ -- has to live here too, not just in the one-off note-refix file, or a future accidental
+ -- re-run of this file would silently undo the fix a third time.
 
 on conflict (external_id) do update set
   title = excluded.title,

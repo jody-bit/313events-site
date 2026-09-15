@@ -80,11 +80,20 @@
   #notFoundState a:hover{text-decoration:underline;}
 
   #eventContent{display:none;}
+  /* 2026-09-16: was a fixed 16:9 box with object-fit:cover — built for
+     landscape hero photography, but most submitted flyers are portrait
+     (concert/show flyers, typically taller than wide), and cover-cropping
+     a portrait image into a 16:9 frame chopped off the date/lineup text
+     that's often at the top or bottom of the graphic. Jody: "can you just
+     adjust the flier to fit? why do we have a fixed size?" — sizes to each
+     image's own natural aspect ratio now (no cropping at all), just capped
+     at a max-height so a very tall portrait doesn't dominate the page. */
   .evt-image-wrap{
-    width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--panel-alt);
+    width:100%;max-height:70vh;overflow:hidden;background:var(--panel-alt);
     border:1px solid var(--line);margin-bottom:20px;
+    display:flex;justify-content:center;
   }
-  .evt-image-wrap img{display:block;width:100%;height:100%;object-fit:cover;}
+  .evt-image-wrap img{display:block;max-width:100%;max-height:70vh;width:auto;height:auto;}
 
   .evt-cat-badge{
     display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
