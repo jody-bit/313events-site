@@ -266,7 +266,7 @@ async function loadIncomplete() {
     if (!resp.ok) return; // silent — same "don't scare Jody over a fetch hiccup" convention as loadHealthcheck()
     const flagged = (data.events || [])
       .map(e => ({ e, missing: getMissingFields(e) }))
-      .filter(x => x.missing.length > 0);
+      .filter(x => x.missing.length > 0 && !x.e.followup_dismissed);
     renderIncompleteList(flagged);
   } catch (err) {
     // Silent by design, same reasoning as loadHealthcheck() — this is a
@@ -318,11 +318,33 @@ function renderIncompleteList(flagged) {
       </div>
       <div class="actions">
         <button class="btn-approve" onclick="saveIncompleteFields('${e.id}')">Save</button>
+        <button class="btn-reject" onclick="dismissFollowUp('${e.id}')" title="Reviewed — this gap can't actually be filled in (e.g. the source itself never discloses it). Stops this row from reappearing; a future real fix from its source still lands normally.">Not fixable — dismiss</button>
       </div>
       <div class="err" id="incomplete-err-${e.id}" style="display:none;"></div>
     </div>
   `;
   }).join('');
+}
+
+async function dismissFollowUp(id) {
+  const errEl = document.getElementById('incomplete-err-' + id);
+  const reason = prompt('Optional: why isn\'t this fixable? (e.g. "RA lists this venue as secret/TBA by design")') || '';
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id, action: 'dismiss_followup', note: reason.trim() }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Dismiss failed'));
+    // Same "just reload the whole queue" approach as saveIncompleteFields().
+    await loadIncomplete();
+  } catch (err) {
+    if (errEl) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+    }
+  }
 }
 
 async function saveIncompleteFields(id) {

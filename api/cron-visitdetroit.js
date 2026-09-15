@@ -216,8 +216,24 @@ module.exports = async (req, res) => {
       const endParts = h.endDate ? detroitParts(h.endDate) : null;
       const endDate = endParts && endParts.date !== startParts.date ? endParts.date : null;
 
+      // 2026-09-16: was `!h.isAllDay && !h.isMultiDay` — that suppressed
+      // time_display for EVERY multi-day listing, not just genuinely
+      // all-day ones. isMultiDay just means the listing spans more than one
+      // calendar date (a festival run, a multi-performance theatre
+      // engagement); it says nothing about whether that listing also has a
+      // real start time-of-day, and startParts.hour/minute come straight
+      // from h.startDate regardless of isMultiDay. isAllDay is the actual
+      // "no meaningful time" signal. Traced this after several
+      // admin-follow-up items that are genuinely multi-day (Detroit Black
+      // Film Festival, Metro Detroit Women's Expo, Banana Ball, Detroit
+      // Legacy Weekend) kept showing "Missing: START TIME" in the admin
+      // panel even after Jody manually researched and confirmed each one
+      // DOES have a real, specific, published start time each day on the
+      // organizer's own site — evidence the source data has a real time,
+      // this cron was just throwing it away. Still suppressed for true
+      // isAllDay listings, same as before.
       let timeDisplay = null;
-      if (!h.isAllDay && !h.isMultiDay) {
+      if (!h.isAllDay) {
         timeDisplay = formatTime(startParts.hour, startParts.minute);
         if (
           endParts &&

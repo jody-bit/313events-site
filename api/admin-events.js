@@ -183,7 +183,7 @@ module.exports = async (req, res) => {
       let url;
       if (incomplete) {
         const todayISO = new Date().toISOString().slice(0, 10);
-        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,venue_name_raw,venue_address_raw,venue_city_raw,description,ticket_url,event_url,submitter_org_name,submitter_email,source&order=start_date.asc`;
+        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,venue_name_raw,venue_address_raw,venue_city_raw,description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note&order=start_date.asc`;
       } else if (search) {
         // Live-event takedown search: only ever searches already-approved
         // (publicly visible) events — never pending_review or already-hidden
@@ -302,8 +302,42 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // dismiss_followup / undo_dismiss_followup (2026-09-16, Jody: "how can
+    // we make this more seamless and auto-healing?") — a real slice of the
+    // follow-up queue is never fixable (RA's secret/TBA venues, a bus tour
+    // with no fixed address) and was re-appearing, unchanged, on every
+    // single PDF export. This lets a moderator mark a flagged gap
+    // "reviewed, not fixable" so it stops nagging, without touching
+    // status/approval or blocking a future real fix from a cron re-upsert
+    // — see migration_027_followup_dismissed.sql for the column and the
+    // full reasoning.
+    if (action === "dismiss_followup" || action === "undo_dismiss_followup") {
+      if (!id) {
+        res.status(400).json({ error: "Body must include { id, action: 'dismiss_followup'|'undo_dismiss_followup' }" });
+        return;
+      }
+      const dismissing = action === "dismiss_followup";
+      const note = dismissing && typeof body.note === "string" ? body.note.trim().slice(0, 500) : null;
+      try {
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { ...sbHeaders, Prefer: "return=representation" },
+          body: JSON.stringify({
+            followup_dismissed: dismissing,
+            followup_dismissed_note: dismissing ? (note || null) : null,
+            followup_dismissed_at: dismissing ? new Date().toISOString() : null,
+          }),
+        });
+        const rows = await resp.json();
+        res.status(resp.ok ? 200 : 502).json(resp.ok ? { ok: true, event: rows[0] } : { error: rows });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup' }" });
       return;
     }
 
