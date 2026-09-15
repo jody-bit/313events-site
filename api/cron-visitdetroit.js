@@ -259,6 +259,10 @@ module.exports = async (req, res) => {
         end_date: endDate,
         time_display: timeDisplay,
         is_recurring: !!h.readableRepeatRule,
+        // Persisted so the admin follow-up queue can stop asking for a
+        // start time on genuinely all-day listings instead of treating
+        // every null time_display as a parsing gap — see migration_028.
+        is_all_day: !!h.isAllDay,
         is_free: false, // no price signal in this index — see header comment, never guessed true
         price_from: null,
         ticket_url: h.uri ? `https://visitdetroit.com${h.uri}` : null,

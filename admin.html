@@ -270,7 +270,13 @@ function getMissingFields(e) {
   // with no start time at all and asked for start time to be treated as
   // critical too — a missing time_display is exactly as much a "check this"
   // signal as a missing venue or link, not a lesser cosmetic gap.
-  if (!(e.time_display && e.time_display.trim())) {
+  // 2026-09-16: ...unless the source itself says there was never a single
+  // start time to have (migration_028) — a festival/expo run genuinely has
+  // no one "start time," so treating a null time_display as a gap there
+  // was flagging events that were never missing anything. Only skips the
+  // check when a source has explicitly set is_all_day=true; everything
+  // else keeps working exactly as before.
+  if (!e.is_all_day && !(e.time_display && e.time_display.trim())) {
     missing.push('start time');
   }
   return missing;
