@@ -402,6 +402,26 @@ function render(){
   // i.event being null.
   if(upcomingOnly) items = items.filter(i => i.event && i.event.date >= todayIso);
 
+  // 2026-09-16 (Jody: "default order should be articles about events
+  // happening that day so from now until the future") — this page used to
+  // just keep the Supabase query's own order=published_at.desc (newest
+  // ARTICLE first), which has nothing to do with when the event it covers
+  // actually happens. Re-sorted here instead: an item tied to a real
+  // upcoming event (today or later) now sorts by that event's date,
+  // soonest first — a show tonight leads, a show next month trails. That
+  // covers the default view entirely, since upcomingOnly's filter above
+  // already drops everything else when it's on (the default). Past-event
+  // matches and never-matched articles only reappear with the toggle off,
+  // and keep the old newest-published-first order among themselves, tucked
+  // in after every upcoming-dated item rather than interleaved with them.
+  items = items.slice().sort((a, b) => {
+    const aUpcoming = a.event && a.event.date >= todayIso;
+    const bUpcoming = b.event && b.event.date >= todayIso;
+    if(aUpcoming && bUpcoming) return a.event.date.localeCompare(b.event.date);
+    if(aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
+    return (b.publishedAt || '').localeCompare(a.publishedAt || '');
+  });
+
   const grid = document.getElementById('radarGrid');
   const empty = document.getElementById('emptyState');
   document.getElementById('resultCount').textContent = `${items.length} article${items.length===1?'':'s'}`;
