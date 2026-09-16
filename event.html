@@ -88,12 +88,21 @@
      adjust the flier to fit? why do we have a fixed size?" — sizes to each
      image's own natural aspect ratio now (no cropping at all), just capped
      at a max-height so a very tall portrait doesn't dominate the page. */
-  .evt-image-wrap{
-    width:100%;max-height:70vh;overflow:hidden;background:var(--panel-alt);
-    border:1px solid var(--line);margin-bottom:20px;
-    display:flex;justify-content:center;
+  /* 2026-09-16 (Jody, looking at the Lost Legion portrait flyer live: "can
+     the area for the flier just adapt to the artwork uploaded automatically?
+     and also be responsive?") — the fix above sized the IMAGE to its own
+     aspect ratio, but the WRAP was still width:100% with the border/
+     background painted on that full-width box, so a portrait flyer (narrower
+     than the .wrap's 820px) left a big empty panel beside it. Moving the
+     border+background onto the image itself and letting the wrap just
+     center it (text-align, no fixed width) means the visible box always
+     hugs exactly whatever the uploaded image's real dimensions are —
+     portrait, landscape, or square — at any viewport width. */
+  .evt-image-wrap{max-height:70vh;margin:0 0 20px;text-align:center;}
+  .evt-image-wrap img{
+    display:inline-block;max-width:100%;max-height:70vh;width:auto;height:auto;
+    background:var(--panel-alt);border:1px solid var(--line);
   }
-  .evt-image-wrap img{display:block;max-width:100%;max-height:70vh;width:auto;height:auto;}
 
   .evt-cat-badge{
     display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
