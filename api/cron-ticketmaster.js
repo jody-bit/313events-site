@@ -185,6 +185,21 @@ function shapeForDb(e, venueMap) {
   const venue0 = e._embedded && e._embedded.venues && e._embedded.venues[0];
   const venueName = venue0 ? venue0.name : "Venue TBA";
   const venueCity = venue0 && venue0.city ? venue0.city.name : null;
+  // 2026-09-16 (Jody: "how can we automate that process more?", after
+  // clearing the admin follow-up queue by hand yet again) — by far the
+  // single biggest bucket in that queue was "missing address" on
+  // Ticketmaster events (151 of 193 flagged, ~78%, per a live count of the
+  // actual queue that day). Turned out Ticketmaster's own Discovery API
+  // response already carries the venue's street address the whole time
+  // (`_embedded.venues[0].address.line1`, documented at
+  // developer.ticketmaster.com) — this file was just never reading it,
+  // unlike cron-visitdetroit.js's parseAddress() which already does the
+  // equivalent for its own source. Same "absent for some listings" caveat
+  // as that description/`info` fix above: a handful of venues (livestream/
+  // TBA-style listings) genuinely have no address in Ticketmaster's own
+  // data, and those should still land in the follow-up queue rather than
+  // being masked with a blank string.
+  const venueAddress = venue0 && venue0.address ? venue0.address.line1 : null;
   // No city allowlist here on purpose — the latlong+radius params above
   // already constrain results geographically, so every venue Ticketmaster
   // returns is already within the 75-mile service area. venueCity IS still
@@ -222,6 +237,7 @@ function shapeForDb(e, venueMap) {
     // 83 stay unlinked until researched — see NEW_SOURCES_RESEARCH.md's
     // don't-guess-at-geography precedent).
     venue_id: resolveVenueId(venueMap, venueName),
+    venue_address_raw: venueAddress,
     venue_city_raw: venueCity,
     start_date: start.localDate,
     time_display: formatTime(start),
