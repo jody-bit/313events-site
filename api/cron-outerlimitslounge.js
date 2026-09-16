@@ -38,10 +38,17 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 // `location.addressTitle`/`addressLine1`/`addressLine2` on every sampled
 // item, so those are hardcoded here rather than re-parsed per event.
 //
-// ** CATEGORY ** — hardcoded "music", same convention as the other
-// single-venue music-club crons (cron-lagerhouse.js, cron-trinosophes.js).
-// Outer Limits Lounge is a DIY music venue; every listing checked was a
-// band/DJ show.
+// ** CATEGORY ** — Jody caught a real miss here: the first pass hardcoded
+// "music" for every event (copying the cron-lagerhouse.js/cron-trinosophes.js
+// convention), based on only glancing at the first ~8 listings. The full
+// 53-event feed is NOT all bands — it also has a recurring weekly karaoke
+// night, recurring Lions watch parties, a film series ("Slimeball Cinerama
+// After Dark"), an actual film festival ("Planet 9 Film Fest"), and a Santa
+// photo-op night. The feed itself has no category/tag data (every item's
+// own `categories`/`tags` arrays are empty, confirmed live), so this maps
+// by keyword against the title instead — checked against the full live
+// 53-event list before shipping, not just a sample. Falls back to "music"
+// (this venue's primary purpose) when nothing else matches.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -113,6 +120,17 @@ function stripHtml(html) {
   return text || null;
 }
 
+// Keyword-based category classifier, checked in priority order. See the
+// header comment above for why this exists instead of a hardcoded value.
+function mapCategory(title) {
+  const t = (title || "").toLowerCase();
+  if (/\b(film|cinema|movie|screening|cinerama|documentary)\b/.test(t)) return "film";
+  if (/\bkaraoke\b/.test(t)) return "nightlife";
+  if (/\bwatch party\b|\bpot ?luck\b|\bfootball\b|\blions\b/.test(t)) return "nightlife";
+  if (/\bsanta\b/.test(t)) return "family";
+  return "music";
+}
+
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
@@ -161,7 +179,7 @@ module.exports = async (req, res) => {
         external_id: `oll-${item.id}`,
         title: decodeEntities(item.title),
         description: stripHtml(item.body) || stripHtml(item.excerpt),
-        category: "music",
+        category: mapCategory(decodeEntities(item.title)),
         venue_name_raw: VENUE_NAME,
         venue_address_raw: VENUE_ADDRESS,
         venue_city_raw: VENUE_CITY,
