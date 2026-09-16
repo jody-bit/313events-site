@@ -160,7 +160,8 @@
     "photographer": "Jody Tyree",
     "copyright": "Jody Tyree",
     "content_note": "A downtown plaza/streetscape with an outdoor stage set up for a show. Exact city/venue not confirmed — no signage identifying the location was visible in the source photo; revisit the alt text if Jody can identify it.",
-    "usage": "313.events homepage hero rotation, added 2026-09-14"
+    "usage": "313.events homepage hero rotation, added 2026-09-14",
+    "status": "removed from rotation 2026-09-16 -- Jody: \"it is hella boring, not sure how it made it in there\". Kept in this manifest as a historical record only; no longer referenced in index.html's HERO_PHOTOS array."
   },
   {
     "candidate": "J",

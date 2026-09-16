@@ -4406,8 +4406,9 @@
     // crossfade while the page stays open. Jody's calls: preload every one up
     // front (smoother crossfades are worth the extra initial bandwidth vs.
     // lazy-loading each one right before its turn) and an ~8s, slow-fade
-    // rotation rather than a hard cut. 11 candidates as of 2026-09-14 (F-K
-    // added this pass — see HERO_PHOTOS below and the manifest for sourcing).
+    // rotation rather than a hard cut. 10 candidates as of 2026-09-16 (F-K
+    // added 2026-09-14; 'I' pulled 2026-09-16, too boring — see HERO_PHOTOS
+    // below and the manifest for sourcing).
     var HERO_PHOTOS = [
       { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
       { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
@@ -4426,7 +4427,13 @@
       { file:'F', w:2400, h:1350, alt:'A band performing on a small club stage lit in red and green, with a neon "Small\'s" sign visible behind them.' },
       { file:'G', w:2400, h:1350, alt:'A singer performing into a microphone in front of a large "Negative Approach" backdrop, band members and amps around him.' },
       { file:'H', w:2400, h:1350, alt:'A packed crowd under blue stage lighting inside a venue, with a neon "The Sound" sign glowing on the wall behind them.' },
-      { file:'I', w:2400, h:1350, alt:'A brick-paved downtown plaza with a two-story storefront building and a covered outdoor stage set up for a show.' },
+      // 'I' (a quiet downtown plaza/storefront streetscape, no crowd or
+      // event energy in frame) pulled from rotation 2026-09-16 — Jody: "we
+      // gotta get rid of this picture - it is hella boring". Its own
+      // manifest entry already flagged it as the least-confirmed of this
+      // batch (location never identified). Left out entirely rather than
+      // replaced, so the rotation is 10 candidates until a livelier one
+      // takes its place — see the manifest for the full record.
       { file:'J', w:2400, h:1350, alt:'The cover of a book titled "The Yard Graffiti Museum, Southwest Detroit, MI," showing a photograph of a graffiti-covered wall.' },
       { file:'K', w:2400, h:1350, alt:'A backyard concert crowd at dusk seated at picnic tables strung with string lights, with a musician performing on a small stage.' }
     ];
