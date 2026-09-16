@@ -144,6 +144,23 @@
   .evt-detail-note{font-size:13.5px;color:#d1b34a;font-style:italic;margin-bottom:20px;}
   .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;}
 
+  /* Resale-availability note (2026-09-16, Jody: "see if the event is sold
+     out ... to get tickets cheaper on the resale apps") -- only shown for
+     Ticketmaster events whose own dates.status.code came back "offsale".
+     Deliberately styled as a hedge/tip, not an alarm -- see event.html's
+     resaleNoteHtml() for why the wording never asserts a flat "SOLD OUT". */
+  .evt-resale-box{
+    font-size:13.5px;color:var(--ink-soft);background:var(--panel-alt);
+    border:1px solid var(--line);padding:14px 16px;margin-bottom:20px;
+  }
+  .evt-resale-box strong{color:var(--ink);}
+  .evt-resale-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .evt-resale-links a{
+    font-size:12.5px;font-weight:700;text-decoration:none;color:var(--ink);
+    border:1px solid var(--line);border-radius:var(--radius);padding:6px 12px;
+  }
+  .evt-resale-links a:hover{background:var(--panel-hover);}
+
   /* QR code (2026-08-28, Jody: printed flyers linking straight to an
      event's own page). Built on demand via api.qrserver.com — a free,
      no-key image API — rather than always loading it: most visitors never
@@ -233,6 +250,7 @@
 
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
       <div class="evt-detail-note" id="evtNote" style="display:none;"></div>
+      <div class="evt-resale-box" id="evtResale" style="display:none;"></div>
       <a class="evt-editorial" id="evtEditorial" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-editorial-also" id="evtEditorialAlso" style="display:none;"></div>
       <div class="evt-detail-source" id="evtSource" style="display:none;"></div>
@@ -312,6 +330,45 @@ function sourceSearchUrl(source){
   const s = String(source).toLowerCase();
   if(s.includes('resident advisor')) return 'https://ra.co/events/us/detroit';
   return null;
+}
+
+// Resale marketplace search links (2026-09-16, Jody: "see if the event is
+// sold out ... to get tickets cheaper on the resale apps"). Deliberately
+// just search-by-title deep links, not scraped price data -- verified live
+// against each site 2026-09-16 (their search UIs/params change without
+// notice, so re-check these three URLs directly if this ever stops
+// working rather than assuming the code is wrong):
+//   StubHub:    https://www.stubhub.com/secure/search?q=<title>
+//   SeatGeek:   https://seatgeek.com/search?search=<title>&f=1
+//   Vivid Seats: https://www.vividseats.com/search?searchTerm=<title>
+// Title alone (not title+venue) is used as the query -- broader, but the
+// three sites' own search results already show venue/city/date per result
+// so a visitor can tell a same-named tribute act apart from the real show.
+function resaleSearchUrls(title){
+  const q = encodeURIComponent(String(title || '').trim());
+  if(!q) return null;
+  return {
+    stubhub: `https://www.stubhub.com/secure/search?q=${q}`,
+    seatgeek: `https://seatgeek.com/search?search=${q}&f=1`,
+    vividseats: `https://www.vividseats.com/search?searchTerm=${q}`,
+  };
+}
+
+// Only Ticketmaster's own dates.status.code=="offsale" is used here (see
+// migration_030's header comment) -- never shown for any other source or
+// status, and the copy itself hedges rather than claiming "SOLD OUT"
+// outright, since "offsale" is also what an event shows before its sale
+// window opens.
+function resaleNoteHtml(e){
+  if(e.source !== 'Ticketmaster' || e.ticketStatus !== 'offsale') return null;
+  const urls = resaleSearchUrls(e.title);
+  if(!urls) return null;
+  return `<strong>Not currently on sale through Ticketmaster.</strong> That can mean it's sold out, or that tickets just haven't gone on sale yet -- worth a check either way. If it is sold out, resale prices on these often come down as the date gets closer:` +
+    `<div class="evt-resale-links">` +
+    `<a href="${escapeHtml(urls.stubhub)}" target="_blank" rel="noopener noreferrer">StubHub</a>` +
+    `<a href="${escapeHtml(urls.seatgeek)}" target="_blank" rel="noopener noreferrer">SeatGeek</a>` +
+    `<a href="${escapeHtml(urls.vividseats)}" target="_blank" rel="noopener noreferrer">Vivid Seats</a>` +
+    `</div>`;
 }
 function truncateText(str, maxLen){
   if(!str) return '';
@@ -484,6 +541,7 @@ function mapRow(row){
     // avoids colliding with that. See migration_022_event_url.sql.
     eventPageUrl: row.event_url || undefined,
     priceFrom: row.price_from ?? undefined,
+    ticketStatus: row.ticket_status || undefined,
   };
 }
 
@@ -613,6 +671,12 @@ function renderEvent(e){
     n.textContent = e.note;
     n.style.display = 'block';
   }
+  const resaleHtml = resaleNoteHtml(e);
+  if(resaleHtml){
+    const r = document.getElementById('evtResale');
+    r.innerHTML = resaleHtml;
+    r.style.display = 'block';
+  }
   if(shouldShowSource(e)){
     const s = document.getElementById('evtSource');
     s.textContent = `via ${e.source}`;
@@ -718,7 +782,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();

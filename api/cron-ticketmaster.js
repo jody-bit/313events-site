@@ -213,6 +213,16 @@ function shapeForDb(e, venueMap) {
 
   const priceRange = e.priceRanges && e.priceRanges[0];
 
+  // ticket_status (2026-09-16, Jody: "see if the event is sold out ... to
+  // get tickets cheaper on the resale apps") -- Discovery API's own
+  // dates.status.code, values per Ticketmaster's docs: onsale, offsale,
+  // cancelled, postponed, rescheduled. See migration_030's header comment
+  // for the important caveat: "offsale" alone does NOT reliably mean sold
+  // out (could also mean the sale window just hasn't opened), so
+  // event.html deliberately hedges its wording rather than asserting
+  // "SOLD OUT" off this field alone.
+  const ticketStatus = e.dates && e.dates.status ? e.dates.status.code : null;
+
   return {
     external_id: e.id,
     title: e.name,
@@ -246,6 +256,7 @@ function shapeForDb(e, venueMap) {
     ticket_url: affiliateTicketUrl(e.url),
     image_url: pickImage(e.images),
     source: "Ticketmaster",
+    ticket_status: ticketStatus,
   };
 }
 
