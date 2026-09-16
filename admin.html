@@ -334,6 +334,9 @@ function renderIncompleteList(flagged) {
         Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b><br>
         Source: ${escapeHtml(e.source || '—')}
         ${e.submitter_email ? '<br>Submitted by: <b>' + escapeHtml(e.submitter_org_name || '—') + '</b> (' + escapeHtml(e.submitter_email) + ')' : ''}
+        ${e.ticket_url ? '<br>' + '<a href="' + escapeHtml(e.ticket_url) + '" target="_blank" rel="noopener">tickets ↗</a>' : ''}
+        ${e.event_url && e.event_url !== e.ticket_url ? (e.ticket_url ? ' · ' : '<br>') + '<a href="' + escapeHtml(e.event_url) + '" target="_blank" rel="noopener">event page ↗</a>' : ''}
+        ${e.status === 'approved' ? (e.ticket_url || e.event_url ? ' · ' : '<br>') + '<a href="event.html?id=' + encodeURIComponent(e.id) + '" target="_blank" rel="noopener">View live page ↗</a>' : ''}
         <br><br><b>Missing:</b> ${missing.map(m => `<span class="status-badge pending_review">${escapeHtml(m)}</span>`).join(' ')}
       </div>
       <div class="incomplete-fields" data-fields="${escapeAttr(inputs.map(f => f.key).join(','))}">
