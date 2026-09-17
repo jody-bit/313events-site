@@ -4406,9 +4406,10 @@
     // crossfade while the page stays open. Jody's calls: preload every one up
     // front (smoother crossfades are worth the extra initial bandwidth vs.
     // lazy-loading each one right before its turn) and an ~8s, slow-fade
-    // rotation rather than a hard cut. 10 candidates as of 2026-09-16 (F-K
-    // added 2026-09-14; 'I' pulled 2026-09-16, too boring — see HERO_PHOTOS
-    // below and the manifest for sourcing).
+    // rotation rather than a hard cut. 11 candidates as of 2026-09-17 (F-K
+    // added 2026-09-14; 'I' pulled 2026-09-16, too boring; 'L' (Bikini Kill
+    // @ Royal Oak Music Theatre, Jody's own photo) added 2026-09-17 — see
+    // HERO_PHOTOS below and the manifest for sourcing).
     var HERO_PHOTOS = [
       { file:'A', w:2400, h:1350, alt:'A packed outdoor festival crowd at night, with the Detroit skyline and the lit Renaissance Center towers behind the stage.' },
       { file:'B', w:2400, h:1350, alt:'A daytime festival crowd gathered along the Detroit riverfront on a rainy day, with the Renaissance Center towers in the background.' },
@@ -4435,7 +4436,11 @@
       // replaced, so the rotation is 10 candidates until a livelier one
       // takes its place — see the manifest for the full record.
       { file:'J', w:2400, h:1350, alt:'The cover of a book titled "The Yard Graffiti Museum, Southwest Detroit, MI," showing a photograph of a graffiti-covered wall.' },
-      { file:'K', w:2400, h:1350, alt:'A backyard concert crowd at dusk seated at picnic tables strung with string lights, with a musician performing on a small stage.' }
+      { file:'K', w:2400, h:1350, alt:'A backyard concert crowd at dusk seated at picnic tables strung with string lights, with a musician performing on a small stage.' },
+      // 'L' added 2026-09-17 -- Jody: "i wanted that picture to be in the hero
+      // section on the home page in the slide show" (the same Bikini Kill
+      // photo already live on that event's own page).
+      { file:'L', w:2400, h:1350, alt:'Bikini Kill performing on stage at the Royal Oak Music Theatre under blue stage lighting, seen from the crowd with a sound and lighting booth in the foreground.' }
     ];
     var ROTATE_MS = 8000;
     var container = document.getElementById('heroPhoto');

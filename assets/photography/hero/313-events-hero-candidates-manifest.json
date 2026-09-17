@@ -188,5 +188,18 @@
     "copyright": "Jody Tyree",
     "content_note": "Backyard concert crowd — Jody confirmed (2026-09-14) this is a public show at Outer Limits, not a private gathering, after an earlier draft of this pass held it back over an identifiability concern.",
     "usage": "313.events homepage hero rotation, added 2026-09-14"
+  },
+  {
+    "candidate": "L",
+    "source": "photo supplied directly via chat by Jody, taken at Bikini Kill @ Royal Oak Music Theatre, 2026-09-15 (same photo also used as that event's own image on event.html)",
+    "source_resolution": [3024, 2051],
+    "strength": "PRESENCE",
+    "desktop": { "file": "313-events-homepage-hero-L.webp", "size": [2400, 1350], "note": "Center cover-crop (top/bottom trimmed) from the landscape original to hit 16:9." },
+    "mobile": { "file": "313-events-homepage-hero-L-mobile.webp", "size": [900, 1200] },
+    "treatment": "Center cover-crop from the landscape original; resized with Lanczos resampling; no color/contrast grading, no tint, no generative alteration.",
+    "photographer": "Jody Tyree",
+    "copyright": "Jody Tyree",
+    "content_note": "Bikini Kill performing live at Royal Oak Music Theatre, 2026-09-15 -- same photo already live on that event's own page.",
+    "usage": "313.events homepage hero rotation, added 2026-09-17"
   }
 ]
