@@ -42,6 +42,29 @@ const path = require("path");
 // every visitor got before this file existed) whenever: no id is present,
 // the event isn't found/approved, or the Supabase request fails for any
 // reason — this must never be the thing that makes event.html stop loading.
+//
+// 2026-09-17 FOLLOW-UP -- THIS WAS NEVER ACTUALLY RUNNING: Jody shared an
+// event link to Facebook and it showed the generic fallback card despite
+// the event being approved. Investigation found the real bug: Vercel's
+// routing checks static files BEFORE rewrites, and event.html existed as a
+// literal static file at that exact path (it has to -- this function reads
+// it straight off disk). So every single request to /event.html?id=... was
+// served as the raw static file directly, and this function's rewrite
+// (vercel.json: "/event.html" -> "/api/event-meta") never fired at all --
+// confirmed live: even a cache-busted query string came back as an
+// x-vercel-cache: HIT with the plain static Cache-Control header, which
+// only makes sense for a literal static file being served by the CDN, not
+// this function's own Cache-Control (see bottom of this file). This means
+// every 313.events link shared anywhere since this file was first written
+// (2026-09-13) showed the generic card, not just today's.
+//
+// FIX: the on-disk template was renamed from event.html to
+// event-template.html (git mv, history preserved) so nothing occupies the
+// literal /event.html static path anymore -- the rewrite now has nothing
+// to lose to. The PUBLIC url is unchanged (still exactly
+// event.html?id=... -- see canonicalUrl below), only the on-disk filename
+// this function reads via fs.readFileSync moved. vercel.json's
+// functions["api/event-meta.js"].includeFiles was updated to match.
 
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://afvyfjfqukptnfmgshzn.supabase.co";
 // Same public/publishable key every client-facing page already hardcodes
@@ -110,7 +133,7 @@ function replaceTag(html, pattern, value) {
 }
 
 module.exports = async (req, res) => {
-  const templatePath = path.join(process.cwd(), "event.html");
+  const templatePath = path.join(process.cwd(), "event-template.html");
   let html;
   try {
     html = fs.readFileSync(templatePath, "utf8");

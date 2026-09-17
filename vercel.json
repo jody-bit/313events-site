@@ -87,7 +87,7 @@
   ],
   "functions": {
     "api/event-meta.js": {
-      "includeFiles": "event.html"
+      "includeFiles": "event-template.html"
     },
     "api/cron-metrotimes.js": {
       "maxDuration": 60
