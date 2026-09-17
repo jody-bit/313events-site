@@ -89,6 +89,9 @@
     "api/event-meta.js": {
       "includeFiles": "event-template.html"
     },
+    "api/venue-meta.js": {
+      "includeFiles": "venue-template.html"
+    },
     "api/cron-metrotimes.js": {
       "maxDuration": 60
     },
@@ -122,6 +125,10 @@
     {
       "source": "/event.html",
       "destination": "/api/event-meta"
+    },
+    {
+      "source": "/venue.html",
+      "destination": "/api/venue-meta"
     }
   ]
 }
