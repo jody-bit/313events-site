@@ -83,6 +83,14 @@
     {
       "path": "/api/cron-outerlimitslounge",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron-motorcitywine",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron-detroittraining",
+      "schedule": "0 10 * * *"
     }
   ],
   "functions": {
@@ -115,6 +123,12 @@
     },
     "api/cron-oldmiami.js": {
       "maxDuration": 60
+    },
+    "api/cron-detroittraining.js": {
+      "maxDuration": 60
+    },
+    "api/cron-motorcitywine.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
