@@ -67,6 +67,34 @@
   .refresh{margin-bottom:16px;}
   .refresh button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
 
+  /* Tabbed layout (2026-09-18, FEATURE_BACKLOG.md) — replaces one long
+     scroll of 6 sections with per-tab panels + a badge count per tab, so
+     Jody can see at a glance which queues actually need attention without
+     scrolling past ones that don't. Every section keeps its existing inner
+     #ids untouched (renderList/renderFeedList/etc. don't change at all) —
+     only the wrapper around each section changed, from always-visible to
+     shown/hidden via .tab-panel.active. Badges reuse the exact
+     .status-badge.pending_review colors so "needs a look" reads the same
+     way here as it already does everywhere else on this page, and a badge
+     hides itself entirely at count 0 rather than showing "0" — the smoke
+     tests badge in particular is how a failing check stays visible even
+     while some other tab is open, since the nav bar itself never hides. */
+  .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--line);}
+  .tab-btn{
+    background:none;border:none;border-bottom:2px solid transparent;color:var(--ink-soft);
+    padding:10px 13px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;
+    font-family:inherit;white-space:nowrap;
+  }
+  .tab-btn:hover{color:var(--ink);}
+  .tab-btn.active{color:var(--ink);border-bottom-color:var(--accent);}
+  .tab-badge{
+    display:inline-block;min-width:9px;text-align:center;background:#443a1a;color:#e8c96b;
+    font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 6px;line-height:1.5;
+  }
+  .tab-badge.hidden{display:none;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
   section.block{margin-top:36px;}
   section.block h2{font-size:15px;margin:0 0 4px;font-family:'Archivo Narrow',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.01em;}
   section.block .sub{color:var(--ink-soft);font-size:13px;margin-bottom:14px;}
@@ -161,49 +189,80 @@
   </div>
 
   <div id="queue" style="display:none;">
-    <div id="healthBanner" class="health-banner"></div>
+    <!-- Tab order follows FEATURE_BACKLOG.md's own wording (Smoke test
+         results, Editorial review, Event submissions review, Events
+         missing details) with 3 sections this page already had (Feed
+         sources, Live events, Recently hidden) appended after — the
+         backlog item didn't mention them, but nothing here could just be
+         dropped. Default-active tab is Event submissions, matching what
+         used to be the first section a moderator scrolled to. -->
+    <nav class="tabs" id="adminTabs">
+      <button type="button" class="tab-btn" data-tab="health" onclick="showTab('health')">Smoke tests <span class="tab-badge hidden" id="badge-health">0</span></button>
+      <button type="button" class="tab-btn" data-tab="editorial" onclick="showTab('editorial')">Press coverage <span class="tab-badge hidden" id="badge-editorial">0</span></button>
+      <button type="button" class="tab-btn active" data-tab="submissions" onclick="showTab('submissions')">Event submissions <span class="tab-badge hidden" id="badge-submissions">0</span></button>
+      <button type="button" class="tab-btn" data-tab="followup" onclick="showTab('followup')">Needs follow-up <span class="tab-badge hidden" id="badge-followup">0</span></button>
+      <button type="button" class="tab-btn" data-tab="feeds" onclick="showTab('feeds')">Feed sources <span class="tab-badge hidden" id="badge-feeds">0</span></button>
+      <button type="button" class="tab-btn" data-tab="live" onclick="showTab('live')">Live events</button>
+      <button type="button" class="tab-btn" data-tab="hidden" onclick="showTab('hidden')">Recently hidden</button>
+    </nav>
 
     <div class="refresh"><button onclick="loadAll()">↻ Refresh</button></div>
 
-    <section class="block">
-      <h2>Event submissions</h2>
-      <div class="sub">Single events submitted via submit.html — approve to publish, reject to discard.</div>
-      <div id="list"></div>
-    </section>
+    <div class="tab-panel" data-tab-panel="health">
+      <div id="healthBanner" class="health-banner"></div>
+    </div>
 
-    <section class="block">
-      <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
-      <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
-      <div id="incompleteList"></div>
-    </section>
+    <div class="tab-panel" data-tab-panel="editorial">
+      <section class="block" style="margin-top:0;">
+        <h2>Press coverage</h2>
+        <div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically, so radar.html immediately shows it as matched instead of "Not yet linked"); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div>
+        <div id="editorialList"></div>
+      </section>
+    </div>
 
-    <section class="block">
-      <h2>Feed sources</h2>
-      <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form. Approving one does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. Each feed's own events then land pre-approved, since the feed itself was the thing reviewed.</div>
-      <div id="feedList"></div>
-    </section>
+    <div class="tab-panel active" data-tab-panel="submissions">
+      <section class="block" style="margin-top:0;">
+        <h2>Event submissions</h2>
+        <div class="sub">Single events submitted via submit.html — approve to publish, reject to discard.</div>
+        <div id="list"></div>
+      </section>
+    </div>
 
-    <section class="block">
-      <h2>Press coverage</h2>
-      <div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically, so radar.html immediately shows it as matched instead of "Not yet linked"); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div>
-      <div id="editorialList"></div>
-    </section>
+    <div class="tab-panel" data-tab-panel="followup">
+      <section class="block" style="margin-top:0;">
+        <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
+        <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
+        <div id="incompleteList"></div>
+      </section>
+    </div>
 
-    <section class="block">
-      <h2>Live events</h2>
-      <div class="sub">Search anything currently live on the site — from any source, including automated feeds — and remove it if it doesn't fit the brand. Removing is reversible from "Recently hidden" below.</div>
-      <div class="search-row">
-        <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
-        <button onclick="searchLiveEvents()">Search</button>
-      </div>
-      <div id="liveResults"></div>
-    </section>
+    <div class="tab-panel" data-tab-panel="feeds">
+      <section class="block" style="margin-top:0;">
+        <h2>Feed sources</h2>
+        <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form. Approving one does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. Each feed's own events then land pre-approved, since the feed itself was the thing reviewed.</div>
+        <div id="feedList"></div>
+      </section>
+    </div>
 
-    <section class="block">
-      <h2>Recently hidden</h2>
-      <div class="sub">The last 20 events removed via Reject or Remove from site. Restore brings one back to the live site.</div>
-      <div id="hiddenList"></div>
-    </section>
+    <div class="tab-panel" data-tab-panel="live">
+      <section class="block" style="margin-top:0;">
+        <h2>Live events</h2>
+        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — and remove it if it doesn't fit the brand. Removing is reversible from "Recently hidden" below.</div>
+        <div class="search-row">
+          <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
+          <button onclick="searchLiveEvents()">Search</button>
+        </div>
+        <div id="liveResults"></div>
+      </section>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="hidden">
+      <section class="block" style="margin-top:0;">
+        <h2>Recently hidden</h2>
+        <div class="sub">The last 20 events removed via Reject or Remove from site. Restore brings one back to the live site.</div>
+        <div id="hiddenList"></div>
+      </section>
+    </div>
   </div>
   <datalist id="venueDatalist"></datalist>
 </main>
@@ -232,6 +291,26 @@ function unlock(event) {
 // actually types a search, since it's a lookup, not a fixed-size queue.
 async function loadAll() {
   await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues(), loadIncomplete()]);
+}
+
+// ---- Tabbed layout (2026-09-18) ----
+// Purely a display-visibility switch — every load function above still
+// fetches and renders all 7 panels' content up front via loadAll(), same
+// as before tabs existed. Switching tabs never re-fetches anything.
+function showTab(key) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.tabPanel === key));
+}
+
+// Called from each section's own render/load function below with that
+// section's own "needs a look" count — 0 hides the badge entirely rather
+// than showing "0", so the nav bar only draws the eye toward tabs that
+// actually have something pending.
+function setTabBadge(key, count) {
+  const el = document.getElementById('badge-' + key);
+  if (!el) return;
+  el.textContent = count;
+  el.classList.toggle('hidden', !count);
 }
 
 // ---- Needs follow-up (missing critical fields) — 2026-09-05 ----
@@ -290,6 +369,7 @@ async function loadIncomplete() {
     const flagged = (data.events || [])
       .map(e => ({ e, missing: getMissingFields(e) }))
       .filter(x => x.missing.length > 0 && !x.e.followup_dismissed);
+    setTabBadge('followup', flagged.length);
     renderIncompleteList(flagged);
   } catch (err) {
     // Silent by design, same reasoning as loadHealthcheck() — this is a
@@ -475,6 +555,7 @@ function renderHealthcheck(data) {
   const { latest, streakOk } = data;
   const checkedAt = new Date(latest.run_at).toLocaleString();
   const failing = (latest.checks || []).filter(c => !c.ok);
+  setTabBadge('health', failing.length);
 
   if (latest.overall === 'ok') {
     banner.className = 'health-banner ok';
@@ -510,6 +591,7 @@ async function loadQueue() {
 
 function renderList(events) {
   const list = document.getElementById('list');
+  setTabBadge('submissions', events.length);
   if (!events.length) {
     list.innerHTML = '<div class="empty">No pending submissions. 🎉</div>';
     return;
@@ -599,6 +681,9 @@ function feedActionsFor(f) {
 
 function renderFeedList(feeds) {
   const list = document.getElementById('feedList');
+  // Badge counts only the ones actually waiting on a yes/no decision —
+  // approved/paused/rejected feeds are ongoing state, not a queue.
+  setTabBadge('feeds', feeds.filter(f => f.status === 'pending_review').length);
   if (!feeds.length) {
     list.innerHTML = '<div class="empty">No feed sources submitted yet.</div>';
     return;
@@ -702,6 +787,7 @@ async function loadEditorial() {
 
 function renderEditorialList(articles) {
   const list = document.getElementById('editorialList');
+  setTabBadge('editorial', articles.length);
   if (!articles.length) {
     list.innerHTML = '<div class="empty">Nothing waiting for review. 🎉</div>';
     return;
