@@ -25,7 +25,7 @@ const VALID_CATEGORIES = new Set([
   // registering with either default category would fail this validation
   // even though both are valid values in the database. Fixed 2026-09-02
   // audit, mirroring api/submit.js's whitelist exactly.
-  "community", "vendor",
+  "community", "vendor", "training",
 ]);
 
 function isValidEmail(email) {

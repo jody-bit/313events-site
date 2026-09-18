@@ -81,6 +81,7 @@
     --c-sports:#FF3B3B;   /* neon scarlet */
     --c-community:#3DFF6E; /* neon green */
     --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
+    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -496,7 +497,8 @@ const CATS = [
   {key:"nightlife", label:"Nightlife & Club",  color:"var(--c-night)"},
   {key:"sports",    label:"Sports",            color:"var(--c-sports)"},
   {key:"community", label:"Community",         color:"var(--c-community)"},
-  {key:"vendor",    label:"Vendor Markets",    color:"var(--c-vendor)"}
+  {key:"vendor",    label:"Vendor Markets",    color:"var(--c-vendor)"},
+  {key:"training",  label:"Classes & Training", color:"var(--c-training)"}
 ];
 
 function buildCatGrid(gridId, radioName){

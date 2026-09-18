@@ -1,0 +1,27 @@
+-- Migration 031: add 'training' to event_category
+--
+-- Context: Jody, 2026-09-18 — asked to mine Detroit Training Center
+-- (detroittraining.com) for events ("this would go into classes & training")
+-- and there was no home for it: the taxonomy tops out at 13 values today
+-- (music, theatre, dance, visual, museum, family, fest, food, film,
+-- nightlife, sports, community, vendor — see migration_007/009b/018 for the
+-- three prior additions). Vocational/workforce classes and certification
+-- courses (builders license prep, forklift/heavy-equipment certs, OSHA,
+-- HAZWOPER, first aid, etc.) don't fit any existing bucket, so this adds a
+-- 14th: "training", labeled "Classes & Training" (see migration_032 for the
+-- categories-table metadata row and index.html/etc.'s CATS object for the
+-- matching client-side label/color).
+--
+-- RUN THIS STATEMENT BY ITSELF, as its own separate paste/run in the SQL
+-- Editor. Postgres will not run ALTER TYPE ... ADD VALUE inside a
+-- transaction block alongside other statements, and most SQL editors
+-- (including Supabase's) submit a multi-statement paste as one batch/
+-- transaction, so combining this with anything else can make the whole
+-- batch fail silently rather than partially succeed — same caveat as
+-- migration_009a/migration_018's own notes. migration_032 (the categories
+-- table row + schema_migrations insert for THIS file) is a separate file
+-- for exactly this reason — run this one alone first, then that one.
+--
+-- IF NOT EXISTS makes this safe to re-run regardless.
+
+alter type event_category add value if not exists 'training';

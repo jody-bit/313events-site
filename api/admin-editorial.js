@@ -90,7 +90,7 @@ function parsePriceFrom(input) {
 // fixed there too as of the same 2026-08-30 change that added "vendor" here.
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum", "family",
-  "fest", "food", "film", "nightlife", "community", "sports", "vendor",
+  "fest", "food", "film", "nightlife", "community", "sports", "vendor", "training",
 ]);
 
 function isSafeHttpUrl(url) {

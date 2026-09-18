@@ -22,6 +22,9 @@ const VALID_CATEGORIES = new Set([
   // "vendor" (2026-08-30, migration_018): Vendor Markets — flea markets,
   // craft/holiday markets, oddities markets.
   "vendor",
+  // "training" (2026-09-18): Classes & Training — vocational/workforce
+  // classes and certification courses (e.g. Detroit Training Center).
+  "training",
 ]);
 
 function isValidEmail(email) {
