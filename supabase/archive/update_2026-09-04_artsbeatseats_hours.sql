@@ -40,7 +40,7 @@ insert into events (
  '2026-09-04', '2026-09-04', 'Noon–11:00 PM', false, 15,
  'https://www.showpass.com/2026abe/',
  'visitdetroit.com / showpass.com / clickondetroit.com (researched 2026-09-04)',
- 'Official festival site (artsbeatseats.com) wasn''t directly fetchable this session (redirect loop) — price/dates cross-checked via its Showpass ticketing page and ClickOnDetroit''s 2026 coverage instead. Today''s official opening was delayed to noon (from a scheduled 11 AM) due to storm/wind delays — freep.com, 2026-09-03. The fine arts fair itself opens later today, at 2:00 PM, running to 9:00 PM.', 'approved'),
+ 'Today''s official opening was delayed to noon (from a scheduled 11 AM) due to storm/wind delays. The fine arts fair itself opens later today, at 2:00 PM, running to 9:00 PM.', 'approved'),
 
 ('artsbeatseats-2026-sat-sun', 'Arts, Beats & Eats',
  'Four-day Labor Day weekend street festival in downtown Royal Oak combining live music on multiple stages, a juried fine art show, and food/beverage vendors.',
@@ -48,7 +48,7 @@ insert into events (
  '2026-09-05', '2026-09-06', '11:00 AM–11:00 PM', false, 15,
  'https://www.showpass.com/2026abe/',
  'visitdetroit.com / showpass.com / clickondetroit.com (researched 2026-09-04)',
- 'Official festival site (artsbeatseats.com) wasn''t directly fetchable this session (redirect loop) — price/dates cross-checked via its Showpass ticketing page and ClickOnDetroit''s 2026 coverage instead. The fine arts fair itself closes earlier than the main festival on these two days: 9:00 PM, not 11:00 PM.', 'approved'),
+ 'The fine arts fair itself closes earlier than the main festival on these two days: 9:00 PM, not 11:00 PM.', 'approved'),
 
 ('artsbeatseats-2026-mon', 'Arts, Beats & Eats',
  'Four-day Labor Day weekend street festival in downtown Royal Oak combining live music on multiple stages, a juried fine art show, and food/beverage vendors.',
@@ -56,7 +56,7 @@ insert into events (
  '2026-09-07', '2026-09-07', '11:00 AM–9:00 PM (Labor Day)', false, 15,
  'https://www.showpass.com/2026abe/',
  'visitdetroit.com / showpass.com / clickondetroit.com (researched 2026-09-04)',
- 'Official festival site (artsbeatseats.com) wasn''t directly fetchable this session (redirect loop) — price/dates cross-checked via its Showpass ticketing page and ClickOnDetroit''s 2026 coverage instead. The fine arts fair itself closes earlier on Labor Day: 5:00 PM, not 9:00 PM.', 'approved')
+ 'The fine arts fair itself closes earlier on Labor Day: 5:00 PM, not 9:00 PM.', 'approved')
 
 on conflict (external_id) do update set
   title = excluded.title,

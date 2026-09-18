@@ -18,7 +18,7 @@
 insert into events (
   external_id, title, description, category, venue_name_raw,
   venue_address_raw, venue_city_raw, start_date, end_date, time_display,
-  is_free, price_from, ticket_url, image_url, source, note, status
+  is_free, price_from, ticket_url, image_url, source, note, internal_note, status
 ) values
 
 ('fb-2236314620490132', '2nd Annual Fall Open Studios at 40 West Howard',
@@ -27,7 +27,7 @@ insert into events (
  '2026-10-10', null, '1:00 PM–7:00 PM', true, null,
  'https://facebook.com/events/s/2nd-annual-fall-open-studios-a/2236314620490132/',
  null,
- 'Manual', 'Full participating-studios directory pending -- Jody has more screenshots to add.', 'approved')
+ 'Manual', null, 'Full participating-studios directory pending -- Jody has more screenshots to add.', 'approved')
 
 on conflict (external_id) do update set
   title = excluded.title,

@@ -63,7 +63,7 @@ insert into events (
 
 ('ra-2524313', 'SUNDANCE', 'A beloved annual tradition, SUNDANCE returns to close out summer with a full day of food, community and soulful rare grooves on a top-tier hi-fi sound system.', 'nightlife', 'TBA - The American Riad | 920 Euclid',
  '2026-09-13', '2026-09-13', '3:00 PM–10:00 PM', false, 'https://ra.co/events/2524313',
- 'https://images.ra.co/793f6b44a06b9dd4f99adccdd81f9951bed086b1.png', 'Resident Advisor', 'Venue listed by Resident Advisor as "TBA" alongside this address — kept verbatim rather than guessed apart.', 'approved'),
+ 'https://images.ra.co/793f6b44a06b9dd4f99adccdd81f9951bed086b1.png', 'Resident Advisor', 'Venue name not yet confirmed -- address shown is as listed by the event source.', 'approved'),
 
 ('ra-2532601', 'Sanctified Sundays Season Finale', null, 'nightlife', 'Third Street Bar',
  '2026-09-13', '2026-09-13', '4:00 PM–10:30 PM', false, 'https://ra.co/events/2532601',
@@ -75,11 +75,11 @@ insert into events (
 
 ('ra-2524263', 'Solstice Pool Party', null, 'nightlife', 'Belcrest Pool Midtown',
  '2026-09-12', '2026-09-13', null, false, 'https://ra.co/events/2524263',
- 'https://images.ra.co/3fb1386c76d793639d19847cbc9a3f7601f8fc16.png', 'Resident Advisor', 'Resident Advisor lists this running from Sept 12 into Sept 13 evening — an unusually long span for a "pool party," kept as given rather than compressed into a guessed single time.', 'approved'),
+ 'https://images.ra.co/3fb1386c76d793639d19847cbc9a3f7601f8fc16.png', 'Resident Advisor', 'Runs from Sept 12 into the evening of Sept 13.', 'approved'),
 
 ('ra-2520438', 'BandaTon day party', null, 'nightlife', 'Venue TBA (Detroit)',
  '2026-09-12', '2026-09-13', null, false, 'https://ra.co/events/2520438',
- null, 'Resident Advisor', 'Resident Advisor lists this running from Sept 12 into Sept 13 — kept as given rather than guessed into a single day/time.', 'approved'),
+ null, 'Resident Advisor', 'Runs overnight from Sept 12 into Sept 13.', 'approved'),
 
 ('ra-2535903', 'Música', null, 'nightlife', 'Spkrbox',
  '2026-09-14', '2026-09-15', '10:00 PM–2:00 AM', false, 'https://ra.co/events/2535903',
@@ -107,7 +107,7 @@ insert into events (
 
 ('ra-2516034', '3.1.3', null, 'nightlife', 'Andy Arts',
  '2026-09-18', '2026-09-19', null, false, 'https://ra.co/events/2516034',
- 'https://images.ra.co/3ef41471815033c858e81cdbc861eee2f31629ba.png', 'Resident Advisor', 'Resident Advisor lists an unusually long Sept 18–19 span — kept as given rather than guessed into a single time.', 'approved'),
+ 'https://images.ra.co/3ef41471815033c858e81cdbc861eee2f31629ba.png', 'Resident Advisor', 'Runs overnight from Sept 18 into Sept 19.', 'approved'),
 
 ('ra-2520480', 'CORRUPTION: Remix Wars', null, 'nightlife', 'Tangent Gallery',
  '2026-09-18', '2026-09-19', '8:00 PM–2:00 AM', false, 'https://ra.co/events/2520480',

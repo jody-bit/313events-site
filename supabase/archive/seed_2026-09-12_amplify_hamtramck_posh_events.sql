@@ -67,7 +67,7 @@ insert into events (
  '2026-10-24', null, '8:00 PM–2:00 AM', false, null,
  'https://posh.vip/e/dont-cross-the-street',
  'Amplify (posh.vip/g/amplify-music, researched 2026-09-12)',
- 'Source page spells it "Bizzare''s album drop" — corrected to the artist''s actual name (Bizarre, of D12) here; flag if the misspelling matters for search/SEO matching.', 'approved'),
+ null, 'approved'),
 
 ('posh-amplify-phright-night-2', 'Phright Night',
  'Halloween event with phonk artist Ryan Celsius bringing unique visuals and sound. Costumes encouraged. Lineup: TomKillsJerry, ENOKALYPSE, Ryan Celsius, Kiefergr33n, Rowles Royce.',
@@ -98,7 +98,7 @@ insert into events (
  '2026-11-13', null, '7:00 PM–2:00 AM', false, null,
  'https://posh.vip/e/friday-the-13th-29',
  'Amplify (posh.vip/g/amplify-music, researched 2026-09-12)',
- 'Birthday name is inconsistent between the flyer image ("Rachel''s 33rd Birthday Bash") and the page''s own written description ("RayCheezy''s 33rd Birthday!") — likely the same person under a nickname, but not confirmable from the listing alone; description above deliberately omits the name rather than guess which is right.', 'approved'),
+ null, 'approved'),
 
 ('posh-amplify-inkless', 'Inkless',
  'Hard rock night with Inkless & friends. Inkless is a Detroit-based rock band (Andy Boyer, Luke Daniels, Josh Rodriguez, Cardi DeMonaco) with a sound in the vein of Foo Fighters, Alice In Chains, The Cult, and Stone Temple Pilots.',

@@ -61,7 +61,7 @@ insert into events (
  '2026-09-25', '2026-09-26', '8:00 PM–12:30 AM', false, null,
  'https://ra.co/events/2539083',
  null,
- 'Resident Advisor', 'No RA ticket price shown on the source page -- likely door/cash entry.', 'approved'),
+ 'Resident Advisor', null, 'approved'),
 
 ('ra-2533789', 'RIDDIM RESTAURANT',
  'Bass-heavy dubstep at Elektricity -- Melt (CA), Master Nyne, Gooberz, Briddimboi, and The General. Doors at 9pm. 18+.',
@@ -69,7 +69,7 @@ insert into events (
  '2026-09-25', '2026-09-26', '9:00 PM–2:00 AM', false, null,
  'https://ra.co/events/2533789',
  null,
- 'Resident Advisor', 'No RA ticket price shown on the source page.', 'approved'),
+ 'Resident Advisor', null, 'approved'),
 
 ('ra-2529033', 'Club 1BD',
  'Club 1BD showcases POC talent at Magic Stick with hip-hop, R&B, Jersey Club, and house -- "a unique vision of what club life should be." Dress code: orange and yellow. 18+.',
@@ -77,7 +77,7 @@ insert into events (
  '2026-09-25', '2026-09-26', '9:00 PM–2:00 AM', false, null,
  'https://ra.co/events/2529033',
  null,
- 'Resident Advisor', 'No RA ticket price shown on the source page.', 'approved'),
+ 'Resident Advisor', null, 'approved'),
 
 ('ra-2533991', 'LATIN NIGHT: DJ IZA & SWDJEY (BAD BUNNY VIBES)',
  'Big Pink''s Latin Night with SWDEJAY and DJ IZA -- baile funk and reggaeton, Bad Bunny vibes. Free entry (first come, first served), or $23 guaranteed admission. 21+.',

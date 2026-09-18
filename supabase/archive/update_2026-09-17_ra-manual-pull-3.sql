@@ -145,7 +145,7 @@ insert into events (
  '2026-09-18', '2026-09-19', '10:00 PM–4:00 AM', false, 11.50,
  'https://ra.co/events/2532512',
  null,
- 'Resident Advisor', 'No description or real photo on RA''s own page (image field null; og:image falls back to RA''s generic site logo, not used here).', 'approved'),
+ 'Resident Advisor', null, 'approved'),
 
 ('ra-2529208', 'SHAKE DOWN',
  'An evening at Roar Brewing Company blending ghettotech, hip-hop, and R&B with sets from Almighty Leo, Flexico, JMT, and Mykel Andre.',

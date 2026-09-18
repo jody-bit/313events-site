@@ -98,7 +98,7 @@ insert into events (
  '2026-09-12', null, true, null,
  'https://www.dallyinthealley.com/lineup/',
  'dallyinthealley.com (researched 2026-09-04)',
- 'The festival''s own site only says "the Saturday after Labor Day" — 2026-09-12 cross-checked against Wayne State University''s official events calendar (events.wayne.edu). No exact street address found on either source.', 'approved'),
+ 'No exact street address published for this event.', 'approved'),
 
 ('youmacon-2026', 'Youmacon',
  'Annual four-day anime and pop-culture convention at Huntington Place in downtown Detroit over Halloween weekend, with gaming, cosplay competitions, concerts, and a vendor marketplace.',
@@ -134,7 +134,7 @@ insert into events (
  'fest', 'East Nine Mile Rd', null, 'Ferndale',
  '2026-09-25', '2026-09-27', true, null,
  'https://www.ferndalediy.com',
- 'ferndalediy.com (researched 2026-09-04)', 'No exact street number published — Nine Mile is captured as the location instead.', 'approved'),
+ 'ferndalediy.com (researched 2026-09-04)', 'No exact street address published for this event -- general location is Nine Mile Rd, Ferndale.', 'approved'),
 
 ('funkyferndaleartfair-2026', 'Funky Ferndale Art Fair',
  'Free juried outdoor fine-art fair featuring roughly 140 artists in painting, sculpture, and wearable art, on Nine Mile Road at Woodward in downtown Ferndale, the same weekend as (and just across the street from) Ferndale DIY.',

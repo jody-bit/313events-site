@@ -67,7 +67,7 @@ insert into events (
  '2026-10-03', '2026-10-03', '8:00 PM', false, false, 15.00,
  'https://www.instagram.com/p/DdExe5YlWTt/',
  'https://afvyfjfqukptnfmgshzn.supabase.co/storage/v1/object/public/event-flyers/e9833f20-11bc-41a0-9404-2c58b64e65fe.jpg',
- 'Manual', 'Caption gives "$15 | Doors 8 PM" — the flyer graphic itself also shows a hand-drawn "3PM" speech bubble; 8 PM (the caption''s explicit doors time) is used here rather than the ambiguous flyer graphic.', 'approved'),
+ 'Manual', null, 'approved'),
 
 ('ig-DdE7AziRMZX', 'Michael Hubbard: "After the Fall I Stay Apart"',
  'A new series of work by artist Michael Hubbard (@meh_ubbard), on view at Paris Bar Detroit September 9th through September 30th.',
@@ -91,7 +91,7 @@ insert into events (
  '2026-11-01', '2026-11-01', '7:00 PM', false, false, null,
  'https://www.instagram.com/p/DdO7rQ9BOtF/',
  'https://afvyfjfqukptnfmgshzn.supabase.co/storage/v1/object/public/event-flyers/332598f5-883f-435c-8515-25e073b9cb5d.jpg',
- 'Manual', 'Post says "Tix on RA, link in bio" — no direct Resident Advisor URL was visible in the screenshot, so ticket_url points at this Instagram post itself rather than a guessed RA link.', 'approved'),
+ 'Manual', 'Ticket link goes to this event''s Instagram post -- the RA link is in that post''s bio.', 'approved'),
 
 ('ig-DdM545jgRxz', 'Industry Mondays: Music by Dominic Jevalon & Angela Baskets',
  'Paris Bar''s recurring Industry Monday night — music by Dominic Jevalon and Angela Baskets, pop-up jewelry by Archangel Archive, and tarot readings by Moonbeam. Goth & romantic theme this week.',
