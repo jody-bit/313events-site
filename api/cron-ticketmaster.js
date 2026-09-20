@@ -319,7 +319,27 @@ module.exports = async (req, res) => {
   }
 
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  const rows = raw.map((e) => shapeForDb(e, venueMap)).filter(Boolean);
+  const rawRows = raw.map((e) => shapeForDb(e, venueMap)).filter(Boolean);
+
+  // De-dupe by external_id before sending — Postgres's ON CONFLICT DO UPDATE
+  // can't touch the same target row twice in one statement, so one duplicate
+  // pair would otherwise fail the ENTIRE batch instead of just that pair
+  // (same fix already applied in cron-dossin.js and
+  // cron-detroitmonthofdesign.js — see their matching comments). Root-caused
+  // 2026-09-20: Ticketmaster's own paginated Discovery API results can
+  // return the same event id across two different pages of the same fetch
+  // (confirmed the exact failure mode directly — `ERROR: 21000: ON CONFLICT
+  // DO UPDATE command cannot affect row a second time`), and this cron had
+  // no dedup step, so every run since roughly 2026-09-18 silently wrote
+  // nothing at all once one such duplicate ID appeared in a fetch — the
+  // whole POST failed, not just the duplicate pair, which is why ALL
+  // Ticketmaster events (not just the offending one) stopped updating.
+  const seen = new Map();
+  for (const row of rawRows) {
+    if (!seen.has(row.external_id)) seen.set(row.external_id, row);
+  }
+  const rows = Array.from(seen.values());
+
   if (!rows.length) {
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;
