@@ -4729,6 +4729,14 @@ const LOCATIONS = [
   {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
   {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
 
+  // Added 2026-09-20, newly in scope after the center->border measurement
+  // switch (SERVICE_AREA.md): Lansing is 67.5mi from Detroit's actual
+  // border (was 81.5mi from Detroit's center, just outside the old
+  // boundary). East Lansing (MSU's campus town, the specific "huge college
+  // town" Jody flagged) is 64.3mi, with even more margin.
+  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56000},
+  {name:"East Lansing", type:"city", region:"Michigan", lat:42.7370, lng:-84.4839},
+
   // --- Supplementary Detroit-metro suburbs (added for venue-city match
   // coverage beyond the SERVICE_AREA.md boundary-illustration list above —
   // all comfortably inside the 75-mile radius already established there) ---
@@ -4782,6 +4790,68 @@ function haversineMiles(lat1, lng1, lat2, lng2){
   const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
   const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
   return R * 2 * Math.asin(Math.sqrt(a));
+}
+
+// Detroit's official city-boundary polygon, used only for the two "is this
+// within the Detroit Orbit / real service area" checks below (isInDetroitOrbit
+// and matchesFilters()'s Detroit-Orbit branch) — NOT for isWithinRadius(),
+// which measures from an arbitrary chosen origin (the user's own location or
+// a picked city/neighborhood) and correctly stays plain center-point math,
+// since "distance from Detroit's border" isn't a meaningful concept for a
+// point that isn't Detroit.
+//
+// Switched 2026-09-20 from a Detroit-center-point + 75mi radius to this
+// border-based measurement — same 75-mile figure, more honest reference
+// point (a real city has real physical extent; measuring from an abstract
+// center systematically under-counted real nearby places, Lansing/MSU being
+// the case that prompted the fix). See SERVICE_AREA.md for the full
+// reasoning, and api/_lib/detroit-boundary.js for the server-side copy of
+// this same data/logic (this page is a self-contained static file with no
+// shared JS module across pages, so it can't require() that file — keep
+// both in sync if the boundary source or simplification ever changes).
+//
+// Source: the City of Detroit's own open-data GIS layer,
+// `City_of_Detroit_Boundary` (ArcGIS Feature Layer, serviceItemId
+// 86b221bb68ca4364afe81d156e54f95c), queried 2026-09-20 at
+// https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/city_of_detroit_boundary/FeatureServer/0 .
+// The real outer boundary ring has 1,090 vertices; simplified via
+// Douglas-Peucker (tolerance ~0.05mi) down to 70 points here so it's cheap
+// to embed and iterate over — verified during development to reproduce the
+// full-precision distance to the fraction-of-a-mile for every city checked
+// (Lansing, Saginaw, Bowling Green OH). The interior ring (a hole around the
+// Hamtramck/Highland Park enclaves) isn't included — it can never be the
+// nearest edge to a point outside Detroit.
+const DETROIT_BOUNDARY = [[-82.91625,42.42135],[-82.91034,42.41902],[-82.91055,42.41719],[-82.91863,42.39956],[-82.92149,42.39546],[-82.93542,42.38978],[-82.9468,42.38699],[-82.93027,42.36214],[-82.93087,42.3619],[-82.92859,42.358],[-82.92397,42.35212],[-82.94541,42.3474],[-82.95977,42.33977],[-82.98912,42.33248],[-83.01895,42.33062],[-83.06356,42.31686],[-83.07994,42.30717],[-83.0999,42.2867],[-83.11463,42.29018],[-83.11813,42.28973],[-83.11987,42.28755],[-83.11764,42.28041],[-83.11877,42.27913],[-83.13745,42.28279],[-83.16097,42.25496],[-83.16635,42.25968],[-83.16811,42.26391],[-83.16983,42.26458],[-83.15816,42.27884],[-83.167,42.28957],[-83.16166,42.29178],[-83.15825,42.29202],[-83.15769,42.29496],[-83.15169,42.29626],[-83.14999,42.29583],[-83.14894,42.29341],[-83.14724,42.29257],[-83.14256,42.29441],[-83.14045,42.29775],[-83.14242,42.30569],[-83.1406,42.30668],[-83.13964,42.30866],[-83.1407,42.31101],[-83.15313,42.32809],[-83.15647,42.32724],[-83.1569,42.33696],[-83.15296,42.33759],[-83.14994,42.33984],[-83.14835,42.34469],[-83.14766,42.35192],[-83.19653,42.35089],[-83.19606,42.33644],[-83.21534,42.33614],[-83.21528,42.32902],[-83.22514,42.32881],[-83.22783,42.3326],[-83.23458,42.32984],[-83.23503,42.33584],[-83.23749,42.33574],[-83.23777,42.34309],[-83.26384,42.34169],[-83.26591,42.35705],[-83.26658,42.37879],[-83.27491,42.37859],[-83.27586,42.40728],[-83.28638,42.407],[-83.28773,42.44268],[-82.94053,42.45037],[-82.95128,42.43581],[-82.91625,42.42135]];
+
+// Local equirectangular projection centered near Detroit — accurate to
+// ~0.15mi against the full-precision haversine figure at the ~65-130 mile
+// distances this is actually evaluated at, more than enough for a "within
+// 75 miles" cutoff that was never a survey-grade line to begin with.
+const DB_LAT0 = 42.35;
+const DB_MILES_PER_DEG_LAT = 69.0;
+const DB_MILES_PER_DEG_LON = 69.0 * Math.cos(DB_LAT0 * Math.PI / 180);
+function dbToXY(lon, lat){
+  return [(lon + 83.4) * DB_MILES_PER_DEG_LON, (lat - DB_LAT0) * DB_MILES_PER_DEG_LAT];
+}
+function dbDistPointToSeg(px, py, ax, ay, bx, by){
+  const dx = bx - ax, dy = by - ay;
+  const len2 = dx*dx + dy*dy;
+  let t = len2 === 0 ? 0 : ((px-ax)*dx + (py-ay)*dy) / len2;
+  t = Math.max(0, Math.min(1, t));
+  const cx = ax + t*dx, cy = ay + t*dy;
+  return Math.hypot(px-cx, py-cy);
+}
+function milesFromDetroitBorder(lat, lng){
+  const [px, py] = dbToXY(lng, lat);
+  let minDist = Infinity;
+  for(let i=0; i<DETROIT_BOUNDARY.length-1; i++){
+    const [alon,alat] = DETROIT_BOUNDARY[i];
+    const [blon,blat] = DETROIT_BOUNDARY[i+1];
+    const [ax,ay] = dbToXY(alon,alat), [bx,by] = dbToXY(blon,blat);
+    const d = dbDistPointToSeg(px,py,ax,ay,bx,by);
+    if(d < minDist) minDist = d;
+  }
+  return minDist;
 }
 
 // Real, sourced Detroit events, Aug 19 - Oct 31 2026.
@@ -5173,9 +5243,10 @@ let originLocation = null;
 // UI, this is the widest tier and the default. It is NOT narrowed by
 // whatever origin the user searched (that's what makes it the widest tier),
 // but matchesFilters() still hard-caps it at 75 miles from Detroit's own
-// city center specifically — the fixed definition of the Detroit Orbit
-// boundary, per SERVICE_AREA.md — so results can never drift outside the
-// site's real coverage area regardless of the chosen origin. A separate
+// city BORDER specifically (switched 2026-09-20 from a center-point
+// measurement) — the fixed definition of the Detroit Orbit boundary, per
+// SERVICE_AREA.md — so results can never drift outside the site's real
+// coverage area regardless of the chosen origin. A separate
 // literal "75 mi" option (measured from the user's origin, like the other
 // numeric tiers) used to exist alongside it, which was a redundant way of
 // saying almost the same boundary twice; removed 2026-08-26 in favor of
@@ -5431,11 +5502,12 @@ function matchesNonDateFilters(e){
     if(radiusMiles === 'all'){
       // Detroit Orbit: not narrowed by the chosen origin location itself
       // (that's what makes it the widest tier), but still hard-capped at 75
-      // miles from Detroit's own city center — the fixed definition of the
-      // Detroit Orbit boundary — so results never drift outside the site's
-      // real coverage area no matter where the user searched from.
-      const detroit = CITY_LOOKUP.get('detroit');
-      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
+      // miles from Detroit's own city BORDER (switched 2026-09-20 from a
+      // center-point measurement, see the DETROIT_BOUNDARY comment above)
+      // — the fixed definition of the Detroit Orbit boundary — so results
+      // never drift outside the site's real coverage area no matter where
+      // the user searched from.
+      if(milesFromDetroitBorder(loc.lat, loc.lng) > 75) return false;
     } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
       return false;
     }
@@ -5528,18 +5600,18 @@ function matchesFilters(e){
   return true;
 }
 
-// Is this event within 75 miles of Detroit's own center — the fixed
-// definition of "the Detroit Orbit"? Unlike the Detroit-Orbit branch inside
-// matchesFilters() above, this is NOT gated on the visitor having picked an
-// origin location or radius; it backs the homepage hero's "N things
-// happening today in the Detroit Orbit" stat, which is meant to be a
-// constant, site-wide count, not something that changes as someone filters
-// the calendar below it.
+// Is this event within 75 miles of Detroit's own border — the fixed
+// definition of "the Detroit Orbit"? (Switched 2026-09-20 from a
+// center-point measurement, see the DETROIT_BOUNDARY comment above.) Unlike
+// the Detroit-Orbit branch inside matchesFilters() above, this is NOT gated
+// on the visitor having picked an origin location or radius; it backs the
+// homepage hero's "N things happening today in the Detroit Orbit" stat,
+// which is meant to be a constant, site-wide count, not something that
+// changes as someone filters the calendar below it.
 function isInDetroitOrbit(e){
   const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
   if(!loc) return false;
-  const detroit = CITY_LOOKUP.get('detroit');
-  return haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) <= 75;
+  return milesFromDetroitBorder(loc.lat, loc.lng) <= 75;
 }
 
 // Generic version of the above, parameterized on an arbitrary origin/radius

@@ -28,11 +28,15 @@ create table if not exists venues (
   id          uuid primary key default gen_random_uuid(),
   name        text not null,
   address     text,
-  city        text not null default 'Detroit',        -- Any city within ~75 miles of Detroit (the site's
-                                                        -- service area — see SERVICE_AREA.md). Was
-                                                        -- previously constrained to Detroit/Hamtramck/
-                                                        -- Highland Park only; that restriction was lifted
-                                                        -- 2026-08 to match the Census-defined 75-mile radius.
+  city        text not null default 'Detroit',        -- Any city within 75 miles of Detroit's actual city
+                                                        -- BORDER, not its center point (the site's service
+                                                        -- area — see SERVICE_AREA.md). Was previously
+                                                        -- constrained to Detroit/Hamtramck/Highland Park
+                                                        -- only; lifted 2026-08 to a 75-mile radius from
+                                                        -- Detroit's center matching the Census-defined
+                                                        -- regional radius, then switched 2026-09-20 to
+                                                        -- measure from Detroit's real border instead (same
+                                                        -- 75-mile figure, more honest reference point).
   website     text,
   lat         double precision,
   lng         double precision,

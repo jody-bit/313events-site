@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
 // Discovery API and upserts them straight into Supabase as status='approved'
@@ -68,22 +69,37 @@ function affiliateTicketUrl(eventUrl) {
 
 
 // Geographic radius search, not a city allowlist — 313.events' coverage area
-// is a 75-mile radius from Detroit's center (see SERVICE_AREA.md), which pulls
-// in dozens of cities/townships (Ann Arbor, Pontiac, Windsor ON, Toledo OH,
-// etc.) that a hardcoded city list would have silently dropped.
+// is 75 miles from Detroit's actual city BORDER, not its center point
+// (switched 2026-09-20 — see SERVICE_AREA.md and api/_lib/detroit-boundary.js
+// for the full reasoning). This pulls in dozens of cities/townships (Ann
+// Arbor, Pontiac, Windsor ON, Toledo OH, Lansing, etc.) that a hardcoded
+// city list would have silently dropped.
 //
 // Verified against Ticketmaster's own Discovery API docs (2026-08-25):
 // latlong+radius+unit is real and currently works (default radius is even
-// 100 "miles", so 75 fits), and size=200 * page<5 stays under their
+// 100 "miles", so this fits), and size=200 * page<5 stays under their
 // "size*page < 1000" deep-paging cap. One thing to revisit later: the docs
 // flag `latlong` as "maybe removed in a future release, please use geoPoint
 // instead" (a geohash string) — not urgent since it still works today, but
-// worth switching before Ticketmaster actually pulls the plug. Center point
-// and radius match SERVICE_AREA.md exactly so this stays in sync with that
-// document if the radius or center ever changes.
+// worth switching before Ticketmaster actually pulls the plug.
 const CENTER_LAT = 42.3314;
 const CENTER_LON = -83.0458;
+// The real service-area cutoff — 75 miles from Detroit's actual city
+// border. Enforced precisely per-event below, in shapeForDb(), via
+// milesFromDetroitBorder() against each venue's own coordinates. Matches
+// SERVICE_AREA.md exactly so this stays in sync with that document if the
+// radius or boundary source ever changes.
 const RADIUS_MILES = 75;
+// Ticketmaster's API only accepts a single center point + radius, so this
+// is deliberately wider than RADIUS_MILES: an over-fetch buffer, not the
+// real cutoff. A border-based service area reaches farther than a center-
+// based circle of the same stated radius in every direction (border points
+// are always at least as close to an outside location as the center is),
+// and the biggest gap measured across a dozen checked directions during
+// development (Milford, MI) was ~14.6mi — 90 leaves comfortable margin
+// above that. This radius only controls what Ticketmaster bothers sending
+// us; the real 75-mile-from-border line is drawn afterward, in code.
+const TM_QUERY_RADIUS_MILES = 90;
 
 // Ticketmaster segment/genre -> this calendar's category keys.
 // Sports was excluded from day one (out of scope for an arts/culture/
@@ -160,7 +176,7 @@ async function fetchTicketmasterEvents() {
     const url = new URL("https://app.ticketmaster.com/discovery/v2/events.json");
     url.searchParams.set("apikey", TICKETMASTER_API_KEY);
     url.searchParams.set("latlong", `${CENTER_LAT},${CENTER_LON}`);
-    url.searchParams.set("radius", String(RADIUS_MILES));
+    url.searchParams.set("radius", String(TM_QUERY_RADIUS_MILES));
     url.searchParams.set("unit", "miles");
     url.searchParams.set("startDateTime", startDateTime);
     url.searchParams.set("endDateTime", endDateTime);
@@ -201,12 +217,26 @@ function shapeForDb(e, venueMap) {
   // being masked with a blank string.
   const venueAddress = venue0 && venue0.address ? venue0.address.line1 : null;
   // No city allowlist here on purpose — the latlong+radius params above
-  // already constrain results geographically, so every venue Ticketmaster
-  // returns is already within the 75-mile service area. venueCity IS still
-  // captured (into venue_city_raw below) so the site can display it — a
-  // 75-mile radius pulls in Rochester Hills, Sterling Heights, Clarkston,
-  // etc., and without a visible city label those all silently read as
-  // Detroit on the calendar. See migration_006.
+  // constrain results geographically (with a wider buffer than the real
+  // cutoff — see TM_QUERY_RADIUS_MILES above), so every venue Ticketmaster
+  // returns is already roughly in range. venueCity IS still captured (into
+  // venue_city_raw below) so the site can display it — this radius pulls in
+  // Rochester Hills, Sterling Heights, Clarkston, etc., and without a
+  // visible city label those all silently read as Detroit on the calendar.
+  // See migration_006.
+  //
+  // The real 75-mile-from-Detroit's-border cutoff (switched 2026-09-20 from
+  // a center-point measurement — see SERVICE_AREA.md) is enforced right
+  // here, against the venue's own coordinates, since TM_QUERY_RADIUS_MILES
+  // above is deliberately looser than the true boundary. A venue with no
+  // location data from Ticketmaster (rare) falls back to trusting TM's own
+  // radius search rather than guessing — conservative, not lax, given that
+  // search already over-fetches.
+  const venueLat = venue0 && venue0.location ? parseFloat(venue0.location.latitude) : null;
+  const venueLng = venue0 && venue0.location ? parseFloat(venue0.location.longitude) : null;
+  if (venueLat != null && venueLng != null && !Number.isNaN(venueLat) && !Number.isNaN(venueLng)) {
+    if (milesFromDetroitBorder(venueLat, venueLng) > RADIUS_MILES) return null;
+  }
 
   const start = e.dates && e.dates.start;
   if (!start || !start.localDate) return null;
