@@ -102,8 +102,12 @@
   .venue-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
   .venue-address{display:block;font-size:13px;color:var(--accent);text-decoration:none;margin:10px 0;}
   .venue-address:hover{text-decoration:underline;}
-  .venue-website{display:block;font-size:13.5px;color:var(--ink);text-decoration:none;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:18px;}
+  .venue-links{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line);}
+  .venue-website{display:block;font-size:13.5px;color:var(--ink);text-decoration:none;margin-bottom:8px;}
   .venue-website:hover{color:var(--accent);}
+  .venue-socials{display:flex;flex-wrap:wrap;gap:14px;}
+  .venue-social-link{font-size:13.5px;color:var(--ink);text-decoration:none;}
+  .venue-social-link:hover{color:var(--accent);}
 
   .venue-upcoming-heading{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:14px;
@@ -141,7 +145,10 @@
       <h1 class="venue-title" id="venueTitle"></h1>
       <div class="venue-meta" id="venueWhere"></div>
       <a class="venue-address" id="venueAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
-      <a class="venue-website" id="venueWebsite" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
+      <div class="venue-links" id="venueLinks" style="display:none;">
+        <a class="venue-website" id="venueWebsite" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
+        <div class="venue-socials" id="venueSocials"></div>
+      </div>
 
       <h2 class="venue-upcoming-heading">Upcoming events</h2>
       <div id="venueEvents"></div>
@@ -233,12 +240,31 @@ function renderVenue(v, events){
     addrEl.textContent = `📍 ${v.address} — Get directions`;
     addrEl.style.display = 'block';
   }
+  const linksWrap = document.getElementById('venueLinks');
+  let anyLink = false;
   const webEl = document.getElementById('venueWebsite');
   if(v.website && safeUrl(v.website)){
     webEl.href = safeUrl(v.website);
     webEl.textContent = `🔗 ${v.website.replace(/^https?:\/\//,'').replace(/\/$/,'')}`;
     webEl.style.display = 'block';
+    anyLink = true;
   }
+  // Social links — same "only show what's actually confirmed" rule as
+  // website: an empty/missing platform just doesn't render, never a
+  // placeholder or guessed handle.
+  const SOCIALS = [
+    { key: 'instagram_url', icon: '📷', label: 'Instagram' },
+    { key: 'facebook_url',  icon: '📘', label: 'Facebook' },
+    { key: 'tiktok_url',    icon: '🎵', label: 'TikTok' },
+    { key: 'twitter_url',   icon: '🐦', label: 'X / Twitter' },
+  ];
+  const socialsEl = document.getElementById('venueSocials');
+  const socialLinks = SOCIALS.filter(s => v[s.key] && safeUrl(v[s.key]));
+  socialsEl.innerHTML = socialLinks
+    .map(s => `<a class="venue-social-link" href="${escapeHtml(safeUrl(v[s.key]))}" target="_blank" rel="noopener noreferrer">${s.icon} ${s.label}</a>`)
+    .join('');
+  if(socialLinks.length) anyLink = true;
+  if(anyLink) linksWrap.style.display = 'block';
 
   const listEl = document.getElementById('venueEvents');
   if(!events.length){
@@ -274,6 +300,9 @@ function renderVenue(v, events){
     ld.address = { "@type": "PostalAddress", "addressLocality": v.city || "Detroit", "addressRegion": "MI" };
     if(v.address) ld.address.streetAddress = v.address;
   }
+  const sameAs = [v.website, v.instagram_url, v.facebook_url, v.tiktok_url, v.twitter_url]
+    .map(u => safeUrl(u)).filter(Boolean);
+  if(sameAs.length) ld.sameAs = sameAs;
   const ldScript = document.createElement('script');
   ldScript.type = 'application/ld+json';
   ldScript.textContent = JSON.stringify(ld);
@@ -289,7 +318,7 @@ async function init(){
   }
   const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   try {
-    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,website,neighborhood_id`;
+    const venueUrl = `${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(id)}&select=id,name,address,city,website,instagram_url,facebook_url,tiktok_url,twitter_url,neighborhood_id`;
     const venueResp = await fetch(venueUrl, { headers });
     if(!venueResp.ok) throw new Error('fetch failed');
     const venueRows = await venueResp.json();
@@ -313,6 +342,10 @@ async function init(){
       address: row.address ? decodeEntities(row.address) : undefined,
       city: row.city ? decodeEntities(row.city) : undefined,
       website: row.website || undefined,
+      instagram_url: row.instagram_url || undefined,
+      facebook_url: row.facebook_url || undefined,
+      tiktok_url: row.tiktok_url || undefined,
+      twitter_url: row.twitter_url || undefined,
       neighborhood: neighborhoodName,
     };
 
