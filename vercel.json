@@ -110,7 +110,7 @@
       "maxDuration": 60
     },
     "api/cron-detroitmonthofdesign.js": {
-      "maxDuration": 60
+      "maxDuration": 180
     },
     "api/cron-planetanttheatre.js": {
       "maxDuration": 60

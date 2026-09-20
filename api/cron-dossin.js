@@ -55,8 +55,19 @@ const MONTHS = {
   july: "07", august: "08", september: "09", october: "10", november: "11", december: "12",
 };
 
-const DATE_LINE = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/;
-const TIME_LINE = /^(\d{1,2}:\d{2}\s*[ap]m)\s*-\s*(\d{1,2}:\d{2}\s*[ap]m)$/i;
+// Live layout, confirmed 2026-09-20 by fetching detroithistorical.org/events
+// and diffing its real line-by-line text against this file's regexes: each
+// event renders as four consecutive lines — TITLE, then VENUE NAME, then a
+// single combined "Month D, YYYY, H:MMam - H:MMpm" line, then a "LEARN MORE"
+// link. The date and time sit on ONE line together, not two separate lines
+// the way the original DATE_LINE/TIME_LINE pair assumed — that assumption
+// was simply wrong from the start (not a site change since this was
+// written), so DATE_LINE never matched a single real line and this scraper
+// has upserted zero rows on every run since it existed, despite returning a
+// clean 200 every time (confirmed via Vercel's own logs: three straight
+// scheduled runs, all 200, with nothing ever written — a silent failure,
+// not a crashing one). Root-caused 2026-09-20.
+const TITLE_DATE_TIME_LINE = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})(?:,\s*(\d{1,2}:\d{2}\s*(?:am|pm)?)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm)))?\s*$/i;
 const NOISE_LINE = /^(home|about|events|calendar|tickets?|buy tickets|membership|donate|contact|newsletter|subscribe|instagram|facebook|shop|visit|hours|admission)$/i;
 
 // Decodes HTML entities in scraped text. The previous version only handled
@@ -89,41 +100,40 @@ function htmlToLines(html) {
 function parseDossinEvents(html) {
   const lines = htmlToLines(html);
   const events = [];
-  let pendingTitle = null;
-  let pendingDate = null;
 
+  // Walk the lines looking for the combined date/time line, then look
+  // backward two lines for VENUE and TITLE — the real, confirmed order on
+  // this page (see TITLE_DATE_TIME_LINE's comment above). This replaces the
+  // old forward-looking state machine, which never worked because it
+  // expected date and time on separate lines.
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const dtMatch = lines[i].match(TITLE_DATE_TIME_LINE);
+    if (!dtMatch) continue;
 
-    const dateMatch = line.match(DATE_LINE);
-    if (dateMatch) {
-      const month = MONTHS[dateMatch[1].toLowerCase()];
-      if (month) {
-        pendingDate = { date: `${dateMatch[3]}-${month}-${dateMatch[2].padStart(2, "0")}`, time: null };
+    const month = MONTHS[dtMatch[1].toLowerCase()];
+    if (!month) continue;
+
+    const venueLine = lines[i - 1];
+    const titleLine = lines[i - 2];
+    if (!venueLine || !VENUE_MATCH.test(venueLine)) continue; // not a Dossin event — skip
+    if (!titleLine || NOISE_LINE.test(titleLine) || titleLine.length < 3 || titleLine.length > 140) continue;
+
+    const date = `${dtMatch[3]}-${month}-${dtMatch[2].padStart(2, "0")}`;
+    let time = null;
+    if (dtMatch[4] && dtMatch[5]) {
+      let start = dtMatch[4].trim();
+      const end = dtMatch[5].trim();
+      // Some entries omit am/pm on the start time when it shares the end
+      // time's period (e.g. "1:00 - 2:30pm" means 1:00pm-2:30pm) — infer it
+      // from the end time rather than leaving it ambiguous.
+      if (!/am|pm/i.test(start)) {
+        const suffix = end.match(/am|pm/i);
+        if (suffix) start += suffix[0];
       }
-      continue;
+      time = `${start} – ${end}`;
     }
 
-    if (pendingDate) {
-      const timeMatch = line.match(TIME_LINE);
-      if (timeMatch) {
-        pendingDate.time = `${timeMatch[1]} – ${timeMatch[2]}`;
-        continue;
-      }
-      // A nearby line naming the venue confirms/attributes this event and
-      // closes out the block, whether or not a time line was present.
-      if (VENUE_MATCH.test(line)) {
-        if (pendingTitle) {
-          events.push({ title: pendingTitle, date: pendingDate.date, time: pendingDate.time });
-        }
-        pendingTitle = null;
-        pendingDate = null;
-        continue;
-      }
-    }
-
-    if (NOISE_LINE.test(line) || line.length < 3 || line.length > 140) continue;
-    if (!pendingDate) pendingTitle = line; // most recent non-noise line before a date is the title
+    events.push({ title: titleLine, date, time });
   }
 
   return events;
