@@ -163,7 +163,7 @@ module.exports = async (req, res) => {
 
   const {
     title, category, description, imageUrl, startDate, endDate, startTime,
-    recurring, venue, address, venueTba, admission, price, ticketUrl, eventUrl,
+    recurring, clothingOptional, venue, address, venueTba, admission, price, ticketUrl, eventUrl,
     orgName, contactEmail, companyWebsite, elapsedMs,
   } = body;
 
@@ -255,6 +255,11 @@ module.exports = async (req, res) => {
     end_date: endDate || null,
     time_display: formatTimeDisplay(startTime),
     is_recurring: !!recurring,
+    // See migration_034_clothing_optional.sql — a distinct, structured flag
+    // from any age restriction (which stays free-text in description, same
+    // as every other editorial caveat) because it's a fact about the event
+    // itself, not a content warning to render as prose.
+    is_clothing_optional: !!clothingOptional,
     is_free: isFree,
     price_from: Number.isFinite(priceFrom) ? priceFrom : null,
     ticket_url: ticketUrl || null,

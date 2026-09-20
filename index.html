@@ -4176,6 +4176,12 @@
   .evt-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
   .evt-price{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
   .evt-price.free{color:#3fbf6a;}
+  /* Content-nature descriptor, distinct from category/price and from the
+     italic editorial .note line below — a plain fact about the event
+     ("what you'll see there"), not a caveat or a warning, so it gets a
+     neutral outlined badge rather than a loud color. See
+     migration_034_clothing_optional.sql. */
+  .evt-tag-clothing-optional{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:2px 7px;margin-top:6px;}
 
   @media (max-width:640px){
     /* Time + category/price move above the title instead of framing it on
@@ -6254,6 +6260,7 @@ function renderList(dateList, meta){
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.clothingOptional?`<div class="evt-tag-clothing-optional">Clothing optional</div>`:''}
                 ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
                 ${multiDayNoteHtml(e)}
                 ${editorialLinkHtml(e)}
@@ -7601,6 +7608,10 @@ function mapSupabaseRow(row) {
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
+    // See migration_034_clothing_optional.sql — a distinct content-nature
+    // flag from any age restriction (which stays free-text in note/
+    // description, same as every other editorial caveat).
+    clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
     note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
@@ -7654,7 +7665,7 @@ async function loadSupabaseEvents() {
     // neighborhood via the real venue_id -> neighborhoods join. This
     // replaces what used to be a separate loadNeighborhoodData() fetch of
     // every venue and every neighborhood on every page load.
-    const url = `${SUPABASE_URL}/rest/v1/events_public?start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from&order=start_date.asc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/events_public?start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from,is_clothing_optional&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,

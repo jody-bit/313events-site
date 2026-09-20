@@ -886,6 +886,10 @@ function eventFormHtml(a) {
           <input type="checkbox" id="ef-free-${a.id}">
           <label style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;">Free event</label>
         </div>
+        <div class="ef-checkbox">
+          <input type="checkbox" id="ef-clothingoptional-${a.id}">
+          <label style="margin:0;text-transform:none;letter-spacing:0;font-size:13px;">Clothing optional</label>
+        </div>
         <div>
           <label>Price from (optional)</label>
           <input type="number" step="0.01" min="0" id="ef-price-${a.id}" placeholder="e.g. 25">
@@ -928,6 +932,7 @@ async function submitEditorialEvent(id) {
     imageUrl: val('imageurl'),
     description: val('description'),
     isFree: document.getElementById(`ef-free-${id}`).checked,
+    isClothingOptional: document.getElementById(`ef-clothingoptional-${id}`).checked,
     priceFrom: val('price'),
   };
 

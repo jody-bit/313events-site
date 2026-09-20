@@ -249,7 +249,7 @@ module.exports = async (req, res) => {
     const ev = body.event || {};
     const {
       title, category, description, venue, address, city, startDate, endDate,
-      timeDisplay, isFree, priceFrom, ticketUrl, eventUrl, imageUrl,
+      timeDisplay, isFree, isClothingOptional, priceFrom, ticketUrl, eventUrl, imageUrl,
     } = ev;
 
     const errors = [];
@@ -282,6 +282,8 @@ module.exports = async (req, res) => {
       end_date: endDate || null,
       time_display: timeDisplay || null,
       is_free: !!isFree,
+      // See migration_034_clothing_optional.sql.
+      is_clothing_optional: !!isClothingOptional,
       price_from: Number.isFinite(parsedPrice) ? parsedPrice : null,
       ticket_url: ticketUrl || null,
       // Separate field from ticket_url — see migration_022_event_url.sql.

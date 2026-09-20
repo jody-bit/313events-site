@@ -142,6 +142,10 @@
   .btn-secondary:hover{background:var(--panel-hover);}
 
   .evt-detail-desc{font-size:15.5px;color:var(--ink);white-space:pre-line;margin-bottom:24px;}
+  /* Content-nature descriptor, distinct from the italic editorial note
+     below — a plain fact about the event, not a caveat. See
+     migration_034_clothing_optional.sql. */
+  .evt-tag-clothing-optional{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:3px 8px;margin-bottom:16px;}
   .evt-detail-note{font-size:13.5px;color:#d1b34a;font-style:italic;margin-bottom:20px;}
   .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;}
 
@@ -250,6 +254,7 @@
       <div class="evt-detail-actions" id="evtActions"></div>
 
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
+      <div class="evt-tag-clothing-optional" id="evtClothingOptional" style="display:none;">Clothing optional</div>
       <div class="evt-detail-note" id="evtNote" style="display:none;"></div>
       <div class="evt-resale-box" id="evtResale" style="display:none;"></div>
       <a class="evt-editorial" id="evtEditorial" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
@@ -534,6 +539,8 @@ function mapRow(row){
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
+    // See migration_034_clothing_optional.sql.
+    clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
     note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
@@ -668,6 +675,9 @@ function renderEvent(e){
     d.textContent = e.description;
     d.style.display = 'block';
   }
+  if(e.clothingOptional){
+    document.getElementById('evtClothingOptional').style.display = 'inline-block';
+  }
   if(e.note){
     const n = document.getElementById('evtNote');
     n.textContent = e.note;
@@ -784,7 +794,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();
