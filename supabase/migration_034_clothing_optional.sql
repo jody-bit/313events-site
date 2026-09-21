@@ -38,6 +38,14 @@ alter table events add column if not exists is_clothing_optional boolean not nul
 -- why), so a new events column is invisible to the public site until it's
 -- added here too. Full column list copied from migration_025, plus the one
 -- new line.
+--
+-- IMPORTANT: Postgres's CREATE OR REPLACE VIEW will not let you insert a
+-- new column in the middle of the select list — every existing column has
+-- to keep its ordinal position, or Postgres reads it as an attempt to
+-- rename whatever column now lands in that slot (hence: "cannot change
+-- name of view column "venue_name" to "is_clothing_optional"" when
+-- is_clothing_optional was first placed before venue_name/venue_city). A
+-- new column is only safe to add at the very end of the list.
 create or replace view events_public as
 select
   e.id,
@@ -55,10 +63,10 @@ select
   e.ticket_url,
   e.event_url,
   e.venue_id,
-  e.is_clothing_optional,
   coalesce(v.name, e.venue_name_raw) as venue_name,
   coalesce(v.city, e.venue_city_raw) as venue_city,
-  n.name as neighborhood
+  n.name as neighborhood,
+  e.is_clothing_optional
 from events e
 left join venues v on v.id = e.venue_id
 left join neighborhoods n on n.id = v.neighborhood_id
