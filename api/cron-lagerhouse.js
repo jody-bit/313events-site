@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls Lager House (Corktown, Detroit) shows straight from
 // thelagerhouse.com/events. Added 2026-09-02 at Jody's request ("We must add
 // in Lager house events to the database").
@@ -76,7 +77,7 @@ function timingSafeStringEqual(a, b) {
 
 
 const SOURCE_URL = "https://thelagerhouse.com/events";
-const SOURCE_SLUG = "lagerhouse"; // WP 0.5 source_runs identifier -- see api/_lib/run-log.js
+const SOURCE_SLUG = SLUGS.lagerhouse; // canonical slug -- see api/_lib/source-slugs.js
 const VENUE_NAME = "Lager House";
 const SISTER_ROOM_NAME = "After Hours @ Brooklyn Detroit";
 const SISTER_ROOM_MATCH = /after hours @ brooklyn detroit/i;

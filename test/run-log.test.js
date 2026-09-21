@@ -200,6 +200,21 @@ async function run() {
   }
   console.log("PASS: sanitizeErrorSample truncates long text and redacts credential-shaped substrings");
 
+  // --- 10. an unknown/typo'd source_slug is rejected, never throws, never calls fetch ---
+  await withEnv({ SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "test-key" }, async () => {
+    const { startRun } = freshRunLog();
+    let fetchCalled = false;
+    global.fetch = async () => { fetchCalled = true; throw new Error("should not be called"); };
+
+    const handle = await startRun("lager-house"); // plausible typo of the real "lagerhouse" slug
+    assert.strictEqual(handle, null, "an unknown source_slug must resolve to null, not throw");
+    assert.strictEqual(fetchCalled, false, "no fetch call should be made for an unknown source_slug");
+
+    const handle2 = await startRun(undefined);
+    assert.strictEqual(handle2, null, "a missing source_slug must also resolve to null, not throw");
+  });
+  console.log("PASS: an unknown/typo'd source_slug is rejected by startRun without throwing or calling fetch (see api/_lib/source-slugs.js)");
+
   console.log("\nAll run-log.js tests passed.");
 }
 

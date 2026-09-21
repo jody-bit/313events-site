@@ -48,6 +48,8 @@ function supabaseServiceRoleKey() {
   return process.env.SUPABASE_SERVICE_ROLE_KEY;
 }
 
+const { isKnownSourceSlug } = require("./source-slugs");
+
 const RUN_LOG_FETCH_TIMEOUT_MS = 5000;
 const ERROR_SAMPLE_MAX_LEN = 500;
 
@@ -84,6 +86,15 @@ function configured() {
 // proceed with their normal work; do not gate ingestion on this.
 async function startRun(sourceSlug) {
   const startedAtMs = Date.now();
+  // Fail-safe by design (see module header): an unknown/typo'd slug must
+  // never crash or block the connector's real ingestion work. It just
+  // means this run isn't logged, with a bounded diagnostic saying why —
+  // see api/_lib/source-slugs.js for the canonical list a connector should
+  // be importing its slug from.
+  if (!isKnownSourceSlug(sourceSlug)) {
+    console.warn(`[run-log] startRun called with unknown source_slug "${sourceSlug}" — skipping run logging (see api/_lib/source-slugs.js)`);
+    return null;
+  }
   if (!configured()) return null;
   try {
     const resp = await fetch(`${supabaseUrl()}/rest/v1/source_runs`, {
