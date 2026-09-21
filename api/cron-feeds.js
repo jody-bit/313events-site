@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair } = require("./_lib/venue-lookup");
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
 // admin.html/api/admin-feeds.js) and upserts what it finds into `events`.
@@ -187,7 +187,7 @@ function formatIcsTime(hour, minute) {
 // scoped to one feed_source (which supplies venue name + default category —
 // v1 assumes one feed = one venue, same assumption every single-venue cron
 // in this project already makes, e.g. cron-cinema-detroit.js's VENUE_NAME).
-function icsEventsToRows(icsEvents, feedSource, venueMap) {
+function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap) {
   const rows = [];
   for (const ev of icsEvents) {
     if (!ev.dtstart) continue; // no start date at all — can't place this on the calendar
@@ -204,7 +204,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap) {
 
     const uidOrHash = ev.uid || `${start.date}-${(ev.summary || "").slice(0, 40)}`;
 
-    rows.push({
+    const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
       description: ev.description ? ev.description.slice(0, 1000) : null,
@@ -214,6 +214,11 @@ function icsEventsToRows(icsEvents, feedSource, venueMap) {
       // this feed's self-reported venue_name happens to match one already
       // in the database; never creates or guesses a fuzzy one.
       venue_id: resolveVenueId(venueMap, feedSource.venue_name),
+      // Filled below by SH.1's resolveVenueAddressCityRepair when this
+      // feed's venue is already known to 313.events; stays null otherwise
+      // (unresolved), same honest-gap convention as venue_id above.
+      venue_address_raw: null,
+      venue_city_raw: null,
       start_date: start.date,
       // All-day multi-day spans only (start.hour === null) — a timed event's
       // DTEND is just its own end time, already folded into time_display
@@ -233,7 +238,21 @@ function icsEventsToRows(icsEvents, feedSource, venueMap) {
       // Times, which lands pending_review because IT is an unvetted general
       // calendar, not a single approved venue.
       feed_source_id: feedSource.id,
-    });
+    };
+
+    // SH.1 (Metadata Self-Healing, 2026-09-21) — this connector has always
+    // set venue_name_raw (and venue_id, when resolvable) per row but never
+    // populated venue_address_raw/venue_city_raw, even when the feed's own
+    // venue is already known to 313.events. Purely additive: the two
+    // fields above start null, so this can only ever fill them in, never
+    // overwrite anything this function itself just produced. See
+    // api/_lib/venue-lookup.js's resolveVenueAddressCityRepair for the
+    // exact/no-fuzzy repair rules (canonical venue_id match, then exact
+    // canonical name match, then exact learned historical match — never a
+    // guess).
+    Object.assign(row, resolveVenueAddressCityRepair(row, venueDetailsMaps, learnedVenueMap));
+
+    rows.push(row);
   }
   return rows;
 }
@@ -290,6 +309,10 @@ module.exports = async (req, res) => {
   // See api/_lib/venue-lookup.js — one lookup for the whole run, reused
   // across every approved feed source below.
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  // SH.1 (Metadata Self-Healing) — same one-lookup-per-run pattern, for
+  // venue_address_raw/venue_city_raw repair. See api/_lib/venue-lookup.js.
+  const venueDetailsMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   for (const feedSource of feedSources) {
     let pollResult;
@@ -305,7 +328,7 @@ module.exports = async (req, res) => {
         } else {
           const text = await r.text();
           const icsEvents = parseIcsEvents(text);
-          const rows = icsEventsToRows(icsEvents, feedSource, venueMap);
+          const rows = icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap);
 
           if (!rows.length) {
             pollResult = "Fetched OK — 0 events found (feed may be empty, all-past, or in an unsupported shape)";
