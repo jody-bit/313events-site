@@ -181,6 +181,20 @@ Sonnet 5 (default) — defined features, UI, forms/filters, individual adapters,
 
 ---
 
+### BUG-002 — Detroit Historical Society/Dossin: adjacent-line date/time parsing gap
+
+- **Type:** BUG · **Status:** REVIEW (fix implemented + verified against live production data, awaiting PO acceptance) · **Priority:** High
+- **Epic:** EPIC-001 · **Recommended Model:** Sonnet 5
+- **Dependencies:** None.
+- **Discovered:** 2026-09-21, during the production ingestion-health incident triage (8 of 51 smoke checks failing). Distinct from the 2026-09-20 fix (`69e42b9`) already applied to this same file for a different, now-resolved defect (that one assumed date/time were never split at all; the site turned out to still split them, just differently than first diagnosed).
+- **Problem/User Need:** `cron-dossin.js`'s `DATE_LINE` regex (then named `TITLE_DATE_TIME_LINE`) required an event's start time and end time to appear on one combined line. Reproduced live on 2026-09-21: the site actually renders the start date/time and the "- end time" as two separate lines/elements, so the regex never matched anything and the connector silently upserted zero rows on every run — exactly what the source-freshness smoke check was catching.
+- **Acceptance Criteria:** current live markup produces events; start time parses correctly; end time parses correctly when it's on the line immediately after the start line; the old single-line combined format still works if it's ever used again; an unrecognized month name or an out-of-range day is skipped rather than producing a bad row; connector reaches a valid write payload.
+- **Implementation Notes:** fixed in `api/cron-dossin.js` — `DATE_LINE` now accepts a start time with no same-line end time, then checks the next line for a bare `- H:MMam/pm` continuation. Verified against a local fixture (`test/cron-dossin-parse.test.js`, `node test/cron-dossin-parse.test.js`) and independently re-verified by re-running the fixed parsing logic against the live `detroithistorical.org/events` page: 5 Dossin events now parse correctly (0 before the fix).
+- **Discovered Work:** —
+- **Product Decisions Required:** none — implementation-level fix, no policy/scope question.
+
+---
+
 ## Tech debt
 
 ### DEBT-001 — Detroit Orbit boundary is not enforced server-side outside cron-ticketmaster.js

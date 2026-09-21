@@ -58,16 +58,23 @@ const MONTHS = {
 // Live layout, confirmed 2026-09-20 by fetching detroithistorical.org/events
 // and diffing its real line-by-line text against this file's regexes: each
 // event renders as four consecutive lines — TITLE, then VENUE NAME, then a
-// single combined "Month D, YYYY, H:MMam - H:MMpm" line, then a "LEARN MORE"
-// link. The date and time sit on ONE line together, not two separate lines
-// the way the original DATE_LINE/TIME_LINE pair assumed — that assumption
-// was simply wrong from the start (not a site change since this was
-// written), so DATE_LINE never matched a single real line and this scraper
-// has upserted zero rows on every run since it existed, despite returning a
-// clean 200 every time (confirmed via Vercel's own logs: three straight
-// scheduled runs, all 200, with nothing ever written — a silent failure,
-// not a crashing one). Root-caused 2026-09-20.
-const TITLE_DATE_TIME_LINE = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})(?:,\s*(\d{1,2}:\d{2}\s*(?:am|pm)?)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm)))?\s*$/i;
+// date/time block, then a "LEARN MORE" link.
+//
+// BUG-002, 2026-09-21 (production incident): the 2026-09-20 fix above
+// assumed the date and time always sit on ONE combined line
+// ("Month D, YYYY, H:MMam - H:MMpm"). Re-verified live during the 2026-09-21
+// incident triage by re-running this exact parsing code against the current
+// page: 0 events parsed despite Dossin rows clearly present in the raw HTML.
+// The real cause: the site now (still, per a second live check) splits the
+// start date/time and the end time across TWO separate lines —
+// "September 19, 2026, 10:00am" then "- 2:00pm" immediately after — not one
+// combined line. DATE_LINE below now accepts a start time with no end time
+// on the same line, and — when that happens — checks whether the very next
+// line is just an end-time continuation ("- H:MMpm") and uses it if so. The
+// old single-line combined shape is still accepted too (harmless either way,
+// and cheap insurance if the site's template varies or reverts).
+const DATE_LINE = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})(?:,\s*(\d{1,2}:\d{2}\s*(?:am|pm)?)(?:\s*[-–—]\s*(\d{1,2}:\d{2}\s*(?:am|pm)))?)?\s*$/i;
+const END_TIME_CONTINUATION_LINE = /^[-–—]\s*(\d{1,2}:\d{2}\s*(?:am|pm))\s*$/i;
 const NOISE_LINE = /^(home|about|events|calendar|tickets?|buy tickets|membership|donate|contact|newsletter|subscribe|instagram|facebook|shop|visit|hours|admission)$/i;
 
 // Decodes HTML entities in scraped text. The previous version only handled
@@ -101,17 +108,19 @@ function parseDossinEvents(html) {
   const lines = htmlToLines(html);
   const events = [];
 
-  // Walk the lines looking for the combined date/time line, then look
-  // backward two lines for VENUE and TITLE — the real, confirmed order on
-  // this page (see TITLE_DATE_TIME_LINE's comment above). This replaces the
-  // old forward-looking state machine, which never worked because it
-  // expected date and time on separate lines.
+  // Walk the lines looking for the date line, then look backward two lines
+  // for VENUE and TITLE — the real, confirmed order on this page (see
+  // DATE_LINE's comment above).
   for (let i = 0; i < lines.length; i++) {
-    const dtMatch = lines[i].match(TITLE_DATE_TIME_LINE);
+    const dtMatch = lines[i].match(DATE_LINE);
     if (!dtMatch) continue;
 
     const month = MONTHS[dtMatch[1].toLowerCase()];
-    if (!month) continue;
+    const day = parseInt(dtMatch[2], 10);
+    // Guards against malformed date text silently becoming a bad event —
+    // an unrecognized month name or an out-of-range day skips the line
+    // instead of producing a row with a garbage/wrapped date.
+    if (!month || !day || day > 31) continue;
 
     const venueLine = lines[i - 1];
     const titleLine = lines[i - 2];
@@ -119,18 +128,33 @@ function parseDossinEvents(html) {
     if (!titleLine || NOISE_LINE.test(titleLine) || titleLine.length < 3 || titleLine.length > 140) continue;
 
     const date = `${dtMatch[3]}-${month}-${dtMatch[2].padStart(2, "0")}`;
+
     let time = null;
-    if (dtMatch[4] && dtMatch[5]) {
+    if (dtMatch[4]) {
       let start = dtMatch[4].trim();
-      const end = dtMatch[5].trim();
-      // Some entries omit am/pm on the start time when it shares the end
-      // time's period (e.g. "1:00 - 2:30pm" means 1:00pm-2:30pm) — infer it
-      // from the end time rather than leaving it ambiguous.
-      if (!/am|pm/i.test(start)) {
-        const suffix = end.match(/am|pm/i);
-        if (suffix) start += suffix[0];
+      let end = dtMatch[5] ? dtMatch[5].trim() : null;
+
+      // No end time on the same line as the start time — check whether the
+      // very next line is just the end-time continuation ("- 2:00pm"),
+      // which is the real shape on the live site as of 2026-09-21 (see
+      // BUG-002 comment above).
+      if (!end) {
+        const cont = lines[i + 1] && lines[i + 1].match(END_TIME_CONTINUATION_LINE);
+        if (cont) end = cont[1].trim();
       }
-      time = `${start} – ${end}`;
+
+      if (end) {
+        // Some entries omit am/pm on the start time when it shares the end
+        // time's period (e.g. "1:00 - 2:30pm" means 1:00pm-2:30pm) — infer it
+        // from the end time rather than leaving it ambiguous.
+        if (!/am|pm/i.test(start)) {
+          const suffix = end.match(/am|pm/i);
+          if (suffix) start += suffix[0];
+        }
+        time = `${start} – ${end}`;
+      } else {
+        time = start;
+      }
     }
 
     events.push({ title: titleLine, date, time });
@@ -139,7 +163,7 @@ function parseDossinEvents(html) {
   return events;
 }
 
-module.exports = async (req, res) => {
+const handler = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -245,3 +269,6 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+module.exports = handler;
+module.exports.parseDossinEvents = parseDossinEvents; // exposed for test/cron-dossin-parse.test.js only
