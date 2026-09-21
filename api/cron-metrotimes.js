@@ -1,5 +1,12 @@
 const crypto = require("crypto");
-const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const {
+  buildVenueNameToIdMap,
+  resolveVenueId,
+  buildVenueDetailsMap,
+  buildLearnedVenueAddressCityMap,
+  resolveVenueAddressCityRepair,
+  isBlank,
+} = require("./_lib/venue-lookup");
 // Vercel Cron job — pulls Metro Times' community calendar (Gyrobase CMS).
 //
 // Metro Times' own EventSearch/listing UI is blocked by robots.txt, but its
@@ -112,6 +119,18 @@ function getMeta(html, name) {
   return m ? decodeEntities(m[1]) : null;
 }
 
+// SH.4 (Metadata Self-Healing, 2026-09-21) — same getMeta() above, but
+// treats an empty/whitespace-only content="" attribute (seen on a handful
+// of Gyrobase pages for fields the venue never filled in) the same as a
+// missing tag: null, not an empty string that would otherwise read as
+// "present but blank" to the address/city repair logic below.
+function metaOrNull(html, name) {
+  const v = getMeta(html, name);
+  if (v === null || v === undefined) return null;
+  const trimmed = String(v).trim();
+  return trimmed ? trimmed : null;
+}
+
 function nextOccurrenceOf(monthIdx, day) {
   // No year in the "When:" text — assume the nearest future occurrence of
   // that month/day (Metro Times' "recent" sitemap only lists current/
@@ -163,6 +182,16 @@ function parseEventPage(html, url) {
   // real photo — still better than no image at all).
   const imageUrl = getMeta(html, "og:image");
 
+  // SH.4 (Metadata Self-Healing, 2026-09-21) — og:street-address/og:locality
+  // are already present on every fetched event page (see this file's header
+  // note — verified live before this scraper was even written) but were
+  // never read. No additional network request: same html already in hand
+  // for og:image/title/When: above. og:region (state) is deliberately not
+  // folded into venue_city_raw — every other connector in this project
+  // stores just the city name there (e.g. "Detroit"), not "Detroit, MI".
+  const metroTimesAddress = metaOrNull(html, "og:street-address");
+  const metroTimesCity = metaOrNull(html, "og:locality");
+
   const idMatch = url.match(/-(\d+)$/);
   const id = idMatch ? idMatch[1] : url;
 
@@ -174,6 +203,11 @@ function parseEventPage(html, url) {
     time_display: first.time || null,
     ticket_url: url,
     image_url: imageUrl,
+    // SH.4 — carried through to the handler below, which decides whether
+    // to actually use them (an existing nonblank event value always wins;
+    // see the handler's precedence comment).
+    metroTimesAddress,
+    metroTimesCity,
     note: occurrences.length > 1 ? "Metro Times lists multiple dates for this listing — only the first was captured." : null,
   };
 }
@@ -301,6 +335,21 @@ module.exports = async (req, res) => {
   // Links to an existing venues row if one matches; never creates or
   // guesses a fuzzy one.
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  // SH.1 (Metadata Self-Healing) — same one-lookup-per-run pattern, used
+  // below by SH.4 as the fallback tier when Metro Times' own page has no
+  // address/city (step 3 of the precedence order in the SH.4 comment
+  // further down).
+  const canonicalVenueMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+  // SH.4 — Metro Times' own address/city per event, keyed by external_id so
+  // the precedence logic below (in the upsert-prep block, where each row's
+  // *existing* database value also has to be looked up) can find it without
+  // re-parsing or attaching non-column fields to `row` itself.
+  const metroTimesMetaByExternalId = new Map();
+  pages.filter(Boolean).forEach((e) => {
+    metroTimesMetaByExternalId.set(e.external_id, { address: e.metroTimesAddress, city: e.metroTimesCity });
+  });
 
   const rows = pages.filter(Boolean).map((e) => ({
     external_id: e.external_id,
@@ -332,27 +381,74 @@ module.exports = async (req, res) => {
     // into pending_review on the very next run. 2026-09-02 fix for the
     // status-clobbering bug — see cron-lagerhouse.js's header comment for
     // the full story.
+    //
+    // SH.4 (Metadata Self-Healing, 2026-09-21) extends this same
+    // look-up-before-write to venue_address_raw/venue_city_raw: this cron's
+    // upsert is a full-column merge-duplicates write, so any column it
+    // sends is written unconditionally, blank or not, on every run — the
+    // existing status-preserving lookup above is the established pattern
+    // in this project for exactly that hazard. Reused (one extra `select`
+    // field, not a new request) rather than adding a second lookup.
     const idList = rows.map((r) => r.external_id).join(",");
-    const existingStatusByExternalId = new Map();
+    const existingByExternalId = new Map();
     try {
       const lookupResp = await fetch(
-        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
+        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status,venue_address_raw,venue_city_raw`,
         { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
       );
       if (lookupResp.ok) {
         const existingRows = await lookupResp.json();
         if (Array.isArray(existingRows)) {
-          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+          existingRows.forEach((row) => existingByExternalId.set(row.external_id, row));
         }
       }
     } catch {
       // Lookup failed — fall through with an empty map, same as this
-      // scraper's first-ever run.
+      // scraper's first-ever run. venue_address_raw/venue_city_raw below
+      // then fall straight to the Metro Times/SH.1 tiers, same as a
+      // brand-new row would.
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+
+    // SH.4 address/city precedence, per row (never touches any other
+    // field — category/status/description/dates/times/image are untouched
+    // by this block):
+    //   1. an existing nonblank event value always wins — Metro Times
+    //      supplying a different value is never a reason to overwrite it.
+    //   2. otherwise, the authoritative og:street-address/og:locality
+    //      already extracted from this event's own fetched page.
+    //   3. otherwise, SH.1's existing canonical-venue repair (venue_id,
+    //      then exact canonical name match, then exact learned historical
+    //      match — see api/_lib/venue-lookup.js; no fuzzy matching here
+    //      either).
+    //   4. otherwise, left null — unresolved, not guessed.
+    const rowsWithStatus = rows.map((row) => {
+      const existing = existingByExternalId.get(row.external_id) || {};
+      const metroTimesMeta = metroTimesMetaByExternalId.get(row.external_id) || {};
+
+      const preRepair = {
+        venue_id: row.venue_id,
+        venue_name_raw: row.venue_name_raw,
+        venue_address_raw: !isBlank(existing.venue_address_raw)
+          ? existing.venue_address_raw
+          : (!isBlank(metroTimesMeta.address) ? metroTimesMeta.address : null),
+        venue_city_raw: !isBlank(existing.venue_city_raw)
+          ? existing.venue_city_raw
+          : (!isBlank(metroTimesMeta.city) ? metroTimesMeta.city : null),
+      };
+      const repaired = Object.assign(
+        {},
+        preRepair,
+        resolveVenueAddressCityRepair(preRepair, canonicalVenueMaps, learnedVenueMap)
+      );
+
+      return {
+        ...row,
+        status: existing.status || DEFAULT_STATUS,
+        venue_id: repaired.venue_id,
+        venue_address_raw: repaired.venue_address_raw,
+        venue_city_raw: repaired.venue_city_raw,
+      };
+    });
 
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
       method: "POST",
@@ -377,3 +473,5 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports.parseEventPage = parseEventPage; // exposed for test/cron-metrotimes-sh4.test.js only
+
