@@ -39,7 +39,7 @@ Full technical detail and rationale: `INGESTION_PLATFORM_ARCHITECTURE.md` §1 (g
 
 | WP | Status | Priority | Recommended Model | Architecture Gate | Product Owner Decision | Blocked By |
 |---|---|---|---|---|---|---|
-| 0.1 | READY | High (fixes a live crash — every run fails) | Sonnet 5 | None | — | — |
+| 0.1 | **REVIEW — FIXED, LOCAL VERIFIED, NEEDS PROD VERIFICATION** (fix implemented and unit-tested locally 2026-09-21 during the production ingestion-health incident; the deployed scheduled cron has not yet run with this fix) | High (fixes a live crash — every run fails) | Sonnet 5 | None | — | — |
 | 0.2 | READY | High (M1-class gap: cron endpoints open if env var unset) | Sonnet 5 | None | — | — |
 | 0.3 | READY | High (I1, S1 — a hung fetch can consume a whole run) | Sonnet 5 | None | — | — |
 | 0.4 | READY | High (K1, S1 — failures currently report success) | Sonnet 5 | None | — | — |
