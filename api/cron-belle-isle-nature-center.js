@@ -124,6 +124,18 @@ module.exports = async (req, res) => {
 
   const events = Array.isArray(data.events) ? data.events : [];
 
+  // See api/_lib/venue-lookup.js — links to the existing venues row if one
+  // exists, never creates or guesses a fuzzy match. Single-venue cron, so
+  // one lookup for the whole run — same pattern as cron-cinema-detroit.js/
+  // cron-dossin.js. 2026-09-21 fix (WP 0.1): this call was missing
+  // entirely — `venue_id: venueId` below referenced an undefined variable,
+  // throwing a ReferenceError on every row built, on every single run,
+  // before the upsert was ever reached. That's why Belle Isle's freshness
+  // check was red: this cron has been crashing on every invocation, not
+  // just finding nothing to write.
+  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueId = resolveVenueId(venueMap, VENUE_NAME);
+
   const rows = events
     .filter((e) => e.start_date)
     .map((e) => ({
