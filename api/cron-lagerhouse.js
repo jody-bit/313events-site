@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { startRun, finishRun } = require("./_lib/run-log");
 // Vercel Cron job — pulls Lager House (Corktown, Detroit) shows straight from
 // thelagerhouse.com/events. Added 2026-09-02 at Jody's request ("We must add
 // in Lager house events to the database").
@@ -75,6 +76,7 @@ function timingSafeStringEqual(a, b) {
 
 
 const SOURCE_URL = "https://thelagerhouse.com/events";
+const SOURCE_SLUG = "lagerhouse"; // WP 0.5 source_runs identifier -- see api/_lib/run-log.js
 const VENUE_NAME = "Lager House";
 const SISTER_ROOM_NAME = "After Hours @ Brooklyn Detroit";
 const SISTER_ROOM_MATCH = /after hours @ brooklyn detroit/i;
@@ -132,7 +134,12 @@ function parseLagerHouseEvents(html) {
     events.push({ date, slug, title, startTime, doorsSpan, priceText, description, imageUrl });
   }
 
-  return events;
+  // cards.length (WP 0.5 records_fetched) is the raw candidate count before
+  // per-card parsing/filtering; events.length (records_parsed) is only the
+  // subset that actually produced a usable event record. Kept distinct so
+  // "nothing on the page" and "the page changed and nothing parses anymore"
+  // aren't the same number.
+  return { events, cardsFound: cards.length };
 }
 
 function parsePrice(priceText) {
@@ -150,7 +157,16 @@ module.exports = async (req, res) => {
       return;
     }
   }
+  // WP 0.5: the run begins here, once the request is confirmed to be a real
+  // cron invocation (not an unauthenticated hit). See api/_lib/run-log.js
+  // for why this row is written now, before any fetch, rather than only at
+  // the end -- it is what makes a runtime-killed run (e.g. a timeout)
+  // distinguishable from a cron that never started at all.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    // startRun() above already checked these same env vars and no-opped
+    // (runHandle is null), so there is no source_runs row to finish here.
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
   }
@@ -159,17 +175,30 @@ module.exports = async (req, res) => {
   try {
     const r = await fetch(SOURCE_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, {
+        outcome: blocked ? "blocked" : "failed",
+        http_status: r.status,
+        error_sample: `Fetch failed: HTTP ${r.status}`,
+      });
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     html = await r.text();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
-  const parsed = parseLagerHouseEvents(html);
+  const { events: parsed, cardsFound } = parseLagerHouseEvents(html);
   if (!parsed.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: cardsFound,
+      records_parsed: 0,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, note: "No Lager House events parsed — the site's layout may have changed, or none are currently listed.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -215,6 +244,12 @@ module.exports = async (req, res) => {
   const rows = Array.from(seen.values());
 
   if (!rows.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: cardsFound,
+      records_parsed: parsed.length,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, note: "Parsed events but none are today or later.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -258,11 +293,32 @@ module.exports = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: cardsFound,
+        records_parsed: parsed.length,
+        records_written: 0,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, {
+      outcome: "success",
+      http_status: resp.status,
+      records_fetched: cardsFound,
+      records_parsed: parsed.length,
+      records_written: rowsWithStatus.length,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, {
+      outcome: "failed",
+      records_fetched: cardsFound,
+      records_parsed: parsed.length,
+      error_sample: err.message,
+    });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
