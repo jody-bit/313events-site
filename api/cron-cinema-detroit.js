@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls Cinema Detroit's screenings from WordPress's core
 // REST API (wp/v2/pages). Cinema Detroit (cinemadetroit.org) runs Divi, not
 // a calendar plugin — there's no /wp-json/tribe/* namespace and no `event`
@@ -44,6 +46,7 @@ function timingSafeStringEqual(a, b) {
 
 
 const API_URL = "https://cinemadetroit.org/wp-json/wp/v2/pages?per_page=100&status=publish";
+const SOURCE_SLUG = SLUGS.cinemaDetroit; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "Cinema Detroit";
 const DEFAULT_STATUS = "approved";
 
@@ -110,7 +113,13 @@ module.exports = async (req, res) => {
       return;
     }
   }
+  // WP 0.5: the run begins here, once the request is confirmed to be a
+  // real cron invocation -- see api/_lib/run-log.js.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    // startRun() above already checked these same env vars and no-opped
+    // (runHandle is null), so there is no source_runs row to finish here.
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
   }
@@ -119,16 +128,31 @@ module.exports = async (req, res) => {
   try {
     const r = await fetch(API_URL, { headers: { "User-Agent": "313.events event calendar" } });
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, {
+        outcome: blocked ? "blocked" : "failed",
+        http_status: r.status,
+        error_sample: `Fetch failed: HTTP ${r.status}`,
+      });
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     pages = await r.json();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
   if (!Array.isArray(pages)) {
+    // Not the same as a legitimate zero-record run (see the !parsed.length
+    // branch below) -- the API returned something that isn't a pages list
+    // at all, so records_fetched can't be trusted. Treat it as a failure,
+    // not a suspicious-but-valid empty run.
+    await finishRun(runHandle, {
+      outcome: "failed",
+      error_sample: "Unexpected API response shape (pages was not an array)",
+    });
     res.status(200).json({ upserted: 0, error: "Unexpected API response shape" });
     return;
   }
@@ -137,6 +161,19 @@ module.exports = async (req, res) => {
   const parsed = pages.map(parsePage).filter((e) => e && e.start_date >= today);
 
   if (!parsed.length) {
+    // This is Cinema Detroit's normal, expected state (see the LOW
+    // CONFIDENCE header note above) -- the site's `pages` endpoint often
+    // has zero pages whose scraped date is still upcoming. That is a
+    // successful execution that legitimately found nothing to write, not
+    // a broken connector: records_fetched reflects how many pages were
+    // checked, records_parsed=0 reflects that none had a usable
+    // still-upcoming date, and outcome stays 'success'.
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: pages.length,
+      records_parsed: 0,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, checked: pages.length, note: "No upcoming screenings found — see LOW CONFIDENCE note in source.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -207,11 +244,32 @@ module.exports = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: pages.length,
+        records_parsed: parsed.length,
+        records_written: 0,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, {
+      outcome: "success",
+      http_status: resp.status,
+      records_fetched: pages.length,
+      records_parsed: parsed.length,
+      records_written: rowsWithStatus.length,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, checked: pages.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, {
+      outcome: "failed",
+      records_fetched: pages.length,
+      records_parsed: parsed.length,
+      error_sample: err.message,
+    });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };

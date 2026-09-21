@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls Detroit-area events from WDET's public events
 // calendar (wdet.org), which runs on the WordPress "The Events Calendar"
 // plugin and exposes a real, documented JSON REST API — no HTML scraping
@@ -37,6 +39,7 @@ function timingSafeStringEqual(a, b) {
 
 
 const API_URL = "https://wdet.org/wp-json/tribe/events/v1/events?per_page=50";
+const SOURCE_SLUG = SLUGS.wdet; // WP 0.5 -- see api/_lib/source-slugs.js
 const ALLOWED_CITIES = ["detroit", "hamtramck", "highland park"];
 const DEFAULT_STATUS = "approved";
 
@@ -128,7 +131,13 @@ module.exports = async (req, res) => {
       return;
     }
   }
+  // WP 0.5: the run begins here, once the request is confirmed to be a
+  // real cron invocation -- see api/_lib/run-log.js.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    // startRun() above already checked these same env vars and no-opped
+    // (runHandle is null), so there is no source_runs row to finish here.
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
   }
@@ -137,15 +146,25 @@ module.exports = async (req, res) => {
   try {
     const r = await fetch(API_URL, { headers: { "User-Agent": "313.events event calendar" } });
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, {
+        outcome: blocked ? "blocked" : "failed",
+        http_status: r.status,
+        error_sample: `WDET API fetch failed: HTTP ${r.status}`,
+      });
       res.status(200).json({ upserted: 0, error: `WDET API fetch failed: HTTP ${r.status}` });
       return;
     }
     data = await r.json();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "WDET API fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "WDET API fetch failed: " + err.message });
     return;
   }
 
+  // records_fetched (WP 0.5): the raw event array from the Tribe Events
+  // API, before the venue-filter/category/start_date checks in the
+  // .map().filter(Boolean) below -- see api/_lib/source-slugs.js.
   const events = Array.isArray(data.events) ? data.events : [];
 
   // See api/_lib/venue-lookup.js — WDET's feed spans many different venues,
@@ -190,6 +209,12 @@ module.exports = async (req, res) => {
     .filter(Boolean);
 
   if (!rows.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: events.length,
+      records_parsed: rows.length,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;
   }
@@ -234,11 +259,32 @@ module.exports = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: events.length,
+        records_parsed: rows.length,
+        records_written: 0,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, {
+      outcome: "success",
+      http_status: resp.status,
+      records_fetched: events.length,
+      records_parsed: rows.length,
+      records_written: rowsWithStatus.length,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, {
+      outcome: "failed",
+      records_fetched: events.length,
+      records_parsed: rows.length,
+      error_sample: err.message,
+    });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };

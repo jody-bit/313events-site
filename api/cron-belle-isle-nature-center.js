@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls Belle Isle Nature Center's own programming from
 // the WordPress "The Events Calendar" plugin's public JSON REST API.
 // Verified live before writing: belleislenaturecenter.org/wp-json/tribe/events/v1/events
@@ -37,6 +39,7 @@ function timingSafeStringEqual(a, b) {
 
 
 const API_URL = "https://belleislenaturecenter.org/wp-json/tribe/events/v1/events?per_page=50";
+const SOURCE_SLUG = SLUGS.belleIsleNatureCenter; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "Belle Isle Nature Center";
 const DEFAULT_STATUS = "approved";
 
@@ -104,7 +107,13 @@ module.exports = async (req, res) => {
       return;
     }
   }
+  // WP 0.5: the run begins here, once the request is confirmed to be a
+  // real cron invocation -- see api/_lib/run-log.js.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    // startRun() above already checked these same env vars and no-opped
+    // (runHandle is null), so there is no source_runs row to finish here.
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
   }
@@ -113,15 +122,24 @@ module.exports = async (req, res) => {
   try {
     const r = await fetch(API_URL, { headers: { "User-Agent": "313.events event calendar" } });
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, {
+        outcome: blocked ? "blocked" : "failed",
+        http_status: r.status,
+        error_sample: `Fetch failed: HTTP ${r.status}`,
+      });
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     data = await r.json();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
+  // records_fetched (WP 0.5): the raw event array from the Tribe Events
+  // API, before the start_date filter below -- see api/_lib/source-slugs.js.
   const events = Array.isArray(data.events) ? data.events : [];
 
   // See api/_lib/venue-lookup.js — links to the existing venues row if one
@@ -154,6 +172,12 @@ module.exports = async (req, res) => {
     }));
 
   if (!rows.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: events.length,
+      records_parsed: rows.length,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;
   }
@@ -200,11 +224,32 @@ module.exports = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: events.length,
+        records_parsed: rows.length,
+        records_written: 0,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, {
+      outcome: "success",
+      http_status: resp.status,
+      records_fetched: events.length,
+      records_parsed: rows.length,
+      records_written: rowsWithStatus.length,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, {
+      outcome: "failed",
+      records_fetched: events.length,
+      records_parsed: rows.length,
+      error_sample: err.message,
+    });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };

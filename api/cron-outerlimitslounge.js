@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 
 // Vercel Cron job — pulls Outer Limits Lounge's own show calendar straight
 // from Squarespace's own structured JSON feed for the page, discovered
@@ -68,6 +70,7 @@ function timingSafeStringEqual(a, b) {
 }
 
 const FEED_URL = "https://www.outerlimitslounge.com/events?format=json";
+const SOURCE_SLUG = SLUGS.outerlimitslounge; // WP 0.5 -- see api/_lib/source-slugs.js
 const SITE_ORIGIN = "https://www.outerlimitslounge.com";
 const VENUE_NAME = "Outer Limits Lounge";
 const VENUE_ADDRESS = "5507 Caniff Street";
@@ -139,7 +142,13 @@ module.exports = async (req, res) => {
       return;
     }
   }
+  // WP 0.5: the run begins here, once the request is confirmed to be a
+  // real cron invocation -- see api/_lib/run-log.js.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    // startRun() above already checked these same env vars and no-opped
+    // (runHandle is null), so there is no source_runs row to finish here.
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
   }
@@ -148,17 +157,33 @@ module.exports = async (req, res) => {
   try {
     const r = await fetch(FEED_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, {
+        outcome: blocked ? "blocked" : "failed",
+        http_status: r.status,
+        error_sample: `Fetch failed: HTTP ${r.status}`,
+      });
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     data = await r.json();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
+  // records_fetched (WP 0.5): the raw upcoming-item array from Squarespace's
+  // own JSON feed, before the date-parsing filter below -- see
+  // api/_lib/source-slugs.js.
   const upcoming = Array.isArray(data.upcoming) ? data.upcoming : [];
   if (!upcoming.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: 0,
+      records_parsed: 0,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, note: "No upcoming events in the feed — the page layout may have changed.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -198,6 +223,13 @@ module.exports = async (req, res) => {
     .filter(Boolean);
 
   if (!rawRows.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: upcoming.length,
+      records_parsed: 0,
+      records_written: 0,
+      error_sample: excludedByDate ? `All ${excludedByDate} fetched items were excluded by date parsing` : undefined,
+    });
     res.status(200).json({ upserted: 0, excludedByDate, fetchedAt: new Date().toISOString() });
     return;
   }
@@ -249,11 +281,32 @@ module.exports = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: upcoming.length,
+        records_parsed: rawRows.length,
+        records_written: 0,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, {
+      outcome: "success",
+      http_status: resp.status,
+      records_fetched: upcoming.length,
+      records_parsed: rawRows.length,
+      records_written: rowsWithStatus.length,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, excludedByDate, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, {
+      outcome: "failed",
+      records_fetched: upcoming.length,
+      records_parsed: rawRows.length,
+      error_sample: err.message,
+    });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
