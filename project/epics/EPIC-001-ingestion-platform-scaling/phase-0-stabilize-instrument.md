@@ -46,7 +46,7 @@ Full technical detail and rationale: `INGESTION_PLATFORM_ARCHITECTURE.md` §1 (g
 | 0.5 | READY | High (foundational — unlocks 0.10, 0.13, and every later observability WP) | Sonnet 5 | None | — | — |
 | 0.6 | READY | High (D2, S1 — a lookup failure currently wipes venue links in bulk) | Sonnet 5 | None | — | — |
 | 0.7 | BACKLOG | High (D1/D4, S1) | Sonnet 5 | None | — | WP 0.11 |
-| 0.8 | READY | High (D1, S1 interim fix) | Sonnet 5 | None | — | — |
+| 0.8 | **IN PROGRESS — partially done** (Popps half fixed 2026-09-21 during the production incident; Metro Times' `category` half not yet touched) | High (D1, S1 interim fix) | Sonnet 5 | None | — | — |
 | 0.9 | READY | High (D3, S1 — one bad row currently fails a whole batch) | Sonnet 5 | None | — | — |
 | 0.10 | BACKLOG | Medium (measurement; informs whether WP 3.2 gets reprioritized) | Sonnet 5 | None | — | WP 0.5 |
 | 0.11 | READY | Medium (unblocks 0.7) | Sonnet 5 | None | — | — |
@@ -58,5 +58,7 @@ Full technical detail and rationale: `INGESTION_PLATFORM_ARCHITECTURE.md` §1 (g
 | 0.17 | **IN PROGRESS** (pulled 2026-09-21) | **Critical — explicitly named "do first" by the architecture** | Sonnet 5 | None | — | — |
 | 0.18 | BACKLOG | High (G5, S1?) | Sonnet 5 | None | — | WP 0.10 |
 | 0.19 | READY | Low (B6, S3 — convenience, not a defect) | Sonnet 5 | None | — | — |
+
+**WP 0.8 status note (2026-09-21):** only the Popps Packing half of this WP has been implemented so far, as part of the production ingestion-health incident response — `cron-poppspacking.js` now looks up each row's existing `start_date`/`time_display` and omits those keys from the upsert payload for rows that already exist (grouped into a separate request from brand-new rows, since PostgREST's mixed-key-set bulk behavior is still unverified — see WP 0.7/0.11), so a reviewer's date/time correction survives the next run. The Metro Times half (`category` no longer sent on update) has **not** been done — it was intentionally left out of the incident-response pass, since Metro Times is separately under the WP 0.13 blocking investigation and the incident's Phase 3 plan scoped this step to Popps only. This WP should not be marked REVIEW/DONE until the Metro Times half is also implemented.
 
 **Reconciliation:** `BUG-001` in `BACKLOG.md` (the general project backlog) is superseded by this WP. See `BACKLOG.md`'s Bugs section for the cross-reference — WP 0.17 is now the authoritative implementation item; `BUG-001` is not a separate ticket.

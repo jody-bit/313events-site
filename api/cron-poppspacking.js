@@ -287,45 +287,93 @@ module.exports = async (req, res) => {
   }));
 
   try {
-    // Look up each row's current status before writing, so an admin's
-    // approve/reject decision on an existing row survives this upsert
-    // instead of being silently reset to DEFAULT_STATUS every run.
+    // Look up each row's current status AND start_date/time_display before
+    // writing. WP 0.8 (2026-09-21): this cron was re-sending its own
+    // guessed/fallback start_date and time_display on every run, even for
+    // posts already in the database — silently reverting any date/time
+    // correction a reviewer made in admin.html back to this scraper's best
+    // guess the very next day. Status was already preserved this way; date/
+    // time now are too.
     const idList = rowsWithVenue.map((r) => r.external_id).join(",");
     const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
+      `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status,start_date,time_display`,
       { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
     );
-    const existingStatusByExternalId = new Map();
+    const existingByExternalId = new Map();
     if (lookupResp.ok) {
       const existingRows = await lookupResp.json();
       if (Array.isArray(existingRows)) {
-        existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+        existingRows.forEach((row) => existingByExternalId.set(row.external_id, row));
       }
     }
-    // Lookup failure falls through with an empty map — every row defaults
-    // to DEFAULT_STATUS, same as this scraper's first-ever run.
+    // Lookup failure falls through with an empty map — every row is treated
+    // as brand-new (status defaults to DEFAULT_STATUS, start_date/
+    // time_display are sent as usual), same as this scraper's first-ever
+    // run, same fail-soft posture as every other field here.
 
-    const rowsWithStatus = rowsWithVenue.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    // PostgREST's mixed-key bulk-upsert behavior for one batch containing
+    // objects with different key sets is still unverified project-wide
+    // (see WP 0.7/0.11 — sending a batch with some rows missing
+    // start_date/time_display and others having it risks PostgREST
+    // NULL-filling the column for every row instead of leaving existing
+    // values untouched). Rather than risk that, rows are grouped by
+    // identical key set — same interim approach WP 0.7 prescribes — and
+    // sent as two separate upsert calls: brand-new rows (full shape,
+    // including this run's best-guess start_date/time_display) and
+    // existing rows (start_date/time_display genuinely omitted from the
+    // JSON object, not sent as null, so the existing DB value is left
+    // alone).
+    const newRows = [];
+    const existingRows = [];
+    for (const row of rowsWithVenue) {
+      const existing = existingByExternalId.get(row.external_id);
+      const withStatus = { ...row, status: (existing && existing.status) || DEFAULT_STATUS };
+      if (existing) {
+        delete withStatus.start_date;
+        delete withStatus.time_display;
+        existingRows.push(withStatus);
+      } else {
+        newRows.push(withStatus);
+      }
+    }
 
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(rowsWithStatus),
-    });
-    if (!resp.ok) {
-      const errText = await resp.text();
-      res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
+    async function upsertGroup(groupRows) {
+      if (!groupRows.length) return { ok: true, count: 0 };
+      const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          Prefer: "resolution=merge-duplicates,return=minimal",
+        },
+        body: JSON.stringify(groupRows),
+      });
+      if (!resp.ok) {
+        const errText = await resp.text();
+        return { ok: false, count: 0, error: errText };
+      }
+      return { ok: true, count: groupRows.length };
+    }
+
+    const [newResult, existingResult] = await Promise.all([upsertGroup(newRows), upsertGroup(existingRows)]);
+    const upserted = newResult.count + existingResult.count;
+    const groupErrors = [newResult, existingResult].filter((r) => !r.ok);
+
+    if (groupErrors.length) {
+      res.status(502).json({
+        upserted,
+        error: "Supabase upsert failed for one or more groups: " + groupErrors.map((r) => r.error).join(" | "),
+      });
       return;
     }
-    res.status(200).json({ upserted: rowsWithStatus.length, postsParsed: posts.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({
+      upserted,
+      newRows: newRows.length,
+      existingRowsPreserved: existingRows.length,
+      postsParsed: posts.length,
+      fetchedAt: new Date().toISOString(),
+    });
   } catch (err) {
     res.status(500).json({ upserted: 0, error: err.message });
   }
