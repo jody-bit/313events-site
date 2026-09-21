@@ -1,0 +1,62 @@
+# EPIC-001 / Phase 0 — Stabilize & Instrument
+
+**Architecture Gate:** None. Per the architecture doc: "This phase needs no architecture decisions." No Opus 5 review required before or after this phase.
+**Recommended Model:** Sonnet 5 for every WP.
+**Milestone:** M0 — reached at end of phase ("Defect-free and observable"). Not tied to a single WP; reached when all 19 WPs are done.
+**Product Owner approval needed on:** WP 0.13 (unscheduling Metro Times) and WP 0.14 (routing new Trinosophes/Cinema Detroit rows to review) — both explicitly flagged in the source backlog as needing Jody's quick OK before implementation. No Appendix A decision blocks any Phase 0 work.
+**Do first:** WP 0.17 — the architecture doc calls this out by name: it verifies whether moderator/dedupe rejections have already been silently reversed by the D7 defect (a failed status-lookup defaulting rows to `approved`), which is a live, ongoing risk until fixed.
+**Status of this phase:** Prepared for grooming. Nothing implemented. Nothing in `IN PROGRESS`.
+
+Full technical detail and rationale: `INGESTION_PLATFORM_ARCHITECTURE.md` §1 (gap analysis, especially 1D "Write path" and 1N "Connector-level defects"). Gap severities: S1 = live defect/data loss today.
+
+---
+
+## Technical specification (verbatim from INGESTION_BACKLOG.md — authoritative)
+
+| WP | Title | Size | Dep | Deliverable | Test |
+|---|---|---|---|---|---|
+| 0.1 | Fix Belle Isle crash | S | — | Call `buildVenueNameToIdMap` and use `resolveVenueId` in `cron-belle-isle-nature-center.js:135`. Set `is_free` only when cost says free (:138). | Manual run returns `upserted > 0`. The healthcheck freshness check for Belle Isle passes within 24 h. |
+| 0.2 | Cron auth fails closed | S | — | In all 23 cron handlers, missing `CRON_SECRET` returns 500, not open access. Keep the existing timing-safe compare. | With the env var unset locally, every cron endpoint returns 500. With a wrong secret, 401. The healthcheck auth checks still pass in prod. |
+| 0.3 | Fetch timeouts everywhere | S | — | Add `AbortSignal.timeout(30000)` (Node ≥ 18) to every outbound `fetch` in `api/cron-*.js` and `_lib`. | `grep -L "AbortSignal.timeout\|signal:" api/cron-*.js` is empty for files that fetch. A test against a hanging local server aborts in ≤ 31 s. |
+| 0.4 | Failures return non-200 | S | — | Fetch-failure branches return 502 with the same JSON body. "Not configured" returns 500. | Vercel's function log shows the failure status for a forced-failure run (bad URL env override). |
+| 0.5 | `source_runs` table + `withRunLog()` wrapper | M | — | Migration adding `source_runs` (the §8.1 subset: `source_slug, started_at, finished_at, outcome, http_status, records_parsed, records_written, error_sample, duration_ms`) and `_lib/run-log.js`. Wrap all 20 ingestion handlers. | After one day of crons, `select source_slug, count(*) from source_runs group by 1` shows 20 slugs. A forced failure logs `outcome='failed'`. |
+| 0.6 | Venue-lookup failure aborts instead of wiping | S | — | `buildVenueNameToIdMap` returns `null` on failure. Callers then **omit `venue_id` from the payload** rather than sending null (fixes D2). | Simulated lookup failure (bad key): the run completes, and existing `venue_id` values are unchanged (before/after count query). |
+| 0.7 | Don't send nulls over existing values (interim) | M | 0.11 | In each connector, drop keys whose value is null or undefined before upsert, then **group rows by identical key set and send one bulk request per group**. A single `columns=` list can't be used here: PostgREST would fill the omitted keys with NULL and the merge would overwrite existing values. This gives deterministic key-set handling (D1/D4 interim), and the Ticketmaster address fix falls out of it. | Fill `venue_address_raw` on a Ticketmaster event with no API address. It survives the next Ticketmaster run. |
+| 0.8 | Stop per-run overwrites of reviewer-owned fields (interim) | S | — | Metro Times stops sending `category` on update, and Popps stops sending `start_date`/`time_display` for rows that already exist (look up first, as the status lookup does). | Change a Metro Times row's category, run the cron, and the category persists. Same for a Popps `start_date`. |
+| 0.9 | Row-level validation guard (interim) | S | — | A shared `_lib/validate-row.js` drops rows with a null title, invalid `start_date`, or `end_date < start_date`, and counts them in the run log. Apply it in all connectors (fixes Redford D3). | Fixture: a Redford page with a leading date line produces a skipped row, not a 502. |
+| 0.10 | Measure Ticketmaster truncation | S | 0.5 | Log `page.totalElements` and pages fetched to `source_runs`. | One run's record shows whether `totalElements > 1000`. The result goes into this backlog, and if it's saturated, WP 3.2 is prioritized. |
+| 0.11 | Verify PostgREST mixed-key bulk behavior | S | — | A scratch test: bulk POST to a scratch table with objects that have different key sets, with and without `columns=`. Record the behavior. | A written result (error vs null-fill) in `test/notes/postgrest-mixed-keys.md`. It decides the details of WP 0.7. |
+| 0.12 | "Today" in America/Detroit | S | — | A shared `_lib/today.js`, used by Lager House, Planet Ant (`start=` too), DMOD, Playground and every other `todayISO` use. | Run Lager House at 00:30 UTC; a same-evening ET show is included. |
+| 0.13 | Planet Ant / Metro Times block status | S | 0.5 | Record the live outcome of both in the run log for 3 days. If Metro Times is still 403, mark it `blocked` in `sources.html` and stop scheduling it (remove the cron line, keep the code). **Needs Jody's OK** to unschedule. | Run-log evidence is attached. If it's still blocked, `vercel.json` no longer schedules Metro Times. |
+| 0.14 | MotorCity cancelled series + Trinosophes/Cinema safety | S | — | Skip `STATUS:CANCELLED` masters that have an RRULE (`:404`). Trinosophes: keep Jody's 7:00 PM doors default and its public note, but route new rows to `pending_review`, because junk lines become events. Cinema Detroit: new rows go to `pending_review` until migrated. **Needs Jody's OK.** | Fixture: a cancelled weekly master yields 0 rows. A new Trinosophes row lands pending with the declared default time and note. |
+| 0.15 | Playground: write before timeout | S | — | Upsert in chunks as detail pages complete, with a time-budget check that stops at 80% of `maxDuration`. | A run with 60 events writes its first chunks, and the log shows a `partial` outcome instead of zero rows. |
+| 0.16 | Healthcheck lists complete (interim) | S | — | Add the 5 missing crons to `CRON_ENDPOINTS` and the 3 missing freshness targets. | The next healthcheck row includes checks for all 20 ingestion crons. |
+| 0.17 | **Status-lookup safety (do first)** | S | — | Two parts. (1) **Verify:** query whether rows rejected by the 2026-09-17 dedupe batches (archive `update_2026-09-17_dedupe-batch*.sql` id lists) are still `rejected`. (2) **Fix in all 20 connectors:** send the status lookup in chunks of ≤ 100 IDs. If any chunk fails, with a non-OK response or an exception, **abort the upsert** and log `outcome='failed'`, rather than defaulting every row to `approved` (D7). | (1) A written result: count of re-approved rows, with those rows re-rejected if any. (2) With the lookup URL forced to fail, the run writes nothing and returns 502. A ~1,000-ID Ticketmaster run uses ≥ 10 chunked lookups. |
+| 0.18 | Ticketmaster interim: time slicing + partial detection | S | 0.10 | Query the 90-day window as three 30-day slices (each ≤ 1,000 results), and dedupe by ID. Any `!r.ok` page marks the run `partial` in the log instead of silently `break`ing (`:187`). This covers G5 until the tiled adapter (3.2). | `totalElements` per slice is logged. Upserted count ≥ the pre-change count. A forced page failure logs `partial`. |
+| 0.19 | Admin "register a feed" (PHASE0 §5) | S | — | An `admin-feeds.js` `action: "register"` inserts a `feed_sources` row as `approved`, reusing `submit-feed.js` validation. Zero schema changes, as PHASE0 §5 designed. | A registered test ICS feed is polled by the next `cron-feeds` run. Bad input returns 400, and an unauthenticated call returns 401. |
+
+## Project-management tracking
+
+| WP | Status | Priority | Recommended Model | Architecture Gate | Product Owner Decision | Blocked By |
+|---|---|---|---|---|---|---|
+| 0.1 | READY | High (fixes a live crash — every run fails) | Sonnet 5 | None | — | — |
+| 0.2 | READY | High (M1-class gap: cron endpoints open if env var unset) | Sonnet 5 | None | — | — |
+| 0.3 | READY | High (I1, S1 — a hung fetch can consume a whole run) | Sonnet 5 | None | — | — |
+| 0.4 | READY | High (K1, S1 — failures currently report success) | Sonnet 5 | None | — | — |
+| 0.5 | READY | High (foundational — unlocks 0.10, 0.13, and every later observability WP) | Sonnet 5 | None | — | — |
+| 0.6 | READY | High (D2, S1 — a lookup failure currently wipes venue links in bulk) | Sonnet 5 | None | — | — |
+| 0.7 | BACKLOG | High (D1/D4, S1) | Sonnet 5 | None | — | WP 0.11 |
+| 0.8 | READY | High (D1, S1 interim fix) | Sonnet 5 | None | — | — |
+| 0.9 | READY | High (D3, S1 — one bad row currently fails a whole batch) | Sonnet 5 | None | — | — |
+| 0.10 | BACKLOG | Medium (measurement; informs whether WP 3.2 gets reprioritized) | Sonnet 5 | None | — | WP 0.5 |
+| 0.11 | READY | Medium (unblocks 0.7) | Sonnet 5 | None | — | — |
+| 0.12 | READY | High (J1, S1 — same-night events are being silently skipped) | Sonnet 5 | None | — | — |
+| 0.13 | BACKLOG | Medium | Sonnet 5 | None | **Yes — Jody's explicit OK required** to stop scheduling Metro Times | WP 0.5 + Product Owner OK |
+| 0.14 | BACKLOG | High (bundles an S1 fix — MotorCity's cancelled-series expansion — with a policy change) | Sonnet 5 | None | **Yes — Jody's explicit OK required** for the Trinosophes/Cinema Detroit pending-review routing. (The MotorCity cancelled-series fix itself needs no approval and could ship independently if the OK is delayed.) | Product Owner OK (for the review-routing portion only) |
+| 0.15 | READY | Medium (A3-class, S2) | Sonnet 5 | None | — | — |
+| 0.16 | READY | Medium (K4, S2 interim) | Sonnet 5 | None | — | — |
+| 0.17 | READY | **Critical — explicitly named "do first" by the architecture** | Sonnet 5 | None | — | — |
+| 0.18 | BACKLOG | High (G5, S1?) | Sonnet 5 | None | — | WP 0.10 |
+| 0.19 | READY | Low (B6, S3 — convenience, not a defect) | Sonnet 5 | None | — | — |
+
+**Reconciliation:** `BUG-001` in `BACKLOG.md` (the general project backlog) is superseded by this WP. See `BACKLOG.md`'s Bugs section for the cross-reference — WP 0.17 is now the authoritative implementation item; `BUG-001` is not a separate ticket.
