@@ -97,11 +97,26 @@ function parsePage(page) {
   const year = parseInt(match[3], 10);
   if (monthIdx === undefined || !day || !year) return null;
 
+  // SH.8 (Metadata Self-Healing, 2026-09-21) -- page.link is WordPress
+  // core REST API's own canonical permalink field, present on every
+  // successfully fetched `pages` object from this exact endpoint -- the
+  // same core-response guarantee title.rendered/content.rendered above
+  // already rely on, not a Divi-specific or optional field. Description
+  // itself was evaluated for this same WP and excluded: content.rendered
+  // is undifferentiated Divi shortcode text with no established boundary
+  // between real synopsis prose and navigation/boilerplate/button text,
+  // and no real fetched page was available this session (network policy)
+  // to demonstrate one deterministically -- see EPIC-006's SH.8 note.
+  // event_url is treated as absent (null) if page.link is missing or not
+  // a non-blank string, never fabricated from another field.
+  const eventUrl = typeof page.link === "string" && page.link.trim() ? page.link.trim() : null;
+
   return {
     external_id: `cinemadetroit-${page.id}`,
     title,
     start_date: `${year}-${String(monthIdx + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
     time_display: match[4] || null,
+    event_url: eventUrl,
   };
 }
 
@@ -193,6 +208,7 @@ module.exports = async (req, res) => {
     time_display: e.time_display,
     is_free: false,
     source: "Cinema Detroit",
+    event_url: e.event_url,
   }));
 
   // De-dupe by external_id before sending — Postgres's ON CONFLICT DO UPDATE
@@ -212,24 +228,46 @@ module.exports = async (req, res) => {
     // the full story.
     const idList = rows.map((r) => r.external_id).join(",");
     const existingStatusByExternalId = new Map();
+    // SH.8 -- this connector had never previously sent event_url at all
+    // (same "no pre-existing-value hazard from this connector's own past
+    // writes" starting point as SH.1's cron-feeds.js integration), but a
+    // moderator can still set it by hand via admin.html's update_fields
+    // (see api/admin-events.js's own documented update_fields field list,
+    // which includes event_url). Sending this new column unconditionally
+    // on every merge-duplicates upsert would silently overwrite that
+    // manual correction on the very next run -- the same WP 0.7 hazard
+    // SH.4 already had to guard against for Metro Times' address/city.
+    // Same fix shape: fetch the current value alongside status (one extra
+    // select field on the existing lookup request, no new network call)
+    // and let an existing nonblank value always win.
+    const existingEventUrlByExternalId = new Map();
     try {
       const lookupResp = await fetch(
-        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
+        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status,event_url`,
         { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
       );
       if (lookupResp.ok) {
         const existingRows = await lookupResp.json();
         if (Array.isArray(existingRows)) {
-          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
+          existingRows.forEach((row) => {
+            existingStatusByExternalId.set(row.external_id, row.status);
+            if (row.event_url && String(row.event_url).trim()) {
+              existingEventUrlByExternalId.set(row.external_id, row.event_url);
+            }
+          });
         }
       }
     } catch {
-      // Lookup failed — fall through with an empty map, same as this
-      // scraper's first-ever run.
+      // Lookup failed — fall through with empty maps, same as this
+      // scraper's first-ever run (event_url falls through to this run's
+      // freshly-parsed value, same as before this lookup existed).
     }
     const rowsWithStatus = rows.map((row) => ({
       ...row,
       status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+      // SH.8 -- existing nonblank event_url wins; else this run's parsed
+      // page.link value; else null. Never guessed, never geocoded.
+      event_url: existingEventUrlByExternalId.get(row.external_id) || row.event_url,
     }));
 
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
@@ -273,3 +311,5 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+module.exports.parsePage = parsePage; // exposed for test/sh8-deterministic-metadata-recovery.test.js only
