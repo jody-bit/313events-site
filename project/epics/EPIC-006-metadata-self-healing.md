@@ -64,6 +64,31 @@ The one design decision worth flagging: this connector's upsert is a full-column
 
 **WP 0.7 evidence note:** implementing SH.4's "preserve an existing nonblank value" requirement surfaced a concrete, general instance of the exact hazard WP 0.7 (`EPIC-001-ingestion-platform-scaling/phase-0-stabilize-instrument.md`) already names: `cron-metrotimes.js`'s upsert is a full-column `merge-duplicates` write, so **any** column it sends is written unconditionally, overwriting a reviewer's manual correction to that column on the very next run, not just the previously-known `category` case WP 0.8 already tracks. This is recorded here as evidence for WP 0.7's existing scope, cross-referenced from that WP's own notes. **WP 0.7's scope is not expanded and no fix beyond SH.4's own two fields (`venue_address_raw`/`venue_city_raw`) is implemented as part of this entry.**
 
+## SH.1 production BEFORE measurement (2026-09-21)
+
+Read-only, via the Product Owner's own already-authenticated Supabase SQL Editor session (production database access from this environment's own shell/HTTP tools remains network-blocked — see the access-setup note below). No production data was mutated; every query run was a plain `select`.
+
+Scope: `events` with `status in ('pending_review','approved')` and `start_date >= current_date` (1,190 rows) — the same base population `api/admin-events.js`'s `incomplete=1` endpoint uses.
+
+- **Needs Follow-up total** (admin.html's exact `getMissingFields()` definition — missing description, or venue address/city with no raw *or* linked-venue fallback, or ticket/event link, or start time unless all-day; excludes dismissed): **124**.
+- **SH.1 target total** (events where the raw `venue_address_raw` OR `venue_city_raw` column itself is blank — the actual condition `resolveVenueAddressCityRepair` acts on; broader than the figure above, since an event already covered by a linked venue's canonical address doesn't trip the admin UI's flag but still renders blank on `calendar.html`/`map.html`/`event-template.html`, which query raw columns directly, not the `venues` join — see `SH.N` in this epic): **580**.
+  - Repairable via `venue_id` + canonical venue data: **23**
+  - Repairable via exact canonical venue-name match (no `venue_id` yet, but the name matches exactly one canonical venue with a real address): **0**
+  - Ambiguous canonical name (two-plus canonical venues share the exact normalized name): **0**
+  - Repairable only via exact learned historical data: **41**
+  - Conflicting learned historical data (name matches, but historical rows disagree on the address — correctly left unresolved, not guessed): **1**
+  - Unresolved (no canonical or learned match at all): **515**
+
+By source (top contributors to the 580 target total): **Ticketmaster 474** (82%), VisitDetroit 59, Lager House 14, Resident Advisor 9, Trinosophes 8, Redford Theatre 7, plus a long tail of single-digit/manually-researched sources. The 515 "unresolved" figure is concentrated almost entirely in Ticketmaster — consistent with `EPIC-001`'s existing finding that Ticketmaster is the large majority of upcoming approved events, most at venues never added to the curated 83-row `venues` table. This is expected, not a defect: SH.1 was never meant to resolve venue identity on its own (no fuzzy matching, no geocoding), and closing this gap is squarely `EPIC-001`'s venue-resolution/entity-matching work (Phase 4), not `SH.1`'s.
+
+Measurement was taken via manually-typed SQL in the browser (the classifier issue that blocked browser-automation *actions* earlier this engagement appears resolved as of this session); the query logic mirrors `resolveVenueAddressCityRepair`'s tiering as closely as SQL reasonably allows, but is a reporting approximation, not the repair function itself — the actual repair run (once authorized) is the authoritative source of truth for what gets changed.
+
+**Production repair has not been run.** `scripts/sh1-repair-existing-venue-address-city.js` remains unexecuted against production, pending explicit Product Owner authorization.
+
+## Access setup (2026-09-21)
+
+Investigated this environment's supported credential mechanisms per the Product Owner's request. Findings: `github.com` is network-reachable from this environment (confirmed via a plain HTTPS request), but no git credential (PAT, SSH key, credential helper) is configured — the earlier push failure was a missing-credential error, not a network block. `supabase.co` and `vercel.com` are both network-blocked at the proxy layer (`403`/connection-reset on a bare HTTPS request, no credentials involved) — a credential alone will not restore those paths; that block is most likely an organization-level network egress policy. No Vercel CLI session is authenticated in this environment. Full detail and recommended secure setup steps for each were given directly to the Product Owner in chat, not reproduced here since they involve no repository content.
+
 ## Reconciliation
 
 Supersedes no existing `BACKLOG.md` item — this is new discovery from the Product Owner's 2026-09-21 request, not a reclassification of prior work. Related but distinct from `EPIC-001`'s ingestion-platform program: EPIC-001's field-precedence merge (Phase 2/4) is the eventual general mechanism this epic's `SH.6` provenance work is a narrow, immediate precursor to — `SH.6` is not intended to be a competing or duplicate design, and should be revisited against EPIC-001's Phase 4 entity-resolution work if/when that phase is scheduled.
