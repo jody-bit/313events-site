@@ -132,12 +132,17 @@ function sleep(ms) {
 // whatever response it last got (or throws, for a network-level failure),
 // same as before this fix, so callers' existing "skip what doesn't parse"
 // handling is unchanged.
-async function fetchWithRetry(url, options, attempts = MAX_FETCH_ATTEMPTS) {
+async function fetchWithRetry(url, options, attempts = MAX_FETCH_ATTEMPTS, stats = null) {
   let lastResponse;
   for (let attempt = 1; attempt <= attempts; attempt++) {
     const r = await fetch(url, options);
     if (r.ok || !RETRY_STATUSES.has(r.status) || attempt === attempts) return r;
     lastResponse = r;
+    // BUG-003 (2026-09-21) diagnostic instrumentation — see the handler's
+    // own comment below for why. Tracks how often Wix rate-limits/errors
+    // this run, and at which statuses, without changing the retry/backoff
+    // behavior itself at all.
+    if (stats) stats.retryCounts[r.status] = (stats.retryCounts[r.status] || 0) + 1;
     await sleep(400 * attempt); // 400ms, 800ms, 1200ms...
   }
   return lastResponse;
@@ -163,8 +168,8 @@ function decodeEntities(str) {
     .replace(/&nbsp;/g, " ");
 }
 
-async function fetchDetailUrls() {
-  const r = await fetchWithRetry(SITEMAP_URL, { headers: REQUEST_HEADERS });
+async function fetchDetailUrls(stats) {
+  const r = await fetchWithRetry(SITEMAP_URL, { headers: REQUEST_HEADERS }, MAX_FETCH_ATTEMPTS, stats);
   if (!r.ok) throw new Error(`Sitemap fetch failed: HTTP ${r.status}`);
   const xml = await r.text();
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => decodeEntities(m[1]));
@@ -190,8 +195,8 @@ function isoDatePortion(isoString) {
   return isoString.slice(0, 10);
 }
 
-async function fetchEventFromDetailPage(url) {
-  const r = await fetchWithRetry(url, { headers: REQUEST_HEADERS });
+async function fetchEventFromDetailPage(url, stats) {
+  const r = await fetchWithRetry(url, { headers: REQUEST_HEADERS }, MAX_FETCH_ATTEMPTS, stats);
   if (!r.ok) return null;
   const html = await r.text();
   const m = html.match(/<script type="application\/ld\+json">(\{"@context":"https:\/\/schema\.org","@type":"Event".*?\})<\/script>/s);
@@ -252,6 +257,20 @@ async function mapWithConcurrency(items, limit, worker) {
 }
 
 module.exports = async (req, res) => {
+  // BUG-003 (2026-09-21) diagnostic instrumentation. No upstream/parsing
+  // defect was found during the production incident triage — sitemap,
+  // JSON-LD parsing, and a real future event all checked out live — so
+  // this run's own timing/retry/write evidence is what's needed next to
+  // confirm or rule out a maxDuration timeout (the leading, UNCONFIRMED
+  // hypothesis: the sitemap has grown from 318 URLs at the last capacity
+  // check on 2026-09-05 to 367 today). Purely additive — no maxDuration,
+  // concurrency, batching, or ingestion semantics are changed here. No
+  // secrets/tokens/full payloads logged, counts and elapsed ms only.
+  const runStart = Date.now();
+  const elapsed = () => `${Date.now() - runStart}ms`;
+  const stats = { retryCounts: {} }; // e.g. { "429": 12, "503": 2 }
+  console.log(`[cron-detroitmonthofdesign] cron started ${new Date().toISOString()}`);
+
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -266,34 +285,56 @@ module.exports = async (req, res) => {
 
   let detailUrls;
   try {
-    detailUrls = await fetchDetailUrls();
+    detailUrls = await fetchDetailUrls(stats);
+    console.log(`[cron-detroitmonthofdesign] sitemap fetched at ${elapsed()}: ${detailUrls.length} event-details URLs`);
   } catch (err) {
+    console.log(`[cron-detroitmonthofdesign] cron completion: aborted at ${elapsed()}, sitemap fetch failed: ${err.message}`);
     res.status(200).json({ upserted: 0, error: "Sitemap fetch failed: " + err.message });
     return;
   }
   if (!detailUrls.length) {
+    console.log(`[cron-detroitmonthofdesign] cron completion: 0 rows at ${elapsed()}, sitemap had no event-details URLs`);
     res.status(200).json({ upserted: 0, note: "Sitemap parsed but contained no event-details URLs.", fetchedAt: new Date().toISOString() });
     return;
   }
 
+  let completedDetailFetches = 0;
   let parsedResults;
   try {
     parsedResults = await mapWithConcurrency(detailUrls, FETCH_CONCURRENCY, async (url) => {
       try {
-        return await fetchEventFromDetailPage(url);
+        const result = await fetchEventFromDetailPage(url, stats);
+        completedDetailFetches++;
+        // Periodic checkpoint rather than one per page — 367 log lines for
+        // one run would be noise; every 50 gives enough resolution to see
+        // where a run stalls or gets killed, if it does.
+        if (completedDetailFetches % 50 === 0 || completedDetailFetches === detailUrls.length) {
+          console.log(
+            `[cron-detroitmonthofdesign] detail pages ${completedDetailFetches}/${detailUrls.length} completed at ${elapsed()}, retryCounts=${JSON.stringify(stats.retryCounts)}`
+          );
+        }
+        return result;
       } catch {
+        completedDetailFetches++;
         return null; // one bad page never aborts the whole run
       }
     });
   } catch (err) {
+    console.log(
+      `[cron-detroitmonthofdesign] cron completion: aborted at ${elapsed()} after ${completedDetailFetches}/${detailUrls.length} detail pages, detail-page pass failed: ${err.message}`
+    );
     res.status(200).json({ upserted: 0, error: "Detail page fetch pass failed: " + err.message });
     return;
   }
 
   const todayISO = new Date().toISOString().slice(0, 10);
   const parsed = parsedResults.filter(Boolean).filter((e) => e.start_date >= todayISO || (e.end_date && e.end_date >= todayISO));
+  console.log(
+    `[cron-detroitmonthofdesign] detail-page pass done at ${elapsed()}: ${completedDetailFetches}/${detailUrls.length} attempted, ${parsedResults.filter(Boolean).length} parsed, ${parsed.length} current/upcoming (eligible for write), retryCounts=${JSON.stringify(stats.retryCounts)}`
+  );
 
   if (!parsed.length) {
+    console.log(`[cron-detroitmonthofdesign] cron completion: 0 rows at ${elapsed()}, none current/upcoming`);
     res.status(200).json({ upserted: 0, note: "No current/upcoming Detroit Month of Design events parsed.", checkedUrls: detailUrls.length, fetchedAt: new Date().toISOString() });
     return;
   }
@@ -320,6 +361,7 @@ module.exports = async (req, res) => {
     // above) — this source alone can run into the hundreds of rows, and an
     // `external_id=in.(...)` id list that long risks a URL-length ceiling
     // no other cron here has ever approached.
+    console.log(`[cron-detroitmonthofdesign] Supabase write attempted at ${elapsed()}: ${rows.length} row(s), status lookup starting`);
     const existingStatusByExternalId = new Map();
     for (const idsChunk of chunk(rows.map((r) => r.external_id), SUPABASE_BATCH_SIZE)) {
       const lookupResp = await fetch(
@@ -365,9 +407,13 @@ module.exports = async (req, res) => {
       });
       if (!resp.ok) {
         const errText = await resp.text();
+        // Truncated — a PostgREST/Postgres error message, not a secret,
+        // but kept short regardless of what it happens to contain.
+        console.log(`[cron-detroitmonthofdesign] Supabase response at ${elapsed()}: chunk of ${rowsChunk.length} FAILED status=${resp.status} error=${errText.slice(0, 300)}`);
         chunkErrors.push({ externalIds: rowsChunk.map((r) => r.external_id), error: errText });
         continue; // one bad chunk doesn't abort the rest — see comment above
       }
+      console.log(`[cron-detroitmonthofdesign] Supabase response at ${elapsed()}: chunk of ${rowsChunk.length} ok`);
       upserted += rowsChunk.length;
     }
 
@@ -377,11 +423,14 @@ module.exports = async (req, res) => {
       // error text and which rows were in the failing chunk(s), plus how
       // many rows DID make it in, instead of an opaque all-or-nothing
       // failure.
+      console.log(`[cron-detroitmonthofdesign] cron completion: partial/failed at ${elapsed()}, upserted=${upserted}, ${chunkErrors.length} chunk error(s)`);
       res.status(502).json({ upserted, upsertErrors: chunkErrors, checkedUrls: detailUrls.length, fetchedAt: new Date().toISOString() });
       return;
     }
+    console.log(`[cron-detroitmonthofdesign] cron completion: ok at ${elapsed()}, upserted=${upserted}`);
     res.status(200).json({ upserted, checkedUrls: detailUrls.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    console.log(`[cron-detroitmonthofdesign] cron completion: unhandled error at ${elapsed()}: ${err.message}`);
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };

@@ -193,6 +193,18 @@ Sonnet 5 (default) — defined features, UI, forms/filters, individual adapters,
 - **Discovered Work:** —
 - **Product Decisions Required:** none — implementation-level fix, no policy/scope question.
 
+### BUG-003 — Detroit Month of Design: diagnose 7-day freshness silence (no upstream/parsing defect found)
+
+- **Type:** BUG · **Status:** REVIEW (diagnostics added, awaiting next scheduled run's evidence) · **Priority:** Medium
+- **Epic:** EPIC-001 · **Recommended Model:** Sonnet 5
+- **Dependencies:** None.
+- **Discovered:** 2026-09-21, during the production ingestion-health incident triage.
+- **Problem/User Need:** `cron-detroitmonthofdesign.js` has had no row updated in 7+ days, but the upstream sitemap (367 event-details URLs, up from 318 at the connector's last capacity check on 2026-09-05), a sample detail page's JSON-LD, and a real future event (2026-10-17) were all confirmed healthy and correctly parseable live on 2026-09-21. No parsing or upstream defect was found. Leading, **unconfirmed** hypothesis: the connector may now be exceeding its 180s `maxDuration` before reaching the write step, given sitemap growth plus this source's documented Wix rate-limit retries — Vercel would kill the run silently, with zero rows written and nothing logged.
+- **Acceptance Criteria:** diagnostic logging added (cron start, sitemap URL count, detail URLs attempted/completed, elapsed-time checkpoints, Wix retry/rate-limit counts, parsed event count, point reached before termination, write attempt/result) without changing `maxDuration`, concurrency, batching, or any ingestion semantics. No secrets logged. Once the next scheduled run's log evidence is available, it determines whether this is actually a timeout (and what fix that implies) or something else.
+- **Implementation Notes:** implemented in `api/cron-detroitmonthofdesign.js` — cron-start timestamp, sitemap URL count, a per-50-pages progress checkpoint (elapsed ms + Wix retry-status counts) during the detail-page pass, a post-pass summary, per-chunk Supabase write attempt/response, and a final completion log, all as `[cron-detroitmonthofdesign] ...` lines. `maxDuration`/`FETCH_CONCURRENCY`/`SUPABASE_BATCH_SIZE` untouched. Verified via a mocked fetch harness (including a simulated 429-then-success retry) that the added logging doesn't change which rows get written. Vercel streams `console.log` output as it happens, so even if a run is later killed by a timeout, the last logged checkpoint should show how far it got — which is the specific evidence this WP needs.
+- **Discovered Work:** —
+- **Product Decisions Required:** none yet — revisit once the diagnostic evidence is in.
+
 ### BUG-004 — Popps Packing: diagnose 7-day freshness silence (separate from WP 0.8)
 
 - **Type:** BUG · **Status:** REVIEW (diagnostics added, awaiting next scheduled run's evidence) · **Priority:** Medium
