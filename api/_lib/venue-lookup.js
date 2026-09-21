@@ -258,6 +258,34 @@ function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {
   return patch;
 }
 
+
+// SH.N (2026-09-21, EPIC-006) — Node-side twin of the browser-side
+// resolveVenueDisplay() function duplicated across calendar.html, map.html,
+// event-template.html, and radar.html (this project has no build step, so
+// every consumer keeps its own copy — see radar.html's header comment).
+// Used only by api/event-meta.js today. Same precedence rule, same never-
+// invent guarantee, expressed here in terms of this file's own isBlank()
+// rather than redefining it: canonical venue data (an embedded `venues`
+// object reached through a real venue_id) is authoritative for public
+// display whenever it resolves and the specific field is nonblank; the
+// event's own raw text fields are the fallback (null venue_id, unresolved
+// venue_id, or a blank canonical field) and nothing is ever invented beyond
+// what one of the two sources actually has. Keep in sync with every browser
+// copy if this logic ever changes.
+function resolvePublicVenueDisplay(row) {
+  const v = (row && row.venues) || null;
+  const rawName = row ? row.venue_name_raw : null;
+  const rawAddress = row ? row.venue_address_raw : null;
+  const rawCity = row ? row.venue_city_raw : null;
+  return {
+    name: !isBlank(v && v.name) ? v.name : (isBlank(rawName) ? null : rawName),
+    address: !isBlank(v && v.address) ? v.address : (isBlank(rawAddress) ? null : rawAddress),
+    city: !isBlank(v && v.city) ? v.city : (isBlank(rawCity) ? null : rawCity),
+    lat: (v && typeof v.lat === "number") ? v.lat : null,
+    lng: (v && typeof v.lng === "number") ? v.lng : null,
+  };
+}
+
 module.exports = {
   normalizeVenueName,
   buildVenueNameToIdMap,
@@ -266,4 +294,5 @@ module.exports = {
   buildVenueDetailsMap,
   buildLearnedVenueAddressCityMap,
   resolveVenueAddressCityRepair,
+  resolvePublicVenueDisplay,
 };

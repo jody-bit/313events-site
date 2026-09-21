@@ -66,6 +66,7 @@ const path = require("path");
 // this function reads via fs.readFileSync moved. vercel.json's
 // functions["api/event-meta.js"].includeFiles was updated to match.
 
+const { resolvePublicVenueDisplay } = require("./_lib/venue-lookup");
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://afvyfjfqukptnfmgshzn.supabase.co";
 // Same public/publishable key every client-facing page already hardcodes
 // (documented there as "safe for client code, read-only via RLS") — see
@@ -147,9 +148,14 @@ module.exports = async (req, res) => {
   const id = req.query && req.query.id;
   if (id && typeof id === "string" && SUPABASE_URL && SUPABASE_ANON_KEY) {
     try {
+      // SH.N (2026-09-21, EPIC-006): venue_id + an embedded venues(name,city)
+      // resolves the same public-display precedence every other public
+      // surface now uses (canonical venue data when venue_id resolves,
+      // raw text fields as fallback) — see resolvePublicVenueDisplay()
+      // below, this file's own copy of that shared rule.
       const url =
         `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved` +
-        `&select=title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw`;
+        `&select=title,description,image_url,start_date,end_date,venue_id,venue_name_raw,venue_city_raw,venues(name,city)`;
       const resp = await fetch(url, {
         headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
       });
@@ -158,9 +164,10 @@ module.exports = async (req, res) => {
         const e = Array.isArray(rows) && rows[0];
         if (e && e.title) {
           const title = decodeEntities(e.title);
-          const venue = decodeEntities(e.venue_name_raw) || "Venue TBA";
-          const city = e.venue_city_raw && e.venue_city_raw.toLowerCase() !== "detroit"
-            ? decodeEntities(e.venue_city_raw)
+          const vd = resolvePublicVenueDisplay(e);
+          const venue = decodeEntities(vd.name) || "Venue TBA";
+          const city = vd.city && vd.city.toLowerCase() !== "detroit"
+            ? decodeEntities(vd.city)
             : "";
           const dateLabel = dateRangeLabel(e.start_date, e.end_date);
           const pageTitle = `${title} — ${dateLabel} — 313.events`;

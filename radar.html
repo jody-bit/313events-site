@@ -252,6 +252,38 @@ let upcomingOnly = true;
 // retention/pruning) editorial_articles table — revisit with real
 // pagination if that ever gets close, same as sitemap.js's own MAX_EVENTS
 // comment.
+
+// SH.N (2026-09-21, EPIC-006) — single canonical precedence rule for
+// resolving an event's public-facing venue name/address/city. Canonical
+// venues data (embedded here as row.venues via the real venue_id foreign
+// key) is authoritative for public display whenever venue_id resolves and
+// the canonical field itself is nonblank; the event's own raw text fields
+// remain the fallback — used whenever venue_id is null/unresolved, or the
+// canonical field is itself blank — and nothing is ever invented beyond
+// what one of those two sources actually has. This project has no build
+// step (every page duplicates its own small helpers, per this file's own
+// header comment), so this exact function is duplicated verbatim across
+// every public page/endpoint that resolves venue metadata: index.html
+// relies on events_public's own equivalent SQL coalesce() instead (see
+// migration_025), calendar.html/map.html/event-template.html each carry
+// this identical copy, and api/event-meta.js uses the Node-side twin
+// (resolvePublicVenueDisplay) in api/_lib/venue-lookup.js. Keep every copy
+// identical if this logic ever changes.
+function resolveVenueDisplay(row) {
+  const isBlank = (s) => s === null || s === undefined || (typeof s === "string" && s.trim() === "");
+  const v = (row && row.venues) || null; // embedded canonical venue via venue_id — null when unresolved
+  const rawName = row ? row.venue_name_raw : null;
+  const rawAddress = row ? row.venue_address_raw : null;
+  const rawCity = row ? row.venue_city_raw : null;
+  return {
+    name: !isBlank(v && v.name) ? v.name : (isBlank(rawName) ? null : rawName),
+    address: !isBlank(v && v.address) ? v.address : (isBlank(rawAddress) ? null : rawAddress),
+    city: !isBlank(v && v.city) ? v.city : (isBlank(rawCity) ? null : rawCity),
+    lat: (v && typeof v.lat === "number") ? v.lat : null,
+    lng: (v && typeof v.lng === "number") ? v.lng : null,
+  };
+}
+
 async function loadArticles(){
   try {
     // events!editorial_articles_matched_event_id_fkey — NOT bare "events(...)"
@@ -265,7 +297,7 @@ async function loadArticles(){
     // making this page's fetch fail and show "Couldn't load press coverage
     // right now." The explicit !constraint-name hint pins this embed to the
     // original single-match FK, same relationship this page always used.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events!editorial_articles_matched_event_id_fkey(id,title,start_date,venue_name_raw,venue_city_raw,category,status)&order=published_at.desc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events!editorial_articles_matched_event_id_fkey(id,title,start_date,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status)&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
@@ -290,8 +322,8 @@ async function loadArticles(){
           id: r.events.id,
           title: decodeEntities(r.events.title),
           date: r.events.start_date,
-          venue: decodeEntities(r.events.venue_name_raw) || 'Venue TBA',
-          city: (r.events.venue_city_raw && r.events.venue_city_raw.toLowerCase() !== 'detroit') ? decodeEntities(r.events.venue_city_raw) : undefined,
+          venue: decodeEntities(resolveVenueDisplay(r.events).name) || 'Venue TBA',
+          city: (function(){ const vc = resolveVenueDisplay(r.events).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
           cat: r.events.category,
         } : null,
       }));

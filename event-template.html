@@ -520,7 +520,40 @@ function shareEvent(e){
   }
 }
 
-function mapRow(row){
+
+// SH.N (2026-09-21, EPIC-006) — single canonical precedence rule for
+// resolving an event's public-facing venue name/address/city. Canonical
+// venues data (embedded here as row.venues via the real venue_id foreign
+// key) is authoritative for public display whenever venue_id resolves and
+// the canonical field itself is nonblank; the event's own raw text fields
+// remain the fallback — used whenever venue_id is null/unresolved, or the
+// canonical field is itself blank — and nothing is ever invented beyond
+// what one of those two sources actually has. This project has no build
+// step (every page duplicates its own small helpers — see radar.html's
+// header comment), so this exact function is duplicated verbatim across
+// every public page/endpoint that resolves venue metadata: index.html
+// relies on events_public's own equivalent SQL coalesce() instead (see
+// migration_025), calendar.html/map.html/radar.html each carry this
+// identical copy, and api/event-meta.js uses the Node-side twin
+// (resolvePublicVenueDisplay) in api/_lib/venue-lookup.js. Keep every copy
+// identical if this logic ever changes.
+function resolveVenueDisplay(row) {
+  const isBlank = (s) => s === null || s === undefined || (typeof s === "string" && s.trim() === "");
+  const v = (row && row.venues) || null; // embedded canonical venue via venue_id — null when unresolved
+  const rawName = row ? row.venue_name_raw : null;
+  const rawAddress = row ? row.venue_address_raw : null;
+  const rawCity = row ? row.venue_city_raw : null;
+  return {
+    name: !isBlank(v && v.name) ? v.name : (isBlank(rawName) ? null : rawName),
+    address: !isBlank(v && v.address) ? v.address : (isBlank(rawAddress) ? null : rawAddress),
+    city: !isBlank(v && v.city) ? v.city : (isBlank(rawCity) ? null : rawCity),
+    lat: (v && typeof v.lat === "number") ? v.lat : null,
+    lng: (v && typeof v.lng === "number") ? v.lng : null,
+  };
+}
+
+function mapRow(row) {
+  const vd = resolveVenueDisplay(row); // SH.N — canonical-first venue name/address/city
   return {
     id: row.id,
     date: row.start_date,
@@ -532,10 +565,13 @@ function mapRow(row){
     title: decodeEntities(row.title),
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
-    venue: decodeEntities(row.venue_name_raw) || "Venue TBA",
+    venue: decodeEntities(vd.name) || "Venue TBA",
     venueId: row.venue_id || null,
-    address: row.venue_address_raw ? decodeEntities(row.venue_address_raw) : undefined,
-    city: (row.venue_city_raw && row.venue_city_raw.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city_raw) : undefined,
+    // SH.N: sourced through resolveVenueDisplay() — canonical venues.address
+    // when venue_id resolves and is nonblank, raw venue_address_raw
+    // otherwise, blank/undefined (no invented address) if neither has one.
+    address: vd.address ? decodeEntities(vd.address) : undefined,
+    city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
@@ -794,7 +830,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();
