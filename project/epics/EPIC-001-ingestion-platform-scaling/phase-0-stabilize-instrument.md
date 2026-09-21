@@ -5,7 +5,7 @@
 **Milestone:** M0 — reached at end of phase ("Defect-free and observable"). Not tied to a single WP; reached when all 19 WPs are done.
 **Product Owner approval needed on:** WP 0.13 (unscheduling Metro Times) and WP 0.14 (routing new Trinosophes/Cinema Detroit rows to review) — both explicitly flagged in the source backlog as needing Jody's quick OK before implementation. No Appendix A decision blocks any Phase 0 work.
 **Do first:** WP 0.17 — the architecture doc calls this out by name: it verifies whether moderator/dedupe rejections have already been silently reversed by the D7 defect (a failed status-lookup defaulting rows to `approved`), which is a live, ongoing risk until fixed.
-**Status of this phase:** Prepared for grooming. Nothing implemented. Nothing in `IN PROGRESS`.
+**Status of this phase:** **WP 0.17 pulled by the Product Owner and moved to `IN PROGRESS` (2026-09-21).** Investigation (problem restatement, acceptance criteria, file/connector inventory, verification plan, fix design, test plan) is complete and was reported to the Product Owner; no application code has been changed yet — implementation is pending Product Owner approval of the approach. No other Phase 0 WP has been pulled.
 
 Full technical detail and rationale: `INGESTION_PLATFORM_ARCHITECTURE.md` §1 (gap analysis, especially 1D "Write path" and 1N "Connector-level defects"). Gap severities: S1 = live defect/data loss today.
 
@@ -55,7 +55,7 @@ Full technical detail and rationale: `INGESTION_PLATFORM_ARCHITECTURE.md` §1 (g
 | 0.14 | BACKLOG | High (bundles an S1 fix — MotorCity's cancelled-series expansion — with a policy change) | Sonnet 5 | None | **Yes — Jody's explicit OK required** for the Trinosophes/Cinema Detroit pending-review routing. (The MotorCity cancelled-series fix itself needs no approval and could ship independently if the OK is delayed.) | Product Owner OK (for the review-routing portion only) |
 | 0.15 | READY | Medium (A3-class, S2) | Sonnet 5 | None | — | — |
 | 0.16 | READY | Medium (K4, S2 interim) | Sonnet 5 | None | — | — |
-| 0.17 | READY | **Critical — explicitly named "do first" by the architecture** | Sonnet 5 | None | — | — |
+| 0.17 | **IN PROGRESS** (pulled 2026-09-21) | **Critical — explicitly named "do first" by the architecture** | Sonnet 5 | None | — | — |
 | 0.18 | BACKLOG | High (G5, S1?) | Sonnet 5 | None | — | WP 0.10 |
 | 0.19 | READY | Low (B6, S3 — convenience, not a defect) | Sonnet 5 | None | — | — |
 

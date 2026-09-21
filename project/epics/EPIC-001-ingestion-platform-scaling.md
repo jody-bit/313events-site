@@ -1,6 +1,6 @@
 # EPIC-001 — Ingestion Platform Scaling
 
-**Status:** **Approved as technical direction**, subject to the explicit Product Owner decisions in Appendix A (`APPENDIX-A-DECISIONS.md`, A1–A12 — all currently undecided). This is no longer a proposal awaiting review — the architecture and its phased backlog have been reviewed and adopted by the Product Owner. **Nothing has been implemented.** No code, schema, or migration has changed as a result of this adoption. Nothing is `IN PROGRESS`.
+**Status:** **Approved as technical direction**, subject to the explicit Product Owner decisions in Appendix A (`APPENDIX-A-DECISIONS.md`, A1–A12 — all currently undecided). This is no longer a proposal awaiting review — the architecture and its phased backlog have been reviewed and adopted by the Product Owner. **Nothing has been implemented yet.** No code, schema, or migration has changed. **WP 0.17** (Phase 0, status-lookup safety) was pulled by the Product Owner on 2026-09-21 and is `IN PROGRESS` — see `epics/EPIC-001-ingestion-platform-scaling/phase-0-stabilize-instrument.md`. No other work package has been pulled.
 
 ## Objective (preserved verbatim from the architecture)
 
