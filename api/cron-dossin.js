@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls Dossin Great Lakes Museum events from the Detroit
 // Historical Society's combined events page (detroithistorical.org/events,
 // which covers both the Detroit Historical Museum — already in this
@@ -46,6 +48,7 @@ function timingSafeStringEqual(a, b) {
 
 
 const SOURCE_URL = "https://www.detroithistorical.org/events";
+const SOURCE_SLUG = SLUGS.dossin; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "Dossin Great Lakes Museum";
 const VENUE_MATCH = /dossin/i;
 const DEFAULT_STATUS = "approved";
@@ -171,7 +174,13 @@ const handler = async (req, res) => {
       return;
     }
   }
+  // WP 0.5: the run begins here, once the request is confirmed to be a
+  // real cron invocation -- see api/_lib/run-log.js.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    // startRun() above already checked these same env vars and no-opped
+    // (runHandle is null), so there is no source_runs row to finish here.
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
   }
@@ -180,17 +189,37 @@ const handler = async (req, res) => {
   try {
     const r = await fetch(SOURCE_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, {
+        outcome: blocked ? "blocked" : "failed",
+        http_status: r.status,
+        error_sample: `Fetch failed: HTTP ${r.status}`,
+      });
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     html = await r.text();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
+  // records_fetched (WP 0.5): this connector's text-scan parser (the
+  // BUG-002-fixed parseDossinEvents, preserved exactly -- see its own
+  // header comment) does not expose a separate "raw candidate" count
+  // distinct from the events it successfully recognizes; adding one would
+  // mean touching that parser's internals, which this WP does not do.
+  // records_fetched is therefore left null (genuinely unavailable, not
+  // invented) rather than duplicating records_parsed under a different name.
   const parsed = parseDossinEvents(html);
   if (!parsed.length) {
+    await finishRun(runHandle, {
+      outcome: "success",
+      records_fetched: null,
+      records_parsed: 0,
+      records_written: 0,
+    });
     res.status(200).json({ upserted: 0, note: "No Dossin events parsed — the site's layout may have changed, or none are currently listed.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -261,11 +290,32 @@ const handler = async (req, res) => {
     });
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: null,
+        records_parsed: parsed.length,
+        records_written: 0,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, {
+      outcome: "success",
+      http_status: resp.status,
+      records_fetched: null,
+      records_parsed: parsed.length,
+      records_written: rowsWithStatus.length,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, {
+      outcome: "failed",
+      records_fetched: null,
+      records_parsed: parsed.length,
+      error_sample: err.message,
+    });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
