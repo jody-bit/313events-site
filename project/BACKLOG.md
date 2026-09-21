@@ -193,6 +193,18 @@ Sonnet 5 (default) — defined features, UI, forms/filters, individual adapters,
 - **Discovered Work:** —
 - **Product Decisions Required:** none — implementation-level fix, no policy/scope question.
 
+### BUG-004 — Popps Packing: diagnose 7-day freshness silence (separate from WP 0.8)
+
+- **Type:** BUG · **Status:** REVIEW (diagnostics added, awaiting next scheduled run's evidence) · **Priority:** Medium
+- **Epic:** EPIC-001 · **Recommended Model:** Sonnet 5
+- **Dependencies:** None. Explicitly NOT the same defect as WP 0.8 (confirmed 2026-09-21 — see WP 0.8's own notes).
+- **Discovered:** 2026-09-21, during the production ingestion-health incident triage.
+- **Problem/User Need:** `cron-poppspacking.js` has had no row updated in 7+ days. The upstream WordPress REST API was confirmed live and healthy (200, real posts). The shared venue-lookup helper was ruled out as a crash source (`buildVenueNameToIdMap` is designed to never throw). No code-level defect was found — this connector had no diagnostic logging at all (unlike `cron-metrotimes.js`, which got exactly this kind of logging on 2026-09-14 for the same "200 but zero rows written, no visibility" problem), so there was no way to tell what actually happens on a real scheduled run.
+- **Acceptance Criteria:** diagnostic logging added (cron started, upstream response status, number of upstream records fetched, number parsed, number eligible for write, Supabase write attempted, Supabase response/error, cron completion) without changing any ingestion behavior. No secrets/tokens/full payloads logged. Once the next scheduled run's log evidence is available, it determines the actual root cause.
+- **Implementation Notes:** implemented in `api/cron-poppspacking.js` — all 8 required checkpoints logged as `[cron-poppspacking] ...` lines, verified via a mocked fetch harness to confirm the added logging doesn't change behavior or upsert results. Kept as its own commit, separate from the WP 0.8 fix, since the instrumentation is a distinct concern from the field-overwrite repair. Kept separate from WP 0.8 in scope too — WP 0.8 is a real, independently-confirmed defect (existing rows get their `start_date`/`time_display` overwritten) but does not explain total write silence, since even an overwritten row still gets its `updated_at` touched. Fixing WP 0.8 does not close this incident; the actual root cause is still unknown pending the next run's Vercel log output.
+- **Discovered Work:** —
+- **Product Decisions Required:** none yet — revisit once the diagnostic evidence is in.
+
 ---
 
 ## Tech debt

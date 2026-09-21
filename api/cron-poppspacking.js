@@ -240,6 +240,13 @@ function shapeRowForPost(post) {
 }
 
 module.exports = async (req, res) => {
+  // BUG-004 (2026-09-21) diagnostic instrumentation — this connector had no
+  // logging at all, so a 7-day production freshness incident couldn't be
+  // diagnosed from Vercel's logs (unlike cron-metrotimes.js, which got this
+  // same kind of instrumentation on 2026-09-14 for the identical "200 but
+  // nothing written, no visibility" problem). No secrets/tokens/full
+  // payloads are logged — counts and statuses only.
+  console.log(`[cron-poppspacking] cron started ${new Date().toISOString()}`);
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -257,23 +264,32 @@ module.exports = async (req, res) => {
     const r = await fetch(POSTS_URL, {
       headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)", Accept: "application/json" },
     });
+    console.log(`[cron-poppspacking] upstream response status=${r.status}`);
     if (!r.ok) {
+      console.log(`[cron-poppspacking] cron completion: aborted, upstream fetch failed status=${r.status}`);
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     posts = await r.json();
   } catch (err) {
+    console.log(`[cron-poppspacking] cron completion: aborted, upstream fetch threw: ${err.message}`);
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
+  const upstreamCount = Array.isArray(posts) ? posts.length : 0;
+  console.log(`[cron-poppspacking] upstream records fetched=${upstreamCount}`);
+
   if (!Array.isArray(posts) || !posts.length) {
+    console.log("[cron-poppspacking] cron completion: 0 rows, API returned no posts");
     res.status(200).json({ upserted: 0, note: "API returned no posts — layout/response shape may have changed.", fetchedAt: new Date().toISOString() });
     return;
   }
 
   const rows = posts.map(shapeRowForPost).filter(Boolean);
+  console.log(`[cron-poppspacking] records parsed=${rows.length} (of ${upstreamCount} fetched)`);
   if (!rows.length) {
+    console.log("[cron-poppspacking] cron completion: 0 rows, none produced a usable row");
     res.status(200).json({ upserted: 0, note: "Parsed posts but none produced a usable row.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -285,6 +301,7 @@ module.exports = async (req, res) => {
     ...row,
     venue_id: resolveVenueId(venueMap, row.venue_name_raw),
   }));
+  console.log(`[cron-poppspacking] records eligible for write=${rowsWithVenue.length} (this connector applies no additional date/eligibility filter beyond shapeRowForPost)`);
 
   try {
     // Look up each row's current status AND start_date/time_display before
@@ -337,8 +354,9 @@ module.exports = async (req, res) => {
       }
     }
 
-    async function upsertGroup(groupRows) {
+    async function upsertGroup(label, groupRows) {
       if (!groupRows.length) return { ok: true, count: 0 };
+      console.log(`[cron-poppspacking] Supabase write attempted: group=${label} rows=${groupRows.length}`);
       const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
         method: "POST",
         headers: {
@@ -351,22 +369,31 @@ module.exports = async (req, res) => {
       });
       if (!resp.ok) {
         const errText = await resp.text();
+        // Truncated — this is a PostgREST/Postgres error message, not a
+        // secret, but kept short regardless of what it happens to contain.
+        console.log(`[cron-poppspacking] Supabase response: group=${label} status=${resp.status} error=${errText.slice(0, 300)}`);
         return { ok: false, count: 0, error: errText };
       }
+      console.log(`[cron-poppspacking] Supabase response: group=${label} status=${resp.status} ok, wrote ${groupRows.length} row(s)`);
       return { ok: true, count: groupRows.length };
     }
 
-    const [newResult, existingResult] = await Promise.all([upsertGroup(newRows), upsertGroup(existingRows)]);
+    const [newResult, existingResult] = await Promise.all([
+      upsertGroup("new", newRows),
+      upsertGroup("existing", existingRows),
+    ]);
     const upserted = newResult.count + existingResult.count;
     const groupErrors = [newResult, existingResult].filter((r) => !r.ok);
 
     if (groupErrors.length) {
+      console.log(`[cron-poppspacking] cron completion: partial/failed, upserted=${upserted}, ${groupErrors.length} group error(s)`);
       res.status(502).json({
         upserted,
         error: "Supabase upsert failed for one or more groups: " + groupErrors.map((r) => r.error).join(" | "),
       });
       return;
     }
+    console.log(`[cron-poppspacking] cron completion: ok, upserted=${upserted} (new=${newRows.length}, existingPreserved=${existingRows.length})`);
     res.status(200).json({
       upserted,
       newRows: newRows.length,
@@ -375,6 +402,7 @@ module.exports = async (req, res) => {
       fetchedAt: new Date().toISOString(),
     });
   } catch (err) {
+    console.log(`[cron-poppspacking] cron completion: unhandled error: ${err.message}`);
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
