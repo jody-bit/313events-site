@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { lookupExistingStatuses } = require("./_lib/status-lookup");
 // Vercel Cron job — pulls PLAYGROUND DETROIT's own event calendar. Added
 // 2026-09-05 after Jody asked "did we crawl this events page yet?" pointing
 // at playgrounddetroit.com/category/events/.
@@ -395,18 +396,24 @@ module.exports = async (req, res) => {
   const rows = Array.from(seen.values()).map((row) => ({ ...row, venue_id: venueId }));
 
   try {
-    const existingStatusByExternalId = new Map();
-    for (const idsChunk of chunk(rows.map((r) => r.external_id), SUPABASE_BATCH_SIZE)) {
-      const lookupResp = await fetch(
-        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idsChunk.join(",")})&select=external_id,status`,
-        { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    // WP 0.17 (2026-09-22): fail-closed status lookup -- this used to fail
+    // SOFT per chunk (a failed chunk just left those rows' statuses out of
+    // the map, defaulting only those rows to DEFAULT_STATUS below), which
+    // can silently reset moderation state on exactly the rows whose lookup
+    // chunk failed. The shared helper does its own <=100-id chunking
+    // internally and fails the WHOLE lookup -- zero event writes, HTTP 502
+    // -- if any chunk fails, rather than defaulting any row's status. See
+    // api/_lib/status-lookup.js.
+    let existingStatusByExternalId;
+    try {
+      existingStatusByExternalId = await lookupExistingStatuses(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        rows.map((r) => r.external_id)
       );
-      if (lookupResp.ok) {
-        const existingRows = await lookupResp.json();
-        if (Array.isArray(existingRows)) {
-          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
-        }
-      }
+    } catch (lookupErr) {
+      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      return;
     }
 
     const rowsWithStatus = rows.map((row) => ({

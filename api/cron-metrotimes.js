@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 const {
   buildVenueNameToIdMap,
   resolveVenueId,
@@ -389,24 +390,24 @@ module.exports = async (req, res) => {
     // existing status-preserving lookup above is the established pattern
     // in this project for exactly that hazard. Reused (one extra `select`
     // field, not a new request) rather than adding a second lookup.
-    const idList = rows.map((r) => r.external_id).join(",");
-    const existingByExternalId = new Map();
+    // WP 0.17 (2026-09-22): fail-closed status lookup -- a failed lookup
+    // (non-OK response, thrown network error, or an unusable response body)
+    // must never silently default every row to DEFAULT_STATUS (D7). See
+    // api/_lib/status-lookup.js for the full rationale and the chunking
+    // (<=100 ids/request) this also fixes. Any failure aborts this run
+    // entirely -- zero event writes, HTTP 502 -- rather than falling back
+    // to an empty map the way this connector used to.
+    let existingByExternalId;
     try {
-      const lookupResp = await fetch(
-        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status,venue_address_raw,venue_city_raw`,
-        { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+      existingByExternalId = await lookupExistingRows(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,venue_address_raw,venue_city_raw" }
       );
-      if (lookupResp.ok) {
-        const existingRows = await lookupResp.json();
-        if (Array.isArray(existingRows)) {
-          existingRows.forEach((row) => existingByExternalId.set(row.external_id, row));
-        }
-      }
-    } catch {
-      // Lookup failed — fall through with an empty map, same as this
-      // scraper's first-ever run. venue_address_raw/venue_city_raw below
-      // then fall straight to the Metro Times/SH.1 tiers, same as a
-      // brand-new row would.
+    } catch (lookupErr) {
+      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      return;
     }
 
     // SH.4 address/city precedence, per row (never touches any other

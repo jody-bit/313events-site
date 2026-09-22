@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 // Vercel Cron job — pulls Popps Packing's "Events" blog category (a home,
 // studio, and experimental arts space in Hamtramck). Added 2026-09-13 at
 // Jody's request, after a friend (Mark) mentioned performing at Popps
@@ -311,22 +312,29 @@ module.exports = async (req, res) => {
     // correction a reviewer made in admin.html back to this scraper's best
     // guess the very next day. Status was already preserved this way; date/
     // time now are too.
-    const idList = rowsWithVenue.map((r) => r.external_id).join(",");
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status,start_date,time_display`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
-    const existingByExternalId = new Map();
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingRows.forEach((row) => existingByExternalId.set(row.external_id, row));
-      }
+    // WP 0.17 (2026-09-22): fail-closed status lookup -- a failed lookup
+    // used to fall through with an empty map, treating every row as
+    // brand-new: status reset to DEFAULT_STATUS AND this scraper's
+    // guessed start_date/time_display re-sent, undoing a reviewer's WP 0.8
+    // correction. Uses the shared helper's lookupExistingRows() (not
+    // lookupExistingStatuses()) so the extra start_date/time_display
+    // columns this connector also needs stay on the one shared,
+    // fail-closed, chunked (<=100 ids/request) code path instead of a
+    // second, subtly different hand-rolled implementation. See
+    // api/_lib/status-lookup.js. Any failure now aborts this run entirely
+    // -- zero event writes, HTTP 502.
+    let existingByExternalId;
+    try {
+      existingByExternalId = await lookupExistingRows(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        rowsWithVenue.map((r) => r.external_id),
+        { select: "external_id,status,start_date,time_display" }
+      );
+    } catch (lookupErr) {
+      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      return;
     }
-    // Lookup failure falls through with an empty map — every row is treated
-    // as brand-new (status defaults to DEFAULT_STATUS, start_date/
-    // time_display are sent as usual), same as this scraper's first-ever
-    // run, same fail-soft posture as every other field here.
 
     // PostgREST's mixed-key bulk-upsert behavior for one batch containing
     // objects with different key sets is still unverified project-wide

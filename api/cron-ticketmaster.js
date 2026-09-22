@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
+const { lookupExistingStatuses } = require("./_lib/status-lookup");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
 // Discovery API and upserts them straight into Supabase as status='approved'
@@ -351,22 +352,23 @@ module.exports = async (req, res) => {
     // DEFAULT_STATUS by this merge-duplicates upsert. 2026-09-02 fix for the
     // status-clobbering bug — see cron-lagerhouse.js's header comment for
     // the full story.
-    const idList = rows.map((r) => r.external_id).join(",");
-    const existingStatusByExternalId = new Map();
+    // WP 0.17 (2026-09-22): fail-closed status lookup -- a failed lookup
+    // (non-OK response, thrown network error, or an unusable response body)
+    // must never silently default every row to DEFAULT_STATUS (D7). See
+    // api/_lib/status-lookup.js for the full rationale and the chunking
+    // (<=100 ids/request) this also fixes. Any failure aborts this run
+    // entirely -- zero event writes, HTTP 502 -- rather than falling back
+    // to an empty map the way this connector used to.
+    let existingStatusByExternalId;
     try {
-      const lookupResp = await fetch(
-        `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
-        { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+      existingStatusByExternalId = await lookupExistingStatuses(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        rows.map((r) => r.external_id)
       );
-      if (lookupResp.ok) {
-        const existingRows = await lookupResp.json();
-        if (Array.isArray(existingRows)) {
-          existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
-        }
-      }
-    } catch {
-      // Lookup failed — fall through with an empty map, same as this
-      // scraper's first-ever run.
+    } catch (lookupErr) {
+      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      return;
     }
     const rowsWithStatus = rows.map((row) => ({
       ...row,

@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { lookupExistingStatuses } = require("./_lib/status-lookup");
 // Vercel Cron job — pulls upcoming course sessions from Detroit Training
 // Center (detroittraining.com). Added 2026-09-18, Jody: "can we mine this
 // for events? this would go into classes & training" — see
@@ -282,17 +283,22 @@ module.exports = async (req, res) => {
   const rowsWithVenue = rows.map((r) => ({ ...r, venue_id: venueId }));
 
   try {
-    const idList = rowsWithVenue.map((r) => r.external_id).join(",");
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
-    const existingStatusByExternalId = new Map();
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
-      }
+    // WP 0.17 (2026-09-22): fail-closed status lookup -- previously this
+    // had no inner try/catch at all (a thrown network error would
+    // propagate uncontrolled) and a non-OK response fell through silently
+    // to an empty map, defaulting every row to DEFAULT_STATUS (D7). See
+    // api/_lib/status-lookup.js. Any failure now aborts this run entirely
+    // -- zero event writes, HTTP 502 -- rather than either of those.
+    let existingStatusByExternalId;
+    try {
+      existingStatusByExternalId = await lookupExistingStatuses(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        rowsWithVenue.map((r) => r.external_id)
+      );
+    } catch (lookupErr) {
+      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      return;
     }
 
     const rowsWithStatus = rowsWithVenue.map((row) => ({

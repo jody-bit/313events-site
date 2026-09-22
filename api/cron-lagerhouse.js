@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
+const { lookupExistingStatuses } = require("./_lib/status-lookup");
 // Vercel Cron job — pulls Lager House (Corktown, Detroit) shows straight from
 // thelagerhouse.com/events. Added 2026-09-02 at Jody's request ("We must add
 // in Lager house events to the database").
@@ -261,17 +262,28 @@ module.exports = async (req, res) => {
     // approve/reject decision on an existing row survives this upsert
     // instead of being silently reset to DEFAULT_STATUS every run — see the
     // file-header comment for the bug this avoids.
-    const idList = rows.map((r) => r.external_id).join(",");
-    const lookupResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?external_id=in.(${idList})&select=external_id,status`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
-    const existingStatusByExternalId = new Map();
-    if (lookupResp.ok) {
-      const existingRows = await lookupResp.json();
-      if (Array.isArray(existingRows)) {
-        existingRows.forEach((row) => existingStatusByExternalId.set(row.external_id, row.status));
-      }
+    // WP 0.17 (2026-09-22): fail-closed status lookup -- a failed lookup
+    // (non-OK response, thrown network error, or an unusable response body)
+    // must never silently default every row to DEFAULT_STATUS (D7). See
+    // api/_lib/status-lookup.js for the full rationale and the chunking
+    // (<=100 ids/request) this also fixes. Any failure aborts this run
+    // entirely -- zero event writes, HTTP 502 -- rather than falling back
+    // to an empty map the way this connector used to.
+    let existingStatusByExternalId;
+    try {
+      existingStatusByExternalId = await lookupExistingStatuses(
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        rows.map((r) => r.external_id)
+      );
+    } catch (lookupErr) {
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: 502,
+        error_sample: "Status lookup failed: " + lookupErr.message,
+      });
+      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      return;
     }
     // If the lookup itself fails, fall through with an empty map — every row
     // just defaults to DEFAULT_STATUS, same as this scraper's first-ever

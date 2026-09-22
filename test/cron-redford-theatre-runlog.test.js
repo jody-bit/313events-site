@@ -347,6 +347,33 @@ async function run() {
   }
   console.log("PASS: a detail-page fetch failure fails soft -- base row still writes, description/ticket_url stay null");
 
+  // --- WP 0.17 (2026-09-22): a failed status lookup must abort the run
+  // entirely -- ZERO event writes, HTTP 502 -- never fall through to an
+  // empty map and default every row to DEFAULT_STATUS (the D7 bug this WP
+  // closes). This is the write-safety invariant's connector-level proof:
+  // STATUS LOOKUP FAILURE -> ZERO EVENT WRITES. ---
+  {
+    const handler = freshHandler();
+    const href = "https://redfordtheatre.com/events/a-classic-film-1985/";
+    const { fetchFn, calls } = makeMockFetch({
+      source: () => ({ ok: true, status: 200, text: async () => redfordEventLi({ href }) }),
+      statusLookup: () => ({ ok: false, status: 500, text: async () => "status lookup boom" }),
+    });
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+
+    assert.strictEqual(res._status, 502, "a failed status lookup must abort with HTTP 502");
+    assert.strictEqual(res._body.upserted, 0, "a failed status lookup must result in zero event writes");
+    const upsertCall = calls.find((c) => c.url.includes("/rest/v1/events") && c.opts.method === "POST");
+    assert.strictEqual(upsertCall, undefined, "no POST to /rest/v1/events may occur when the status lookup fails");
+    const patches = patchCalls(calls);
+    assert.strictEqual(patches.length, 1, "the failed run must still be logged (finishRun is itself fail-safe)");
+    assert.strictEqual(patches[0].body.outcome, "failed");
+    assert.strictEqual(patches[0].body.http_status, 502);
+  }
+  console.log("PASS: WP 0.17 -- a failed status lookup aborts with zero event writes and HTTP 502");
+
   console.log("\nAll cron-redford-theatre.js WP 0.5 integration tests passed.");
 }
 

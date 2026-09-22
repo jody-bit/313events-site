@@ -214,13 +214,18 @@ async function run() {
   }
   console.log("PASS: with no page.link and no existing value, event_url stays null — never guessed");
 
-  // --- 10. lookup request itself fails -> falls through to this run's
-  //     parsed value (same fail-soft shape as the pre-existing status
-  //     lookup) ---
+  // --- 10. lookup request itself fails -> WP 0.17 (2026-09-22): the
+  //     shared existing-value/status lookup is now fail-CLOSED, not
+  //     fail-soft. A failed lookup must abort the whole run -- zero event
+  //     writes, HTTP 502 -- never fall through to this run's parsed value
+  //     the way it used to (that fail-soft fallback was itself an
+  //     instance of the D7 bug WP 0.17 closes: it could silently reset a
+  //     previously-rejected row's status to DEFAULT_STATUS just as easily
+  //     as it filled in event_url). ---
   {
     const handler = freshHandler();
     const upsertCapture = {};
-    const { fetchFn } = makeMockFetch({
+    const { fetchFn, calls } = makeMockFetch({
       source: () => ({ ok: true, status: 200, json: async () => [divPage({ id: 1, link: "https://cinemadetroit.org/a-film/" })] }),
       statusLookup: () => ({ ok: false, status: 500, json: async () => ({}) }),
       upsertCapture,
@@ -228,12 +233,12 @@ async function run() {
     global.fetch = fetchFn;
     const res = makeRes();
     await handler({ headers: {} }, res);
-    assert.strictEqual(res._status, 200);
-    const row = upsertCapture.body[0];
-    assert.strictEqual(row.event_url, "https://cinemadetroit.org/a-film/", "a failed lookup must fall through to this run's parsed value, same as status's existing fail-soft behavior");
-    assert.strictEqual(row.status, "approved", "a failed lookup must also fall through to DEFAULT_STATUS, unchanged pre-existing behavior");
+    assert.strictEqual(res._status, 502, "a failed existing-value/status lookup must now abort with HTTP 502");
+    assert.strictEqual(res._body.upserted, 0, "a failed lookup must result in zero event writes");
+    const upsertCall = calls.find((c) => c.url.includes("/rest/v1/events") && c.opts.method === "POST");
+    assert.strictEqual(upsertCall, undefined, "no POST to /rest/v1/events may occur when the lookup fails");
   }
-  console.log("PASS: a failed existing-value lookup fails soft — falls through to this run's parsed event_url, same as the pre-existing status lookup");
+  console.log("PASS: WP 0.17 -- a failed existing-value/status lookup now aborts with zero event writes and HTTP 502 (no longer fails soft)");
 
   // --- 11. only one extra select field on the existing lookup request —
   //     no new network request is introduced ---
