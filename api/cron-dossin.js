@@ -69,6 +69,16 @@ const DEFAULT_STATUS = "approved";
 // guess (NO EVIDENCE -> NO ENRICHMENT).
 const VENUE_ADDRESS = "100 Strand Dr";
 const VENUE_CITY = "Detroit";
+const SOURCE_NAME = "Detroit Historical Society";
+
+// Extracted 2026-09-23 (Dossin metadata repair) so scripts/dossin-
+// metadata-repair.js can compute the identical id a freshly-parsed event
+// would get, to match it against an already-upserted database row --
+// same formula this file always used, just named and exported instead of
+// inlined, so there is exactly one place it's defined.
+function dossinExternalId(date, title) {
+  return `dossin-${date}-${title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250);
+}
 
 const MONTHS = {
   january: "01", february: "02", march: "03", april: "04", may: "05", june: "06",
@@ -118,6 +128,21 @@ function htmlToLines(html) {
   const text = decodeEntities(html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    // 2026-09-23 (Dossin metadata repair): parseDossinEvents()'s own header
+    // comment above documents -- from a real, previously-verified live
+    // fetch, diffed line-by-line during the 2026-09-21 BUG-002 incident --
+    // that each event on this page ends with a "LEARN MORE" link. Its href
+    // was always discarded by the generic tag-strip below; this converts
+    // ONLY that specific anchor (visible text exactly "learn more",
+    // case/whitespace insensitive) into a sentinel line preserving the
+    // href, before the generic strip runs. Deliberately narrow: any other
+    // link, or a "learn more" anchor with nested markup inside it, simply
+    // doesn't match and falls through to the exact same behavior as
+    // before this line existed (a plain stripped text line, href lost) --
+    // this can only ever ADD a line's worth of information, never remove
+    // or reorder any existing line, so it cannot change the title/venue
+    // date/time extraction below, which reads lines purely by position.
+    .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>\s*learn\s*more\s*<\/a>/gi, "\n__DOSSIN_LEARN_MORE_URL__$1__\n")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/(p|div|li|h[1-6]|tr|article)>/gi, "\n")
     .replace(/<[^>]+>/g, ""));
@@ -150,6 +175,7 @@ function parseDossinEvents(html) {
     const date = `${dtMatch[3]}-${month}-${dtMatch[2].padStart(2, "0")}`;
 
     let time = null;
+    let consumedContinuationLine = false;
     if (dtMatch[4]) {
       let start = dtMatch[4].trim();
       let end = dtMatch[5] ? dtMatch[5].trim() : null;
@@ -160,7 +186,7 @@ function parseDossinEvents(html) {
       // BUG-002 comment above).
       if (!end) {
         const cont = lines[i + 1] && lines[i + 1].match(END_TIME_CONTINUATION_LINE);
-        if (cont) end = cont[1].trim();
+        if (cont) { end = cont[1].trim(); consumedContinuationLine = true; }
       }
 
       if (end) {
@@ -177,7 +203,19 @@ function parseDossinEvents(html) {
       }
     }
 
-    events.push({ title: titleLine, date, time });
+    // 2026-09-23 (Dossin metadata repair): the "LEARN MORE" line is the
+    // very next line after the date/time block -- one line further still
+    // when an end-time continuation line was consumed just above. Only
+    // ever set when htmlToLines()'s sentinel actually matched a real
+    // per-event anchor; never guessed, never a fallback to any other line.
+    let event_url = null;
+    const learnMoreLine = lines[i + 1 + (consumedContinuationLine ? 1 : 0)];
+    if (learnMoreLine) {
+      const linkMatch = learnMoreLine.match(/^__DOSSIN_LEARN_MORE_URL__(.+)__$/);
+      if (linkMatch) event_url = linkMatch[1];
+    }
+
+    events.push({ title: titleLine, date, time, event_url });
   }
 
   return events;
@@ -247,7 +285,7 @@ const handler = async (req, res) => {
   const venueId = resolveVenueId(venueMap, VENUE_NAME);
 
   const rawRows = parsed.map((e) => ({
-    external_id: `dossin-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
+    external_id: dossinExternalId(e.date, e.title),
     title: e.title,
     category: "museum",
     venue_name_raw: VENUE_NAME,
@@ -257,7 +295,13 @@ const handler = async (req, res) => {
     start_date: e.date,
     time_display: e.time,
     is_free: false,
-    source: "Detroit Historical Society",
+    source: SOURCE_NAME,
+    // Deliberately NOT setting event_url here -- this WP only adds the
+    // ABILITY to parse it (for scripts/dossin-metadata-repair.js's reuse,
+    // see that file), it does not change what this cron itself writes on
+    // a normal scheduled run. Scope stays exactly what the Product Owner
+    // asked for: repair EXISTING rows via Auto-Repair, not a change to
+    // this connector's own ongoing upsert behavior.
   }));
 
   // De-dupe by external_id before sending — Postgres's ON CONFLICT DO UPDATE
@@ -347,3 +391,9 @@ const handler = async (req, res) => {
 
 module.exports = handler;
 module.exports.parseDossinEvents = parseDossinEvents; // exposed for test/cron-dossin-parse.test.js only
+// Exposed for scripts/dossin-metadata-repair.js reuse (2026-09-23) -- same
+// reasoning as api/cron-outerlimitslounge.js's own exports: one parser for
+// this source, reused by the repair script rather than duplicated.
+module.exports.dossinExternalId = dossinExternalId;
+module.exports.SOURCE_URL = SOURCE_URL;
+module.exports.SOURCE_NAME = SOURCE_NAME;

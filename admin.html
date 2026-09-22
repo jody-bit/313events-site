@@ -249,7 +249,7 @@
         <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
         <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
         <div class="refresh" style="margin:0 0 12px;"><button id="autoRepairBtn" onclick="autoRepairFollowup()">Auto-Repair</button><span class="refresh-status" id="autoRepairStatus"></span></div>
-        <div class="sub" style="margin-top:-4px;">Auto-Repair fills in venue address/city (SH.1's deterministic canonical/learned venue lookup) and, for Outer Limits Lounge events, a blank description pulled straight from that venue's own live event page — only ever when the source itself has real event-specific text. Never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its missing fields is actually resolved.</div>
+        <div class="sub" style="margin-top:-4px;">Auto-Repair fills in venue address/city (SH.1's deterministic canonical/learned venue lookup); for Outer Limits Lounge, a blank description pulled from that venue's own live event page; and for Detroit Historical Society/Dossin, a blank ticket/event link pulled from that venue's own "Learn More" link — only ever when the source itself has real, event-specific data (a link shared by more than one event is treated as generic and never used). Never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its missing fields is actually resolved.</div>
         <div class="err" id="incompleteError" style="display:none;"></div>
         <div id="followupBreakdown"></div>
         <div id="incompleteList"></div>
@@ -621,6 +621,14 @@ async function autoRepairFollowup() {
       // what otherwise reads as a clean success line.
       if (data.outerLimitsDescriptionError) {
         summary += ` Outer Limits description repair failed: ${data.outerLimitsDescriptionError}.`;
+        statusEl.classList.add('refresh-error');
+      }
+      // 2026-09-23: same isolation for the third step -- authoritative
+      // Dossin/Detroit Historical Society event_url recovery. Its own
+      // failure is appended and flagged the same way, independently of
+      // whether the other two steps succeeded or failed.
+      if (data.dossinMetadataError) {
+        summary += ` Dossin metadata repair failed: ${data.dossinMetadataError}.`;
         statusEl.classList.add('refresh-error');
       }
       statusEl.textContent = summary;

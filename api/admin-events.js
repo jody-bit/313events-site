@@ -54,9 +54,15 @@ const crypto = require("crypto");
 //                     description recovery (scripts/outerlimits-description-repair.js's
 //                     repairOuterLimitsDescriptions(), reusing api/cron-outerlimitslounge.js's own
 //                     Squarespace fetch/parse logic) against Outer Limits events still missing a
-//                     description. Same blank-only, never-overwrite, race-safe-PATCH guarantees as
-//                     both scripts' own tests already prove. A step-2 failure never discards step 1's
-//                     real results — see the action's own handler comment below.
+//                     description, then (3, added 2026-09-23) authoritative Detroit Historical
+//                     Society/Dossin Great Lakes Museum event_url recovery (scripts/dossin-metadata-
+//                     repair.js's repairDossinMetadata(), reusing api/cron-dossin.js's own page
+//                     fetch/parse logic) against Dossin events still missing both ticket_url and
+//                     event_url — only via that source's own per-event "LEARN MORE" link, and only
+//                     when that link isn't shared by more than one event in the same fetch. Same
+//                     blank-only, never-overwrite, race-safe-PATCH guarantees as all three scripts'
+//                     own tests already prove. A later step's failure never discards an earlier
+//                     step's real results — see the action's own handler comment below.
 // "hide" and "reject" both land on the same event_status enum value
 // ('rejected') — there's no separate DB status for "was live, then pulled"
 // vs. "a submission we declined." Adding one would need a Postgres enum
@@ -384,13 +390,27 @@ module.exports = async (req, res) => {
     // partial success is still reported honestly, never as a silent full
     // failure or a false full success.
     //
-    // This endpoint adds no new venue/description repair DECISION logic of
-    // its own in either step -- it only sequences two already-proven
-    // mechanisms and exposes their combined result to Admin. `written` and
-    // `fieldsWritten` below report the UNION of events either step actually
-    // touched (an event can need both kinds of repair at once; summing the
-    // two steps' own counters alone would double-count that event as two
-    // "events repaired").
+    // Step 3 (2026-09-23): authoritative Detroit Historical Society /
+    // Dossin Great Lakes Museum event_url recovery
+    // (scripts/dossin-metadata-repair.js's repairDossinMetadata()) -- 4
+    // current cards flagged DESCRIPTION + TICKET/EVENT LINK. Reuses
+    // api/cron-dossin.js's own parseDossinEvents()/dossinExternalId()
+    // (there is exactly one parser for this source). Only ever fills
+    // event_url from the source's own per-event "LEARN MORE" link, and
+    // only when that link isn't shared by more than one event in the same
+    // fetch (see that script's own generic-link-guard comment) -- never
+    // description (the source page has no description data at all, a
+    // separately-investigated, honestly-reported limitation, same as
+    // Trinosophes), never a fabricated ticket_url. Same failure-isolation
+    // pattern as Step 2: a failure here never discards Steps 1/2's real
+    // results.
+    //
+    // This endpoint adds no new repair DECISION logic of its own in any
+    // step -- it only sequences three already-proven mechanisms and
+    // exposes their combined result to Admin. `written` and `fieldsWritten`
+    // below report the UNION of events any step actually touched (an
+    // event can need more than one kind of repair at once; summing each
+    // step's own counters alone would double-count that event).
     if (action === "auto_repair_venue") {
       try {
         const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
@@ -408,10 +428,26 @@ module.exports = async (req, res) => {
           outerLimitsDescriptionError = descErr.message;
         }
 
+        let dossinCounts = null;
+        let dossinMetadataError = null;
+        try {
+          const { repairDossinMetadata } = require("../scripts/dossin-metadata-repair");
+          dossinCounts = await repairDossinMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (dossinErr) {
+          // Same isolation as Step 2's own failure handling -- never lets a
+          // Dossin-step failure erase Steps 1/2's real, already-persisted
+          // results.
+          dossinMetadataError = dossinErr.message;
+        }
+
         const venueWrittenIds = venueCounts.writtenIds || [];
         const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds]);
-        const combinedFieldsWritten = venueCounts.fieldsWritten + ((descriptionCounts && descriptionCounts.written) || 0);
+        const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds]);
+        const combinedFieldsWritten =
+          venueCounts.fieldsWritten +
+          ((descriptionCounts && descriptionCounts.written) || 0) +
+          ((dossinCounts && dossinCounts.written) || 0);
 
         res.status(200).json({
           ok: true,
@@ -421,6 +457,8 @@ module.exports = async (req, res) => {
           venue: venueCounts,
           outerLimitsDescription: descriptionCounts,
           outerLimitsDescriptionError,
+          dossinMetadata: dossinCounts,
+          dossinMetadataError,
         });
       } catch (err) {
         res.status(500).json({ error: err.message });
