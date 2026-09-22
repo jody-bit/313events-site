@@ -45,6 +45,13 @@ const crypto = require("crypto");
 //                     venue_city_raw?, ticket_url?, event_url?, time_display? } } — fills in a
 //                     gap the "Needs follow-up" section flagged. Only ever fills a blank field
 //                     in, never blanks or overwrites one that already has a value from here.
+//   auto_repair_venue: { action: "auto_repair_venue" } (no id — operates on the whole batch) —
+//                     Needs Follow-up's "Auto-Repair" button (2026-09-22, Auto-Repair V1). Runs
+//                     the existing SH.1 venue address/city repair (scripts/sh1-repair-existing-
+//                     venue-address-city.js's repairExistingEvents(), unmodified) against every
+//                     current upcoming pending_review/approved event still missing
+//                     venue_address_raw/venue_city_raw. Same blank-only, never-overwrite,
+//                     race-safe-PATCH guarantees as that script's own tests already prove.
 // "hide" and "reject" both land on the same event_status enum value
 // ('rejected') — there's no separate DB status for "was live, then pulled"
 // vs. "a submission we declined." Adding one would need a Postgres enum
@@ -342,8 +349,34 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // auto_repair_venue (2026-09-22, Auto-Repair V1) -- Needs Follow-up's
+    // "Auto-Repair" button. Takes no `id`; operates on the whole current
+    // batch. Reuses the EXISTING, already-tested SH.1 deterministic venue
+    // address/city repair unmodified -- scripts/sh1-repair-existing-venue-
+    // address-city.js's repairExistingEvents(), which itself calls
+    // api/_lib/venue-lookup.js's resolveVenueAddressCityRepair() (canonical
+    // venue_id, then exact canonical name match, then exact learned-
+    // historical match; never fuzzy, never overwrites a populated field,
+    // never touches any other column) and writes via that script's own
+    // race-safe conditional PATCH (re-asserts each field is still null at
+    // write time; a concurrent change is skipped, never overwritten). This
+    // endpoint adds no new repair logic of its own -- it only exposes that
+    // already-proven mechanism to Admin. V1 scope: venue_address_raw /
+    // venue_city_raw / venue_id only. Description, ticket/event link, and
+    // start time are untouched by this action.
+    if (action === "auto_repair_venue") {
+      try {
+        const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
+        const counts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        res.status(200).json({ ok: true, ...counts });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue' }" });
       return;
     }
 

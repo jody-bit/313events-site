@@ -240,6 +240,8 @@
       <section class="block" style="margin-top:0;">
         <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
         <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
+        <div class="refresh" style="margin:0 0 12px;"><button id="autoRepairBtn" onclick="autoRepairFollowup()">Auto-Repair</button><span class="refresh-status" id="autoRepairStatus"></span></div>
+        <div class="sub" style="margin-top:-4px;">Auto-Repair (V1) fills in venue address/city only, using the same deterministic canonical/learned venue lookup SH.1 already proves safe — never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its missing fields is actually resolved.</div>
         <div class="err" id="incompleteError" style="display:none;"></div>
         <div id="incompleteList"></div>
       </section>
@@ -430,6 +432,14 @@ function getMissingFields(e) {
 // renderIncompleteList(). No caching layer of any kind (browser cache mode,
 // Cache-Control header, localStorage, module-level memoization) was found
 // anywhere in this path.
+// Auto-Repair V1 (2026-09-22) needs a before/after snapshot of exactly
+// which events were flagged and how many fields each was missing, to
+// report "N improved / M no longer need follow-up" after a repair pass.
+// Populated at the end of every successful loadIncomplete() call (Refresh
+// included) so Auto-Repair always compares against the most recent real
+// load, never a stale one.
+let lastFlaggedIncomplete = [];
+
 async function loadIncomplete() {
   const errEl = document.getElementById('incompleteError');
   try {
@@ -443,12 +453,100 @@ async function loadIncomplete() {
     const flagged = (data.events || [])
       .map(e => ({ e, missing: getMissingFields(e) }))
       .filter(x => x.missing.length > 0 && !x.e.followup_dismissed);
+    lastFlaggedIncomplete = flagged;
     setTabBadge('followup', flagged.length);
     renderIncompleteList(flagged);
     return true;
   } catch (err) {
     if (errEl) { errEl.textContent = 'Failed to load Needs follow-up: ' + err.message; errEl.style.display = 'block'; }
     return false;
+  }
+}
+
+// ---- Auto-Repair (V1, 2026-09-22) ----
+// Adds ZERO new repair logic of its own. It (1) POSTs to trigger
+// api/admin-events.js's "auto_repair_venue" action, which itself only
+// calls the existing, already-tested SH.1 mechanism
+// (scripts/sh1-repair-existing-venue-address-city.js's
+// repairExistingEvents()) unmodified, then (2) calls loadIncomplete()
+// again -- the exact same reload-and-recompute path Refresh already uses,
+// not a new one -- so getMissingFields() is re-run against whatever the
+// repair actually wrote, and a card only ever disappears here because a
+// real fresh fetch found it no longer missing anything, never because
+// this function assumed the repair worked. V1 only ever touches venue
+// address/city/venue_id; description, ticket/event link, and start time
+// are unaffected and will still show as missing if they still are.
+async function autoRepairFollowup() {
+  const btn = document.getElementById('autoRepairBtn');
+  const statusEl = document.getElementById('autoRepairStatus');
+  const beforeFlagged = lastFlaggedIncomplete;
+  const beforeCount = beforeFlagged.length;
+  const beforeMissingCountById = new Map(beforeFlagged.map(({ e, missing }) => [e.id, missing.length]));
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Auto-Repairing…'; }
+  if (statusEl) {
+    statusEl.classList.remove('refresh-error');
+    statusEl.textContent = `Auto-repairing ${beforeCount} event${beforeCount === 1 ? '' : 's'}…`;
+  }
+
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ action: 'auto_repair_venue' }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Auto-repair failed'));
+
+    // Reload + recompute -- loadIncomplete()'s own existing path, called
+    // exactly as Refresh calls it. If THIS reload fails, that failure is
+    // surfaced explicitly (loadIncomplete() already shows #incompleteError
+    // on failure) and Auto-Repair's own status line says so too, instead
+    // of silently presenting stale before-repair counts as if they were
+    // the result.
+    const reloadOk = await loadIncomplete();
+    if (!reloadOk) {
+      if (statusEl) {
+        statusEl.textContent = 'Auto-repair ran, but reloading Needs follow-up afterward failed — counts below may be stale. Click Refresh.';
+        statusEl.classList.add('refresh-error');
+      }
+      return;
+    }
+
+    const afterFlagged = lastFlaggedIncomplete;
+    const afterMissingCountById = new Map(afterFlagged.map(({ e, missing }) => [e.id, missing.length]));
+
+    let removedCount = 0;  // was flagged before, not flagged at all now
+    let improvedCount = 0; // still flagged, but with fewer missing fields than before
+    for (const [id, beforeMissingCount] of beforeMissingCountById) {
+      if (!afterMissingCountById.has(id)) {
+        removedCount++;
+      } else if (afterMissingCountById.get(id) < beforeMissingCount) {
+        improvedCount++;
+      }
+    }
+    const remainingCount = afterFlagged.length;
+    const eventsRepaired = data.written || 0;
+    const fieldsRepaired = data.fieldsWritten || 0;
+
+    if (statusEl) {
+      statusEl.classList.remove('refresh-error');
+      statusEl.textContent =
+        `Before: ${beforeCount}. Events repaired: ${eventsRepaired}. Missing fields repaired: ${fieldsRepaired}. ` +
+        `Remaining Needs follow-up: ${remainingCount}. ` +
+        `${improvedCount} event${improvedCount === 1 ? '' : 's'} improved. ` +
+        `${removedCount} no longer need${removedCount === 1 ? 's' : ''} follow-up. ` +
+        `${remainingCount} remain.`;
+    }
+  } catch (err) {
+    // Failure is always shown explicitly here -- never masquerades as a
+    // success summary, even a zero-progress one.
+    if (statusEl) {
+      statusEl.textContent = 'Auto-repair failed: ' + err.message;
+      statusEl.classList.add('refresh-error');
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Auto-Repair'; }
   }
 }
 

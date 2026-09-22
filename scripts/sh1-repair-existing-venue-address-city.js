@@ -126,6 +126,16 @@ async function repairExistingEvents({
     repairableFromCanonicalName: 0,
     repairableFromLearnedHistorical: 0,
     written: 0,
+    // Auto-Repair V1 (2026-09-22, api/admin-events.js's "auto_repair_venue"
+    // action): distinct from `written` (events actually patched) -- an
+    // event can have BOTH venue_address_raw and venue_city_raw blank at
+    // once, which is one written event but two repaired fields. Admin's
+    // Auto-Repair button reports both ("Events repaired" vs "Missing
+    // fields repaired") since the Product Owner asked for the field-level
+    // count specifically, not just the event-level one. Purely additive:
+    // counted only when applyPatchFn() actually reports the write applied,
+    // never for a dry-run or a skipped-by-concurrent-write patch.
+    fieldsWritten: 0,
     skippedConcurrentChange: 0,
     unresolved: 0,
   };
@@ -163,6 +173,7 @@ async function repairExistingEvents({
     const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, patch);
     if (applied) {
       counts.written++;
+      counts.fieldsWritten += Object.keys(patch).length;
     } else {
       counts.skippedConcurrentChange++;
       logger.warn(`Skipped event ${event.id} — a field in ${JSON.stringify(patch)} was no longer null at write time (concurrent change).`);
