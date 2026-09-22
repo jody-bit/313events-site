@@ -6829,22 +6829,80 @@ function computeNeighborhoodCounts(){
   return [...counts.entries()].sort((a,b)=> b[1]-a[1]);
 }
 
-// Real per-neighborhood photography, added as it exists (2026-09-14: Jody's
-// own photos, geotagged and confirmed against her own knowledge of where
-// they were actually taken — not guessed from the image alone; see e.g. the
-// stone-bridge photo, which reads visually like Belle Isle but is actually
-// Elmwood Cemetery, per Jody — see "Eastside Historic Cemetery District"
-// below, the neighborhood's real, official name). Deliberately a sparse
-// allow-list, not a fallback/placeholder system — the original design call
-// here (see the .neighborhoods-section CSS comment) was "photo-less
-// typographic cards" specifically to avoid mismatching a generic Detroit
-// photo to the wrong neighborhood or reusing one photo everywhere; a
-// neighborhood with no entry below still renders as a plain typographic
-// card, exactly as before.
+// Real per-neighborhood photography, added as it exists. Two sources now:
+// (1) 2026-09-14: Jody's own photos, geotagged and confirmed against her
+// own knowledge of where they were actually taken — not guessed from the
+// image alone; see e.g. the stone-bridge photo, which reads visually like
+// Belle Isle but is actually Elmwood Cemetery, per Jody — see "Eastside
+// Historic Cemetery District" below, the neighborhood's real, official
+// name. (2) 2026-09-22, per explicit Product Owner direction: properly-
+// licensed Wikimedia Commons photography, hotlinked (src, full URL)
+// rather than downloaded/re-hosted — this environment could not fetch
+// commons.wikimedia.org to resolve or verify file details (confirmed
+// "cache-only, cannot be fetched"), and the Product Owner chose hotlinking
+// over supplying the files directly for local hosting. Every hotlinked
+// entry's URL was derived from Wikimedia's own documented MD5(filename)
+// hash-directory convention (verified against the one working example URL
+// the Product Owner supplied — same first-two-hex-digit path — not
+// guessed), not fetched or scraped. `credit` is a short, visible
+// (title-attribute) source line for the hotlinked entries, per explicit
+// Product Owner decision to use a generic "Wikimedia Commons" credit
+// rather than a named photographer (author names weren't available —
+// same fetch-access gap). This revises the original "Jody's own
+// photography only" design call recorded below and in the
+// .neighborhoods-section CSS comment above — but that principle's actual
+// intent (never mismatch a generic Detroit photo to the wrong
+// neighborhood) is still honored: every Commons photo below was chosen by
+// the Product Owner for one specific, correctly-identified neighborhood,
+// not picked generically or reused across cards. Deliberately still a
+// sparse allow-list, not a fallback/placeholder system — a neighborhood
+// with no entry below still renders as a plain typographic card, exactly
+// as before.
+//
+// Name-mapping note (2026-09-22, Product Owner decision): three of the
+// neighborhoods named for a Commons photo aren't exact matches to this
+// file's canonical 39-name list (see the neighborhood entries in
+// DETROIT_LOCATIONS above) — mapped onto the closest existing name, per
+// explicit instruction, rather than added as new entries: "District
+// Detroit" -> Downtown, "Cass Corridor" -> Midtown, "Fitzgerald-Marygrove"
+// -> Fitzgerald. The Cass Corridor -> Midtown mapping was then superseded:
+// the Product Owner separately chose to replace Midtown's existing photo
+// with the Detroit Institute of Arts image instead, so the Cass Corridor
+// photo has no card left to appear on and was dropped rather than force a
+// conflict on one card. Two other requested photos — "Eastern Market" and
+// the original "Downtown" (Campus Martius) request — each linked a
+// Wikimedia Commons *category* page, not a specific photo, so neither
+// could be resolved to one actual image; neither is included here.
 const NEIGHBORHOOD_PHOTOS = {
+  "Downtown": {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Detroit_August_2025_31_%28Fox_Theatre%29.jpg/500px-Detroit_August_2025_31_%28Fox_Theatre%29.jpg',
+    alt: 'The Fox Theatre marquee and facade in downtown Detroit.',
+    credit: 'Photo: Wikimedia Commons'
+  },
   "Midtown": {
-    file: '313-events-neighborhood-midtown.webp',
-    alt: 'A dense street-festival crowd at dusk in Midtown Detroit, tents and Victorian houses along the block behind them.'
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Detroit_institute_of_arts%2C_esterno_01.jpg/500px-Detroit_institute_of_arts%2C_esterno_01.jpg',
+    alt: 'The exterior facade of the Detroit Institute of Arts in Midtown Detroit.',
+    credit: 'Photo: Wikimedia Commons, CC BY 3.0'
+  },
+  "North Corktown": {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/North_Corktown%2C_Detroit_neighborhood.jpg/500px-North_Corktown%2C_Detroit_neighborhood.jpg',
+    alt: 'A street view of the North Corktown neighborhood in Detroit.',
+    credit: 'Photo: Wikimedia Commons, public domain'
+  },
+  "Mexicantown / Southwest Detroit": {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Mexicantown_-_Southwest_Detroit%2C_Detroit%2C_MI%2C_USA_-_panoramio.jpg/500px-Mexicantown_-_Southwest_Detroit%2C_Detroit%2C_MI%2C_USA_-_panoramio.jpg',
+    alt: 'A street scene in the Mexicantown / Southwest Detroit neighborhood.',
+    credit: 'Photo: Wikimedia Commons'
+  },
+  "Old Redford": {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/RedfordTheatreMarquee.jpg/500px-RedfordTheatreMarquee.jpg',
+    alt: 'The marquee of the Redford Theatre in the Old Redford neighborhood.',
+    credit: 'Photo: Wikimedia Commons, CC BY 3.0'
+  },
+  "Fitzgerald": {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG/500px-Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG',
+    alt: 'Madame Cadillac Hall at Marygrove College in the Fitzgerald neighborhood.',
+    credit: 'Photo: Wikimedia Commons'
   },
   "Eastside Historic Cemetery District": {
     file: '313-events-neighborhood-eastside-historic-cemetery-district.webp',
@@ -6861,8 +6919,14 @@ function renderNeighborhoodsRail(){
   section.style.display = '';
   rail.innerHTML = counts.map(([name, count])=>{
     const photo = NEIGHBORHOOD_PHOTOS[name];
-    const photoHtml = photo
-      ? `<img class="neigh-photo" src="/assets/photography/neighborhoods/${photo.file}" alt="${escapeHtml(photo.alt)}" loading="lazy" width="720" height="405">`
+    // photo.src (a full external URL, e.g. a hotlinked Wikimedia Commons
+    // image) takes precedence when present; otherwise fall back to a local
+    // file under /assets/photography/neighborhoods (Jody's own photos).
+    // photo.credit, when present, renders as a visible hover tooltip
+    // (title attribute) — set only on hotlinked, non-Jody's-own entries.
+    const photoSrc = photo && (photo.src || (photo.file ? `/assets/photography/neighborhoods/${photo.file}` : null));
+    const photoHtml = photoSrc
+      ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
       : '';
     return `
     <button type="button" class="neigh-card${photo?' has-photo':''}${neighborhoodFilter===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
