@@ -9,7 +9,13 @@
 // (never throws) on an unknown one.
 //
 // SCOPE (Product Owner decision, 2026-09-21): exactly the 20 event-
-// ingestion handlers WP 0.5 covers.
+// ingestion handlers WP 0.5 covers, GROWN TO 21 on 2026-09-22 when
+// cron-gottagacha.js was added -- every new event-ingestion connector is
+// born with source_runs instrumentation from day one (explicit Product
+// Owner instruction: "This new connector MUST be born with source_runs
+// instrumentation... Do not create another connector that immediately
+// becomes observability debt"), so the registry is expected to keep
+// growing by exactly one entry per new connector, not re-locked at 20.
 //   - cron-editorial.js is explicitly OUT OF SCOPE: it writes
 //     editorial_articles/editorial_article_events, never events.
 //     source_runs represents event-source ingestion runs, not editorial
@@ -49,6 +55,7 @@ const SOURCE_SLUGS = Object.freeze([
   { slug: "poppspacking", file: "cron-poppspacking.js", label: "Popps Packing" },
   { slug: "oldmiami", file: "cron-oldmiami.js", label: "The Old Miami" },
   { slug: "detroittraining", file: "cron-detroittraining.js", label: "Detroit Training Center" },
+  { slug: "gottagacha", file: "cron-gottagacha.js", label: "GottaGacha" },
   { slug: "metrotimes", file: "cron-metrotimes.js", label: "Metro Times" },
   { slug: "detroitmonthofdesign", file: "cron-detroitmonthofdesign.js", label: "Detroit Month of Design" },
   { slug: "playgrounddetroit", file: "cron-playgrounddetroit.js", label: "PLAYGROUND DETROIT" },
