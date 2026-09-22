@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 
 // Vercel Cron job — pulls Outer Limits Lounge's own show calendar straight
 // from Squarespace's own structured JSON feed for the page, discovered
@@ -25,16 +25,31 @@ const { lookupExistingStatuses } = require("./_lib/status-lookup");
 // schedule like Ticketmaster/VisitDetroit rather than needing Jody to send
 // screenshots.
 //
-// ** WHAT'S NOT IN THIS FEED ** — no description, no ticket link, no price,
-// and no reliable per-event flyer image (the "upcoming" listing includes an
-// `assetUrl` base path, but it does not resolve to an actual image for a
-// show that has no cover image attached in Squarespace, which is most of
-// them — confirmed by checking a specific event's own item JSON). Rather
-// than guess at any of these, description/image_url/price_from are left
-// null and ticket_url instead points at the event's own page on
-// outerlimitslounge.com — the same "link back to the real source rather
-// than invent one" fallback used everywhere else in this project (RA's
-// fallback button, the Paris Bar Instagram-post links).
+// ** WHAT'S NOT IN THIS FEED ** — no price, and no reliable per-event
+// flyer image (the "upcoming" listing includes an `assetUrl` base path,
+// but it does not resolve to an actual image for a show that has no cover
+// image attached in Squarespace, which is most of them — confirmed by
+// checking a specific event's own item JSON). Rather than guess at either
+// of these, image_url/price_from are left null and ticket_url instead
+// points at the event's own page on outerlimitslounge.com — the same
+// "link back to the real source rather than invent one" fallback used
+// everywhere else in this project (RA's fallback button, the Paris Bar
+// Instagram-post links).
+//
+// ** DESCRIPTION ** — corrected 2026-09-22: this line originally read "no
+// description" too, but the code right below has always tried item.body/
+// item.excerpt (see stripHtml() and its call site) — that part of this
+// comment was simply wrong from the start, not a later change. Live-
+// reconfirmed 2026-09-22 while investigating a Needs Follow-up report:
+// Squarespace's own "Post Body" text block genuinely does carry a real,
+// event-specific write-up (an artist bio, a lineup blurb) for roughly
+// 30 of the venue's 53 currently-upcoming listings — about 23, dominated
+// by the recurring "Karaoke with Polish John!" night, simply have no Post
+// Body content at all on the source itself, which is why their
+// description is null: a genuine gap in what the venue publishes, not
+// something this scraper is discarding. See the description-preserving
+// fix in the upsert block below for why an existing nonblank description
+// is never overwritten by a later blank scrape.
 //
 // ** VENUE ** — every event on this page is at Outer Limits Lounge itself
 // (5507 Caniff Street, Hamtramck) — confirmed via the feed's own
@@ -255,12 +270,31 @@ module.exports = async (req, res) => {
     // (<=100 ids/request) this also fixes. Any failure aborts this run
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
-    let existingStatusByExternalId;
+    //
+    // Needs Follow-up burn-down (2026-09-22): also fetches `description`
+    // alongside `status`, for the same reason status is fetched -- this
+    // connector recomputes `description` fresh from the source's own
+    // Squarespace "Post Body" block on every single run (about 23 of the
+    // venue's 53 currently-upcoming listings, confirmed live, simply have
+    // no Post Body at all -- most of them the recurring "Karaoke with
+    // Polish John!" night, which has no per-instance write-up -- so this
+    // connector's description ends up genuinely null for those, correctly,
+    // not a bug). Before this fix, description was blindly overwritten
+    // with whatever the fresh scrape computed every run, including null --
+    // so a moderator who manually typed a real description into one of
+    // those Needs Follow-up cards via admin.html would have had it silently
+    // reverted back to null on this connector's very next scheduled run.
+    // Uses lookupExistingRows() (not lookupExistingStatuses()) so this
+    // extra column stays on the one shared, fail-closed, chunked (<=100
+    // ids/request) code path -- same reasoning as cron-poppspacking.js's
+    // WP 0.8 start_date/time_display need. See api/_lib/status-lookup.js.
+    let existingRowsByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      existingRowsByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,description" }
       );
     } catch (lookupErr) {
       await finishRun(runHandle, {
@@ -271,10 +305,23 @@ module.exports = async (req, res) => {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    const rowsWithStatus = rows.map((row) => {
+      const existing = existingRowsByExternalId.get(row.external_id);
+      // Only ever fill a blank description in -- never overwrite an
+      // existing nonblank one (whether it was moderator-entered or a prior
+      // successful scrape), same "only fill a gap in, never clobber a set
+      // value" convention as admin-events.js's own update_fields handling
+      // and SH.1's resolveVenueAddressCityRepair(). A description that
+      // genuinely has no source content yet (this run's fresh scrape is
+      // blank too) simply stays whatever it already was -- still honest,
+      // never invented.
+      const hasExistingDescription = !!(existing && existing.description && existing.description.trim());
+      return {
+        ...row,
+        status: (existing && existing.status) || DEFAULT_STATUS,
+        description: hasExistingDescription ? existing.description : row.description,
+      };
+    });
 
     const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
       method: "POST",
