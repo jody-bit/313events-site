@@ -166,6 +166,42 @@ async function run() {
   }
   console.log("PASS: a source_runs logging failure does not affect ingestion's own success/response");
 
+  // --- 6. Needs Follow-up burn-down (2026-09-22): every written row
+  //     carries the museum's own known venue_address_raw/venue_city_raw,
+  //     so admin.html's getMissingFields() "venue address/city" check is
+  //     satisfied unconditionally, independent of whether the linked
+  //     venues row happens to have an address on file. ---
+  {
+    const handler = freshHandler();
+    const upsertCapture = {};
+    const { fetchFn } = makeMockFetch({
+      source: () => ({ ok: true, status: 200, text: async () => dossinEventHtml() }),
+      upsert: () => ({ ok: true, status: 201, text: async () => "" }),
+    });
+    // Capture the upsert POST body directly (makeMockFetch's calls array
+    // already records it, but reading it back out here keeps this test
+    // self-contained rather than reaching into shared test-file plumbing).
+    const origFetch = fetchFn;
+    global.fetch = async (url, opts) => {
+      const resp = await origFetch(url, opts);
+      if (url.includes("/rest/v1/events") && opts && opts.method === "POST") {
+        upsertCapture.body = JSON.parse(opts.body);
+      }
+      return resp;
+    };
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+
+    assert.strictEqual(res._status, 200);
+    const row = upsertCapture.body[0];
+    assert.strictEqual(row.venue_address_raw, "100 Strand Dr", "every Dossin row must carry the museum's known street address");
+    assert.strictEqual(row.venue_city_raw, "Detroit", "every Dossin row must carry the museum's known city");
+    // Mirrors admin.html's getMissingFields() hasRawAddress check exactly.
+    const hasRawAddress = !!(row.venue_address_raw && row.venue_address_raw.trim()) || !!(row.venue_city_raw && row.venue_city_raw.trim());
+    assert.ok(hasRawAddress, "a Dossin row must satisfy Needs Follow-up's address-completeness check without needing a linked venues row");
+  }
+  console.log("PASS: Needs Follow-up burn-down -- every Dossin row carries a known venue_address_raw/venue_city_raw");
+
   console.log("\nAll cron-dossin.js WP 0.5 integration tests passed.");
 }
 

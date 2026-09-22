@@ -53,6 +53,22 @@ const SOURCE_SLUG = SLUGS.dossin; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "Dossin Great Lakes Museum";
 const VENUE_MATCH = /dossin/i;
 const DEFAULT_STATUS = "approved";
+// Needs Follow-up burn-down (2026-09-22): this connector never sent
+// venue_address_raw/venue_city_raw at all, so every row it writes was
+// unconditionally flagged "venue address/city" in admin.html's
+// getMissingFields() unless the linked venues row happened to already
+// carry a street address -- unverifiable from this environment (DEBT-002
+// blocks production database reads). A fixed single-venue source doesn't
+// need a lookup for this: the museum's own address is a constant, same
+// established pattern as cron-outerlimitslounge.js/cron-motorcitywine.js/
+// cron-oldmiami.js/cron-poppspacking.js's VENUE_ADDRESS/VENUE_CITY
+// constants. Verified 2026-09-22 against the Detroit Historical Society's
+// own Dossin page ("Located on Strand Drive on Belle Isle") and confirmed
+// by exact street number across independent listings (Yelp, Apple Maps
+// data, TripHobo) -- no single source invented, no schema-assumption
+// guess (NO EVIDENCE -> NO ENRICHMENT).
+const VENUE_ADDRESS = "100 Strand Dr";
+const VENUE_CITY = "Detroit";
 
 const MONTHS = {
   january: "01", february: "02", march: "03", april: "04", may: "05", june: "06",
@@ -236,6 +252,8 @@ const handler = async (req, res) => {
     category: "museum",
     venue_name_raw: VENUE_NAME,
     venue_id: venueId,
+    venue_address_raw: VENUE_ADDRESS,
+    venue_city_raw: VENUE_CITY,
     start_date: e.date,
     time_display: e.time,
     is_free: false,
