@@ -81,7 +81,18 @@ function timingSafeStringEqual(a, b) {
 const SOURCE_URL = "https://redfordtheatre.com/events/";
 const SOURCE_SLUG = SLUGS.redfordTheatre; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "Redford Theatre";
+const SOURCE_NAME = "Redford Theatre";
 const DEFAULT_STATUS = "approved";
+
+// Extracted 2026-09-23 (Needs Follow-up Auto-Repair integration) so
+// scripts/redford-metadata-repair.js can compute the identical id a
+// freshly-parsed event would get, to match it against an already-
+// upserted database row -- same formula this file always used, just
+// named and exported instead of inlined, so there is exactly one place
+// it's defined.
+function redfordExternalId(date, title) {
+  return `redford-${date}-${title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250);
+}
 
 const MONTHS = {
   january: 0, jan: 0, february: 1, feb: 1, march: 2, mar: 2, april: 3, apr: 3,
@@ -524,7 +535,7 @@ module.exports = async (req, res) => {
       // producing two rows out of one source line is safe: each gets its
       // own date, so its own external_id, so no collision with its
       // sibling showing.
-      external_id: `redford-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
+      external_id: redfordExternalId(e.date, e.title),
       title: e.title,
       category: "film",
       description: (detail && detail.description) || null,
@@ -537,7 +548,7 @@ module.exports = async (req, res) => {
       is_free: false,
       event_url: href,
       ticket_url: (detail && detail.ticket_url) || null,
-      source: "Redford Theatre",
+      source: SOURCE_NAME,
     };
   });
 
@@ -625,3 +636,20 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+// ---- Reused by scripts/redford-metadata-repair.js (2026-09-23) ----
+// Needs Follow-up Auto-Repair's authoritative Redford recovery needs the
+// EXACT same archive-page parsing, per-event href extraction, detail-page
+// fetch, and identity scheme this cron already uses and already tests --
+// see parseRedfordEvents()'s and extractEventUrls()'s and
+// fetchEventDetail()'s own header comments above for the full rationale
+// (including WHY ticket_url is only ever recovered when a detail page has
+// exactly one "Buy Tickets" link). Attaching these to the exported handler
+// function is purely additive -- it changes nothing about this file's own
+// behavior as a cron endpoint.
+module.exports.parseRedfordEvents = parseRedfordEvents;
+module.exports.extractEventUrls = extractEventUrls;
+module.exports.fetchEventDetail = fetchEventDetail;
+module.exports.redfordExternalId = redfordExternalId;
+module.exports.SOURCE_URL = SOURCE_URL;
+module.exports.SOURCE_NAME = SOURCE_NAME;

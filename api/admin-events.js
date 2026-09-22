@@ -405,12 +405,22 @@ module.exports = async (req, res) => {
     // pattern as Step 2: a failure here never discards Steps 1/2's real
     // results.
     //
+    // Step 4 (2026-09-23): authoritative Redford Theatre metadata recovery
+    // (scripts/redford-metadata-repair.js's repairRedfordMetadata()) -- 1
+    // current card ("Return of the Jedi (1983)") flagged DESCRIPTION +
+    // TICKET/EVENT LINK. Reuses api/cron-redford-theatre.js's own already-
+    // tested parseRedfordEvents()/extractEventUrls()/fetchEventDetail()
+    // (the exact recovery that connector's own 2026-09-22 rewrite already
+    // proved live: archive-page href, detail-page description, ticket_url
+    // only under the exactly-one-"Buy Tickets"-link rule) -- no new parser.
+    // Same failure-isolation pattern as Steps 2/3.
+    //
     // This endpoint adds no new repair DECISION logic of its own in any
-    // step -- it only sequences three already-proven mechanisms and
-    // exposes their combined result to Admin. `written` and `fieldsWritten`
-    // below report the UNION of events any step actually touched (an
-    // event can need more than one kind of repair at once; summing each
-    // step's own counters alone would double-count that event).
+    // step -- it only sequences four already-proven mechanisms and exposes
+    // their combined result to Admin. `written` and `fieldsWritten` below
+    // report the UNION of events any step actually touched (an event can
+    // need more than one kind of repair at once; summing each step's own
+    // counters alone would double-count that event).
     if (action === "auto_repair_venue") {
       try {
         const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
@@ -440,14 +450,28 @@ module.exports = async (req, res) => {
           dossinMetadataError = dossinErr.message;
         }
 
+        let redfordCounts = null;
+        let redfordMetadataError = null;
+        try {
+          const { repairRedfordMetadata } = require("../scripts/redford-metadata-repair");
+          redfordCounts = await repairRedfordMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (redfordErr) {
+          // Same isolation as Steps 2/3's own failure handling -- never
+          // lets a Redford-step failure erase Steps 1/2/3's real,
+          // already-persisted results.
+          redfordMetadataError = redfordErr.message;
+        }
+
         const venueWrittenIds = venueCounts.writtenIds || [];
         const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
         const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds]);
+        const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds]);
         const combinedFieldsWritten =
           venueCounts.fieldsWritten +
           ((descriptionCounts && descriptionCounts.written) || 0) +
-          ((dossinCounts && dossinCounts.written) || 0);
+          ((dossinCounts && dossinCounts.written) || 0) +
+          ((redfordCounts && redfordCounts.fieldsWritten) || 0);
 
         res.status(200).json({
           ok: true,
@@ -459,6 +483,8 @@ module.exports = async (req, res) => {
           outerLimitsDescriptionError,
           dossinMetadata: dossinCounts,
           dossinMetadataError,
+          redfordMetadata: redfordCounts,
+          redfordMetadataError,
         });
       } catch (err) {
         res.status(500).json({ error: err.message });
