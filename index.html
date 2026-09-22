@@ -6869,15 +6869,49 @@ function computeNeighborhoodCounts(){
 // the Product Owner separately chose to replace Midtown's existing photo
 // with the Detroit Institute of Arts image instead, so the Cass Corridor
 // photo has no card left to appear on and was dropped rather than force a
-// conflict on one card. Two other requested photos — "Eastern Market" and
-// the original "Downtown" (Campus Martius) request — each linked a
-// Wikimedia Commons *category* page, not a specific photo, so neither
-// could be resolved to one actual image; neither is included here.
+// conflict on one card. "Eastern Market" and the original "Downtown"
+// (Campus Martius) requests originally linked a Wikimedia Commons
+// *category* page rather than one specific photo and so were left out.
+//
+// 2026-09-22 update (Product Owner-supplied corrections): both were
+// resolved to exact files and added/replaced below, along with a
+// Mexicantown / Southwest Detroit replacement (the prior photo was a
+// generic aerial/river shot, not an actual Mexicantown scene) — each
+// URL, creator, source page, and license given directly by the Product
+// Owner and independently re-verified live (page text + direct image
+// load) against commons.wikimedia.org / upload.wikimedia.org before
+// being added, same fetch-then-verify bar as every other entry here.
+// Structured per-photo attribution (creator/sourceUrl/license/licenseUrl)
+// is now stored on these three entries for a future photo-credits
+// surface -- it is intentionally NOT rendered on the card itself; the
+// visible `credit` hover tooltip is unchanged in form. Bricktown Historic
+// District was explicitly NOT given an entry -- no verified
+// neighborhood-specific photograph exists for it yet; it keeps rendering
+// as a plain typographic card like every other neighborhood without one.
 const NEIGHBORHOOD_PHOTOS = {
   "Downtown": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Detroit_August_2025_31_%28Fox_Theatre%29.jpg/500px-Detroit_August_2025_31_%28Fox_Theatre%29.jpg',
-    alt: 'The Fox Theatre marquee and facade in downtown Detroit.',
-    credit: 'Photo: Wikimedia Commons'
+    src: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/MikerussellCampusmartiusParkDetroit.jpg',
+    alt: 'Campus Martius Park in downtown Detroit.',
+    credit: 'Photo: Mikerussell / Wikimedia Commons, CC BY-SA 3.0',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/MikerussellCampusmartiusParkDetroit.jpg',
+      creator: 'Mikerussell',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:MikerussellCampusmartiusParkDetroit.jpg',
+      license: 'CC BY-SA 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/'
+    }
+  },
+  "Eastern Market": {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Detroit_May_2023_03_%28Eastern_Market%29.jpg',
+    alt: 'A street scene in Detroit\'s Eastern Market neighborhood.',
+    credit: 'Photo: Michael Barera / Wikimedia Commons, CC BY-SA 4.0',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Detroit_May_2023_03_%28Eastern_Market%29.jpg',
+      creator: 'Michael Barera',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Detroit_May_2023_03_%28Eastern_Market%29.jpg',
+      license: 'CC BY-SA 4.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/'
+    }
   },
   "Midtown": {
     src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Detroit_institute_of_arts%2C_esterno_01.jpg/500px-Detroit_institute_of_arts%2C_esterno_01.jpg',
@@ -6890,9 +6924,16 @@ const NEIGHBORHOOD_PHOTOS = {
     credit: 'Photo: Wikimedia Commons, public domain'
   },
   "Mexicantown / Southwest Detroit": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Mexicantown_-_Southwest_Detroit%2C_Detroit%2C_MI%2C_USA_-_panoramio.jpg/500px-Mexicantown_-_Southwest_Detroit%2C_Detroit%2C_MI%2C_USA_-_panoramio.jpg',
-    alt: 'A street scene in the Mexicantown / Southwest Detroit neighborhood.',
-    credit: 'Photo: Wikimedia Commons'
+    src: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mexican_Village_Detroit.jpg',
+    alt: 'Mexican Village Restaurant in the Mexicantown / Southwest Detroit neighborhood.',
+    credit: 'Photo: Lian Chang / Wikimedia Commons, CC BY 2.0',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mexican_Village_Detroit.jpg',
+      creator: 'Lian Chang',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mexican_Village_Detroit.jpg',
+      license: 'CC BY 2.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/2.0/'
+    }
   },
   "Old Redford": {
     src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/RedfordTheatreMarquee.jpg/500px-RedfordTheatreMarquee.jpg',
@@ -6918,15 +6959,24 @@ function renderNeighborhoodsRail(){
   if(!counts.length){ section.style.display = 'none'; rail.innerHTML = ''; return; }
   section.style.display = '';
   rail.innerHTML = counts.map(([name, count])=>{
-    const photo = NEIGHBORHOOD_PHOTOS[name];
+    const rawPhoto = NEIGHBORHOOD_PHOTOS[name];
+    // Backward/forward-compatible normalization: a NEIGHBORHOOD_PHOTOS
+    // value may be a plain string (bare image src) or the existing
+    // structured object ({src|file, alt, credit[, attribution]}) -- a bare
+    // string is treated as that object's `src`. Every entry today is still
+    // the structured object; this only widens what's accepted.
+    const photo = typeof rawPhoto === 'string' ? { src: rawPhoto } : rawPhoto;
     // photo.src (a full external URL, e.g. a hotlinked Wikimedia Commons
     // image) takes precedence when present; otherwise fall back to a local
     // file under /assets/photography/neighborhoods (Jody's own photos).
     // photo.credit, when present, renders as a visible hover tooltip
     // (title attribute) — set only on hotlinked, non-Jody's-own entries.
+    // photo.attribution ({url, creator, sourceUrl, license, licenseUrl}),
+    // when present, is structured metadata for a future photo-credits
+    // surface -- deliberately not read here, so it never affects the card.
     const photoSrc = photo && (photo.src || (photo.file ? `/assets/photography/neighborhoods/${photo.file}` : null));
     const photoHtml = photoSrc
-      ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
+      ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt || name)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
       : '';
     return `
     <button type="button" class="neigh-card${photo?' has-photo':''}${neighborhoodFilter===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
