@@ -79,6 +79,17 @@ function decodeEntities(str) {
     .replace(/&nbsp;/g, " ");
 }
 
+// Needs Follow-up burn-down (2026-09-22): WDET's Tribe Events API already
+// returns a real per-event `description` (confirmed live, 2026-09-22 --
+// every real local venue-linked event sampled had one), same as
+// cron-belle-isle-nature-center.js's identical WordPress "The Events
+// Calendar" plugin feed -- this crawler just never read it. Ported
+// verbatim from that connector's stripHtml().
+function stripHtml(html) {
+  if (!html) return "";
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 // 2026-09-05 fix — this crawler never read the Tribe Events API's own
 // `image` field at all (confirmed live: 5/5 sampled WDET events had a
 // populated `image` object, none of it ever reaching image_url). Same class
@@ -195,9 +206,19 @@ module.exports = async (req, res) => {
       return {
         external_id: `wdet-${e.id}`,
         title: decodeEntities(e.title),
+        // Needs Follow-up burn-down (2026-09-22): Tribe's own description
+        // field, same source/shape as cron-belle-isle-nature-center.js.
+        description: decodeEntities(stripHtml(e.description)).slice(0, 500) || null,
         category: cat,
         venue_name_raw: rowVenueName,
         venue_id: resolveVenueId(venueMap, rowVenueName),
+        // Needs Follow-up burn-down (2026-09-22): Tribe nests a real street
+        // address/city on `venue` alongside the venue name already used
+        // above for venueName/venueCity -- previously read for filtering
+        // only, then discarded. `venue` is guaranteed non-null here (the
+        // `!venueName` check above already returned null otherwise).
+        venue_address_raw: venue.address ? decodeEntities(venue.address) : undefined,
+        venue_city_raw: venue.city ? decodeEntities(venue.city) : undefined,
         start_date: startDate,
         time_display: formatTimeRange(e.start_date, e.end_date),
         is_free: /free/i.test(e.cost || "") || !e.cost,

@@ -34,16 +34,17 @@ function makeRes() {
   };
 }
 
-function wdetEvent({ id, title = "Live Session", venueName = "El Club", venueCity = "Detroit", category = "Music", start_date = "2026-12-01 20:00:00", end_date = "2026-12-01 22:00:00", cost = "", url = "https://wdet.org/event/x", image = false }) {
+function wdetEvent({ id, title = "Live Session", venueName = "El Club", venueCity = "Detroit", venueAddress = undefined, description = undefined, category = "Music", start_date = "2026-12-01 20:00:00", end_date = "2026-12-01 22:00:00", cost = "", url = "https://wdet.org/event/x", image = false }) {
   return {
     id,
     title,
+    description,
     cost,
     url,
     image,
     start_date,
     end_date,
-    venue: venueName ? { venue: venueName, city: venueCity } : null,
+    venue: venueName ? { venue: venueName, city: venueCity, address: venueAddress } : null,
     categories: category ? [{ name: category }] : [],
   };
 }
@@ -197,6 +198,62 @@ async function run() {
     assert.strictEqual(patches.length, 0, "no PATCH is attempted when startRun() never produced a runId");
   }
   console.log("PASS: a source_runs logging failure does not affect ingestion's own success/response");
+
+  // --- 7. Needs Follow-up burn-down (2026-09-22): description and
+  //     venue_address_raw/venue_city_raw are recovered from Tribe's own
+  //     `description`/`venue.address`/`venue.city` fields -- data the API
+  //     already returns (live-verified 2026-09-22) and this connector
+  //     previously discarded. Confirms this clears admin.html's exact
+  //     getMissingFields() "description" and "venue address/city" checks
+  //     for an event that also has a ticket_url and time_display, i.e. it
+  //     is fully cleared from Needs Follow-up, not just partially patched. ---
+  {
+    const handler = freshHandler();
+    const { fetchFn, calls } = makeMockFetch({
+      source: () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          events: [
+            wdetEvent({
+              id: 1,
+              venueName: "The Detroit Princess Riverboat",
+              venueCity: "Detroit",
+              venueAddress: "1 Civic Center Drive",
+              description: "<p>Waajeed and Liz Warner spin a sunset cruise. &#038; more.</p>",
+            }),
+          ],
+        }),
+      }),
+    });
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.upserted, 1);
+    const upsertCall = calls.find((c) => c.url.includes("/rest/v1/events") && c.opts.method === "POST");
+    assert.ok(upsertCall, "an upsert POST must have been made");
+    const row = upsertCall.body[0];
+    assert.strictEqual(row.description, "Waajeed and Liz Warner spin a sunset cruise. & more.", "HTML must be stripped and entities decoded");
+    assert.strictEqual(row.venue_address_raw, "1 Civic Center Drive");
+    assert.strictEqual(row.venue_city_raw, "Detroit");
+
+    // Replicates admin.html's exact getMissingFields() logic inline (same
+    // approach as test/cron-dossin-runlog.test.js's WP burn-down test).
+    function getMissingFields(e) {
+      const missing = [];
+      if (!e.description || !e.description.trim()) missing.push("description");
+      const hasRawAddress = !!(e.venue_address_raw && e.venue_address_raw.trim()) || !!(e.venue_city_raw && e.venue_city_raw.trim());
+      const hasLinkedVenueAddress = !!(e.venues && e.venues.address && e.venues.address.trim());
+      if (!hasRawAddress && !hasLinkedVenueAddress) missing.push("venue address/city");
+      if (!(e.ticket_url && e.ticket_url.trim()) && !(e.event_url && e.event_url.trim())) missing.push("ticket/event link");
+      if (!e.is_all_day && !(e.time_display && e.time_display.trim())) missing.push("start time");
+      return missing;
+    }
+    assert.deepStrictEqual(getMissingFields(row), [], "with description + address/city recovered (and this row's existing ticket_url + time_display), the event is fully cleared from Needs Follow-up");
+  }
+  console.log("PASS: recovered description + venue_address_raw/venue_city_raw fully clear a WDET event from Needs Follow-up");
 
   console.log("\nAll cron-wdet.js WP 0.5 integration tests passed.");
 }
