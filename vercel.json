@@ -133,6 +133,9 @@
     },
     "api/cron-motorcitywine.js": {
       "maxDuration": 30
+    },
+    "api/cron-redford-theatre.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [

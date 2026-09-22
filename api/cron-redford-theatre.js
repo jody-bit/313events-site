@@ -45,6 +45,13 @@ const { SLUGS } = require("./_lib/source-slugs");
 // ** STILL BEST-EFFORT ** — this is HTML scraping of a page Redford doesn't
 // publish a feed for. If the site's own wording changes again, spot-check
 // https://redfordtheatre.com/events/ against the admin follow-up queue.
+//
+// 2026-09-22 (Needs-Follow-up reduction): extended to also fetch each
+// event's own detail page (linked from the archive page's own <a href>,
+// previously discarded) for event_url, description, and ticket_url — see
+// extractEventUrls()/fetchEventDetail()'s own header comments below for the
+// full rationale. maxDuration is explicitly set to 60s in vercel.json for
+// this reason (bounded-concurrency fetches across ~30 detail pages).
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -270,6 +277,153 @@ function parseRedfordEvents(html) {
   return events;
 }
 
+// SH.8-class recovery (2026-09-22, Needs-Follow-up reduction): the archive
+// page's own markup wraps every listing as
+//   <li><a href="https://redfordtheatre.com/events/<slug>/">
+//     <div class="featureBottom"><h3>TITLE</h3><p>DATE/TIME/PRICE TEXT</p></div>
+//   </a></li>
+// -- confirmed live 2026-09-22 via direct DOM inspection: 32/32 current
+// listings share this exact structure, one <a href> per <li>, its single
+// <div class="featureBottom"> child containing exactly one <h3> and one <p>.
+// parseRedfordEvents() above already turns the <h3>/<p> text into the
+// correct title+date/time pair (via htmlToLines()'s block-tag-to-newline
+// conversion) but discards the <a href> entirely, since generic tag-
+// stripping removes it with everything else. That href is a real,
+// event-specific detail-page link -- exactly the "authoritative source
+// metadata already available but discarded" pattern SH.8 already fixed once
+// for Cinema Detroit's page.link. This recovers it here the same way: purely
+// additive, does not touch parseRedfordEvents()/parseDateLine()/findDates()/
+// findTimes() at all.
+//
+// Keyed by title (the one value both this and parseRedfordEvents() derive
+// from the same <h3>, so they always agree) rather than by array position,
+// because one <li>/href can produce ZERO events (a cancelled listing with no
+// parseable date, e.g. "Rocky (1976)" confirmed live: "Cancelled - Not
+// Available - Please Watch for a New Event on this Date") or TWO events (the
+// LIST case in parseDateLine -- two showtimes of the same production, e.g.
+// "Sat., Dec. 12 at 8:00PM & Sun., Dec. 13 at 2:00 PM" -- both showtimes
+// correctly get the same href, since they're the same detail page). If the
+// same title were ever to appear under two DIFFERENT hrefs (not observed in
+// the live 32/32 check, all titles unique), that title is treated as
+// ambiguous and left unmapped (null) rather than guessing which href is
+// right -- NO EVIDENCE -> NO ENRICHMENT.
+const EVENT_DETAIL_BLOCK = /<a\s+href="(https:\/\/redfordtheatre\.com\/events\/[^"]+)"[^>]*>\s*<div[^>]*class="[^"]*featureBottom[^"]*"[^>]*>\s*<h3[^>]*>([\s\S]*?)<\/h3>/gi;
+
+function extractEventUrls(html) {
+  const byTitle = new Map(); // title -> url, or null once ambiguous
+  let m;
+  EVENT_DETAIL_BLOCK.lastIndex = 0;
+  while ((m = EVENT_DETAIL_BLOCK.exec(html))) {
+    const url = m[1];
+    const title = decodeEntities(m[2].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim());
+    if (!title) continue;
+    if (byTitle.has(title)) {
+      if (byTitle.get(title) !== url) byTitle.set(title, null); // conflicting hrefs for the same title -- don't guess
+    } else {
+      byTitle.set(title, url);
+    }
+  }
+  return byTitle;
+}
+
+// Bounded-concurrency map -- same pattern as cron-detroitmonthofdesign.js's
+// own mapWithConcurrency(), reused verbatim rather than re-invented, so this
+// gets the exact same "don't hammer the source, don't blow maxDuration"
+// behavior already proven safe there (that connector fetches 367 detail
+// pages at concurrency 6; Redford has ~30, so a similar concurrency here is
+// comfortably safe -- see DETAIL_FETCH_CONCURRENCY below).
+async function mapWithConcurrency(items, limit, worker) {
+  const results = new Array(items.length);
+  let next = 0;
+  async function runOne() {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await worker(items[i]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, runOne));
+  return results;
+}
+
+const DETAIL_FETCH_CONCURRENCY = 5;
+
+// 2026-09-22, Needs-Follow-up reduction (continued): the archive page's own
+// href (extractEventUrls() above) points at a real per-event detail page --
+// and that detail page itself carries MORE authoritative source metadata
+// that's currently discarded entirely. Confirmed live against all 32
+// current listings' detail pages:
+//   - description: every one has a non-empty <div class="eventDesc">
+//     containing one or more <p> paragraphs -- 100% coverage (32/32), no
+//     nested <div> inside it on any page checked (safe for a non-greedy
+//     regex bounded by the next </div>).
+//   - ticket_url: 31/32 have at least one "Buy Tickets" link (all to
+//     ticketing.useast.veezi.com or ci.ovationtix.com, real third-party
+//     ticketing platforms -- not a same-site link). The one exception,
+//     "Rocky (1976)", is the cancelled listing with no parseable date --
+//     it never produces an event and so is never fetched here at all.
+//
+// description is plain text: every <p> inside .eventDesc, tags stripped,
+// entities decoded, whitespace collapsed -- same convention every other
+// connector in this project uses for a scraped description (see e.g.
+// cron-outerlimitslounge.js's stripHtml()).
+//
+// ticket_url is populated ONLY when the detail page has EXACTLY ONE "Buy
+// Tickets" link. 4 of the 32 current listings (the LIST-case events -- two
+// or three showtimes of the same production sharing one detail page, e.g.
+// "Sat., Dec. 12 at 8:00PM & Sun., Dec. 13 at 2:00 PM") have 2-3 separate
+// "Buy Tickets" buttons on that one shared page, each a DIFFERENT Veezi
+// purchase link for a DIFFERENT showtime -- confirmed live. There is no
+// reliable way from the page alone to tell which button belongs to which
+// showtime/date, so guessing would risk pointing someone at the wrong
+// showtime's tickets. Per NO EVIDENCE -> NO ENRICHMENT, ticket_url stays
+// null for those ambiguous cases; extractEventUrls()'s own event_url (the
+// shared detail-page link, same for every showtime of that production)
+// already satisfies the "ticket/event link" Needs-Follow-up condition
+// either way, so nothing is lost for those rows.
+//
+// Fails soft at every level, same as the rest of this connector: a single
+// detail-page fetch failure (network error, non-200, unexpected markup)
+// only affects that ONE event's description/ticket_url (both stay null,
+// exactly as before this change) and never blocks or fails the run; if the
+// whole detail-fetch pass throws unexpectedly, the caller falls back to an
+// empty map and proceeds with base rows only -- title/date/time/event_url
+// still write normally, matching this connector's existing fail-safe
+// philosophy (see e.g. buildVenueNameToIdMap's own "fails soft, empty map"
+// precedent in api/_lib/venue-lookup.js).
+function stripEventDescHtml(inner) {
+  const text = decodeEntities(inner.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+  return text || null;
+}
+
+async function fetchEventDetail(url) {
+  try {
+    const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
+    if (!r.ok) return { description: null, ticket_url: null };
+    const html = await r.text();
+
+    let description = null;
+    const descMatch = html.match(/<div[^>]*class="[^"]*eventDesc[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+    if (descMatch) description = stripEventDescHtml(descMatch[1]);
+
+    // Every anchor on the page, tested by its own rendered text (not just
+    // the text immediately after the opening tag) -- mirrors a real
+    // browser's a.textContent match, so a "Buy Tickets" button wrapped in
+    // an inner <span>/icon still matches correctly.
+    const buyLinks = [];
+    const anchorRe = /<a\s+[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+    let am;
+    while ((am = anchorRe.exec(html))) {
+      const linkText = am[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      if (/buy tickets?/i.test(linkText)) buyLinks.push(decodeEntities(am[1]));
+    }
+    const ticket_url = buyLinks.length === 1 ? buyLinks[0] : null;
+
+    return { description, ticket_url };
+  } catch {
+    return { description: null, ticket_url: null };
+  }
+}
+
 
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
@@ -333,23 +487,58 @@ module.exports = async (req, res) => {
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const venueId = resolveVenueId(venueMap, VENUE_NAME);
 
-  const rawRows = parsed.map((e) => ({
-    // Same idempotent id scheme as before -- date+title -- which is exactly
-    // why the LIST case (two distinct showings, e.g. Fri/Sat) producing two
-    // rows out of one source line is safe: each gets its own date, so its
-    // own external_id, so no collision with its sibling showing.
-    external_id: `redford-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
-    title: e.title,
-    category: "film",
-    venue_name_raw: VENUE_NAME,
-    venue_id: venueId,
-    start_date: e.date,
-    end_date: e.endDate,
-    time_display: e.time,
-    is_all_day: e.isAllDay,
-    is_free: false,
-    source: "Redford Theatre",
-  }));
+  // 2026-09-22: per-title event_url recovery -- see extractEventUrls()'s own
+  // header comment above for the full rationale. Never invented: a title
+  // with no matching (or an ambiguous) href simply gets event_url: null,
+  // same as before this change.
+  const eventUrls = extractEventUrls(html);
+
+  // 2026-09-22: description + ticket_url recovery from each event's own
+  // detail page -- see fetchEventDetail()'s own header comment above for
+  // the full rationale. Only fetches hrefs an actual produced event uses
+  // (never "Rocky (1976)"'s page, or any other listing that produced zero
+  // events -- no event will ever look up its detail data).
+  const detailUrls = [...new Set(parsed.map((e) => eventUrls.get(e.title)).filter(Boolean))];
+  const detailByHref = new Map();
+  if (detailUrls.length) {
+    try {
+      const details = await mapWithConcurrency(detailUrls, DETAIL_FETCH_CONCURRENCY, async (url) => ({
+        url,
+        detail: await fetchEventDetail(url),
+      }));
+      details.forEach(({ url, detail }) => detailByHref.set(url, detail));
+    } catch {
+      // Whole detail-fetch pass failed unexpectedly -- fall through with an
+      // empty map, same fail-soft philosophy as venue-lookup.js. Base rows
+      // (title/date/time/event_url) still write normally below.
+    }
+  }
+
+  const rawRows = parsed.map((e) => {
+    const href = eventUrls.get(e.title) || null;
+    const detail = href ? detailByHref.get(href) : null;
+    return {
+      // Same idempotent id scheme as before -- date+title -- which is
+      // exactly why the LIST case (two distinct showings, e.g. Fri/Sat)
+      // producing two rows out of one source line is safe: each gets its
+      // own date, so its own external_id, so no collision with its
+      // sibling showing.
+      external_id: `redford-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
+      title: e.title,
+      category: "film",
+      description: (detail && detail.description) || null,
+      venue_name_raw: VENUE_NAME,
+      venue_id: venueId,
+      start_date: e.date,
+      end_date: e.endDate,
+      time_display: e.time,
+      is_all_day: e.isAllDay,
+      is_free: false,
+      event_url: href,
+      ticket_url: (detail && detail.ticket_url) || null,
+      source: "Redford Theatre",
+    };
+  });
 
   // De-dupe by external_id before sending — Postgres's ON CONFLICT DO UPDATE
   // can't touch the same target row twice in one statement, so one duplicate
