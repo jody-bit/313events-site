@@ -51,6 +51,14 @@
   .empty{color:var(--ink-soft);text-align:center;padding:60px 0;}
   .err{color:var(--bad);font-size:13.5px;margin-top:8px;}
 
+  /* Needs follow-up breakdown (2026-09-22) — a compact operational
+     diagnostic, not a second card list, so it's styled as plain text
+     lines rather than reusing .card's full padding/border treatment. */
+  .breakdown-box{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13.5px;}
+  .breakdown-row{color:var(--ink-soft);line-height:1.5;margin-bottom:6px;}
+  .breakdown-row b{color:var(--ink);}
+  .breakdown-totals{color:var(--ink-soft);margin-top:8px;padding-top:8px;border-top:1px solid var(--line);}
+
   /* Health check banner (2026-09-03) — surfaces api/cron-healthcheck.js's
      latest run right where Jody already looks (this page), instead of a
      separate notification channel. .ok/.fail reuse the same --ok/--bad
@@ -243,6 +251,7 @@
         <div class="refresh" style="margin:0 0 12px;"><button id="autoRepairBtn" onclick="autoRepairFollowup()">Auto-Repair</button><span class="refresh-status" id="autoRepairStatus"></span></div>
         <div class="sub" style="margin-top:-4px;">Auto-Repair (V1) fills in venue address/city only, using the same deterministic canonical/learned venue lookup SH.1 already proves safe — never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its missing fields is actually resolved.</div>
         <div class="err" id="incompleteError" style="display:none;"></div>
+        <div id="followupBreakdown"></div>
         <div id="incompleteList"></div>
       </section>
     </div>
@@ -418,6 +427,72 @@ function getMissingFields(e) {
   return missing;
 }
 
+// ---- Needs follow-up breakdown (2026-09-22) ----
+// Pure operational diagnostic: groups the SAME flagged array
+// loadIncomplete() already built for the badge/cards above by
+// SOURCE + MISSING FIELD COMBINATION, so it's obvious at a glance which
+// source/field pairing is responsible for the bulk of the queue instead
+// of scrolling every individual card. No new fetch, no new query, no
+// repair -- computeFollowupBreakdown() takes exactly the `flagged` array
+// loadIncomplete() already has in hand and does pure grouping/counting on
+// it, nothing else. Because every row's fields come straight from the
+// same `missing` array the card/badge already used, and every flagged
+// event lands in exactly one group, the group counts are mathematically
+// guaranteed to sum to flagged.length -- see
+// test/admin-followup-breakdown.test.js.
+const MISSING_FIELD_LABELS = {
+  'description': 'DESCRIPTION',
+  'venue address/city': 'VENUE ADDRESS/CITY',
+  'ticket/event link': 'TICKET/EVENT LINK',
+  'start time': 'START TIME',
+};
+// Matches the exact order getMissingFields() itself pushes into `missing`
+// -- the combination label below reads in the same order as each card's
+// own "Missing:" badges, rather than being independently (re-)sorted.
+const MISSING_FIELD_ORDER = ['description', 'venue address/city', 'ticket/event link', 'start time'];
+
+function computeFollowupBreakdown(flagged) {
+  const groups = new Map(); // "source||FIELD+FIELD" -> { source, fields, count }
+  const totals = {};
+  MISSING_FIELD_ORDER.forEach(f => { totals[MISSING_FIELD_LABELS[f]] = 0; });
+
+  for (const { e, missing } of flagged) {
+    const source = (e.source && String(e.source).trim()) || 'Unknown source';
+    const labels = missing.filter(m => MISSING_FIELD_LABELS[m]).map(m => MISSING_FIELD_LABELS[m]);
+    const key = source + '||' + labels.join('+');
+    if (!groups.has(key)) groups.set(key, { source, fields: labels, count: 0 });
+    groups.get(key).count++;
+    labels.forEach(label => { totals[label]++; });
+  }
+
+  const rows = Array.from(groups.values()).sort((a, b) => b.count - a.count || a.source.localeCompare(b.source));
+  return { rows, totals };
+}
+
+function renderFollowupBreakdown(flagged) {
+  const el = document.getElementById('followupBreakdown');
+  if (!el) return;
+  if (!flagged.length) {
+    el.innerHTML = '';
+    return;
+  }
+  const { rows, totals } = computeFollowupBreakdown(flagged);
+  const rowsHtml = rows.map(r =>
+    `<div class="breakdown-row"><b>${escapeHtml(r.source)}</b><br>${escapeHtml(r.fields.join(' + '))} — ${r.count}</div>`
+  ).join('');
+  const totalsHtml = MISSING_FIELD_ORDER
+    .map(f => MISSING_FIELD_LABELS[f])
+    .map(label => `${escapeHtml(label)} — ${totals[label]}`)
+    .join(' &nbsp;·&nbsp; ');
+  el.innerHTML = `
+    <div class="breakdown-box">
+      <div class="meta" style="margin:0 0 8px;"><b>Needs follow-up breakdown</b> (${flagged.length} event${flagged.length === 1 ? '' : 's'})</div>
+      ${rowsHtml}
+      <div class="breakdown-totals">${totalsHtml}</div>
+    </div>
+  `;
+}
+
 // 2026-09-22: this used to swallow every failure completely silently (no
 // banner, no return value, old cards just stayed on screen looking
 // current) -- indistinguishable from a successful refresh that legitimately
@@ -456,6 +531,7 @@ async function loadIncomplete() {
     lastFlaggedIncomplete = flagged;
     setTabBadge('followup', flagged.length);
     renderIncompleteList(flagged);
+    renderFollowupBreakdown(flagged);
     return true;
   } catch (err) {
     if (errEl) { errEl.textContent = 'Failed to load Needs follow-up: ' + err.message; errEl.style.display = 'block'; }
