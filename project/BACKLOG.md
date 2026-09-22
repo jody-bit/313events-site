@@ -23,6 +23,18 @@ Sonnet 5 (default) — defined features, UI, forms/filters, individual adapters,
 
 ---
 
+## Product priorities (current)
+
+Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP HUMAN INTERVENTION"). Optimize for **human intervention eliminated**, not raw database completeness.
+
+- **CURRENT:** Needs Follow-up human-intervention reduction (`EPIC-006`). First repair: **SH.9** (Redford Theatre description/event_url/ticket_url recovery, `REVIEW`, commit `69ad2c4`) — see `epics/EPIC-006-metadata-self-healing.md`.
+- **NEXT:** Editorial Review human-intervention reduction (not yet scoped).
+- **THEN:** Detroit Orbit coverage expansion / comprehensive event acquisition.
+- **BACKLOG (not sequenced next):** Image/asset discovery.
+- **TASK-004 (GottaGacha)** is complete (`REVIEW`) and is no longer the active task.
+
+---
+
 ## Epics
 
 | ID | Title | Status | Priority | Related file |
