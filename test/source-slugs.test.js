@@ -19,12 +19,13 @@ const {
 function run() {
   // --- 1. exactly one canonical slug per expected ingestion source ---
   // 20 at WP 0.5's original scope lock (2026-09-21), grown to 21 on
-  // 2026-09-22 when cron-gottagacha.js was added -- see source-slugs.js's
+  // 2026-09-22 when cron-gottagacha.js was added, then to 22 later the
+  // same day when cron-bigtimebingo.js was added -- see source-slugs.js's
   // own SCOPE comment for why this number is expected to keep growing.
-  assert.strictEqual(SOURCE_SLUGS.length, 21, "WP 0.5 scope (20) plus cron-gottagacha.js (2026-09-22) = 21 event-ingestion handlers");
+  assert.strictEqual(SOURCE_SLUGS.length, 22, "WP 0.5 scope (20) plus cron-gottagacha.js and cron-bigtimebingo.js (both 2026-09-22) = 22 event-ingestion handlers");
   const slugs = listSourceSlugs();
-  assert.strictEqual(new Set(slugs).size, 21, "every slug must be unique");
-  console.log("PASS: registry has exactly 21 unique canonical slugs");
+  assert.strictEqual(new Set(slugs).size, 22, "every slug must be unique");
+  console.log("PASS: registry has exactly 22 unique canonical slugs");
 
   // --- every entry's file actually exists in api/, and is a real cron file ---
   for (const entry of SOURCE_SLUGS) {
@@ -65,7 +66,7 @@ function run() {
   assert.strictEqual(SLUGS.belleIsleNatureCenter, "belle-isle-nature-center");
   assert.strictEqual(SLUGS.feeds, "feeds");
   assert.strictEqual(SLUGS.detroitmonthofdesign, "detroitmonthofdesign", "a slug with no internal hyphens keys itself unchanged");
-  assert.strictEqual(Object.keys(SLUGS).length, 21);
+  assert.strictEqual(Object.keys(SLUGS).length, 22);
   console.log("PASS: SLUGS lookup object exposes every canonical slug under a camelCase key");
 
   // --- duplicate detection -- proven against a deliberately-broken list, not just the real one ---

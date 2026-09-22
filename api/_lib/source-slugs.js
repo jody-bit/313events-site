@@ -10,7 +10,8 @@
 //
 // SCOPE (Product Owner decision, 2026-09-21): exactly the 20 event-
 // ingestion handlers WP 0.5 covers, GROWN TO 21 on 2026-09-22 when
-// cron-gottagacha.js was added -- every new event-ingestion connector is
+// cron-gottagacha.js was added, then to 22 later the same day when
+// cron-bigtimebingo.js was added -- every new event-ingestion connector is
 // born with source_runs instrumentation from day one (explicit Product
 // Owner instruction: "This new connector MUST be born with source_runs
 // instrumentation... Do not create another connector that immediately
@@ -56,6 +57,7 @@ const SOURCE_SLUGS = Object.freeze([
   { slug: "oldmiami", file: "cron-oldmiami.js", label: "The Old Miami" },
   { slug: "detroittraining", file: "cron-detroittraining.js", label: "Detroit Training Center" },
   { slug: "gottagacha", file: "cron-gottagacha.js", label: "GottaGacha" },
+  { slug: "bigtimebingo", file: "cron-bigtimebingo.js", label: "Big Time Bingo (Garden Bowl)" },
   { slug: "metrotimes", file: "cron-metrotimes.js", label: "Metro Times" },
   { slug: "detroitmonthofdesign", file: "cron-detroitmonthofdesign.js", label: "Detroit Month of Design" },
   { slug: "playgrounddetroit", file: "cron-playgrounddetroit.js", label: "PLAYGROUND DETROIT" },

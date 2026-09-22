@@ -21,13 +21,15 @@ const API_DIR = path.join(REPO_DIR, "api");
 
 // The full, current (2026-09-22) event-ingestion connector inventory --
 // every cron-*.js whose write path upserts into `events` via
-// `rest/v1/events?on_conflict=external_id`. Recounted for WP 0.17: 21, not
-// the historical WP's stale "20" -- cron-gottagacha.js is the 21st, added
-// 2026-09-22. cron-editorial.js, cron-healthcheck.js, and
-// cron-post-to-facebook.js are deliberately excluded -- confirmed not
-// event-ingestion connectors (no `on_conflict=external_id` events upsert).
+// `rest/v1/events?on_conflict=external_id`. Recounted for WP 0.17: 22, not
+// the historical WP's stale "20" -- cron-gottagacha.js was the 21st, and
+// cron-bigtimebingo.js is the 22nd, both added 2026-09-22.
+// cron-editorial.js, cron-healthcheck.js, and cron-post-to-facebook.js are
+// deliberately excluded -- confirmed not event-ingestion connectors (no
+// `on_conflict=external_id` events upsert).
 const EXPECTED_CONNECTORS = [
   "cron-belle-isle-nature-center.js",
+  "cron-bigtimebingo.js",
   "cron-cinema-detroit.js",
   "cron-detroitmonthofdesign.js",
   "cron-detroittraining.js",
@@ -112,7 +114,7 @@ function run() {
       `${file} must catch a lookup failure and respond 502 with upserted: 0`
     );
   }
-  console.log("PASS: all 21 connectors' lookup failure paths respond 502 with zero upserted rows");
+  console.log("PASS: all 22 connectors' lookup failure paths respond 502 with zero upserted rows");
 
   console.log("\nAll wp017-connector-coverage.test.js checks passed.");
 }
