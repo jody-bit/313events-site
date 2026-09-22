@@ -212,7 +212,16 @@ function runPart1() {
 // ============================================================
 
 async function runPart2() {
-  // --- same fixture as Part 1, but driven through the real fetch -> loadIncomplete() path ---
+  // --- same fixture as Part 1, but driven through the real fetch -> loadIncomplete() path --
+  //     2026-09-23 closure update: e1/e2 (Trinosophes: description +
+  //     ticket/event link are BOTH confirmed source-limited for that
+  //     source) and e3 (Outer Limits Lounge: description alone is
+  //     confirmed source-limited) now have ZERO actionable fields each,
+  //     so all three are excluded from the queue entirely -- not just
+  //     de-emphasized. e4 (Outer Limits Lounge, missing venue
+  //     address/city -- NOT in that source's limited-field list) is
+  //     unaffected and stays actionable. e5 stays excluded via the
+  //     existing followup_dismissed filter, unrelated to this change. ---
   {
     const sandbox = buildSandbox();
     const events = [
@@ -235,31 +244,50 @@ async function runPart2() {
     assert.strictEqual(ok, true);
 
     const badgeCount = sandbox.document.getElementById("badge-followup").textContent;
-    assert.strictEqual(badgeCount, "4", "the badge (same flagged array) must read 4");
+    assert.strictEqual(badgeCount, "1", "only e4 (venue address/city, not a source-limited field for Outer Limits Lounge) has anything actionable left");
 
     const breakdownHtml = sandbox.document.getElementById("followupBreakdown").innerHTML;
     assert.ok(breakdownHtml.includes("Needs follow-up breakdown"), "the breakdown box must render");
-    assert.ok(breakdownHtml.includes("(4 events)"), "the breakdown's own header count must match the badge count exactly: " + breakdownHtml);
+    assert.ok(breakdownHtml.includes("(1 event)"), "the breakdown's own header count must match the badge count exactly: " + breakdownHtml);
     assert.ok(!breakdownHtml.includes("Dossin"), "a dismissed event's source must never appear in the breakdown");
+    assert.ok(!breakdownHtml.includes("Trinosophes"), "Trinosophes (fully source-limited here) must not appear in the breakdown at all");
+    assert.ok(breakdownHtml.includes("VENUE ADDRESS/CITY"), "e4's genuinely actionable gap must still appear");
 
     // Every count printed in the rendered rows (the "— N" pattern) must sum
-    // to the same 4 -- proves the DOM output, not just the underlying
-    // object, matches the badge.
-    const rowCounts = [...breakdownHtml.matchAll(/—\s*(\d+)<\/div>\s*<div class="breakdown-totals"|—\s*(\d+)/g)]
-      .map((m) => parseInt(m[1] || m[2], 10));
-    // The totals line also contains "— N" segments (one per field), so
-    // isolate just the per-row counts by re-deriving them the same way the
-    // production code does and comparing against the live object instead
-    // of parsing HTML further -- the HTML substring checks above already
-    // prove the rendered header count; this re-derivation proves the
-    // underlying data agrees.
-    const recomputedFlagged = buildFlagged(sandbox, events);
-    const { rows } = sandbox.computeFollowupBreakdown(recomputedFlagged);
+    // to the same 1 -- proves the DOM output, not just the underlying
+    // object, matches the badge. computeFollowupBreakdown()'s own `totals`
+    // object (not a regex over the rendered HTML, which always lists every
+    // field name at count 0 in its totals line) confirms DESCRIPTION and
+    // TICKET/EVENT LINK genuinely have zero actionable occurrences left --
+    // Trinosophes's and Outer Limits Lounge's description-only group are
+    // not just missing their own row, they contribute nothing to the totals.
+    // `lastFlaggedIncomplete` is a module-scoped `let` inside the real
+    // script -- not reachable from outside the vm sandbox (only its
+    // function declarations are) -- so this recomputes the identical
+    // actionable-only flagged array loadIncomplete() itself builds, the
+    // same way buildFlagged() above reproduces the pre-closure version.
+    const recomputedActionableFlagged = events
+      .filter((e) => !e.followup_dismissed)
+      .map((e) => {
+        const missing = sandbox.getMissingFields(e);
+        const { actionable } = sandbox.classifyMissingFields(e, missing);
+        return { e, missing: actionable };
+      })
+      .filter((x) => x.missing.length > 0);
+    const { rows, totals } = sandbox.computeFollowupBreakdown(recomputedActionableFlagged);
     const sum = rows.reduce((s, r) => s + r.count, 0);
-    assert.strictEqual(sum, 4, "recomputing from the identical inputs must also sum to 4");
-    assert.strictEqual(recomputedFlagged.length, parseInt(badgeCount, 10), "the flagged array driving the breakdown is the exact same one driving the badge");
+    assert.strictEqual(sum, 1, "recomputing the same actionable-only flagged array loadIncomplete() itself builds must also sum to 1");
+    assert.strictEqual(recomputedActionableFlagged.length, parseInt(badgeCount, 10), "the flagged array driving the breakdown is the exact same one driving the badge");
+    assert.strictEqual(totals["DESCRIPTION"], 0, "no actionable description gap remains -- e1/e2/e3's description gaps were all source-limited");
+    assert.strictEqual(totals["TICKET/EVENT LINK"], 0, "no actionable ticket/event link gap remains -- e1/e2's link gap was source-limited (Trinosophes)");
+    assert.strictEqual(totals["VENUE ADDRESS/CITY"], 1, "only e4's venue address/city gap is actionable");
+
+    // The 3 fully-source-limited events (e1, e2, e3) are surfaced via the
+    // tiny informational note, not silently dropped with no trace.
+    const noteText = sandbox.document.getElementById("sourceLimitedNote").textContent;
+    assert.ok(noteText.includes("3 additional events omitted"), "the 3 fully source-limited events must be accounted for in the note: " + noteText);
   }
-  console.log("PASS: loadIncomplete() wires the same flagged array into both the badge and the breakdown, dismissed events excluded from both identically");
+  console.log("PASS: loadIncomplete() wires the same actionable-only flagged array into both the badge and the breakdown; fully source-limited events (Trinosophes, Outer-Limits-description-only) are excluded entirely and accounted for in the source-limited note, dismissed events excluded from both identically");
 
   // --- empty case: nothing flagged -> breakdown box is cleared, not left showing stale/zero rows ---
   {

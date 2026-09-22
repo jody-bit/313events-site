@@ -246,12 +246,13 @@
 
     <div class="tab-panel" data-tab-panel="followup">
       <section class="block" style="margin-top:0;">
-        <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
-        <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
+        <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(actionable only)</span></h2>
+        <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link, where a human can actually do something about it. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown. A gap a source structurally never provides (e.g. Trinosophes has no description or link data at all on its own page) is a confirmed limitation, not a task — it's left out of this list entirely rather than nagging forever about something no one can fix; see the note below the list when that's hiding anything.</div>
         <div class="refresh" style="margin:0 0 12px;"><button id="autoRepairBtn" onclick="autoRepairFollowup()">Auto-Repair</button><span class="refresh-status" id="autoRepairStatus"></span></div>
-        <div class="sub" style="margin-top:-4px;">Auto-Repair fills in venue address/city (SH.1's deterministic canonical/learned venue lookup); for Outer Limits Lounge, a blank description pulled from that venue's own live event page; for Detroit Historical Society/Dossin, a blank ticket/event link pulled from that venue's own "Learn More" link — only ever when the source itself has real, event-specific data (a link shared by more than one event is treated as generic and never used); and for Redford Theatre, a blank description and/or event link and/or ticket link recovered from that event's own authoritative detail page — the ticket link only when that page has exactly one "Buy Tickets" link. Never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its missing fields is actually resolved.</div>
+        <div class="sub" style="margin-top:-4px;">Auto-Repair fills in venue address/city (SH.1's deterministic canonical/learned venue lookup); for Outer Limits Lounge, a blank description pulled from that venue's own live event page; for Detroit Historical Society/Dossin, a blank ticket/event link pulled from that venue's own "Learn More" link — only ever when the source itself has real, event-specific data (a link shared by more than one event is treated as generic and never used); and for Redford Theatre, a blank description and/or event link and/or ticket link recovered from that event's own authoritative detail page — the ticket link only when that page has exactly one "Buy Tickets" link. Never a generated description, an invented link, or a guessed start time. A card only leaves this list once every one of its actionable missing fields is actually resolved.</div>
         <div class="err" id="incompleteError" style="display:none;"></div>
         <div id="followupBreakdown"></div>
+        <div class="sub" id="sourceLimitedNote" style="margin-top:4px;"></div>
         <div id="incompleteList"></div>
       </section>
     </div>
@@ -427,6 +428,76 @@ function getMissingFields(e) {
   return missing;
 }
 
+// ---- Actionable vs. source-limited (2026-09-23 closure) ----
+// PRODUCT DECISION: "Needs follow-up" means Jody can actually do something
+// about it -- not "one of our preferred fields happens to be blank."
+// getMissingFields() above stays 100% truthful about what's actually blank
+// (nothing here changes what it detects or reports) -- this layer only
+// decides which of those real gaps are worth interrupting Jody for.
+//
+// A small, explicit, source-keyed table -- not a new framework, not a
+// per-event-id list. Each entry below is a confirmed structural fact about
+// that source's own page (not a guess), established during the 2026-09
+// Needs-Follow-up burn-down:
+//   - Trinosophes (api/cron-trinosophes.js): a flat text listing page with
+//     no description and no per-event link anywhere -- confirmed by direct
+//     investigation of the source's own markup. Structurally absent, not
+//     "sometimes missing."
+//   - Detroit Historical Society / Dossin (api/cron-dossin.js): each
+//     listing has title/venue/date/time + a "LEARN MORE" link, but never a
+//     description/excerpt in that block -- see that file's own header
+//     comment. The link itself IS real per-event data (Auto-Repair already
+//     recovers it when unique to that event -- see
+//     scripts/dossin-metadata-repair.js) so it stays actionable; only
+//     description is a structural gap here.
+//   - Outer Limits Lounge (api/cron-outerlimitslounge.js): most listings
+//     have a real Squarespace Post Body description, already recovered
+//     automatically by Auto-Repair when present (see
+//     scripts/outerlimits-description-repair.js) -- but not every listing
+//     has one. A description still blank after Auto-Repair has already
+//     tried is a genuine source gap, not something Jody can fix by hand
+//     either (there's no "real" text to go find).
+// Deliberately NOT listed: Resident Advisor. RA's manually-curated rows
+// use their own "secret loft" / TBA-style venue wording (see
+// isVenueTbaByDesign() below for why that wording doesn't collide with the
+// venue-TBA rule) and are handled entirely by the existing per-event
+// "Not fixable — dismiss" button -- unchanged by this closure.
+const SOURCE_FIELD_LIMITATIONS = {
+  'Trinosophes': ['description', 'ticket/event link'],
+  'Detroit Historical Society': ['description'],
+  'Outer Limits Lounge': ['description'],
+};
+
+// A small number of connectors write venue_name_raw = "Venue TBA" verbatim
+// for a listing where the organizer genuinely hasn't announced a venue yet
+// (see e.g. api/cron-detroitmonthofdesign.js, api/cron-planetanttheatre.js,
+// api/cron-ticketmaster.js, and VisitDetroit's own Algolia data for a
+// "TBA"-style listing) -- there is no address to have yet, so flagging it
+// as an actionable gap asks Jody to go find something that doesn't exist.
+// EXACT match only, never a substring/"contains TBA" match: Resident
+// Advisor's own secret-venue rows use different wording ("Venue TBA
+// (secret loft, revealed to ticket holders)", "TBA - <street>", "Location
+// TBA", plain "TBA") that never equals this exactly -- confirmed against
+// every current RA row in supabase/*.sql. RA's existing manual-dismiss
+// workflow for those is completely unaffected by this rule.
+function isVenueTbaByDesign(e) {
+  return !!(e.venue_name_raw && e.venue_name_raw.trim().toLowerCase() === 'venue tba');
+}
+
+// Splits getMissingFields()'s own truthful "what's missing" list into what
+// Jody can actually act on vs. what a confirmed source limitation already
+// explains. Never invents, never overwrites, never touches the network --
+// pure classification of the SAME missing-field list every caller already
+// had.
+function classifyMissingFields(e, missing) {
+  const source = (e.source && String(e.source).trim()) || '';
+  const limitedFields = new Set(SOURCE_FIELD_LIMITATIONS[source] || []);
+  if (isVenueTbaByDesign(e)) limitedFields.add('venue address/city');
+  const actionable = missing.filter((m) => !limitedFields.has(m));
+  const sourceLimited = missing.filter((m) => limitedFields.has(m));
+  return { actionable, sourceLimited };
+}
+
 // ---- Needs follow-up breakdown (2026-09-22) ----
 // Pure operational diagnostic: groups the SAME flagged array
 // loadIncomplete() already built for the badge/cards above by
@@ -512,7 +583,10 @@ function renderFollowupBreakdown(flagged) {
 // report "N improved / M no longer need follow-up" after a repair pass.
 // Populated at the end of every successful loadIncomplete() call (Refresh
 // included) so Auto-Repair always compares against the most recent real
-// load, never a stale one.
+// load, never a stale one. `missing` here is the ACTIONABLE subset only
+// (see classifyMissingFields() above) -- a source-limited field is never
+// part of it, so Auto-Repair's before/after diff and every downstream
+// reader (badge, cards, breakdown) only ever reasons about real gaps.
 let lastFlaggedIncomplete = [];
 
 async function loadIncomplete() {
@@ -525,13 +599,38 @@ async function loadIncomplete() {
       return false;
     }
     if (errEl) errEl.style.display = 'none';
+    // 2026-09-23 closure: split each event's truthful missing-field list
+    // into actionable vs. source-limited. An event with SOME actionable
+    // gaps stays in the queue showing only those (a source-limited field
+    // on the same event is never shown as a "Missing:" badge -- there's
+    // nothing for Jody to do about it). An event whose ENTIRE missing list
+    // is source-limited is excluded from the queue entirely, not just
+    // hidden -- it's still visible in the raw data, just never asked of a
+    // human. sourceLimitedExcludedCount is purely informational (Step 5:
+    // "a tiny count... is fine") so that exclusion is auditable, not silent.
+    let sourceLimitedExcludedCount = 0;
     const flagged = (data.events || [])
-      .map(e => ({ e, missing: getMissingFields(e) }))
-      .filter(x => x.missing.length > 0 && !x.e.followup_dismissed);
+      .filter((e) => !e.followup_dismissed)
+      .map((e) => {
+        const missing = getMissingFields(e);
+        const { actionable, sourceLimited } = classifyMissingFields(e, missing);
+        return { e, missing: actionable, sourceLimited };
+      })
+      .filter((x) => {
+        if (x.missing.length > 0) return true;
+        if (x.sourceLimited.length > 0) sourceLimitedExcludedCount++;
+        return false;
+      });
     lastFlaggedIncomplete = flagged;
     setTabBadge('followup', flagged.length);
     renderIncompleteList(flagged);
     renderFollowupBreakdown(flagged);
+    const noteEl = document.getElementById('sourceLimitedNote');
+    if (noteEl) {
+      noteEl.textContent = sourceLimitedExcludedCount > 0
+        ? `${sourceLimitedExcludedCount} additional event${sourceLimitedExcludedCount === 1 ? '' : 's'} omitted here — every missing field on ${sourceLimitedExcludedCount === 1 ? 'it is' : 'each is'} a confirmed source limitation (see SOURCE_FIELD_LIMITATIONS in admin.html), not something to act on.`
+        : '';
+    }
     return true;
   } catch (err) {
     if (errEl) { errEl.textContent = 'Failed to load Needs follow-up: ' + err.message; errEl.style.display = 'block'; }

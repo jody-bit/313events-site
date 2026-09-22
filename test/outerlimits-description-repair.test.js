@@ -454,8 +454,16 @@ function eventRow(overrides) {
 }
 
 async function runPart4() {
-  // --- 11. a DESCRIPTION-only card leaves Needs Follow-up once the
-  //     description step reports success and the reload confirms it. ---
+  // --- 11. 2026-09-23 closure update: a DESCRIPTION-only Outer Limits
+  //     Lounge card is now classified source-limited (description is a
+  //     confirmed "sometimes genuinely absent" gap for this source -- see
+  //     admin.html's SOURCE_FIELD_LIMITATIONS), so it's never shown as
+  //     actionable in the first place -- badge stays 0 throughout. Auto-
+  //     Repair's own write mechanism is completely unaffected by that UI
+  //     classification, though: it still fetches the live page and still
+  //     writes the real recovered text when the source actually has it,
+  //     proving real data isn't abandoned just because the UI stopped
+  //     nagging about it. ---
   {
     const sandbox = buildSandbox();
     const before = [eventRow({ id: "evt-desc-only", description: "" })];
@@ -483,18 +491,19 @@ async function runPart4() {
       throw new Error("unexpected fetch #" + callCount);
     };
     await sandbox.loadIncomplete();
-    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "1");
+    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "0", "a description-only Outer Limits Lounge gap is source-limited -- never shown as needing follow-up");
     await sandbox.autoRepairFollowup();
-    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "0");
+    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "0", "still 0 -- this card was never in the actionable queue to leave");
     const listHtml = sandbox.document.getElementById("incompleteList").innerHTML;
-    assert.ok(!listHtml.includes('id="incomplete-evt-desc-only"'), "a description-only card must leave Needs follow-up once description repair actually fills it");
+    assert.ok(!listHtml.includes('id="incomplete-evt-desc-only"'), "the card never appears in the list at all");
     const status = sandbox.document.getElementById("autoRepairStatus").textContent;
-    assert.ok(status.includes("1 no longer needs follow-up"), status);
+    assert.ok(status.includes("Events repaired: 1"), "Auto-Repair must still genuinely fetch and write the real description server-side, independent of the UI's actionable classification: " + status);
   }
-  console.log("PASS: a successfully-repaired DESCRIPTION-only card leaves Needs follow-up");
+  console.log("PASS: a description-only Outer Limits Lounge card is source-limited (never shown as needing follow-up), but Auto-Repair's own write mechanism still recovers and stores the real text when the source actually has it");
 
   // --- 12. a card whose source genuinely has no description (Karaoke-style)
-  //     remains -- never a false success, never fabricated text. ---
+  //     is likewise source-limited from the start -- never shown, never a
+  //     false success, never fabricated text. ---
   {
     const sandbox = buildSandbox();
     const before = [eventRow({ id: "evt-karaoke", title: "Karaoke with Polish John!", description: "" })];
@@ -517,14 +526,14 @@ async function runPart4() {
       throw new Error("unexpected fetch #" + callCount);
     };
     await sandbox.loadIncomplete();
+    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "0", "a description-only gap is source-limited regardless of whether the live page happens to have text or not -- never shown either way");
     await sandbox.autoRepairFollowup();
-    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "1", "a card whose source genuinely has no description must remain flagged");
-    assert.ok(sandbox.document.getElementById("incompleteList").innerHTML.includes('id="incomplete-evt-karaoke"'));
+    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "0");
+    assert.ok(!sandbox.document.getElementById("incompleteList").innerHTML.includes('id="incomplete-evt-karaoke"'), "never appears in the list");
     const status = sandbox.document.getElementById("autoRepairStatus").textContent;
-    assert.ok(status.includes("0 events improved"), status);
-    assert.ok(status.includes("0 no longer needs follow-up") === false || true); // pluralization covered by existing Auto-Repair V1 tests; presence of "0" progress is what matters here
+    assert.ok(status.includes("Events repaired: 0"), "nothing was actually recoverable, so nothing was written: " + status);
   }
-  console.log("PASS: a card whose authoritative source has no description remains flagged, never fabricated, never falsely resolved");
+  console.log("PASS: a card whose authoritative source has no description is source-limited (never shown as needing follow-up), and Auto-Repair correctly writes nothing -- never fabricated, never falsely resolved");
 
   // --- 13. a description-step failure is shown explicitly, but a real
   //     concurrent venue-repair success is still reported accurately --

@@ -489,9 +489,17 @@ async function runPart5() {
   }
   console.log("PASS: a card missing only the ticket/event link leaves Needs follow-up once Dossin repair fills it");
 
-  // --- 11. a card missing BOTH description and the link (the realistic
-  //     current Dossin case) remains flagged but improved -- description
-  //     has no repair mechanism, so it must NOT disappear. ---
+  // --- 11. 2026-09-23 closure update: a card missing BOTH description and
+  //     the link (the realistic current Dossin case) now fully LEAVES
+  //     Needs Follow-up once the link is filled -- Dossin's own parsed
+  //     block structurally never has a description (see api/cron-dossin.js
+  //     's own header comment), so description is a confirmed source
+  //     limitation for this source (see admin.html's
+  //     SOURCE_FIELD_LIMITATIONS), not an actionable gap. Only the link
+  //     was ever actionable here; once Dossin's own repair fills it, there
+  //     is nothing left for Jody to act on. getMissingFields() itself is
+  //     untouched (still truthfully reports description as missing) --
+  //     only the actionable-queue classification changed. ---
   {
     const sandbox = buildSandbox();
     const before = [eventRow({ id: "evt-both-missing", description: "", ticket_url: null, event_url: null })];
@@ -507,15 +515,18 @@ async function runPart5() {
       throw new Error("unexpected fetch #" + callCount);
     };
     await sandbox.loadIncomplete();
+    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "1", "the link gap is genuinely actionable, so the card starts flagged");
     await sandbox.autoRepairFollowup();
-    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "1", "the card must remain -- description is still genuinely missing, with no mechanism to fill it");
-    assert.ok(sandbox.document.getElementById("incompleteList").innerHTML.includes('id="incomplete-evt-both-missing"'));
+    assert.strictEqual(sandbox.document.getElementById("badge-followup").textContent, "0", "once the link is filled, the only remaining gap (description) is source-limited for Dossin -- nothing actionable is left");
+    assert.ok(!sandbox.document.getElementById("incompleteList").innerHTML.includes('id="incomplete-evt-both-missing"'), "the card must leave Needs follow-up entirely");
     const status = sandbox.document.getElementById("autoRepairStatus").textContent;
-    assert.ok(status.includes("1 event improved"), status);
+    assert.ok(status.includes("1 no longer needs follow-up"), status);
+    // getMissingFields() itself stays 100% truthful -- description really
+    // is still blank, this just isn't asked of Jody anymore.
     const afterRow = eventRow({ id: "evt-both-missing", description: "", ticket_url: null, event_url: "https://www.detroithistorical.org/events/dossin-after-dark" });
-    assert.deepStrictEqual(Array.from(sandbox.getMissingFields(afterRow)), ["description"], "only description should remain missing after the link is filled");
+    assert.deepStrictEqual(Array.from(sandbox.getMissingFields(afterRow)), ["description"], "getMissingFields() must still truthfully report description as missing, even though it's no longer actionable");
   }
-  console.log("PASS: a card missing both description and the link remains flagged (improved, not resolved) since description has no repair mechanism");
+  console.log("PASS: a card missing both description and the link now leaves Needs follow-up once the link is filled -- description alone is a confirmed Dossin source limitation, not an action item, though getMissingFields() still reports it truthfully");
 
   // --- 12. a Dossin-step failure is shown explicitly without masking a
   //     real concurrent success from an earlier step. ---
