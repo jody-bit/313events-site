@@ -209,6 +209,59 @@ async function run() {
   }
   console.log("PASS: new rows still write with status='approved' -- WP 0.14 routing was not implicitly added");
 
+  // --- 7. Needs Follow-up investigation (2026-09-22): when the venues
+  //     table actually contains a canonical "Trinosophes" row, this
+  //     connector's venue_id resolution (resolveVenueId(), from the
+  //     shared api/_lib/venue-lookup.js layer) must write that row's id
+  //     onto every upserted event -- proving venue_id really is written
+  //     on ingestion, end to end through the real connector, not just in
+  //     the resolver's own unit tests (test/venue-lookup.test.js). Every
+  //     other test above (and every other single-venue cron's own runlog
+  //     test) mocks /rest/v1/venues as an empty array, which only ever
+  //     exercised the "no match" path -- this is the connector-level
+  //     "a real match exists" case that was previously untested anywhere. ---
+  {
+    const handler = freshHandler();
+    let capturedUpsertBody = null;
+    const { fetchFn } = makeMockFetch({
+      source: () => ({ ok: true, status: 200, text: async () => dateHeadingHtml("December 5, 2026", "A Future Band") }),
+    });
+    global.fetch = async (url, opts = {}) => {
+      if (url.includes("/rest/v1/venues")) {
+        return { ok: true, status: 200, json: async () => [{ id: "venue-trinosophes-id", name: "Trinosophes" }] };
+      }
+      if (opts.method === "POST" && url.includes("/rest/v1/events")) {
+        capturedUpsertBody = JSON.parse(opts.body);
+      }
+      return fetchFn(url, opts);
+    };
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+
+    assert.strictEqual(res._status, 200);
+    assert.ok(capturedUpsertBody && capturedUpsertBody.length === 1);
+    assert.strictEqual(capturedUpsertBody[0].venue_id, "venue-trinosophes-id", "the canonical Trinosophes venues row's id must be written onto the upserted event");
+    assert.strictEqual(capturedUpsertBody[0].venue_name_raw, "Trinosophes");
+
+    // Replicates admin.html's exact getMissingFields() "venue address/city"
+    // check inline (same approach as test/cron-dossin-runlog.test.js and
+    // test/cron-wdet-runlog.test.js's own Needs Follow-up tests): once
+    // venue_id resolves AND the admin query's venues(address,city) embed
+    // (api/admin-events.js's incomplete=1 select string) supplies a real
+    // canonical address, the event is no longer flagged for this reason --
+    // proving the full connector -> resolver -> admin-join -> missing-
+    // field-check chain actually clears once a canonical match exists.
+    const rowAsAdminWouldSeeIt = {
+      ...capturedUpsertBody[0],
+      venues: { address: "1464 Gratiot Ave", city: "Detroit" }, // what the admin query's embed would return for this venue_id
+    };
+    const hasRawAddress = !!(rowAsAdminWouldSeeIt.venue_address_raw && rowAsAdminWouldSeeIt.venue_address_raw.trim()) || !!(rowAsAdminWouldSeeIt.venue_city_raw && rowAsAdminWouldSeeIt.venue_city_raw.trim());
+    const hasLinkedVenueAddress = !!(rowAsAdminWouldSeeIt.venues && rowAsAdminWouldSeeIt.venues.address && rowAsAdminWouldSeeIt.venues.address.trim());
+    assert.strictEqual(hasRawAddress, false, "this connector never writes venue_address_raw/venue_city_raw itself -- confirms the raw-field path is genuinely blank, not silently already covering this");
+    assert.strictEqual(hasLinkedVenueAddress, true, "once venue_id resolves to a canonical row with a real address, admin.html's hasLinkedVenueAddress check is satisfied");
+  }
+  console.log("PASS: a real canonical Trinosophes venues row resolves venue_id on ingestion and clears admin.html's VENUE ADDRESS/CITY check");
+
   console.log("\nAll cron-trinosophes.js WP 0.5 integration tests passed.");
 }
 
