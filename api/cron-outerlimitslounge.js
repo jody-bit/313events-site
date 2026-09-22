@@ -364,3 +364,36 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+// ---- Reused by scripts/outerlimits-description-repair.js (2026-09-22) ----
+// Needs Follow-up burn-down: Auto-Repair's authoritative Outer Limits
+// description recovery needs the EXACT same fetch/parse/identity logic this
+// cron already uses (FEED_URL, the oll-<item.id> external_id scheme,
+// stripHtml()/decodeEntities() for the Post Body text) so there is exactly
+// one parser for this source, never a second one that could quietly drift
+// from this one. Attaching these to the exported handler function (module
+// .exports is itself a function, and functions are objects) is purely
+// additive -- it changes nothing about this file's own behavior as a cron
+// endpoint, which is still `require("./cron-outerlimitslounge")` called
+// directly as `(req, res) => ...`.
+//
+// fetchDescriptionsByExternalId() returns a Map<external_id, description>
+// covering every item CURRENTLY in the live feed. A present key with a
+// null value means "matched, but Squarespace itself has no Post
+// Body/excerpt for this item" (e.g. a recurring Karaoke instance) -- never
+// treated as a reason to fabricate text. An external_id with no key at all
+// means "no longer in the live feed" (unmatched) -- also never repaired,
+// since there is nothing authoritative to repair it from.
+module.exports.FEED_URL = FEED_URL;
+module.exports.SOURCE_NAME = SOURCE_NAME;
+module.exports.fetchDescriptionsByExternalId = async function fetchDescriptionsByExternalId(fetchImpl = fetch) {
+  const r = await fetchImpl(FEED_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
+  if (!r.ok) throw new Error(`Fetch failed: HTTP ${r.status}`);
+  const data = await r.json();
+  const upcoming = Array.isArray(data.upcoming) ? data.upcoming : [];
+  const map = new Map();
+  for (const item of upcoming) {
+    map.set(`oll-${item.id}`, stripHtml(item.body) || stripHtml(item.excerpt));
+  }
+  return map;
+};

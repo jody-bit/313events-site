@@ -46,12 +46,17 @@ const crypto = require("crypto");
 //                     gap the "Needs follow-up" section flagged. Only ever fills a blank field
 //                     in, never blanks or overwrites one that already has a value from here.
 //   auto_repair_venue: { action: "auto_repair_venue" } (no id — operates on the whole batch) —
-//                     Needs Follow-up's "Auto-Repair" button (2026-09-22, Auto-Repair V1). Runs
-//                     the existing SH.1 venue address/city repair (scripts/sh1-repair-existing-
-//                     venue-address-city.js's repairExistingEvents(), unmodified) against every
-//                     current upcoming pending_review/approved event still missing
-//                     venue_address_raw/venue_city_raw. Same blank-only, never-overwrite,
-//                     race-safe-PATCH guarantees as that script's own tests already prove.
+//                     Needs Follow-up's "Auto-Repair" button. Runs, in sequence: (1) the existing
+//                     SH.1 venue address/city repair (scripts/sh1-repair-existing-venue-address-
+//                     city.js's repairExistingEvents(), unmodified) against every current upcoming
+//                     pending_review/approved event still missing venue_address_raw/venue_city_raw,
+//                     then (2, added 2026-09-22 same day) authoritative Outer Limits Lounge
+//                     description recovery (scripts/outerlimits-description-repair.js's
+//                     repairOuterLimitsDescriptions(), reusing api/cron-outerlimitslounge.js's own
+//                     Squarespace fetch/parse logic) against Outer Limits events still missing a
+//                     description. Same blank-only, never-overwrite, race-safe-PATCH guarantees as
+//                     both scripts' own tests already prove. A step-2 failure never discards step 1's
+//                     real results — see the action's own handler comment below.
 // "hide" and "reject" both land on the same event_status enum value
 // ('rejected') — there's no separate DB status for "was live, then pulled"
 // vs. "a submission we declined." Adding one would need a Postgres enum
@@ -349,26 +354,74 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // auto_repair_venue (2026-09-22, Auto-Repair V1) -- Needs Follow-up's
-    // "Auto-Repair" button. Takes no `id`; operates on the whole current
-    // batch. Reuses the EXISTING, already-tested SH.1 deterministic venue
-    // address/city repair unmodified -- scripts/sh1-repair-existing-venue-
+    // auto_repair_venue (2026-09-22, Auto-Repair V1; extended 2026-09-22
+    // same day for Outer Limits description recovery) -- Needs Follow-up's
+    // single "Auto-Repair" button. Takes no `id`; operates on the whole
+    // current batch. Action name kept as-is for stability (nothing else
+    // calls it) even though it now does more than venue repair.
+    //
+    // Step 1: the EXISTING, already-tested SH.1 deterministic venue
+    // address/city repair, unmodified -- scripts/sh1-repair-existing-venue-
     // address-city.js's repairExistingEvents(), which itself calls
     // api/_lib/venue-lookup.js's resolveVenueAddressCityRepair() (canonical
     // venue_id, then exact canonical name match, then exact learned-
     // historical match; never fuzzy, never overwrites a populated field,
     // never touches any other column) and writes via that script's own
     // race-safe conditional PATCH (re-asserts each field is still null at
-    // write time; a concurrent change is skipped, never overwritten). This
-    // endpoint adds no new repair logic of its own -- it only exposes that
-    // already-proven mechanism to Admin. V1 scope: venue_address_raw /
-    // venue_city_raw / venue_id only. Description, ticket/event link, and
-    // start time are untouched by this action.
+    // write time; a concurrent change is skipped, never overwritten).
+    //
+    // Step 2: authoritative Outer Limits Lounge description recovery
+    // (scripts/outerlimits-description-repair.js's
+    // repairOuterLimitsDescriptions()) -- Outer Limits is the single
+    // largest remaining Needs Follow-up bucket (17 of 33 cards,
+    // DESCRIPTION-only, per Jody's 2026-09-22 breakdown). Reuses api/cron-
+    // outerlimitslounge.js's own Squarespace fetch/parse/identity logic
+    // (there is exactly one parser for that source); fills a blank
+    // description only when the venue's own live Post Body/excerpt is
+    // genuinely nonblank, never overwrites, never generates. A failure in
+    // this step is captured (outerLimitsDescriptionError) but never
+    // discards Step 1's already-real, already-persisted results -- a
+    // partial success is still reported honestly, never as a silent full
+    // failure or a false full success.
+    //
+    // This endpoint adds no new venue/description repair DECISION logic of
+    // its own in either step -- it only sequences two already-proven
+    // mechanisms and exposes their combined result to Admin. `written` and
+    // `fieldsWritten` below report the UNION of events either step actually
+    // touched (an event can need both kinds of repair at once; summing the
+    // two steps' own counters alone would double-count that event as two
+    // "events repaired").
     if (action === "auto_repair_venue") {
       try {
         const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
-        const counts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-        res.status(200).json({ ok: true, ...counts });
+        const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+
+        let descriptionCounts = null;
+        let outerLimitsDescriptionError = null;
+        try {
+          const { repairOuterLimitsDescriptions } = require("../scripts/outerlimits-description-repair");
+          descriptionCounts = await repairOuterLimitsDescriptions({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (descErr) {
+          // Never lets a description-repair failure erase Step 1's real,
+          // already-persisted venue-repair results -- surfaced explicitly
+          // instead so it's visible, not masqueraded as a clean success.
+          outerLimitsDescriptionError = descErr.message;
+        }
+
+        const venueWrittenIds = venueCounts.writtenIds || [];
+        const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds]);
+        const combinedFieldsWritten = venueCounts.fieldsWritten + ((descriptionCounts && descriptionCounts.written) || 0);
+
+        res.status(200).json({
+          ok: true,
+          ...venueCounts,
+          written: combinedWrittenIds.size,
+          fieldsWritten: combinedFieldsWritten,
+          venue: venueCounts,
+          outerLimitsDescription: descriptionCounts,
+          outerLimitsDescriptionError,
+        });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }

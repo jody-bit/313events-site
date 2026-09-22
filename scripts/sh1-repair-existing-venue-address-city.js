@@ -138,6 +138,14 @@ async function repairExistingEvents({
     fieldsWritten: 0,
     skippedConcurrentChange: 0,
     unresolved: 0,
+    // 2026-09-22 (Outer Limits description repair integration): the ids of
+    // events this run actually wrote to. api/admin-events.js's combined
+    // Auto-Repair action unions this against the Outer Limits description
+    // repair's own writtenIds to report an accurate "events repaired" count
+    // when a single event needed both kinds of repair (blank venue AND
+    // blank description) -- summing the two counters alone would double-
+    // count that event. Purely additive; nothing here reads or uses it.
+    writtenIds: [],
   };
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -174,6 +182,7 @@ async function repairExistingEvents({
     if (applied) {
       counts.written++;
       counts.fieldsWritten += Object.keys(patch).length;
+      counts.writtenIds.push(event.id);
     } else {
       counts.skippedConcurrentChange++;
       logger.warn(`Skipped event ${event.id} — a field in ${JSON.stringify(patch)} was no longer null at write time (concurrent change).`);
