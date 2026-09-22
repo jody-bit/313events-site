@@ -1,0 +1,34 @@
+-- Migration 036: add 'gaming' to event_category
+--
+-- Context: Jody, 2026-09-22 — Product Owner decision after GottaGacha
+-- (gottagacha.com, a Warren, MI gaming arcade/TCG venue) source discovery
+-- surfaced a real content gap: its actual event catalog is dominated by
+-- trading-card-game nights (Magic, Lorcana, Pokemon, Yu-Gi-Oh, One Piece),
+-- fighting-game/esports tournaments (start.gg/melee.gg-linked), and D&D/
+-- tabletop RPG events — none of which fit any of the 14 categories that
+-- existed before this migration. Adding a 15th: "gaming", labeled "Gaming
+-- & Esports" (see migration_037 for the categories-table metadata row and
+-- index.html/etc.'s CATS object for the matching client-side label/color).
+-- This is an intentional, deliberate expansion of the locked taxonomy, same
+-- as migration_007/009b/018/031's own precedent — not a violation of it.
+--
+-- RUN THIS STATEMENT BY ITSELF, as its own separate paste/run in the SQL
+-- Editor. Postgres will not run ALTER TYPE ... ADD VALUE inside a
+-- transaction block alongside other statements, and most SQL editors
+-- (including Supabase's) submit a multi-statement paste as one batch/
+-- transaction, so combining this with anything else can make the whole
+-- batch fail silently rather than partially succeed — same caveat as
+-- migration_009a/migration_018/migration_031's own notes. migration_037
+-- (the categories table row + schema_migrations insert for THIS file) is a
+-- separate file for exactly this reason — run this one alone first, then
+-- that one.
+--
+-- NOT YET RUN AGAINST PRODUCTION as of this commit — Claude's execution
+-- environments cannot currently reach the 313.events Supabase production
+-- database directly (see DEBT-002 in BACKLOG.md). Prepared here for Jody
+-- to run by hand in the Supabase SQL Editor, same workflow as every other
+-- migration file in this project.
+--
+-- IF NOT EXISTS makes this safe to re-run regardless.
+
+alter type event_category add value if not exists 'gaming';

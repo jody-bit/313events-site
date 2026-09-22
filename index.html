@@ -3403,6 +3403,7 @@
     --c-community:#3DFF6E; /* neon green */
     --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
     --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
+    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -4638,7 +4639,8 @@ const CATS = {
   sports:   {label:"Sports",            color:"var(--c-sports)"},
   community:{label:"Community",         color:"var(--c-community)"},
   vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"}
+  training: {label:"Classes & Training", color:"var(--c-training)"},
+  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
 };
 
 // ---- Location reference data (Phase 1 Chunk 3) ----
@@ -5661,9 +5663,13 @@ function buildFilterBar(){
   allChip.id = 'allTypesChip';
   allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
   // Taxonomy-lock amendment (2026-08-26 clarification): the preserved list is
-  // "All types" (sentence case) plus the 11 categories below, unchanged and
+  // "All types" (sentence case) plus the categories below, unchanged and
   // unreordered. The amendment is explicit that it locks the taxonomy only,
   // not presentation — so this text can still be restyled, just not renamed.
+  // The category COUNT is not locked -- it has grown from the original 11 to
+  // 15 today via migration_007/009b/018/031-032/036-037, each a deliberate,
+  // explicit expansion. "gaming" (Gaming & Esports) is the most recent,
+  // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
   allChip.textContent = 'All types';
   allChip.onclick = ()=>{
     activeCats = new Set(Object.keys(CATS));

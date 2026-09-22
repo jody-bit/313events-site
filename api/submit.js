@@ -25,6 +25,11 @@ const VALID_CATEGORIES = new Set([
   // "training" (2026-09-18): Classes & Training — vocational/workforce
   // classes and certification courses (e.g. Detroit Training Center).
   "training",
+  // "gaming" (2026-09-22, migration_036/037): Gaming & Esports — added for
+  // GottaGacha (cron-gottagacha.js): TCG nights, fighting-game/esports
+  // tournaments, D&D/tabletop RPG events. Product Owner decision, taxonomy
+  // gap surfaced by that source's actual event catalog.
+  "gaming",
 ]);
 
 function isValidEmail(email) {

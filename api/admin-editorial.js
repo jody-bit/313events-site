@@ -81,16 +81,19 @@ function parsePriceFrom(input) {
   return Number.isFinite(n) ? n : null;
 }
 
-// Same 13-category taxonomy as radar.html's CATS / schema.sql's
+// Same 15-category taxonomy as radar.html's CATS / schema.sql's
 // event_category enum (music/theatre/dance/visual/museum/family/fest/food/
-// film/nightlife/community/sports/vendor) — kept as its own literal list
-// rather than imported, same one-file-per-endpoint convention as every other
-// api/*.js in this project. api/submit.js's own VALID_CATEGORIES list was
-// separately missing "sports" (a pre-existing gap noted in that file); now
-// fixed there too as of the same 2026-08-30 change that added "vendor" here.
+// film/nightlife/community/sports/vendor/training/gaming) — kept as its own
+// literal list rather than imported, same one-file-per-endpoint convention as
+// every other api/*.js in this project. api/submit.js's own VALID_CATEGORIES
+// list was separately missing "sports" (a pre-existing gap noted in that
+// file); now fixed there too as of the same 2026-08-30 change that added
+// "vendor" here. "gaming" added 2026-09-22 (migration_036/037) for
+// GottaGacha — see that migration's own header for why.
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum", "family",
   "fest", "food", "film", "nightlife", "community", "sports", "vendor", "training",
+  "gaming",
 ]);
 
 function isSafeHttpUrl(url) {
