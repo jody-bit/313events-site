@@ -338,24 +338,51 @@ module.exports = async (req, res) => {
 
     // PostgREST's mixed-key bulk-upsert behavior for one batch containing
     // objects with different key sets is still unverified project-wide
-    // (see WP 0.7/0.11 — sending a batch with some rows missing
-    // start_date/time_display and others having it risks PostgREST
-    // NULL-filling the column for every row instead of leaving existing
-    // values untouched). Rather than risk that, rows are grouped by
-    // identical key set — same interim approach WP 0.7 prescribes — and
-    // sent as two separate upsert calls: brand-new rows (full shape,
-    // including this run's best-guess start_date/time_display) and
-    // existing rows (start_date/time_display genuinely omitted from the
-    // JSON object, not sent as null, so the existing DB value is left
-    // alone).
+    // (see WP 0.7/0.11), so rows are still grouped by identical key set —
+    // same interim approach WP 0.7 prescribes — and sent as two separate
+    // upsert calls: brand-new rows (full shape, this run's best-guess
+    // start_date/time_display) and existing rows (start_date/time_display
+    // set below, per-row, from the lookup's own returned value).
+    //
+    // 2026-09-22 correction (BUG-004 root cause): existing rows used to
+    // have start_date/time_display deleted from the object entirely,
+    // intending to leave the stored value alone. That doesn't work --
+    // start_date is `date not null` with no default (schema.sql), so a
+    // batch where every row omits that key produces an INSERT ... ON
+    // CONFLICT DO UPDATE statement that never mentions the start_date
+    // column at all, which Postgres rejects for the WHOLE batch with a
+    // NOT NULL violation. See the fix below: existing rows now send their
+    // own current start_date/time_display value back explicitly (a
+    // value-for-value no-op that still satisfies the constraint and still
+    // touches updated_at), instead of omitting the column.
     const newRows = [];
     const existingRows = [];
     for (const row of rowsWithVenue) {
       const existing = existingByExternalId.get(row.external_id);
       const withStatus = { ...row, status: (existing && existing.status) || DEFAULT_STATUS };
       if (existing) {
-        delete withStatus.start_date;
-        delete withStatus.time_display;
+        // 2026-09-22 fix (BUG-004 root cause, confirmed via schema.sql):
+        // start_date is `date not null` with no default -- omitting it
+        // entirely from every row in this batch (as this used to do, via
+        // `delete`) means PostgREST's generated INSERT ... ON CONFLICT DO
+        // UPDATE statement never mentions the start_date column at all.
+        // Postgres rejects that with "null value in column start_date
+        // violates not-null constraint" for the WHOLE batch, on every
+        // single run, since virtually all of Popps' 20 most-recent posts
+        // are already "existing" after this connector's first successful
+        // run. That silently 502'd the entire existing-rows upsert (no
+        // logging existed yet when this shipped -- see 7cb3648) --
+        // explaining BUG-004's 7+ day production freshness incident.
+        // Fix: write the row's own CURRENT start_date/time_display back
+        // (from the lookup already performed above) instead of omitting
+        // the key. This still never re-sends this scraper's own guessed
+        // value over a reviewer's correction -- the value written is
+        // whatever is already stored in the DB -- while keeping
+        // start_date syntactically present so the NOT NULL constraint is
+        // satisfied and the row's updated_at is genuinely touched by a
+        // real (if value-for-value no-op) UPDATE.
+        withStatus.start_date = existing.start_date;
+        withStatus.time_display = existing.time_display;
         existingRows.push(withStatus);
       } else {
         newRows.push(withStatus);
