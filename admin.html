@@ -64,8 +64,16 @@
   .health-banner .fail-list li{margin-bottom:2px;}
   .health-banner .checked-at{color:var(--ink-soft);font-weight:400;}
 
-  .refresh{margin-bottom:16px;}
+  .refresh{margin-bottom:16px;display:flex;align-items:center;gap:10px;}
   .refresh button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
+  .refresh button:disabled{opacity:.6;cursor:default;}
+  /* 2026-09-22: operational feedback for the Refresh button -- previously
+     pressing it gave no visible signal at all (loadIncomplete() and its
+     sibling loaders swallowed fetch errors silently), which is
+     indistinguishable from "did nothing" whether or not the underlying
+     data actually changed. See loadAll()/loadIncomplete()'s own comments. */
+  .refresh-status{font-size:12.5px;color:var(--ink-soft);}
+  .refresh-status.refresh-error{color:var(--bad);font-weight:600;}
 
   /* Tabbed layout (2026-09-18, FEATURE_BACKLOG.md) — replaces one long
      scroll of 6 sections with per-tab panels + a badge count per tab, so
@@ -206,7 +214,7 @@
       <button type="button" class="tab-btn" data-tab="hidden" onclick="showTab('hidden')">Recently hidden</button>
     </nav>
 
-    <div class="refresh"><button onclick="loadAll()">↻ Refresh</button></div>
+    <div class="refresh"><button id="refreshBtn" onclick="loadAll()">↻ Refresh</button><span class="refresh-status" id="refreshStatus"></span></div>
 
     <div class="tab-panel" data-tab-panel="health">
       <div id="healthBanner" class="health-banner"></div>
@@ -232,6 +240,7 @@
       <section class="block" style="margin-top:0;">
         <h2>Needs follow-up <span class="sub" style="font-weight:normal;">(missing info)</span></h2>
         <div class="sub">Upcoming events — pending or already live — missing a description, a venue address/city, a start time, or any ticket/event link. Live ones from automated sources go straight to the site with no human review, so a parsing gap here can otherwise sit unnoticed; this is just a heads-up, not an edit tool — fix the field directly in Supabase, or follow up with the submitter using the contact info shown.</div>
+        <div class="err" id="incompleteError" style="display:none;"></div>
         <div id="incompleteList"></div>
       </section>
     </div>
@@ -289,8 +298,54 @@ function unlock(event) {
 // reason to make the moderator unlock or refresh them all separately. Live
 // event search is NOT auto-loaded here — it only runs when the moderator
 // actually types a search, since it's a lookup, not a fixed-size queue.
+//
+// 2026-09-22: Refresh previously gave zero visible feedback either way --
+// no loading state on the button, and every individual loadX() function
+// (loadIncomplete() included) swallows its own fetch/parse errors silently
+// (see loadIncomplete()'s own comment), so Promise.all here never rejects
+// even when a panel's fetch genuinely failed. That made a real failure
+// indistinguishable from "nothing changed," which is exactly what was
+// reported as "Refresh appears to do nothing." This does NOT change what
+// any individual panel fetches or how it fails -- it only adds an honest
+// signal: the button shows it's working, and Needs follow-up specifically
+// (the queue under investigation) reports success/failure explicitly via
+// loadIncomplete()'s new return value, so a failed Needs follow-up refresh
+// is surfaced instead of silently leaving stale data looking current.
 async function loadAll() {
-  await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues(), loadIncomplete()]);
+  const btn = document.getElementById('refreshBtn');
+  const originalLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
+  setRefreshStatus('refreshing');
+  try {
+    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues(), loadIncomplete()]);
+    const incompleteOk = results[results.length - 1] !== false;
+    setRefreshStatus(incompleteOk ? 'ok' : 'error');
+  } catch (err) {
+    // None of the current loaders reject (each catches its own errors), so
+    // this only fires on something unexpected -- still surfaced rather than
+    // silently leaving the old timestamp/data looking current.
+    setRefreshStatus('error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+  }
+}
+
+// Updates the "Last refreshed" / failure indicator next to the Refresh
+// button. Only called from loadAll(), never touched by any individual
+// loader directly, so there is exactly one place that decides what the
+// moderator sees about the refresh they just triggered.
+function setRefreshStatus(state) {
+  const el = document.getElementById('refreshStatus');
+  if (!el) return;
+  el.classList.remove('refresh-error');
+  if (state === 'refreshing') {
+    el.textContent = 'Refreshing…';
+  } else if (state === 'ok') {
+    el.textContent = 'Last refreshed: ' + new Date().toLocaleTimeString();
+  } else if (state === 'error') {
+    el.textContent = 'Refresh failed — showing previous data. Try again.';
+    el.classList.add('refresh-error');
+  }
 }
 
 // ---- Tabbed layout (2026-09-18) ----
@@ -361,19 +416,39 @@ function getMissingFields(e) {
   return missing;
 }
 
+// 2026-09-22: this used to swallow every failure completely silently (no
+// banner, no return value, old cards just stayed on screen looking
+// current) -- indistinguishable from a successful refresh that legitimately
+// found nothing new. This is the queue under direct investigation for
+// "Refresh appears to do nothing," so it now does two things the sibling
+// loaders still don't: shows an explicit error banner instead of quietly
+// keeping stale-looking cards, and returns true/false so loadAll() can
+// tell whether THIS refresh actually succeeded (see setRefreshStatus()).
+// The fetch/recompute/render path itself is unchanged -- still a fresh,
+// uncached network request every call, still getMissingFields() run against
+// whatever admin-events.js just returned, still a full DOM replace via
+// renderIncompleteList(). No caching layer of any kind (browser cache mode,
+// Cache-Control header, localStorage, module-level memoization) was found
+// anywhere in this path.
 async function loadIncomplete() {
+  const errEl = document.getElementById('incompleteError');
   try {
     const resp = await fetch('/api/admin-events?incomplete=1', { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
-    if (!resp.ok) return; // silent — same "don't scare Jody over a fetch hiccup" convention as loadHealthcheck()
+    if (!resp.ok) {
+      if (errEl) { errEl.textContent = errText(data, 'Failed to load Needs follow-up (HTTP ' + resp.status + ')'); errEl.style.display = 'block'; }
+      return false;
+    }
+    if (errEl) errEl.style.display = 'none';
     const flagged = (data.events || [])
       .map(e => ({ e, missing: getMissingFields(e) }))
       .filter(x => x.missing.length > 0 && !x.e.followup_dismissed);
     setTabBadge('followup', flagged.length);
     renderIncompleteList(flagged);
+    return true;
   } catch (err) {
-    // Silent by design, same reasoning as loadHealthcheck() — this is a
-    // heads-up feature, not core moderation functionality.
+    if (errEl) { errEl.textContent = 'Failed to load Needs follow-up: ' + err.message; errEl.style.display = 'block'; }
+    return false;
   }
 }
 
