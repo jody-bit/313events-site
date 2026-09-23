@@ -142,14 +142,57 @@ function extractAddressFromContent(content) {
 // characters between, which real HTML-stripped text routinely violates,
 // silently defeating this match on genuine, real production article pages
 // even though the same phrase matches fine on hand-typed test fixtures.
-const AT_VENUE_RE = /\bat\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})(?:\s+in\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?))?(?=\s*[.,]|\s+(?:on|this|next|during|starting|opens|opening|for|from)\b)/;
+// PRODUCTION BUG FIX (2026-09-23, item 2): two more real-world phrasings
+// this pattern silently missed, found tracing the still-unresolved
+// Recovery & Resilience Festival articles (both Metro Times pieces name
+// the venue in full, but neither was ever extracted):
+//   (a) "at THE <Venue Name>" -- an article ("the") between the
+//       preposition and the venue's own name is extremely common ("at the
+//       Downriver Council for the Arts") and was previously fatal: the
+//       original pattern required the very next character after "at " to
+//       be the capitalized start of the venue name itself.
+//   (b) a venue name containing its own internal lowercase connector
+//       word(s) ("Downriver Council for the Arts", "Detroit Institute of
+//       Arts") -- the original repeating group required EVERY subsequent
+//       word to itself start with a capital letter, so it silently
+//       truncated at the first lowercase connector ("Downriver Council"),
+//       which is worse than not matching at all (resolveVenueId never
+//       fuzzy-matches, so a truncated name fails to resolve against the
+//       real venue). "in" is deliberately excluded from the connector list
+//       -- it stays reserved as the "at X in City" separator, so "at Color
+//       Ink Studio in Hazel Park" still splits into venue/city exactly as
+//       before, never absorbed into one phrase.
+// Neither change touches RETURNS_TO_VENUE_RE or the stray-space fix above.
+const VENUE_NAME_CONNECTOR = "(?:of|for|the|and|&)";
+const AT_VENUE_RE = new RegExp(
+  `\\bat\\s+(?:the\\s+)?([A-Z][A-Za-z0-9&''.-]*(?:\\s+(?:${VENUE_NAME_CONNECTOR}\\s+)*[A-Z][A-Za-z0-9&''.-]*){0,5})` +
+  `(?:\\s+in\\s+([A-Z][a-zA-Z]+(?:\\s+[A-Z][a-zA-Z]+)?))?` +
+  `(?=\\s*[.,]|\\s+(?:on|this|next|during|starting|opens|opening|for|from)\\b)`
+);
 const RETURNS_TO_VENUE_RE = /\breturns?\s+to\s+the\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})\b/;
 
 // Words that are never a venue name even when they're capitalized and
-// happen to follow "at"/"the" -- common false-positive traps.
+// happen to follow "at"/"the" -- common false-positive traps. Checked
+// against the bare captured phrase AND against "the " + that phrase, since
+// AT_VENUE_RE's "at THE <Venue>" tolerance (above) means the captured group
+// never itself includes the leading "the" -- a false-positive match on "at
+// the door" now captures "Door", not "the door".
 const VENUE_STOPWORDS = new Set([
   "the door", "the event", "the show", "the market", "the festival", "the preview",
 ]);
+
+// A captured "at (the) X" phrase is rejected as a venue whenever X itself
+// ends in a recognized EVENT-type noun -- e.g. "Tolhurst will speak at the
+// Recovery and Resilience Festival" names the EVENT, not a place. Without
+// this, the "at THE <Venue>" tolerance added above (for real venue phrasing
+// like "at the Downriver Council for the Arts") would just as readily catch
+// an article referring back to its own event by name, silently writing the
+// event's own title in as its "venue." Same noun list
+// scripts/press-coverage-linking.js's own TITLE_PHRASE_RE anchors an event
+// TITLE with (duplicated intentionally, not imported -- this project's
+// stated one-file-per-concern convention; see that file's own
+// decodeEntities comment).
+const VENUE_REJECT_EVENT_NOUN_RE = /\b(Festival|Fest|Market|Fair|Expo|Gala|Crawl|Showcase|Parade|Exhibition|Exhibit)$/;
 
 // extractVenuePhraseFromText(text) -> { name, city } | null
 //
@@ -162,8 +205,12 @@ function extractVenuePhraseFromText(text) {
     return { name: returnsMatch[1].trim(), city: null };
   }
   const atMatch = text.match(AT_VENUE_RE);
-  if (atMatch && !VENUE_STOPWORDS.has(atMatch[1].toLowerCase())) {
-    return { name: atMatch[1].trim(), city: atMatch[2] ? atMatch[2].trim() : null };
+  if (atMatch) {
+    const bare = atMatch[1].toLowerCase();
+    const namesTheEventItself = VENUE_REJECT_EVENT_NOUN_RE.test(atMatch[1]);
+    if (!namesTheEventItself && !VENUE_STOPWORDS.has(bare) && !VENUE_STOPWORDS.has("the " + bare)) {
+      return { name: atMatch[1].trim(), city: atMatch[2] ? atMatch[2].trim() : null };
+    }
   }
   return null;
 }

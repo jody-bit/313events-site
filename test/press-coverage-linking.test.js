@@ -648,6 +648,147 @@ async function runProductionPathRegressionTests() {
     );
   }
   console.log("PASS: [PRODUCTION REGRESSION] extractVenue tolerates a stray space before terminal punctuation, the real stripHtml() artifact that defeated this match in production");
+
+  // --- 18. Root cause #3 regression ("FINISH EDITORIAL / PRESS COVERAGE
+  //     AUTOMATION", 2026-09-23): AT_VENUE_RE never matched either real
+  //     Metro Times Recovery & Resilience Festival article, even though
+  //     BOTH name their venue in full — "at the Downriver Council for the
+  //     Arts, 81 Chestnut St., Wyandotte" and "held at 81 Chestnut Street
+  //     in Wyandotte." Two compounding gaps, verbatim (trimmed) text from
+  //     the real live pages captured while tracing this report:
+  //       (a) "at THE <Venue>" — the definite article between "at" and the
+  //           venue's own name was previously fatal (the pattern required
+  //           the very next character after "at " to start the venue name).
+  //       (b) a venue name with its own internal lowercase connector word
+  //           ("Council FOR THE Arts") previously truncated the match at
+  //           the first lowercase word ("Downriver Council"), which is
+  //           worse than no match — resolveVenueId never fuzzy-matches, so
+  //           a truncated name silently fails to resolve against the real
+  //           venue even when a match is found at all.
+  //     Also proves the fix does NOT turn the article's own back-reference
+  //     to its own event name ("speak at the Recovery and Resilience
+  //     Festival") into a false "venue" — the new event-noun-suffix guard
+  //     (VENUE_REJECT_EVENT_NOUN_RE) exists specifically to keep the (a)
+  //     fix from over-matching. ---
+  {
+    const { extractVenue } = freshLib();
+    const downriverRealStripped =
+      "September is National Recovery Month, and the Downriver Council for the Arts and Passenger Recovery are " +
+      "marking the occasion with the first Recovery & Resilience Festival: A Celebration of Recovery Pathways on " +
+      "Sept. 20, featuring guest speaker Lol Tolhurst of The Cure. The first Recovery & Resilience Festival is " +
+      "free and open to all. It runs from noon to 10 p.m. Sunday, Sept. 20, at the Downriver Council for the " +
+      "Arts , 81 Chestnut St., Wyandotte.";
+    const lolRealStripped =
+      "Tolhurst is speaking at the Recovery and Resilience Festival on Sunday, Sept. 20, about recovery and " +
+      "managing substance use disorder. Tolhurst will speak at 6 p.m. at the Recovery and Resilience Festival. " +
+      "The free event will be held at 81 Chestnut Street in Wyandotte, with free tickets available online.";
+    assert.deepStrictEqual(
+      extractVenue(downriverRealStripped),
+      { name: "Downriver Council for the Arts", city: null },
+      "must find the FULL venue name including its internal 'for the' connector words, from real 'at the <Venue>' phrasing"
+    );
+    assert.strictEqual(
+      extractVenue(lolRealStripped),
+      null,
+      "this article never names a venue -- 'at the Recovery and Resilience Festival' is the article referring back to the EVENT itself and must never be read as a venue, even with the new (a)/(b) tolerance"
+    );
+  }
+  console.log("PASS: [PRODUCTION REGRESSION] extractVenue finds a real venue name stated as \"at the <Venue>\" (including internal connector words like \"for the\"), while still never mistaking the article's own back-reference to its event's name for a venue");
+
+  // --- 19. End-to-end production-path proof: with the (a)/(b) fix above,
+  //     BOTH real Recovery & Resilience Festival articles pool to ONE
+  //     created event purely from their own text -- no TAVILY_API_KEY
+  //     needed for this case at all (isExternalDiscoveryConfiguredFn/
+  //     tavilyApiKey are deliberately left at their REAL defaults here,
+  //     reading process.env.TAVILY_API_KEY exactly like the real deployed
+  //     Auto-Link path -- this project has no such credential configured
+  //     today, confirmed via a full .env.local audit, so this proves the
+  //     fix works in exactly the unconfigured state production is
+  //     actually in, not a hypothetical configured one). Real default
+  //     sbHeaders/createEvent/applyLink/fetchArticleText wiring throughout
+  //     (nothing overridden), same PostgREST-faithful mock as test #16. ---
+  {
+    const downriverHtml =
+      "<html><body><article><h1>Downriver recovery festival brings music, art and support together</h1>" +
+      "<p>September is National Recovery Month, and the Downriver Council for the Arts and Passenger Recovery are " +
+      "marking the occasion with the first Recovery &amp; Resilience Festival: A Celebration of Recovery Pathways " +
+      "on Sept. 20, featuring guest speaker Lol Tolhurst of The Cure.</p>" +
+      "<p>The first Recovery &amp; Resilience Festival is free and open to all. It runs from noon to 10 p.m. " +
+      "Sunday, Sept. 20, at <a href=\"https://example.org\">the Downriver Council for the Arts</a>, 81 Chestnut " +
+      "St., Wyandotte.</p></article></body></html>";
+    const lolHtml =
+      "<html><body><article><h1>The Cure co-founder Lol Tolhurst talks recovery, goth and Detroit</h1>" +
+      "<p>Tolhurst is speaking at the Recovery and Resilience Festival on Sunday, Sept. 20, about recovery and " +
+      "managing substance use disorder.</p>" +
+      "<p>Tolhurst will speak at 6 p.m. at the Recovery and Resilience Festival. The free event will be held at " +
+      "81 Chestnut Street in Wyandotte, with free tickets available online.</p></article></body></html>";
+    const downriverRow = {
+      id: "article-downriver-prod",
+      title: DOWNRIVER_HEADLINE,
+      excerpt: DOWNRIVER_EXCERPT,
+      url: "https://example.com/downriver-prod",
+      published_at: "2026-09-18T14:58:57+00:00",
+    };
+    const lolRow = {
+      id: "article-lol-prod",
+      title: LOL_HEADLINE,
+      excerpt: "",
+      url: "https://example.com/lol-prod",
+      published_at: "2026-09-18T14:59:51+00:00",
+    };
+    const writeAttempts = [];
+    const fetchFn = async (url, opts = {}) => {
+      const method = opts.method || "GET";
+      if (method === "GET" && url.includes("/editorial_articles")) {
+        return { ok: true, status: 200, json: async () => [downriverRow, lolRow] };
+      }
+      if (method === "GET" && url.includes("/events?status=")) {
+        return { ok: true, status: 200, json: async () => [] };
+      }
+      if (method === "GET" && url.includes("/venues?select=")) {
+        return { ok: true, status: 200, json: async () => [] };
+      }
+      if (method === "GET" && url === downriverRow.url) {
+        return { ok: true, status: 200, text: async () => downriverHtml };
+      }
+      if (method === "GET" && url === lolRow.url) {
+        return { ok: true, status: 200, text: async () => lolHtml };
+      }
+      if (method === "POST" || method === "PATCH") {
+        const contentType = opts.headers && opts.headers["Content-Type"];
+        writeAttempts.push({ url, method, contentType });
+        if (contentType !== "application/json") {
+          return { ok: false, status: 400, json: async () => ({ code: "PGRST102", message: "Content-Type not acceptable: text/plain" }) };
+        }
+        if (url.includes("/events") && !url.includes("/editorial_article_events") && method === "POST") {
+          return { ok: true, status: 201, json: async () => [{ id: "evt-recovery-prod", title: "Recovery & Resilience Festival", venue_name_raw: "Downriver Council for the Arts", start_date: "2026-09-20" }] };
+        }
+        return { ok: true, status: 204, json: async () => ({}) };
+      }
+      throw new Error(`unexpected fetch in Recovery Festival production-path regression test: ${method} ${url}`);
+    };
+    global.fetch = fetchFn;
+
+    const { linkPressCoverageQueue: realOrchestrator } = freshLib();
+    const counts = await realOrchestrator({
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "test-key",
+      logger: silentLogger,
+      repairGenericMetadataFn: async () => ({ written: 0 }),
+      // isExternalDiscoveryConfiguredFn / tavilyApiKey deliberately left at
+      // their real defaults (process.env.TAVILY_API_KEY, unset in this
+      // test environment, matching today's real deployed state) -- this
+      // proves the fix resolves the pooled group WITHOUT external
+      // discovery, exactly as it must in production today.
+    });
+
+    assert.strictEqual(counts.autoCreated, 1, "the pooled Recovery & Resilience Festival group must now be created from the articles' own text alone");
+    assert.strictEqual(counts.stillHuman, 0);
+    assert.strictEqual(counts.crossArticleDuplicatesPrevented, 1, "both articles must resolve to the SAME single event, not two");
+    assert.ok(writeAttempts.length > 0);
+    assert.ok(writeAttempts.every((a) => a.contentType === "application/json"));
+  }
+  console.log("PASS: [PRODUCTION REGRESSION] both real Recovery & Resilience Festival articles now pool to ONE created event via the real default pipeline wiring, with no external discovery needed");
 }
 
 run().catch((err) => {
