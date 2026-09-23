@@ -462,6 +462,34 @@ function getMissingFields(e) {
 // isVenueTbaByDesign() below for why that wording doesn't collide with the
 // venue-TBA rule) and are handled entirely by the existing per-event
 // "Not fixable — dismiss" button -- unchanged by this closure.
+// ---- Reason codes for what survives automated enrichment (2026-09-23) ----
+// PRODUCT DECISION (follow-up to the closure above): "Needs Follow-up means
+// automation exhausted its safe options and human action may resolve
+// this." Since scripts/generic-metadata-enrichment.js now runs automation
+// (safe factual descriptions, reverse address->venue resolution, venue-
+// digital-home link recovery) BEFORE an event ever reaches this page, a
+// field that is STILL missing by the time admin.html sees it already means
+// automation tried and could not safely resolve it -- computed here purely
+// from data already on the event, no new columns needed (the smallest
+// mechanism per the Product Owner's instruction).
+function explainRemainingGap(field, e) {
+  if (field === 'start time') return 'NO_AUTHORITATIVE_TIME'; // never generated or inferred, by explicit instruction
+  if (field === 'description') {
+    // In practice unreachable once enrichment has run: buildFactualDescription()
+    // (api/_lib/description-enrichment.js) only needs a title and start_date,
+    // both `not null` columns -- kept as a defensive label, not a guess.
+    return 'AI_DESCRIPTION_UNAVAILABLE';
+  }
+  if (field === 'venue address/city') {
+    const hasName = !!(e.venue_name_raw && e.venue_name_raw.trim());
+    const hasRawAddress = !!(e.venue_address_raw && e.venue_address_raw.trim()) || !!(e.venue_city_raw && e.venue_city_raw.trim());
+    if (!hasName && !hasRawAddress) return 'NO_VENUE_SIGNAL'; // nothing to resolve from in either direction
+    return 'NO_CANONICAL_VENUE_DATA'; // a venue name/address exists but has no matching row in the venues table yet
+  }
+  if (field === 'ticket/event link') return 'EXTERNAL_LOOKUP_UNAVAILABLE'; // no organizer listing, no venue digital home on file, and this project has no web-search capability to go further
+  return null;
+}
+
 const SOURCE_FIELD_LIMITATIONS = {
   'Trinosophes': ['description', 'ticket/event link'],
   'Detroit Historical Society': ['description'],
@@ -792,7 +820,7 @@ function renderIncompleteList(flagged) {
         ${e.ticket_url ? '<br>' + '<a href="' + escapeHtml(e.ticket_url) + '" target="_blank" rel="noopener">tickets ↗</a>' : ''}
         ${e.event_url && e.event_url !== e.ticket_url ? (e.ticket_url ? ' · ' : '<br>') + '<a href="' + escapeHtml(e.event_url) + '" target="_blank" rel="noopener">event page ↗</a>' : ''}
         ${e.status === 'approved' ? (e.ticket_url || e.event_url ? ' · ' : '<br>') + '<a href="event.html?id=' + encodeURIComponent(e.id) + '" target="_blank" rel="noopener">View live page ↗</a>' : ''}
-        <br><br><b>Missing:</b> ${missing.map(m => `<span class="status-badge pending_review">${escapeHtml(m)}</span>`).join(' ')}
+        <br><br><b>Missing:</b> ${missing.map(m => `<span class="status-badge pending_review">${escapeHtml(m)}</span><span style="font-size:11px;color:#888;margin:0 6px 0 2px;" title="Automation already tried and could not safely resolve this — see FEATURE_BACKLOG.md/NEEDS_FOLLOWUP_CLOSURE.md">${escapeHtml(explainRemainingGap(m, e) || '')}</span>`).join(' ')}
       </div>
       <div class="incomplete-fields" data-fields="${escapeAttr(inputs.map(f => f.key).join(','))}">
         ${inputsHtml}

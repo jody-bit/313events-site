@@ -28,6 +28,19 @@ function normalizeVenueName(name) {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+// Same trim + lowercase + whitespace-collapse normalization as
+// normalizeVenueName, applied to address and city and joined into one key.
+// Added 2026-09-23 for the reverse (address -> venue) resolution tier — see
+// resolveVenueNameFromAddressRepair below. Returns "" (never matches
+// anything) when address is blank; city alone is never enough to identify a
+// venue.
+function normalizeAddressCity(address, city) {
+  const a = typeof address === "string" ? address.trim().toLowerCase().replace(/\s+/g, " ") : "";
+  if (!a) return "";
+  const c = typeof city === "string" ? city.trim().toLowerCase().replace(/\s+/g, " ") : "";
+  return `${a}|${c}`;
+}
+
 // Fetches every venue once per cron run and returns a Map of normalized
 // name -> venue id. Only 83 venues today (bounded, growing slowly by
 // hand-reviewed research, not per-event) — a single unpaged fetch is fine
@@ -134,31 +147,46 @@ function isBlank(v) {
 async function buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) {
   const byName = new Map();
   const byId = new Map();
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return { byName, byId };
+  const byAddress = new Map(); // added 2026-09-23 for SH.1's reverse (address -> venue) tier — see resolveVenueNameFromAddressRepair below
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return { byName, byId, byAddress };
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city&limit=1000`, {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,website,facebook_url&limit=1000`, {
       headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
     });
-    if (!resp.ok) return { byName, byId };
+    if (!resp.ok) return { byName, byId, byAddress };
     const rows = await resp.json();
-    if (!Array.isArray(rows)) return { byName, byId };
+    if (!Array.isArray(rows)) return { byName, byId, byAddress };
     for (const v of rows) {
       if (!v || !v.id) continue;
-      const detail = { id: v.id, address: v.address || null, city: v.city || null };
+      // `name`/`website`/`facebook_url` added 2026-09-23 (generic enrichment:
+      // reverse venue-name resolution needs the canonical name itself, and
+      // digital-home link recovery needs these two) — purely additive to
+      // this detail object; every existing consumer only ever read
+      // .address/.city and is unaffected.
+      const detail = { id: v.id, name: v.name || null, address: v.address || null, city: v.city || null, website: v.website || null, facebook_url: v.facebook_url || null };
       byId.set(v.id, detail);
-      const key = normalizeVenueName(v.name);
-      if (!key) continue;
-      if (byName.has(key)) {
-        byName.set(key, AMBIGUOUS_VENUE_NAME);
-      } else {
-        byName.set(key, detail);
+      const nameKey = normalizeVenueName(v.name);
+      if (nameKey) {
+        if (byName.has(nameKey)) {
+          byName.set(nameKey, AMBIGUOUS_VENUE_NAME);
+        } else {
+          byName.set(nameKey, detail);
+        }
+      }
+      const addressKey = normalizeAddressCity(v.address, v.city);
+      if (addressKey) {
+        if (byAddress.has(addressKey)) {
+          byAddress.set(addressKey, AMBIGUOUS_VENUE_NAME);
+        } else {
+          byAddress.set(addressKey, detail);
+        }
       }
     }
   } catch {
     // Network/parse failure — return whatever's in the maps so far (empty
     // on a first-request failure), never throw out of this helper.
   }
-  return { byName, byId };
+  return { byName, byId, byAddress };
 }
 
 // Builds the tier-C "learned from historical events" fallback: every event
@@ -259,6 +287,77 @@ function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {
 }
 
 
+// ---------------------------------------------------------------------------
+// Generic enrichment, 2026-09-23 (Admin stabilization follow-up: "the 26
+// source-limited events should NOT merely be hidden -- the system should
+// try to enrich them first"). Extends this same file rather than a new
+// module, per the Product Owner's own precedent for SH.1 above ("inspect
+// and reuse the smallest appropriate existing venue-resolution
+// functionality") -- these reuse buildVenueDetailsMap()'s maps and isBlank()
+// directly. See scripts/generic-metadata-enrichment.js for the caller that
+// sequences these into an actual repair run.
+
+// resolveVenueNameFromAddressRepair(event, canonicalMaps) -> patch
+//
+// The reverse of SH.1's tier B: ADDRESS -> VENUE NAME. Only fires when an
+// event has a real street address but genuinely no venue name at all (never
+// second-guesses an existing venue_id or a present venue_name_raw -- see
+// resolveVenueAddressCityRepair's own tier-A "trust the existing link or
+// nothing" rule, applied here to the mirror-image case). Matches on an
+// EXACT normalized (address, city) pair against the canonical venues table
+// only -- no fuzzy matching, no geocoding. An address matching more than one
+// canonical venue (AMBIGUOUS_VENUE_NAME) is left unresolved, same as an
+// ambiguous name match in the forward direction: never guess which one.
+function resolveVenueNameFromAddressRepair(event, canonicalMaps) {
+  const patch = {};
+  if (!event) return patch;
+  if (!isBlank(event.venue_id)) return patch; // already linked — trust that, nothing to second-guess
+  if (!isBlank(event.venue_name_raw)) return patch; // this tier only applies when there is truly no name to go on
+  const addressKey = normalizeAddressCity(event.venue_address_raw, event.venue_city_raw);
+  if (!addressKey) return patch; // no address to resolve from either
+
+  const byAddress = (canonicalMaps && canonicalMaps.byAddress) || new Map();
+  const match = byAddress.get(addressKey);
+  if (!match || match === AMBIGUOUS_VENUE_NAME || !match.name) return patch;
+
+  patch.venue_id = match.id;
+  patch.venue_name_raw = match.name;
+  return patch;
+}
+
+// resolveDigitalHomeLink(event, canonicalMaps) -> string | null
+//
+// Last deterministic tier of the ticket/event-link fallback hierarchy (see
+// scripts/generic-metadata-enrichment.js's header for the full hierarchy):
+// a verified official venue website, or failing that a verified official
+// Facebook page, reused from the venue's own canonical record
+// (migration_033_venue_social_links.sql). Only ever proposed when an event
+// has NEITHER a ticket_url NOR an event_url of its own -- this is a
+// last-resort "useful working destination," never a substitute for a real
+// per-event link when one exists or can be recovered another way. Never
+// invents a URL, never searches for one -- purely reads what a human
+// already confirmed and stored on the canonical venue row. Resolves the
+// venue via event.venue_id first (the trustworthy link), falling back to an
+// already-embedded `event.venues` join (the shape api/admin-events.js's
+// incomplete=1 query returns) only when venue_id itself isn't set.
+function resolveDigitalHomeLink(event, canonicalMaps) {
+  if (!event) return null;
+  if (!isBlank(event.ticket_url) || !isBlank(event.event_url)) return null;
+
+  const byId = (canonicalMaps && canonicalMaps.byId) || new Map();
+  let venue = null;
+  if (!isBlank(event.venue_id) && byId.has(event.venue_id)) {
+    venue = byId.get(event.venue_id);
+  } else if (event.venues && typeof event.venues === "object") {
+    venue = event.venues;
+  }
+  if (!venue) return null;
+
+  if (!isBlank(venue.website)) return venue.website.trim();
+  if (!isBlank(venue.facebook_url)) return venue.facebook_url.trim();
+  return null;
+}
+
 // SH.N (2026-09-21, EPIC-006) — Node-side twin of the browser-side
 // resolveVenueDisplay() function duplicated across calendar.html, map.html,
 // event-template.html, and radar.html (this project has no build step, so
@@ -288,11 +387,14 @@ function resolvePublicVenueDisplay(row) {
 
 module.exports = {
   normalizeVenueName,
+  normalizeAddressCity,
   buildVenueNameToIdMap,
   resolveVenueId,
   isBlank,
   buildVenueDetailsMap,
   buildLearnedVenueAddressCityMap,
   resolveVenueAddressCityRepair,
+  resolveVenueNameFromAddressRepair,
+  resolveDigitalHomeLink,
   resolvePublicVenueDisplay,
 };

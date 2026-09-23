@@ -415,8 +415,22 @@ module.exports = async (req, res) => {
     // only under the exactly-one-"Buy Tickets"-link rule) -- no new parser.
     // Same failure-isolation pattern as Steps 2/3.
     //
+    // Step 5 (2026-09-23, "enrich before hiding"): generic (not source-
+    // specific) automated enrichment -- scripts/generic-metadata-
+    // enrichment.js's repairGenericMetadata(). Runs LAST, after every
+    // authoritative per-source step above has already had its chance: safe
+    // factual description generation from verified fields only
+    // (api/_lib/description-enrichment.js, marked description_source=
+    // 'generated' so it never outranks a real one), reverse ADDRESS ->
+    // VENUE NAME resolution (api/_lib/venue-lookup.js's
+    // resolveVenueNameFromAddressRepair, the mirror of SH.1's existing NAME
+    // -> ADDRESS tier), and last-resort ticket/event link recovery via a
+    // venue's own verified website/Facebook (resolveDigitalHomeLink).
+    // Resident Advisor is excluded inside that script itself, not just by
+    // caller discipline. Same failure-isolation pattern as Steps 2/3/4.
+    //
     // This endpoint adds no new repair DECISION logic of its own in any
-    // step -- it only sequences four already-proven mechanisms and exposes
+    // step -- it only sequences five already-proven mechanisms and exposes
     // their combined result to Admin. `written` and `fieldsWritten` below
     // report the UNION of events any step actually touched (an event can
     // need more than one kind of repair at once; summing each step's own
@@ -462,16 +476,30 @@ module.exports = async (req, res) => {
           redfordMetadataError = redfordErr.message;
         }
 
+let genericCounts = null;
+        let genericEnrichmentError = null;
+        try {
+          const { repairGenericMetadata } = require("../scripts/generic-metadata-enrichment");
+          genericCounts = await repairGenericMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (genericErr) {
+          // Same isolation as Steps 2/3/4's own failure handling -- never
+          // lets a generic-enrichment failure erase Steps 1-4's real,
+          // already-persisted results.
+          genericEnrichmentError = genericErr.message;
+        }
+
         const venueWrittenIds = venueCounts.writtenIds || [];
         const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
         const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
         const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds]);
+        const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds]);
         const combinedFieldsWritten =
           venueCounts.fieldsWritten +
           ((descriptionCounts && descriptionCounts.written) || 0) +
           ((dossinCounts && dossinCounts.written) || 0) +
-          ((redfordCounts && redfordCounts.fieldsWritten) || 0);
+          ((redfordCounts && redfordCounts.fieldsWritten) || 0) +
+          ((genericCounts && genericCounts.fieldsWritten) || 0);
 
         res.status(200).json({
           ok: true,
@@ -485,6 +513,8 @@ module.exports = async (req, res) => {
           dossinMetadataError,
           redfordMetadata: redfordCounts,
           redfordMetadataError,
+          genericEnrichment: genericCounts,
+          genericEnrichmentError,
         });
       } catch (err) {
         res.status(500).json({ error: err.message });
