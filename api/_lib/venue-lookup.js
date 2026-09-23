@@ -385,6 +385,114 @@ function resolvePublicVenueDisplay(row) {
   };
 }
 
+
+// ---------------------------------------------------------------------------
+// External venue-knowledge persistence, 2026-09-23 ("CORRECTION TO
+// ENRICHMENT PRODUCT BEHAVIOR" -- "KNOWLEDGE MUST COMPOUND... stored ONCE
+// and automatically benefit every existing and future <venue> event").
+// Extends this same file, same precedent as SH.1 and the reverse-resolution
+// tier above. These two functions are the ONLY write path this correction
+// adds to the venues table; api/_lib/external-discovery.js does the actual
+// (bounded, verified) external lookup and hands its result here to persist
+// -- this file never verifies anything itself, only writes what it's given,
+// and never overwrites a field a human or an earlier process already
+// populated (same "never overwrite a populated field" convention as every
+// repair tier above).
+
+// mergeVenueIntoMaps(canonicalMaps, venueRow) -> void
+//
+// Folds one freshly-known venue row (typically just returned by
+// upsertVenueKnowledge below) into the in-memory maps built by
+// buildVenueDetailsMap(), so the SAME enrichment pass can immediately
+// re-run deterministic venue resolution against it without a second fetch
+// -- "persist reusable venue/source knowledge -> revalidate." Never
+// overwrites an existing map entry; only adds what wasn't already there.
+function mergeVenueIntoMaps(canonicalMaps, venueRow) {
+  if (!canonicalMaps || !venueRow || !venueRow.id) return;
+  const detail = {
+    id: venueRow.id,
+    name: venueRow.name || null,
+    address: venueRow.address || null,
+    city: venueRow.city || null,
+    website: venueRow.website || null,
+    facebook_url: venueRow.facebook_url || null,
+  };
+  if (canonicalMaps.byId && !canonicalMaps.byId.has(detail.id)) canonicalMaps.byId.set(detail.id, detail);
+  const nameKey = normalizeVenueName(detail.name);
+  if (nameKey && canonicalMaps.byName && !canonicalMaps.byName.has(nameKey)) canonicalMaps.byName.set(nameKey, detail);
+  const addressKey = normalizeAddressCity(detail.address, detail.city);
+  if (addressKey && canonicalMaps.byAddress && !canonicalMaps.byAddress.has(addressKey)) canonicalMaps.byAddress.set(addressKey, detail);
+}
+
+// upsertVenueKnowledge(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, discovery, fetchFn)
+//   -> { id, name, address, city, website, facebook_url } | null
+//
+// Persists a VERIFIED external discovery result (see api/_lib/external-
+// discovery.js's discoverVenueKnowledge) as reusable canonical venue
+// knowledge. Looks up by exact normalized name first (normalizeVenueName,
+// same rule as every other tier in this file); if a canonical row already
+// exists, only fills in its currently-blank fields -- never overwrites a
+// populated address/city/website. If no canonical row exists yet, creates
+// one (city defaults to 'Detroit' only when genuinely unresolved, matching
+// this table's own schema default -- see supabase/schema.sql -- not an
+// invented fact). Fails soft (returns null, never throws) on any network or
+// parse problem, same convention as every other lookup/write helper here.
+async function upsertVenueKnowledge(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, discovery, fetchFn) {
+  const doFetch = fetchFn || fetch;
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !discovery || !discovery.name) return null;
+  const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
+  try {
+    const nameKey = normalizeVenueName(discovery.name);
+    const getResp = await doFetch(
+      `${SUPABASE_URL}/rest/v1/venues?name=ilike.${encodeURIComponent(discovery.name.trim())}&select=id,name,address,city,website,facebook_url&limit=5`,
+      { headers }
+    );
+    if (!getResp.ok) return null;
+    const existingRows = await getResp.json();
+    const existing = Array.isArray(existingRows)
+      ? existingRows.find((v) => normalizeVenueName(v.name) === nameKey)
+      : null;
+
+    if (existing) {
+      const patch = {};
+      if (isBlank(existing.address) && discovery.address) patch.address = discovery.address;
+      if (isBlank(existing.city) && discovery.city) patch.city = discovery.city;
+      if (isBlank(existing.website) && discovery.website) patch.website = discovery.website;
+      if (Object.keys(patch).length === 0) {
+        return { id: existing.id, name: existing.name, address: existing.address, city: existing.city, website: existing.website, facebook_url: existing.facebook_url || null };
+      }
+      const patchResp = await doFetch(`${SUPABASE_URL}/rest/v1/venues?id=eq.${encodeURIComponent(existing.id)}`, {
+        method: "PATCH",
+        headers: { ...headers, "Content-Type": "application/json", Prefer: "return=representation" },
+        body: JSON.stringify(patch),
+      });
+      if (!patchResp.ok) return null;
+      const rows = await patchResp.json();
+      const row = Array.isArray(rows) && rows[0] ? rows[0] : { ...existing, ...patch };
+      return { id: row.id, name: row.name, address: row.address, city: row.city, website: row.website, facebook_url: row.facebook_url || null };
+    }
+
+    const insertBody = {
+      name: discovery.name,
+      address: discovery.address || null,
+      city: discovery.city || "Detroit",
+      website: discovery.website || null,
+    };
+    const postResp = await doFetch(`${SUPABASE_URL}/rest/v1/venues`, {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json", Prefer: "return=representation" },
+      body: JSON.stringify(insertBody),
+    });
+    if (!postResp.ok) return null;
+    const created = await postResp.json();
+    const row = Array.isArray(created) && created[0] ? created[0] : null;
+    if (!row) return null;
+    return { id: row.id, name: row.name, address: row.address, city: row.city, website: row.website, facebook_url: row.facebook_url || null };
+  } catch {
+    return null;
+  }
+}
+
 module.exports = {
   normalizeVenueName,
   normalizeAddressCity,
@@ -397,4 +505,6 @@ module.exports = {
   resolveVenueNameFromAddressRepair,
   resolveDigitalHomeLink,
   resolvePublicVenueDisplay,
+  mergeVenueIntoMaps,
+  upsertVenueKnowledge,
 };
