@@ -121,6 +121,42 @@ function extractAddressFromContent(content) {
   };
 }
 
+// "at <Venue Name>[ in <City>]" / "to the <Venue Name>" -- a Title-Case
+// phrase of 1-5 words immediately after the preposition. Deliberately
+// requires the preposition (never just "any capitalized phrase" -- that
+// would catch far too much unrelated text, e.g. a person's name). Moved
+// here 2026-09-23 (SMALL CORRECTION BEFORE DEPLOYMENT) from
+// scripts/press-coverage-linking.js so the SAME pattern-matching machinery
+// can pull a venue name both out of an article's own body text (that file's
+// extractVenue, which now delegates here) AND out of a verified external
+// search result's content (discoverEventVenue below) -- one venue-phrase
+// extractor, two callers, not two search systems.
+const AT_VENUE_RE = /\bat\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})(?:\s+in\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?))?(?=[.,]|\s+(?:on|this|next|during|starting|opens|opening|for|from)\b)/;
+const RETURNS_TO_VENUE_RE = /\breturns?\s+to\s+the\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})\b/;
+
+// Words that are never a venue name even when they're capitalized and
+// happen to follow "at"/"the" -- common false-positive traps.
+const VENUE_STOPWORDS = new Set([
+  "the door", "the event", "the show", "the market", "the festival", "the preview",
+]);
+
+// extractVenuePhraseFromText(text) -> { name, city } | null
+//
+// Conservative venue-phrase extraction, reused by both an article's own
+// body text and a verified external search result's content.
+function extractVenuePhraseFromText(text) {
+  if (!text) return null;
+  const returnsMatch = text.match(RETURNS_TO_VENUE_RE);
+  if (returnsMatch && !VENUE_STOPWORDS.has(returnsMatch[1].toLowerCase())) {
+    return { name: returnsMatch[1].trim(), city: null };
+  }
+  const atMatch = text.match(AT_VENUE_RE);
+  if (atMatch && !VENUE_STOPWORDS.has(atMatch[1].toLowerCase())) {
+    return { name: atMatch[1].trim(), city: atMatch[2] ? atMatch[2].trim() : null };
+  }
+  return null;
+}
+
 async function tavilySearch({ query, apiKey, fetchFn, maxResults = 5 }) {
   const doFetch = fetchFn || fetch;
   const resp = await doFetch("https://api.tavily.com/search", {
@@ -166,6 +202,59 @@ async function discoverVenueKnowledge({ venueName, apiKey = process.env.TAVILY_A
     website: `https://${host}`,
     address: extracted.address || null,
     city: extracted.city || null,
+    sourceUrl: verified.url,
+  };
+}
+
+// discoverEventVenue({ eventTitle, city, contextTerms, apiKey, fetchFn }) ->
+//   { venueName, city, address, website, sourceUrl } | null
+//
+// Added 2026-09-23 ("SMALL CORRECTION BEFORE DEPLOYMENT -- do not broaden
+// scope"). Same bounded-search/verification machinery as
+// discoverVenueKnowledge above (tavilySearch + verifyOfficialResult) -- NOT
+// a second search system -- composing a query from what an article-derived
+// event identity actually has (title + city + one context entity such as an
+// organizer/performer) instead of a venue name, for the specific case where
+// an article covers a real event confidently enough (title/date/category
+// all present) but never names its own venue. Returns null immediately with
+// no network call when unconfigured (no apiKey), same fail-closed default
+// as every other function in this file. A verified result that yields
+// neither a venue phrase nor a street address is treated as unusable and
+// also returns null -- this function never returns a "maybe," only a
+// confidently-extracted venue or nothing.
+async function discoverEventVenue({ eventTitle, city, contextTerms = [], apiKey = process.env.TAVILY_API_KEY, fetchFn } = {}) {
+  if (!eventTitle || typeof eventTitle !== "string" || !eventTitle.trim()) return null;
+  if (!apiKey || !apiKey.trim()) return null;
+
+  const queryParts = [eventTitle.trim()];
+  if (city) queryParts.push(city.trim());
+  if (Array.isArray(contextTerms) && contextTerms.length && contextTerms[0]) queryParts.push(contextTerms[0]);
+  queryParts.push("venue location");
+  const query = queryParts.join(" ");
+
+  let results;
+  try {
+    results = await tavilySearch({ query, apiKey, fetchFn });
+  } catch {
+    return null; // fail closed -- never throw out of a discovery attempt
+  }
+
+  const subjectTerms = [eventTitle, city].filter(Boolean);
+  const verified = results.find((r) => verifyOfficialResult(subjectTerms, r));
+  if (!verified) return null;
+
+  const host = hostnameOf(verified.url);
+  if (!host) return null;
+
+  const venuePhrase = extractVenuePhraseFromText(verified.content || "");
+  const addressExtracted = extractAddressFromContent(verified.content) || {};
+  if (!venuePhrase && !addressExtracted.address) return null; // nothing confidently extracted -- never guess
+
+  return {
+    venueName: venuePhrase ? venuePhrase.name : null,
+    city: (venuePhrase && venuePhrase.city) || addressExtracted.city || city || null,
+    address: addressExtracted.address || null,
+    website: `https://${host}`,
     sourceUrl: verified.url,
   };
 }
@@ -218,7 +307,9 @@ module.exports = {
   hostnameOf,
   verifyOfficialResult,
   extractAddressFromContent,
+  extractVenuePhraseFromText,
   discoverVenueKnowledge,
+  discoverEventVenue,
   discoverAuthoritativeDescription,
   NON_OFFICIAL_DOMAINS,
 };

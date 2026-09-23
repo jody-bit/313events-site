@@ -1,5 +1,8 @@
 const crypto = require("crypto");
+const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
+const { repairGenericMetadata } = require(path.join(__dirname, "..", "scripts", "generic-metadata-enrichment"));
 // Vercel serverless function powering admin.html's "Press coverage" section
 // — the review queue for editorial_articles rows cron-editorial.js stored
 // but couldn't confidently match to an existing event (matched_event_id is
@@ -152,8 +155,24 @@ module.exports = async (req, res) => {
     body = body || {};
     const { articleId, action } = body;
 
+    // action === "auto_link" is the one exception: it isn't scoped to a
+    // single articleId (it runs scripts/press-coverage-linking.js's deep
+    // pass across the WHOLE current queue) — same "exception/retry surface"
+    // role as admin.html's Needs-follow-up Auto-Repair button, for the rare
+    // case Jody wants to apply this on demand rather than wait for
+    // cron-editorial.js's own scheduled run.
+    if (action === "auto_link") {
+      try {
+        const result = await linkPressCoverageQueue({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, repairGenericMetadataFn: repairGenericMetadata });
+        res.status(200).json({ ok: true, result });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     if (!articleId || !["create_event", "dismiss", "link_event"].includes(action)) {
-      res.status(400).json({ error: "Body must include { articleId, action: 'create_event'|'dismiss'|'link_event' }" });
+      res.status(400).json({ error: "Body must include { articleId, action: 'create_event'|'dismiss'|'link_event'|'auto_link' }" });
       return;
     }
 

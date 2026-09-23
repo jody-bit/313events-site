@@ -1,4 +1,7 @@
 const crypto = require("crypto");
+const path = require("path");
+const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
+const { repairGenericMetadata } = require(path.join(__dirname, "..", "scripts", "generic-metadata-enrichment"));
 // Vercel Cron job — pulls a fixed, curated list of local Detroit outlets'
 // own RSS/Atom feeds, stores just enough to point back to each article
 // (title/excerpt/url/source/thumbnail — NEVER the full article body, see
@@ -699,6 +702,26 @@ module.exports = async (req, res) => {
   // retryUnmatchedArticles()'s own header comment for why this exists.
   const retryResult = await retryUnmatchedArticles(sbHeaders);
 
+  // Deep press-coverage linking (2026-09-23, "AUTOMATE ADMIN -> PRESS
+  // COVERAGE") — the final, hardest-case pass. Everything still unmatched
+  // after the two passes above gets its own article page fetched and
+  // searched in full (not just the short stored excerpt), matched against
+  // every current candidate event, and — only when the article itself
+  // contains enough verified information — a new event created and linked.
+  // See scripts/press-coverage-linking.js for the full pipeline and safety
+  // rules. Isolated in its own try/catch, same "one step's failure never
+  // erases an earlier step's real results" convention as every other
+  // multi-step cron/action in this project (e.g. api/admin-events.js's
+  // auto_repair_venue steps) — a failure here never rolls back the
+  // ingestion or retroactive-rematch work already done above.
+  let deepLinkResult = null;
+  let deepLinkError = null;
+  try {
+    deepLinkResult = await linkPressCoverageQueue({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, repairGenericMetadataFn: repairGenericMetadata });
+  } catch (err) {
+    deepLinkError = err.message;
+  }
+
   res.status(200).json({
     upserted: totalUpserted,
     matched: totalMatched,
@@ -706,6 +729,8 @@ module.exports = async (req, res) => {
     outletsChecked: OUTLETS.length,
     results,
     retroactiveRematch: retryResult,
+    deepPressCoverageLinking: deepLinkResult,
+    deepPressCoverageLinkingError: deepLinkError,
     fetchedAt: new Date().toISOString(),
   });
 };

@@ -231,7 +231,8 @@
     <div class="tab-panel" data-tab-panel="editorial">
       <section class="block" style="margin-top:0;">
         <h2>Press coverage</h2>
-        <div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically, so radar.html immediately shows it as matched instead of "Not yet linked"); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div>
+        <div class="sub">Articles api/cron-editorial.js pulled from local outlets that look like real event coverage (see <code>looksLikeEventCoverage()</code>) but couldn't be confidently matched to an event already on the site — usually because the event isn't listed yet. cron-editorial.js already runs an automated deep-linking pass (scripts/press-coverage-linking.js) on every scheduled run — reading each article's own page, not just its headline, matching it against every current event, and creating a new one when the article itself contains enough verified information. What's left here is what that automation couldn't safely resolve. Review each one: if it's a real event, fill in the details and create it (this links the article back automatically); if it's too vague or out of scope, dismiss it so it stops reappearing here.</div>
+        <div class="refresh" style="margin:0 0 12px;"><button id="autoLinkBtn" onclick="autoLinkEditorial()">Auto-Link</button><span class="refresh-status" id="autoLinkStatus"></span></div>
         <div id="editorialList"></div>
       </section>
     </div>
@@ -1186,6 +1187,40 @@ async function loadEditorial() {
     renderEditorialList(data.articles || []);
   } catch (err) {
     document.getElementById('editorialList').innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+// ---- Press coverage: manual on-demand trigger for the deep auto-link pass
+// (2026-09-23) ----
+//
+// Automation already runs unattended on cron-editorial.js's own schedule —
+// this button exists only as the exception/retry surface, same role as
+// Needs Follow-up's Auto-Repair button, for when Jody wants it applied
+// right now rather than waiting for the next scheduled run.
+async function autoLinkEditorial() {
+  const btn = document.getElementById('autoLinkBtn');
+  const statusEl = document.getElementById('autoLinkStatus');
+  if (btn) { btn.disabled = true; btn.textContent = 'Auto-Linking…'; }
+  if (statusEl) { statusEl.classList.remove('refresh-error'); statusEl.textContent = 'Reading and matching articles…'; }
+  try {
+    const resp = await fetch('/api/admin-editorial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ action: 'auto_link' }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Auto-link failed'));
+    const r = data.result || {};
+    if (statusEl) {
+      statusEl.textContent =
+        `Considered: ${r.totalConsidered || 0}. Matched: ${r.autoMatched || 0}. Created: ${r.autoCreated || 0}. ` +
+        `Duplicates prevented: ${r.crossArticleDuplicatesPrevented || 0}. Still needs review: ${r.stillHuman || 0}.`;
+    }
+    await loadEditorial();
+  } catch (err) {
+    if (statusEl) { statusEl.textContent = 'Auto-link failed: ' + err.message; statusEl.classList.add('refresh-error'); }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Auto-Link'; }
   }
 }
 
