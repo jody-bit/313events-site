@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { SLUGS } = require("./_lib/source-slugs"); // WP 0.5 reuse -- see api/_lib/source-slugs.js
 // Vercel Cron job — the automated smoke test suite Jody asked about on
 // 2026-09-02 ("wanted to check in on the automated smoke tests - when are
 // those scheduled?").
@@ -40,6 +41,38 @@ const crypto = require("crypto");
 // a check this cron structurally can't do itself — asking her browser to
 // visit the site and report back next time it's connected.
 
+// 2026-09-23, WP 0.5 reuse (Admin stabilization): the per-source checks below
+// used to ask "has an events row for this source been touched recently" and
+// FAIL when the answer was no. That conflates "the connector didn't run" with
+// "the connector ran and legitimately found nothing new" -- a healthy source
+// with zero new/changed events on a given day would upsert nothing and this
+// suite would report it as broken. Per the Product Owner's explicit 2026-09-23
+// instruction, event-row freshness (events.updated_at) is no longer the
+// PRIMARY health signal for any source. It is kept only as a non-failing
+// ADVISORY fallback (see checkSourceFreshnessAdvisory) for sources this
+// connector suite has no run-level evidence for yet.
+//
+// The authoritative signal is now source_runs (migration_035_source_runs.sql,
+// api/_lib/run-log.js) -- existing WP 0.5 infrastructure, reused here rather
+// than reinvented: does this source's most recent logged run show it started
+// within its expected interval and finished with a non-failure outcome. See
+// checkSourceHealth/evaluateRunHealth below.
+//
+// IMPORTANT: as of this change, migration_035_source_runs.sql has NOT been
+// applied to production (confirmed live: GET .../rest/v1/source_runs returns
+// PostgREST error PGRST205, "Could not find the table 'public.source_runs' in
+// the schema cache" -- a missing-relation error, not an RLS/permission
+// error). Until the Product Owner runs that migration against production
+// Supabase, fetchLatestSourceRun() below will always report "no_table" and
+// every source falls back to the advisory freshness check -- which never
+// fails on its own, only on a genuine Supabase REST error. This is
+// intentional fail-soft behavior, not a bug: it means turning this file on
+// cannot make the smoke suite noisier than it already was. Once the migration
+// is applied and the 11 connectors that already call startRun()/finishRun()
+// (see api/_lib/source-slugs.js for the full 22-slug registry; not every
+// registered slug has a calling connector yet -- see source-slugs.js's own
+// header) log their next real run, source_runs-backed checks become live
+// automatically, no further code change required.
 const BASE_URL = "https://313.events";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -165,7 +198,16 @@ const SOURCE_FRESHNESS_TARGETS = [
   { source: "Trinosophes", days: SOURCE_FRESHNESS_DAYS_QUIET },
 ];
 
-async function checkSourceFreshness(sourceName, days) {
+// ADVISORY ONLY, by design (see 2026-09-23 header comment above): this never
+// fails a source purely for having zero rows touched in the window -- a
+// healthy connector can legitimately find nothing new to write. It still
+// fails on a genuine Supabase REST error (a real infrastructure problem, not
+// a freshness judgment call). This is the fallback used for any source with
+// no source_runs evidence yet -- either because migration_035 isn't applied,
+// or because that particular connector doesn't call startRun()/finishRun()
+// yet (see api/_lib/source-slugs.js's header for which of the 22 registered
+// slugs currently have a calling connector).
+async function checkSourceFreshnessAdvisory(sourceName, days) {
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const url = `${SUPABASE_URL}/rest/v1/events?select=id&source=eq.${encodeURIComponent(sourceName)}&updated_at=gte.${encodeURIComponent(cutoff)}&limit=1`;
   const resp = await fetch(url, {
@@ -174,9 +216,136 @@ async function checkSourceFreshness(sourceName, days) {
   if (!resp.ok) throw new Error(`Supabase REST HTTP ${resp.status}`);
   const rows = await resp.json();
   if (!Array.isArray(rows) || rows.length < 1) {
-    throw new Error(`no ${sourceName} row updated in the last ${days} day(s) — this source's cron may be failing silently`);
+    return (
+      `ADVISORY ONLY (not a failure): no ${sourceName} row updated in the last ${days}d. ` +
+      `Event-row freshness is not proof of connector failure -- a healthy run can legitimately ` +
+      `find zero new/changed events. No source_runs data is available yet for this source; this ` +
+      `is the best available fallback signal until there is (see checkSourceHealth).`
+    );
   }
-  return `${rows.length} row(s) updated within ${days}d`;
+  return `${rows.length} row(s) updated within ${days}d (advisory fallback signal -- see source_runs for authoritative health once available)`;
+}
+
+// Generous relative to any connector's real execution time on Vercel -- this
+// only exists to distinguish "still running" from "abandoned / probable
+// serverless timeout" for a row stuck at outcome='started' (see
+// migration_035_source_runs.sql's own header on why that row is left behind
+// rather than cleaned up). A single global budget, not a per-source one --
+// the minimum viable choice with no real per-connector timing data behind it
+// yet; tighten per-source later if a specific connector's own maxDuration
+// makes this too loose or too strict.
+const STARTED_RUN_TIMEOUT_MINUTES = 15;
+
+// fetchLatestSourceRun(slug) -> Promise<{status:'no_table'}|{status:'no_rows'}|{status:'row', row}>
+//
+// Distinguishes "migration_035 not applied" (PostgREST PGRST205 -- the
+// relation genuinely doesn't exist) from "table exists, nothing logged for
+// this slug yet" (empty result) so the caller can report the right thing
+// instead of collapsing both into one generic failure.
+async function fetchLatestSourceRun(slug) {
+  const url = `${SUPABASE_URL}/rest/v1/source_runs?select=started_at,finished_at,outcome,http_status,error_sample&source_slug=eq.${encodeURIComponent(slug)}&order=started_at.desc&limit=1`;
+  const resp = await fetch(url, {
+    headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
+  });
+  if (resp.status === 404) {
+    const body = await resp.json().catch(() => ({}));
+    if (body && body.code === "PGRST205") return { status: "no_table" };
+    throw new Error(`source_runs REST HTTP 404: ${JSON.stringify(body)}`);
+  }
+  if (!resp.ok) throw new Error(`source_runs REST HTTP ${resp.status}`);
+  const rows = await resp.json();
+  if (!Array.isArray(rows) || rows.length === 0) return { status: "no_rows" };
+  return { status: "row", row: rows[0] };
+}
+
+// evaluateRunHealth(row, target) -> string detail, or throws (a real failure)
+//
+// The PO's explicit semantics: events_seen=20/inserted=0/updated=0 is
+// healthy (a successful run that found nothing new); events_seen=0 alone is
+// not automatically a failure. This function never gates on records_fetched/
+// records_parsed/records_written -- only on outcome and on whether a run
+// actually happened within the source's own expected interval (target.days,
+// the same SOURCE_FRESHNESS_DAYS_DEFAULT/QUIET windows the old freshness
+// check already used -- reused here as "how often should this source's cron
+// run", not "how often should its rows change").
+function evaluateRunHealth(row, target) {
+  const startedAt = new Date(row.started_at);
+  const ageMs = Date.now() - startedAt.getTime();
+
+  if (row.outcome === "started" && !row.finished_at) {
+    if (ageMs > STARTED_RUN_TIMEOUT_MINUTES * 60 * 1000) {
+      throw new Error(
+        `run for ${target.source} started ${Math.round(ageMs / 60000)}m ago and never finished -- probable timeout/abandoned run`
+      );
+    }
+    return `run in progress (started ${Math.round(ageMs / 60000)}m ago)`;
+  }
+
+  if (row.outcome === "failed") {
+    throw new Error(
+      `last run FAILED${row.http_status ? ` (HTTP ${row.http_status})` : ""}${row.error_sample ? `: ${row.error_sample}` : ""}`
+    );
+  }
+
+  if (row.outcome === "blocked") {
+    throw new Error(
+      `last run BLOCKED by upstream${row.http_status ? ` (HTTP ${row.http_status})` : ""}${row.error_sample ? `: ${row.error_sample}` : ""}`
+    );
+  }
+
+  // outcome is 'success' or 'partial' -- healthy, regardless of how many
+  // records it saw/wrote, UNLESS the run itself is older than this source's
+  // own expected interval (i.e. the cron has stopped running, not "ran and
+  // found nothing").
+  const maxAgeMs = target.days * 24 * 60 * 60 * 1000;
+  if (ageMs > maxAgeMs) {
+    throw new Error(
+      `no successful run started for ${target.source} in the last ${target.days}d (last run: ${row.started_at}, outcome=${row.outcome}) -- the connector itself, not event data, is stale`
+    );
+  }
+  return `last run ${row.outcome}, started ${Math.round(ageMs / 3600000)}h ago`;
+}
+
+// One entry per SOURCE_FRESHNESS_TARGETS source that has a real slug in the
+// WP 0.5 registry (api/_lib/source-slugs.js). Explicit map, not fuzzy label
+// matching, per this project's existing "constants over ceremony" style
+// (source-slugs.js's own words) -- a source's display name in `events.source`
+// and its slug's `label` don't always read the same
+// ("Detroit Historical Society" vs. "Detroit Historical Society (Dossin)",
+// "Rock In Detroit (rockindetroit.com/venue/old-miami)" vs. "The Old Miami").
+// A source with no entry here (e.g. Ticketmaster, Metro Times, VisitDetroit,
+// Detroit Month of Design, Planet Ant Theatre, PLAYGROUND DETROIT, Popps
+// Packing -- their connectors don't call startRun()/finishRun() yet) always
+// falls back to the advisory freshness check below.
+const SOURCE_NAME_TO_SLUG = {
+  WDET: SLUGS.wdet,
+  "HALO Detroit": SLUGS.halo,
+  "Belle Isle Nature Center": SLUGS.belleIsleNatureCenter,
+  "Redford Theatre": SLUGS.redfordTheatre,
+  "Cinema Detroit": SLUGS.cinemaDetroit,
+  "Detroit Historical Society": SLUGS.dossin,
+  "Lager House": SLUGS.lagerhouse,
+  Trinosophes: SLUGS.trinosophes,
+};
+
+// checkSourceHealth(target) -> Promise<string detail>, or throws (a failure)
+//
+// The replacement for the old checkSourceFreshness in the main check list:
+// prefers source_runs (authoritative -- did the connector actually run and
+// complete) when this source has a mapped slug AND source_runs has evidence
+// for it; otherwise falls back to the non-failing advisory freshness check.
+async function checkSourceHealth(target) {
+  const slug = SOURCE_NAME_TO_SLUG[target.source];
+  if (slug) {
+    const latest = await fetchLatestSourceRun(slug);
+    if (latest.status === "row") {
+      return evaluateRunHealth(latest.row, target);
+    }
+    // "no_table" (migration_035 not applied) or "no_rows" (table exists,
+    // nothing logged for this slug yet) -- both fall back to advisory below,
+    // never a hard failure on their own.
+  }
+  return checkSourceFreshnessAdvisory(target.source, target.days);
 }
 
 // cron-feeds.js has no fixed source string — it polls whatever's currently
@@ -364,7 +533,7 @@ module.exports = async (req, res) => {
     ...PAGES.map((p) => runCheck(`page: ${p}`, () => checkPage(p))),
     runCheck("supabase: approved events reachable", checkSupabaseData),
     ...SOURCE_FRESHNESS_TARGETS.map((t) =>
-      runCheck(`source freshness: ${t.source}`, () => checkSourceFreshness(t.source, t.days))
+      runCheck(`source health: ${t.source}`, () => checkSourceHealth(t))
     ),
     runCheck("source freshness: registered feeds (cron-feeds)", () =>
       checkFeedSourcesFreshness(SOURCE_FRESHNESS_DAYS_QUIET)
@@ -405,3 +574,12 @@ module.exports = async (req, res) => {
 
   res.status(200).json({ overall, duration_ms: durationMs, failing: checks.filter((c) => !c.ok).map((c) => c.name) });
 };
+
+// Exposed for test/cron-healthcheck-source-health.test.js only.
+module.exports.checkSourceHealth = checkSourceHealth;
+module.exports.evaluateRunHealth = evaluateRunHealth;
+module.exports.fetchLatestSourceRun = fetchLatestSourceRun;
+module.exports.checkSourceFreshnessAdvisory = checkSourceFreshnessAdvisory;
+module.exports.SOURCE_NAME_TO_SLUG = SOURCE_NAME_TO_SLUG;
+module.exports.SOURCE_FRESHNESS_TARGETS = SOURCE_FRESHNESS_TARGETS;
+module.exports.STARTED_RUN_TIMEOUT_MINUTES = STARTED_RUN_TIMEOUT_MINUTES;
