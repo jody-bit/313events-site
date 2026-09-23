@@ -131,7 +131,18 @@ function extractAddressFromContent(content) {
 // extractVenue, which now delegates here) AND out of a verified external
 // search result's content (discoverEventVenue below) -- one venue-phrase
 // extractor, two callers, not two search systems.
-const AT_VENUE_RE = /\bat\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})(?:\s+in\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?))?(?=[.,]|\s+(?:on|this|next|during|starting|opens|opening|for|from)\b)/;
+// PRODUCTION BUG FIX (2026-09-23): the trailing lookahead must tolerate an
+// OPTIONAL space before the terminating period/comma (\s*[.,], not [.,]).
+// stripHtml() (scripts/press-coverage-linking.js) turns an HTML tag
+// boundary into a literal space, so real article text very often reads
+// "...at Color Ink Studio in Hazel Park . The exhibition..." (a stray
+// space before the period, from markup like "...Hazel Park</a>." or a
+// trailing inline element) -- the original [.,] alternative required the
+// punctuation to immediately follow the captured phrase with zero
+// characters between, which real HTML-stripped text routinely violates,
+// silently defeating this match on genuine, real production article pages
+// even though the same phrase matches fine on hand-typed test fixtures.
+const AT_VENUE_RE = /\bat\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})(?:\s+in\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)?))?(?=\s*[.,]|\s+(?:on|this|next|during|starting|opens|opening|for|from)\b)/;
 const RETURNS_TO_VENUE_RE = /\breturns?\s+to\s+the\s+([A-Z][A-Za-z0-9&''.-]*(?:\s+[A-Z][A-Za-z0-9&''.-]*){0,4})\b/;
 
 // Words that are never a venue name even when they're capitalized and

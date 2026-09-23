@@ -627,7 +627,16 @@ async function linkPressCoverageQueue({
     logger.error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set — nothing to do.");
     return counts;
   }
-  const sbHeaders = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
+  // PRODUCTION BUG FIX (2026-09-23): must set Content-Type explicitly, the
+  // same way api/admin-editorial.js's own (working) sbHeaders always has --
+  // without it, a POST/PATCH body defaults to Content-Type: text/plain and
+  // PostgREST rejects EVERY write with 400 PGRST102 "Content-Type not
+  // acceptable: text/plain," silently converted by this file's own
+  // !resp.ok checks into CREATE_FAILED/LINK_WRITE_FAILED -- i.e. every
+  // article stays human with no visible error, however sufficient its
+  // extracted identity was. Confirmed against live production Supabase
+  // (a real, side-effect-free 400 without this header, 204 with it).
+  const sbHeaders = { "Content-Type": "application/json", apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
 
   const queue = await fetchQueue(SUPABASE_URL, sbHeaders);
   counts.totalConsidered = queue.length;

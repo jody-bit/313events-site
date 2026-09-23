@@ -510,7 +510,144 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
   }
   console.log("PASS: applyLink's own default implementation always re-asserts matched_event_id is still null before writing");
 
+  await runProductionPathRegressionTests();
   console.log("\nAll press-coverage-linking.js orchestrator tests passed.");
+}
+
+// ---------------------------------------------------------------------------
+// PRODUCTION BUG REGRESSION (2026-09-23) — "Considered: 6 / Matched: 0 /
+// Created: 0 / Still needs review: 6" on the real deployed Auto-Link button,
+// contradicting the pre-deployment simulation (2 auto-created / 4 human).
+//
+// Root cause #1 (universal — affected every article, every write):
+// linkPressCoverageQueue() built its own sbHeaders WITHOUT
+// "Content-Type": "application/json" (unlike api/admin-editorial.js's own
+// sbHeaders, which always has it). fetch() defaults a JSON.stringify'd
+// body to Content-Type: text/plain when none is set, and PostgREST rejects
+// that outright — confirmed against LIVE production Supabase with a real,
+// side-effect-free request: 400 PGRST102 "Content-Type not acceptable:
+// text/plain" without the header, 204 with it. Every createEvent/applyLink
+// write hit this and was silently converted by this file's own !resp.ok
+// checks into CREATE_FAILED/LINK_WRITE_FAILED — i.e. "still needs review"
+// with no visible error, however sufficient the extracted identity was.
+//
+// Root cause #2 (Heroes-specific, compounding): AT_VENUE_RE's trailing
+// lookahead required the terminating period/comma to immediately follow
+// the venue phrase with zero characters between. stripHtml() turns an
+// HTML tag boundary into a literal space, so Hour Detroit's real page
+// reads "...at Color Ink Studio in Hazel Park . The exhibition..." (a
+// stray space before the period) — this silently defeated the match on
+// the REAL page even though the same phrase matched fine on a hand-typed
+// test fixture that never had that space.
+//
+// These tests reproduce the ACTUAL production execution path — the real
+// default sbHeaders construction, the real default createEvent/applyLink/
+// fetchArticleText functions (never overridden with createEventFn/
+// applyLinkFn mocks the way the earlier tests in this file do) — against a
+// mocked fetch that enforces the SAME Content-Type rule the real,
+// deployed PostgREST instance enforces, and against REAL Hour Detroit page
+// text (a trimmed but verbatim excerpt, captured live 2026-09-23) for the
+// AT_VENUE_RE fix. Purely synthetic direct-function tests (like #9 above,
+// which override createEventFn/applyLinkFn and so never exercise the real
+// sbHeaders/fetch wiring at all) would not have caught either bug.
+async function runProductionPathRegressionTests() {
+  // A verbatim (trimmed) excerpt of Hour Detroit's real, live page after
+  // stripHtml() — captured 2026-09-23 while debugging this production
+  // report. Note the stray space before the period after "Hazel Park",
+  // exactly as stripHtml() actually produces it from the real markup.
+  const HEROES_REAL_PAGE_HTML =
+    "<html><body><nav>FOOD COMMUNITY ARTS & AGENDA EVENTS</nav><article>" +
+    "<h1>Douglas Elbinger on His Career Retrospective Exhibition &lsquo;Heroes of the Revolution&rsquo;</h1>" +
+    "<p>Douglas Elbinger isn&rsquo;t afraid to be controversial. Proof of that can be found in " +
+    "&ldquo;Heroes of the Revolution,&rdquo; his career retrospective exhibition opening on Sept. 19 at " +
+    "<a href=\"https://colorinkstudio.com\">Color Ink Studio in Hazel Park</a>. The exhibition features photos " +
+    "over multiple decades of some of the most impactful figures in modern history.</p>" +
+    "<p>Heroes of the Revolution runs from Sept. 19-Oct. 30.</p>" +
+    "</article></body></html>";
+
+  // --- 16. Root cause #1 regression: the REAL default sbHeaders/createEvent/
+  //     applyLink wiring (nothing overridden) must send Content-Type:
+  //     application/json on every write, or a PostgREST-faithful mock
+  //     rejects it exactly like real production did. ---
+  {
+    const queueRow = {
+      id: "article-heroes-prod",
+      title: "Douglas Elbinger on His Career Retrospective Exhibition ‘Heroes of the Revolution’",
+      excerpt: "",
+      url: "https://example.com/heroes-prod",
+      published_at: "2026-09-18T21:56:49+00:00",
+    };
+    const writeAttempts = []; // { url, method, contentType }
+    const fetchFn = async (url, opts = {}) => {
+      const method = opts.method || "GET";
+      if (method === "GET" && url.includes("/editorial_articles")) {
+        return { ok: true, status: 200, json: async () => [queueRow] };
+      }
+      if (method === "GET" && url.includes("/events?status=")) {
+        return { ok: true, status: 200, json: async () => [] };
+      }
+      if (method === "GET" && url.includes("/venues?select=")) {
+        return { ok: true, status: 200, json: async () => [] };
+      }
+      if (method === "GET" && url === queueRow.url) {
+        return { ok: true, status: 200, text: async () => HEROES_REAL_PAGE_HTML };
+      }
+      if (method === "POST" || method === "PATCH") {
+        const contentType = opts.headers && opts.headers["Content-Type"];
+        writeAttempts.push({ url, method, contentType });
+        if (contentType !== "application/json") {
+          // The REAL PostgREST response, verified live against production
+          // Supabase 2026-09-23 (a real, side-effect-free 400).
+          return { ok: false, status: 400, json: async () => ({ code: "PGRST102", message: "Content-Type not acceptable: text/plain" }) };
+        }
+        if (url.includes("/events") && !url.includes("/editorial_article_events") && method === "POST") {
+          return { ok: true, status: 201, json: async () => [{ id: "evt-heroes-prod", title: "Heroes of the Revolution", venue_name_raw: "Color Ink Studio", start_date: "2026-09-18" }] };
+        }
+        return { ok: true, status: 204, json: async () => ({}) };
+      }
+      throw new Error(`unexpected fetch in production-path regression test: ${method} ${url}`);
+    };
+    global.fetch = fetchFn;
+
+    const { linkPressCoverageQueue: realOrchestrator } = freshLib();
+    const counts = await realOrchestrator({
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "test-key",
+      logger: silentLogger,
+      repairGenericMetadataFn: async () => ({ written: 0 }),
+      // Deliberately NOT overriding fetchQueue / fetchCandidateEvents /
+      // fetchArticleTextFn / applyLinkFn / createEventFn / buildVenueIdMap —
+      // this exercises the REAL default implementations and the REAL
+      // internal sbHeaders, exactly like the deployed Admin Auto-Link path.
+    });
+
+    assert.ok(writeAttempts.length > 0, "the real default createEvent/applyLink must have attempted at least one write");
+    assert.ok(
+      writeAttempts.every((a) => a.contentType === "application/json"),
+      `every real write must send Content-Type: application/json (production regression) — got: ${JSON.stringify(writeAttempts)}`
+    );
+    assert.strictEqual(counts.autoCreated, 1, "with the real page text and the real wiring, Heroes must actually be created — not silently rejected");
+    assert.strictEqual(counts.stillHuman, 0);
+  }
+  console.log("PASS: [PRODUCTION REGRESSION] the real default sbHeaders/createEvent/applyLink wiring sends Content-Type: application/json, matching what real production PostgREST requires — a mock that enforces PostgREST's actual rule now succeeds instead of silently rejecting every write");
+
+  // --- 17. Root cause #2 regression: extractVenue must find the venue
+  //     phrase in text stripped from REAL markup, where an inline tag
+  //     boundary (e.g. a link around the venue name) leaves a stray space
+  //     before the terminating period — not just on a hand-typed fixture
+  //     that never has that space. ---
+  {
+    const { extractVenue } = freshLib();
+    const realStrippedText =
+      "Proof of that can be found in “Heroes of the Revolution,” his career retrospective exhibition " +
+      "opening on Sept. 19 at Color Ink Studio in Hazel Park . The exhibition features photos over multiple decades.";
+    assert.deepStrictEqual(
+      extractVenue(realStrippedText),
+      { name: "Color Ink Studio", city: "Hazel Park" },
+      "must find the venue even with a stray space before the period (a real stripHtml() artifact from an inline tag boundary), not just on cleanly hand-typed text"
+    );
+  }
+  console.log("PASS: [PRODUCTION REGRESSION] extractVenue tolerates a stray space before terminal punctuation, the real stripHtml() artifact that defeated this match in production");
 }
 
 run().catch((err) => {
