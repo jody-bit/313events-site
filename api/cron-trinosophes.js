@@ -96,17 +96,38 @@ const DATE_LINE = /^(January|February|March|April|May|June|July|August|September
 // current year context since individual date lines usually omit it.
 const YEAR_LINE = /^(20\d{2})$/;
 
+// PRODUCTION BUG FIX (2026-09-25): a single complex listing spanning several
+// <br>-separated lines was being split into multiple bogus "events" sharing
+// one date, instead of being recognized as one listing. Confirmed against
+// Trinosophes' real live page that day (the still-upcoming "October 8" /
+// "October 11" / "October 25" listings, each of which produced 1 real event
+// worth of information split across 3, 1, and 3 raw lines respectively —
+// exactly the 7 garbled rows a human first reported seeing live on the
+// site). Four narrow, specific line shapes, each confirmed against that
+// real text, are now folded into the event they belong with instead of
+// becoming their own row:
+const PARENTHETICAL_ONLY_RE = /^\(.+\)$/;
+const LOCATION_CLARIFIER_RE = /^(?:at|in)\s+[A-Z]/;
+const PRESENTER_PREFIX_RE = /\bpresents?$/i;
+const CLOSURE_NOTICE_RE = /^closed\b/i;
+
 function parseTrinosophesEvents(html) {
   const lines = htmlToLines(html);
   const events = [];
   let currentYear = new Date().getFullYear(); // fallback if no year heading seen yet
   let pendingDate = null; // {month, day}
+  // A presenter-credit / series-heading line ("Trinosophes and Media City
+  // Fil Festival present", "Tuesdays at Trinosophes presents") held until
+  // the next real title line, then prefixed onto it — never pushed as an
+  // event of its own.
+  let pendingPrefix = null;
 
   for (const line of lines) {
     const yearMatch = line.match(YEAR_LINE);
     if (yearMatch) {
       currentYear = parseInt(yearMatch[1], 10);
       pendingDate = null;
+      pendingPrefix = null;
       continue;
     }
 
@@ -116,26 +137,56 @@ function parseTrinosophesEvents(html) {
       const day = dateMatch[2].padStart(2, "0");
       const year = dateMatch[3] || String(currentYear);
       pendingDate = { date: `${year}-${month}-${day}` };
+      pendingPrefix = null;
       continue;
     }
 
     // Skip obvious section headers / nav / footer noise. This is a defensive
     // guard, not a guarantee — untested against the real live page, so
-    // spot-check the first cron run's output before trusting it.
+    // spot-check the first cron run's output before trusting it. A venue
+    // closure notice ("Closed for a private event in the evening") is noise
+    // too -- it's operational information, never a public event.
     const isNoise =
       line.length <= 2 ||
       line.length > 120 || // real titles are short; long lines are usually paragraph copy
       /^coming soon$/i.test(line) ||
       /^(home|about|events|shop|contact|menu|tickets?|newsletter|subscribe|instagram|facebook|twitter|donate|directions|hours|faq)$/i.test(line) ||
       /^https?:\/\//i.test(line) ||
-      /@/.test(line); // likely an email/handle line, not an event title
+      /@/.test(line) || // likely an email/handle line, not an event title
+      CLOSURE_NOTICE_RE.test(line);
 
-    if (pendingDate && !isNoise) {
-      events.push({ date: pendingDate.date, title: line });
-      // Trinosophes sometimes lists multiple acts on one date across
-      // several lines — keep pendingDate open so they all attach to the
-      // same date, rather than clearing it after the first line.
+    if (!pendingDate || isNoise) continue;
+
+    // Trinosophes sometimes lists multiple acts on one date across several
+    // lines — pendingDate stays open so they all attach to the same date,
+    // rather than clearing it after the first line. Distinguishing "this
+    // line is a NEW act" from "this line belongs to the PREVIOUS line" is
+    // the part that isn't fully solvable on unstructured text (confirmed:
+    // the real page has no consistent wrapper per listing), so only the
+    // narrow, confirmed-real patterns below are folded in — anything else
+    // still becomes its own row, same as before.
+    const lastForThisDate =
+      events.length && events[events.length - 1].date === pendingDate.date
+        ? events[events.length - 1]
+        : null;
+
+    if (lastForThisDate && (PARENTHETICAL_ONLY_RE.test(line) || LOCATION_CLARIFIER_RE.test(line))) {
+      // A personnel/credit parenthetical ("(Doug McCombs, Steve Shelley,
+      // Bruce Lamont, Eric Block)") or a trailing location clarifier ("at
+      // Detroit Public Lirbary") belongs to the event immediately before
+      // it, never a standalone one.
+      lastForThisDate.title = `${lastForThisDate.title} ${line}`;
+      continue;
     }
+
+    if (PRESENTER_PREFIX_RE.test(line)) {
+      pendingPrefix = line;
+      continue;
+    }
+
+    const title = pendingPrefix ? `${pendingPrefix} ${line}` : line;
+    pendingPrefix = null;
+    events.push({ date: pendingDate.date, title });
   }
 
   return events;
@@ -318,3 +369,5 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+module.exports.parseTrinosophesEvents = parseTrinosophesEvents; // exposed for test/cron-trinosophes-parse.test.js only
