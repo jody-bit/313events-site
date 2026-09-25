@@ -1214,7 +1214,8 @@ async function autoLinkEditorial() {
     if (statusEl) {
       statusEl.textContent =
         `Considered: ${r.totalConsidered || 0}. Matched: ${r.autoMatched || 0}. Created: ${r.autoCreated || 0}. ` +
-        `Duplicates prevented: ${r.crossArticleDuplicatesPrevented || 0}. Still needs review: ${r.stillHuman || 0}.`;
+        `Duplicates prevented: ${r.crossArticleDuplicatesPrevented || 0}. ` +
+        `Dismissed as already past: ${r.autoDismissedPast || 0}. Still needs review: ${r.stillHuman || 0}.`;
     }
     await loadEditorial();
   } catch (err) {

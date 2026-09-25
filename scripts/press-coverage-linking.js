@@ -216,13 +216,35 @@ const MONTHS = {
 const MONTH_NAMES_RE = "(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)\\.?";
 const DATE_RE = new RegExp(`\\b${MONTH_NAMES_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s+(\\d{4}))?\\b`, "gi");
 
+// How many days a bare "<Month> <Day>" (no year stated) is allowed to fall
+// BEHIND the article's own publish date before extractDates() concludes it
+// must mean next year rather than this year. 2026-09-25 ("FIX PAST-EVENT
+// RECAP CLUTTER"): this was 5 days, tuned for "a festival covered the day
+// it starts, or a recap published a day or two after" — too narrow for how
+// this project's actual outlets behave. Two real C&G Newspapers recaps
+// ("Lathrup Village Music Festival," Sept. 12 event published Sept. 24;
+// "Senior Expo," Sept. 15 event published Sept. 24) run their recaps 9-12
+// days after the event — well past the old 5-day window — which silently
+// rolled BOTH into next year (e.g. "2027-09-12") instead of correctly
+// landing on the real, already-past 2026 date. A wrongly-future-dated recap
+// is worse than merely unhelpful: nothing downstream can ever recognize it
+// as coverage of something already over (see the past-event dismissal in
+// linkPressCoverageQueue below), so it would sit in the queue forever, or
+// -- worse -- get created as a bogus future event if every other field
+// happened to extract cleanly. 30 days comfortably covers this project's
+// observed local-news recap lag while still treating a "Month Day" that's
+// merely a FEW days ahead of publish (an ordinary preview) as this year,
+// same as before.
+const RECAP_TRAILING_SLACK_DAYS = 30;
+
 // Finds every explicit "<Month> <Day>[, <Year>]" occurrence in the text and
 // resolves each to a real ISO date. No year stated -> the nearest date
 // on/after the article's own publish date (rolling into next year only
-// when the month/day has already passed relative to publish date) — the
-// same inference any reader makes of a news article that says "opening on
-// Sept. 19" without restating the year, never a value pulled from thin
-// air. Returns dates sorted ascending, deduped.
+// when the month/day has already passed relative to publish date, by more
+// than RECAP_TRAILING_SLACK_DAYS) — the same inference any reader makes of
+// a news article that says "opening on Sept. 19" without restating the
+// year, never a value pulled from thin air. Returns dates sorted ascending,
+// deduped.
 function extractDates(text, publishedAtIso) {
   if (!text) return [];
   const publishedDate = publishedAtIso ? new Date(publishedAtIso) : new Date();
@@ -238,10 +260,7 @@ function extractDates(text, publishedAtIso) {
     if (!m[3]) {
       const candidate = new Date(Date.UTC(year, month - 1, day));
       const publishedFloor = new Date(Date.UTC(publishedYear, publishedDate.getUTCMonth(), publishedDate.getUTCDate()));
-      // Allow a few days of slack behind "now" (a festival covered the day
-      // it starts, or a recap published a day or two after) before rolling
-      // to next year.
-      const slackFloor = new Date(publishedFloor.getTime() - 5 * 86400000);
+      const slackFloor = new Date(publishedFloor.getTime() - RECAP_TRAILING_SLACK_DAYS * 86400000);
       if (candidate < slackFloor) year += 1;
     }
     const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -264,11 +283,31 @@ const TITLE_PHRASE_RE = new RegExp(
 // A quoted phrase in the headline itself — e.g. 'Heroes of the Revolution'.
 const QUOTED_TITLE_RE = /["'‘’“”]([A-Z][^"'‘’“”]{3,70})["'‘’“”]/;
 
+// 2026-09-25 ("FIX PAST-EVENT RECAP CLUTTER" — real example: Grosse Pointe
+// News' "Get amped up with Mac Watts at outdoor concert"): a single-
+// performer concert/show article often has no formal "event name" at
+// all — neither a "the X Festival/Market/..." phrase nor a quoted title —
+// because the performer's own name IS the event's identity, exactly how a
+// calendar listing would title it ("Mac Watts," not "the Mac Watts
+// Concert"). Deliberately narrow, same "never guess" posture as every
+// other extractor here: only a clear "<Proper Name> will <performance
+// verb>" construction counts (at most 4 capitalized words, so it can't run
+// on into an unrelated sentence), and the verb list is a closed set of
+// unambiguous performance terms — never a bare proper-noun mention on its
+// own, which would false-positive on any person's name quoted anywhere in
+// an article (a biographical aside, an organizer's name, etc.).
+const PERFORMANCE_VERB_RE = "(?:take[s]? the stage|perform(?:s)?|headline[s]?|play[s]?|return[s]? to the stage)";
+const PERFORMER_TITLE_RE = new RegExp(
+  `\\b([A-Z][A-Za-z0-9&''.-]*(?:\\s+[A-Z][A-Za-z0-9&''.-]*){0,3})\\s+will\\s+${PERFORMANCE_VERB_RE}\\b`
+);
+
 function extractTitle(headline, bodyText) {
   const phraseMatch = (bodyText || "").match(TITLE_PHRASE_RE) || (headline || "").match(TITLE_PHRASE_RE);
   if (phraseMatch) return phraseMatch[1].replace(/\s+/g, " ").trim();
   const quoted = (headline || "").match(QUOTED_TITLE_RE);
   if (quoted) return quoted[1].trim();
+  const performer = (bodyText || "").match(PERFORMER_TITLE_RE);
+  if (performer) return performer[1].replace(/\s+/g, " ").trim();
   return null;
 }
 
@@ -338,6 +377,33 @@ function extractCity(bodyText, titlePhrase) {
     if (m) return m[1].trim();
   }
   return extractCityFromKnownList(bodyText || "");
+}
+
+// extractStreetAddress(text) -> { address, city } | null
+//
+// 2026-09-25 ("FIX PAST-EVENT RECAP CLUTTER" — same Mac Watts article as
+// PERFORMER_TITLE_RE above): a real, specific numbered street address
+// ("15118 Mack, Grosse Pointe Park") pins down an event's location just as
+// confidently as a named venue does — often more so — even when the
+// article never states a conventional venue name (an outdoor fundraiser in
+// a parking lot between two businesses, one of which doesn't exist yet, is
+// a real example this project has to handle, not a hypothetical). This is
+// deliberately narrow and anchored, same "never guess" posture as every
+// other extractor here: requires a leading street number, 1-4 capitalized
+// words, then a comma and one of this project's own KNOWN_CITIES immediately
+// after — the known-city anchor is what keeps this from ever mistaking an
+// ordinary number in running text (a price, a phone number, a year) for an
+// address; a street number with no recognized city right after it is never
+// matched at all.
+const STREET_ADDRESS_RE = new RegExp(
+  `\\b(\\d{2,6}\\s+[A-Z][A-Za-z]*(?:\\s+[A-Z][A-Za-z]*){0,3})\\s*,\\s*(${KNOWN_CITIES_SORTED.map(escapeRegex).join("|")})\\b`
+);
+
+function extractStreetAddress(text) {
+  if (!text) return null;
+  const m = text.match(STREET_ADDRESS_RE);
+  if (!m) return null;
+  return { address: m[1].trim(), city: m[2].trim() };
 }
 
 // extractContextEntities(bodyText) -> string[]
@@ -454,14 +520,23 @@ function extractDescriptionSentence(bodyText, titlePhrase) {
 function extractEventIdentity(headline, bodyText, publishedAtIso) {
   const title = extractTitle(headline, bodyText);
   const venue = extractVenue(bodyText || "");
+  const streetAddress = extractStreetAddress(bodyText || "");
   const category = extractCategory(headline, bodyText);
   const dates = extractDates(bodyText || "", publishedAtIso);
   const description = title ? extractDescriptionSentence(bodyText || "", title) : null;
-  const city = (venue && venue.city) || extractCity(bodyText || "", title);
+  // Prefer the venue's own stated city, then the city anchored right next
+  // to a stated street address (both confident, textually-tied-to-the-
+  // event signals) before falling back to the loose whole-text
+  // KNOWN_CITIES scan — that scan has no way to tell an event's own city
+  // apart from an unrelated city mentioned in passing (a performer's
+  // hometown, an organizer's home base), so a more specific signal always
+  // wins when one exists.
+  const city = (venue && venue.city) || (streetAddress && streetAddress.city) || extractCity(bodyText || "", title);
   return {
     title,
     venueName: venue ? venue.name : null,
     city,
+    streetAddress: streetAddress ? streetAddress.address : null,
     category,
     startDate: dates.length ? dates[0] : null,
     endDate: dates.length > 1 ? dates[dates.length - 1] : null,
@@ -481,12 +556,20 @@ function extractEventIdentity(headline, bodyText, publishedAtIso) {
 // distributed-event signal — see isDistributedEvent) — never a bare city
 // alone, which would risk accepting an ordinary under-reported single-venue
 // event just because a city happened to be named somewhere in the article.
+//
+// 2026-09-25: a confident CITY plus a confident STREET ADDRESS (see
+// extractStreetAddress) is a third way to satisfy location — a specific
+// numbered address pins down one exact place at least as precisely as a
+// named venue does, so it's never treated as a lesser substitute the way a
+// bare city is.
 function isSufficientForCreate(identity) {
   const missing = [];
   if (!identity.title) missing.push("NO_TITLE_SIGNAL");
   if (!identity.startDate) missing.push("NO_DATE_SIGNAL");
   if (!identity.category) missing.push("NO_CATEGORY_SIGNAL");
-  const hasLocation = !!identity.venueName || (!!identity.city && !!identity.isDistributed);
+  const hasLocation = !!identity.venueName
+    || (!!identity.city && !!identity.isDistributed)
+    || (!!identity.city && !!identity.streetAddress);
   if (!hasLocation) missing.push(identity.city ? "NO_CONFIDENT_VENUE" : "NO_VENUE_OR_CITY_SIGNAL");
   return { sufficient: missing.length === 0, missing };
 }
@@ -513,6 +596,7 @@ function mergeIdentities(identities) {
     title: first("title"),
     venueName: first("venueName"),
     city: first("city"),
+    streetAddress: first("streetAddress"),
     category: first("category"),
     startDate: first("startDate"),
     endDate: endDates.length ? endDates[endDates.length - 1] : null,
@@ -563,18 +647,42 @@ async function applyLink(SUPABASE_URL, sbHeaders, articleId, eventId, matchType)
   return true;
 }
 
+// 2026-09-25 ("FIX PAST-EVENT RECAP CLUTTER") — the SAME reversible flag
+// admin.html's own "Not a fit" button sets (see api/admin-editorial.js's
+// dismiss action): admin_dismissed=true, never a hard delete. Used by
+// linkPressCoverageQueue below to auto-dismiss recap/retrospective coverage
+// of an event that's already over, the same disposition a human would give
+// it by hand — just without making a human click it. Re-asserts
+// admin_dismissed=false in the PATCH filter for the same "never clobber
+// something already decided" reason applyLink/createEvent guard their own
+// writes.
+async function dismissArticle(SUPABASE_URL, sbHeaders, articleId) {
+  const resp = await fetch(
+    `${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(articleId)}&admin_dismissed=eq.false`,
+    { method: "PATCH", headers: { ...sbHeaders, Prefer: "return=minimal" }, body: JSON.stringify({ admin_dismissed: true }) }
+  );
+  return resp.ok;
+}
+
 // Same row shape / venue resolution as api/admin-editorial.js's
 // create_event action (source distinguishes how it was made). NEVER sets
-// time_display/is_all_day — see file header.
+// time_display/is_all_day — see file header. venue_name_raw falls back to
+// the literal "Venue TBA" placeholder this project already uses elsewhere
+// (api/cron-detroitmonthofdesign.js, api/cron-planetanttheatre.js,
+// api/cron-ticketmaster.js, api/event-meta.js) whenever isSufficientForCreate
+// accepted this identity WITHOUT a venue name — the city+distributed path,
+// or the city+streetAddress path added 2026-09-25 — rather than writing a
+// blank/null display name.
 async function createEvent(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, identity, venueIdMap) {
   const row = {
     title: identity.title,
     description: identity.description || null,
     description_source: identity.description ? "authoritative" : null,
     category: identity.category,
-    venue_name_raw: identity.venueName,
+    venue_name_raw: identity.venueName || "Venue TBA",
     venue_id: resolveVenueId(venueIdMap, identity.venueName),
     venue_city_raw: identity.city || null,
+    venue_address_raw: identity.streetAddress || null,
     start_date: identity.startDate,
     end_date: identity.endDate || null,
     source: "Editorial Review (Automated)",
@@ -606,12 +714,18 @@ async function linkPressCoverageQueue({
   fetchArticleTextFn = fetchArticleText,
   applyLinkFn = applyLink,
   createEventFn = createEvent,
+  dismissArticleFn = dismissArticle, // 2026-09-25, past-event auto-dismissal
   buildVenueIdMap = buildVenueNameToIdMap,
   discoverEventVenueFn = discoverEventVenue, // item 1 of the 2026-09-23 correction
   upsertVenueKnowledgeFn = upsertVenueKnowledge, // persists a successful external resolution
   isExternalDiscoveryConfiguredFn = isExternalDiscoveryConfigured,
   tavilyApiKey = process.env.TAVILY_API_KEY,
   repairGenericMetadataFn = null, // injected by callers that want the reuse step; see api/cron-editorial.js / api/admin-editorial.js wiring
+  // 2026-09-25 ("FIX PAST-EVENT RECAP CLUTTER"): "today," injectable so
+  // tests stay deterministic instead of drifting with the real calendar
+  // (see test/press-coverage-linking.test.js's own nowIso usage). Real
+  // callers always get the real current date.
+  nowIso = new Date().toISOString().slice(0, 10),
 } = {}) {
   const counts = {
     totalConsidered: 0,
@@ -620,6 +734,8 @@ async function linkPressCoverageQueue({
     crossArticleDuplicatesPrevented: 0,
     stillHuman: 0,
     stillHumanDetail: [], // [{ articleId, title, url, reasons }]
+    autoDismissedPast: 0,
+    autoDismissedPastDetail: [], // [{ articleId, title, url, date }]
     fetchFailed: 0,
   };
 
@@ -673,6 +789,34 @@ async function linkPressCoverageQueue({
     }
 
     const identity = extractEventIdentity(article.title, bodyText, article.published_at);
+
+    // 2026-09-25 ("FIX PAST-EVENT RECAP CLUTTER" -- Jody: "I should not have
+    // to manually dismiss obvious past-event coverage"): an article whose
+    // ONLY textually-stated date(s) are already behind us describes
+    // something that's already happened -- recap/retrospective coverage,
+    // never a future event to list. Never inferred/guessed: this only
+    // fires when extractDates() found a real, explicit date in the
+    // article's own text (identity.startDate/endDate come straight from
+    // it) and the LATEST one found is still strictly before today. Since
+    // extractDates() returns dates sorted ascending, endDate (when present)
+    // or else startDate IS the latest one found -- so this one comparison
+    // is equivalent to checking every extracted date, not just the first.
+    // An article naming BOTH a past reference and a real upcoming date
+    // (e.g. "last year's turnout was huge; this year's is Nov 3") is
+    // untouched by this -- only when every extracted date is in the past.
+    // Auto-dismissed the exact same reversible way "Not a fit" does
+    // (admin_dismissed=true, never a hard delete, undoable by a human) --
+    // never left for a human to dismiss by hand, and never carried forward
+    // to Phase B where a lucky full extraction could otherwise create it as
+    // a bogus past-dated event.
+    const latestKnownDate = identity.endDate || identity.startDate;
+    if (latestKnownDate && latestKnownDate < nowIso) {
+      if (!dryRun) await dismissArticleFn(SUPABASE_URL, sbHeaders, article.id);
+      counts.autoDismissedPast++;
+      counts.autoDismissedPastDetail.push({ articleId: article.id, title: article.title, url: article.url, date: latestKnownDate });
+      continue;
+    }
+
     unresolved.push({ article, identity });
   }
 
@@ -808,6 +952,7 @@ module.exports = {
   extractTitle,
   extractVenue,
   extractCity,
+  extractStreetAddress,
   extractContextEntities,
   isDistributedEvent,
   extractCategory,
@@ -820,6 +965,7 @@ module.exports = {
   fetchCandidateEventsDefault,
   applyLink,
   createEvent,
+  dismissArticle,
   fetchArticleText,
 };
 

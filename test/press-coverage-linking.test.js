@@ -52,11 +52,43 @@ const DOWNRIVER_EXCERPT = "The Recovery & Resilience Festival in Wyandotte will 
 const PHOTOS_HEADLINE = "Photos sought for exhibit celebrating America's 250th birthday";
 const PHOTOS_BODY = "An upcoming exhibit aims to bring Americans together by letting them share pictures of places they love, whether across the state or country, or even at home.";
 
+// "FIX PAST-EVENT RECAP CLUTTER" (2026-09-25) — two more real articles from
+// the live Press Coverage queue, both traced from Jody's own report ("I
+// should not have to manually dismiss obvious past-event coverage, and the
+// Sept. 26 Mac Watts event should be resolvable").
+//
+// A real C&G Newspapers recap, published a full 12 days after the event it
+// covers — the exact real-world gap that silently rolled its date to NEXT
+// year under the old 5-day extractDates() slack window (see
+// RECAP_TRAILING_SLACK_DAYS).
+const LATHRUP_HEADLINE = "Lathrup Village Music Festival brings together community for full day of music";
+const LATHRUP_BODY =
+  "LATHRUP VILLAGE — Lathrup Village Municipal Park was bursting with activity on Sept. 12 due to the all-day " +
+  "Lathrup Village Music Festival. The post Lathrup Village Music Festival brings together community for full " +
+  "day of music first appeared on C & G Newspapers .";
+
+// A real Grosse Pointe News concert preview — Jody's own example of an
+// article that SHOULD be resolvable. Trimmed but verbatim (captured live
+// 2026-09-25): no formal "event name" is ever stated (neither a "the X
+// Festival/Market" phrase nor a quoted title — the performer's own name is
+// the event's real identity), and no conventional venue is named either —
+// only a specific street address for a fundraiser held in a parking lot
+// between two businesses, one of which doesn't exist yet.
+const MAC_WATTS_HEADLINE = "Get amped up with Mac Watts at outdoor concert";
+const MAC_WATTS_BODY =
+  "Nashville superstar and Michigan native Mac Watts will take the stage once again during an outdoor " +
+  "fundraiser Saturday, Sept. 26, that benefits the future home of Michael B’s Cafe. The headliner " +
+  "— who was raised in Bloomfield Hills before making it big in Music City — is one part of a " +
+  "down-home celebration that kicks off at 5 p.m. The concert takes place in the parking lot between " +
+  "Cabbage Patch Saloon and the future Michael B’s. Keeping with the country theme, bales of hay will " +
+  "be provided for additional seating. Tickets are $60 and available online at michaelbcafe.org. The " +
+  "project is the renovation of the building at 15118 Mack, Grosse Pointe Park.";
+
 function run() {
   const {
     extractTitle, extractVenue, extractDates, extractCategory, extractDescriptionSentence,
     extractEventIdentity, isSufficientForCreate, deepMatchArticleToEvent, normalizeAmpersand,
-    extractCity, extractContextEntities, isDistributedEvent, mergeIdentities,
+    extractCity, extractStreetAddress, extractContextEntities, isDistributedEvent, mergeIdentities,
     linkPressCoverageQueue,
   } = freshLib();
 
@@ -228,6 +260,89 @@ function run() {
   }
   console.log("PASS: deepMatchArticleToEvent matches an existing event via full body text when the headline doesn't name it");
 
+  // --- 9. [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25] extractDates: a recap
+  //     published well over the old 5-day window after its own event must
+  //     still resolve to the event's real (past) year, not roll forward to
+  //     next year -- the real bug behind the Lathrup Village Music Festival
+  //     and Senior Expo recaps sitting stuck in the Press Coverage queue. ---
+  {
+    assert.deepStrictEqual(
+      extractDates(LATHRUP_BODY, "2026-09-24T12:00:00+00:00"),
+      ["2026-09-12"],
+      "a recap published 12 days after its event must land on the real, already-past 2026 date, not roll to 2027 the way the old 5-day slack window did"
+    );
+    // Still correctly rolls forward for a date genuinely many months behind
+    // publish -- widening the slack must not turn off year-inference
+    // entirely, only extend how much trailing lag counts as "this year."
+    assert.deepStrictEqual(extractDates("The show is Jan. 5.", "2026-09-01T00:00:00Z"), ["2027-01-05"]);
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] extractDates tolerates a real-world recap lag without misdating the event a year into the future");
+
+  // --- 10. [FIX PAST-EVENT RECAP CLUTTER] extractTitle: a single-performer
+  //     concert article with no formal event name at all (neither a "the X
+  //     Festival/Market" phrase nor a quoted title) falls back to the
+  //     performer's own name via an explicit "will <performance verb>"
+  //     construction -- the real Mac Watts article, Jody's own example of
+  //     an article that should be resolvable. ---
+  {
+    assert.strictEqual(
+      extractTitle(MAC_WATTS_HEADLINE, MAC_WATTS_BODY),
+      "Mac Watts",
+      "no formal title phrase anywhere -- must fall back to the performer's own name, stated as \"Mac Watts will take the stage\""
+    );
+    // Must not fire on a bare proper-noun mention with no performance verb
+    // -- e.g. an organizer's name in this same article -- only the narrow
+    // "will <verb>" construction counts.
+    assert.strictEqual(
+      extractTitle("Fundraiser planned", "Alicia Carlisle, whose Cabbage Patch Saloon will be open for business during the event, is helping organize."),
+      null,
+      "\"will be open\" is not a performance verb -- must never guess a title from a bare proper-noun mention"
+    );
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] extractTitle falls back to a performer's own name only on an explicit \"will <performance verb>\" construction, never a bare name mention");
+
+  // --- 11. [FIX PAST-EVENT RECAP CLUTTER] extractStreetAddress: a specific
+  //     numbered street address anchored to one of this project's own known
+  //     cities is a confident location signal, even with no conventional
+  //     venue name stated anywhere -- the real Mac Watts article again
+  //     (an outdoor fundraiser in a parking lot between two businesses). ---
+  {
+    assert.deepStrictEqual(extractStreetAddress(MAC_WATTS_BODY), { address: "15118 Mack", city: "Grosse Pointe Park" });
+    assert.strictEqual(extractStreetAddress(HEROES_BODY), null, "no street address stated anywhere in this article -- must not guess one");
+    assert.strictEqual(extractStreetAddress("Tickets are $60, available online."), null, "a bare number with no known city right after it must never be mistaken for an address");
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] extractStreetAddress finds a real numbered address anchored to a known city, never a guess from a bare number");
+
+  // --- 12. [FIX PAST-EVENT RECAP CLUTTER] isSufficientForCreate: a
+  //     confident city PLUS a confident street address is sufficient
+  //     location, same standing as a named venue -- but a city alone
+  //     (without either the address or the existing distributed-event
+  //     signal) still is not. ---
+  {
+    const withAddress = { title: "Mac Watts", venueName: null, city: "Grosse Pointe Park", streetAddress: "15118 Mack", category: "music", startDate: "2026-09-26", isDistributed: false };
+    assert.deepStrictEqual(isSufficientForCreate(withAddress), { sufficient: true, missing: [] });
+
+    const withoutAddress = { ...withAddress, streetAddress: null };
+    assert.deepStrictEqual(isSufficientForCreate(withoutAddress), { sufficient: false, missing: ["NO_CONFIDENT_VENUE"] }, "a bare city, with neither an address nor a distributed-event signal, must still not be enough");
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] isSufficientForCreate accepts a confident city+street-address pair as real location evidence, same as a named venue");
+
+  // --- 13. [FIX PAST-EVENT RECAP CLUTTER] extractEventIdentity: the city
+  //     anchored to the street address wins over the loose whole-text
+  //     KNOWN_CITIES scan -- which, on the real Mac Watts article, is
+  //     ambiguous (it also finds "Bloomfield Hills," the performer's own
+  //     unrelated hometown, mentioned in the same article). ---
+  {
+    const identity = extractEventIdentity(MAC_WATTS_HEADLINE, MAC_WATTS_BODY, "2026-09-23T15:03:44+00:00");
+    assert.strictEqual(identity.title, "Mac Watts");
+    assert.strictEqual(identity.venueName, null);
+    assert.strictEqual(identity.streetAddress, "15118 Mack");
+    assert.strictEqual(identity.city, "Grosse Pointe Park", "must use the address-anchored city, not bail out on the ambiguous Bloomfield-Hills-vs-Grosse-Pointe-Park whole-text scan");
+    assert.strictEqual(identity.category, "music");
+    assert.strictEqual(identity.startDate, "2026-09-26");
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] extractEventIdentity resolves the real Mac Watts article's city via its street address, sidestepping an unrelated hometown mention that would otherwise make the plain city scan ambiguous");
+
   console.log("\nAll press-coverage-linking.js pure-function tests passed.\n");
   return runOrchestratorTests({ linkPressCoverageQueue });
 }
@@ -251,6 +366,11 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
       SUPABASE_URL: "https://example.supabase.co",
       SUPABASE_SERVICE_ROLE_KEY: "test-key",
       logger: silentLogger,
+      // Pinned "today" -- see [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25]:
+      // without this, the real wall-clock date would eventually pass this
+      // fixture's Sept 19 event date and the new past-event auto-dismissal
+      // would swallow this article before it ever reached creation.
+      nowIso: "2026-09-18",
       fetchQueue: async () => [{ id: "article-heroes", title: HEROES_HEADLINE, excerpt: "", url: "https://hourdetroit.example/heroes", published_at: "2026-09-18T21:56:49+00:00" }],
       fetchCandidateEvents: async () => [],
       fetchArticleTextFn: async () => HEROES_BODY,
@@ -316,6 +436,7 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
       SUPABASE_URL: "https://example.supabase.co",
       SUPABASE_SERVICE_ROLE_KEY: "test-key",
       logger: silentLogger,
+      nowIso: "2026-09-18", // pinned -- see [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25]
       fetchQueue: async () => [
         { id: "article-downriver", title: DOWNRIVER_HEADLINE, excerpt: DOWNRIVER_EXCERPT, url: "https://example.com/downriver", published_at: "2026-09-18T14:58:57+00:00" },
         { id: "article-lol", title: LOL_HEADLINE, excerpt: "", url: "https://example.com/lol", published_at: "2026-09-18T14:59:51+00:00" },
@@ -360,6 +481,7 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
       SUPABASE_URL: "https://example.supabase.co",
       SUPABASE_SERVICE_ROLE_KEY: "test-key",
       logger: silentLogger,
+      nowIso: "2026-09-18", // pinned -- see [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25]
       fetchQueue: async () => [
         { id: "article-downriver", title: DOWNRIVER_HEADLINE, excerpt: DOWNRIVER_EXCERPT, url: "https://example.com/downriver", published_at: "2026-09-18T14:58:57+00:00" },
         { id: "article-lol", title: LOL_HEADLINE, excerpt: "", url: "https://example.com/lol", published_at: "2026-09-18T14:59:51+00:00" },
@@ -395,6 +517,7 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
       SUPABASE_URL: "https://example.supabase.co",
       SUPABASE_SERVICE_ROLE_KEY: "test-key",
       logger: silentLogger,
+      nowIso: "2026-09-16", // pinned -- see [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25]
       fetchQueue: async () => [{ id: "article-kitchens", title: "Neighborhood Kitchen Showcase set for this weekend", excerpt: "", url: "https://example.com/kitchens", published_at: "2026-09-16T15:05:58+00:00" }],
       fetchCandidateEvents: async () => [],
       fetchArticleTextFn: async () => distributedBody,
@@ -510,6 +633,119 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
   }
   console.log("PASS: applyLink's own default implementation always re-asserts matched_event_id is still null before writing");
 
+  // --- 16. [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25] An article whose only
+  //     stated date is already past (the real Lathrup Village Music
+  //     Festival recap, published 12 days after its own event) is
+  //     auto-dismissed outright -- never left stuck in the human queue,
+  //     never risked as a bogus past-dated event even if every other field
+  //     happened to extract cleanly. ---
+  {
+    const dismissed = [];
+    const counts = await linkPressCoverageQueue({
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "test-key",
+      logger: silentLogger,
+      nowIso: "2026-09-25", // "today" for this test -- after the recap's own Sept 12 event date
+      fetchQueue: async () => [{ id: "article-lathrup", title: LATHRUP_HEADLINE, excerpt: "", url: "https://example.com/lathrup", published_at: "2026-09-24T12:00:00+00:00" }],
+      fetchCandidateEvents: async () => [],
+      fetchArticleTextFn: async () => LATHRUP_BODY,
+      buildVenueIdMap: async () => new Map(),
+      createEventFn: async () => { throw new Error("must never create an event for something already over"); },
+      dismissArticleFn: async (_u, _h, articleId) => { dismissed.push(articleId); return true; },
+      repairGenericMetadataFn: async () => { throw new Error("must never run enrichment when nothing was created"); },
+    });
+    assert.strictEqual(counts.autoDismissedPast, 1);
+    assert.strictEqual(counts.autoCreated, 0);
+    assert.strictEqual(counts.stillHuman, 0, "a past-event recap must never sit in the human queue either -- it's dismissed outright, not left stuck");
+    assert.strictEqual(dismissed.length, 1);
+    assert.strictEqual(dismissed[0], "article-lathrup");
+    assert.strictEqual(counts.autoDismissedPastDetail.length, 1);
+    assert.strictEqual(counts.autoDismissedPastDetail[0].date, "2026-09-12");
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] a real recap whose only stated date is already past is auto-dismissed, never left for a human to dismiss by hand and never created as a bogus past-dated event");
+
+  // --- 17. [FIX PAST-EVENT RECAP CLUTTER] An article naming BOTH a past
+  //     reference and a genuine upcoming date must NOT be auto-dismissed --
+  //     only when every extracted date is in the past. ---
+  {
+    const body = "Last year's turnout for the show was huge on Sept. 10. This year's show returns Oct. 15.";
+    const counts = await linkPressCoverageQueue({
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "test-key",
+      logger: silentLogger,
+      nowIso: "2026-09-25",
+      fetchQueue: async () => [{ id: "article-mixed-dates", title: "Untitled", excerpt: "", url: "https://example.com/mixed", published_at: "2026-09-20T12:00:00+00:00" }],
+      fetchCandidateEvents: async () => [],
+      fetchArticleTextFn: async () => body,
+      buildVenueIdMap: async () => new Map(),
+      dismissArticleFn: async () => { throw new Error("must never auto-dismiss an article that also names a real upcoming date"); },
+      repairGenericMetadataFn: async () => ({ written: 0 }),
+    });
+    assert.strictEqual(counts.autoDismissedPast, 0);
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] an article naming both a past reference and a genuine upcoming date is never auto-dismissed -- only when every extracted date is in the past");
+
+  // --- 18. [FIX PAST-EVENT RECAP CLUTTER] End-to-end: the real Mac Watts
+  //     article -- Jody's own example of an article that should be
+  //     resolvable -- now auto-creates, with title via the performer
+  //     fallback and location via street-address+city, WITHOUT needing
+  //     external venue discovery (unconfigured in real production today). ---
+  {
+    let createdRow = null;
+    const counts = await linkPressCoverageQueue({
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "test-key",
+      logger: silentLogger,
+      nowIso: "2026-09-23", // "today" for this test -- before the Sept 26 event
+      fetchQueue: async () => [{ id: "article-macwatts", title: MAC_WATTS_HEADLINE, excerpt: "", url: "https://example.com/macwatts", published_at: "2026-09-23T15:03:44+00:00" }],
+      fetchCandidateEvents: async () => [],
+      fetchArticleTextFn: async () => MAC_WATTS_BODY,
+      buildVenueIdMap: async () => new Map(),
+      isExternalDiscoveryConfiguredFn: () => false, // no TAVILY_API_KEY -- today's real state
+      discoverEventVenueFn: async () => { throw new Error("must never attempt external resolution when street-address+city already supply a confident location"); },
+      applyLinkFn: async () => true,
+      createEventFn: async (_u, _k, _h, identity) => {
+        createdRow = identity;
+        return { id: "evt-macwatts", title: identity.title, venue_name_raw: identity.venueName || "Venue TBA", start_date: identity.startDate };
+      },
+      repairGenericMetadataFn: async () => ({ written: 0 }),
+    });
+    assert.strictEqual(counts.autoCreated, 1, "a real concert article with a performer name and a street address -- but no formal title phrase or named venue -- must now resolve automatically");
+    assert.strictEqual(counts.stillHuman, 0);
+    assert.ok(createdRow);
+    assert.strictEqual(createdRow.title, "Mac Watts");
+    assert.strictEqual(createdRow.venueName, null, "must never fabricate a single venue name from \"the parking lot between two businesses\" -- the street-address+city path is what makes this creatable, not a guessed venue");
+    assert.strictEqual(createdRow.city, "Grosse Pointe Park");
+    assert.strictEqual(createdRow.streetAddress, "15118 Mack");
+    assert.strictEqual(createdRow.startDate, "2026-09-26");
+    assert.strictEqual(createdRow.category, "music");
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] the real Mac Watts article now resolves automatically -- title via the performer fallback, location via street-address+city, no external search needed");
+
+  // --- 19. [FIX PAST-EVENT RECAP CLUTTER] createEvent's own default row-
+  //     builder: falls back to this project's existing "Venue TBA"
+  //     placeholder (never null/blank) when isSufficientForCreate accepted
+  //     an identity without a venue name, and writes venue_address_raw when
+  //     a street address is known. ---
+  {
+    const { createEvent } = require(`${REPO_DIR}/scripts/press-coverage-linking.js`);
+    let capturedBody = null;
+    const fetchFn = async (_url, opts) => {
+      capturedBody = JSON.parse(opts.body);
+      return { ok: true, status: 201, json: async () => [{ id: "evt-macwatts-2", ...capturedBody }] };
+    };
+    global.fetch = fetchFn;
+    await createEvent(
+      "https://example.supabase.co", "test-key", {},
+      { title: "Mac Watts", venueName: null, city: "Grosse Pointe Park", streetAddress: "15118 Mack", category: "music", startDate: "2026-09-26", endDate: null, description: null },
+      new Map()
+    );
+    assert.strictEqual(capturedBody.venue_name_raw, "Venue TBA", "no venue name known -- must fall back to this project's existing 'Venue TBA' placeholder, never null/blank");
+    assert.strictEqual(capturedBody.venue_address_raw, "15118 Mack");
+    assert.strictEqual(capturedBody.venue_city_raw, "Grosse Pointe Park");
+  }
+  console.log("PASS: [FIX PAST-EVENT RECAP CLUTTER] createEvent falls back to 'Venue TBA' and writes venue_address_raw when only a street address is known, never a fabricated venue name");
+
   await runProductionPathRegressionTests();
   console.log("\nAll press-coverage-linking.js orchestrator tests passed.");
 }
@@ -614,6 +850,7 @@ async function runProductionPathRegressionTests() {
       SUPABASE_URL: "https://example.supabase.co",
       SUPABASE_SERVICE_ROLE_KEY: "test-key",
       logger: silentLogger,
+      nowIso: "2026-09-18", // pinned -- see [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25]
       repairGenericMetadataFn: async () => ({ written: 0 }),
       // Deliberately NOT overriding fetchQueue / fetchCandidateEvents /
       // fetchArticleTextFn / applyLinkFn / createEventFn / buildVenueIdMap —
@@ -774,6 +1011,7 @@ async function runProductionPathRegressionTests() {
       SUPABASE_URL: "https://example.supabase.co",
       SUPABASE_SERVICE_ROLE_KEY: "test-key",
       logger: silentLogger,
+      nowIso: "2026-09-18", // pinned -- see [FIX PAST-EVENT RECAP CLUTTER, 2026-09-25]
       repairGenericMetadataFn: async () => ({ written: 0 }),
       // isExternalDiscoveryConfiguredFn / tavilyApiKey deliberately left at
       // their real defaults (process.env.TAVILY_API_KEY, unset in this
