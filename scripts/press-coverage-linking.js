@@ -157,13 +157,35 @@ function daysBetween(isoA, isoB) {
   return Math.abs(Math.round((a - b) / 86400000));
 }
 
+// 2026-09-25 ("RESOLVE EMBEDDED FUTURE EVENTS"): every article page on at
+// least one of this project's real outlets (C&G Newspapers) appends a
+// trailing "You May Also Be Interested In..." teaser block linking to
+// OTHER, unrelated articles -- including THEIR OWN dates and venue-shaped
+// "at <Place>" phrases (a real example, captured live while tracing this
+// fix: "...the 5K will return to Twelve Mile Crossing at Fountain Walk on
+// Oct...."). stripHtml()'s own whitespace-flattening makes that block
+// textually indistinguishable from the real article body to every
+// extractor below (title/venue/date/category/address alike), so it has to
+// be cut BEFORE any extraction ever sees it -- not worked around case by
+// case. Deliberately narrow: only a known boilerplate heading trims the
+// text, and only the text AFTER that heading is discarded -- never a guess
+// at where the real article "seems" to end.
+const TRAILING_BOILERPLATE_RE = /\b(You May Also Be Interested In|Related Articles|More From This Section|Read Next|You Might Also Like)\b/i;
+
+function trimTrailingBoilerplate(text) {
+  if (!text) return text;
+  const m = text.match(TRAILING_BOILERPLATE_RE);
+  if (!m) return text;
+  return text.slice(0, m.index).trim();
+}
+
 async function fetchArticleText(url, fetchFn) {
   try {
     const doFetch = fetchFn || fetch;
     const resp = await doFetch(url, { headers: { "User-Agent": UA, Accept: "text/html" } });
     if (!resp.ok) return null;
     const html = await resp.text();
-    return stripHtml(html).slice(0, MAX_ARTICLE_CHARS);
+    return trimTrailingBoilerplate(stripHtml(html)).slice(0, MAX_ARTICLE_CHARS);
   } catch {
     return null; // fail closed — never throws; caller treats this as "no body text available"
   }
@@ -245,6 +267,32 @@ const RECAP_TRAILING_SLACK_DAYS = 30;
 // a news article that says "opening on Sept. 19" without restating the
 // year, never a value pulled from thin air. Returns dates sorted ascending,
 // deduped.
+// resolveDateMatch(m, publishedYear, publishedDate) -> iso string | null
+//
+// Pure year-inference + validity logic factored out of extractDates()
+// 2026-09-25 ("RESOLVE EMBEDDED FUTURE EVENTS") so extractEventDates()
+// below can reuse the EXACT same "no year stated -> nearest date on/after
+// publish, unless already RECAP_TRAILING_SLACK_DAYS behind" rule while
+// layering its own separate window/cue filtering on TOP -- never a second,
+// slightly-different copy of this logic. A pure refactor: extractDates()'s
+// own behavior/tests are unchanged by this.
+function resolveDateMatch(m, publishedYear, publishedDate) {
+  const month = MONTHS[m[1].toLowerCase().replace(/\.$/, "")];
+  const day = parseInt(m[2], 10);
+  if (!month || !day || day < 1 || day > 31) return null;
+  let year = m[3] ? parseInt(m[3], 10) : publishedYear;
+  if (!m[3]) {
+    const candidate = new Date(Date.UTC(year, month - 1, day));
+    const publishedFloor = new Date(Date.UTC(publishedYear, publishedDate.getUTCMonth(), publishedDate.getUTCDate()));
+    const slackFloor = new Date(publishedFloor.getTime() - RECAP_TRAILING_SLACK_DAYS * 86400000);
+    if (candidate < slackFloor) year += 1;
+  }
+  const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  const check = new Date(iso + "T00:00:00Z");
+  if (check.getUTCMonth() + 1 !== month || check.getUTCDate() !== day) return null; // rejects e.g. Feb 30
+  return iso;
+}
+
 function extractDates(text, publishedAtIso) {
   if (!text) return [];
   const publishedDate = publishedAtIso ? new Date(publishedAtIso) : new Date();
@@ -253,20 +301,109 @@ function extractDates(text, publishedAtIso) {
   let m;
   DATE_RE.lastIndex = 0;
   while ((m = DATE_RE.exec(text))) {
-    const month = MONTHS[m[1].toLowerCase().replace(/\.$/, "")];
-    const day = parseInt(m[2], 10);
-    if (!month || !day || day < 1 || day > 31) continue;
-    let year = m[3] ? parseInt(m[3], 10) : publishedYear;
-    if (!m[3]) {
-      const candidate = new Date(Date.UTC(year, month - 1, day));
-      const publishedFloor = new Date(Date.UTC(publishedYear, publishedDate.getUTCMonth(), publishedDate.getUTCDate()));
-      const slackFloor = new Date(publishedFloor.getTime() - RECAP_TRAILING_SLACK_DAYS * 86400000);
-      if (candidate < slackFloor) year += 1;
-    }
-    const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const check = new Date(iso + "T00:00:00Z");
-    if (check.getUTCMonth() + 1 !== month || check.getUTCDate() !== day) continue; // rejects e.g. Feb 30
-    found.add(iso);
+    const iso = resolveDateMatch(m, publishedYear, publishedDate);
+    if (iso) found.add(iso);
+  }
+  return Array.from(found).sort();
+}
+
+// How far forward (characters) from the extracted title's first mention in
+// the body to keep searching for THIS event's own date -- long enough to
+// cover a real article's lead paragraph and its own deadline/detail
+// sentence, short enough to exclude an unrelated OTHER event's date
+// mentioned later in the same article (a real example: C&G's "Photos
+// sought..." article mentions the Tiny Art Show, a completely different,
+// already-running exhibit, well over a thousand characters after "Backyard
+// and Beyond" is first introduced). Chosen empirically against that real
+// article -- both Oct. 10 deadline mentions AND the real Nov. 9 event date
+// sit well inside this window; the unrelated Tiny Art Show date does not.
+const DATE_SEARCH_WINDOW_CHARS = 800;
+
+// Cue words/phrases immediately preceding a date that describe the event
+// itself actually HAPPENING -- vs. NON_EVENT_DATE_CUE_RE below, which
+// describes some OTHER date tied to the same event (most often a
+// submission/registration deadline) that must never be mistaken for when
+// the event itself occurs. Both lists are deliberately closed and narrow --
+// same "never guess" posture as every other extractor in this file.
+const EVENT_OCCURRENCE_CUE_RE = /\b(?:opens?|open(?:ing)?|starts?|starting|begins?|beginning|goes? live|kicks? off|runs? (?:from|through)|unfolds?|held|takes? place|scheduled for)\b/i;
+const NON_EVENT_DATE_CUE_RE = /\b(?:deadline|due by|due date|submissions? (?:close|closes|closing|due)|register(?:ation)? by|rsvp by|apply by|applications? (?:close|closes|closing|due))\b/i;
+
+// nearestCueIndexBefore(text, re, fromIdx) -> the START index of the
+// CLOSEST match of re that occurs strictly before fromIdx, scanning the
+// WHOLE preceding text -- not just the same sentence/clause. A real
+// example has the deadline cue and the event-occurrence cue in the SAME
+// sentence, separated only by a comma ("The exhibit goes live on Monday,
+// Nov. 9, ... but the deadline for submissions is Saturday, Oct. 10."), so
+// a clause- or sentence-boundary approach would either merge both dates
+// together or wrongly split mid-clause. Returns -1 when no match exists
+// before fromIdx.
+function nearestCueIndexBefore(text, re, fromIdx) {
+  const flags = re.flags.includes("g") ? re.flags : re.flags + "g";
+  const g = new RegExp(re.source, flags);
+  let best = -1;
+  let m;
+  while ((m = g.exec(text))) {
+    if (m.index >= fromIdx) break;
+    best = m.index;
+    if (g.lastIndex === m.index) g.lastIndex++; // guard against zero-width matches
+  }
+  return best;
+}
+
+// extractEventDates(bodyText, publishedAtIso, titlePhrase) -> string[] (ISO, sorted)
+//
+// 2026-09-25 ("RESOLVE EMBEDDED FUTURE EVENTS" -- Jody: "Fix the generic
+// extraction logic so articles whose primary framing is a submission call,
+// registration notice, announcement, preview, road closure, volunteer
+// call, or similar can still identify... a clearly described future event
+// embedded in the article body"): extractDates() alone just returns EVERY
+// date anywhere in the article, in order -- fine for an article that's
+// ABOUT the event, but not for one primarily framed as a call to action
+// (submit photos by X, register by Y) where the event's own date is just
+// one date among several, possibly including a completely unrelated OTHER
+// event's date. This narrows (never widens) extractDates()'s own result
+// using two independent, additive signals -- a match failing EITHER one is
+// dropped:
+//   1. Proximity: only a date within DATE_SEARCH_WINDOW_CHARS of the
+//      extracted title's own first mention in the body -- the same
+//      "textually tied to the event, not just present somewhere in the
+//      article" posture every other extractor here already uses.
+//   2. Cue words: a date immediately preceded by a NON_EVENT_DATE_CUE_RE
+//      cue (a submission/registration deadline) CLOSER than any
+//      EVENT_OCCURRENCE_CUE_RE cue is excluded -- it describes a different
+//      date than the event's own. A date with no cue of either kind
+//      nearby, or whose nearest cue is an EVENT_OCCURRENCE_CUE_RE one, is
+//      kept (same "default to including, only exclude on a confident
+//      signal" posture as the rest of this file -- most real event dates
+//      have no cue word at all, e.g. a plain "the festival returns Sept.
+//      12").
+// Falls back to extractDates()'s own full, unfiltered result whenever
+// there's no title, or the title never actually appears in the body text
+// (both cases where a window can't be anchored at all) -- this never makes
+// extraction MORE permissive than extractDates() already is, only ever
+// narrower. Never infers a missing end date, time, or price -- purely a
+// disambiguation of dates the article itself already, textually, states.
+function extractEventDates(bodyText, publishedAtIso, titlePhrase) {
+  const text = bodyText || "";
+  const allDates = extractDates(text, publishedAtIso);
+  if (!titlePhrase) return allDates;
+  const titleIdx = text.indexOf(titlePhrase);
+  if (titleIdx === -1) return allDates;
+
+  const publishedDate = publishedAtIso ? new Date(publishedAtIso) : new Date();
+  const publishedYear = publishedDate.getUTCFullYear();
+  const windowEnd = titleIdx + titlePhrase.length + DATE_SEARCH_WINDOW_CHARS;
+
+  const found = new Set();
+  let m;
+  DATE_RE.lastIndex = 0;
+  while ((m = DATE_RE.exec(text))) {
+    if (m.index >= windowEnd) continue;
+    const eventCueIdx = nearestCueIndexBefore(text, EVENT_OCCURRENCE_CUE_RE, m.index);
+    const nonEventCueIdx = nearestCueIndexBefore(text, NON_EVENT_DATE_CUE_RE, m.index);
+    if (nonEventCueIdx > eventCueIdx) continue; // a closer non-event (deadline-type) cue -> a different date, exclude
+    const iso = resolveDateMatch(m, publishedYear, publishedDate);
+    if (iso) found.add(iso);
   }
   return Array.from(found).sort();
 }
@@ -282,6 +419,32 @@ const TITLE_PHRASE_RE = new RegExp(
 );
 // A quoted phrase in the headline itself — e.g. 'Heroes of the Revolution'.
 const QUOTED_TITLE_RE = /["'‘’“”]([A-Z][^"'‘’“”]{3,70})["'‘’“”]/;
+
+// 2026-09-25 ("RESOLVE EMBEDDED FUTURE EVENTS" -- Jody, overriding an
+// earlier "not a fit" call on the real C&G Newspapers article "Photos
+// sought for exhibit celebrating America's 250th birthday": "The article
+// explicitly contains a future public event, 'Backyard and Beyond'... Fix
+// the generic extraction logic so articles whose primary framing is a
+// submission call, registration notice, announcement, preview, road
+// closure, volunteer call, or similar can still identify... a clearly
+// described future event embedded in the article body"): a formal event
+// name sometimes appears nowhere in the headline at all -- not even as a
+// quoted headline phrase -- only inside the body, introduced by an
+// explicit naming verb ("titled/called/named/known as <quoted phrase>").
+// Deliberately anchored to one of those four verbs, never a blind
+// first-quote-in-body match -- a real article body routinely quotes
+// unrelated speech (an organizer's own words, a spokesperson's quote), and
+// a blind match would just as easily grab one of those instead of the
+// event's real name.
+const QUOTED_BODY_TITLE_RE = /\b(?:titled|called|named|known as)\s+["'‘’“”]([A-Z][^"'‘’“”]{2,70})["'‘’“”]/;
+
+// Strips trailing sentence/clause punctuation a quoted-title capture can
+// pick up when the article's own punctuation sits INSIDE the closing quote
+// (AP style — e.g. "titled 'Backyard and Beyond.'" captures a trailing
+// period that's punctuation, not part of the event's real name).
+function stripTrailingPunctuation(str) {
+  return (str || "").replace(/[.,;:!?]+$/, "").trim();
+}
 
 // 2026-09-25 ("FIX PAST-EVENT RECAP CLUTTER" — real example: Grosse Pointe
 // News' "Get amped up with Mac Watts at outdoor concert"): a single-
@@ -306,6 +469,8 @@ function extractTitle(headline, bodyText) {
   if (phraseMatch) return phraseMatch[1].replace(/\s+/g, " ").trim();
   const quoted = (headline || "").match(QUOTED_TITLE_RE);
   if (quoted) return quoted[1].trim();
+  const bodyQuoted = (bodyText || "").match(QUOTED_BODY_TITLE_RE);
+  if (bodyQuoted) return stripTrailingPunctuation(bodyQuoted[1].trim());
   const performer = (bodyText || "").match(PERFORMER_TITLE_RE);
   if (performer) return performer[1].replace(/\s+/g, " ").trim();
   return null;
@@ -522,7 +687,14 @@ function extractEventIdentity(headline, bodyText, publishedAtIso) {
   const venue = extractVenue(bodyText || "");
   const streetAddress = extractStreetAddress(bodyText || "");
   const category = extractCategory(headline, bodyText);
-  const dates = extractDates(bodyText || "", publishedAtIso);
+  // 2026-09-25 ("RESOLVE EMBEDDED FUTURE EVENTS"): extractEventDates(), not
+  // the raw extractDates(), so an article framed primarily as a submission
+  // call/registration notice/announcement can still resolve to its real
+  // future event date without being confused by a nearby deadline mention
+  // or an unrelated other event's own date -- see extractEventDates's own
+  // header for the full rule. Narrows extractDates()'s result only; never
+  // adds a date extractDates() itself wouldn't have found.
+  const dates = extractEventDates(bodyText || "", publishedAtIso, title);
   const description = title ? extractDescriptionSentence(bodyText || "", title) : null;
   // Prefer the venue's own stated city, then the city anchored right next
   // to a stated street address (both confident, textually-tied-to-the-
@@ -957,6 +1129,8 @@ module.exports = {
   isDistributedEvent,
   extractCategory,
   extractDates,
+  extractEventDates,
+  trimTrailingBoilerplate,
   extractDescriptionSentence,
   isSufficientForCreate,
   mergeIdentities,
