@@ -227,6 +227,20 @@
 
     <div class="tab-panel" data-tab-panel="health">
       <div id="healthBanner" class="health-banner"></div>
+
+      <!-- Resident Advisor sync (2026-09-25) -- observability only, per the
+           Product Owner's explicit "Admin V1 is observability, not a fake
+           sync button" decision. There is deliberately no button here: a
+           plain HTTP request from this page cannot itself trigger a live
+           ra.co re-scrape (RA's anti-bot defenses require a real browser
+           session, same as the device's own scheduled task) -- showing a
+           "Sync Now" control that couldn't actually do that would be worse
+           than showing nothing. See scripts/ra-sync.js and api/admin-ra.js. -->
+      <section class="block">
+        <h2>Resident Advisor sync</h2>
+        <div class="sub">The device's browser-driven scheduled task still walks ra.co's listing and fetches each event's detail page -- RA's anti-bot defenses require a real browser, so that part is unchanged. Everything after that (deciding what's genuinely new, deriving fields, a conservative duplicate check, and the actual database write) now happens server-side here, tracked as one sync session per run.</div>
+        <div id="raSyncBanner" class="health-banner"></div>
+      </section>
     </div>
 
     <div class="tab-panel" data-tab-panel="editorial">
@@ -331,7 +345,7 @@ async function loadAll() {
   if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
   setRefreshStatus('refreshing');
   try {
-    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadVenues(), loadIncomplete()]);
+    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete()]);
     const incompleteOk = results[results.length - 1] !== false;
     setRefreshStatus(incompleteOk ? 'ok' : 'error');
   } catch (err) {
@@ -974,6 +988,82 @@ function renderHealthcheck(data) {
       </ul>
     `;
   }
+  banner.style.display = 'block';
+}
+
+// Resident Advisor sync status (2026-09-25) -- read-only, mirrors
+// loadHealthcheck()/renderHealthcheck()'s own "fail silently, never break
+// the rest of the page" convention. See api/admin-ra.js for the exact
+// response shape; this never writes anything and never calls any
+// RA-triggering endpoint -- there isn't one a button here could call.
+async function loadRaSync() {
+  const banner = document.getElementById('raSyncBanner');
+  if (!banner) return;
+  try {
+    const resp = await fetch('/api/admin-ra', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) { banner.style.display = 'none'; return; }
+    renderRaSync(data);
+  } catch (err) {
+    banner.style.display = 'none';
+  }
+}
+
+function formatRaCounts(run) {
+  const parts = [];
+  if (run.candidateCount !== null) parts.push(`${run.candidateCount} candidate${run.candidateCount === 1 ? '' : 's'}`);
+  if (run.knownCount !== null) parts.push(`${run.knownCount} already known`);
+  if (run.allNewCount !== null) parts.push(`${run.allNewCount} new`);
+  if (run.imported !== null) parts.push(`${run.imported} imported`);
+  if (run.duplicates !== null) parts.push(`${run.duplicates} duplicate${run.duplicates === 1 ? '' : 's'} skipped`);
+  if (run.skipped !== null) parts.push(`${run.skipped} cancelled`);
+  if (run.errors !== null && run.errors > 0) parts.push(`${run.errors} error${run.errors === 1 ? '' : 's'}`);
+  return parts.join(', ');
+}
+
+function renderRaSync(data) {
+  const banner = document.getElementById('raSyncBanner');
+  const { latestRun, lastSuccessfulRun } = data;
+
+  if (!latestRun) {
+    banner.className = 'health-banner';
+    banner.innerHTML = 'No Resident Advisor sync has run yet.';
+    banner.style.display = 'block';
+    return;
+  }
+
+  const startedAt = new Date(latestRun.startedAt).toLocaleString();
+
+  if (latestRun.incomplete) {
+    banner.className = 'health-banner fail';
+    const abandonedNote = latestRun.probablyAbandoned
+      ? ` -- no completion recorded in over ${Math.floor(latestRun.staleMinutes / 60)}h, likely abandoned (RA re-blocked mid-run, or the browser session ended early)`
+      : ' -- still in progress, or ended before reporting completion';
+    banner.innerHTML = `
+      ⧗ <b>Resident Advisor sync incomplete</b> <span class="checked-at">— started ${escapeHtml(startedAt)}${escapeHtml(abandonedNote)}</span>
+      <ul class="fail-list"><li>${escapeHtml(formatRaCounts(latestRun) || 'Diff not recorded')}</li></ul>
+    `;
+  } else if (latestRun.outcome === 'success') {
+    banner.className = 'health-banner ok';
+    banner.innerHTML = `✓ <b>Resident Advisor sync succeeded</b> <span class="checked-at">— ${escapeHtml(startedAt)} — ${escapeHtml(formatRaCounts(latestRun))}</span>`;
+  } else {
+    banner.className = 'health-banner fail';
+    banner.innerHTML = `
+      ✗ <b>Resident Advisor sync ${escapeHtml(latestRun.outcome || 'failed')}</b> <span class="checked-at">— ${escapeHtml(startedAt)} — ${escapeHtml(formatRaCounts(latestRun))}</span>
+    `;
+  }
+
+  // Surface the last time it genuinely worked whenever the latest run
+  // itself wasn't a clean success -- an incomplete or failed latest run
+  // should never hide how long it's actually been since RA sync last
+  // really succeeded.
+  if (lastSuccessfulRun && (!latestRun || latestRun.outcome !== 'success' || latestRun.incomplete)) {
+    const lastOk = new Date(lastSuccessfulRun.startedAt).toLocaleString();
+    banner.innerHTML += `<div class="checked-at" style="margin-top:6px;">Last successful sync: ${escapeHtml(lastOk)} — ${escapeHtml(formatRaCounts(lastSuccessfulRun))}</div>`;
+  } else if (!lastSuccessfulRun) {
+    banner.innerHTML += `<div class="checked-at" style="margin-top:6px;">No Resident Advisor sync has ever completed successfully yet.</div>`;
+  }
+
   banner.style.display = 'block';
 }
 

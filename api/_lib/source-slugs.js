@@ -63,6 +63,13 @@ const SOURCE_SLUGS = Object.freeze([
   { slug: "playgrounddetroit", file: "cron-playgrounddetroit.js", label: "PLAYGROUND DETROIT" },
   { slug: "ticketmaster", file: "cron-ticketmaster.js", label: "Ticketmaster" },
   { slug: "feeds", file: "cron-feeds.js", label: "Approved/registered feeds (aggregate — one row per invocation across every approved feed_sources row)" },
+  // Added 2026-09-25 -- RA architecture simplification. cron-ra.js is a
+  // two-action endpoint (start/complete a sync session -- see
+  // scripts/ra-sync.js), not a single-shot cron like every other entry
+  // above, but it still reports through the exact same source_runs
+  // mechanism: one row per session, this slug, session-specific extra
+  // state in source_runs.session_data (migration_039).
+  { slug: "resident-advisor", file: "cron-ra.js", label: "Resident Advisor" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human
