@@ -1,0 +1,51 @@
+name: RA Sync Bridge
+
+# Relays RA (Resident Advisor) acquisition payloads that Claude's browser
+# session commits under ra-sync/inbox/ to the existing server-side RA sync
+# API (api/cron-ra.js / scripts/ra-sync.js), and hands the response back
+# via a pushed git tag. See ra-sync/README.md for the full design and why
+# a tag -- never a commit -- carries the response.
+#
+# Transport only (2026-09-26 addendum to the 2026-09-25 RA sync
+# architecture): this workflow does not decide what counts as a new RA
+# event, does not derive event fields, and does not touch source_runs
+# directly -- all of that stays exactly where it already was, in
+# scripts/ra-sync.js, called through the same CRON_SECRET-gated
+# /api/cron-ra endpoint the device used to call directly. This workflow
+# exists only because the device's own shell cannot reach 313.events (org
+# egress policy blocks it end to end), while a GitHub Actions runner can.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ra-sync/inbox/start-*.json'
+      - 'ra-sync/inbox/complete-*.json'
+
+permissions:
+  contents: write   # only to push the response tag(s) -- no other write
+
+# One relay at a time, and never cancel one mid-flight -- an in-progress
+# run is mid-API-call against a live sync session; cancelling it partway
+# would abandon that call with no response tag ever pushed.
+concurrency:
+  group: ra-sync-bridge
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Relay new RA sync payload(s) to /api/cron-ra
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          RA_SYNC_API_URL: https://313.events/api/cron-ra
+        run: node .github/scripts/ra-sync-bridge.js
