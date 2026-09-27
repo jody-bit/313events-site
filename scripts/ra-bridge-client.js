@@ -56,6 +56,29 @@ function currentBranch() {
   return run("git", ["rev-parse", "--abbrev-ref", "HEAD"]).trim();
 }
 
+// pushBranch(branch) — pushes using GH_PUSH_TOKEN when it's set (the
+// unattended/daily path: device_bash has read-only GitHub access, no
+// ambient push credential, confirmed 2026-09-27), falling back to
+// whatever ambient git auth is already configured (e.g. a human running
+// this by hand in their own Terminal) when it isn't.
+//
+// The token's literal value is never assembled into any argv this
+// process constructs, and so never appears in argv, in a thrown error's
+// message, or in a process listing. It's referenced only by name
+// ($GH_PUSH_TOKEN) inside a credential-helper shell snippet; git spawns
+// that snippet as its own subprocess at push time and THAT subprocess
+// (inheriting this one's environment) is what expands the variable --
+// exactly the same "shell substitutes it, this script never sees it"
+// pattern CRON_SECRET already uses for the /api/cron-ra calls.
+function pushBranch(branch) {
+  if (process.env.GH_PUSH_TOKEN) {
+    const helper = '!f() { echo "username=x-access-token"; echo "password=$GH_PUSH_TOKEN"; }; f';
+    run("git", ["-c", `credential.helper=${helper}`, "push", "origin", branch]);
+    return;
+  }
+  run("git", ["push", "origin", branch]);
+}
+
 function cmdSubmit(action, jsonFilePath) {
   if (action !== "start" && action !== "complete") {
     throw new Error(`submit: action must be "start" or "complete", got ${JSON.stringify(action)}`);
@@ -81,7 +104,7 @@ function cmdSubmit(action, jsonFilePath) {
 
   run("git", ["add", outRel]);
   run("git", ["commit", "-m", `ra-sync: submit ${action} payload ${runToken}`]);
-  run("git", ["push", "origin", currentBranch()]);
+  pushBranch(currentBranch());
 
   console.error(`Submitted ${outRel} and pushed (runToken ${runToken}).`);
   process.stdout.write(runToken + "\n");
