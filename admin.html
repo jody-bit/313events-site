@@ -402,6 +402,12 @@ function setTabBadge(key, count) {
 // broader candidate set (any upcoming pending_review/approved event) and
 // leaves the actual judgment call to this function, on purpose, so the
 // definition can change without touching the endpoint.
+// No-advance-ticket ticket_status values (migration_041) that fully
+// explain a null ticket_url/event_url -- none of these mean "we don't
+// know," they mean "we DO know, and no advance ticket exists by design."
+// See api/cron-halo.js for the one current writer of these values.
+const NO_ADVANCE_TICKET_STATUSES = new Set(['door', 'rsvp_no_advance_sale', 'free', 'registration_required']);
+
 function getMissingFields(e) {
   const missing = [];
   if (!e.description || !e.description.trim()) missing.push('description');
@@ -420,13 +426,36 @@ function getMissingFields(e) {
   // genuinely-unknown-venue cases (Resident Advisor's "secret loft"/"Venue
   // TBA" rows) — those stay flagged, because the linked venue itself has no
   // address on file either.
+  // 2026-09-28: ...or the event itself has no fixed venue BY DESIGN
+  // (migration_040_no_fixed_venue.sql) -- a bus tour with a departure
+  // point, not a conventional venue, e.g. VisitDetroit's Christmas Cookie
+  // Coach Tour / The Original Detroit Christmas Bakery Bus Tour. Never
+  // guessed -- e.no_fixed_venue is only ever true when a source's own
+  // structured category data or an unambiguous title keyword positively
+  // identifies the event as such (api/_lib/mobile-event.js).
   const hasRawAddress = !!(e.venue_address_raw && e.venue_address_raw.trim()) || !!(e.venue_city_raw && e.venue_city_raw.trim());
   const hasLinkedVenueAddress = !!(e.venues && e.venues.address && e.venues.address.trim());
-  if (!hasRawAddress && !hasLinkedVenueAddress) {
+  if (!e.no_fixed_venue && !hasRawAddress && !hasLinkedVenueAddress) {
     missing.push('venue address/city');
   }
-  if (!(e.ticket_url && e.ticket_url.trim()) && !(e.event_url && e.event_url.trim())) {
+  // 2026-09-28: ...or ticket_status already tells us WHY there's no
+  // advance ticket_url/event_url (pay-at-door, free, registration-only, or
+  // a source's own booking UI showing no advance-purchase mechanism at
+  // all) -- a null link is then the CORRECT state, not a gap. See
+  // migration_041_ticket_status_generalize.sql.
+  const ticketStatusExplainsNoLink = !!(e.ticket_status && NO_ADVANCE_TICKET_STATUSES.has(e.ticket_status));
+  if (!ticketStatusExplainsNoLink && !(e.ticket_url && e.ticket_url.trim()) && !(e.event_url && e.event_url.trim())) {
     missing.push('ticket/event link');
+  }
+  // 2026-09-28: a POPULATED ticket_url/event_url that's confirmed dead
+  // (link_check_status='dead' -- see api/_lib/link-health.js and
+  // scripts/visitdetroit-dead-link-repair.js) is a DIFFERENT, always-
+  // actionable gap from the one above -- a non-null field was never
+  // evidence of health, only of non-blankness. Deliberately independent of
+  // the 'ticket/event link' check above (a dead link is never also
+  // reported as "missing" -- it IS present, just broken).
+  if (e.link_check_status === 'dead') {
+    missing.push('dead event/ticket link');
   }
   // 2026-09-05: Jody flagged the Hamtramck Labor Day Festival showing up
   // with no start time at all and asked for start time to be treated as
@@ -503,6 +532,15 @@ function explainRemainingGap(field, e) {
     return 'NO_CANONICAL_VENUE_DATA'; // a venue name/address exists but has no matching row in the venues table yet
   }
   if (field === 'ticket/event link') return 'EXTERNAL_LOOKUP_UNAVAILABLE'; // no organizer listing, no venue digital home on file, and this project has no web-search capability to go further
+  if (field === 'dead event/ticket link') {
+    // Which field is actually dead is read off which one is STILL
+    // populated -- a confirmed-dead link is never cleared, only ever
+    // replaced (on a successful repair) or left as-is with
+    // link_check_status='dead' (see scripts/visitdetroit-dead-link-repair.js).
+    if (e.ticket_url && e.ticket_url.trim()) return 'DEAD_TICKET_LINK';
+    if (e.event_url && e.event_url.trim()) return 'DEAD_EVENT_LINK';
+    return 'DEAD_EVENT_LINK';
+  }
   return null;
 }
 
@@ -559,12 +597,13 @@ const MISSING_FIELD_LABELS = {
   'description': 'DESCRIPTION',
   'venue address/city': 'VENUE ADDRESS/CITY',
   'ticket/event link': 'TICKET/EVENT LINK',
+  'dead event/ticket link': 'DEAD EVENT/TICKET LINK',
   'start time': 'START TIME',
 };
 // Matches the exact order getMissingFields() itself pushes into `missing`
 // -- the combination label below reads in the same order as each card's
 // own "Missing:" badges, rather than being independently (re-)sorted.
-const MISSING_FIELD_ORDER = ['description', 'venue address/city', 'ticket/event link', 'start time'];
+const MISSING_FIELD_ORDER = ['description', 'venue address/city', 'ticket/event link', 'dead event/ticket link', 'start time'];
 
 function computeFollowupBreakdown(flagged) {
   const groups = new Map(); // "source||FIELD+FIELD" -> { source, fields, count }

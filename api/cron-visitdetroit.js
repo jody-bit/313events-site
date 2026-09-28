@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 
 // Vercel Cron job — pulls Detroit-area events straight from visitdetroit.com's
 // own Algolia search index, discovered 2026-09-14 while answering Jody's
@@ -121,19 +122,48 @@ function mapCategory(cats) {
   return null;
 }
 
-// Identical Unix-seconds -> America/Detroit conversion approach as
-// cron-feeds.js/cron-playgrounddetroit.js's own UTC -> America/Detroit
-// helpers, just starting from an epoch-seconds number instead of an ICS
-// "Z" timestamp.
+// FIXED 2026-09-28 (Needs Follow-up self-healing pass 2) -- this used to
+// apply a real UTC -> America/Detroit conversion via Intl.DateTimeFormat,
+// which is the textbook-correct approach FOR A GENUINE UTC EPOCH. The bug:
+// VisitDetroit's own backend does not apply a timezone offset when it
+// serializes startDate/endDate -- it takes the event's intended Detroit
+// LOCAL wall-clock time and encodes it directly as Unix epoch seconds AS IF
+// that local time were already UTC (a naive-datetime-labeled-as-UTC bug on
+// THEIR side, confirmed 2026-09-28 by cross-checking two live events'
+// h.startDate against visitdetroit.com's own published times: Christmas
+// Cookie Coach Tour's real 1:30 PM was epoch-encoded as 13:30 "UTC", and
+// The Original Detroit Christmas Bakery Bus Tour's real 8:30 AM was
+// epoch-encoded as 08:30 "UTC" -- both exactly reproduce the wrong times
+// Admin was showing, 8:30 AM and 3:30 AM respectively, once you apply a
+// REAL UTC->America/Detroit conversion on top of an already-local value).
+// Applying a real conversion on top of that double-subtracts the Detroit
+// offset -- wrong by exactly that offset for the event's date (5h in EST
+// months, 4h in EDT months), which is why the bug's exact magnitude wasn't
+// a fixed "always 5 hours" -- it tracks DST like the (wrongly-applied)
+// conversion always did.
+//
+// The fix: read the epoch's own UTC calendar/clock digits directly, with
+// NO further timezone conversion -- those digits already ARE the intended
+// Detroit local time, because that's how VisitDetroit's own system
+// produced them. Same underlying principle as scripts/ra-sync.js's
+// parseIsoLocal(): trust the source's own local-time encoding directly
+// rather than re-deriving it through a real timezone conversion that
+// assumes well-formed UTC input.
+//
+// This is believed to affect every non-all-day VisitDetroit event with a
+// real time-of-day, not just these two -- the mechanism is a fixed
+// encoding convention on VisitDetroit's side, not a per-event data-entry
+// mistake, so there's no reason it would apply to some events and not
+// others. Confirmed by directly reading two independent events' raw
+// Algolia data against their live published times, not guessed.
 function detroitParts(unixSeconds) {
   if (!unixSeconds && unixSeconds !== 0) return null;
-  const fmt = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Detroit", year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", hour12: false,
-  });
-  const parts = Object.fromEntries(fmt.formatToParts(new Date(unixSeconds * 1000)).map((p) => [p.type, p.value]));
-  const hour24 = parts.hour === "24" ? 0 : parseInt(parts.hour, 10);
-  return { date: `${parts.year}-${parts.month}-${parts.day}`, hour: hour24, minute: parseInt(parts.minute, 10) };
+  const d = new Date(unixSeconds * 1000);
+  return {
+    date: `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
+    hour: d.getUTCHours(),
+    minute: d.getUTCMinutes(),
+  };
 }
 
 function formatTime(hour, minute) {
@@ -165,7 +195,56 @@ function dedupeKey(title, startDate) {
   return `${norm}|${startDate}`;
 }
 
-module.exports = async (req, res) => {
+// Derives { startDate, endDate, timeDisplay } from a raw VisitDetroit
+// Algolia hit's startDate/endDate/isAllDay fields, using the corrected
+// UTC-digit-read detroitParts() (see its own comment: VisitDetroit's
+// backend naive-serializes local Detroit time as if it were UTC, so
+// reading the UTC digits directly -- not converting through a timezone --
+// is what actually matches the times VisitDetroit itself publishes).
+// Returns null when startDate is missing/unparseable, mirroring the live
+// cron's excludedByDate skip.
+//
+// Shared by the live cron's row-mapper below AND by
+// scripts/visitdetroit-time-backfill.js (the one-time repair for existing
+// rows queued after the 2026-09-28 time-parsing fix) so the two can never
+// drift out of sync -- one derivation, two call sites.
+function deriveDateTimeFields(h) {
+  const startParts = detroitParts(h.startDate);
+  if (!startParts) return null;
+  const endParts = h.endDate ? detroitParts(h.endDate) : null;
+  const endDate = endParts && endParts.date !== startParts.date ? endParts.date : null;
+
+  // 2026-09-16: was `!h.isAllDay && !h.isMultiDay` -- that suppressed
+  // time_display for EVERY multi-day listing, not just genuinely all-day
+  // ones. isMultiDay just means the listing spans more than one calendar
+  // date (a festival run, a multi-performance theatre engagement); it says
+  // nothing about whether that listing also has a real start time-of-day,
+  // and startParts.hour/minute come straight from h.startDate regardless
+  // of isMultiDay. isAllDay is the actual "no meaningful time" signal.
+  // Traced this after several admin-follow-up items that are genuinely
+  // multi-day (Detroit Black Film Festival, Metro Detroit Women's Expo,
+  // Banana Ball, Detroit Legacy Weekend) kept showing "Missing: START
+  // TIME" in the admin panel even after Jody manually researched and
+  // confirmed each one DOES have a real, specific, published start time
+  // each day on the organizer's own site -- evidence the source data has
+  // a real time, this cron was just throwing it away. Still suppressed
+  // for true isAllDay listings, same as before.
+  let timeDisplay = null;
+  if (!h.isAllDay) {
+    timeDisplay = formatTime(startParts.hour, startParts.minute);
+    if (
+      endParts &&
+      endParts.date === startParts.date &&
+      (endParts.hour !== startParts.hour || endParts.minute !== startParts.minute)
+    ) {
+      timeDisplay += ` \u2013 ${formatTime(endParts.hour, endParts.minute)}`;
+    }
+  }
+
+  return { startDate: startParts.date, endDate, timeDisplay };
+}
+
+const visitDetroitHandler = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -212,38 +291,8 @@ module.exports = async (req, res) => {
       const cat = mapCategory(h.eventCategories);
       if (!cat) { excludedByCategory++; return null; }
 
-      const startParts = detroitParts(h.startDate);
-      if (!startParts) { excludedByDate++; return null; }
-      const endParts = h.endDate ? detroitParts(h.endDate) : null;
-      const endDate = endParts && endParts.date !== startParts.date ? endParts.date : null;
-
-      // 2026-09-16: was `!h.isAllDay && !h.isMultiDay` — that suppressed
-      // time_display for EVERY multi-day listing, not just genuinely
-      // all-day ones. isMultiDay just means the listing spans more than one
-      // calendar date (a festival run, a multi-performance theatre
-      // engagement); it says nothing about whether that listing also has a
-      // real start time-of-day, and startParts.hour/minute come straight
-      // from h.startDate regardless of isMultiDay. isAllDay is the actual
-      // "no meaningful time" signal. Traced this after several
-      // admin-follow-up items that are genuinely multi-day (Detroit Black
-      // Film Festival, Metro Detroit Women's Expo, Banana Ball, Detroit
-      // Legacy Weekend) kept showing "Missing: START TIME" in the admin
-      // panel even after Jody manually researched and confirmed each one
-      // DOES have a real, specific, published start time each day on the
-      // organizer's own site — evidence the source data has a real time,
-      // this cron was just throwing it away. Still suppressed for true
-      // isAllDay listings, same as before.
-      let timeDisplay = null;
-      if (!h.isAllDay) {
-        timeDisplay = formatTime(startParts.hour, startParts.minute);
-        if (
-          endParts &&
-          endParts.date === startParts.date &&
-          (endParts.hour !== startParts.hour || endParts.minute !== startParts.minute)
-        ) {
-          timeDisplay += ` – ${formatTime(endParts.hour, endParts.minute)}`;
-        }
-      }
+      const dt = deriveDateTimeFields(h);
+      if (!dt) { excludedByDate++; return null; }
 
       const { name: venueName, street, city } = parseAddress(h.address);
 
@@ -256,9 +305,18 @@ module.exports = async (req, res) => {
         venue_address_raw: street,
         venue_city_raw: city && city.toLowerCase() !== "detroit" ? city : null,
         venue_id: resolveVenueId(venueMap, venueName),
-        start_date: startParts.date,
-        end_date: endDate,
-        time_display: timeDisplay,
+        // See api/_lib/mobile-event.js -- true only when VisitDetroit's own
+        // eventCategories (e.g. "Tours") or an unambiguous title keyword
+        // positively identifies this as a no-fixed-venue mobile event
+        // (a bus tour, walking tour, etc.), never guessed. Lets Needs
+        // Follow-up stop requiring venue_address_raw/venue_city_raw for
+        // listings that are genuinely venue-less by nature, e.g. Christmas
+        // Cookie Coach Tour / The Original Detroit Christmas Bakery Bus
+        // Tour, which supply no address field in Algolia at all.
+        no_fixed_venue: isLikelyNoFixedVenue({ title: h.title, sourceCategories: h.eventCategories }),
+        start_date: dt.startDate,
+        end_date: dt.endDate,
+        time_display: dt.timeDisplay,
         is_recurring: !!h.readableRepeatRule,
         // Persisted so the admin follow-up queue can stop asking for a
         // start time on genuinely all-day listings instead of treating
@@ -272,7 +330,7 @@ module.exports = async (req, res) => {
         note: h.readableRepeatRule
           ? `VisitDetroit lists this as recurring ("${h.readableRepeatRule}") — only this dated occurrence is captured here.`
           : null,
-        _dedupeKey: dedupeKey(h.title, startParts.date),
+        _dedupeKey: dedupeKey(h.title, dt.startDate),
       };
     })
     .filter(Boolean);
@@ -381,3 +439,9 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+module.exports = visitDetroitHandler;
+module.exports.detroitParts = detroitParts; // exposed for test/cron-visitdetroit-time-parsing.test.js only
+module.exports.parseAddress = parseAddress;
+module.exports.mapCategory = mapCategory;
+module.exports.deriveDateTimeFields = deriveDateTimeFields; // exposed for scripts/visitdetroit-time-backfill.js and its test only

@@ -207,7 +207,7 @@ module.exports = async (req, res) => {
         // comment (2026-09-16) for why venue_address_raw/venue_city_raw
         // alone was flagging well-matched events (e.g. Paris Bar) as
         // missing an address they don't actually lack.
-        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,is_all_day,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note&order=start_date.asc`;
+        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,is_all_day,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note,no_fixed_venue,ticket_status,link_check_status&order=start_date.asc`;
       } else if (search) {
         // Live-event takedown search: only ever searches already-approved
         // (publicly visible) events — never pending_review or already-hidden
@@ -488,18 +488,58 @@ let genericCounts = null;
           genericEnrichmentError = genericErr.message;
         }
 
+        // Step 6 (2026-09-28, Needs Follow-up self-healing pass 2):
+        // VisitDetroit dead-event-link self-healing
+        // (scripts/visitdetroit-dead-link-repair.js's
+        // repairVisitDetroitDeadLinks()) -- live-checks every current
+        // VisitDetroit event's stored ticket_url, repairs it via the
+        // known /<slug>/ -> /events/<slug>/ URL-shape migration when a
+        // 404/410 is confirmed AND the replacement page's own text
+        // confirms the same event title (api/_lib/link-health.js +
+        // api/_lib/visitdetroit-link-recovery.js), and marks
+        // link_check_status='dead' (a new, actionable Needs Follow-up
+        // reason -- see admin.html's classifyMissingFields()) when it
+        // can't. A timeout/403/429/5xx check is never treated as evidence
+        // of anything and never writes. Same failure-isolation pattern as
+        // Steps 2-5.
+        //
+        // SCOPE NOTE (per Jody, 2026-09-28): this button step is for
+        // ONGOING drift only -- it re-checks whatever is currently in the
+        // database each time it runs, so it's naturally idempotent and
+        // safe to leave wired in here. It is deliberately NOT how the
+        // initial, systemic 2026-09-28 VisitDetroit cleanup (repairing
+        // every existing future row's time-parsing AND link-migration
+        // fallout in one historical pass) gets done -- that one-time
+        // repair is scripts/visitdetroit-initial-backfill.js, run once by
+        // hand, separately from this button, so the first historical
+        // cleanup is a deliberate, reviewed action rather than a side
+        // effect of clicking Auto-Repair for something unrelated.
+        let visitDetroitLinkCounts = null;
+        let visitDetroitLinkError = null;
+        try {
+          const { repairVisitDetroitDeadLinks } = require("../scripts/visitdetroit-dead-link-repair");
+          visitDetroitLinkCounts = await repairVisitDetroitDeadLinks({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (linkErr) {
+          // Same isolation as Steps 2-5's own failure handling -- never
+          // lets a dead-link-repair failure erase Steps 1-5's real,
+          // already-persisted results.
+          visitDetroitLinkError = linkErr.message;
+        }
+
         const venueWrittenIds = venueCounts.writtenIds || [];
         const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
         const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
         const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
         const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds]);
+        const visitDetroitLinkWrittenIds = (visitDetroitLinkCounts && visitDetroitLinkCounts.writtenIds) || [];
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds]);
         const combinedFieldsWritten =
           venueCounts.fieldsWritten +
           ((descriptionCounts && descriptionCounts.written) || 0) +
           ((dossinCounts && dossinCounts.written) || 0) +
           ((redfordCounts && redfordCounts.fieldsWritten) || 0) +
-          ((genericCounts && genericCounts.fieldsWritten) || 0);
+          ((genericCounts && genericCounts.fieldsWritten) || 0) +
+          ((visitDetroitLinkCounts && visitDetroitLinkCounts.fieldsWritten) || 0);
 
         res.status(200).json({
           ok: true,
@@ -515,6 +555,8 @@ let genericCounts = null;
           redfordMetadataError,
           genericEnrichment: genericCounts,
           genericEnrichmentError,
+          visitDetroitDeadLinks: visitDetroitLinkCounts,
+          visitDetroitLinkError,
         });
       } catch (err) {
         res.status(500).json({ error: err.message });

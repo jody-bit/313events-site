@@ -79,8 +79,20 @@ function decodeEntities(str) {
     .replace(/&nbsp;/g, " ");
 }
 
+// ACTION_LINK_RE matches an anchor whose visible text is one of HALO's own
+// known event-action buttons (Buy Tickets / Get Tickets / RSVP / Details /
+// Learn More). Captured BEFORE the generic tag-strip below, as a synthetic
+// "__ACTION_LINK__label|href" line, so the href survives into the line-scan
+// instead of being discarded along with every other tag the same way it
+// always was before 2026-09-28. Everything else strips exactly as before;
+// this only intercepts anchors whose own visible text already matched
+// NOISE_LINE's action-button vocabulary, so no unrelated link (social
+// icons, nav, footer) is ever captured.
+const ACTION_LINK_RE = /<a\b[^>]*\bhref="([^"]*)"[^>]*>\s*(buy tickets|get tickets|rsvp|details|learn more)\s*<\/a>/gi;
+
 function htmlToLines(html) {
-  const text = decodeEntities(html
+  const withActionLinkTokens = html.replace(ACTION_LINK_RE, (_, href, label) => `\n__ACTION_LINK__${label.trim()}|${href}\n`);
+  const text = decodeEntities(withActionLinkTokens
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<br\s*\/?>/gi, "\n")
@@ -90,6 +102,16 @@ function htmlToLines(html) {
     .split("\n")
     .map((l) => l.replace(/\s+/g, " ").trim())
     .filter(Boolean);
+}
+
+// "__ACTION_LINK__RSVP|https://www.thehalodetroit.com/events/hot-ash-..."
+const ACTION_LINK_LINE = /^__ACTION_LINK__(buy tickets|get tickets|rsvp|details|learn more)\|(.+)$/i;
+
+function resolveHaloUrl(href) {
+  if (!href) return null;
+  if (/^https?:\/\//i.test(href)) return href;
+  if (href.startsWith("/")) return `https://www.thehalodetroit.com${href}`;
+  return null; // relative-without-leading-slash or unrecognized shape -- don't guess a base
 }
 
 // "Sun, Aug 23" — short date marking the start of a new event block.
@@ -102,6 +124,20 @@ function parseHaloEvents(html) {
   const lines = htmlToLines(html);
   const events = [];
   let candidateTitle = null;
+  // See ACTION_LINK_RE/ACTION_LINK_LINE above -- WP 2026-09-28: this used to
+  // be discarded entirely (NOISE_LINE just skipped the bare button-text
+  // line). It's real, non-invented, authoritative source evidence: HALO's
+  // own Wix event system shows "Buy Tickets"/"Get Tickets" only when a real
+  // advance-ticket-purchase flow is configured for that event, and "RSVP"/
+  // "Details" only when it isn't -- that distinction is exactly what
+  // migration_041's ticket_status='rsvp_no_advance_sale' value exists for.
+  // Confirmed live 2026-09-28: HOT ASH CIGAR & PIPE SOCIAL shows "RSVP"
+  // (no paid ticketing configured), while a different HALO listing on the
+  // same page shows "Details" for the same reason (no ticketing widget at
+  // all, just an info page) -- both are equally good evidence of "no
+  // advance ticket exists," so both are treated the same way here.
+  let candidateActionLabel = null;
+  let candidateActionHref = null;
   let inEventBlock = false;
 
   for (let i = 0; i < lines.length; i++) {
@@ -110,6 +146,8 @@ function parseHaloEvents(html) {
     if (SHORT_DATE_LINE.test(line)) {
       inEventBlock = true;
       candidateTitle = null;
+      candidateActionLabel = null;
+      candidateActionHref = null;
       continue;
     }
 
@@ -123,10 +161,31 @@ function parseHaloEvents(html) {
       const year = fullMatch[3];
       if (month && candidateTitle) {
         const time = fullMatch[5] ? `${fullMatch[4]} – ${fullMatch[5]}` : fullMatch[4];
-        events.push({ date: `${year}-${month}-${day}`, title: candidateTitle, time });
+        events.push({
+          date: `${year}-${month}-${day}`,
+          title: candidateTitle,
+          time,
+          actionLabel: candidateActionLabel,
+          actionHref: candidateActionHref,
+        });
       }
       inEventBlock = false; // event block finished; wait for the next short-date line
       candidateTitle = null;
+      candidateActionLabel = null;
+      candidateActionHref = null;
+      continue;
+    }
+
+    const actionMatch = line.match(ACTION_LINK_LINE);
+    if (actionMatch) {
+      // First action link wins per block -- confirmed structure has at most
+      // one per event; if a future layout ever had more, keeping the first
+      // is the same "don't overwrite an already-decided value" posture used
+      // everywhere else in this project.
+      if (!candidateActionLabel) {
+        candidateActionLabel = actionMatch[1].toLowerCase();
+        candidateActionHref = actionMatch[2];
+      }
       continue;
     }
 
@@ -141,7 +200,7 @@ function parseHaloEvents(html) {
   return events;
 }
 
-module.exports = async (req, res) => {
+const haloHandler = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -202,6 +261,31 @@ module.exports = async (req, res) => {
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const venueId = resolveVenueId(venueMap, VENUE_NAME);
 
+  // WP 2026-09-28: ticket_url/event_url/ticket_status from the action
+  // button captured in parseHaloEvents. "buy tickets"/"get tickets" means a
+  // real advance-ticket flow is configured -- that link IS the ticket_url,
+  // no ticket_status needed (a populated ticket_url already says
+  // "advance tickets exist"). "rsvp"/"details" means no advance-purchase
+  // mechanism exists on HALO's own booking system -- that link is instead
+  // the event's own info/RSVP page (event_url, not ticket_url, since it
+  // isn't a ticket purchase flow), and ticket_status is set to the new
+  // migration_041 value so Needs Follow-up understands a missing
+  // ticket_url here is expected, not a gap. Never invents a URL: if
+  // actionHref didn't resolve to a real absolute URL (resolveHaloUrl
+  // returns null), the corresponding field is simply left null, same as
+  // before this change.
+  function ticketFieldsFor(e) {
+    const url = resolveHaloUrl(e.actionHref);
+    if (!url) return { ticket_url: null, event_url: null, ticket_status: null };
+    if (e.actionLabel === "buy tickets" || e.actionLabel === "get tickets") {
+      return { ticket_url: url, event_url: null, ticket_status: null };
+    }
+    if (e.actionLabel === "rsvp" || e.actionLabel === "details") {
+      return { ticket_url: null, event_url: url, ticket_status: "rsvp_no_advance_sale" };
+    }
+    return { ticket_url: null, event_url: null, ticket_status: null };
+  }
+
   const rawRows = parsed.map((e) => ({
     external_id: `halo-${e.date}-${e.title}`.toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 250),
     title: e.title,
@@ -212,6 +296,7 @@ module.exports = async (req, res) => {
     time_display: e.time,
     is_free: false,
     source: "HALO Detroit",
+    ...ticketFieldsFor(e),
   }));
 
   // De-dupe by external_id before sending — Postgres's ON CONFLICT DO UPDATE
@@ -298,3 +383,7 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+module.exports = haloHandler;
+module.exports.parseHaloEvents = parseHaloEvents; // exposed for test/cron-halo-ticket-status.test.js only
+module.exports.resolveHaloUrl = resolveHaloUrl;
