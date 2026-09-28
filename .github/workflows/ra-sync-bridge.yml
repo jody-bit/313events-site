@@ -36,13 +36,19 @@ jobs:
   relay:
     runs-on: ubuntu-latest
     steps:
+      # token here (not the default GITHUB_TOKEN) matters: this repo's
+      # default Actions token turned out to be read-only in practice even
+      # with this workflow's own `permissions: contents: write` above
+      # (confirmed 2026-09-27 -- the job reported success while silently
+      # pushing no tag at all). GH_PUSH_TOKEN is the same fine-grained PAT
+      # (Contents: read-and-write, this repo only) already used for the
+      # device's own pushes -- reusing it here, rather than provisioning
+      # a second token, is what checkout's own `persist-credentials`
+      # then uses for every git write this job makes, tag pushes included.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - uses: actions/checkout@v4
-           with:
-             fetch-depth: 1
-             token: ${{ secrets.GH_PUSH_TOKEN }}
+          token: ${{ secrets.GH_PUSH_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:
