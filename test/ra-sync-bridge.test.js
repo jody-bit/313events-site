@@ -12,29 +12,26 @@ const client = require("../scripts/ra-bridge-client.js");
 
 async function run() {
   // ============================================================
-  // Part 1: extractInboxFiles — only genuinely-new inbox files count
+  // Part 1: extractInboxFiles — only genuinely-new inbox files count.
+  // Takes a flat file-path list (what changedFilesFromGitDiff produces)
+  // rather than the raw push event -- see that function's own header
+  // for why: a real push on 2026-09-28 that genuinely added a matching
+  // file still produced an empty commits[].added, so trusting that
+  // field silently dropped a real payload. This is a regression test
+  // for exactly that: extractInboxFiles no longer looks at commits[] at
+  // all, it only ever sees whatever changedFilesFromGitDiff decided was
+  // actually added.
   // ============================================================
   {
-    const event = {
-      commits: [
-        {
-          added: [
-            "ra-sync/inbox/start-20260926-120000-abc123.json",
-            "README.md", // unrelated file in the same commit
-          ],
-          modified: ["ra-sync/inbox/start-OLD-should-be-ignored.json"], // modified, not added
-        },
-        {
-          added: [
-            "ra-sync/inbox/complete-20260926-120500-def456.json",
-            "ra-sync/inbox/start-20260926-120000-abc123.json", // duplicate across commits
-            "ra-sync/inbox/not-a-real-shape.json", // doesn't match start-/complete- prefix
-          ],
-        },
-      ],
-    };
-    const entries = bridge.extractInboxFiles(event);
-    assert.strictEqual(entries.length, 2, "modified-only and non-matching files must be excluded, duplicates deduped");
+    const paths = [
+      "ra-sync/inbox/start-20260926-120000-abc123.json",
+      "README.md", // unrelated file in the same diff
+      "ra-sync/inbox/complete-20260926-120500-def456.json",
+      "ra-sync/inbox/start-20260926-120000-abc123.json", // duplicate
+      "ra-sync/inbox/not-a-real-shape.json", // doesn't match start-/complete- prefix
+    ];
+    const entries = bridge.extractInboxFiles(paths);
+    assert.strictEqual(entries.length, 2, "non-matching files must be excluded, duplicates deduped");
     assert.deepStrictEqual(
       entries.map((e) => e.filePath),
       [
@@ -48,11 +45,49 @@ async function run() {
     assert.strictEqual(complete.runToken, "20260926-120500-def456");
   }
 
-  // extractInboxFiles on an empty/malformed event never throws
+  // extractInboxFiles on empty/malformed input never throws
   {
-    assert.deepStrictEqual(bridge.extractInboxFiles({}), []);
-    assert.deepStrictEqual(bridge.extractInboxFiles({ commits: null }), []);
-    assert.deepStrictEqual(bridge.extractInboxFiles({ commits: [{}] }), []);
+    assert.deepStrictEqual(bridge.extractInboxFiles(undefined), []);
+    assert.deepStrictEqual(bridge.extractInboxFiles(null), []);
+    assert.deepStrictEqual(bridge.extractInboxFiles([]), []);
+  }
+
+  // ============================================================
+  // Part 1b: changedFilesFromGitDiff — the real "what changed" source
+  // ============================================================
+  {
+    // ZERO_SHA (new-branch push, nothing to diff against) short-circuits
+    // to [] without calling execFn at all.
+    const result = bridge.changedFilesFromGitDiff({
+      execFn: () => {
+        throw new Error("must not be called for a new-branch push");
+      },
+      before: bridge.ZERO_SHA,
+      after: "deadbeef",
+    });
+    assert.deepStrictEqual(result, []);
+  }
+  {
+    // Normal case: fetches `before`, then parses `git diff --name-status
+    // --diff-filter=A` output (status-letter, tab, path -- one per line).
+    const calls = [];
+    const execFn = (cmd, args) => {
+      calls.push([cmd, ...args].join(" "));
+      if (args[0] === "diff") {
+        return "A\tra-sync/inbox/start-20260928-161912-2f2141.json\nA\tREADME.md\n";
+      }
+      return "";
+    };
+    const result = bridge.changedFilesFromGitDiff({ execFn, before: "aaa111", after: "bbb222" });
+    assert.deepStrictEqual(result, ["ra-sync/inbox/start-20260928-161912-2f2141.json", "README.md"]);
+    assert.ok(calls.some((c) => c === "git fetch --depth=1 origin aaa111"), "must fetch the before SHA first");
+    assert.ok(calls.some((c) => c === "git diff --name-status --diff-filter=A aaa111 bbb222"));
+  }
+  {
+    // Missing before/after also short-circuits to [] rather than
+    // calling git with an invalid ref.
+    assert.deepStrictEqual(bridge.changedFilesFromGitDiff({ execFn: () => "", before: undefined, after: "x" }), []);
+    assert.deepStrictEqual(bridge.changedFilesFromGitDiff({ execFn: () => "", before: "x", after: undefined }), []);
   }
 
   // ============================================================

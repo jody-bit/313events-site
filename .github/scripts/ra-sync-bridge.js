@@ -35,24 +35,56 @@ const INBOX_FILE_RE = /^ra-sync\/inbox\/(start|complete)-([A-Za-z0-9._-]+)\.json
 // Pure logic
 // ---------------------------------------------------------------------
 
-// extractInboxFiles(eventPayload) -> [{ filePath, action, runToken }, ...]
-// Only files present in some commit's own "added" list count. A file
-// that was merely modified is deliberately ignored (these payloads are
-// never supposed to be edited in place, only added), and only files from
-// THIS push's own event payload are ever in scope, which is what keeps a
-// later push from ever reprocessing an earlier one.
-function extractInboxFiles(eventPayload) {
-  const commits = Array.isArray(eventPayload && eventPayload.commits) ? eventPayload.commits : [];
+// extractInboxFiles(filePaths) -> [{ filePath, action, runToken }, ...]
+// filePaths is a flat, deduped list of files added in this push (see
+// changedFilesFromGitDiff below for how main() gets that list). Only
+// files matching the start-/complete- inbox pattern count; everything
+// else in the same push is ignored.
+function extractInboxFiles(filePaths) {
   const seen = new Map(); // filePath -> {filePath, action, runToken}
-  for (const commit of commits) {
-    const added = Array.isArray(commit && commit.added) ? commit.added : [];
-    for (const filePath of added) {
-      const m = INBOX_FILE_RE.exec(filePath);
-      if (!m) continue;
-      seen.set(filePath, { filePath, action: m[1], runToken: m[2] });
-    }
+  for (const filePath of Array.isArray(filePaths) ? filePaths : []) {
+    const m = INBOX_FILE_RE.exec(filePath);
+    if (!m) continue;
+    seen.set(filePath, { filePath, action: m[1], runToken: m[2] });
   }
   return Array.from(seen.values()).sort((a, b) => a.filePath.localeCompare(b.filePath));
+}
+
+// The push event's "before" SHA when the push created a new branch (no
+// prior commit to diff against).
+const ZERO_SHA = "0000000000000000000000000000000000000000";
+
+// changedFilesFromGitDiff({ execFn, cwd, before, after }) -> string[]
+//
+// Returns every file ADDED between `before` and `after`, via `git diff`
+// against the repo actually checked out in this job -- not via the push
+// event's own commits[].added lists. That field turns out not to be
+// reliably populated for every push on this repo (confirmed 2026-09-28:
+// a real single-commit push that genuinely added a matching file still
+// produced an empty commits[].added, and the job "succeeded" having
+// silently relayed nothing at all). A direct git diff has no such
+// ambiguity: whatever the tree actually gained between the two commits
+// is exactly what this returns.
+//
+// `before` may be unreachable in a shallow clone, so this fetches it
+// (depth 1 is enough -- only the blob/tree at that one commit is
+// needed for the diff, not its own history) before diffing. Returns []
+// for the "pushed a brand-new branch" case (before === ZERO_SHA), since
+// there's nothing to diff against; main() falls back to the event's own
+// commits[].added for that one edge case only.
+function changedFilesFromGitDiff({ execFn, before, after }) {
+  if (!before || !after || before === ZERO_SHA) return [];
+  execFn("git", ["fetch", "--depth=1", "origin", before]);
+  const out = execFn("git", ["diff", "--name-status", "--diff-filter=A", before, after]);
+  return out
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const tab = line.indexOf("\t");
+      return tab === -1 ? null : line.slice(tab + 1).trim();
+    })
+    .filter(Boolean);
 }
 
 // parsePayloadFile(entry, rawContent) -> { action, runToken, requestBody }
@@ -224,8 +256,26 @@ async function main() {
   execFileSync("git", ["config", "user.name", "ra-sync-bridge[bot]"], { cwd });
   execFileSync("git", ["config", "user.email", "ra-sync-bridge@users.noreply.github.com"], { cwd });
 
+  const execFn = (cmd, args) => execFileSync(cmd, args, { cwd, encoding: "utf8" });
+
   const eventPayload = JSON.parse(fs.readFileSync(eventPath, "utf8"));
-  const entries = extractInboxFiles(eventPayload);
+
+  // Primary: a direct git diff between the push's before/after SHAs --
+  // see changedFilesFromGitDiff's own header for why this replaced
+  // trusting the event's commits[].added lists.
+  let changedFiles = changedFilesFromGitDiff({ execFn, before: eventPayload.before, after: eventPayload.after });
+
+  // Fallback, new-branch case only (before === ZERO_SHA, nothing to
+  // diff against): fall back to whatever commits[].added the event
+  // itself reports, better-than-nothing for a case this repo's own
+  // ra-bridge-client.js never actually triggers (it only ever pushes to
+  // the existing main branch).
+  if (changedFiles.length === 0 && eventPayload.before === ZERO_SHA) {
+    const commits = Array.isArray(eventPayload.commits) ? eventPayload.commits : [];
+    changedFiles = commits.flatMap((c) => (Array.isArray(c && c.added) ? c.added : []));
+  }
+
+  const entries = extractInboxFiles(changedFiles);
 
   if (entries.length === 0) {
     console.log("No new ra-sync/inbox/{start,complete}-*.json files in this push -- nothing to relay.");
@@ -238,7 +288,7 @@ async function main() {
     apiUrl,
     cronSecret,
     fetchFn: fetch,
-    execFn: (cmd, args) => execFileSync(cmd, args, { cwd, encoding: "utf8" }),
+    execFn,
     readFileFn: (p, enc) => fs.readFileSync(path.join(cwd, p), enc),
     log: (msg) => console.log(msg),
   };
@@ -257,6 +307,8 @@ async function main() {
 
 module.exports = {
   extractInboxFiles,
+  changedFilesFromGitDiff,
+  ZERO_SHA,
   parsePayloadFile,
   responseTagName,
   remoteTagExists,
