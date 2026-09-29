@@ -382,6 +382,46 @@ async function patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
 const DEFAULT_MAX_NEW_PER_RUN = 30; // same cap the old prompt's Step 4 used
 
+// Listing-card-level fields the browser walk can plausibly read straight
+// off ra.co's listing page, without opening any detail page -- never
+// derived, never inferred, just whatever the card itself showed. Kept
+// deliberately separate from the "events" schema completeRaSyncSession()
+// accepts (which has real derived fields like a parsed startDate): this is
+// raw listing evidence, persisted as a durable seed for later independent
+// corroboration, not a finished event row.
+const LISTING_METADATA_FIELDS = ["title", "date", "displayedTime", "venueName", "city", "url", "image"];
+const LISTING_METADATA_FIELD_MAX_LEN = 500;
+
+// sanitizeListingMetadata(parsedCandidateIds, rawMetadata) -> { [id]: { ...fields } }
+//
+// Best-effort, fail-soft (never throws -- a malformed listingMetadata
+// payload must never block the id diff this call exists to return). Two
+// guards: (1) an id not present in this call's own candidateIds is
+// dropped -- the metadata payload cannot claim anything about an id
+// outside this session's own diff; (2) only the whitelisted fields above
+// are kept, and only as trimmed, length-capped strings -- anything else
+// (wrong type, unknown key, empty after trim) is simply omitted, never
+// coerced into an invented value.
+function sanitizeListingMetadata(parsedCandidateIds, rawMetadata) {
+  const out = {};
+  if (!rawMetadata || typeof rawMetadata !== "object" || Array.isArray(rawMetadata)) return out;
+  const candidateSet = new Set(parsedCandidateIds);
+  for (const [id, raw] of Object.entries(rawMetadata)) {
+    if (!candidateSet.has(id)) continue;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    const clean = {};
+    for (const field of LISTING_METADATA_FIELDS) {
+      const val = raw[field];
+      if (typeof val !== "string") continue;
+      const trimmed = val.trim();
+      if (!trimmed) continue;
+      clean[field] = trimmed.slice(0, LISTING_METADATA_FIELD_MAX_LEN);
+    }
+    if (Object.keys(clean).length > 0) out[id] = clean;
+  }
+  return out;
+}
+
 // startRaSyncSession({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds, ... })
 //   -> { runId, candidateCount, knownCount, newCount, allNewCount, ids }
 //
@@ -404,6 +444,7 @@ async function startRaSyncSession(opts) {
     SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY,
     candidateIds,
+    listingMetadata,
     maxNewPerRun = DEFAULT_MAX_NEW_PER_RUN,
     fetchFn = fetch,
     lookupExistingRowsFn = lookupExistingRows,
@@ -419,6 +460,7 @@ async function startRaSyncSession(opts) {
   const knownIds = computeKnownIds(parsed, existingIdSet);
   const allNewIds = computeCandidateNewIds(parsed, existingIdSet);
   const newIdsThisRun = allNewIds.slice(0, maxNewPerRun);
+  const cleanListingMetadata = sanitizeListingMetadata(parsed, listingMetadata);
 
   const runHandle = await startRunFn(SLUGS.residentAdvisor);
   if (!runHandle) {
@@ -432,7 +474,9 @@ async function startRaSyncSession(opts) {
     candidateCount: parsed.length,
     knownCount: knownIds.length,
     allNewCount: allNewIds.length,
+    allNewIds, // full, UNCAPPED backlog -- every genuinely-new id, not just this run's detail-fetch batch. The 30/run cap is a detail-fetch workload limit, not a discovery limit -- a blocked or partial run must never strand ids this call already knows are new.
     newIds: newIdsThisRun,
+    listingMetadata: cleanListingMetadata, // listing-card evidence (title/date/venue/etc, whatever the device actually read off the listing page), keyed by id, for EVERY candidate submitted -- persisted here, before any detail page is ever opened, so a DataDome block partway through detail acquisition can never erase it.
     startedAt: new Date().toISOString(),
   };
   await patchSourceRunSessionData(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runHandle.runId, sessionData, fetchFn);
@@ -443,7 +487,9 @@ async function startRaSyncSession(opts) {
     knownCount: knownIds.length,
     newCount: newIdsThisRun.length,
     allNewCount: allNewIds.length,
+    allNewIds, // uncapped -- lets the caller persist/track the full backlog, not just this run's capped detail-fetch batch
     ids: newIdsThisRun,
+    listingMetadataCount: Object.keys(cleanListingMetadata).length,
   };
 }
 
@@ -571,7 +617,26 @@ async function completeRaSyncSession(opts) {
     imported.length = 0;
   }
 
-  const outcome = writeError ? "failed" : errors.length ? "partial" : "success";
+  // "success" here deliberately still allows a PARTIAL submission (some,
+  // but not all, of this session's expected ids addressed) -- that's the
+  // documented, expected shape of a normal capped run and always has been
+  // (see this function's own header: "it's fine, even expected, for this to
+  // be a subset"). What must NEVER read back as success is the specific
+  // zero-progress case: a session that expected new ids but addressed
+  // LITERALLY NONE of them (RA re-blocked before a single detail page came
+  // back, and the device submitted events: [] per the fail-closed contract,
+  // e.g.) -- there the backlog for those ids is entirely outstanding, not
+  // partially chipped away, and both Admin (api/admin-ra.js) and the
+  // lastSuccessfulRun query need to see that honestly rather than count it
+  // as a real completed sync.
+  const addressedCount = imported.length + duplicates.length + skipped.length;
+  const outcome = writeError
+    ? "failed"
+    : errors.length
+    ? "partial"
+    : expectedIds.size > 0 && addressedCount === 0
+    ? "partial"
+    : "success";
 
   const finalSessionData = {
     ...sessionData,
@@ -623,6 +688,7 @@ module.exports = {
   deriveCategory,
   deriveEventRow,
   findConservativeDuplicate,
+  sanitizeListingMetadata,
   getSourceRun,
   patchSourceRunSessionData,
   DEFAULT_MAX_NEW_PER_RUN,

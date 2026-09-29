@@ -363,6 +363,65 @@ async function run() {
   }
   console.log("PASS: startRaSyncSession -- malformed candidateIds rejected via the reused validator");
 
+  {
+    // listingMetadata: persisted for every submitted candidate id (not just
+    // this run's capped detail-fetch batch), foreign ids and non-whitelisted/
+    // malformed fields dropped rather than invented or silently coerced, and
+    // allNewIds comes back uncapped even though `ids` stays capped -- this is
+    // the actual repair for "listing acquisition must persist all newly
+    // discovered ids and their listing-card evidence, not only the capped
+    // detail batch" (2026-09-29 incident: RA blocked detail pages after a
+    // successful listing walk and the run closed with zero durable evidence).
+    let patchedSessionData = null;
+    const fetchFn = async (url, opts) => {
+      patchedSessionData = JSON.parse(opts.body).session_data;
+      return { ok: true, text: async () => "" };
+    };
+    const candidateIds = Array.from({ length: 5 }, (_, i) => `ra-${5000 + i}`);
+    const result = await lib.startRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds, maxNewPerRun: 2,
+      listingMetadata: {
+        "ra-5000": { title: "Real Event Title", date: "2026-10-15", venueName: "TV Lounge", city: "Detroit", url: "https://ra.co/events/5000", extraJunkField: "dropped" },
+        "ra-5001": { title: "  Trimmed Title  ", displayedTime: 12345 }, // non-string field dropped, string trimmed
+        "ra-9999999": { title: "id not in this session's candidateIds -- must be dropped entirely" },
+        "ra-5002": {},
+      },
+      fetchFn,
+      lookupExistingRowsFn: async () => new Map(),
+      startRunFn: async () => ({ runId: "run-meta", startedAtMs: Date.now() }),
+    });
+
+    assert.strictEqual(result.allNewCount, 5);
+    assert.strictEqual(result.newCount, 2); // still capped
+    assert.deepStrictEqual(result.allNewIds.sort(), candidateIds.slice().sort()); // uncapped backlog
+    assert.strictEqual(result.listingMetadataCount, 2); // ra-5002 had no usable fields, ra-9999999 was foreign
+    assert.ok(patchedSessionData.listingMetadata, "listingMetadata must be persisted in session_data");
+    assert.deepStrictEqual(patchedSessionData.listingMetadata["ra-5000"], {
+      title: "Real Event Title", date: "2026-10-15", venueName: "TV Lounge", city: "Detroit", url: "https://ra.co/events/5000",
+    });
+    assert.strictEqual(patchedSessionData.listingMetadata["ra-5001"].title, "Trimmed Title");
+    assert.strictEqual(patchedSessionData.listingMetadata["ra-5001"].displayedTime, undefined);
+    assert.strictEqual(patchedSessionData.listingMetadata["ra-9999999"], undefined);
+    assert.strictEqual(patchedSessionData.listingMetadata["ra-5002"], undefined);
+    assert.deepStrictEqual(patchedSessionData.allNewIds.sort(), candidateIds.slice().sort());
+  }
+  console.log("PASS: startRaSyncSession -- listingMetadata persisted per-id (foreign ids/fields dropped, never invented), allNewIds returned uncapped");
+
+  {
+    // no listingMetadata at all -- must not throw, must behave exactly as
+    // before this repair (backward compatible for any caller that doesn't
+    // send it yet).
+    const result = await lib.startRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds: ["ra-6000"],
+      fetchFn: async () => ({ ok: true, text: async () => "" }),
+      lookupExistingRowsFn: async () => new Map(),
+      startRunFn: async () => ({ runId: "run-nometa", startedAtMs: Date.now() }),
+    });
+    assert.strictEqual(result.listingMetadataCount, 0);
+    assert.deepStrictEqual(result.allNewIds, ["ra-6000"]);
+  }
+  console.log("PASS: startRaSyncSession -- omitted listingMetadata is backward compatible (empty, never throws)");
+
   // ============================================================
   // Part 4: completeRaSyncSession
   // ============================================================
@@ -528,6 +587,62 @@ async function run() {
     assert.strictEqual(finished.outcome, "failed");
   }
   console.log("PASS: completeRaSyncSession -- a real database write failure reports outcome='failed', zero imported, never a false success");
+
+  {
+    // 2026-09-29 incident, reproduced directly: a session expected new ids
+    // (newIds non-empty) but RA blocked detail-page acquisition entirely, so
+    // the device submitted events: [] per the existing fail-closed contract
+    // ("stop, commit whatever completed, even zero is fine"). That must read
+    // back as a run that did NOT actually finish its work -- outcome
+    // 'partial', not a quiet 'success' with imported=0 indistinguishable from
+    // a genuinely empty diff.
+    const blockedRun = {
+      id: "run-blocked",
+      source_slug: "resident-advisor",
+      outcome: "started",
+      started_at: new Date().toISOString(),
+      session_data: { phase: "started", newIds: ["ra-300", "ra-301"], candidateCount: 5, knownCount: 3, allNewCount: 2 },
+    };
+    const { fetchFn } = makeCompleteFetch({ run: blockedRun });
+    let finished = null;
+    const result = await lib.completeRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: "run-blocked",
+      events: [],
+      fetchFn,
+      finishRunFn: async (handle, fields) => { finished = fields; },
+      buildVenueNameToIdMapFn: async () => new Map(),
+      lookupExistingStatusesFn: async () => new Map(),
+    });
+    assert.strictEqual(result.imported, 0);
+    assert.strictEqual(result.errors, 0); // not an error -- a legitimate, expected fail-closed stop
+    assert.strictEqual(finished.outcome, "partial");
+  }
+  console.log("PASS: completeRaSyncSession -- expected new ids but zero addressed (RA blocked mid-run) closes as outcome='partial', never a false 'success'");
+
+  {
+    // Contrast case: a session that genuinely had nothing new to fetch
+    // (newIds: []) completing with events: [] is a real, honest success --
+    // must NOT be misclassified as partial just because addressedCount is 0.
+    const emptyDiffRun = {
+      id: "run-empty-diff",
+      source_slug: "resident-advisor",
+      outcome: "started",
+      started_at: new Date().toISOString(),
+      session_data: { phase: "started", newIds: [], candidateCount: 5, knownCount: 5, allNewCount: 0 },
+    };
+    const { fetchFn } = makeCompleteFetch({ run: emptyDiffRun });
+    let finished = null;
+    const result = await lib.completeRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: "run-empty-diff",
+      events: [],
+      fetchFn,
+      finishRunFn: async (handle, fields) => { finished = fields; },
+      buildVenueNameToIdMapFn: async () => new Map(),
+      lookupExistingStatusesFn: async () => new Map(),
+    });
+    assert.strictEqual(finished.outcome, "success");
+  }
+  console.log("PASS: completeRaSyncSession -- a genuinely empty diff (nothing new found) still closes as outcome='success', not misclassified as partial");
 
   // ============================================================
   // Part 5: today's REAL 140-id candidate listing walk (Decision 10 --

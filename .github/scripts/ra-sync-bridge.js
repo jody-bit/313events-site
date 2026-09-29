@@ -112,10 +112,25 @@ function parsePayloadFile(entry, rawContent) {
     if (!Array.isArray(data.candidateIds) || data.candidateIds.length === 0) {
       throw new Error(`${entry.filePath}: "start" payload needs a non-empty candidateIds array`);
     }
+    // listingMetadata is optional (older payloads and any caller that
+    // hasn't adopted it yet still work unchanged) but must be a plain
+    // object when present -- same fail-closed-on-malformed posture this
+    // function already uses for candidateIds/runId/events, rather than
+    // silently dropping a bad value through to the API. The API itself
+    // (scripts/ra-sync.js's sanitizeListingMetadata) does its own
+    // per-field whitelist/type validation; this is just the shape check.
+    if (
+      data.listingMetadata !== undefined &&
+      (typeof data.listingMetadata !== "object" || data.listingMetadata === null || Array.isArray(data.listingMetadata))
+    ) {
+      throw new Error(`${entry.filePath}: "listingMetadata", when present, must be a plain object keyed by id`);
+    }
+    const requestBody = { action: "start", candidateIds: data.candidateIds };
+    if (data.listingMetadata !== undefined) requestBody.listingMetadata = data.listingMetadata;
     return {
       action: "start",
       runToken: entry.runToken,
-      requestBody: { action: "start", candidateIds: data.candidateIds },
+      requestBody,
     };
   }
 

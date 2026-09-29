@@ -33,12 +33,25 @@ const { StatusLookupFailedError } = require("./_lib/status-lookup");
 //
 // REQUEST -- POST /api/cron-ra
 //   Header: Authorization: Bearer <CRON_SECRET>
-//   Body:   { "action": "start", "candidateIds": ["ra-2495966", ...] }
-//        -> { runId, candidateCount, knownCount, newCount, allNewCount, ids }
+//   Body:   { "action": "start", "candidateIds": ["ra-2495966", ...],
+//             "listingMetadata": { "ra-2495966": { title, date, displayedTime,
+//               venueName, city, url, image }, ... } }  // listingMetadata optional
+//        -> { runId, candidateCount, knownCount, newCount, allNewCount,
+//             allNewIds, ids, listingMetadataCount }
 //   Body:   { "action": "complete", "runId": "...", "events": [ { id, title,
 //             description, startDate, endDate, venueName, address, image,
 //             offersPrice, url }, ... ] }
 //        -> { runId, imported, duplicates, skipped, errors, errorDetail, duplicateDetail }
+//
+// "start"'s listingMetadata is optional and additive: whatever the device
+// read directly off ra.co's listing cards (never invented), keyed by the
+// same "ra-<id>" strings as candidateIds. It's persisted server-side
+// (source_runs.session_data.listingMetadata) for EVERY submitted id, not
+// just the ids in this run's capped `ids` detail-fetch batch, and before
+// any detail page is ever opened -- so a DataDome block partway through
+// detail acquisition can never strand it. allNewIds (also new) is the full,
+// uncapped list of genuinely-new ids this run's diff found; `ids` stays the
+// existing capped subset actually due for detail-fetch this run.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -95,6 +108,7 @@ module.exports = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         candidateIds: body.candidateIds,
+        listingMetadata: body.listingMetadata,
       });
       res.status(200).json(result);
     } catch (err) {

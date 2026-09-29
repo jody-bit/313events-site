@@ -106,6 +106,40 @@ async function run() {
     );
     assert.deepStrictEqual(parsed.requestBody, { action: "complete", runId: "run-abc", events: [{ id: "ra-1" }] });
   }
+  // listingMetadata: optional on "start", passed through verbatim when
+  // present (the shape check here, per-field sanitizing happens server-
+  // side), and omitted from requestBody entirely (not sent as undefined)
+  // when the payload doesn't include it -- older/unmodified payloads must
+  // keep working exactly as before this field existed.
+  {
+    const entry = { filePath: "ra-sync/inbox/start-TOK1.json", action: "start", runToken: "TOK1" };
+    const parsed = bridge.parsePayloadFile(
+      entry,
+      JSON.stringify({ runToken: "TOK1", action: "start", candidateIds: ["ra-1"], listingMetadata: { "ra-1": { title: "Some Event" } } })
+    );
+    assert.deepStrictEqual(parsed.requestBody, {
+      action: "start",
+      candidateIds: ["ra-1"],
+      listingMetadata: { "ra-1": { title: "Some Event" } },
+    });
+  }
+  {
+    const entry = { filePath: "ra-sync/inbox/start-TOK1.json", action: "start", runToken: "TOK1" };
+    const parsed = bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK1", action: "start", candidateIds: ["ra-1"] }));
+    assert.deepStrictEqual(parsed.requestBody, { action: "start", candidateIds: ["ra-1"] });
+    assert.ok(!("listingMetadata" in parsed.requestBody), "must not send listingMetadata at all when the payload omitted it");
+  }
+  {
+    const entry = { filePath: "ra-sync/inbox/start-TOK1.json", action: "start", runToken: "TOK1" };
+    assert.throws(
+      () => bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK1", candidateIds: ["ra-1"], listingMetadata: ["not", "an", "object"] })),
+      /must be a plain object/
+    );
+    assert.throws(
+      () => bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK1", candidateIds: ["ra-1"], listingMetadata: "nope" })),
+      /must be a plain object/
+    );
+  }
   // runToken mismatch between filename and payload body is rejected
   {
     const entry = { filePath: "ra-sync/inbox/start-TOK1.json", action: "start", runToken: "TOK1" };

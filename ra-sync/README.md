@@ -100,3 +100,60 @@ name `CRON_SECRET`, same value already in `.env.local`). Nothing else —
 no new tokens, no new services. Everything else here only uses git
 operations against this repo's own GitHub remote, which the device
 already authenticates for pushes today.
+
+## 2026-09-29 repair: listing evidence and backlog survive a mid-run block
+
+Incident: RA's listing page walked successfully (121 candidates), but every
+one of that run's 30 capped detail-page fetches was blocked by DataDome
+before completing. The run correctly stopped rather than attempt any
+workaround -- but under the original design that meant three real gaps:
+
+1. Only the capped 30 ids' worth of "new" work was ever visible to the
+   device. The other 55 genuinely-new ids existed only as `allNewCount` (a
+   number), never as an actual list -- there was no way to even name them,
+   let alone act on them later.
+2. Zero listing-card evidence (title/date/venue/etc, all of it plainly
+   visible on the listing page the walk had already succeeded on) was ever
+   captured. Step 2 of the device-side prompt only ever collected bare
+   `ra-<id>` strings.
+3. The run closed via `complete` with `events: []` and read back
+   indistinguishable from a genuine "nothing new today" success --
+   `outcome` was `"success"` either way.
+
+Fixed the same day, server-side only (Decision: smallest repair, no new
+tables, no redesign):
+
+- `startRaSyncSession()` now accepts an optional `listingMetadata` param
+  (`{ [id]: { title, date, displayedTime, venueName, city, url, image } }`),
+  sanitized by the new `sanitizeListingMetadata()` (foreign ids and
+  non-whitelisted/malformed fields dropped, nothing ever invented) and
+  persisted into `session_data.listingMetadata` for **every** submitted
+  candidate id -- not just this run's capped detail-fetch batch, and before
+  any detail page is ever opened. `session_data.allNewIds` (uncapped) and
+  the response's `allNewIds` field close gap 1 the same way.
+- `completeRaSyncSession()`'s outcome is `"partial"` (not `"success"`) when
+  the session expected new ids but addressed literally none of them --
+  the exact zero-progress shape a mid-run block produces. A normal partial
+  submission (some, not all, of the expected ids addressed) is still
+  `"success"`, unchanged -- see the function's own comment.
+- `.github/scripts/ra-sync-bridge.js` forwards `listingMetadata` through to
+  `/api/cron-ra` (shape-validated, fail-closed on malformed input, same as
+  its other fields); `scripts/ra-bridge-client.js` needed no change (it
+  already forwards the whole payload object verbatim).
+- The device-side scheduled task prompt (Steps 2/3/6) was updated to
+  capture listing-card evidence during the walk and submit it, and to
+  report a `newCount > 0` / zero-addressed run as `RA_SYNC_BLOCKED_MIDRUN`
+  instead of staying silent.
+
+Tests: `test/ra-sync.test.js` (listingMetadata persistence/sanitization,
+`allNewIds` uncapped, both the new `outcome='partial'` case and its
+contrasting `outcome='success'` case) and `test/ra-sync-bridge.test.js`
+(listingMetadata passthrough and shape validation).
+
+No backlog-priority mechanism was added on top of what already existed:
+`startRaSyncSession()` already recomputes the true new/known diff fresh
+against production every run, so an unresolved id is automatically
+re-offered the next day without any extra state -- see that function's own
+header comment. RA's listing order (soonest-event-first) is preserved into
+`candidateIds` and already gives an existing, reasonable within-cap
+priority signal, so none was added mechanically on top of it.
