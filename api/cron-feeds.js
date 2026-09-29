@@ -1,7 +1,22 @@
 const crypto = require("crypto");
+const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair, resolveVenueFromCandidate } = require("./_lib/venue-lookup");
 const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+// Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
+// "Production track record") — scripts/press-coverage-linking.js's
+// extractCategory() already does keyword-based category derivation against
+// this project's real taxonomy (api/admin-editorial.js's VALID_CATEGORIES)
+// and already returns null (never a guess) when nothing confidently matches.
+// api/cron-editorial.js and api/admin-editorial.js already require a
+// scripts/*.js module the same way (see their own `require(path.join(...))`
+// lines) — this is an established pattern, not a new one. Deliberately NOT
+// modifying extractCategory()/CATEGORY_KEYWORDS itself in this change (no
+// community/gaming keywords added, no dance/family reordering, no
+// Congregation-specific rule) — that's shared logic other consumers
+// (press-coverage matching) also depend on, and changing it is a separate
+// decision.
+const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
 // admin.html/api/admin-feeds.js) and upserts what it finds into `events`.
@@ -303,7 +318,17 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
       description: ev.description ? ev.description.slice(0, 1000) : null,
-      category: feedSource.default_category,
+      // 2026-09-29 correction — this used to be feedSource.default_category
+      // unconditionally for every event a feed produces (flat, regardless of
+      // that event's own title/description). Now: a confident per-event
+      // derivation from the VEVENT's own title+description, via the same
+      // shared extractCategory() press-coverage matching already uses,
+      // falling back to the feed's own default only when extractCategory
+      // finds no confident keyword match (never null, never invented) —
+      // identical behavior whether this feed is location_per_event or not,
+      // since category derivation doesn't depend on which venue-resolution
+      // branch ran above.
+      category: extractCategory(ev.summary, ev.description) || feedSource.default_category,
       ...venueFields,
       start_date: start.date,
       // All-day multi-day spans only (start.hour === null) — a timed event's

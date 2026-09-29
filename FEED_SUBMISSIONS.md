@@ -95,6 +95,52 @@ today — only ICS.
    fetch or parse never blocks the others — same fail-soft, document-
    honestly convention as every other cron (see `sources.html`).
 
+## Production track record
+
+- **2026-09-29 — The Congregation: first `feed_sources` feed to reach
+  production, verified end to end.** Approved in `admin.html` (validated
+  safe for the then-current single-venue architecture, `location_per_event`
+  left `false`), migration 043 applied, then `api/cron-feeds.js` manually
+  triggered from the Vercel dashboard (no scheduled run had occurred yet
+  since approval). Result, verified read-only against production directly
+  (anon-key reads of `events`, not just the run's own reported status):
+  upcoming approved events **1,037 → 1,067 (+30)**, all 30 attributable to
+  this one feed (`external_id` prefix `feed-<feed_source.id>-...`), zero
+  duplicate `external_id`s against the pre-existing 1,037 or each other,
+  every row's `ticket_url` resolving to a real
+  `thecongregationdetroit.com/publicevents/...` page. This is the first
+  live confirmation that the generic ICS connector (`api/cron-feeds.js`,
+  live since migration_008) works end to end for a real, previously-
+  unreachable venue — The Congregation's own `robots.txt` blocks AI/Claude
+  crawlers (`INGESTION_PLATFORM_ARCHITECTURE.md`'s source classification
+  table), so this self-service feed path was the only permitted way in.
+- **Two data-quality gaps this first real batch exposed:**
+  (1) **Category — fixed 2026-09-29.** All 30 events had inherited the
+  feed's flat `default_category = "nightlife"`, including clearly
+  non-nightlife programming (yoga, a mental-health workshop, an AI meetup,
+  a nail-art workshop). `icsEventsToRows()` now derives each event's
+  category from its own `SUMMARY`/`DESCRIPTION` via the same shared
+  `extractCategory()` `scripts/press-coverage-linking.js` already uses for
+  press-coverage matching (reused, not reimplemented — no new classifier,
+  no Congregation-specific rules), falling back to `feedSource.default_category`
+  only when nothing confidently matches. Applies identically whether a feed
+  is `location_per_event` or not. `CATEGORY_KEYWORDS` itself was
+  deliberately left unchanged in this pass (no `community`/`gaming`
+  keywords added, no `dance`/`family` reordering) — those are shared-logic
+  decisions for later, not slipped in here.
+  (2) **Venue resolution — root-caused, data fix pending as of 2026-09-29.**
+  All 30 events carry `venue_id = null` and no
+  `venue_address_raw`/`venue_city_raw`. Root cause confirmed to be a
+  missing `venues` row (no canonical venue named or addressed like "The
+  Congregation" exists yet under any spelling) — not a resolution bug;
+  `resolveVenueId`/SH.1's `resolveVenueAddressCityRepair` are both behaving
+  exactly as designed by declining to guess. Smallest fix identified: one
+  new `venues` row (`name: "The Congregation"`, `address: "9321 Rosa Parks
+  Blvd"`, `city: "Detroit"`, `neighborhood_id` left `null` pending your own
+  editorial assignment, same convention as every other venue) plus running
+  `admin.html`'s existing Auto-Repair action once it exists — no code
+  change required for the backfill itself.
+
 ## Known v1 limitations (real, not silently papered over)
 
 - **No RRULE expansion.** A recurring event with no explicit further
@@ -137,7 +183,17 @@ today — only ICS.
   pending), `events.feed_source_id` FK.
 - `api/submit-feed.js` — submission endpoint.
 - `api/admin-feeds.js` — approval/pause/resume endpoint.
-- `api/cron-feeds.js` — the generic ICS poller.
+- `api/cron-feeds.js` — the generic ICS poller. `icsEventsToRows()` now
+  derives each event's category via `scripts/press-coverage-linking.js`'s
+  existing `extractCategory()` (see "Production track record" above),
+  falling back to `feedSource.default_category` only when unmatched — no
+  change to `extractCategory()`/`CATEGORY_KEYWORDS` itself.
+- `test/cron-feeds-category.test.js` (2026-09-29) — per-event category
+  derivation contract tests (confident match overrides default, no-match
+  falls back, identical across `location_per_event`, representative real
+  Congregation fixtures) — deliberately does not lock in the full 30-event
+  production distribution, since the shared taxonomy/keyword list is
+  expected to evolve.
 - `api/_lib/ics-location.js` (2026-09-29) — per-`VEVENT` `LOCATION` parser
   for the `location_per_event` feeds above; shared infrastructure also
   intended for Phase 6's future Tribe (`WP 6.4`) and CivicPlus (`WP 6.8`)
