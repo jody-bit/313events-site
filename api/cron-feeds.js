@@ -1,5 +1,6 @@
 const crypto = require("crypto");
-const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair } = require("./_lib/venue-lookup");
+const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair, resolveVenueFromCandidate } = require("./_lib/venue-lookup");
+const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
@@ -184,10 +185,87 @@ function formatIcsTime(hour, minute) {
   return `${h12}:${String(minute).padStart(2, "0")} ${ap}`;
 }
 
+// The project's existing single-venue placeholder convention (see
+// press-coverage-linking.js's createEvent, cron-detroitmonthofdesign.js,
+// cron-planetanttheatre.js, cron-ticketmaster.js, api/event-meta.js) —
+// used here only in the location_per_event branch below, and only when
+// there is genuinely no per-event location signal to fall back on.
+const VENUE_TBA = "Venue TBA";
+
+// Resolves ONE VEVENT's own venue fields for a feed_source flagged
+// location_per_event (migration_043) — added 2026-09-29 for the Phase 6
+// per-event venue-resolution shared infrastructure (see
+// api/_lib/ics-location.js's header for the full design). Never called for
+// an ordinary (location_per_event=false) feed — see icsEventsToRows below,
+// which keeps that path byte-for-byte as it was before this change.
+//
+// Three outcomes, matching the locked product decision (do not conflate
+// these -- each is a genuinely different epistemic state, not just a
+// different string):
+//   - blank/missing LOCATION -> Venue TBA. There is no per-event signal at
+//     all, so this is the one case where there's nothing to prefer over
+//     "unknown" -- and it is NEVER feedSource.venue_name, because a feed
+//     flagged location_per_event has already been judged (at onboarding)
+//     to be an aggregator/organization, not itself a bookable venue.
+//   - parseable LOCATION, confidently resolved against the canonical
+//     venues table -> that canonical venue's own name/address/city/id
+//     (same trust level as SH.1's own tier B/tier-by-address).
+//   - parseable LOCATION, not matched to any canonical venue -> the
+//     PARSED candidate name/address/city, verbatim -- an honest, real,
+//     specific place this VEVENT actually named, just not yet linked to a
+//     canonical row.
+//   - present but UNPARSEABLE LOCATION (real text, matched neither known
+//     grammar) -> the sanitized (HTML/entities stripped, whitespace
+//     collapsed) raw text itself, as venue_name_raw, address/city left
+//     null. This is the one case that must NOT collapse to Venue TBA or to
+//     feedSource.venue_name — there IS a real, human-written location
+//     signal here, it just isn't decomposable into name/address/city
+//     without guessing, and discarding it would throw away real
+//     information the source actually gave us.
+function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
+  const parsed = parseIcsLocation(locationRaw);
+
+  if (parsed.status === "blank") {
+    return { venue_name_raw: VENUE_TBA, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+  }
+
+  if (parsed.status === "unparseable") {
+    return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+  }
+
+  // status === "parsed"
+  const candidate = { name: parsed.candidateName, address: parsed.candidateAddress, city: parsed.candidateCity };
+  const canonical = resolveVenueFromCandidate(candidate, venueDetailsMaps);
+  if (canonical) {
+    return {
+      venue_name_raw: canonical.name || candidate.name,
+      venue_id: canonical.id,
+      venue_address_raw: canonical.address || candidate.address || null,
+      venue_city_raw: canonical.city || candidate.city || null,
+    };
+  }
+  return {
+    venue_name_raw: candidate.name,
+    venue_id: null,
+    venue_address_raw: candidate.address || null,
+    venue_city_raw: candidate.city || null,
+  };
+}
+
 // Converts parsed ICS VEVENTs into rows shaped for the `events` table,
-// scoped to one feed_source (which supplies venue name + default category —
-// v1 assumes one feed = one venue, same assumption every single-venue cron
-// in this project already makes, e.g. cron-cinema-detroit.js's VENUE_NAME).
+// scoped to one feed_source (which supplies default category, and — for
+// every feed_source EXCEPT one flagged location_per_event (migration_043,
+// 2026-09-29) — the venue name too: v1's original one-feed-one-venue
+// assumption, same one every other single-venue cron in this project makes
+// (e.g. cron-cinema-detroit.js's VENUE_NAME), still the correct default for
+// a feed that genuinely is one venue's own calendar. A feed_source with
+// location_per_event=true is an aggregator/organization (Tourism Windsor
+// Essex, a CivicPlus municipal calendar, etc.) whose OWN name is never a
+// real event venue — see resolveIcsEventVenue above for that branch, added
+// for the Phase 6 per-event venue-resolution shared infrastructure so
+// these feeds' events preserve and resolve their own VEVENT LOCATION
+// instead of every event being mislabeled with the feed organization's
+// name.
 function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap) {
   const rows = [];
   for (const ev of icsEvents) {
@@ -205,21 +283,28 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
 
     const uidOrHash = ev.uid || `${start.date}-${(ev.summary || "").slice(0, 40)}`;
 
+    const venueFields = feedSource.location_per_event
+      ? resolveIcsEventVenue(ev.location, venueDetailsMaps)
+      : {
+          venue_name_raw: feedSource.venue_name,
+          // See api/_lib/venue-lookup.js — links to the existing venues row
+          // if this feed's self-reported venue_name happens to match one
+          // already in the database; never creates or guesses a fuzzy one.
+          venue_id: resolveVenueId(venueMap, feedSource.venue_name),
+          // Filled below by SH.1's resolveVenueAddressCityRepair when this
+          // feed's venue is already known to 313.events; stays null
+          // otherwise (unresolved), same honest-gap convention as venue_id
+          // above.
+          venue_address_raw: null,
+          venue_city_raw: null,
+        };
+
     const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
       description: ev.description ? ev.description.slice(0, 1000) : null,
       category: feedSource.default_category,
-      venue_name_raw: feedSource.venue_name,
-      // See api/_lib/venue-lookup.js — links to the existing venues row if
-      // this feed's self-reported venue_name happens to match one already
-      // in the database; never creates or guesses a fuzzy one.
-      venue_id: resolveVenueId(venueMap, feedSource.venue_name),
-      // Filled below by SH.1's resolveVenueAddressCityRepair when this
-      // feed's venue is already known to 313.events; stays null otherwise
-      // (unresolved), same honest-gap convention as venue_id above.
-      venue_address_raw: null,
-      venue_city_raw: null,
+      ...venueFields,
       start_date: start.date,
       // All-day multi-day spans only (start.hour === null) — a timed event's
       // DTEND is just its own end time, already folded into time_display
@@ -228,10 +313,14 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       time_display: timeDisplay,
       ticket_url: ev.url || null,
       image_url: ev.image || null,
-      // Just the venue name, matching every other single-venue cron's
-      // convention (e.g. cron-trinosophes.js's source:"Trinosophes") — the
-      // site renders this as "via {source}", so a value like "Feed: X"
-      // would read as the redundant "via Feed: X".
+      // Just the feed's own organization/venue name, matching every other
+      // single-venue cron's convention (e.g. cron-trinosophes.js's
+      // source:"Trinosophes") — the site renders this as "via {source}",
+      // so a value like "Feed: X" would read as the redundant "via Feed:
+      // X". Deliberately always feedSource.venue_name, even in the
+      // location_per_event branch — `source` attributes WHERE this event
+      // was ingested FROM (still honest: it did come from this feed), not
+      // where it physically takes place (that's venue_name_raw above).
       source: feedSource.venue_name,
       // The SOURCE (this feed URL) was human-approved in admin.html — every
       // event it produces auto-publishes at that same trust tier, same as
@@ -244,9 +333,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     // SH.1 (Metadata Self-Healing, 2026-09-21) — this connector has always
     // set venue_name_raw (and venue_id, when resolvable) per row but never
     // populated venue_address_raw/venue_city_raw, even when the feed's own
-    // venue is already known to 313.events. Purely additive: the two
-    // fields above start null, so this can only ever fill them in, never
-    // overwrite anything this function itself just produced. See
+    // venue is already known to 313.events. Purely additive: it only ever
+    // fills a field that's still blank at this point, never overwrites
+    // anything venueFields above already produced (including the
+    // location_per_event branch's own resolved/candidate/raw values) — see
     // api/_lib/venue-lookup.js's resolveVenueAddressCityRepair for the
     // exact/no-fuzzy repair rules (canonical venue_id match, then exact
     // canonical name match, then exact learned historical match — never a

@@ -9,6 +9,41 @@
 
 Full technical detail: `INGESTION_PLATFORM_ARCHITECTURE.md` §7 (handling by source class) and Appendix C (indicative Orbit county list — the basis for the ring sweeps in 6.15/6.16).
 
+## Prerequisite shared infrastructure (implemented 2026-09-29, outside this phase's own WP numbering)
+
+Per-`VEVENT` `LOCATION` resolution — `api/_lib/ics-location.js` (LOCATION
+text parsing) and `api/_lib/venue-lookup.js`'s new
+`resolveVenueFromCandidate()` (canonical-venue resolution for a per-event
+candidate, reusing SH.1's own exact-match tiers), wired into
+`api/cron-feeds.js`'s existing generic ICS connector behind a new opt-in
+`feed_sources.location_per_event` flag
+(`migration_043_feed_sources_location_per_event.sql`). This closes
+`FEED_SUBMISSIONS.md`'s own long-flagged "one feed = one venue" v1
+limitation and `INGESTION_PLATFORM_ARCHITECTURE.md` §7.3's already-stated
+target behavior for multi-venue ICS feeds.
+
+This is deliberately **not** a new Phase 6 WP: it's a correction to the
+existing, already-live, pre-Phase-6 `cron-feeds.js` connector (built for
+migration_008, before this phase existed), not a new platform adapter — so
+it does not, on its own, trigger this phase's hard sequencing rule above.
+It exists specifically so **WP 6.4** (Batch: Tribe tenants) and **WP 6.8**
+(`civicplus` adapter) don't each need to independently derive the same
+LOCATION-string grammars when their time comes — both should call
+`parseIcsLocation`/`resolveVenueFromCandidate` directly rather than
+re-deriving this parsing logic. Two real LOCATION grammars are confirmed
+and covered (Tribe/The Events Calendar's comma-escaped shape; CivicPlus's
+clean dash-separated shape); a third real, confirmed CivicPlus shape
+(editor-entered free text with embedded HTML, observed live in Royal Oak's
+own "Downtown Events" category) is deliberately left unparsed rather than
+guessed at, preserved instead as a sanitized raw-text signal.
+
+Per-feed cross-source duplicate risk (the concern behind this phase's own
+hard sequencing rule) still applies to any specific feed this capability is
+used to onboard — this infrastructure itself adds no cross-source dedupe
+(that remains WP 4.10/Milestone M3, untouched). Feeds are onboarded one at
+a time, by hand, with `location_per_event` set only after review — this is
+not a batch/automatic capability.
+
 ---
 
 ## Technical specification (verbatim from INGESTION_BACKLOG.md — authoritative)

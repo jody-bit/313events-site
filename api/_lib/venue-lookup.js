@@ -325,6 +325,46 @@ function resolveVenueNameFromAddressRepair(event, canonicalMaps) {
   return patch;
 }
 
+// resolveVenueFromCandidate(candidate, canonicalMaps) -> { id, name, address, city } | null
+//
+// Added 2026-09-29 for the per-VEVENT LOCATION resolution shared
+// infrastructure (see api/_lib/ics-location.js and api/cron-feeds.js's
+// icsEventsToRows) -- "canonical venue when confidently matched." Given a
+// candidate { name, address, city } parsed out of one VEVENT's own LOCATION
+// text (never a whole feed's org-level venue_name), resolves it against the
+// canonical venues table using the SAME two exact-match tiers already
+// established elsewhere in this file, in order:
+//   1. candidate.name, exact normalized match against byName (mirrors SH.1's
+//      tier B above).
+//   2. candidate.address+city, exact normalized match against byAddress
+//      (mirrors resolveVenueNameFromAddressRepair's reverse tier above) --
+//      covers a LOCATION whose stated name is a DBA/room name a canonical
+//      name lookup doesn't recognize, but whose address is already known.
+// Either tier being AMBIGUOUS_VENUE_NAME (two+ canonical venues sharing that
+// exact name or address) is treated as unresolved, same as every other
+// consumer of these maps -- never guesses which one. No fuzzy matching, no
+// geocoding, no new tier invented beyond what's already proven elsewhere in
+// this file. Returns null when neither tier resolves; the caller's own job
+// (never this function's) is deciding what to do with an unresolved
+// candidate -- see icsEventsToRows's "honest raw venue" handling.
+function resolveVenueFromCandidate(candidate, canonicalMaps) {
+  if (!candidate) return null;
+  const byName = (canonicalMaps && canonicalMaps.byName) || new Map();
+  const byAddress = (canonicalMaps && canonicalMaps.byAddress) || new Map();
+
+  if (!isBlank(candidate.name)) {
+    const nameKey = normalizeVenueName(candidate.name);
+    const nameMatch = nameKey ? byName.get(nameKey) : null;
+    if (nameMatch && nameMatch !== AMBIGUOUS_VENUE_NAME) return nameMatch;
+  }
+  if (!isBlank(candidate.address)) {
+    const addressKey = normalizeAddressCity(candidate.address, candidate.city);
+    const addressMatch = addressKey ? byAddress.get(addressKey) : null;
+    if (addressMatch && addressMatch !== AMBIGUOUS_VENUE_NAME) return addressMatch;
+  }
+  return null;
+}
+
 // resolveDigitalHomeLink(event, canonicalMaps) -> string | null
 //
 // Last deterministic tier of the ticket/event-link fallback hierarchy (see
@@ -503,6 +543,7 @@ module.exports = {
   buildLearnedVenueAddressCityMap,
   resolveVenueAddressCityRepair,
   resolveVenueNameFromAddressRepair,
+  resolveVenueFromCandidate,
   resolveDigitalHomeLink,
   resolvePublicVenueDisplay,
   mergeVenueIntoMaps,

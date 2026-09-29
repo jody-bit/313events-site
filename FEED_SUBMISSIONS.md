@@ -105,12 +105,25 @@ today — only ICS.
   common case — a feed relying on `RRULE` expansion for far-future dates
   will undercount until re-polled closer to each occurrence.
 - **RSS is schema-ready but not implemented.** See above.
-- **One feed = one venue.** A multi-location organizer's feed will have
-  every event attributed to the single venue name given at submission,
-  regardless of each `VEVENT`'s own `LOCATION` field. Fine for the
-  target case (a single venue registering its own calendar); wrong for an
-  organizer that runs events at several different rooms/venues under one
-  feed. Not solved now — flagged for whoever hits it.
+- **One feed = one venue, UNLESS `location_per_event` is set.**
+  `migration_043_feed_sources_location_per_event.sql` (2026-09-29) added an
+  opt-in per-feed switch for exactly the case this limitation used to
+  describe: an aggregator/organization feed (Tourism Windsor Essex,
+  Downtown Windsor BIA, a CivicPlus municipal calendar, etc.) whose own
+  name is never itself a real event venue. When set, `icsEventsToRows()`
+  resolves each `VEVENT`'s own `LOCATION` (see `api/_lib/ics-location.js`)
+  into that event's venue instead of forcing `feedSource.venue_name` onto
+  every row — a canonical venue match when confidently resolved, the
+  parsed candidate name/address/city verbatim when not, "Venue TBA" only
+  when `LOCATION` is genuinely blank, or the sanitized raw text when
+  `LOCATION` is present but doesn't match either recognized grammar (never
+  discarded, never force-parsed into invented structure). Defaults to
+  `false` for every feed — nothing already approved changes unless an
+  admin explicitly flags it. Still not solved by default for a plain
+  single-venue feed that also happens to run events in a few different
+  rooms under one name (that case still wants the feed's own venue_name,
+  which is why this is opt-in rather than automatic) — flagged for whoever
+  hits that narrower case.
 - **No immediate "preview what this feed contains" step before approval.**
   An admin approving a feed is trusting the URL based on what's in the
   submission form (venue name, notes, a quick manual check of the feed URL
@@ -125,6 +138,15 @@ today — only ICS.
 - `api/submit-feed.js` — submission endpoint.
 - `api/admin-feeds.js` — approval/pause/resume endpoint.
 - `api/cron-feeds.js` — the generic ICS poller.
+- `api/_lib/ics-location.js` (2026-09-29) — per-`VEVENT` `LOCATION` parser
+  for the `location_per_event` feeds above; shared infrastructure also
+  intended for Phase 6's future Tribe (`WP 6.4`) and CivicPlus (`WP 6.8`)
+  batches — see `project/epics/EPIC-001-ingestion-platform-scaling/phase-6-platform-adapters-coverage.md`.
+- `api/_lib/venue-lookup.js` — added `resolveVenueFromCandidate()`, reusing
+  the same exact-match-only tiers as SH.1's own repair, for resolving a
+  per-event `LOCATION` candidate rather than a whole feed's `venue_name`.
+- `supabase/migration_043_feed_sources_location_per_event.sql` — the
+  `location_per_event` opt-in column.
 - `submit.html` — added the tab switcher and the feed-submission form;
   also added `sports` to the shared category list (present in the data
   model since `migration_007_sports_category.sql` but missing from this
