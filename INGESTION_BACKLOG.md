@@ -16,6 +16,16 @@
   - No WP removes a legacy cron until its shadow-parity WP passes.
   - Each WP updates the docs it makes stale. That includes `SERVICE_AREA.md`, `sources.html` and cron headers.
 
+## Outreach-based onboarding candidates (not engineering work)
+
+These aren't WPs — no new code is needed, because `cron-feeds.js` (source_slug `feeds`) and the admin feed-registration path (`api/admin-feeds.js` / `api/submit-feed.js`) already exist and already poll every `feed_sources` row with `status='approved'`. Each item here just needs a human step (an email, a reply with a feed URL) before it becomes a one-time registration, not a build.
+
+| Candidate | Why it's here, not in the phase table | Human step needed | Once done |
+|---|---|---|---|
+| **Scarab Club** (added 2026-09-29, per Facebook-discovery-experiment approval) | Has a working per-event ICS export (`scarabclub.org/calendar`, confirmed in `NEW_SOURCES_RESEARCH.md`), but its `robots.txt` explicitly disallows ~150 named bots/scrapers — a small artist-run nonprofit that deliberately blocked automated access. Scraping around that would be the wrong acquisition mechanism even though the data is technically reachable; a Facebook-keyword-search experiment is an even worse fit for the same reason (same org, same "ask, don't scrape" answer). | Email Scarab Club, ask permission to pull their public ICS feed, get the feed URL. | Register the feed URL via `admin-feeds.js`'s registration action (or `submit-feed.js` if that's the only live path) — `cron-feeds.js` picks it up on its next daily run with zero new code. |
+
+---
+
 ## Phase map
 
 | Phase | Theme | Outcome at phase end | WPs |
