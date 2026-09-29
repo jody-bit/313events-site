@@ -151,6 +151,38 @@ async function run() {
   }
   console.log("PASS: missing Supabase config no-ops cleanly");
 
+  // ============================================================
+  // 7. Outcome-code tally (2026-09-29): every event whose ORIGINAL url
+  //    comes back confirmed dead is tallied into counts.byOutcome under
+  //    exactly one of Jody's 5 codes, whether or not this run also
+  //    issued a write for it.
+  // ============================================================
+  {
+    const candidates = [
+      { id: "evt-6", external_id: "vd-6", title: "Repaired Tour", ticket_url: "https://visitdetroit.com/repaired-tour/", link_check_status: null },
+      { id: "evt-7", external_id: "vd-7", title: "Unrepaired Tour", ticket_url: "https://visitdetroit.com/unrepaired-tour/", link_check_status: null },
+      { id: "evt-8", external_id: "vd-8", title: "Already Known Dead Tour", ticket_url: "https://visitdetroit.com/already-dead-tour/", link_check_status: "dead" },
+    ];
+    const healFn = async ({ url }) => {
+      if (url === "https://visitdetroit.com/repaired-tour/") {
+        return { checked: true, classification: "dead", repaired: true, newUrl: "https://visitdetroit.com/events/repaired-tour/" };
+      }
+      return { checked: true, classification: "dead", repaired: false, newUrl: null };
+    };
+    const applyPatchFn = async () => true;
+    const counts = await repairVisitDetroitDeadLinks({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+      fetchCandidates: async () => candidates,
+      healFn, applyPatchFn,
+    });
+    assert.strictEqual(counts.byOutcome.LINK_DEAD_REPLACED, 1);
+    assert.strictEqual(counts.byOutcome.RECOVERY_UNCERTAIN, 2, "tallied for both the fresh unrepaired dead link AND the already-recorded-dead one -- every dead link this run reasoned about, not just the ones it wrote");
+    assert.strictEqual(counts.byOutcome.LINK_DEAD_REMOVED, 0);
+    assert.strictEqual(counts.byOutcome.EVENT_CONFIRMED_CANCELLED, 0);
+    assert.strictEqual(counts.byOutcome.EVENT_SOURCE_GONE, 0);
+  }
+  console.log("PASS: counts.byOutcome tallies every confirmed-dead link into exactly one of Jody's 5 outcome codes");
+
   console.log("\nvisitdetroit-dead-link-repair.test.js: all assertions passed");
 }
 

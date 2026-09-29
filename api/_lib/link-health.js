@@ -82,6 +82,87 @@ function hostnameOf(url) {
   }
 }
 
+// normalizeForIdentityMatch(str) -> lowercase, HTML-entity-decoded,
+// JSON-backslash-unescaped comparable form of a string.
+//
+// A recovered candidate page's raw HTML almost never repeats a title
+// character-for-character: browsers/CMSes routinely re-encode quotes,
+// ampersands and apostrophes as HTML entities inside <title>/meta tags
+// (`&quot;`, `&amp;`, `&#8217;`...), and a JSON-LD <script> block escapes
+// an internal quote as `\"` rather than `"`. A strategy comparing a DB
+// title against raw fetched HTML with a plain case-insensitive substring
+// search will silently, wrongly reject a genuine match purely because of
+// this encoding noise -- confirmed 2026-09-29 against two real
+// VisitDetroit events ("Wild West" Murder Mystery Interactive Dinner and
+// What We Notice: Living in Art) whose own live /events/ pages matched
+// in every way except this. Decoding first (never the reverse -- this
+// normalizes toward plain text, never toward guessing) keeps the
+// "confirm identity before trusting a recovered link" bar exactly as
+// strict, just no longer defeated by markup escaping.
+function normalizeForIdentityMatch(str) {
+  return String(str)
+    .replace(/\\"/g, '"') // JSON-LD's escaped internal quotes
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;|&apos;/gi, "'")
+    .replace(/&rsquo;|&#8217;|&#x2019;/gi, "'")
+    .replace(/&lsquo;|&#8216;|&#x2018;/gi, "'")
+    .replace(/&ldquo;|&#8220;|&#x201c;/gi, '"')
+    .replace(/&rdquo;|&#8221;|&#x201d;/gi, '"')
+    .replace(/&amp;/gi, "&")
+    .replace(/&nbsp;/gi, " ")
+    .trim()
+    .toLowerCase();
+}
+
+// htmlContainsTitle(html, title) -> boolean
+// The shared identity check a recovery strategy should use before
+// trusting a candidate page: true only if the page's own text confirms
+// the same event title, after normalizing away markup-encoding noise on
+// both sides (see normalizeForIdentityMatch above). Still a strict
+// substring match, still "never guess" -- just no longer fooled by
+// &quot;/&amp;/\" encoding differences between the DB's plain-text title
+// and the page's raw HTML source.
+function htmlContainsTitle(html, title) {
+  if (!title || !String(title).trim()) return false;
+  return normalizeForIdentityMatch(html).includes(normalizeForIdentityMatch(title));
+}
+
+// classifyRecoveryOutcome({ repaired }) -> one of Jody's 5 dead-link
+// recovery outcome codes (2026-09-29 dead-link systematization):
+//   LINK_DEAD_REPLACED         -- a strategy found + revalidated a
+//                                 replacement (repaired === true).
+//   RECOVERY_UNCERTAIN         -- confirmed dead, no strategy could
+//                                 confidently replace it. The safe
+//                                 default for every source/case this
+//                                 project doesn't yet have a positive
+//                                 signal for.
+//   LINK_DEAD_REMOVED,
+//   EVENT_CONFIRMED_CANCELLED,
+//   EVENT_SOURCE_GONE           -- reserved for a FUTURE strategy that
+//                                 can positively assert one of these
+//                                 (e.g. "the source's own listing feed
+//                                 no longer contains this event at all"
+//                                 -> EVENT_SOURCE_GONE; "the source
+//                                 itself marks this event cancelled" ->
+//                                 EVENT_CONFIRMED_CANCELLED). Only ever
+//                                 reachable via strategy-specific code
+//                                 that positively confirms one of these,
+//                                 never inferred from a dead link alone
+//                                 -- per the explicit product rule, a
+//                                 dead ticket/event link by itself is
+//                                 NEVER evidence of cancellation or
+//                                 source removal. Nothing in this
+//                                 project currently produces these two
+//                                 outcomes; the vocabulary is specified
+//                                 now, ahead of any strategy that emits
+//                                 them, so RECOVERY_UNCERTAIN never gets
+//                                 silently reused to mean something more
+//                                 specific once one is added.
+function classifyRecoveryOutcome({ repaired }) {
+  return repaired ? "LINK_DEAD_REPLACED" : "RECOVERY_UNCERTAIN";
+}
+
+
 // healEventUrl({ url, title, fetchFn }) -> {
 //   checked: boolean,       -- false only when url itself was falsy
 //   classification,         -- 'ok' | 'dead' | 'inconclusive' of the
@@ -126,4 +207,13 @@ async function healEventUrl({ url, title, fetchFn = fetch } = {}) {
   return { checked: true, classification: "dead", repaired: true, newUrl: revalidated.finalUrl || candidate };
 }
 
-module.exports = { classifyUrlCheck, checkUrl, healEventUrl, registerRecoveryStrategy, hostnameOf };
+module.exports = {
+  classifyUrlCheck,
+  checkUrl,
+  healEventUrl,
+  registerRecoveryStrategy,
+  hostnameOf,
+  normalizeForIdentityMatch,
+  htmlContainsTitle,
+  classifyRecoveryOutcome,
+};

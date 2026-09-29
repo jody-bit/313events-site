@@ -122,6 +122,62 @@ async function run() {
   }
   console.log("PASS: healEventUrl — dead+recovered+revalidated (repaired), dead+candidate-also-dead (not repaired), dead+no-strategy, inconclusive, and already-ok all behave correctly");
 
+  // ============================================================
+  // Part 4: htmlContainsTitle / normalizeForIdentityMatch -- 2026-09-29
+  // dead-link systematization. A candidate page's raw HTML routinely
+  // re-encodes quotes/ampersands/apostrophes as HTML entities or, inside
+  // a JSON-LD block, as backslash-escaped quotes. A naive substring
+  // match rejects a genuinely-matching page purely because of this
+  // encoding noise -- confirmed against two real VisitDetroit events,
+  // see test/visitdetroit-link-recovery.test.js.
+  // ============================================================
+  {
+    const { htmlContainsTitle, normalizeForIdentityMatch } = freshLinkHealth();
+
+    assert.strictEqual(
+      htmlContainsTitle("<title>&quot;Wild West&quot; Murder Mystery</title>", '"Wild West" Murder Mystery'),
+      true,
+      "HTML-entity-encoded quotes in <title> still match a literally-quoted DB title"
+    );
+    assert.strictEqual(
+      htmlContainsTitle('<script>{"name":"\\"Wild West\\" Murder Mystery"}</script>', '"Wild West" Murder Mystery'),
+      true,
+      "JSON-LD's backslash-escaped quotes still match a literally-quoted DB title"
+    );
+    assert.strictEqual(
+      htmlContainsTitle("<title>Ashley Menth &amp; Tzu Pore</title>", "Ashley Menth & Tzu Pore"),
+      true,
+      "&amp; in raw HTML still matches a title with a literal ampersand"
+    );
+    assert.strictEqual(
+      htmlContainsTitle("<title>Some Completely Different Event</title>", "Christmas Cookie Coach Tour"),
+      false,
+      "normalization never manufactures a match that isn't genuinely there"
+    );
+    assert.strictEqual(htmlContainsTitle("<title>Anything</title>", ""), false, "a blank title never matches -- never guesses");
+    assert.strictEqual(
+      normalizeForIdentityMatch('&quot;A&quot; &amp; \\"B\\"'),
+      '"a" & "b"',
+      "decodes entities/backslash-escapes and lowercases, nothing more"
+    );
+  }
+  console.log("PASS: htmlContainsTitle/normalizeForIdentityMatch -- HTML-entity and JSON-escape encoding noise no longer defeats a genuine identity match");
+
+  // ============================================================
+  // Part 5: classifyRecoveryOutcome -- Jody's 5-code dead-link recovery
+  // outcome vocabulary (2026-09-29). Only ever LINK_DEAD_REPLACED or the
+  // conservative default RECOVERY_UNCERTAIN today -- the other three
+  // codes are reserved for a future strategy that can positively assert
+  // them; nothing here infers cancellation/removal from a dead link
+  // alone.
+  // ============================================================
+  {
+    const { classifyRecoveryOutcome } = freshLinkHealth();
+    assert.strictEqual(classifyRecoveryOutcome({ repaired: true }), "LINK_DEAD_REPLACED");
+    assert.strictEqual(classifyRecoveryOutcome({ repaired: false }), "RECOVERY_UNCERTAIN");
+  }
+  console.log("PASS: classifyRecoveryOutcome -- repaired => LINK_DEAD_REPLACED, unrepaired => RECOVERY_UNCERTAIN (never a guessed cancellation/removal code)");
+
   console.log("\nlink-health.test.js: all assertions passed");
 }
 

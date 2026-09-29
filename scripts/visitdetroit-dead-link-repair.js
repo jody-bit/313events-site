@@ -31,7 +31,7 @@
 //   node scripts/visitdetroit-dead-link-repair.js            (writes)
 //   node scripts/visitdetroit-dead-link-repair.js --dry-run  (reports only)
 
-const { healEventUrl, registerRecoveryStrategy } = require("../api/_lib/link-health");
+const { healEventUrl, registerRecoveryStrategy, classifyRecoveryOutcome } = require("../api/_lib/link-health");
 const { visitDetroitRecoveryStrategy } = require("../api/_lib/visitdetroit-link-recovery");
 
 registerRecoveryStrategy("visitdetroit.com", visitDetroitRecoveryStrategy);
@@ -99,6 +99,24 @@ async function repairVisitDetroitDeadLinks({
     written: 0,
     fieldsWritten: 0,
     writtenIds: [],
+    // Jody's 2026-09-29 dead-link outcome vocabulary -- tallied for every
+    // event whose ORIGINAL url comes back confirmed dead (regardless of
+    // whether this run actually issues a write for it, e.g. an
+    // already-recorded-dead event that's still unrepaired), so the count
+    // reflects every dead link this run reasoned about, not just the
+    // ones it happened to touch. See classifyRecoveryOutcome() in
+    // api/_lib/link-health.js for what each code means and why
+    // LINK_DEAD_REMOVED/EVENT_CONFIRMED_CANCELLED/EVENT_SOURCE_GONE are
+    // currently always 0 (reserved for a future strategy that can
+    // positively assert one of them -- never inferred from a dead link
+    // alone).
+    byOutcome: {
+      LINK_DEAD_REPLACED: 0,
+      LINK_DEAD_REMOVED: 0,
+      EVENT_CONFIRMED_CANCELLED: 0,
+      EVENT_SOURCE_GONE: 0,
+      RECOVERY_UNCERTAIN: 0,
+    },
   };
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -118,6 +136,11 @@ async function repairVisitDetroitDeadLinks({
     if (result.classification === "inconclusive") {
       counts.inconclusive++;
       continue; // never write on an inconclusive check
+    }
+
+    if (result.classification === "dead") {
+      const outcome = classifyRecoveryOutcome({ repaired: result.repaired });
+      counts.byOutcome[outcome]++;
     }
 
     let patchBody;

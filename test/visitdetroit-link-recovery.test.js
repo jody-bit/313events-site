@@ -103,6 +103,59 @@ async function run() {
   }
   console.log("PASS: no code path can produce a generic listing/homepage URL as a \"recovered\" candidate");
 
+  // ============================================================
+  // Real 2026-09-29 regression cases: the two VisitDetroit events Jody
+  // flagged as stuck dead links. Both have real live /events/ pages
+  // (confirmed by direct fetch 2026-09-29), but neither was actually
+  // getting repaired -- for two different reasons, both fixed here.
+  // ============================================================
+
+  // --- "Wild West" Murder Mystery Interactive Dinner: OLD_SHAPE_RE
+  // matches fine (pure-ASCII slug), but the DB title contains literal
+  // quote characters that the live page's raw HTML re-encodes as HTML
+  // entities in <title> and as backslash-escaped quotes in its JSON-LD
+  // block -- a plain substring match against either form silently never
+  // matched a literal `"`. htmlContainsTitle() (api/_lib/link-health.js)
+  // now normalizes both sides before comparing. ---
+  {
+    const realTitle = '"Wild West" Murder Mystery Interactive Dinner';
+    const realHtmlFragment =
+      '<title>&quot;Wild West&quot; Murder Mystery Interactive Dinner | Visit Detroit</title>' +
+      '<script type="application/ld+json">{"name":"\\"Wild West\\" Murder Mystery Interactive Dinner"}</script>';
+    const fetchFn = async (url) => {
+      assert.strictEqual(url, "https://visitdetroit.com/events/wild-west-murder-mystery-interactive-dinner/");
+      return { ok: true, status: 200, text: async () => realHtmlFragment };
+    };
+    const result = await visitDetroitRecoveryStrategy(
+      "https://visitdetroit.com/wild-west-murder-mystery-interactive-dinner/",
+      { title: realTitle, fetchFn }
+    );
+    assert.strictEqual(result, "https://visitdetroit.com/events/wild-west-murder-mystery-interactive-dinner/");
+  }
+  console.log('PASS: "Wild West" Murder Mystery Interactive Dinner recovers despite &quot;/\\" quote-encoding in the candidate page');
+
+  // --- What We Notice: Living in Art - Ashley Menth & Tzu Pore: the DB's
+  // stored dead URL contains a non-ASCII slug character (an accented e),
+  // which the old [a-z0-9-]-only OLD_SHAPE_RE silently refused to match
+  // at all -- never even attempting a candidate. The Unicode-aware
+  // pattern now recognizes it, and the candidate's JSON-LD (which spells
+  // the ampersand literally, unescaped) confirms identity. ---
+  {
+    const deadUrl = "https://visitdetroit.com/what-we-notice-living-in-art-ashley-menth-tzu-por\u00e9/";
+    const candidateUrl = "https://visitdetroit.com/events/what-we-notice-living-in-art-ashley-menth-tzu-por\u00e9/";
+    const realTitle = "What We Notice: Living in Art - Ashley Menth & Tzu Por\u00e9";
+    const realHtmlFragment =
+      '<title>What We Notice: Living in Art - Ashley Menth &amp; Tzu Por\u00e9 | Visit Detroit</title>' +
+      '<script type="application/ld+json">{"name":"What We Notice: Living in Art - Ashley Menth & Tzu Por\u00e9"}</script>';
+    const fetchFn = async (url) => {
+      assert.strictEqual(url, candidateUrl);
+      return { ok: true, status: 200, text: async () => realHtmlFragment };
+    };
+    const result = await visitDetroitRecoveryStrategy(deadUrl, { title: realTitle, fetchFn });
+    assert.strictEqual(result, candidateUrl);
+  }
+  console.log("PASS: What We Notice: Living in Art recovers now that OLD_SHAPE_RE accepts a non-ASCII slug character");
+
   console.log("\nvisitdetroit-link-recovery.test.js: all assertions passed");
 }
 
