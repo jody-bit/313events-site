@@ -4,6 +4,18 @@ Running list of requested features/improvements not yet implemented. Add new ite
 
 ---
 
+## 2026-09-29
+
+### 6. RA sync: distinguish an interrupted detail batch from a fully-completed one
+
+Logged low-priority per the Product Owner's explicit instruction while closing out the 2026-09-29 RA sync incident (see `ra-sync/README.md`'s "2026-09-29 repair" section and commit `77c0044`) -- do not implement, just track.
+
+Today's fix made `completeRaSyncSession()` close a session as `outcome: 'partial'` specifically when it expected new ids but addressed literally zero of them (the exact shape a mid-run DataDome block produces). What it does NOT yet do: distinguish, within a batch that got SOME detail pages before being blocked (e.g. 18 of this run's 30 capped ids completed, then RA blocked the rest), whether that partial batch was ever finished later vs. permanently abandoned partway. Right now that case already reads back honestly as `outcome: 'success'` with `records_written` less than the batch size (never misrepresented as fully done) -- so this isn't a correctness bug, more a missing observability nuance: Admin (`api/admin-ra.js`) and Jody currently can't tell "a capped batch that was always meant to be partial and will fully resolve via tomorrow's fresh diff" apart from "a batch that got cut short mid-flight and whose un-submitted remainder needs distinct visibility" just by looking at one run's summary.
+
+**Ask:** revisit RA sync run-outcome semantics so an interrupted/cut-short detail batch (some ids attempted, run stopped before reaching all of this run's own capped `ids`) can eventually be told apart from a batch that was always fully requested and fully completed -- likely needs `completeRaSyncSession()` to know how many of the session's `newIds` were ever attempted (vs. addressed), not just how many were addressed, since today's fix only covers the all-or-nothing zero-progress case.
+
+---
+
 ## 2026-09-13
 
 ### 5. Visitor profiles + social chat/engagement ("MySpace vibe")
