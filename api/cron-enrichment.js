@@ -111,12 +111,30 @@ module.exports = async (req, res) => {
     genericEnrichmentError = genericErr.message;
   }
 
+  // 2026-09-30 ("self-healing/enrichment pivot" root-cause fix -- see
+  // NEEDS_FOLLOWUP_ROOT_CAUSE.md and scripts/venue-raw-reparse-repair.js's
+  // own header): same generalized re-parse step api/admin-events.js's
+  // "auto_repair_venue" action now also runs (its Step 7) -- re-runs the
+  // now-fixed api/_lib/ics-location.js parser against any event whose
+  // venue_name_raw is still holding an un-split raw location string from
+  // before the grammar fix landed. Same failure isolation as every other
+  // step above.
+  let venueRawReparseCounts = null;
+  let venueRawReparseError = null;
+  try {
+    const { repairVenueRawReparse } = require("../scripts/venue-raw-reparse-repair");
+    venueRawReparseCounts = await repairVenueRawReparse({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+  } catch (reparseErr) {
+    venueRawReparseError = reparseErr.message;
+  }
+
   const venueWrittenIds = venueCounts.writtenIds || [];
   const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
   const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
   const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
   const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
-  const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds]);
+  const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
+  const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds]);
 
   res.status(200).json({
     ok: true,
@@ -130,5 +148,7 @@ module.exports = async (req, res) => {
     redfordMetadataError,
     genericEnrichment: genericCounts,
     genericEnrichmentError,
+    venueRawReparse: venueRawReparseCounts,
+    venueRawReparseError,
   });
 };

@@ -102,13 +102,101 @@ function collapseWhitespace(str) {
   return str.replace(/\s+/g, " ").trim();
 }
 
-// Requires a 2-letter region code as its confidence anchor (the one real
-// fixture this was built against uses "ON") -- deliberately narrow, same
-// "never guess" posture as every extractor elsewhere in this project; a
-// feed spelling out a full region name falls through to "unparseable"
-// (safe and honest) rather than this grammar mismatching it.
-const TRIBE_LOCATION_RE =
-  /^(.+?),\s*(.+?),\s*([^,]+),\s*([A-Za-z]{2}),\s*([A-Za-z0-9 -]+?)(?:,\s*(.+))?$/;
+// 2026-09-30 root-cause fix (self-healing/enrichment pivot -- see
+// NEEDS_FOLLOWUP_ROOT_CAUSE.md): the original TRIBE_LOCATION_RE anchored
+// its confidence entirely on a strict 2-letter region code as the 4th
+// comma-separated segment. That anchor is real (Windsor Symphony
+// Orchestra's own feed does use "ON"), but two OTHER live, currently-
+// registered Tribe/Events-Calendar feeds use the exact same "Venue,
+// Street, City, ...[, Country]" grammar with a region field shaped
+// differently, confirmed against real production LOCATION values:
+//   - Downtown Windsor BIA: spells the region out in full ("Ontario"),
+//     never abbreviates it.
+//   - Eastern Market Partnership: omits the region token ENTIRELY --
+//     "<Venue>, <Street>, <City>, <Zip>, <Country>", four trailing fields
+//     worth of structure, not five.
+// Same grammar family, not a new/different shape -- fixed by relaxing how
+// the region/postal/country tail is recognized, not by adding a second
+// regex. Confirmed downstream (resolveIcsEventVenue in cron-feeds.js):
+// region/postal/country are NEVER used past this module -- only
+// candidateName/candidateAddress/candidateCity ever reach canonical venue
+// resolution or the venue_address_raw/venue_city_raw columns -- so
+// getting those three right is what actually matters; region/postal/
+// country are kept only because callers/tests already read them.
+//
+// New confidence anchor, replacing "region must be exactly 2 letters": at
+// least one trailing (post-city) segment must look like a real postal/zip
+// code (US 5-digit, or Canadian letter-digit-letter[ ]digit-letter-digit)
+// OR a bare 2-letter region code. Requiring name + street + city PLUS a
+// postal-shaped or region-shaped trailing token is at least as strong a
+// signal of genuine structured venue data as the old check -- still a
+// closed, specific pattern, never a guess.
+const US_ZIP_RE = /\b\d{5}(?:-\d{4})?\b/;
+// Deliberately no leading \b -- a real Downtown Windsor BIA LOCATION
+// glues the city name directly onto the postal code with no space
+// ("WindN9A 5S8", i.e. the source feed's own "Windsor" + "N9A 5S8" with
+// the space dropped), which would never satisfy a leading word boundary.
+// The pattern itself (letter-digit-letter, optional space,
+// digit-letter-digit) is specific enough not to false-positive on
+// ordinary prose even without a boundary anchor.
+const CA_POSTAL_RE = /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/;
+const REGION_CODE_RE = /^[A-Za-z]{2}$/;
+
+function looksLikePostal(segment) {
+  return US_ZIP_RE.test(segment) || CA_POSTAL_RE.test(segment);
+}
+
+// Best-effort split of whatever trails name/street/city into
+// region/postal/country. Never fails the overall parse on its own -- by
+// the time this runs, the anchor in tryTribeGrammar has already confirmed
+// real structure is present; this only decides which trailing field is
+// which, and downstream code never depends on getting that exactly right
+// (see header comment above).
+function classifyTrailingSegments(rest) {
+  if (rest.length >= 3) {
+    // Original, most common shape: region, postal, country in that order
+    // (e.g. "ON, N9A 5P4, Canada") -- same field assignment as the
+    // original regex.
+    return { region: rest[0], postal: rest[1], country: rest[rest.length - 1] };
+  }
+  if (rest.length === 2) {
+    const [a, b] = rest;
+    if (looksLikePostal(a) && !looksLikePostal(b)) return { region: null, postal: a, country: b };
+    if (looksLikePostal(b) && !looksLikePostal(a)) return { region: a, postal: b, country: null };
+    return { region: a, postal: b, country: null };
+  }
+  if (rest.length === 1) {
+    return looksLikePostal(rest[0])
+      ? { region: null, postal: rest[0], country: null }
+      : { region: rest[0], postal: null, country: null };
+  }
+  return { region: null, postal: null, country: null };
+}
+
+// Positional split, not a single greedy regex -- lets name/street/city
+// stay simple, required, non-empty fields regardless of how many (if any)
+// trailing region/postal/country fields follow, and however they're
+// spelled.
+function tryTribeGrammar(cleaned) {
+  const segments = cleaned.split(",").map((s) => s.trim());
+  if (segments.length < 4) return null; // need name, street, city, + at least one trailing field to anchor on
+  const [name, address, city, ...rest] = segments;
+  if (!name || !address || !city) return null;
+  const trailing = rest.filter((s) => s.length > 0);
+  if (!trailing.length) return null;
+  const hasAnchor = trailing.some((s) => looksLikePostal(s) || REGION_CODE_RE.test(s));
+  if (!hasAnchor) return null; // real structure unconfirmed -- fall through to unparseable, never guess
+  const { region, postal, country } = classifyTrailingSegments(trailing);
+  return {
+    status: "parsed",
+    candidateName: name,
+    candidateAddress: address,
+    candidateCity: city,
+    candidateRegion: region,
+    candidatePostal: postal,
+    candidateCountry: country,
+  };
+}
 
 // Requires: <name> - <digit-led street> <2+ spaces> <city words> <2-letter
 // state> <5-digit zip[-4]>. The double-space and the digit-led street are
@@ -122,18 +210,8 @@ function parseIcsLocation(raw) {
   const cleaned = lightlyClean(raw).trim();
   if (!cleaned) return { status: "blank" };
 
-  const tribe = TRIBE_LOCATION_RE.exec(cleaned);
-  if (tribe) {
-    return {
-      status: "parsed",
-      candidateName: tribe[1].trim(),
-      candidateAddress: tribe[2].trim(),
-      candidateCity: tribe[3].trim(),
-      candidateRegion: tribe[4].trim(),
-      candidatePostal: tribe[5].trim(),
-      candidateCountry: tribe[6] ? tribe[6].trim() : null,
-    };
-  }
+  const tribe = tryTribeGrammar(cleaned);
+  if (tribe) return tribe;
 
   const civicplus = CIVICPLUS_LOCATION_RE.exec(cleaned);
   if (civicplus) {

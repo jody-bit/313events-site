@@ -101,6 +101,54 @@ function run() {
     assert.ok(!result.rawText.includes("&nbsp;"), "HTML entities must be decoded, not left literal");
   }
 
+  // --- 6. Tribe grammar, region spelled out in full rather than
+  //     abbreviated (real Downtown Windsor BIA LOCATION, captured live
+  //     2026-09-30 -- root-cause fix for the "68 actionable Needs
+  //     Follow-up, Auto-Repair fixed 0" investigation). The old regex
+  //     required an exact 2-letter region code and fell through to
+  //     "unparseable" for every event from this feed; name/address/city
+  //     must still resolve correctly even though region/postal here are
+  //     unusual (a full province name, and a postal code the source feed
+  //     itself glued onto the city with no space). ---
+  {
+    const result = parseIcsLocation(
+      "Windsor Public Library, 185 Ouellette Ave, Windsor, Ontario, WindN9A 5S8, Canada"
+    );
+    assert.strictEqual(result.status, "parsed");
+    assert.strictEqual(result.candidateName, "Windsor Public Library");
+    assert.strictEqual(result.candidateAddress, "185 Ouellette Ave");
+    assert.strictEqual(result.candidateCity, "Windsor");
+  }
+
+  // --- 7. Tribe grammar with NO region field at all (real Eastern Market
+  //     Partnership LOCATION, captured live 2026-09-30 -- same root-cause
+  //     fix): "<Venue>, <Street>, <City>, <Zip>, <Country>" -- four
+  //     trailing fields, not five. Must still parse on the strength of the
+  //     zip code alone as the confidence anchor. ---
+  {
+    const result = parseIcsLocation(
+      "Cool Cities / Hope Village, 14150 Woodrow Wilson, Detroit, 48238, United States"
+    );
+    assert.strictEqual(result.status, "parsed");
+    assert.strictEqual(result.candidateName, "Cool Cities / Hope Village");
+    assert.strictEqual(result.candidateAddress, "14150 Woodrow Wilson");
+    assert.strictEqual(result.candidateCity, "Detroit");
+    assert.strictEqual(result.candidateRegion, null);
+    assert.strictEqual(result.candidatePostal, "48238");
+    assert.strictEqual(result.candidateCountry, "United States");
+  }
+
+  // --- 8. Regression guard: ordinary 4+-clause prose with no postal/
+  //     region-shaped trailing segment must still fall through to
+  //     "unparseable" rather than being force-parsed now that the region
+  //     anchor has been relaxed. ---
+  {
+    const result = parseIcsLocation(
+      "Join us downtown, near the river, after the parade, before sunset"
+    );
+    assert.strictEqual(result.status, "unparseable");
+  }
+
   console.log("ics-location.test.js: all assertions passed");
 }
 

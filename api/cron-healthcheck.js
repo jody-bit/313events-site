@@ -91,6 +91,15 @@ const CRON_ENDPOINTS = [
   "cron-cinema-detroit", "cron-dossin", "cron-feeds", "cron-editorial",
   "cron-lagerhouse", "cron-detroitmonthofdesign", "cron-planetanttheatre",
   "cron-playgrounddetroit", "cron-visitdetroit", "cron-post-to-facebook",
+  // 2026-09-30 (monitoring-gap fix, prompted by Jody's question "does the
+  // current smoke/source-health system alert us if RA stops syncing
+  // successfully, including a partial run caused by DataDome or RA
+  // becoming stale?" -- the honest answer before this change was no, on
+  // every axis this file checks): api/cron-ra.js's own auth boundary was
+  // never in this list, so a CRON_SECRET regression on the RA endpoint
+  // specifically would have gone uncaught even though every other cron's
+  // was covered.
+  "cron-ra",
 ];
 const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial", "admin-venues"];
 const PAGES = ["/", "/calendar.html", "/map.html", "/submit.html", "/sources.html", "/event.html", "/admin.html"];
@@ -196,6 +205,17 @@ const SOURCE_FRESHNESS_TARGETS = [
   { source: "Rock In Detroit (rockindetroit.com/venue/old-miami)", days: SOURCE_FRESHNESS_DAYS_QUIET },
   { source: "Popps Packing", days: SOURCE_FRESHNESS_DAYS_QUIET },
   { source: "Trinosophes", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  // 2026-09-30 (monitoring-gap fix): Resident Advisor was the one
+  // registered, real, already-running source with NO entry anywhere in
+  // this file -- not here, not in SOURCE_NAME_TO_SLUG below, not in
+  // CRON_ENDPOINTS above -- despite scripts/ra-sync.js already logging
+  // every session to source_runs via SLUGS.residentAdvisor. QUIET (7d),
+  // not DEFAULT: RA sync is device-browser-driven, not a fully unattended
+  // Vercel cron (see scripts/ra-sync.js's own header), so its real cadence
+  // is inherently less regular than the other sources in this list --
+  // same "avoid paging over a normal quiet week" reasoning this file
+  // already documents for small single-venue calendars above.
+  { source: "Resident Advisor", days: SOURCE_FRESHNESS_DAYS_QUIET },
 ];
 
 // ADVISORY ONLY, by design (see 2026-09-23 header comment above): this never
@@ -293,10 +313,35 @@ function evaluateRunHealth(row, target) {
     );
   }
 
-  // outcome is 'success' or 'partial' -- healthy, regardless of how many
-  // records it saw/wrote, UNLESS the run itself is older than this source's
-  // own expected interval (i.e. the cron has stopped running, not "ran and
-  // found nothing").
+  // 2026-09-30 (monitoring-gap fix, prompted by Jody's question about
+  // whether a DataDome-caused partial RA run gets caught): 'partial' with
+  // records_written EXPLICITLY 0 is the one real, documented zero-progress
+  // case -- scripts/ra-sync.js's own header spells this out verbatim: "What
+  // must NEVER read back as success is the specific zero-progress case...
+  // both Admin and the lastSuccessfulRun query need to see that honestly
+  // rather than count it as a real completed sync." Before this change,
+  // this function's own comment below said the opposite ("'partial' --
+  // healthy, regardless of how many records it saw/wrote"), so the one
+  // failure mode actually observed in production (DataDome blocking every
+  // detail-page fetch, imported: 0) would have kept reporting green even
+  // once RA was added to the checked-source list above. This is a general
+  // rule, not RA-specific -- records_written is a generic run-log.js field,
+  // and zero real database writes on a run that expected to make some is
+  // never a healthy signal for any source, so this applies the same way to
+  // every source_runs-backed check in this file. Strictly `=== 0`, never
+  // null/undefined (a connector that doesn't report this field at all is a
+  // different, non-diagnostic case -- not conflated with proven zero
+  // progress).
+  if (row.outcome === "partial" && row.records_written === 0) {
+    throw new Error(
+      `last run for ${target.source} completed with outcome=partial but wrote 0 records -- zero real progress (e.g. an anti-bot block before any detail page came back), not a healthy partial`
+    );
+  }
+
+  // outcome is 'success' or a genuine 'partial' (made SOME real progress) --
+  // healthy, regardless of how many records it saw/wrote, UNLESS the run
+  // itself is older than this source's own expected interval (i.e. the
+  // cron has stopped running, not "ran and found nothing").
   const maxAgeMs = target.days * 24 * 60 * 60 * 1000;
   if (ageMs > maxAgeMs) {
     throw new Error(
@@ -326,6 +371,13 @@ const SOURCE_NAME_TO_SLUG = {
   "Detroit Historical Society": SLUGS.dossin,
   "Lager House": SLUGS.lagerhouse,
   Trinosophes: SLUGS.trinosophes,
+  // 2026-09-30 (monitoring-gap fix) -- see SOURCE_FRESHNESS_TARGETS' own
+  // comment above. scripts/ra-sync.js already calls startRun(SLUGS.
+  // residentAdvisor)/finishRun() on every real session; this just makes
+  // checkSourceHealth() actually look it up instead of falling back to the
+  // advisory-only freshness check every other now-registered source moved
+  // off of.
+  "Resident Advisor": SLUGS.residentAdvisor,
 };
 
 // checkSourceHealth(target) -> Promise<string detail>, or throws (a failure)

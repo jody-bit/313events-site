@@ -221,6 +221,53 @@ async function run() {
   }
   console.log("PASS: SOURCE_NAME_TO_SLUG entries are all real registered slugs and all correspond to an actual freshness target");
 
+  // --- 19. 2026-09-30 monitoring-gap fix: a 'partial' run that wrote
+  //     ZERO records (the real, observed DataDome-block shape -- see
+  //     scripts/ra-sync.js's own outcome logic) must FAIL, not read as
+  //     healthy. This is the exact gap Jody asked about directly. ---
+  {
+    const row = { started_at: isoMinutesAgo(10), finished_at: isoMinutesAgo(9), outcome: "partial", records_written: 0 };
+    assert.throws(
+      () => evaluateRunHealth(row, { source: "Resident Advisor", days: 7 }),
+      /wrote 0 records|zero real progress/,
+      "a partial run with records_written=0 must fail — zero real progress, e.g. an anti-bot block before any detail page came back"
+    );
+  }
+  console.log("PASS: outcome=partial with records_written=0 fails — zero-progress partial (the DataDome case) is never silently healthy");
+
+  // --- 20. the same zero-progress rule applies generically, not just to
+  //     Resident Advisor -- records_written is a generic run-log.js field. ---
+  {
+    const row = { started_at: isoMinutesAgo(10), finished_at: isoMinutesAgo(9), outcome: "partial", records_written: 0 };
+    assert.throws(
+      () => evaluateRunHealth(row, { source: "Cinema Detroit", days: 7 }),
+      /wrote 0 records/,
+      "zero-progress partial must fail for any source_runs-backed check, not only Resident Advisor"
+    );
+  }
+  console.log("PASS: zero-progress partial fails generically, for any source, not just Resident Advisor");
+
+  // --- 21. a partial run with records_written=null (connector doesn't
+  //     report the field at all) is a DIFFERENT, non-diagnostic case --
+  //     must NOT be conflated with proven zero progress. ---
+  {
+    const row = { started_at: isoMinutesAgo(10), finished_at: isoMinutesAgo(9), outcome: "partial", records_written: null };
+    const detail = evaluateRunHealth(row, { source: "Cinema Detroit", days: 7 });
+    assert.ok(/partial/.test(detail), "records_written=null must not be treated the same as records_written=0 — it's 'unreported', not 'proven zero'");
+  }
+  console.log("PASS: outcome=partial with records_written=null (unreported) stays healthy — not conflated with proven zero progress");
+
+  // --- 22. Resident Advisor is now a registered check, closing the gap
+  //     directly: mapped to its real slug, and present in the freshness
+  //     target list (so it isn't silently skipped). ---
+  {
+    const { SLUGS } = require(`${REPO_DIR}/api/_lib/source-slugs.js`);
+    assert.strictEqual(SOURCE_NAME_TO_SLUG["Resident Advisor"], SLUGS.residentAdvisor);
+    const target = SOURCE_FRESHNESS_TARGETS.find((t) => t.source === "Resident Advisor");
+    assert.ok(target, "Resident Advisor must be in SOURCE_FRESHNESS_TARGETS");
+  }
+  console.log("PASS: Resident Advisor is registered (SOURCE_NAME_TO_SLUG + SOURCE_FRESHNESS_TARGETS) — no longer invisible to the smoke suite");
+
   console.log("\nAll cron-healthcheck source-health tests passed.");
 }
 

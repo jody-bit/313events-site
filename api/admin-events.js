@@ -526,20 +526,53 @@ let genericCounts = null;
           visitDetroitLinkError = linkErr.message;
         }
 
+        // Step 7 (2026-09-30, "self-healing/enrichment pivot" root-cause
+        // fix -- see NEEDS_FOLLOWUP_ROOT_CAUSE.md): venue raw location
+        // re-parse (scripts/venue-raw-reparse-repair.js's
+        // repairVenueRawReparse()). api/_lib/ics-location.js's per-VEVENT
+        // LOCATION grammars were too narrow for several already-live
+        // multi-venue feeds (a region spelled out in full instead of
+        // abbreviated; a Tribe-style location with no region field at
+        // all) -- real address/city text fell through to the safe
+        // "unparseable" fallback and got written WHOLE into
+        // venue_name_raw instead of being split out. That grammar gap is
+        // now fixed directly in ics-location.js, so every newly-ingested
+        // event benefits automatically; this step gives EVERY event
+        // already stuck with a raw, unsplit location string in
+        // venue_name_raw (venue_id/venue_address_raw/venue_city_raw all
+        // still null) one more chance at the same parser, now that it
+        // recognizes their shape -- literally no new repair logic, just
+        // re-running the (now-fixed) shared parser against evidence
+        // already sitting on the row. Same failure-isolation pattern as
+        // Steps 2-6.
+        let venueRawReparseCounts = null;
+        let venueRawReparseError = null;
+        try {
+          const { repairVenueRawReparse } = require("../scripts/venue-raw-reparse-repair");
+          venueRawReparseCounts = await repairVenueRawReparse({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (reparseErr) {
+          // Same isolation as Steps 2-6's own failure handling -- never
+          // lets this step's failure erase Steps 1-6's real,
+          // already-persisted results.
+          venueRawReparseError = reparseErr.message;
+        }
+
         const venueWrittenIds = venueCounts.writtenIds || [];
         const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
         const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
         const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
         const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
         const visitDetroitLinkWrittenIds = (visitDetroitLinkCounts && visitDetroitLinkCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds]);
+        const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds, ...venueRawReparseWrittenIds]);
         const combinedFieldsWritten =
           venueCounts.fieldsWritten +
           ((descriptionCounts && descriptionCounts.written) || 0) +
           ((dossinCounts && dossinCounts.written) || 0) +
           ((redfordCounts && redfordCounts.fieldsWritten) || 0) +
           ((genericCounts && genericCounts.fieldsWritten) || 0) +
-          ((visitDetroitLinkCounts && visitDetroitLinkCounts.fieldsWritten) || 0);
+          ((visitDetroitLinkCounts && visitDetroitLinkCounts.fieldsWritten) || 0) +
+          ((venueRawReparseCounts && venueRawReparseCounts.written) || 0);
 
         res.status(200).json({
           ok: true,
@@ -557,6 +590,8 @@ let genericCounts = null;
           genericEnrichmentError,
           visitDetroitDeadLinks: visitDetroitLinkCounts,
           visitDetroitLinkError,
+          venueRawReparse: venueRawReparseCounts,
+          venueRawReparseError,
         });
       } catch (err) {
         res.status(500).json({ error: err.message });
