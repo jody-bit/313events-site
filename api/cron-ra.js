@@ -73,19 +73,8 @@ function checkAuth(req, res) {
     res.status(500).json({ error: "CRON_SECRET not configured on the server." });
     return false;
   }
-  const auth = req.headers["authorization"] || "";
-  const receivedToken = auth.startsWith("Bearer ") ? auth.slice(7) : auth;
-  const match = timingSafeStringEqual(auth, `Bearer ${CRON_SECRET}`);
-  // TEMPORARY DIAGNOSTIC (RA_AUTH_DEBUG) -- added 2026-09-30 to isolate a
-  // CRON_SECRET mismatch between GitHub Actions and Vercel Production.
-  // Server-side log only -- never returned in the HTTP response. Logs
-  // presence/length/match only, never the secret value, prefix, suffix,
-  // hash, or any recoverable credential material. REMOVE after the
-  // mismatch is found and fixed -- see ra-sync/README.md / chat history.
-  console.log(
-    `RA_AUTH_DEBUG: expectedPresent=${!!CRON_SECRET} expectedLength=${CRON_SECRET.length} receivedPresent=${!!auth} receivedLength=${receivedToken.length} match=${match}`
-  );
-  if (!match) {
+  const auth = req.headers["authorization"];
+  if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
     res.status(401).json({ error: "Unauthorized" });
     return false;
   }
