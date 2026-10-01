@@ -68,6 +68,23 @@ const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}/;
 // needed.
 const SESSION_LOOKBACK = 5;
 
+// RA_CANDIDATE_PROMOTION_MAX_PER_RUN (2026-10-01, V1 experiment cap --
+// Product Owner decision). Caps how many genuinely-new, deduped-clean RA
+// candidates may actually become pending_review rows in ONE promotion
+// run. Deliberately separate from, and applied strictly AFTER, both the
+// existing-RA-row check and findConservativeDuplicate -- this cap never
+// changes who counts as a duplicate or who lacks identity data, it only
+// ever limits how many of the genuinely-eligible candidates get written
+// this run. Selection is deterministic (allNewIds' own order -- RA's own
+// listing order, soonest-event-first, per scripts/ra-sync.js's own
+// header note on why no separate backlog-priority mechanism was ever
+// needed) -- never random, and stable run to run for the same backlog.
+// A candidate beyond the cap is NOT touched in any way (not marked
+// duplicate, not marked resolved, no row of any kind) -- it is simply
+// still in tomorrow's allNewIds, exactly as if this run had never seen
+// it, because nothing here ever writes anything for it.
+const DEFAULT_MAX_PER_RUN = Number(process.env.RA_CANDIDATE_PROMOTION_MAX_PER_RUN) || 10;
+
 // getLatestRaSession(SUPABASE_URL, KEY, fetchFn) -> { id, allNewIds, listingMetadata } | null
 //
 // The most recent Resident Advisor source_runs row (by started_at desc,
@@ -148,6 +165,7 @@ async function promoteRaCandidates({
   findConservativeDuplicateFn = findConservativeDuplicate,
   deriveCategoryFn = deriveCategory,
   insertCandidateRowFn = insertCandidateRow,
+  maxPerRun = DEFAULT_MAX_PER_RUN,
 } = {}) {
   // SAFETY GATE (2026-10-01): Product Owner decision 1/2 is explicit --
   // pending_review auto-creation is approved for THIS MVP, but must not
@@ -179,7 +197,15 @@ async function promoteRaCandidates({
     insufficientIdentityIds: [],
     duplicates: 0,
     duplicateDetail: [],
+    // "promotable" keeps its existing meaning: every candidate that
+    // passed BOTH the already-present check and conservative dedupe --
+    // i.e. everyone who is genuinely eligible, before the per-run cap is
+    // ever applied. promoted + deferredByCap always equals promotable.
     promotable: 0,
+    promoted: 0,
+    deferredByCap: 0,
+    deferredByCapIds: [],
+    maxPerRun,
     written: 0,
     writtenIds: [],
     dryRun: effectiveDryRun,
@@ -248,6 +274,22 @@ async function promoteRaCandidates({
 
     counts.promotable++;
 
+    // Per-run cap -- checked strictly AFTER existing-RA detection (the
+    // alreadyPresent check above) and conservative cross-source dedupe
+    // (the findConservativeDuplicate check above). A candidate deferred
+    // here is counted and named (deferredByCapIds) but otherwise
+    // completely untouched -- no row, no other write, no state change of
+    // any kind -- so it is exactly as eligible on a later run as it is
+    // right now. This check runs identically in dry-run mode (it's a
+    // SELECTION decision, not a write decision), so a dry run reports
+    // the same promoted/deferredByCap split a real run would produce.
+    if (counts.promoted >= maxPerRun) {
+      counts.deferredByCap++;
+      counts.deferredByCapIds.push(id);
+      continue;
+    }
+    counts.promoted++;
+
     const note = buildRaDiscoveryNote({ raId: id, raUrl: meta.url || null, presentFields });
     const row = {
       ...draftRow,
@@ -273,6 +315,7 @@ module.exports = {
   getLatestRaSession,
   insertCandidateRow,
   SESSION_LOOKBACK,
+  DEFAULT_MAX_PER_RUN,
 };
 
 if (require.main === module) {

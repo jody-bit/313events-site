@@ -148,6 +148,91 @@ async function run() {
   console.log("\nAll ra-candidate-promotion.js tests passed.");
 }
 
+// RA_CANDIDATE_PROMOTION_MAX_PER_RUN tests (2026-10-01, V1 experiment cap).
+async function runMaxPerRunTests() {
+  process.env.RA_CANDIDATE_PROMOTION_ENABLED = "true";
+  const lib = freshLib();
+
+  // A backlog with 5 genuinely eligible candidates (after a duplicate and
+  // an insufficient-identity one are already filtered out upstream), a
+  // cap of 2 -- deterministic: the FIRST 2 eligible ids in allNewIds'
+  // own order are promoted, the rest are deferred, untouched.
+  const session = {
+    id: "run-cap",
+    allNewIds: ["ra-3000", "ra-3001", "ra-3002", "ra-3003", "ra-3004", "ra-3005", "ra-3006"],
+    listingMetadata: {
+      "ra-3000": { title: "Cap Test Show A", date: "2026-12-01T00:00:00.000", venueName: "Venue A" },
+      "ra-3001": { title: "No Date Show" }, // insufficient identity -- must never count against the cap
+      "ra-3002": { title: "Cap Test Show B", date: "2026-12-02T00:00:00.000", venueName: "Venue B" },
+      "ra-3003": { title: "Dup Show", date: "2026-12-03T00:00:00.000", venueName: "Venue C" }, // duplicate -- must never count against the cap
+      "ra-3004": { title: "Cap Test Show C", date: "2026-12-04T00:00:00.000", venueName: "Venue D" },
+      "ra-3005": { title: "Cap Test Show D", date: "2026-12-05T00:00:00.000", venueName: "Venue E" },
+      "ra-3006": { title: "Cap Test Show E", date: "2026-12-06T00:00:00.000", venueName: "Venue F" },
+    },
+  };
+
+  {
+    const inserted = [];
+    const counts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      maxPerRun: 2,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(),
+      findConservativeDuplicateFn: async (u, k, row) => (row.external_id === "ra-3003" ? { id: "evt-legacy", title: "x" } : null),
+      insertCandidateRowFn: async (u, k, row) => { inserted.push(row.external_id); return true; },
+    });
+
+    assert.strictEqual(counts.insufficientIdentity, 1);
+    assert.strictEqual(counts.duplicates, 1);
+    assert.strictEqual(counts.promotable, 5, "promotable must count every eligible candidate, BEFORE the cap is applied");
+    assert.strictEqual(counts.promoted, 2, "only maxPerRun candidates may actually be selected");
+    assert.strictEqual(counts.deferredByCap, 3, "the rest of the eligible candidates must be explicitly counted as deferred, not silently dropped");
+    assert.strictEqual(counts.promoted + counts.deferredByCap, counts.promotable, "promoted + deferredByCap must always equal promotable");
+    assert.deepStrictEqual(counts.deferredByCapIds, ["ra-3004", "ra-3005", "ra-3006"], "selection must be deterministic -- the FIRST eligible ids in allNewIds order are promoted, not random");
+    assert.deepStrictEqual(inserted, ["ra-3000", "ra-3002"], "exactly the first 2 eligible ids must actually be written");
+    assert.strictEqual(counts.written, 2);
+    assert.strictEqual(counts.maxPerRun, 2);
+  }
+  console.log("PASS: RA_CANDIDATE_PROMOTION_MAX_PER_RUN -- cap applies strictly after existing-RA and dedupe checks, deterministic selection, rest deferred and untouched");
+
+  // dryRun must respect and report the identical cap/split, writing nothing.
+  {
+    const inserted = [];
+    const counts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      dryRun: true,
+      maxPerRun: 2,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(),
+      findConservativeDuplicateFn: async (u, k, row) => (row.external_id === "ra-3003" ? { id: "evt-legacy", title: "x" } : null),
+      insertCandidateRowFn: async (u, k, row) => { inserted.push(row.external_id); return true; },
+    });
+    assert.strictEqual(counts.promoted, 2, "dry-run must report the same selection the real run would make");
+    assert.strictEqual(counts.deferredByCap, 3);
+    assert.deepStrictEqual(counts.deferredByCapIds, ["ra-3004", "ra-3005", "ra-3006"]);
+    assert.strictEqual(counts.written, 0, "dry-run must never actually write");
+    assert.strictEqual(inserted.length, 0, "dry-run must never call insertCandidateRowFn at all, even for the ids within the cap");
+  }
+  console.log("PASS: RA_CANDIDATE_PROMOTION_MAX_PER_RUN -- dry-run reports the identical promoted/deferred split without writing");
+
+  // Default cap is 10 unless overridden -- env-overridable, not hardcoded.
+  {
+    delete process.env.RA_CANDIDATE_PROMOTION_MAX_PER_RUN;
+    delete require.cache[require.resolve(`${REPO_DIR}/scripts/ra-candidate-promotion.js`)];
+    const defaultLib = require(`${REPO_DIR}/scripts/ra-candidate-promotion.js`);
+    assert.strictEqual(defaultLib.DEFAULT_MAX_PER_RUN, 10, "the shipped V1 default must be 10");
+
+    process.env.RA_CANDIDATE_PROMOTION_MAX_PER_RUN = "3";
+    delete require.cache[require.resolve(`${REPO_DIR}/scripts/ra-candidate-promotion.js`)];
+    const envLib = require(`${REPO_DIR}/scripts/ra-candidate-promotion.js`);
+    assert.strictEqual(envLib.DEFAULT_MAX_PER_RUN, 3, "RA_CANDIDATE_PROMOTION_MAX_PER_RUN must override the default without a code change");
+    delete process.env.RA_CANDIDATE_PROMOTION_MAX_PER_RUN;
+  }
+  console.log("PASS: RA_CANDIDATE_PROMOTION_MAX_PER_RUN -- env-overridable, defaults to 10");
+
+  console.log("\nAll RA_CANDIDATE_PROMOTION_MAX_PER_RUN tests passed.");
+}
+
 // 5. Safety gate (added after initial deployment, same day): without
 // RA_CANDIDATE_PROMOTION_ENABLED="true" explicitly set, writes are forced
 // off even when the caller explicitly asked for dryRun:false -- the daily
@@ -203,7 +288,8 @@ async function runSafetyGateTests() {
 
 run()
   .then(runSafetyGateTests)
-  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate) passed."))
+  .then(runMaxPerRunTests)
+  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate + max-per-run cap) passed."))
   .catch((err) => {
     console.error(err);
     process.exitCode = 1;
