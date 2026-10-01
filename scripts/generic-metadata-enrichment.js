@@ -97,7 +97,7 @@ const {
   discoverVenueKnowledge,
   discoverAuthoritativeDescription,
 } = require(path.join(__dirname, "..", "api", "_lib", "external-discovery"));
-const { classifySourceTier } = require(path.join(__dirname, "..", "api", "_lib", "source-authority"));
+const { classifySourceTier, domainPlausiblyOwnedByName } = require(path.join(__dirname, "..", "api", "_lib", "source-authority"));
 const { appendEnrichmentProvenance } = require(path.join(__dirname, "..", "api", "_lib", "ra-provenance-note"));
 
 // Bounds -- see header. Independent of whether external discovery is even
@@ -423,7 +423,22 @@ async function repairGenericMetadata({
           } else if (dryRun) {
             logger.log(`[dry-run] would write authoritative description for event ${event.id}: "${authoritative.text}" (source: ${authoritative.sourceUrl})`);
           } else {
-            const descTier = classifySourceTier({ url: authoritative.sourceUrl, matchedOn: "venue" });
+            // 2026-10-01 hardening: unlike the venue-discovery call site
+            // above (a true venue-identity search, where "venue" is an
+            // honest matchedOn), this result was accepted by
+            // verifyEventSpecificResult on event-title/date evidence --
+            // it says nothing about whether the HOST itself is the
+            // venue's own domain. Only claim matchedOn: "venue" here when
+            // the domain itself plausibly belongs to the venue
+            // (domainPlausiblyOwnedByName); otherwise this is exactly the
+            // discotech.me / technobeatscloud.com production failure --
+            // real, event-specific content from a domain that isn't the
+            // venue's own -- and must default to discovery_only via
+            // classifySourceTier's own no-signal branch, never asserted
+            // as primary_authoritative.
+            const descVenueName = (event.venues && event.venues.name) || event.venue_name_raw || "";
+            const descMatchedOn = domainPlausiblyOwnedByName(authoritative.sourceUrl, descVenueName) ? "venue" : undefined;
+            const descTier = classifySourceTier({ url: authoritative.sourceUrl, matchedOn: descMatchedOn });
             const applied = await applyPatchFn(
               SUPABASE_URL, sbHeaders, event.id,
               {

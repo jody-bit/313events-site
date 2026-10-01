@@ -79,6 +79,42 @@ function normalize(s) {
 // etc.) is ALWAYS discovery_only, regardless of matchedOn -- an aggregator
 // listing an event is evidence the event exists, never evidence of the
 // venue/organizer's own facts.
+// domainPlausiblyOwnedByName(url, name) -> boolean
+//
+// 2026-10-01, RA candidate-recovery hardening. The generalized authority
+// check this module was missing: a POSITIVE signal that a domain is
+// actually the named venue/organizer's own site, not just a NEGATIVE
+// "not on our denylist" check. NON_OFFICIAL_DOMAINS (external-
+// discovery.js) stays as a cheap defensive backstop for known
+// aggregators, but it is explicitly not the primary protection here --
+// Product Owner, 2026-10-01: "do not solve authority primarily by
+// growing an endless aggregator denylist... the generalized identity/
+// authority validation must be the actual protection." A hand-maintained
+// list of aggregator domains can never be complete; this check doesn't
+// need it to be, because it asks the opposite question. A domain that
+// genuinely belongs to a venue almost always carries some recognizable
+// fragment of that venue's own name (bigpinklovesyou.com,
+// themarblebar.com, northernlightslounge.com all did, in this project's
+// own real production data). An aggregator's domain structurally does
+// not, no matter how many different venues' pages it hosts -- ma.to,
+// discotech.me, and technobeatscloud.com each served a venue's event in
+// this same production batch while containing no fragment of that
+// venue's name at all. Conservative: a missing/blank name, or a name
+// that normalizes to fewer than 3 characters (too weak to mean
+// anything, same floor used elsewhere in this codebase), never passes.
+function normalizeNameToken(s) {
+  return typeof s === "string" ? s.toLowerCase().replace(/^the\s+/, "").replace(/[^a-z0-9]/g, "") : "";
+}
+
+function domainPlausiblyOwnedByName(url, name) {
+  const host = hostnameOf(url);
+  if (!host || !name) return false;
+  const nameToken = normalizeNameToken(name);
+  if (nameToken.length < 3) return false;
+  const hostToken = host.replace(/\.[a-z]+$/i, "").replace(/[^a-z0-9]/g, "");
+  return hostToken.includes(nameToken);
+}
+
 function classifySourceTier({ url, matchedOn } = {}) {
   const host = hostnameOf(url);
   if (!host) return TIERS.DISCOVERY_ONLY;
@@ -96,4 +132,4 @@ function classifySourceTier({ url, matchedOn } = {}) {
   return TIERS.DISCOVERY_ONLY;
 }
 
-module.exports = { TIERS, classifySourceTier };
+module.exports = { TIERS, classifySourceTier, domainPlausiblyOwnedByName };

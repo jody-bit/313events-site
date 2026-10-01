@@ -306,6 +306,97 @@ async function run() {
   }
   console.log("PASS: Acceptance Test C — a useful authoritative event description found externally outranks a generated template, with provenance recorded in note");
 
+  // --- 8b. 2026-10-01 hardening regression -- real production failure:
+  //     the description call site used to assert matchedOn:"venue"
+  //     unconditionally, so a genuinely-correct description recovered
+  //     from an aggregator-shaped domain (Discotech, standing in for the
+  //     real Jive Turkeys/discotech.me production row) was wrongly
+  //     tiered primary_authoritative. It must now come through as
+  //     discovery_only, while the description text itself is still
+  //     recovered and written (content was never the problem for this
+  //     row -- only its tier was). ---
+  {
+    const { repairGenericMetadata } = freshLib();
+    const { fetchFn, patches } = makeMockFetch({
+      venues: [{ id: "venue-tv-lounge", name: "TV Lounge", address: "2548 Grand River Ave", city: "Detroit" }],
+      candidates: [{
+        id: "evt-jive-turkeys", title: "Jive Turkeys Detroit annual fundraiser", description: null,
+        start_date: "2026-10-04", time_display: null, is_all_day: false,
+        venue_id: "venue-tv-lounge", venue_name_raw: "TV Lounge", venue_address_raw: "2548 Grand River Ave", venue_city_raw: "Detroit",
+        ticket_url: null, event_url: null, source: "Resident Advisor",
+      }],
+    });
+    global.fetch = fetchFn;
+
+    const discoverAuthoritativeDescriptionFn = async ({ event }) => {
+      assert.strictEqual(event.id, "evt-jive-turkeys");
+      return { text: "Jive Turkeys Detroit annual fundraiser at TV Lounge. Sunday, October 4 at 1 pm EDT.", sourceUrl: "https://app.discotech.me/events/38273665-jive-turkeys-detroit-annual-fundraiser-at-tv-lounge" };
+    };
+
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY, logger: silentLogger,
+      isExternalDiscoveryConfiguredFn: () => true,
+      discoverAuthoritativeDescriptionFn,
+    });
+
+    assert.strictEqual(counts.externalDescriptionsRecovered, 1, "the description is still recovered and written -- content was correct, only the tier was wrong");
+    const descPatch = patches.find((p) => p.body.description);
+    assert.ok(descPatch);
+    assert.ok(descPatch.body.description.includes("Jive Turkeys"));
+    assert.ok(descPatch.body.note.includes("tier=discovery_only"), "real production mistier: discotech.me carries no fragment of TV Lounge's own name and must not be asserted primary_authoritative");
+    assert.ok(!descPatch.body.note.includes("tier=primary_authoritative"));
+  }
+  console.log("PASS: 2026-10-01 regression — a genuinely-correct description from an aggregator-shaped domain is recovered and written, but now tiers as discovery_only instead of the real production mistier (primary_authoritative)");
+
+  // --- 8c. Current State / The High Dive positive control (Product
+  //     Owner, 2026-10-01: "an important positive pattern... preserve
+  //     that behavior"). Venue knowledge resolves via external discovery
+  //     and keeps its existing matchedOn:"venue" -> primary_authoritative
+  //     tier, completely unaffected by this fix (that call site was
+  //     deliberately left unchanged -- see source-authority.test.js's own
+  //     positive-control assertion for why). The description attempt
+  //     finds nothing verifiable and correctly falls through to the safe
+  //     factual-template generator, exactly as it did in the real run. ---
+  {
+    const { repairGenericMetadata } = freshLib();
+    const { fetchFn, patches } = makeMockFetch({
+      venues: [],
+      candidates: [{
+        id: "evt-current-state", title: "Current State", description: null,
+        start_date: "2026-10-02", time_display: null, is_all_day: false,
+        venue_id: null, venue_name_raw: "The High Dive", venue_address_raw: null, venue_city_raw: null,
+        ticket_url: null, event_url: null, source: "Resident Advisor",
+      }],
+    });
+    global.fetch = fetchFn;
+
+    const discoverVenueKnowledgeFn = async ({ venueName }) => {
+      assert.strictEqual(venueName, "The High Dive");
+      return { name: "The High Dive", website: "https://community.metrotimes.com", address: "11474 Joseph Campau Ave", city: "Detroit", sourceUrl: "https://community.metrotimes.com/location/the-high-dive-18870035" };
+    };
+    const upsertVenueKnowledgeFn = async (_u, _k, discovery) => ({ id: "venue-the-high-dive", name: discovery.name, address: discovery.address, city: discovery.city, website: discovery.website, facebook_url: null });
+    const discoverAuthoritativeDescriptionFn = async () => null; // genuinely nothing verifiable found, same as the real run
+
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY, logger: silentLogger,
+      isExternalDiscoveryConfiguredFn: () => true,
+      discoverVenueKnowledgeFn,
+      upsertVenueKnowledgeFn,
+      discoverAuthoritativeDescriptionFn,
+    });
+
+    assert.strictEqual(counts.externalVenueDiscoveryResolved, 1);
+    const venuePatch = patches.find((p) => p.body.venue_id === "venue-the-high-dive");
+    assert.ok(venuePatch, "venue knowledge is still resolved and persisted exactly as in the real run");
+    assert.ok(venuePatch.body.note.includes("tier=primary_authoritative"), "the venue-discovery call site's unconditional matchedOn:'venue' is untouched by this fix");
+
+    assert.strictEqual(counts.descriptionsGenerated, 1, "with nothing verifiable found, Level 2's safe factual template still fires -- exactly the real production outcome");
+    const descPatch = patches.find((p) => p.body.description);
+    assert.ok(descPatch);
+    assert.strictEqual(descPatch.body.description_source, "generated");
+  }
+  console.log("PASS: Current State / The High Dive positive control — venue resolution keeps its real tier, description still falls through safely to the factual template");
+
   // --- 9. Acceptance Test D (within one run) -- a second event at the same
   //     unresolved venue reuses the first event's persisted discovery;
   //     the external provider is called exactly once for the whole run. ---

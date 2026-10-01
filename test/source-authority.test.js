@@ -9,7 +9,7 @@
 const assert = require("assert");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { TIERS, classifySourceTier } = require(`${REPO_DIR}/api/_lib/source-authority.js`);
+const { TIERS, classifySourceTier, domainPlausiblyOwnedByName } = require(`${REPO_DIR}/api/_lib/source-authority.js`);
 
 // 1. A venue/organizer-domain match with matchedOn:'venue' is primary.
 assert.strictEqual(
@@ -60,5 +60,63 @@ assert.strictEqual(classifySourceTier({ url: null, matchedOn: "venue" }), TIERS.
 assert.strictEqual(classifySourceTier({}), TIERS.DISCOVERY_ONLY);
 assert.strictEqual(classifySourceTier(), TIERS.DISCOVERY_ONLY);
 console.log("PASS: a missing/malformed url never throws, always falls back to discovery_only");
+
+// ===========================================================================
+// domainPlausiblyOwnedByName -- 2026-10-01 hardening. Real production
+// fixtures: discoverAuthoritativeDescription genuinely matched these two
+// events' own title and date (see external-discovery.test.js #16), but
+// their SOURCE TIER was wrongly primary_authoritative because the
+// description call site asserted matchedOn:"venue" unconditionally. This
+// is the generalized check that replaces that assertion -- not a per-
+// domain denylist (Product Owner, 2026-10-01: "do not solve authority
+// primarily by growing an endless aggregator denylist").
+// ===========================================================================
+
+// 7. Discotech served Jive Turkeys' event accurately, but discotech.me
+//    carries no fragment of "TV Lounge" -- it is not that venue's domain.
+assert.strictEqual(domainPlausiblyOwnedByName("https://app.discotech.me/events/38273665-jive-turkeys", "TV Lounge"), false);
+console.log("PASS: domainPlausiblyOwnedByName rejects discotech.me for TV Lounge (real Jive Turkeys mistier)");
+
+// 8. Techno Beats Cloud served Ø[Phase]'s event accurately, but
+//    technobeatscloud.com carries no fragment of "Lincoln Factory".
+assert.strictEqual(domainPlausiblyOwnedByName("https://technobeatscloud.com/en/events/event/phase", "Lincoln Factory"), false);
+console.log("PASS: domainPlausiblyOwnedByName rejects technobeatscloud.com for Lincoln Factory (real Ø[Phase] mistier)");
+
+// 9. A domain that genuinely carries the venue's own name passes --
+//    proves the check isn't just "always false," and protects the three
+//    legitimately-tiered venue-owned domains from this same production
+//    batch (Big Pink, Marble Bar, Northern Lights Lounge).
+assert.strictEqual(domainPlausiblyOwnedByName("https://bigpinklovesyou.com", "Big Pink"), true);
+assert.strictEqual(domainPlausiblyOwnedByName("https://themarblebar.com/events", "Marble Bar"), true);
+assert.strictEqual(domainPlausiblyOwnedByName("https://www.northernlightslounge.com/music", "Northern Lights Lounge"), true);
+console.log("PASS: domainPlausiblyOwnedByName accepts a domain that genuinely carries the venue's own name");
+
+// 10. ma.to was the "primary_authoritative" source for THREE different,
+//     unrelated venues in the same real production batch -- it must fail
+//     the check against every one of them, proving this isn't a
+//     coincidence specific to one domain/venue pairing.
+assert.strictEqual(domainPlausiblyOwnedByName("https://ma.to/event/hiphop-night-big-pink-03-oct-2026", "Big Pink"), false);
+assert.strictEqual(domainPlausiblyOwnedByName("https://ma.to/event/marble-bar-11-year-anniversary-03-oct-2026", "Marble Bar"), false);
+assert.strictEqual(domainPlausiblyOwnedByName("https://ma.to/event/realms-of-techno-spkrbox-06-aug-2026", "Spkrbox"), false);
+console.log("PASS: domainPlausiblyOwnedByName rejects ma.to for every venue it was wrongly tiered as -- not a per-domain special case");
+
+// 11. Current State / The High Dive positive control -- Product Owner,
+//     2026-10-01: "an important positive pattern... preserve that
+//     behavior." community.metrotimes.com genuinely fails
+//     domainPlausiblyOwnedByName against "The High Dive" (it's Metro
+//     Times' own directory, not the venue's site) -- but this function is
+//     deliberately NEVER consulted by the venue-discovery call site
+//     (scripts/generic-metadata-enrichment.js's venue-knowledge branch),
+//     which keeps asserting matchedOn:"venue" unconditionally exactly as
+//     it did before this fix, because that search IS a true venue-
+//     identity search. This assertion exists so that check staying
+//     unchanged is a deliberate, tested fact, not an accident of scope.
+assert.strictEqual(domainPlausiblyOwnedByName("https://community.metrotimes.com/location/the-high-dive-18870035", "The High Dive"), false);
+assert.strictEqual(
+  classifySourceTier({ url: "https://community.metrotimes.com/location/the-high-dive-18870035", matchedOn: "venue" }),
+  TIERS.PRIMARY_AUTHORITATIVE,
+  "the venue-discovery call site's own matchedOn:'venue' is untouched by this fix -- Current State's real production tier must not change"
+);
+console.log("PASS: Current State / The High Dive positive control -- venue-discovery's unconditional matchedOn:'venue' is preserved unchanged");
 
 console.log("\nAll source-authority.js tests passed.");

@@ -4,6 +4,20 @@ Running list of requested features/improvements not yet implemented. Add new ite
 
 ---
 
+## 2026-10-01
+
+### 7. Generic self-healing: extract structured facts from external evidence instead of persisting raw page prose
+
+Deferred per the Product Owner's explicit instruction while closing out the RA candidate-recovery V1 description-validation fix (same date, same incident as item 6's neighbor below): "Structured-fact extraction from arbitrary external prose is a future generalized self-healing enhancement, not required for RA V1." Logged here to track the idea, not to scope or implement it.
+
+Today's fix (`api/_lib/external-discovery.js`'s `verifyEventSpecificResult`/`titleEvidenceCoverage`/`eventDateCompatible`) made `discoverAuthoritativeDescription` require the event's own title to be substantially present and reject any date disagreement before accepting a result — but what it still *writes* as the event's description, once a result clears that bar, is the verified page's own raw prose (capped/trimmed by `trimToSentenceBoundary`), unedited. That's a real, separate gap from the one just fixed: even a correctly-identified, genuinely-on-topic page can be oddly worded, start mid-sentence once trimmed, or otherwise read as un-curated scraped text rather than a proper description.
+
+**Ask:** once a result is verified as genuinely about the right event (today's fix), extract independently-confirmed structured facts from it (e.g. a confirmed date/time phrase, a confirmed venue detail, a confirmed organizer/performer name) and feed those into `buildFactualDescription` (`api/_lib/description-enrichment.js`) — the same safe, templated generator already used as the Level-2 fallback — rather than persisting the verified page's raw content as Level-1 prose. This generalizes beyond RA: any source using `discoverAuthoritativeDescription` would benefit.
+
+**Scope flag:** this is bigger than it sounds. It needs a real fact-extraction design (what counts as a "confirmed fact," how much structure to require before trusting an extraction, how `buildFactualDescription`'s template would need to flex to incorporate externally-sourced facts alongside the event's own known fields) — not a quick follow-on to today's fix. Revisit only when there's enough real post-V1 RA volume (or another source) to justify it, same posture as item 6 below.
+
+---
+
 ## 2026-09-29
 
 ### 6. RA sync: distinguish an interrupted detail batch from a fully-completed one
