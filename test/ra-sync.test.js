@@ -275,6 +275,83 @@ async function run() {
   }
   console.log("PASS: findConservativeDuplicate -- fails soft (no match) on a lookup error, never blocks ingestion");
 
+  // ------------------------------------------------------------
+  // Part 2b: title identity check (2026-10-01 production dry-run
+  // correction). Regression cohort is the REAL 8-match output of a real
+  // 90-candidate production dry run, not invented fixtures -- see
+  // scripts/ra-sync.js's own header comment on titleIdentityCompatible for
+  // the full incident. Three real pairs that must stay duplicates, four
+  // real pairs that must NOT auto-match merely because venue/date were
+  // close, one real pair that must stay unresolved/ambiguous rather than
+  // either wrongly merged or wrongly rejected outright.
+  // ------------------------------------------------------------
+  const REAL_DUPLICATE_REGRESSION_CASES = [
+    // [titleA, titleB, expectCompatible, label]
+    ["Jazz is Dead presents Cortex with Adrian Younge and J.Rocc", "Jazz Is Dead presents Cortex with Adrian Younge and J.Rocc", true, "near-identical title (case only) -- a real legacy duplicate"],
+    ["Grave Rave", "Grave Rave", true, "exact title match -- a real cross-source (VisitDetroit) duplicate"],
+    ["Amplify Grand Opening", "Amplify Grand Opening", true, "exact title match -- a real cross-source duplicate"],
+    ["Ø[Phase] - Holden Federico - Jėck - Lincoln Factory", "Valentino Khan", false, "two different real shows, same venue, consecutive nights -- venue proximity alone must never match"],
+    ["DENNETT", "Sam Alfred — USA Tour", false, "two different real shows, same venue, consecutive nights"],
+    ["Siren: Venus In Furs", "Industry Mondays", false, "a one-off show vs. a different recurring weekly series at the same venue"],
+    ["House Your Life - DJ Minx Birthday Edition", "Jazz Is Dead presents Cortex with Adrian Younge and J.Rocc", false, "the SAME existing row that correctly matches a different RA candidate above must NOT also match this unrelated one"],
+    ["Devil's Night", "Devil's Night Film Festival", false, "a generic phrase that is a true substring of a longer, structurally different event name -- must stay unresolved, not auto-merged"],
+  ];
+
+  for (const [titleA, titleB, expected, label] of REAL_DUPLICATE_REGRESSION_CASES) {
+    const got = lib.titleIdentityCompatible(titleA, titleB);
+    assert.strictEqual(got, expected, `titleIdentityCompatible(${JSON.stringify(titleA)}, ${JSON.stringify(titleB)}) -- ${label}`);
+  }
+  console.log("PASS: titleIdentityCompatible -- all 8 real production dry-run regression cases classified correctly");
+
+  // Symmetry is the actual mechanism (not a lookup table) -- order must
+  // never matter, and a title must always be compatible with itself.
+  for (const [titleA, titleB] of REAL_DUPLICATE_REGRESSION_CASES) {
+    assert.strictEqual(lib.titleIdentityCompatible(titleA, titleB), lib.titleIdentityCompatible(titleB, titleA), "the check must be symmetric regardless of argument order");
+  }
+  assert.strictEqual(lib.titleIdentityCompatible("Grave Rave", "Grave Rave"), true);
+  assert.strictEqual(lib.titleIdentityCompatible("", "Grave Rave"), false, "a blank title must never vacuously match");
+  assert.strictEqual(lib.titleIdentityCompatible(null, undefined), false, "non-string input must never throw or vacuously match");
+  console.log("PASS: titleIdentityCompatible -- symmetric, never vacuously true on blank/missing input");
+
+  {
+    // End-to-end: findConservativeDuplicate itself must reject a
+    // venue-only/date-only match even though the broad SQL fetch legitimately
+    // surfaces the row (recall is unchanged -- only the final accept
+    // decision is stricter now).
+    const fetchFn = async (url) => {
+      assert.ok(url.includes("venue_name_raw.ilike"), "the broad recall fetch must still search by venue -- that part is unchanged");
+      return {
+        ok: true,
+        json: async () => [{ id: "evt-sam-alfred", title: "Sam Alfred — USA Tour", venue_name_raw: "Magic Stick", external_id: null, start_date: "2026-10-02" }],
+      };
+    };
+    const match = await lib.findConservativeDuplicate(
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+      { title: "DENNETT", venue_name_raw: "Magic Stick", start_date: "2026-10-03" },
+      fetchFn
+    );
+    assert.strictEqual(match, null, "a venue-only match within the date window must never be accepted as a duplicate on its own");
+  }
+  console.log("PASS: findConservativeDuplicate -- end to end, a real venue-only near-match (DENNETT/Sam Alfred, Magic Stick) is correctly rejected");
+
+  {
+    // End-to-end: a genuine near-identical title (the Jazz Is Dead case)
+    // still gets caught as a duplicate -- the fix must not have made this
+    // over-conservative to the point of losing real catches.
+    const fetchFn = async () => ({
+      ok: true,
+      json: async () => [{ id: "evt-jazz-is-dead", title: "Jazz Is Dead presents Cortex with Adrian Younge and J.Rocc", venue_name_raw: "Lincoln Factory", external_id: null, start_date: "2026-10-11" }],
+    });
+    const match = await lib.findConservativeDuplicate(
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+      { title: "Jazz is Dead presents Cortex with Adrian Younge and J.Rocc", venue_name_raw: "Lincoln Factory", start_date: "2026-10-11" },
+      fetchFn
+    );
+    assert.ok(match, "a genuine near-identical-title duplicate must still be caught after the fix");
+    assert.strictEqual(match.id, "evt-jazz-is-dead");
+  }
+  console.log("PASS: findConservativeDuplicate -- end to end, a genuine near-identical-title duplicate (Jazz Is Dead) is still correctly caught");
+
   // ============================================================
   // Part 3: startRaSyncSession
   // ============================================================

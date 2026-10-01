@@ -303,10 +303,89 @@ function deriveEventRow(raw, venueMap) {
 const DUPLICATE_DATE_WINDOW_DAYS = 2;
 const MIN_MATCHABLE_LENGTH = 6;
 
+// TITLE IDENTITY CHECK (2026-10-01, RA candidate-recovery MVP correction --
+// production dry-run regression). Root cause being fixed: the SQL fetch
+// below has always cast a broad net with `or=(title ilike, venue ilike)`
+// -- correct, that's recall, not the bug -- but the OLD decision step then
+// accepted the FIRST non-RA row that broad net returned with NO further
+// check, which meant a VENUE-only match (two different real shows on
+// nearby nights at the same busy venue) was silently treated as the same
+// identity as a TITLE-only or title+venue match. Confirmed in production
+// 2026-10-01: of 8 "duplicate" hits in a real 90-candidate dry run, 4 were
+// two different real events that merely shared a venue within the date
+// window (e.g. "DENNETT" vs "Sam Alfred -- USA Tour", both Magic Stick,
+// one night apart) -- see RA_CANDIDATE_RECOVERY delivery notes.
+//
+// Fix: venue and date stay exactly what they always were -- supporting
+// evidence that narrows the SQL fetch -- but are never, by themselves,
+// sufficient for the final accept decision. A candidate row is only ever
+// reported as a duplicate when its OWN title is also a confident identity
+// match for the new row's title, checked independently of however the SQL
+// OR-filter happened to surface it.
+//
+// "Confident identity match" is a bidirectional, symmetric token-overlap
+// ratio -- not a hardcoded list of titles (this must generalize to every
+// future title, not just today's 8-candidate regression cohort). Normalize
+// both titles to a token set (lowercase, drop possessive apostrophes so
+// "Devil's" and "Devils" aren't treated as different words, split on any
+// run of non-letter/non-digit characters, drop empty tokens), then require
+// that the shared tokens cover a HIGH fraction of BOTH titles' own tokens
+// -- not just one direction. That symmetry is exactly what tells apart:
+//   - "Jazz is Dead presents Cortex with Adrian Younge and J.Rocc" vs
+//     "Jazz Is Dead presents Cortex with Adrian Younge and J.Rocc"
+//     -- same tokens both sides (only case differs) -- both ratios 1.0 --
+//     a real duplicate, correctly kept.
+//   - "Devil's Night" vs "Devil's Night Film Festival" -- every token of
+//     the SHORT title is present in the long one (ratio 1.0 one way), but
+//     the long title has substantial content the short one never
+//     mentions (ratio ~0.5 the other way) -- a generic phrase that is a
+//     substring of a structurally different, longer event name. Fails
+//     the symmetric check, correctly stays unresolved/ambiguous (it
+//     becomes its own new pending_review candidate rather than being
+//     silently suppressed OR wrongly auto-merged).
+//   - Two titles sharing no real words at all (every other regression
+//     case below) -- both ratios ~0 regardless of venue/date -- never a
+//     match, exactly the behavior being restored.
+//
+// TITLE_IDENTITY_MATCH_RATIO is deliberately high (conservative, "never
+// guess" -- same posture as every other matching rule in this project):
+// this is meant to catch "the same event, trivially reworded/recased,"
+// not "two events that happen to share some words."
+const TITLE_IDENTITY_MATCH_RATIO = 0.8;
+
 function addDaysIso(dateStr, days) {
   const d = new Date(dateStr + "T12:00:00Z");
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
+}
+
+// tokenizeTitleForIdentity(title) -> Set<string>
+// Exported for tests. Pure, no I/O. Unicode-aware (handles accented
+// characters, symbols like "☆", stylized Latin letters) via \p{L}/\p{N}
+// rather than an ASCII-only [a-z0-9] class, so a real stylized RA title
+// doesn't collapse to zero tokens.
+function tokenizeTitleForIdentity(title) {
+  if (typeof title !== "string") return new Set();
+  const noPossessive = title.toLowerCase().replace(/['’]/g, "");
+  const tokens = noPossessive.split(/[^\p{L}\p{N}]+/u).filter((t) => t.length > 0);
+  return new Set(tokens);
+}
+
+// titleIdentityCompatible(titleA, titleB, ratio=TITLE_IDENTITY_MATCH_RATIO)
+//   -> boolean
+// Exported for tests. Symmetric: both titles' own token sets must be
+// covered at least `ratio` by the shared tokens. Either title tokenizing
+// to zero words (blank/unmatchable) is never a match -- no division by
+// zero, no vacuous "everything matches nothing" case.
+function titleIdentityCompatible(titleA, titleB, ratio = TITLE_IDENTITY_MATCH_RATIO) {
+  const tokensA = tokenizeTitleForIdentity(titleA);
+  const tokensB = tokenizeTitleForIdentity(titleB);
+  if (tokensA.size === 0 || tokensB.size === 0) return false;
+  let shared = 0;
+  for (const t of tokensA) {
+    if (tokensB.has(t)) shared++;
+  }
+  return shared / tokensA.size >= ratio && shared / tokensB.size >= ratio;
 }
 
 async function findConservativeDuplicate(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, row, fetchFn) {
@@ -328,7 +407,16 @@ async function findConservativeDuplicate(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     if (!resp.ok) return null;
     const rows = await resp.json();
     if (!Array.isArray(rows)) return null;
-    return rows.find((r) => !r.external_id || !RA_ID_PATTERN.test(r.external_id)) || null;
+    // Venue/date already narrowed this list (the SQL fetch above) -- that
+    // stays supporting evidence, never the decision itself. The decision
+    // requires the candidate row's OWN title to also be a confident
+    // identity match for our title, independent of why the SQL filter
+    // surfaced it (title ilike, venue ilike, or both).
+    return (
+      rows.find(
+        (r) => (!r.external_id || !RA_ID_PATTERN.test(r.external_id)) && titleIdentityCompatible(row.title, r.title)
+      ) || null
+    );
   } catch {
     return null;
   }
@@ -771,6 +859,8 @@ module.exports = {
   deriveCategory,
   deriveEventRow,
   findConservativeDuplicate,
+  tokenizeTitleForIdentity,
+  titleIdentityCompatible,
   sanitizeListingMetadata,
   MERGE_BLANK_FIELDS,
   LISTING_METADATA_FIELDS,
