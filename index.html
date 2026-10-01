@@ -4234,6 +4234,15 @@
   footer.site .footer-sources a:hover, footer.site .footer-social a:hover{color:var(--ink-soft);text-decoration:underline;}
   footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
   footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
+  /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
+     same quiet uppercase-label treatment as footer-sources/footer-social,
+     just a longer link list. */
+  footer.site .footer-links{font-size:11px;}
+  footer.site .footer-links a{
+    text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;font-weight:700;
+    color:var(--ink-dim);text-decoration:none;
+  }
+  footer.site .footer-links a:hover{color:var(--ink-soft);text-decoration:underline;}
 
   @media (max-width:720px){
     .day-cell{min-height:78px;}
@@ -4353,6 +4362,7 @@
   }
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
+<script src="/legal-snippets.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -4522,7 +4532,7 @@
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
         <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
       </button>
-      <input type="text" id="search" placeholder="Search events, venues, neighborhoods&hellip;">
+      <input type="text" id="search" aria-label="Search events, venues, or neighborhoods" placeholder="Search events, venues, neighborhoods&hellip;">
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
 
@@ -4618,9 +4628,10 @@
 
   <footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
+    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
     <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
-    <p class="footer-credit">313.events is a product of <a href="https://sentientproductions.com" target="_blank" rel="noopener noreferrer">Sentient Productions</a>.</p>
+    <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
   </footer>
 
 </div>
@@ -6297,6 +6308,7 @@ function renderList(dateList, meta){
                   ${addToCalendarHtml(e)}
                   ${shareButtonHtml(e)}
                 </div>
+                ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
             </div>

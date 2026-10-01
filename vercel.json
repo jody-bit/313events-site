@@ -158,6 +158,30 @@
     {
       "source": "/venue.html",
       "destination": "/api/venue-meta"
+    },
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/copyright",
+      "destination": "/copyright.html"
+    },
+    {
+      "source": "/editorial-policy",
+      "destination": "/editorial-policy.html"
+    },
+    {
+      "source": "/accessibility",
+      "destination": "/accessibility.html"
     }
   ]
 }

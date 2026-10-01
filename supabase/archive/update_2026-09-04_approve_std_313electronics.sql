@@ -16,10 +16,13 @@
 --      the flyer exactly, without inventing a specific end hour we weren't
 --      given.
 --
--- Also worth knowing: contactEmail was submitted as Jody's own email
--- (hellojody@gmail.com) as a placeholder, since we don't have the friend's
--- real contact info — Jody may want to update that field once she has it,
--- so it's not permanently misattributed to her. Admission was left as the
+-- Also worth knowing: contactEmail was submitted as Jody's own email as a
+-- placeholder [email redacted from this comment 2026-10-01, Phase 1 Legal
+-- + Trust pass data-minimization cleanup -- not referenced by the SQL
+-- statement below, so redacting it here has no effect on replay/
+-- reconstruction], since we don't have the friend's real contact info —
+-- Jody may want to update that field once she has it, so it's not
+-- permanently misattributed to her. Admission was left as the
 -- form's default ("Free") since neither the flyer nor the caption specified
 -- a price — worth double-checking with the friend and updating price/
 -- admission here too if there's a cover charge.

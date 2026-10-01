@@ -513,6 +513,15 @@
      full methodology/status page, styled as a small uppercase label rather
      than an inline sentence — the homepage stays slick, sources.html stays
      the transparent one. */
+  /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
+     same quiet uppercase-label treatment as footer-sources/footer-social,
+     just a longer link list. */
+  footer.site .footer-links{font-size:11px;}
+  footer.site .footer-links a{
+    text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;font-weight:700;
+    color:var(--ink-dim);text-decoration:none;
+  }
+  footer.site .footer-links a:hover{color:var(--ink-soft);text-decoration:underline;}
   footer.site .footer-sources a, footer.site .footer-social a{
     text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:700;
     color:var(--ink-dim);text-decoration:none;
@@ -627,6 +636,7 @@
      button below). Hash verified against the real leaflet@1.9.4 npm package. -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
+<script src="/legal-snippets.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -715,7 +725,7 @@
       <div id="monthLabel">August 2026</div>
       <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
     </div>
-    <input type="text" id="search" placeholder="Search events, venues&hellip;">
+    <input type="text" id="search" aria-label="Search events or venues" placeholder="Search events, venues&hellip;">
     <div class="view-toggle">
       <button id="monthViewBtn" class="active">Month</button>
       <button id="listViewBtn">List</button>
@@ -758,9 +768,10 @@
 
   <footer class="site">
     <p>Always confirm dates, times, and venues before making plans.</p>
+    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
     <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
-    <p class="footer-credit">313.events is a product of <a href="https://sentientproductions.com" target="_blank" rel="noopener noreferrer">Sentient Productions</a>.</p>
+    <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
   </footer>
 
 </div>
@@ -1855,6 +1866,7 @@ function showDayPanel(iso){
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
                 ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
                 ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+                ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
             </div>
@@ -1905,6 +1917,7 @@ function renderList(dateList){
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
                 ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
                 ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+                ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
             </div>

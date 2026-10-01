@@ -4,8 +4,12 @@
 --
 -- Found it live: while approving/editing the brand-new venue-submitted
 -- "Elmwood Alight" listing (submitted directly by Historic Elmwood
--- Cemetery & Foundation, mnavoy@elmcem.org, 2026-09-16 21:11 UTC -- a real,
--- legitimate submission, separate issue noted below), the edit landed on
+-- Cemetery & Foundation [contact email redacted 2026-10-01, Phase 1 Legal
+-- + Trust pass data-minimization cleanup -- see that pass's report for why
+-- this comment-only mention was redacted but the SQL statement below,
+-- which already ran against production, was deliberately left untouched],
+-- 2026-09-16 21:11 UTC -- a real, legitimate submission, separate issue
+-- noted below), the edit landed on
 -- the WRONG row: "Lucky Rabbit" (id 915467ae-512f-42dd-82d0-071578f5bfcf)
 -- got its ticket_url overwritten with Elmwood Alight's Eventbrite link and
 -- its venue_address_raw/venue_city_raw overwritten with Elmwood
@@ -34,7 +38,8 @@ where id = '915467ae-512f-42dd-82d0-071578f5bfcf'; -- Lucky Rabbit
 -- Related but separate issue, found while investigating the above: the
 -- venue submission Jody was approving (id 61d83bbe...) is a genuine,
 -- legitimate new listing -- Historic Elmwood Cemetery & Foundation
--- submitted their own "Elmwood Alight" directly (mnavoy@elmcem.org).
+-- submitted their own "Elmwood Alight" directly [contact email redacted,
+-- see this file's earlier redaction note].
 -- Problem: this site ALREADY had an "Elmwood Alight" from the VisitDetroit
 -- cron (id 3360668a..., external_id 'vd-48582238', fixed up in
 -- update_2026-09-16_venue-followup-batch5.sql just a few minutes earlier

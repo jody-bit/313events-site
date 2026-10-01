@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Use — 313.events</title>
+<link rel="canonical" href="https://313.events/terms">
+<meta name="description" content="Terms of Use for 313.events, an independent Detroit-area event discovery and editorial platform operated by Sentient Productions LLC.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Terms of Use — 313.events">
+<meta property="og:description" content="Terms of Use for 313.events, an independent Detroit-area event discovery and editorial platform operated by Sentient Productions LLC.">
+<meta property="og:url" content="https://313.events/terms">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<!--
+  New page (2026-10-01, Phase 1 Legal + Trust pass). Plain-English Terms of
+  Use for an independent Michigan event-discovery/media site. Content is
+  based directly on this project's actual implementation (confirmed via a
+  full repo audit before this page was written) -- it does not describe
+  functionality the site doesn't have, and does not claim legal review or
+  certification it hasn't received. See legal-dates.js for the
+  Effective/Last updated line, and legal-snippets.js for the shared
+  trademark-disclaimer wording reused here.
+-->
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --radius:0px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;
+  }
+  a{color:inherit;}
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .wrap{max-width:760px;margin:0 auto;padding:14px 20px 64px;}
+  header.site{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
+  }
+  .wordmark{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
+    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
+  }
+  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
+  .back-link:hover{color:var(--accent);}
+  .back-link::before{content:'← ';}
+
+  h1.legal-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:clamp(26px,5vw,36px);line-height:1.1;letter-spacing:-.01em;
+    text-transform:uppercase;margin:0 0 8px;
+  }
+  .legal-dates{font-size:13px;color:var(--ink-dim);margin:0 0 30px;}
+  .legal-intro{font-size:15px;color:var(--ink-soft);margin:0 0 30px;max-width:62ch;}
+
+  h2.legal-h{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:19px;
+    text-transform:uppercase;letter-spacing:-.005em;margin:34px 0 10px;
+    padding-top:18px;border-top:1px solid var(--line-soft);
+  }
+  h2.legal-h:first-of-type{padding-top:0;border-top:none;}
+  p.legal-p, li.legal-li{font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 14px;}
+  ul.legal-ul, ol.legal-ol{margin:0 0 14px;padding-left:22px;}
+  li.legal-li{margin-bottom:8px;}
+  strong{color:var(--ink);}
+
+  .legal-note{
+    background:var(--panel-alt);border:1px solid var(--line);padding:14px 16px;
+    font-size:13.5px;color:var(--ink-soft);margin:16px 0;
+  }
+  .legal-note strong{color:var(--ink);}
+
+  .legal-contact{
+    background:var(--panel-alt);border:1px solid var(--line);padding:16px 18px;
+    font-size:14px;color:var(--ink-soft);margin-top:10px;
+  }
+  .legal-contact strong{color:var(--ink);display:block;margin-bottom:4px;}
+
+  footer.site{margin-top:48px;font-size:12px;color:var(--ink-soft);line-height:1.8;padding-top:18px;border-top:1px solid var(--line);}
+  footer.site a{color:var(--ink-soft);text-decoration:underline;}
+  footer.site a:hover{color:var(--accent);}
+  footer.site p{margin:0 0 8px;}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
+<script src="/legal-dates.js"></script>
+<script src="/legal-snippets.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="back-link" href="/">All events</a>
+    </header>
+
+    <h1 class="legal-title">Terms of Use</h1>
+    <p class="legal-dates" id="legalDates"></p>
+    <script>renderLegalDates('legalDates');</script>
+    <p class="legal-intro">Plain-English terms for using 313.events. If anything here is unclear, reach out — contact info is at the bottom of this page.</p>
+
+    <h2 class="legal-h">Who operates 313.events</h2>
+    <p class="legal-p">313.events is operated by <strong>Sentient Productions LLC</strong>, an independent Detroit-area event discovery and editorial platform. Sentient Productions LLC is not affiliated with, owned by, or operated on behalf of any venue, promoter, ticketing company, or event organizer whose listings appear on the site, unless a specific page explicitly says otherwise.</p>
+
+    <h2 class="legal-h">Using the site</h2>
+    <p class="legal-p">313.events is available to anyone browsing for informational purposes. You agree to use the site lawfully and not to interfere with its operation — for example, by attempting to disrupt the service, bypass access controls, or submit false or abusive content through the event-submission form.</p>
+
+    <h2 class="legal-h">Event listings are informational, not guarantees</h2>
+    <p class="legal-p">313.events aggregates and curates event information from organizers, venues, public sources, user submissions, and other third parties. Event details can and do change after a listing is published. <strong>313.events does not guarantee</strong> the accuracy, completeness, or timeliness of any listing, including but not limited to: event dates and times, pricing, ticket availability or inventory, cancellation or postponement status, accessibility information, venue conditions, or whether a particular performer will actually appear.</p>
+    <p class="legal-p"><strong>Always confirm important details directly with the event's organizer, venue, or official ticket seller</strong> — especially before traveling or making a purchase. 313.events is generally not the event's organizer, venue, performer, promoter, or ticket seller, unless a listing explicitly states otherwise.</p>
+
+    <h2 class="legal-h">Third-party websites and ticket links</h2>
+    <p class="legal-p">Listings link out to third-party websites — organizer pages, venue sites, and ticketing platforms — that 313.events does not control and is not responsible for. Once you leave 313.events, that third party's own terms and privacy practices apply, not ours.</p>
+    <p class="legal-p"><strong>Some outbound ticket links are affiliate links.</strong> 313.events participates in Ticketmaster's affiliate program: when a listing's ticket link goes to Ticketmaster, that link is routed through an affiliate tracking redirect, and 313.events may earn a commission if you complete a purchase through it. This never changes the price you pay. Listings sourced from any other connector on the site do not currently carry affiliate tracking of this kind.</p>
+
+    <h2 class="legal-h">No sponsorship or endorsement implied</h2>
+    <p class="legal-p">Third-party event, artist, venue, organizer, promoter, ticketing-company, and other names and trademarks belong to their respective owners. Their appearance on 313.events does not imply sponsorship, endorsement, affiliation, or partnership unless explicitly stated. This applies throughout the site — including in event listings, editorial coverage, and the data-sources list.</p>
+
+    <h2 class="legal-h">Intellectual property</h2>
+    <p class="legal-p">The 313.events name, logo, site design, original editorial content (including "On the Radar" coverage), and the compiled database of event listings are the property of Sentient Productions LLC or its licensors, except for material that belongs to the third parties who submitted or are described in it.</p>
+    <p class="legal-p">You're welcome to browse the site, share links to individual listings, and use it for your own personal, non-commercial purpose of finding things to do. You may not systematically scrape, bulk-extract, mirror, republish, or build a derivative product from 313.events' database or editorial content without 313.events' prior written permission.</p>
+
+    <h2 class="legal-h">Submitting events or feeds</h2>
+    <p class="legal-p">If you submit an event, an event feed, or any related media (images, descriptions, links) through 313.events' submission tools, you represent that you have the right to submit that information and media, and that doing so doesn't violate anyone else's rights or any law.</p>
+    <p class="legal-p">By submitting, you grant 313.events a non-exclusive, royalty-free license to host, reproduce, format, edit, correct, display, distribute, and promote the submitted material in connection with operating the site (for example: showing it on the event calendar and map, in editorial coverage, or in social posts promoting the listing). 313.events may edit, correct, reject, de-duplicate, or remove any submission or existing listing at its own discretion — including to fix factual errors, resolve duplicate entries, or take down a listing that turns out not to be a real, public event.</p>
+
+    <h2 class="legal-h">Copyright complaints</h2>
+    <p class="legal-p">If you believe content on 313.events infringes your copyright, see the <a href="copyright.html">Copyright / DMCA page</a> for how to send a notice.</p>
+
+    <h2 class="legal-h">Disclaimer of warranties</h2>
+    <p class="legal-p">313.events is provided "as is" and "as available," without warranties of any kind, express or implied, including — to the extent permitted by law — implied warranties of merchantability, fitness for a particular purpose, and non-infringement. 313.events does not warrant that the site will be uninterrupted, error-free, or that every listing is accurate or current.</p>
+
+    <h2 class="legal-h">Limitation of liability</h2>
+    <p class="legal-p">To the fullest extent permitted by law, Sentient Productions LLC will not be liable for indirect, incidental, special, or consequential damages arising from your use of 313.events, including losses related to an event being cancelled, changed, or different from how it was listed, or a ticket purchase made through a link on the site. Nothing here is meant to limit liability where the law doesn't allow it to be limited.</p>
+
+    <h2 class="legal-h">Indemnification</h2>
+    <p class="legal-p">If you submit content to 313.events or otherwise use the site in a way that causes a legal claim against Sentient Productions LLC (for example, submitting content you didn't have the right to share), you agree to reasonably indemnify Sentient Productions LLC for losses directly resulting from that.</p>
+
+    <h2 class="legal-h">Changes to these terms</h2>
+    <p class="legal-p">313.events may update these Terms of Use from time to time as the product changes. The "Last updated" date at the top of this page reflects the most recent revision. Continuing to use the site after an update means you accept the revised terms.</p>
+
+    <h2 class="legal-h">Access and termination</h2>
+    <p class="legal-p">313.events may suspend or restrict access to the site, or to specific features like event submission, for anyone who violates these terms or misuses the service.</p>
+
+    <h2 class="legal-h">Governing law</h2>
+    <p class="legal-p">These terms are governed by the laws of the State of Michigan, without regard to its conflict-of-laws principles.</p>
+
+    <h2 class="legal-h">Contact</h2>
+    <div class="legal-contact">
+      <strong>Sentient Productions LLC</strong>
+      9011 Linwood St #110<br>
+      Detroit, MI 48221<br>
+      United States<br><br>
+      <a href="mailto:jody@sentientproductions.com">jody@sentientproductions.com</a>
+    </div>
+
+    <footer class="site">
+      <p>Always confirm dates, times, and venues before making plans.</p>
+      <p class="footer-links">
+        <a href="about.html">About</a> &middot;
+        <a href="submit.html">Submit an Event</a> &middot;
+        <a href="editorial-policy.html">Editorial Policy</a> &middot;
+        <a href="terms.html">Terms</a> &middot;
+        <a href="privacy.html">Privacy</a> &middot;
+        <a href="copyright.html">Copyright / DMCA</a> &middot;
+        <a href="accessibility.html">Accessibility</a> &middot;
+        <a href="mailto:jody@sentientproductions.com">Contact</a>
+      </p>
+      <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
+      <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
+      <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
+    </footer>
+  </div>
+</body>
+</html>

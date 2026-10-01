@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — 313.events</title>
+<link rel="canonical" href="https://313.events/privacy">
+<meta name="description" content="Privacy Policy for 313.events — what information we collect, how we use it, and the third-party services involved.">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+<link rel="shortcut icon" href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Privacy Policy — 313.events">
+<meta property="og:description" content="Privacy Policy for 313.events — what information we collect, how we use it, and the third-party services involved.">
+<meta property="og:url" content="https://313.events/privacy">
+<meta property="og:site_name" content="313.events">
+<meta property="og:image" content="https://313.events/assets/social/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<!--
+  New page (2026-10-01, Phase 1 Legal + Trust pass). Based only on
+  technologies actually found during a full repo audit before this page
+  was written -- no invented data practices, no claim of "never sharing
+  data" that infrastructure providers' own processing would contradict.
+  GA4 + Metricool disclosure wording reflects Jody's own decision (kept
+  site-wide on public pages, removed from admin.html only -- see that
+  file's own comment on the removal).
+-->
+<style>
+  :root{
+    --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --line:#2c2c2c; --line-soft:#212121;
+    --accent:#D7FF00; --on-accent:#0A0A0A;
+    --radius:0px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;
+  }
+  a{color:inherit;}
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .wrap{max-width:760px;margin:0 auto;padding:14px 20px 64px;}
+  header.site{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
+  }
+  .wordmark{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
+    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
+  }
+  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
+  .back-link:hover{color:var(--accent);}
+  .back-link::before{content:'← ';}
+
+  h1.legal-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-size:clamp(26px,5vw,36px);line-height:1.1;letter-spacing:-.01em;
+    text-transform:uppercase;margin:0 0 8px;
+  }
+  .legal-dates{font-size:13px;color:var(--ink-dim);margin:0 0 30px;}
+  .legal-intro{font-size:15px;color:var(--ink-soft);margin:0 0 30px;max-width:62ch;}
+
+  h2.legal-h{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:19px;
+    text-transform:uppercase;letter-spacing:-.005em;margin:34px 0 10px;
+    padding-top:18px;border-top:1px solid var(--line-soft);
+  }
+  h2.legal-h:first-of-type{padding-top:0;border-top:none;}
+  p.legal-p, li.legal-li{font-size:15px;line-height:1.7;color:var(--ink);margin:0 0 14px;}
+  ul.legal-ul, ol.legal-ol{margin:0 0 14px;padding-left:22px;}
+  li.legal-li{margin-bottom:8px;}
+  strong{color:var(--ink);}
+
+  table.legal-table{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13.5px;}
+  table.legal-table th{text-align:left;color:var(--ink-soft);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);text-transform:uppercase;font-size:11.5px;letter-spacing:.03em;}
+  table.legal-table td{padding:10px;border-bottom:1px solid var(--line-soft);vertical-align:top;color:var(--ink);}
+
+  .legal-note{
+    background:var(--panel-alt);border:1px solid var(--line);padding:14px 16px;
+    font-size:13.5px;color:var(--ink-soft);margin:16px 0;
+  }
+  .legal-note strong{color:var(--ink);}
+
+  .legal-contact{
+    background:var(--panel-alt);border:1px solid var(--line);padding:16px 18px;
+    font-size:14px;color:var(--ink-soft);margin-top:10px;
+  }
+  .legal-contact strong{color:var(--ink);display:block;margin-bottom:4px;}
+
+  footer.site{margin-top:48px;font-size:12px;color:var(--ink-soft);line-height:1.8;padding-top:18px;border-top:1px solid var(--line);}
+  footer.site a{color:var(--ink-soft);text-decoration:underline;}
+  footer.site a:hover{color:var(--accent);}
+  footer.site p{margin:0 0 8px;}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1078BKN0M3');
+</script>
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
+<script src="/legal-dates.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="back-link" href="/">All events</a>
+    </header>
+
+    <h1 class="legal-title">Privacy Policy</h1>
+    <p class="legal-dates" id="legalDates"></p>
+    <script>renderLegalDates('legalDates');</script>
+    <p class="legal-intro">This describes what information 313.events actually collects, how it's used, and which outside services are involved. It only describes what the site actually does — not a generic template.</p>
+
+    <h2 class="legal-h">Information you voluntarily provide</h2>
+    <p class="legal-p">If you use the <a href="submit.html">Submit an Event</a> form, you provide event details (title, description, dates, venue, pricing, links) and, for the person submitting it: an organizer/venue name and a contact email address. If you submit an event feed instead, you provide the feed URL and a contact email for the feed owner.</p>
+    <p class="legal-p">This information is used to review and, if approved, publish the event listing, and to reach you if we have a question about the submission. Your contact email and organizer name are <strong>not</strong> shown on the public site — the public event pages only show the event's own details, not who submitted it.</p>
+    <p class="legal-p">If you email us directly, we keep that correspondence to respond to you and to keep a record of the request.</p>
+
+    <h2 class="legal-h">Automatically collected technical information</h2>
+    <p class="legal-p">Like most websites, our hosting provider (Vercel) automatically logs standard technical information for every request — things like IP address, browser type, the page requested, and timestamps. This is standard server/CDN logging used for operating and securing the site, not something 313.events separately collects or analyzes.</p>
+
+    <h2 class="legal-h">Analytics</h2>
+    <p class="legal-p">313.events uses two analytics/measurement tools on its public pages, to understand traffic and how the site is used:</p>
+    <table class="legal-table">
+      <tr><th>Service</th><th>Purpose</th></tr>
+      <tr><td>Google Analytics 4</td><td>Standard web analytics — page views, traffic sources, general usage patterns.</td></tr>
+      <tr><td>Metricool</td><td>Marketing measurement and attribution, including tracking engagement that originates from our social media activity.</td></tr>
+    </table>
+    <p class="legal-p">These are both active on the public side of 313.events (the event calendar, map, event pages, submission form, and similar). They are <strong>not</strong> active on our internal admin/moderation tool, since that's operational traffic, not public visitor traffic.</p>
+    <p class="legal-p">We don't operate any separate, custom analytics or tracking system of our own beyond these two third-party tools.</p>
+
+    <h2 class="legal-h">Cookies</h2>
+    <p class="legal-p">313.events' own code does not set or read cookies directly. Google Analytics and Metricool each set their own cookies in your browser once loaded, as part of how those services work — this is standard for analytics tools and is covered by each provider's own privacy policy (Google's and Metricool's, respectively).</p>
+
+    <h2 class="legal-h">Local storage</h2>
+    <p class="legal-p">313.events does not use browser local storage or session storage to store any data about you.</p>
+
+    <h2 class="legal-h">Hosting &amp; infrastructure providers</h2>
+    <p class="legal-p">313.events runs on <strong>Vercel</strong> (hosting and serverless functions) and <strong>Supabase</strong> (database and image storage for submitted event flyers). These providers necessarily process the data that flows through the site in order for it to function — this is standard for any web application, not a separate "sharing" of your data for their own purposes.</p>
+
+    <h2 class="legal-h">Other third-party services</h2>
+    <p class="legal-p">Depending on what you're doing on the site, these additional third parties may be involved:</p>
+    <ul class="legal-ul">
+      <li class="legal-li"><strong>Ticketmaster</strong> — supplies event listing data for Ticketmaster-sourced events; outbound ticket links for those events go through Ticketmaster's own affiliate tracking (see <a href="terms.html">Terms of Use</a>).</li>
+      <li class="legal-li"><strong>CARTO</strong> — supplies the map tiles shown on the map view.</li>
+      <li class="legal-li"><strong>Resend</strong> — sends transactional emails (e.g., confirming an event or feed submission).</li>
+      <li class="legal-li"><strong>Facebook</strong> — some editorial/event content is automatically posted to 313.events' own Facebook Page.</li>
+    </ul>
+    <p class="legal-p">None of these services receive your submission-form contact email or organizer name — that information stays within 313.events' own database.</p>
+
+    <h2 class="legal-h">Outbound links &amp; social platforms</h2>
+    <p class="legal-p">313.events links out to third-party sites constantly, by design — organizer pages, venues, and ticket sellers. Once you click through, that site's own privacy practices apply, not ours. The site also links to 313.events' own Instagram profile; visiting it is subject to Instagram's own privacy policy.</p>
+
+    <h2 class="legal-h">Retention</h2>
+    <p class="legal-p">Event-submission information is kept as part of the normal event record for as long as the listing is relevant to the site's operation (including past events, for historical/editorial reference). If you'd like your submitter contact information removed, see "Your privacy choices" below.</p>
+
+    <h2 class="legal-h">Security</h2>
+    <p class="legal-p">313.events uses standard safeguards appropriate to a small web application — access to the admin/moderation tool is restricted by a secret credential, and the database's public-facing views are deliberately limited to exclude non-public fields like submitter contact information. No method of transmission or storage is 100% secure, and we can't guarantee absolute security.</p>
+
+    <h2 class="legal-h">Sharing of information</h2>
+    <p class="legal-p">We don't sell your information. We share information only with the service providers described above, to the extent necessary for them to provide their service (hosting, database, email delivery, analytics), or if required by law (for example, in response to a valid legal request).</p>
+
+    <h2 class="legal-h">Children's privacy</h2>
+    <p class="legal-p">313.events is not directed at children, and we don't knowingly collect personal information from children under 13.</p>
+
+    <h2 class="legal-h">U.S. operation</h2>
+    <p class="legal-p">313.events is operated from the United States, and information is processed and stored in the United States (via our hosting and database providers). If you're accessing the site from outside the U.S. (including from Windsor, Ontario, which is part of our coverage area), your information will be processed in the U.S.</p>
+
+    <h2 class="legal-h">Your privacy choices</h2>
+    <p class="legal-p">To ask what information we have about you, request a correction, or ask us to delete your submitter contact information from our records, email us at the address below. We'll respond to reasonable requests.</p>
+
+    <h2 class="legal-h">Changes to this policy</h2>
+    <p class="legal-p">We may update this Privacy Policy as the product changes. The "Last updated" date at the top of this page reflects the most recent revision.</p>
+
+    <h2 class="legal-h">Contact</h2>
+    <div class="legal-contact">
+      <strong>Sentient Productions LLC</strong>
+      9011 Linwood St #110<br>
+      Detroit, MI 48221<br>
+      United States<br><br>
+      <a href="mailto:jody@sentientproductions.com">jody@sentientproductions.com</a>
+    </div>
+
+    <footer class="site">
+      <p>Always confirm dates, times, and venues before making plans.</p>
+      <p class="footer-links">
+        <a href="about.html">About</a> &middot;
+        <a href="submit.html">Submit an Event</a> &middot;
+        <a href="editorial-policy.html">Editorial Policy</a> &middot;
+        <a href="terms.html">Terms</a> &middot;
+        <a href="privacy.html">Privacy</a> &middot;
+        <a href="copyright.html">Copyright / DMCA</a> &middot;
+        <a href="accessibility.html">Accessibility</a> &middot;
+        <a href="mailto:jody@sentientproductions.com">Contact</a>
+      </p>
+      <p class="footer-sources"><a href="sources.html">Data sources</a> &middot; <a href="install.html">Add to Home Screen</a></p>
+      <p class="footer-social"><a href="https://www.instagram.com/313.thecityison/" target="_blank" rel="noopener noreferrer">Follow @313.thecityison on Instagram</a></p>
+      <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
+    </footer>
+  </div>
+</body>
+</html>
