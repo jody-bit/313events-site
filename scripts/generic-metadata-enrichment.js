@@ -107,6 +107,33 @@ const { appendEnrichmentProvenance } = require(path.join(__dirname, "..", "api",
 const MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN = 25;
 const MAX_EXTERNAL_DESCRIPTION_LOOKUPS_PER_RUN = 50;
 
+// TAVILY V1 DAILY BUDGET (2026-10-01, Product Owner decision). Separate
+// from, and stricter than, the per-run caps above: cron-enrichment.js runs
+// exactly once per day today, so a plain in-memory counter scoped to one
+// repairGenericMetadata() call already IS a daily budget -- no new table,
+// no new persistence (explicit instruction: "Do not create a new
+// monthly-budget table" / "not a new database accounting system"). Both
+// numbers are env-overridable so they're changeable without a code
+// change; the literals below are only the shipped defaults.
+//
+// TAVILY_DAILY_SEARCH_LIMIT caps TOTAL external searches (RA + every
+// other source sharing this one enrichment pass) at 20/day.
+// TAVILY_DAILY_SEARCH_LIMIT_RA caps how many of those 20 RA candidates may
+// consume, at 12/day -- guaranteeing at least 8/day stay available to
+// non-RA self-healing without needing a separate "reserved" number
+// anywhere; RA can never crowd out the rest of the budget.
+const TAVILY_DAILY_SEARCH_LIMIT = Number(process.env.TAVILY_DAILY_SEARCH_LIMIT) || 20;
+const TAVILY_DAILY_SEARCH_LIMIT_RA = Number(process.env.TAVILY_DAILY_SEARCH_LIMIT_RA) || 12;
+
+// isRaSourced(event) -> boolean
+// Exported for tests. The one place this file decides "is this an RA
+// candidate" for budget/corroboration-gating purposes -- matches the
+// exact literal scripts/ra-sync.js's deriveEventRow() and scripts/ra-
+// candidate-promotion.js both already write into events.source.
+function isRaSourced(event) {
+  return !!(event && event.source === "Resident Advisor");
+}
+
 // Tier C (learned-historical) already had its chance in SH.1's own,
 // separate Step-1 script (scripts/sh1-repair-existing-venue-address-city.js)
 // before this script ever runs -- if a learned match would have resolved
@@ -173,6 +200,8 @@ async function repairGenericMetadata({
   upsertVenueKnowledgeFn = upsertVenueKnowledge,
   externalApiKey = process.env.TAVILY_API_KEY,
   externalFetchFn = undefined,
+  dailySearchLimit = TAVILY_DAILY_SEARCH_LIMIT,
+  dailySearchLimitRA = TAVILY_DAILY_SEARCH_LIMIT_RA,
 } = {}) {
   const counts = {
     totalConsidered: 0,
@@ -186,6 +215,16 @@ async function repairGenericMetadata({
     externalDescriptionsRecovered: 0,
     externalDescriptionNoResult: 0,
     externalDescriptionUnavailable: 0,
+    // Tavily V1 daily-budget telemetry (2026-10-01) -- unified across both
+    // call sites (venue + description) and both RA/non-RA, deliberately
+    // small (six counters on the same object this function already
+    // returns/logs), not a new observability subsystem.
+    externalSearchesAttempted: 0,
+    externalSearchesSucceeded: 0,
+    externalSearchesNoResult: 0,
+    externalSearchesSkippedBudgetTotal: 0,
+    externalSearchesSkippedBudgetRA: 0,
+    raDescriptionSkippedNoCorroboration: 0,
     skippedConcurrentChange: 0,
     written: 0,
     fieldsWritten: 0,
@@ -205,6 +244,8 @@ async function repairGenericMetadata({
   const attemptedVenueDiscoveryNames = new Set();
   let externalVenueLookupsUsed = 0;
   let externalDescriptionLookupsUsed = 0;
+  let totalExternalSearchesToday = 0;
+  let raExternalSearchesToday = 0;
 
   for (const event of candidates) {
     let touchedThisEvent = false;
@@ -259,9 +300,24 @@ async function repairGenericMetadata({
         const alreadyAttempted = !nameKey || attemptedVenueDiscoveryNames.has(nameKey);
         if (!alreadyAttempted && externalVenueLookupsUsed < MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN) {
           attemptedVenueDiscoveryNames.add(nameKey);
+          const isRa = isRaSourced(event);
           if (!isExternalDiscoveryConfiguredFn()) {
             counts.externalVenueDiscoveryUnavailable++;
+          } else if (totalExternalSearchesToday >= dailySearchLimit) {
+            // Tavily V1 daily budget (2026-10-01): total across every
+            // source sharing this provider is exhausted for today -- stop
+            // spending, regardless of source. Checked before any call is
+            // made, so this never counts a request Tavily itself never saw.
+            counts.externalSearchesSkippedBudgetTotal++;
+          } else if (isRa && raExternalSearchesToday >= dailySearchLimitRA) {
+            // RA's own sub-budget is exhausted for today, even though
+            // total budget may still have room -- that remaining room is
+            // reserved for non-RA self-healing, not available to RA.
+            counts.externalSearchesSkippedBudgetRA++;
           } else {
+            totalExternalSearchesToday++;
+            if (isRa) raExternalSearchesToday++;
+            counts.externalSearchesAttempted++;
             externalVenueLookupsUsed++;
             counts.externalVenueDiscoveryAttempted++;
             let discovery = null;
@@ -272,12 +328,14 @@ async function repairGenericMetadata({
             }
             if (!discovery) {
               counts.externalVenueDiscoveryNoResult++;
+              counts.externalSearchesNoResult++;
             } else if (dryRun) {
               logger.log(`[dry-run] would persist external venue knowledge for "${event.venue_name_raw}":`, discovery);
             } else {
               const persisted = await upsertVenueKnowledgeFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, discovery, undefined);
               if (persisted) {
                 counts.externalVenueDiscoveryResolved++;
+                counts.externalSearchesSucceeded++;
                 mergeVenueIntoMaps(canonicalMaps, persisted);
                 const revalidated = resolveVenueAddressCityRepair(event, canonicalMaps, EMPTY_LEARNED_MAP);
                 if (Object.keys(revalidated).length > 0) {
@@ -327,10 +385,31 @@ async function repairGenericMetadata({
     //    this file.
     if (isDescriptionBlank(event)) {
       let usedLevel1 = false;
-      if (externalDescriptionLookupsUsed < MAX_EXTERNAL_DESCRIPTION_LOOKUPS_PER_RUN) {
+      // Product Owner policy (2026-10-01): "do not spend a Tavily
+      // description lookup on an RA candidate that has not first achieved
+      // sufficient independent corroboration." Corroboration here means
+      // venue_id is already resolved -- by step 1/1.5 above, deterministically
+      // or via this same run's own venue search -- i.e. an independent
+      // (non-RA) source has already confirmed this event's venue identity.
+      // RA's own listing data is never itself corroboration (ra.co is
+      // already excluded from "official" in external-discovery.js's
+      // NON_OFFICIAL_DOMAINS). Only RA candidates are gated this way --
+      // every other source's description enrichment is unaffected.
+      const raNeedsCorroborationFirst = isRaSourced(event) && isBlank(event.venue_id);
+      if (raNeedsCorroborationFirst) {
+        counts.raDescriptionSkippedNoCorroboration++;
+      } else if (externalDescriptionLookupsUsed < MAX_EXTERNAL_DESCRIPTION_LOOKUPS_PER_RUN) {
+        const isRa = isRaSourced(event);
         if (!isExternalDiscoveryConfiguredFn()) {
           counts.externalDescriptionUnavailable++;
+        } else if (totalExternalSearchesToday >= dailySearchLimit) {
+          counts.externalSearchesSkippedBudgetTotal++;
+        } else if (isRa && raExternalSearchesToday >= dailySearchLimitRA) {
+          counts.externalSearchesSkippedBudgetRA++;
         } else {
+          totalExternalSearchesToday++;
+          if (isRa) raExternalSearchesToday++;
+          counts.externalSearchesAttempted++;
           externalDescriptionLookupsUsed++;
           let authoritative = null;
           try {
@@ -340,6 +419,7 @@ async function repairGenericMetadata({
           }
           if (!authoritative) {
             counts.externalDescriptionNoResult++;
+            counts.externalSearchesNoResult++;
           } else if (dryRun) {
             logger.log(`[dry-run] would write authoritative description for event ${event.id}: "${authoritative.text}" (source: ${authoritative.sourceUrl})`);
           } else {
@@ -359,6 +439,7 @@ async function repairGenericMetadata({
             );
             if (applied) {
               counts.externalDescriptionsRecovered++;
+              counts.externalSearchesSucceeded++;
               counts.fieldsWritten += 1;
               touchedThisEvent = true;
               usedLevel1 = true;
@@ -430,6 +511,9 @@ module.exports = {
   applyPatch,
   MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN,
   MAX_EXTERNAL_DESCRIPTION_LOOKUPS_PER_RUN,
+  TAVILY_DAILY_SEARCH_LIMIT,
+  TAVILY_DAILY_SEARCH_LIMIT_RA,
+  isRaSourced,
 };
 
 if (require.main === module) {

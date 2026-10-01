@@ -419,6 +419,117 @@ async function run() {
   }
   console.log("PASS: a concurrent-change PATCH miss is counted as skipped, never as a silent overwrite or an error");
 
+  // --- Tavily V1 daily-budget policy (2026-10-01, Product Owner decision) ---
+
+  // 13a. An RA candidate whose venue is still unresolved must NEVER spend
+  // a Tavily description lookup, even when external discovery IS
+  // configured and would find something -- it falls to the free,
+  // Tavily-free generated template instead. "RA itself does not count as
+  // independent corroboration" -- a blank venue_id is exactly that case.
+  {
+    const { repairGenericMetadata } = freshLib();
+    const { fetchFn } = makeMockFetch({
+      venues: [],
+      candidates: [{
+        id: "evt-ra-no-venue", title: "Secret Warehouse Night", description: null,
+        start_date: "2026-10-20", time_display: "10:00 PM", is_all_day: false,
+        venue_id: null, venue_name_raw: null, venue_address_raw: null, venue_city_raw: null,
+        ticket_url: "https://ra.co/events/y", event_url: null, source: "Resident Advisor",
+      }],
+    });
+    global.fetch = fetchFn;
+    let descCalls = 0;
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY, logger: silentLogger,
+      isExternalDiscoveryConfiguredFn: () => true,
+      discoverAuthoritativeDescriptionFn: async () => { descCalls++; return { text: "should never be reached", sourceUrl: "https://x.com" }; },
+    });
+    assert.strictEqual(descCalls, 0, "an RA candidate with no corroborated venue must never trigger a Tavily description call");
+    assert.strictEqual(counts.raDescriptionSkippedNoCorroboration, 1);
+    assert.strictEqual(counts.externalDescriptionsRecovered, 0);
+    assert.strictEqual(counts.descriptionsGenerated, 1, "the free factual-template fallback must still fire");
+  }
+  console.log("PASS: Tavily V1 -- an RA candidate without a corroborated venue never spends a description lookup, falls to the free template");
+
+  // 13b. Once an RA candidate's venue IS resolved (independent
+  // corroboration achieved), description discovery proceeds normally.
+  {
+    const { repairGenericMetadata } = freshLib();
+    const { fetchFn } = makeMockFetch({
+      venues: [],
+      candidates: [{
+        id: "evt-ra-has-venue", title: "Confirmed Warehouse Night", description: null,
+        start_date: "2026-10-20", time_display: "10:00 PM", is_all_day: false,
+        venue_id: "venue-already-resolved", venue_name_raw: "Russell Industrial Center",
+        venue_address_raw: "1600 Clay St", venue_city_raw: "Detroit",
+        ticket_url: "https://ra.co/events/z", event_url: null, source: "Resident Advisor",
+      }],
+    });
+    global.fetch = fetchFn;
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY, logger: silentLogger,
+      isExternalDiscoveryConfiguredFn: () => true,
+      discoverAuthoritativeDescriptionFn: async () => ({ text: "A real authoritative description.", sourceUrl: "https://russellindustrialcenter.com/event" }),
+    });
+    assert.strictEqual(counts.raDescriptionSkippedNoCorroboration, 0);
+    assert.strictEqual(counts.externalDescriptionsRecovered, 1);
+    assert.strictEqual(counts.externalSearchesAttempted, 1);
+    assert.strictEqual(counts.externalSearchesSucceeded, 1);
+  }
+  console.log("PASS: Tavily V1 -- an RA candidate with a corroborated venue proceeds to description discovery normally");
+
+  // 13c. Total daily budget: once exhausted, remaining candidates (RA or
+  // not) are skipped and counted, never silently dropped or retried.
+  {
+    const { repairGenericMetadata } = freshLib();
+    const candidates = [1, 2, 3, 4].map((n) => ({
+      id: `evt-budget-${n}`, title: `Budget Test Venue Night ${n}`, description: "already has one",
+      start_date: "2026-10-20", time_display: "9:00 PM", is_all_day: false,
+      venue_id: null, venue_name_raw: `Budget Venue ${n}`, venue_address_raw: null, venue_city_raw: null,
+      ticket_url: null, event_url: null, source: "Some Other Source",
+    }));
+    const { fetchFn } = makeMockFetch({ venues: [], candidates });
+    global.fetch = fetchFn;
+    let venueCalls = 0;
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY, logger: silentLogger,
+      isExternalDiscoveryConfiguredFn: () => true,
+      discoverVenueKnowledgeFn: async () => { venueCalls++; return null; },
+      dailySearchLimit: 2,
+      dailySearchLimitRA: 2,
+    });
+    assert.strictEqual(venueCalls, 2, "only dailySearchLimit calls may ever actually reach the provider");
+    assert.strictEqual(counts.externalSearchesAttempted, 2);
+    assert.strictEqual(counts.externalSearchesSkippedBudgetTotal, 2, "the remaining candidates must be counted as skipped-by-budget, not silently dropped");
+  }
+  console.log("PASS: Tavily V1 -- total daily search budget is enforced across candidates, skips counted explicitly");
+
+  // 13d. RA sub-budget: RA is capped even while total budget still has
+  // room, and that reserved room remains usable by a non-RA candidate in
+  // the SAME run.
+  {
+    const { repairGenericMetadata } = freshLib();
+    const candidates = [
+      { id: "evt-ra-1", title: "RA Venue Night 1", description: "x", start_date: "2026-10-20", time_display: "9 PM", is_all_day: false, venue_id: null, venue_name_raw: "RA Venue A", venue_address_raw: null, venue_city_raw: null, ticket_url: null, event_url: null, source: "Resident Advisor" },
+      { id: "evt-ra-2", title: "RA Venue Night 2", description: "x", start_date: "2026-10-20", time_display: "9 PM", is_all_day: false, venue_id: null, venue_name_raw: "RA Venue B", venue_address_raw: null, venue_city_raw: null, ticket_url: null, event_url: null, source: "Resident Advisor" },
+      { id: "evt-nonra-1", title: "Non-RA Venue Night", description: "x", start_date: "2026-10-20", time_display: "9 PM", is_all_day: false, venue_id: null, venue_name_raw: "Non-RA Venue", venue_address_raw: null, venue_city_raw: null, ticket_url: null, event_url: null, source: "Some Other Source" },
+    ];
+    const { fetchFn } = makeMockFetch({ venues: [], candidates });
+    global.fetch = fetchFn;
+    let venueCalls = 0;
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY, logger: silentLogger,
+      isExternalDiscoveryConfiguredFn: () => true,
+      discoverVenueKnowledgeFn: async () => { venueCalls++; return null; },
+      dailySearchLimit: 10,
+      dailySearchLimitRA: 1,
+    });
+    assert.strictEqual(venueCalls, 2, "exactly 1 RA attempt (its own sub-cap) + 1 non-RA attempt must reach the provider");
+    assert.strictEqual(counts.externalSearchesSkippedBudgetRA, 1, "the second RA candidate must be skipped by RA's own sub-budget, even though total budget still had room");
+    assert.strictEqual(counts.externalSearchesSkippedBudgetTotal, 0, "total budget was never the reason anything was skipped here");
+  }
+  console.log("PASS: Tavily V1 -- RA sub-budget caps RA independently of total budget, reserving headroom for non-RA in the same run");
+
   // --- 13. Dry run never writes anything, including external-discovery
   //     persistence. ---
   {
