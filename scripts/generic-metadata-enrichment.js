@@ -97,6 +97,8 @@ const {
   discoverVenueKnowledge,
   discoverAuthoritativeDescription,
 } = require(path.join(__dirname, "..", "api", "_lib", "external-discovery"));
+const { classifySourceTier } = require(path.join(__dirname, "..", "api", "_lib", "source-authority"));
+const { appendEnrichmentProvenance } = require(path.join(__dirname, "..", "api", "_lib", "ra-provenance-note"));
 
 // Bounds -- see header. Independent of whether external discovery is even
 // configured; these protect against a single run hammering a real provider
@@ -125,7 +127,7 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     `&followup_dismissed=is.false` +
     `&or=(description.is.null,and(venue_name_raw.is.null,venue_id.is.null),and(ticket_url.is.null,event_url.is.null),and(venue_address_raw.is.null,venue_city_raw.is.null,venue_id.is.null))` +
     `&select=id,title,description,category,is_free,price_from,start_date,time_display,is_all_day,` +
-    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,` +
+    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,note,` +
     `venues(name,address,city,website,facebook_url)` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
@@ -279,11 +281,33 @@ async function repairGenericMetadata({
                 mergeVenueIntoMaps(canonicalMaps, persisted);
                 const revalidated = resolveVenueAddressCityRepair(event, canonicalMaps, EMPTY_LEARNED_MAP);
                 if (Object.keys(revalidated).length > 0) {
-                  const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, revalidated, Object.keys(revalidated));
+                  // Decision 3 (RA candidate-recovery MVP, 2026-10-01):
+                  // record WHICH independent source confirmed WHICH
+                  // field, and its authority tier, in the same patch that
+                  // writes the field itself -- never a separate write, and
+                  // never touching any RA_PROVENANCE line already present
+                  // (appendEnrichmentProvenance is purely additive). Both
+                  // of this file's external-discovery call sites search
+                  // specifically for the venue/organizer's own official
+                  // presence (see external-discovery.js's own query
+                  // construction), so "venue" is an honest matchedOn
+                  // today -- there is no artist/secondary-source signal
+                  // wired into either call site yet.
+                  const tier = classifySourceTier({ url: discovery.sourceUrl, matchedOn: "venue" });
+                  const venuePatch = {
+                    ...revalidated,
+                    note: appendEnrichmentProvenance(event.note, {
+                      field: Object.keys(revalidated).join("+"),
+                      tier,
+                      sourceUrl: discovery.sourceUrl,
+                    }),
+                  };
+                  const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, venuePatch, Object.keys(revalidated));
                   if (applied) {
                     counts.fieldsWritten += Object.keys(revalidated).length;
                     touchedThisEvent = true;
                     Object.assign(event, revalidated);
+                    event.note = venuePatch.note;
                   } else {
                     counts.skippedConcurrentChange++;
                   }
@@ -319,9 +343,18 @@ async function repairGenericMetadata({
           } else if (dryRun) {
             logger.log(`[dry-run] would write authoritative description for event ${event.id}: "${authoritative.text}" (source: ${authoritative.sourceUrl})`);
           } else {
+            const descTier = classifySourceTier({ url: authoritative.sourceUrl, matchedOn: "venue" });
             const applied = await applyPatchFn(
               SUPABASE_URL, sbHeaders, event.id,
-              { description: authoritative.text, description_source: "authoritative" },
+              {
+                description: authoritative.text,
+                description_source: "authoritative",
+                note: appendEnrichmentProvenance(event.note, {
+                  field: "description",
+                  tier: descTier,
+                  sourceUrl: authoritative.sourceUrl,
+                }),
+              },
               ["description"]
             );
             if (applied) {

@@ -425,10 +425,15 @@ async function run() {
   // ============================================================
   // Part 4: completeRaSyncSession
   // ============================================================
-  function makeCompleteFetch({ run, dupeMatch } = {}) {
+  function makeCompleteFetch({ run, dupeMatch, mergePatchOk = true } = {}) {
     const calls = [];
     const fetchFn = async (url, opts) => {
-      calls.push({ url, method: (opts && opts.method) || "GET" });
+      const method = (opts && opts.method) || "GET";
+      let body = null;
+      if (opts && opts.body) {
+        try { body = JSON.parse(opts.body); } catch { body = opts.body; }
+      }
+      calls.push({ url, method, body });
       if (url.includes("/source_runs?id=eq.")) {
         if (opts && opts.method === "PATCH") return { ok: true, text: async () => "" };
         return { ok: true, json: async () => (run ? [run] : []) };
@@ -438,6 +443,13 @@ async function run() {
       }
       if (url.includes("/rest/v1/events?on_conflict=external_id")) {
         return { ok: true, text: async () => "" };
+      }
+      // Per-row blank-fields-only merge PATCH (2026-10-01, "protect
+      // enriched data") -- targets an EXISTING row by external_id, never
+      // the bulk on_conflict=external_id insert path above.
+      if (url.includes("/rest/v1/events?external_id=eq.") && method === "PATCH") {
+        if (!mergePatchOk) return { ok: false, status: 500, json: async () => ({}) };
+        return { ok: true, json: async () => [body] };
       }
       throw new Error("unexpected fetch: " + url);
     };
@@ -463,7 +475,7 @@ async function run() {
       fetchFn,
       finishRunFn: async (handle, fields) => { finished = { handle, fields }; },
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(result.imported, 1);
     assert.strictEqual(result.duplicates, 0);
@@ -483,7 +495,7 @@ async function run() {
       fetchFn,
       finishRunFn: async () => {},
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(result.imported, 0);
     assert.strictEqual(result.errors, 1);
@@ -500,7 +512,7 @@ async function run() {
       fetchFn,
       finishRunFn: async () => {},
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(result.imported, 0);
     assert.strictEqual(result.skipped, 1);
@@ -520,7 +532,7 @@ async function run() {
       fetchFn,
       finishRunFn: async () => {},
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(result.imported, 0);
     assert.strictEqual(result.duplicates, 1);
@@ -579,7 +591,7 @@ async function run() {
       fetchFn,
       finishRunFn: async (handle, fields) => { finished = fields; },
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(result.imported, 0);
     assert.strictEqual(result.errors, 1);
@@ -611,7 +623,7 @@ async function run() {
       fetchFn,
       finishRunFn: async (handle, fields) => { finished = fields; },
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(result.imported, 0);
     assert.strictEqual(result.errors, 0); // not an error -- a legitimate, expected fail-closed stop
@@ -638,11 +650,122 @@ async function run() {
       fetchFn,
       finishRunFn: async (handle, fields) => { finished = fields; },
       buildVenueNameToIdMapFn: async () => new Map(),
-      lookupExistingStatusesFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
     });
     assert.strictEqual(finished.outcome, "success");
   }
   console.log("PASS: completeRaSyncSession -- a genuinely empty diff (nothing new found) still closes as outcome='success', not misclassified as partial");
+
+  {
+    // "Protect enriched data" (2026-10-01): an existing row for this
+    // external_id already has venue_id/description independently
+    // resolved (e.g. by scripts/ra-candidate-promotion.js + the generic
+    // enrichment pass, since RA re-blocked on this id for days). A LATER
+    // successful RA detail fetch for the SAME id must never clobber
+    // those already-resolved fields -- only still-blank fields may be
+    // filled, and status must still be preserved exactly as before.
+    const { fetchFn, calls } = makeCompleteFetch({ run: baseRun });
+    let finished = null;
+    const result = await lib.completeRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: "run-1",
+      events: [
+        { id: "ra-300", title: "RIOT: The Machine World Tour", description: "RA's own generic description", startDate: "2026-12-12T21:00:00-05:00", venueName: "Elektricity", address: "15 South Saginaw Street, Pontiac, MI 48342" },
+      ],
+      fetchFn,
+      finishRunFn: async (handle, fields) => { finished = { handle, fields }; },
+      buildVenueNameToIdMapFn: async () => new Map(),
+      lookupExistingRowsFn: async (url, key, ids) => {
+        assert.deepStrictEqual(ids, ["ra-300"]);
+        return new Map([[
+          "ra-300",
+          {
+            external_id: "ra-300",
+            status: "pending_review",
+            description: "Independently confirmed via tickets.venuepilot.com -- a real, already-resolved description.",
+            venue_id: "venue-already-resolved-uuid",
+            venue_name_raw: "Elektricity",
+            venue_address_raw: null,
+            venue_city_raw: null,
+            ticket_url: null,
+            image_url: null,
+            end_date: null,
+            time_display: null,
+            is_free: null,
+            price_from: null,
+          },
+        ]]);
+      },
+    });
+    assert.strictEqual(result.imported, 1);
+    assert.strictEqual(result.errors, 0);
+    assert.strictEqual(finished.fields.outcome, "success");
+
+    const mergePatch = calls.find((c) => c.method === "PATCH" && c.url.includes("external_id=eq.ra-300"));
+    assert.ok(mergePatch, "a merge PATCH by external_id must be issued for an existing row");
+    assert.strictEqual(
+      mergePatch.body.description, undefined,
+      "an already-populated description must never be included in the write -- it must not be clobbered"
+    );
+    assert.strictEqual(
+      mergePatch.body.venue_id, undefined,
+      "an already-populated venue_id must never be included in the write -- it must not be clobbered"
+    );
+    assert.strictEqual(mergePatch.body.status, "pending_review", "an existing status must still be preserved exactly as before");
+    assert.ok(!calls.some((c) => c.url.includes("on_conflict=external_id") && c.method === "POST"),
+      "an existing row must go through the merge path, never the bulk insert path");
+  }
+  console.log("PASS: completeRaSyncSession -- a later successful RA detail fetch never clobbers an already independently-resolved field on an existing row");
+
+  {
+    // Same existing-row scenario, but the row's mergeable fields are
+    // genuinely still blank (the normal "promoted but never got to
+    // enrichment yet" case) -- RA's own now-available detail data SHOULD
+    // fill them in, same as a brand-new row would have gotten.
+    const { fetchFn, calls } = makeCompleteFetch({ run: baseRun });
+    const result = await lib.completeRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: "run-1",
+      events: [
+        { id: "ra-300", title: "RIOT: The Machine World Tour", description: "RA's own detail-page description", startDate: "2026-12-12T21:00:00-05:00", venueName: "Elektricity", address: "15 South Saginaw Street, Pontiac, MI 48342" },
+      ],
+      fetchFn,
+      finishRunFn: async () => {},
+      buildVenueNameToIdMapFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map([[
+        "ra-300",
+        {
+          external_id: "ra-300", status: "pending_review",
+          description: null, venue_id: null, venue_name_raw: "Elektricity",
+          venue_address_raw: null, venue_city_raw: null, ticket_url: null,
+          image_url: null, end_date: null, time_display: null, is_free: null, price_from: null,
+        },
+      ]]),
+    });
+    assert.strictEqual(result.imported, 1);
+    assert.strictEqual(result.errors, 0);
+
+    const mergePatch = calls.find((c) => c.method === "PATCH" && c.url.includes("external_id=eq.ra-300"));
+    assert.strictEqual(mergePatch.body.description, "RA's own detail-page description", "a genuinely blank field must still be filled in from RA's own now-available detail data");
+    assert.strictEqual(mergePatch.body.status, "pending_review");
+  }
+  console.log("PASS: completeRaSyncSession -- an existing row's genuinely blank fields are still filled in from a later successful RA fetch");
+
+  {
+    // A merge-PATCH write failure is isolated per-row (never silently
+    // dropped, never crashes the whole completion).
+    const { fetchFn } = makeCompleteFetch({ run: baseRun, mergePatchOk: false });
+    const result = await lib.completeRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: "run-1",
+      events: [{ id: "ra-300", title: "RIOT: The Machine World Tour", startDate: "2026-12-12T21:00:00-05:00" }],
+      fetchFn,
+      finishRunFn: async () => {},
+      buildVenueNameToIdMapFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map([["ra-300", { external_id: "ra-300", status: "approved" }]]),
+    });
+    assert.strictEqual(result.imported, 0);
+    assert.strictEqual(result.errors, 1);
+    assert.strictEqual(result.errorDetail[0].reason, "WRITE_FAILED");
+  }
+  console.log("PASS: completeRaSyncSession -- a merge-PATCH failure for an existing row reports WRITE_FAILED, isolated per-row");
 
   // ============================================================
   // Part 5: today's REAL 140-id candidate listing walk (Decision 10 --

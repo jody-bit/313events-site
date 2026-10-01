@@ -511,6 +511,11 @@ async function startRaSyncSession(opts) {
 // anything else is rejected as an error, never silently accepted, so a
 // buggy or compromised client can't inject arbitrary external_ids through
 // this path.
+const MERGE_BLANK_FIELDS = [
+  "description", "venue_id", "venue_name_raw", "venue_address_raw", "venue_city_raw",
+  "ticket_url", "image_url", "end_date", "time_display", "is_free", "price_from",
+]; // fields a later successful RA detail fetch may fill in ONLY if still blank -- see completeRaSyncSession's own updated comment.
+
 async function completeRaSyncSession(opts) {
   const {
     SUPABASE_URL,
@@ -520,7 +525,7 @@ async function completeRaSyncSession(opts) {
     fetchFn = fetch,
     finishRunFn = finishRun,
     buildVenueNameToIdMapFn = buildVenueNameToIdMap,
-    lookupExistingStatusesFn = lookupExistingStatuses,
+    lookupExistingRowsFn = lookupExistingRows,
   } = opts;
 
   if (!runId || typeof runId !== "string") throw new RaSyncSessionError("runId is required");
@@ -578,34 +583,112 @@ async function completeRaSyncSession(opts) {
   if (rowsToUpsert.length) {
     try {
       // Same fail-closed status-preserving lookup every other connector
-      // uses (WP 0.17) -- almost always a no-op here, since every id in
-      // rowsToUpsert was just confirmed NOT already in production by
-      // startRaSyncSession()'s own diff, but a retried/duplicated
-      // complete() call for the same session is exactly the edge case
-      // this protects: never silently reset a moderator's decision.
-      const existingStatus = await lookupExistingStatusesFn(
+      // uses (WP 0.17), WIDENED 2026-10-01 (RA candidate-recovery MVP,
+      // Product Owner decision "protect enriched data") from status-only
+      // to the full MERGE_BLANK_FIELDS set: a retried/duplicated
+      // complete() call for the same session is no longer the only reason
+      // an external_id here might already have a row -- scripts/ra-
+      // candidate-promotion.js can now promote a pending_review row for
+      // this SAME external_id from RA's own listing evidence before this
+      // detail-page fetch ever succeeds, and api/cron-enrichment.js's
+      // existing generic enrichment pass may have already independently
+      // resolved some of that row's fields (venue, description) by the
+      // time RA's detail page finally becomes fetchable. A later
+      // successful RA fetch must never clobber an already-resolved field
+      // -- same blank-fields-only, never-overwrite-a-populated-field
+      // convention scripts/generic-metadata-enrichment.js's applyPatch
+      // already uses everywhere else in this project, applied here to
+      // RA's own write path for the first time. Status is still preserved
+      // exactly as before (never reset by a later RA fetch either way).
+      const existingRows = await lookupExistingRowsFn(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rowsToUpsert.map((r) => r.row.external_id)
+        rowsToUpsert.map((r) => r.row.external_id),
+        { select: `external_id,status,${MERGE_BLANK_FIELDS.join(",")}` }
       );
-      const payload = rowsToUpsert.map(({ row }) => ({
-        ...row,
-        status: existingStatus.get(row.external_id) || "approved",
-      }));
-      const resp = await fetchFn(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          Prefer: "resolution=merge-duplicates,return=minimal",
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!resp.ok) {
-        writeError = "Supabase upsert failed: " + (await resp.text());
-      } else {
-        for (const { id } of rowsToUpsert) imported.push({ id });
+
+      // No existing row at all (the normal, overwhelmingly common case --
+      // a genuinely new RA id) keeps the exact original behavior: one
+      // bulk insert, status defaults to "approved". An existing row (the
+      // new provisional-candidate case, or a retried complete() call)
+      // never goes through this bulk path -- see the per-row merge loop
+      // below, which is the only thing that changes for that case.
+      const toInsert = [];
+      const toMerge = [];
+      for (const entry of rowsToUpsert) {
+        const existing = existingRows.get(entry.row.external_id);
+        if (existing) toMerge.push({ ...entry, existing });
+        else toInsert.push(entry);
+      }
+
+      if (toInsert.length) {
+        const payload = toInsert.map(({ row }) => ({ ...row, status: "approved" }));
+        const resp = await fetchFn(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            Prefer: "resolution=merge-duplicates,return=minimal",
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!resp.ok) {
+          writeError = "Supabase upsert failed: " + (await resp.text());
+        } else {
+          for (const { id } of toInsert) imported.push({ id });
+        }
+      }
+
+      // Per-row, blank-fields-only, race-safe PATCH for every id that
+      // already has a row. Re-asserts (in the WHERE clause itself) that
+      // every field this patch is about to write is STILL blank right
+      // now -- same race-safety convention as every other repair script's
+      // applyPatch. A field already populated (whether by independent
+      // enrichment, a moderator, or an earlier RA fetch) is never touched;
+      // `note`'s provenance trail (api/_lib/ra-provenance-note.js) is
+      // never touched either -- this RA-detail-page write path doesn't
+      // know about that format and must not risk corrupting it.
+      if (!writeError && toMerge.length) {
+        for (const { id, row, existing } of toMerge) {
+          const patch = {};
+          for (const field of MERGE_BLANK_FIELDS) {
+            const existingVal = existing[field];
+            const existingBlank = existingVal === null || existingVal === undefined || existingVal === "";
+            const newVal = row[field];
+            const newHasValue = newVal !== null && newVal !== undefined && newVal !== "";
+            if (existingBlank && newHasValue) patch[field] = newVal;
+          }
+          patch.status = existing.status || "approved";
+
+          const blankFieldFilters = MERGE_BLANK_FIELDS
+            .filter((f) => Object.prototype.hasOwnProperty.call(patch, f))
+            .map((f) => `${f}.is.null`);
+          const whereExtra = blankFieldFilters.length ? `&and=(${blankFieldFilters.join(",")})` : "";
+
+          try {
+            const resp = await fetchFn(
+              `${SUPABASE_URL}/rest/v1/events?external_id=eq.${encodeURIComponent(row.external_id)}${whereExtra}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  apikey: SUPABASE_SERVICE_ROLE_KEY,
+                  Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+                  Prefer: "return=representation",
+                },
+                body: JSON.stringify(patch),
+              }
+            );
+            if (!resp.ok) {
+              errors.push({ id, reason: "WRITE_FAILED" });
+            } else {
+              imported.push({ id });
+            }
+          } catch (mergeErr) {
+            errors.push({ id, reason: "WRITE_FAILED" });
+          }
+        }
       }
     } catch (err) {
       writeError = "Supabase upsert failed: " + err.message;
@@ -689,6 +772,8 @@ module.exports = {
   deriveEventRow,
   findConservativeDuplicate,
   sanitizeListingMetadata,
+  MERGE_BLANK_FIELDS,
+  LISTING_METADATA_FIELDS,
   getSourceRun,
   patchSourceRunSessionData,
   DEFAULT_MAX_NEW_PER_RUN,

@@ -5,6 +5,7 @@ const {
   completeRaSyncSession,
   RaSyncSessionError,
 } = require(path.join(__dirname, "..", "scripts", "ra-sync"));
+const { promoteRaCandidates } = require(path.join(__dirname, "..", "scripts", "ra-candidate-promotion"));
 const { RaKnownIdsValidationError } = require("./_lib/ra-known-ids");
 const { StatusLookupFailedError } = require("./_lib/status-lookup");
 
@@ -144,5 +145,29 @@ module.exports = async (req, res) => {
     return;
   }
 
-  res.status(400).json({ error: "Body must include { action: 'start'|'complete', ... }" });
+  if (body.action === "promote_candidates") {
+    // 2026-10-01, RA candidate-recovery MVP -- on-demand trigger for
+    // scripts/ra-candidate-promotion.js, reachable via the exact same
+    // CRON_SECRET-gated bridge as start/complete (see .github/scripts/
+    // ra-sync-bridge.js's "promote" action). This is also exactly what
+    // api/cron-enrichment.js's own daily Step 0 calls automatically --
+    // this endpoint exists so it can be run on demand (dry-run validation
+    // before production deployment; a manual re-run) without waiting for
+    // tomorrow's cron. dryRun defaults false; promoteRaCandidates itself
+    // never auto-creates anything other than status='pending_review'
+    // rows, regardless of dryRun.
+    try {
+      const result = await promoteRaCandidates({
+        SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY,
+        dryRun: !!body.dryRun,
+      });
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+    return;
+  }
+
+  res.status(400).json({ error: "Body must include { action: 'start'|'complete'|'promote_candidates', ... }" });
 };

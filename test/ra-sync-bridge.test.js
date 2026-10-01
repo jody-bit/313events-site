@@ -28,14 +28,16 @@ async function run() {
       "README.md", // unrelated file in the same diff
       "ra-sync/inbox/complete-20260926-120500-def456.json",
       "ra-sync/inbox/start-20260926-120000-abc123.json", // duplicate
-      "ra-sync/inbox/not-a-real-shape.json", // doesn't match start-/complete- prefix
+      "ra-sync/inbox/not-a-real-shape.json", // doesn't match start-/complete-/promote- prefix
+      "ra-sync/inbox/promote-20261001-140000-ghi789.json", // RA candidate-recovery MVP, 2026-10-01
     ];
     const entries = bridge.extractInboxFiles(paths);
-    assert.strictEqual(entries.length, 2, "non-matching files must be excluded, duplicates deduped");
+    assert.strictEqual(entries.length, 3, "non-matching files must be excluded, duplicates deduped");
     assert.deepStrictEqual(
       entries.map((e) => e.filePath),
       [
         "ra-sync/inbox/complete-20260926-120500-def456.json",
+        "ra-sync/inbox/promote-20261001-140000-ghi789.json",
         "ra-sync/inbox/start-20260926-120000-abc123.json",
       ]
     );
@@ -43,6 +45,8 @@ async function run() {
     assert.strictEqual(start.runToken, "20260926-120000-abc123");
     const complete = entries.find((e) => e.action === "complete");
     assert.strictEqual(complete.runToken, "20260926-120500-def456");
+    const promote = entries.find((e) => e.action === "promote");
+    assert.strictEqual(promote.runToken, "20261001-140000-ghi789");
   }
 
   // extractInboxFiles on empty/malformed input never throws
@@ -166,6 +170,26 @@ async function run() {
     assert.throws(
       () => bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK2", runId: "run-abc" })),
       /needs an events array/
+    );
+  }
+
+  // "promote" -- RA candidate-recovery MVP, 2026-10-01. No required
+  // fields; dryRun is the only optional one.
+  {
+    const entry = { filePath: "ra-sync/inbox/promote-TOK3.json", action: "promote", runToken: "TOK3" };
+    const parsed = bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK3", action: "promote" }));
+    assert.deepStrictEqual(parsed.requestBody, { action: "promote_candidates" }, "an empty promote payload is valid -- dryRun defaults server-side");
+  }
+  {
+    const entry = { filePath: "ra-sync/inbox/promote-TOK3.json", action: "promote", runToken: "TOK3" };
+    const parsed = bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK3", action: "promote", dryRun: true }));
+    assert.deepStrictEqual(parsed.requestBody, { action: "promote_candidates", dryRun: true });
+  }
+  {
+    const entry = { filePath: "ra-sync/inbox/promote-TOK3.json", action: "promote", runToken: "TOK3" };
+    assert.throws(
+      () => bridge.parsePayloadFile(entry, JSON.stringify({ runToken: "TOK3", dryRun: "not-a-boolean" })),
+      /must be a boolean/
     );
   }
 

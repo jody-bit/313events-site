@@ -112,6 +112,30 @@ module.exports = async (req, res) => {
   const runHandle = await startRun(SLUGS.enrichment);
 
   try {
+    // Step 0 (2026-10-01, RA candidate-recovery MVP -- Product Owner
+    // decision 6: "Reuse the existing generic enrichment/self-healing
+    // pipeline. Do not create a separate RA enrichment architecture.
+    // Implement the proposed RA candidate-promotion Step 0 in cron-
+    // enrichment."). Promotes any still-unresolved Resident Advisor
+    // backlog id (source_runs.session_data.allNewIds/listingMetadata --
+    // durable even through a DataDome-blocked detail-fetch run, see
+    // scripts/ra-sync.js's own header) into a minimal, safe
+    // status='pending_review' events row, using ONLY RA's own listing-
+    // card evidence -- never a guessed venue/time/ticket link, never
+    // 'approved' (that status transition is explicitly manual-only for
+    // this MVP). Once such a row exists, the five existing steps below
+    // run against it completely unmodified, the same day. Isolated in its
+    // own try/catch, same convention as every other step here -- a
+    // promotion failure must never block the other five.
+    let raCandidateCounts = null;
+    let raCandidatePromotionError = null;
+    try {
+      const { promoteRaCandidates } = require("../scripts/ra-candidate-promotion");
+      raCandidateCounts = await promoteRaCandidates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (raErr) {
+      raCandidatePromotionError = raErr.message;
+    }
+
     // Same five steps, same order, same failure isolation as api/admin-
     // events.js's "auto_repair_venue" action — see that file's own header
     // comment for the full reasoning behind each step. Duplicated here
@@ -173,20 +197,21 @@ module.exports = async (req, res) => {
       venueRawReparseError = reparseErr.message;
     }
 
+    const raCandidateWrittenIds = (raCandidateCounts && raCandidateCounts.writtenIds) || [];
     const venueWrittenIds = venueCounts.writtenIds || [];
     const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
     const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
     const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
     const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
     const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-    const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds]);
+    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds]);
 
     // Step-level failures stay isolated (unchanged) -- but a run where any
     // step errored is not a clean 'success' for telemetry purposes either.
     // 'partial' mirrors the outcome vocabulary every ingestion connector
     // already uses for "ran, wrote some things, but not everything went
     // cleanly" (migration_035's own outcome check constraint).
-    const stepErrors = [outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError].filter(Boolean);
+    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError].filter(Boolean);
     await finishRun(runHandle, {
       outcome: stepErrors.length ? "partial" : "success",
       records_written: combinedWrittenIds.size,
@@ -196,6 +221,8 @@ module.exports = async (req, res) => {
     res.status(200).json({
       ok: true,
       written: combinedWrittenIds.size,
+      raCandidatePromotion: raCandidateCounts,
+      raCandidatePromotionError,
       venue: venueCounts,
       outerLimitsDescription: descriptionCounts,
       outerLimitsDescriptionError,

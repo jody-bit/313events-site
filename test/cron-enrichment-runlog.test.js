@@ -39,6 +39,11 @@ const SCRIPT_FILES = [
   "api/_lib/venue-lookup.js",
   "api/_lib/ics-location.js",
   "api/cron-outerlimitslounge.js",
+  "scripts/ra-candidate-promotion.js",
+  "api/_lib/status-lookup.js",
+  "api/_lib/ra-provenance-note.js",
+  "api/_lib/source-authority.js",
+  "api/_lib/external-discovery.js",
 ];
 
 function freshHandler() {
@@ -108,6 +113,16 @@ function makeMockFetch({ runInsert, runUpdate, failGet = {} } = {}) {
     }
     if (url.includes("/rest/v1/source_runs") && method === "PATCH") {
       return runUpdate ? runUpdate() : { ok: true, status: 204, json: async () => ({}) };
+    }
+    // Step 0 (RA candidate-promotion, 2026-10-01) reads the latest
+    // Resident Advisor source_runs row looking for a backlog to promote --
+    // an empty array here means "no RA session found yet," the same
+    // honest "zero candidates everywhere" default every other step in
+    // this mock already uses (scripts/ra-candidate-promotion.js's own
+    // getLatestRaSession fails soft to sessionFound:false, never an
+    // error, on an empty result).
+    if (url.includes("/rest/v1/source_runs") && method === "GET") {
+      return { ok: true, status: 200, json: async () => [] };
     }
     if (EXTERNAL_SOURCE_URLS[url]) {
       return EXTERNAL_SOURCE_URLS[url]();

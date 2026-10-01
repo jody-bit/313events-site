@@ -29,7 +29,7 @@ const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
-const INBOX_FILE_RE = /^ra-sync\/inbox\/(start|complete)-([A-Za-z0-9._-]+)\.json$/;
+const INBOX_FILE_RE = /^ra-sync\/inbox\/(start|complete|promote)-([A-Za-z0-9._-]+)\.json$/;
 
 // ---------------------------------------------------------------------
 // Pure logic
@@ -145,6 +145,27 @@ function parsePayloadFile(entry, rawContent) {
       action: "complete",
       runToken: entry.runToken,
       requestBody: { action: "complete", runId: data.runId, events: data.events },
+    };
+  }
+
+  // "promote" -- 2026-10-01, RA candidate-recovery MVP. On-demand trigger
+  // for scripts/ra-candidate-promotion.js's promoteRaCandidates(), via the
+  // exact same CRON_SECRET-gated bridge as start/complete (api/cron-ra.js's
+  // "promote_candidates" action). No required fields -- dryRun (optional,
+  // defaults false on the API side) is the only thing this payload ever
+  // carries, since promoteRaCandidates reads its own backlog from the
+  // latest Resident Advisor source_runs row, not from anything the device
+  // submits here.
+  if (entry.action === "promote") {
+    if (data.dryRun !== undefined && typeof data.dryRun !== "boolean") {
+      throw new Error(`${entry.filePath}: "dryRun", when present, must be a boolean`);
+    }
+    const requestBody = { action: "promote_candidates" };
+    if (data.dryRun !== undefined) requestBody.dryRun = data.dryRun;
+    return {
+      action: "promote",
+      runToken: entry.runToken,
+      requestBody,
     };
   }
 

@@ -261,8 +261,11 @@ async function run() {
     assert.ok(venuePatch, "Acceptance Test B: the event is repaired with the newly persisted venue");
     assert.strictEqual(venuePatch.body.venue_address_raw, "4140 Woodward Ave");
     assert.strictEqual(venuePatch.body.venue_city_raw, "Detroit");
+    assert.ok(venuePatch.body.note.includes("RA_ENRICHMENT"), "decision 3: an independent-source confirmation must be recorded in note");
+    assert.ok(venuePatch.body.note.includes("tier=primary_authoritative"));
+    assert.ok(venuePatch.body.note.includes("source_url=https://majesticdetroit.com/garden-bowl"));
   }
-  console.log("PASS: Acceptance Test B — an unknown-but-unambiguous venue progresses through verified external discovery -> persisted canonical knowledge -> repaired event");
+  console.log("PASS: Acceptance Test B — an unknown-but-unambiguous venue progresses through verified external discovery -> persisted canonical knowledge -> repaired event, with provenance recorded in note");
 
   // --- 8. Acceptance Test C -- a useful authoritative external event
   //     description outranks a generated template: Level 1 is tried first
@@ -297,8 +300,11 @@ async function run() {
     assert.ok(descPatch);
     assert.strictEqual(descPatch.body.description_source, "authoritative");
     assert.ok(descPatch.body.description.includes("monthly tarot-reading"));
+    assert.ok(descPatch.body.note.includes("RA_ENRICHMENT"), "decision 3: an independent-source confirmation must be recorded in note");
+    assert.ok(descPatch.body.note.includes("field=description"));
+    assert.ok(descPatch.body.note.includes("source_url=https://madarts.example.com/events/house-of-tarot"));
   }
-  console.log("PASS: Acceptance Test C — a useful authoritative event description found externally outranks a generated template");
+  console.log("PASS: Acceptance Test C — a useful authoritative event description found externally outranks a generated template, with provenance recorded in note");
 
   // --- 9. Acceptance Test D (within one run) -- a second event at the same
   //     unresolved venue reuses the first event's persisted discovery;

@@ -80,8 +80,8 @@ function pushBranch(branch) {
 }
 
 function cmdSubmit(action, jsonFilePath) {
-  if (action !== "start" && action !== "complete") {
-    throw new Error(`submit: action must be "start" or "complete", got ${JSON.stringify(action)}`);
+  if (action !== "start" && action !== "complete" && action !== "promote") {
+    throw new Error(`submit: action must be "start", "complete", or "promote", got ${JSON.stringify(action)}`);
   }
   if (!jsonFilePath) {
     throw new Error("submit: missing <jsonFile> argument");
@@ -94,6 +94,10 @@ function cmdSubmit(action, jsonFilePath) {
   if (action === "complete" && (typeof data.runId !== "string" || !Array.isArray(data.events))) {
     throw new Error(`submit complete: ${jsonFilePath} needs "runId" (string) and "events" (array)`);
   }
+  // "promote" needs nothing at all -- {} is a perfectly valid payload
+  // (dryRun defaults false server-side); see .github/scripts/ra-sync-
+  // bridge.js's own "promote" branch for the one optional field it does
+  // accept.
 
   const runToken = makeRunToken();
   const outRel = ["ra-sync", "inbox", `${action}-${runToken}.json`].join("/");
@@ -124,8 +128,8 @@ function sleep(ms) {
 }
 
 async function cmdWait(action, runToken, timeoutSec, pollSec) {
-  if (action !== "start" && action !== "complete") {
-    throw new Error(`wait: action must be "start" or "complete", got ${JSON.stringify(action)}`);
+  if (action !== "start" && action !== "complete" && action !== "promote") {
+    throw new Error(`wait: action must be "start", "complete", or "promote", got ${JSON.stringify(action)}`);
   }
   if (!runToken) {
     throw new Error("wait: missing <runToken> argument");
@@ -171,8 +175,8 @@ async function main() {
   }
   console.error(
     "Usage:\n" +
-      "  ra-bridge-client.js submit <start|complete> <jsonFile>\n" +
-      "  ra-bridge-client.js wait <start|complete> <runToken> [timeoutSec] [pollSec]"
+      "  ra-bridge-client.js submit <start|complete|promote> <jsonFile>\n" +
+      "  ra-bridge-client.js wait <start|complete|promote> <runToken> [timeoutSec] [pollSec]"
   );
   process.exitCode = 1;
 }
