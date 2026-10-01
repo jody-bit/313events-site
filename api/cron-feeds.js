@@ -253,14 +253,23 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
   const canonical = resolveVenueFromCandidate(candidate, venueDetailsMaps);
   if (canonical) {
     return {
-      venue_name_raw: canonical.name || candidate.name,
+      // 2026-10-01: candidate.name can now genuinely be null (the two new
+      // empty-name CivicPlus grammars in ics-location.js -- see that
+      // file's header) -- || VENUE_TBA closes that gap for a brand-new row
+      // (unlike the backfill script, there is no existing venue_name_raw
+      // to fall back to here, so this can never silently write a bare
+      // null into a freshly-inserted event). Never invents a name --
+      // VENUE_TBA is this project's own existing, established "no name
+      // available" convention, the same one the blank-LOCATION branch
+      // above already uses.
+      venue_name_raw: canonical.name || candidate.name || VENUE_TBA,
       venue_id: canonical.id,
       venue_address_raw: canonical.address || candidate.address || null,
       venue_city_raw: canonical.city || candidate.city || null,
     };
   }
   return {
-    venue_name_raw: candidate.name,
+    venue_name_raw: candidate.name || VENUE_TBA,
     venue_id: null,
     venue_address_raw: candidate.address || null,
     venue_city_raw: candidate.city || null,

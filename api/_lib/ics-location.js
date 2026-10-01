@@ -142,8 +142,28 @@ const US_ZIP_RE = /\b\d{5}(?:-\d{4})?\b/;
 const CA_POSTAL_RE = /[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d/;
 const REGION_CODE_RE = /^[A-Za-z]{2}$/;
 
+// 2026-10-01 (parser generalization pass, following the location_per_event
+// config-repair measurement): a recognized FULL region name is its own
+// valid anchor too, even with ZERO postal-shaped segment anywhere in the
+// trailing fields. Confirmed real, 2026-10-01 production pull: Windsor
+// Symphony Orchestra's own LOCATION ("...Windsor, Ontario, Canada") has no
+// postal code at all, unlike the Downtown Windsor BIA case the 2026-09-30
+// fix already covered (which DID have one alongside its spelled-out
+// region). Same grammar family, one more recognized anchor shape -- a
+// closed, explicit vocabulary (this project's own documented service area,
+// SERVICE_AREA.md: MI, OH, ON), never a guess at an unrecognized word, and
+// this alone does NOT loosen the grammar into accepting an arbitrary
+// unanchored comma-separated string -- the pre-existing regression guard
+// (test #8, ordinary 4+-clause prose with no postal/region-shaped segment)
+// still correctly falls through to unparseable.
+const FULL_REGION_NAMES = new Set(["ontario", "michigan", "ohio"]);
+
 function looksLikePostal(segment) {
   return US_ZIP_RE.test(segment) || CA_POSTAL_RE.test(segment);
+}
+
+function looksLikeFullRegionName(segment) {
+  return FULL_REGION_NAMES.has(String(segment).trim().toLowerCase());
 }
 
 // Best-effort split of whatever trails name/street/city into
@@ -184,7 +204,7 @@ function tryTribeGrammar(cleaned) {
   if (!name || !address || !city) return null;
   const trailing = rest.filter((s) => s.length > 0);
   if (!trailing.length) return null;
-  const hasAnchor = trailing.some((s) => looksLikePostal(s) || REGION_CODE_RE.test(s));
+  const hasAnchor = trailing.some((s) => looksLikePostal(s) || REGION_CODE_RE.test(s) || looksLikeFullRegionName(s));
   if (!hasAnchor) return null; // real structure unconfirmed -- fall through to unparseable, never guess
   const { region, postal, country } = classifyTrailingSegments(trailing);
   return {
@@ -205,6 +225,93 @@ function tryTribeGrammar(cleaned) {
 const CIVICPLUS_LOCATION_RE =
   /^(.+?)\s+-\s+(\d+[^,]*?)\s{2,}([A-Za-z .'-]+?)\s+([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/;
 
+// 2026-10-01 (parser generalization pass, following the location_per_event
+// config-repair measurement -- see NEEDS_FOLLOWUP_ROOT_CAUSE.md's follow-up
+// analysis for the full investigation). Three more real, confirmed
+// CivicPlus-family shapes, found only after several municipal feeds'
+// location_per_event flag was corrected and their real per-event LOCATION
+// text became visible for the first time:
+//
+//   Task 1 -- NO STREET component at all: "<name> - <City> <ST> <Zip>",
+//   e.g. "Main Meeting Room - Mount Clemens MI 48043", "Downtown -
+//   Rochester MI 48307". Real room/plaza/park names, not a guess -- but
+//   the SAME trailing "- <words> <ST> <Zip>" shape is also used by a
+//   handful of these feeds to glue a full narrative sentence onto a
+//   city/state/zip (e.g. a parade-route description), which this module
+//   must never mistake for a venue name. Confirmed from the actual
+//   2026-10-01 production distribution:
+//     - every real room/plaza/park name is <= 51 chars ("Larry Nehasil
+//       Park (Five Mile and Farmington Roads)" is the longest confirmed
+//       real one)
+//     - every real narrative string wrongly glued onto this same shape
+//       starts at 64 chars and runs past 200
+//   The 55-char cap on the name group sits in that real, confirmed gap --
+//   it is the confidence anchor for this grammar, not an arbitrary number.
+//   The city group is separately capped at 25 chars (every real Orbit city
+//   name is well under that -- "St. Clair Shores" is the longest at 16);
+//   this specifically rejects a route/intersection description that would
+//   otherwise satisfy the same bare letters-and-spaces character class
+//   (e.g. "Denton Rd and North of Cherry Hill Rd Canton", 45 chars) --
+//   left unparsed, honest gap preserved, exactly the posture this
+//   project's "never guess" convention requires for a route/intersection
+//   event with no conventional address.
+const CIVICPLUS_NO_STREET_RE =
+  /^(.{1,55}?)\s+-\s+([A-Za-z .'-]{1,25}?)\s+([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/;
+
+//   Task 2 -- EMPTY NAME variant of the two CivicPlus shapes above: the
+//   venue-name field before the dash is blank. Two confirmed real
+//   sub-shapes, both real production LOCATION values, 2026-10-01:
+//     (a) a real street address still follows, e.g. "- 12066 Merriman Road
+//         Livonia MI 48150", "- 39000 Van Born Road Canton MI 48188".
+//         These have no comma and no double-space delimiter anywhere
+//         (confirmed by direct character-code inspection, not assumed) --
+//         CIVICPLUS_LOCATION_RE's own street/city delimiter never applies
+//         here. The street/city boundary is instead located with a
+//         closed, standard street-type-suffix vocabulary (the same kind of
+//         fixed, universal English addressing convention as a 2-letter
+//         state code or a 5-digit zip, never a venue guess): the street is
+//         everything up to and including the first recognized suffix
+//         word, the city is whatever remains before the state/zip. Falls
+//         through to unparseable (never guessed) when no recognized
+//         suffix word is found, or when what's left over doesn't look
+//         like a real city (the same 25-char cap as Task 1, for the same
+//         reason).
+//     (b) no street at all, e.g. "- Livonia MI 48154", "- St. Clair Shores
+//         MI 48081" -- unambiguous, nothing to split, city-only.
+//   candidateName is null in both -- there is no name to report, and
+//   resolveIcsEventVenue (cron-feeds.js) is the one place that turns a
+//   null name into the project's own existing "Venue TBA" convention
+//   (never invented here).
+const STREET_SUFFIX_RE =
+  /\b(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Way|Highway|Hwy|Parkway|Pkwy|Place|Pl|Terrace|Ter)\b\.?/;
+const CIVICPLUS_EMPTY_NAME_WITH_STREET_OUTER_RE =
+  /^-\s*(\d+.*?)\s+([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/;
+const CIVICPLUS_EMPTY_NAME_NO_STREET_RE =
+  /^-\s*([A-Za-z .'-]{1,25}?)\s+([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/;
+
+function tryCivicplusEmptyNameWithStreet(cleaned) {
+  const outer = CIVICPLUS_EMPTY_NAME_WITH_STREET_OUTER_RE.exec(cleaned);
+  if (!outer) return null;
+  const blob = outer[1]; // e.g. "39000 Van Born Road Canton" -- street + city, no delimiter between them
+  const region = outer[2];
+  const postal = outer[3];
+  const suffixMatch = STREET_SUFFIX_RE.exec(blob);
+  if (!suffixMatch) return null; // no recognized street-type word -- can't safely locate the boundary, leave unparsed
+  const splitAt = suffixMatch.index + suffixMatch[0].length;
+  const address = blob.slice(0, splitAt).trim();
+  const city = blob.slice(splitAt).trim();
+  if (!address || !city || city.length > 25) return null;
+  return {
+    status: "parsed",
+    candidateName: null,
+    candidateAddress: address,
+    candidateCity: city,
+    candidateRegion: region,
+    candidatePostal: postal,
+    candidateCountry: null,
+  };
+}
+
 function parseIcsLocation(raw) {
   if (typeof raw !== "string") return { status: "blank" };
   const cleaned = lightlyClean(raw).trim();
@@ -222,6 +329,39 @@ function parseIcsLocation(raw) {
       candidateCity: civicplus[3].trim(),
       candidateRegion: civicplus[4].trim(),
       candidatePostal: civicplus[5].trim(),
+      candidateCountry: null,
+    };
+  }
+
+  // 2026-10-01 generalizations -- see the header comments on each pattern
+  // above for the full evidence behind every bound used here. Order
+  // matters: the no-street (named) variant is tried before the empty-name
+  // variants so a real name is never discarded in favor of a null one.
+  const noStreet = CIVICPLUS_NO_STREET_RE.exec(cleaned);
+  if (noStreet) {
+    return {
+      status: "parsed",
+      candidateName: noStreet[1].trim(),
+      candidateAddress: null,
+      candidateCity: noStreet[2].trim(),
+      candidateRegion: noStreet[3].trim(),
+      candidatePostal: noStreet[4].trim(),
+      candidateCountry: null,
+    };
+  }
+
+  const emptyNameWithStreet = tryCivicplusEmptyNameWithStreet(cleaned);
+  if (emptyNameWithStreet) return emptyNameWithStreet;
+
+  const emptyNameNoStreet = CIVICPLUS_EMPTY_NAME_NO_STREET_RE.exec(cleaned);
+  if (emptyNameNoStreet) {
+    return {
+      status: "parsed",
+      candidateName: null,
+      candidateAddress: null,
+      candidateCity: emptyNameNoStreet[1].trim(),
+      candidateRegion: emptyNameNoStreet[2].trim(),
+      candidatePostal: emptyNameNoStreet[3].trim(),
       candidateCountry: null,
     };
   }
