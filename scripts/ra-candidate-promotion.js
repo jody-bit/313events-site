@@ -149,8 +149,28 @@ async function promoteRaCandidates({
   deriveCategoryFn = deriveCategory,
   insertCandidateRowFn = insertCandidateRow,
 } = {}) {
+  // SAFETY GATE (2026-10-01): Product Owner decision 1/2 is explicit --
+  // pending_review auto-creation is approved for THIS MVP, but must not
+  // go live in production before she has reviewed a real dry-run report
+  // against today's actual backlog. cron-enrichment.js's Step 0 calls
+  // this function unconditionally, once daily, already deployed as of
+  // this commit -- without this gate, tomorrow's scheduled run would
+  // silently start writing real rows the moment it next fires, which is
+  // exactly what she asked NOT to happen yet. RA_CANDIDATE_PROMOTION_ENABLED
+  // must be explicitly set to the string "true" (a real env var Jody
+  // adds herself, in Vercel's own project settings -- never invented or
+  // defaulted on here) before any write is ever attempted, from EITHER
+  // caller (the daily cron Step 0, or the on-demand promote_candidates
+  // bridge action) -- an explicit dryRun:false in a request body is NOT
+  // enough to bypass this; the flag is the single source of truth and
+  // forces dryRun regardless of what was asked. Remove only once Jody
+  // has reviewed the dry-run report and explicitly turned this on.
+  const liveWritesEnabled = process.env.RA_CANDIDATE_PROMOTION_ENABLED === "true";
+  const effectiveDryRun = dryRun || !liveWritesEnabled;
+
   const counts = {
     configured: true,
+    liveWritesEnabled,
     sessionFound: false,
     runId: null,
     examined: 0,
@@ -162,7 +182,7 @@ async function promoteRaCandidates({
     promotable: 0,
     written: 0,
     writtenIds: [],
-    dryRun: !!dryRun,
+    dryRun: effectiveDryRun,
   };
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -236,7 +256,7 @@ async function promoteRaCandidates({
       note,
     };
 
-    if (!dryRun) {
+    if (!effectiveDryRun) {
       const ok = await insertCandidateRowFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, row, fetchFn);
       if (ok) {
         counts.written++;

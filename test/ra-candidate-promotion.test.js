@@ -28,6 +28,12 @@ function freshLib() {
 }
 
 async function run() {
+  // These tests exercise promoteRaCandidates' own classification/write
+  // logic, not the safety gate (that has its own dedicated test,
+  // runSafetyGateTests, below) -- explicitly enabled here so "written"
+  // reflects real classification, restored by runSafetyGateTests'
+  // own save/restore of this same env var either way.
+  process.env.RA_CANDIDATE_PROMOTION_ENABLED = "true";
   const lib = freshLib();
 
   // 1. Not configured -- fails soft, never throws.
@@ -142,7 +148,63 @@ async function run() {
   console.log("\nAll ra-candidate-promotion.js tests passed.");
 }
 
-run().catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
-});
+// 5. Safety gate (added after initial deployment, same day): without
+// RA_CANDIDATE_PROMOTION_ENABLED="true" explicitly set, writes are forced
+// off even when the caller explicitly asked for dryRun:false -- the daily
+// cron must never silently start writing real rows before the Product
+// Owner has reviewed a dry-run report and turned this on herself.
+async function runSafetyGateTests() {
+  const lib = freshLib();
+  const session = {
+    id: "run-gate",
+    allNewIds: ["ra-2000"],
+    listingMetadata: { "ra-2000": { title: "Gate Test Show", date: "2026-12-01T00:00:00.000", venueName: "Some Venue" } },
+  };
+
+  const prevFlag = process.env.RA_CANDIDATE_PROMOTION_ENABLED;
+  try {
+    delete process.env.RA_CANDIDATE_PROMOTION_ENABLED;
+    let inserted = false;
+    const counts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      dryRun: false, // caller explicitly asked for real writes
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(),
+      findConservativeDuplicateFn: async () => null,
+      insertCandidateRowFn: async () => { inserted = true; return true; },
+    });
+    assert.strictEqual(counts.liveWritesEnabled, false);
+    assert.strictEqual(counts.dryRun, true, "must be forced into dry-run when the env flag is unset, regardless of the dryRun argument");
+    assert.strictEqual(counts.promotable, 1);
+    assert.strictEqual(counts.written, 0, "nothing may be written while the flag is unset");
+    assert.strictEqual(inserted, false, "insertCandidateRowFn must never be called at all while the flag is unset");
+
+    process.env.RA_CANDIDATE_PROMOTION_ENABLED = "true";
+    delete require.cache[require.resolve(`${REPO_DIR}/scripts/ra-candidate-promotion.js`)];
+    const libEnabled = require(`${REPO_DIR}/scripts/ra-candidate-promotion.js`);
+    let insertedWhenEnabled = false;
+    const countsEnabled = await libEnabled.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      dryRun: false,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(),
+      findConservativeDuplicateFn: async () => null,
+      insertCandidateRowFn: async () => { insertedWhenEnabled = true; return true; },
+    });
+    assert.strictEqual(countsEnabled.liveWritesEnabled, true);
+    assert.strictEqual(countsEnabled.written, 1, "once explicitly enabled AND dryRun:false, a real write proceeds");
+    assert.strictEqual(insertedWhenEnabled, true);
+  } finally {
+    if (prevFlag === undefined) delete process.env.RA_CANDIDATE_PROMOTION_ENABLED;
+    else process.env.RA_CANDIDATE_PROMOTION_ENABLED = prevFlag;
+  }
+  console.log("PASS: the RA_CANDIDATE_PROMOTION_ENABLED safety gate forces dry-run until explicitly turned on, overriding any caller-requested dryRun:false");
+}
+
+run()
+  .then(runSafetyGateTests)
+  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate) passed."))
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
