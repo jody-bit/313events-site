@@ -1,4 +1,4 @@
-# 313.events — New Data Source Research: Publications, Museums, Cinemas
+# 313.events — New Data Source Research: Publications, Museums, Cinemas, Municipal Recreation
 
 You asked to look at Detroit publications (Metro Times, Hour Detroit, Free Press, Detroit News, etc.) for events calendars to pull in, then expanded it to every museum and movie theater/microcinema in town. This is that research pass, using the same method already proven on HALO Detroit and Trinosophes: find the calendar, check for a real feed/API, check robots.txt, check Terms of Use, and give a straight verdict — nothing here has been built or scraped yet, this is reconnaissance only.
 
@@ -57,6 +57,16 @@ You asked to look at Detroit publications (Metro Times, Hour Detroit, Free Press
 
 ---
 
+## Municipal recreation & parks programming
+
+*New candidate, added 2026-10-01: Jody supplied two URLs on a municipal recreation platform, plus an Instagram handle for identification context (not fetched — see below).*
+
+| Operator | Calendar | Platform | Feed/API? | robots.txt | Verdict |
+|---|---|---|---|---|---|
+| **City of Detroit Parks & Recreation** (likely operator — inferred from the `@detroitparksrec` Instagram handle Jody supplied; that handle itself was not fetched, since `instagram.com` is also `robots.txt`-blocked for this project and that restriction isn't being worked around either) | `midetroitweb.myvscloud.com/webtrac/web/search.html?module=PST&display=listing&sort=EventDates...` (a program/event search listing) and `.../splash.html?ccode=splash%20programs%20type...` (a "splash" landing/category page) | **WebTrac** (Vermont Systems' RecTrac/WebTrac recreation-management software — the standard platform municipal Parks & Rec departments use for activity registration and program listings, not a custom build) | **Unknown — couldn't be determined.** Both URLs are `robots.txt`-disallowed, so this session couldn't load either page to look for an export, RSS/ICS feed, or any embeddable widget. Unlike Scarab Club below, there's no prior confirmation that a usable feed even exists here. | `Disallow` on both the search and splash paths — confirmed via `WebFetch` (`ROBOTS_DISALLOWED`), not circumvented by any other method | **Blocked from automated recon entirely.** This isn't a "scrape-feasible vs. not" verdict like the rows above — the block prevents even finding out whether there's something worth building against. If this is worth pursuing, it needs a human step first: confirm the operator and ask directly whether WebTrac exposes any public feed/export for this installation, the same way the Scarab Club candidate below was handled. No code should be written against this until that's answered. |
+
+---
+
 ## What this actually means for 313.events
 
 **Best near-term targets**, in rough order of how clean the path is:
@@ -75,5 +85,6 @@ You asked to look at Detroit publications (Metro Times, Hour Detroit, Free Press
 **Needs a human check, not a verdict from here:**
 - **Detroit Free Press and Detroit News** — this session couldn't reach Gannett's domains at all, so "no calendar / likely blocked" is a guess dressed up as a finding. Worth five minutes in an actual browser before writing these off. Detroit News in particular had a real events calendar as recently as 2014 (vendor: SpinGo) — whether that ever got replaced or just quietly died is worth confirming directly.
 - **Hour Detroit** — robots.txt says yes, the live site says no (its firewall 403s automated requests). Worth a manual spot-check in case that's inconsistent by page or time of day.
+- **City of Detroit Parks & Recreation (WebTrac)** — `robots.txt` blocks both URLs outright, so there's no way from here to even see whether a feed exists. Needs a direct human check (a manual browser look, or just asking the department) before this goes anywhere. Also logged in `INGESTION_BACKLOG.md`'s outreach-candidates table since the likely next step, if pursued, is asking rather than building.
 
 **One data-model note worth flagging now, before any of this gets built:** Metro Times' calendar is self-serve — venues and promoters submit their own listings, the same way HALO Detroit and Trinosophes already are venue-run pages you scrape directly. That's a different kind of source than "Metro Times' own editorial content," and it runs into the same source-vs-organizer conflation already documented in `FOUNDATIONAL_ITEMS.md` §3 — the listing came from Metro Times' platform, but the promoter is the actual organizer. Worth keeping in mind if/when any of this actually gets built.
