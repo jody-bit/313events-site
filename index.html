@@ -5397,6 +5397,26 @@ function multiDayNoteHtml(e){
   return `<div class="note">Through ${escapeHtml(formatDateLabel(e.endDate))}</div>`;
 }
 
+// Ticket-status fallback note (2026-10-01, Needs Follow-up remaining-gap
+// product pass, extended here from event-template.html's detail-page-only
+// version -- see that file's own TICKET_STATUS_NOTES/ticketStatusNoteHtml()
+// comment for the full rationale). Only ever shown when there's truly no
+// ticketUrl/eventPageUrl to offer instead (see the call site) -- a real
+// link always wins over this text fallback.
+const TICKET_STATUS_NOTES = {
+  door: 'Pay at the door — no advance tickets for this one.',
+  rsvp_no_advance_sale: 'RSVP required — no advance ticket purchase for this one.',
+  free: 'Free — no ticket required.',
+  registration_required: 'Registration required — check with the organizer for how to sign up.',
+};
+function ticketStatusNoteHtml(e){
+  if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(!e.ticketStatus) return '';
+  const text = TICKET_STATUS_NOTES[e.ticketStatus];
+  return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
+}
+
 // The single source of truth for "which dates does the list currently
 // show" — every render() call funnels through here instead of each mode
 // scattering its own date-list logic. Order matters: a specific When
@@ -6277,6 +6297,7 @@ function renderList(dateList, meta){
                   ${addToCalendarHtml(e)}
                   ${shareButtonHtml(e)}
                 </div>
+                ${ticketStatusNoteHtml(e)}
               </div>
             </div>
           </div>
@@ -7741,6 +7762,7 @@ function mapSupabaseRow(row) {
     // this field's name distinct avoids colliding with that. See
     // migration_022_event_url.sql.
     eventPageUrl: row.event_url || undefined,
+    ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
     // 2026-09-14: resolved server-side by events_public via the real
     // venue_id -> venues.neighborhood_id -> neighborhoods.name join — see
@@ -7786,7 +7808,7 @@ async function loadSupabaseEvents() {
     // neighborhood via the real venue_id -> neighborhoods join. This
     // replaces what used to be a separate loadNeighborhoodData() fetch of
     // every venue and every neighborhood on every page load.
-    const url = `${SUPABASE_URL}/rest/v1/events_public?start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from,is_clothing_optional&order=start_date.asc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/events_public?start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from,is_clothing_optional,ticket_status&order=start_date.asc&limit=2000`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
