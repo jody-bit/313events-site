@@ -67,6 +67,17 @@ You asked to look at Detroit publications (Metro Times, Hour Detroit, Free Press
 
 ---
 
+## Institutional campuses — McNichols corridor
+
+*New candidates, added 2026-10-01: found while sourcing 8 one-off events from a CSV Jody supplied (events at Marygrove and University of Detroit Mercy venues, both on W. McNichols Rd — see `update_2026-10-01_marygrove-udm-mcnichols-corridor-events.sql`). Both institutions turned out to be recurring, multi-event sources in their own right, worth evaluating the same way as everything else here.*
+
+| Institution | Calendar | Platform | Feed/API? | robots.txt | Verdict |
+|---|---|---|---|---|---|
+| **Marygrove Conservancy** | `marygroveconservancy.org/events/` | WordPress + **The Events Calendar (TEC)** — confirmed via the page's own `meta-tec-api-origin`/`meta-tec-api-version: v1` meta tags | **Likely yes** — TEC ships a documented, public REST API at `/wp-json/tribe/events/v1/events`; this session could not fetch that exact endpoint directly (tooling restriction, not a content/access finding), so treat as a strong lead, not a confirmed one | Not checked this session (same tooling restriction) | **Worth pursuing, with one caveat**: their own native calendar currently only lists Marygrove's own in-house recurring programming (Detroit Fine Arts Breakfast Club, Sonic Memory Circles) — none of the 4 third-party-rented events in this CSV (the magic show, the gala, the play, Project Purple Light) appear on it. A connector here would pick up Marygrove's own programming automatically; the rented-space one-offs would still need their own source (Eventbrite/Humanitix/FB scraping, or continued manual entry) |
+| **University of Detroit Mercy — Titan Athletics** | `detroittitans.com/sports/<sport>/schedule` (one page per sport/season) | Sidearm Sports (standard NCAA athletics CMS) | **None found** — no iCal/RSS/JSON export visible in either the men's or women's soccer schedule page | Not checked this session | **Scrape-feasible**, same category as the existing HTML-table-scrape connectors (HALO, Trinosophes) — just one schedule table per sport rather than a single calendar. Real near-term duplicate risk worth noting: Ticketmaster has carried individual Titans games before (see the archived note for a Titans-at-Oakland match), so a future connector here would need its own-source dedup thinking, not just `on_conflict(external_id)` |
+
+---
+
 ## What this actually means for 313.events
 
 **Best near-term targets**, in rough order of how clean the path is:
@@ -75,6 +86,8 @@ You asked to look at Detroit publications (Metro Times, Hour Detroit, Free Press
 2. **The museum list** (Michigan Science Center, Motown Museum, Belle Isle Nature Center, Belle Isle Aquarium, Dossin Great Lakes Museum, Tuskegee Airmen Museum, Charles H. Wright, Detroit Public Library) — all technically scrape-feasible, all WordPress-or-similar with no structured feed, so each is a small standalone scraper in the same style as the existing crons.
 3. **Cinema Detroit and Redford Theatre** — same shape, straightforward WordPress scrapes.
 4. **Scarab Club** — hold off on scraping and just ask them directly for their ICS feed. It's a small nonprofit that took the trouble to explicitly block bots; a quick email is more in keeping with how 313.events has approached everything else (sources.html is built on being straightforward about where data comes from).
+5. **Marygrove Conservancy** — the strongest lead of this whole document, if the TEC REST API confirms out: a real documented JSON API, not a scrape. Scoped narrowly to their own in-house programming, not the rented-space one-offs.
+6. **UDM Titan Athletics** — same shape as HALO/Trinosophes (HTML schedule-table scrape), just needs its own dedup logic against Ticketmaster.
 
 **Explicitly off the table:**
 - **Senate Theater** — names AI crawlers directly in robots.txt.
@@ -86,5 +99,6 @@ You asked to look at Detroit publications (Metro Times, Hour Detroit, Free Press
 - **Detroit Free Press and Detroit News** — this session couldn't reach Gannett's domains at all, so "no calendar / likely blocked" is a guess dressed up as a finding. Worth five minutes in an actual browser before writing these off. Detroit News in particular had a real events calendar as recently as 2014 (vendor: SpinGo) — whether that ever got replaced or just quietly died is worth confirming directly.
 - **Hour Detroit** — robots.txt says yes, the live site says no (its firewall 403s automated requests). Worth a manual spot-check in case that's inconsistent by page or time of day.
 - **City of Detroit Parks & Recreation (WebTrac)** — `robots.txt` blocks both URLs outright, so there's no way from here to even see whether a feed exists. Needs a direct human check (a manual browser look, or just asking the department) before this goes anywhere. Also logged in `INGESTION_BACKLOG.md`'s outreach-candidates table since the likely next step, if pursued, is asking rather than building.
+- **Marygrove Conservancy and UDM Titan Athletics** — neither domain's `robots.txt` was actually checked this session (a tooling restriction on fetching URLs outside this conversation's existing context, not a finding about either site). Confirm both are permissive, and confirm the TEC REST API endpoint actually responds, before writing a connector against either.
 
 **One data-model note worth flagging now, before any of this gets built:** Metro Times' calendar is self-serve — venues and promoters submit their own listings, the same way HALO Detroit and Trinosophes already are venue-run pages you scrape directly. That's a different kind of source than "Metro Times' own editorial content," and it runs into the same source-vs-organizer conflation already documented in `FOUNDATIONAL_ITEMS.md` §3 — the listing came from Metro Times' platform, but the promoter is the actual organizer. Worth keeping in mind if/when any of this actually gets built.
