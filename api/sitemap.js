@@ -63,6 +63,12 @@ module.exports = async (req, res) => {
     // in venueUrls below (those have been in the sitemap since the venue
     // pages feature shipped; this is the new index page pointing at them).
     { loc: `${SITE_URL}/venues.html`, changefreq: "daily", priority: "0.6" },
+    // Neighborhood directory (2026-10-01) — same rationale as venues.html
+    // above: the directory *listing* page for all 39 Detroit neighborhoods,
+    // including ones with zero upcoming events (the homepage rail only
+    // surfaces the top 20 by event count, so this is the only page that
+    // links to every neighborhood).
+    { loc: `${SITE_URL}/neighborhoods.html`, changefreq: "daily", priority: "0.6" },
     { loc: `${SITE_URL}/submit.html`, changefreq: "monthly", priority: "0.5" },
     { loc: `${SITE_URL}/sources.html`, changefreq: "monthly", priority: "0.3" },
     { loc: `${SITE_URL}/radar.html`, changefreq: "daily", priority: "0.6" },

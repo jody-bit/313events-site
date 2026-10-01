@@ -123,7 +123,7 @@ function run() {
   // ============================================================
   // 8. Global footer rollout -- every public page, NOT admin.html
   // ============================================================
-  const FOOTER_PAGES = ["index.html", "calendar.html", "map.html", "event-template.html", "submit.html", "radar.html", "venues.html", "venue-template.html", "install.html", "sources.html"];
+  const FOOTER_PAGES = ["index.html", "calendar.html", "map.html", "event-template.html", "submit.html", "radar.html", "venues.html", "venue-template.html", "install.html", "sources.html", "neighborhoods.html"];
   const REQUIRED_FOOTER_LINKS = ["about.html", "submit.html", "editorial-policy.html", "terms.html", "privacy.html", "copyright.html", "accessibility.html", "mailto:jody@sentientproductions.com"];
   for (const p of FOOTER_PAGES) {
     const html = read(p);

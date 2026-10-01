@@ -3995,9 +3995,12 @@
      one actually exists for that specific neighborhood; every other card
      still renders exactly as before. */
   .neighborhoods-section{margin:18px 0 22px;}
+  .neighborhoods-head-row{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px;
+  }
   .neighborhoods-heading{
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
-    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0 0 10px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0;
   }
   .neighborhoods-rail{
     display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;
@@ -4397,6 +4400,7 @@
       <a class="site-nav-link" href="calendar.html">Calendar</a>
       <a class="site-nav-link" href="map.html">Map</a>
       <a class="site-nav-link" href="venues.html">Venues</a>
+      <a class="site-nav-link" href="neighborhoods.html">Neighborhoods</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
     </nav>
     <div style="display:flex;align-items:center;gap:18px;">
@@ -4517,7 +4521,10 @@
        (see 2026-08-27 conversation): they read as a peer to the hero's primary path, not as part
        of the filter mechanism that acts on the list. -->
   <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
-    <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+    <div class="neighborhoods-head-row">
+      <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+      <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
+    </div>
     <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
   </section>
 
