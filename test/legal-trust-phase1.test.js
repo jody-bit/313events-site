@@ -76,12 +76,15 @@ function run() {
   console.log("PASS: 4. DMCA contact + business address present on copyright.html; USCO registration honestly flagged as pending, not claimed complete");
 
   // ============================================================
-  // 4. LARA status -- must never claim "good standing" (explicit instruction)
+  // 4. LARA status (2026-10-01: filing confirmed brought current by Jody --
+  //    superseding this pass's original lapsed-status instruction). terms.html
+  //    may now factually describe Sentient Productions LLC as an active
+  //    Michigan LLC; the DMCA designated-agent registration is a separate,
+  //    still-pending fact and must stay flagged as not yet done regardless.
   // ============================================================
-  for (const [name, html] of Object.entries({ terms, privacy, copyright, editorial, accessibility, about })) {
-    assert.ok(!/good standing/i.test(html), `${name} must not claim Sentient Productions LLC is "in good standing" (LARA filing has lapsed)`);
-  }
-  console.log("PASS: 5. no legal page claims Sentient Productions LLC is in good standing");
+  assert.ok(/active Michigan limited liability company/.test(terms), "terms.html should factually describe Sentient Productions LLC as an active Michigan LLC now that its LARA filing is current");
+  assert.ok(/has not yet registered a designated agent with the U\.S\. Copyright Office/.test(copyright), "copyright.html must still flag DMCA designated-agent registration as pending -- LARA status and USCO agent registration are separate facts");
+  console.log("PASS: 5. terms.html reflects the current (active) Michigan LLC status; copyright.html still correctly flags DMCA agent registration as pending");
 
   // ============================================================
   // 5. About page sticks to Jody's exact six factual points, no fluff
