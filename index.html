@@ -6847,7 +6847,15 @@ function renderExploreVenuesCard(){
 // activeCats/freeOnly/query/whenMode — but DO respect neighborhoodFilter's
 // own "today or later" floor, same as
 // everywhere else on the homepage.
-const NEIGHBORHOOD_RAIL_LIMIT = 10;
+// Raised 10 -> 20, 2026-10-01 (Jody's decision, after live verification
+// showed Bagley -- correctly built and correctly counted at 1 upcoming
+// event -- ranked 19th of 19 active neighborhoods and so never cleared
+// the old top-10 cutoff). 19 neighborhoods currently have >=1 upcoming
+// event; 20 covers all of them today with one slot of headroom, without
+// abandoning the count-based ranking itself -- a low-activity
+// neighborhood still sorts to the bottom of a longer visible list, it
+// isn't pinned or exempted from the ordering.
+const NEIGHBORHOOD_RAIL_LIMIT = 20;
 
 function computeNeighborhoodCounts(){
   const todayIso = getTodayISO();
