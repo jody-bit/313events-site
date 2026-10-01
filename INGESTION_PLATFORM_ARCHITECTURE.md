@@ -1120,8 +1120,9 @@ For sources with no feed and no structured data, and **only** where the policy g
 | Planet Ant / CrowdWork | Cloudflare 403 on 2026-09-04; header fix attempted 2026-09-05, outcome not recorded in code | Verify via run log (WP 0.13). If still blocked: ask CrowdWork or the venue for a feed. |
 | Resident Advisor | ToS prohibits automated access; DataDome challenges seen during manual sessions (git log 2026-09-18) | Partnership request. Manual pulls are **decision A3**. |
 | DICE, AXS, Etix, See Tickets, Tixr | ToS / partner-gated | Partnership; aggregator overlap audit |
-| Senate Theater, Detroit House of Comedy, The Congregation, Northern Lights, Painted Lady, Eastern Market Brewing, Mic Drop, Mato, TV Lounge, Spot Lite | robots names AI crawlers | `not_permitted`; outreach for ICS / `submit-feed` |
+| Senate Theater, Coriander Kitchen and Farm, Detroit House of Comedy, The Congregation, Northern Lights, Painted Lady, Eastern Market Brewing, Mic Drop, Mato, TV Lounge, Spot Lite | robots names AI crawlers (confirmed 2026-10-01 for Senate Theater and Coriander Kitchen and Farm: identical Squarespace boilerplate naming ClaudeBot/anthropic-ai and others in the same UA group as `*`) | `not_permitted`; outreach for ICS / `submit-feed` |
 | Scarab Club | ~150 bots disallowed, but an ICS feed exists | Outreach: the ask is simply for permission to subscribe to the feed |
+| Florian East Lagers & Ales | `robots.txt` disallows automated access to every path (confirmed 2026-10-01) — a blunter block than the named-crawler Squarespace sites above, nothing is carved out | Not an outreach case: the venue runs its own Eventbrite organizer page (`eventbrite.com/o/florian-east-105186308861`, confirmed same brewery), an `official_api`/T2 route (§6.1) that never touches the blocked site. Seed it into the registry once the planned `eventbrite-org` adapter (§2.3) ships. |
 | Instagram, Facebook | No third-party read API; ToS | Manual capture lane (T5) or organizer submission |
 
 ### 7.8 The manual and assisted capture lane
@@ -1137,6 +1138,24 @@ Today's manual lane produces the most valuable long-tail data: Resident Advisor 
 - **Agent-assisted sessions** (a Claude session in Jody's browser) produce capture-tool payloads (JSON `SourceEvent`s) instead of SQL. Each payload is reviewed in the same preview.
 - **The benefits compound.** Venues, aliases and organizations created during capture persist, and duplicates are caught at capture time, not in a later dedupe batch. Reconcile *does not* apply to manual sources, since their absence carries no information, so manual events rely on `occurrence_status` updates made by hand.
 - **Policy caution (decision A3).** Resident Advisor's terms prohibit automated access, and its bot protection has challenged sessions. A browser session driven by an agent is still automated access in the sense most terms use, even when a human asks for each pull. The honest options are: (a) pursue a written RA partnership; (b) restrict RA captures to details a human reads and enters personally; or (c) accept the ToS risk knowingly. This document doesn't make that call. It flags that the current practice is closer to (c) than the prior-session framing suggested. The same question applies, less sharply, to Instagram. A human transcribing a flyer is fine; bulk agent-driven browsing of profiles is less clearly fine.
+
+### 7.9 Lead sources: discovery-only, non-authoritative
+
+**Product decision (2026-10-01).** Not every site worth watching belongs on the access ladder above, because not every site is a candidate to be *ingested from* at all. Events in the D (`eventsinthed.com`) is the first source classified as a **lead source** rather than a discovery or acquisition channel: it has real local coverage and its event/venue data is technically easy to reach (see the companion research note, `eventsinthed-discovery-source-research.md`), but its own Terms of Service prohibit scraping or copying its data without permission, and its descriptions/images are its own in-house editorial copy, not organizer-supplied fact. A lead source is a pointer, not a record, and the distinction matters enough to be a standing rule rather than a one-off judgment call:
+
+- Do not scrape or automate collection from a lead source without permission.
+- Do not ingest or reproduce its descriptions, images, or other editorial content.
+- Do not use a lead source as provenance for a published event's facts.
+- Something noticed there may trigger independent research into the event, venue, organizer, series or source it points at.
+- Find that venue/organizer/series's first-party or otherwise authoritative source independently — this is DC3 (§3.4, "venue-driven reverse discovery") run on one lead instead of a full aggregator sweep.
+- Only verified facts from that independent source enter the normal ingestion pipeline, through whatever access class it actually supports (§7.1–7.8).
+- If the lead reveals a previously unknown venue, organizer, calendar or feed, that upstream source gets evaluated for **permanent** ingestion, so the outcome is a closed coverage gap, not just one recovered event.
+
+Conceptually: `LEAD → dedupe → authoritative-source discovery → verify → normal ingestion → source-network expansion`. Dedupe against `events`/`venues` is the same lightweight name/date match already in use; anything already covered is discarded at that step without further work.
+
+**What this is not.** No lead-management system, registry column or admin queue is being built for this now. Until lead volume justifies it, a lead write-up is a markdown research note (the current pattern) and any resulting candidates are added by hand to this document and to `INGESTION_BACKLOG.md`'s outreach table, the same way Scarab Club and the WebTrac candidates already are. A `role = lead` tag on `sources` and a thin review queue are the obvious next step if this stops being occasional — not something this decision mandates.
+
+**Worked example (2026-10-01).** Events in the D's curated picks surfaced four venues absent from `venues` entirely: POST Detroit, Coriander Kitchen and Farm, Senate Theater, and Florian East Lagers & Ales. Each was independently re-sourced — not re-scraped from Events in the D — per the rule above; the resulting onboarding verdicts are in `INGESTION_BACKLOG.md`. Two outcomes are worth calling out because they show the rule catching exactly the risk it's for: Senate Theater and Coriander Kitchen and Farm both turned out, once checked directly, to already be `not_permitted`/AI-crawler-blocked Squarespace sites (§7.7) — Events in the D's own copy for both was not a safe stand-in for an ingestible source. Florian East is blocked even harder at the site level (its `robots.txt` disallows every path), but independent research found it runs its own Eventbrite organizer page — a fully permitted `official_api` route into the same venue's events that never touches the blocked site. That's source-network expansion working as intended: the lead pointed at a venue, and the authoritative-source-discovery step found a different, open door into it.
 
 ---
 

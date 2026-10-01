@@ -162,6 +162,102 @@ All entries below are reconstructed from decisions already made and recorded in 
 
 ---
 
+### DEC-014 — Three-layer discovery model: comprehensive calendar, algorithmic lenses, human editorial curation
+
+**Date:** 2026-10-01
+**Decision:** 313.events adopts three distinct, coexisting layers rather than choosing comprehensiveness *or* curation: (1) the comprehensive calendar/database — search, filters, map, neighborhoods, categories, dates, free events, and every other browsing tool continue to operate across the full database, and a routine or editorially-unremarkable event is never culled or hidden from these; (2) discovery lenses — algorithmic/contextual navigation (Tonight, This Weekend, Free, Just Added, One Night Only, and others), generally derived from structured facts rather than subjective AI judgment, implying no editorial endorsement; (3) On the Radar — a human editorial curation layer for events that deserve additional attention, explicitly **not** synonymous with biggest/most popular/highest-selling/highest-attendance/advertiser/paid placement. The operating principle across all three: **the machine nominates, a human curates** — automation (`EPIC-007`) should dramatically reduce the number of events an editor must inspect, but must never autonomously decide cultural importance or publish a subjective editorial endorsement.
+**Context:** Raised as 313.events' coverage grows toward `EPIC-001`'s hundreds-to-thousands-of-sources goal — comprehensiveness is working as intended, but it creates a second, un-addressed discovery problem (nobody can evaluate that much undifferentiated volume).
+**Alternatives considered:** Not documented beyond the three-layer shape as given.
+**Reason:** Preserves the "comprehensive by default" product promise (`DEC-012`'s "never guess"/honest-gap conventions extend naturally to "never hide," too) while adding a way to surface what's unusually interesting — without either culling the database or letting an automated system silently decide what matters.
+**Consequences:** `EPIC-007`–`EPIC-010` exist to build out layers 2 and 3. **Real naming conflict already exists**: `radar.html` and `index.html`'s "radar" filter chip are live today and mean "has press coverage" — a different concept from this decision's "On the Radar" (human-curated noteworthy, independent of press coverage). This is **not resolved by this decision** — see `DISCOVERY-010`.
+**Related backlog items:** `EPIC-007`, `EPIC-008`, `EPIC-009`, `EPIC-010`; `DISCOVERY-010` (naming collision, open).
+
+---
+
+### DEC-015 — Editorial selection and commercial placement are structurally separate; paid placement can never influence or imply editorial selection
+
+**Date:** 2026-10-01
+**Decision:** On the Radar (`DEC-014`'s layer 3) is editorial, human-selected, and cannot be purchased — selection is independent of any advertiser/sponsor relationship. Any future commercial placement feature (tentatively "Featured"/"Promoted"/"Sponsored" — public naming not yet decided) is a separate concept: potentially purchasable, must be visibly identified as promotional/sponsored wherever shown, and must never imply On the Radar editorial selection. Paid placement must never influence `EPIC-007`'s Radar Candidate Score or `EPIC-008`'s editorial selection, as an input of any weight.
+**Context:** 313.events has no monetization/paid-placement feature today. This decision is made now, ahead of any such feature being proposed, specifically so the firewall is a constraint a future proposal is checked against rather than a line that has to be drawn after a commercial relationship already exists.
+**Alternatives considered:** Not documented — stated as a firm principle, not a weighed tradeoff.
+**Reason:** Editorial trust is one of this product's foundational conventions (the "never guess"/"honest-gap" culture already established in `PRODUCT.md`) — letting commercial pressure quietly shape editorial selection would undermine that trust in a way that would be far harder to detect or undo after the fact than to prevent structurally now.
+**Consequences:** `EPIC-010` tracks the implementation and naming questions this decision raises but doesn't resolve by itself (public label for commercial placement; whether commercial placement lives in a fully separate table from the start). No monetization feature may be scheduled without being checked against this decision first.
+**Related backlog items:** `EPIC-010`; `DISCOVERY-012` (public naming, open); `DISCOVERY-013` (schema separation, open).
+
+---
+
+### DEC-016 — Discovery-only "lead" sources are pointers, never provenance
+
+**Date:** 2026-10-01
+**Decision:** A **lead source** (e.g. Events in the D, press coverage, Resident Advisor discovery, community tips, a Facebook-discovery experiment) may reveal that an event, venue, organizer, series, or calendar exists, but is never treated as authoritative provenance for a published event's facts, and its descriptions/images/editorial content are never ingested or reproduced as 313.events' own. The operating shape: `LEAD → dedupe → authoritative-source discovery → verify → normal ingestion → source-network expansion`. If a lead reveals a previously-unknown venue/organizer/calendar/feed, that upstream source is evaluated for **permanent** ingestion through the normal access-ladder/trust-tier rules (`INGESTION_PLATFORM_ARCHITECTURE.md` §6–§7), so the outcome is a closed coverage gap, not just one recovered event.
+**Context:** First applied to Events in the D (`eventsinthed.com`), whose data is technically easy to reach but whose Terms of Service prohibit scraping/copying without permission, and whose descriptions/photos are its own in-house editorial copy, not organizer-supplied fact. Four venues it surfaced (POST Detroit, Coriander Kitchen and Farm, Senate Theater, Florian East Lagers & Ales) were independently re-sourced under this rule the same day — see `INGESTION_BACKLOG.md`'s outreach table for the resulting onboarding verdicts.
+**Alternatives considered:** Treating Events in the D (and sources like it) as an ordinary discovery/acquisition channel subject only to the normal robots.txt/ToS gate (rejected — its ToS explicitly prohibits automated scraping regardless of robots.txt, and its editorial copy is not safe to republish even where technically reachable).
+**Reason:** Separates "this pointed me somewhere real" from "this is a source I can trust and automate against" — the same distinction the project already draws between a venue's own feed (T1) and an unmoderated aggregator (T4), extended to sources that shouldn't be automated against at all.
+**Consequences:** No lead-management system, registry column, or admin queue exists yet — a lead write-up is a markdown research note, and resulting candidates are added by hand to `INGESTION_PLATFORM_ARCHITECTURE.md` §7.9/`INGESTION_BACKLOG.md`'s outreach table, the same way Scarab Club and the WebTrac candidates already are. **Lead presence is explicitly not itself evidence that an event is noteworthy** — `EPIC-007`'s Radar Candidate scoring must not give a lead-sourced event any bonus for having come from a lead; it is scored on its own independently-verified merits like any other event, once (and only if) it clears normal ingestion.
+**Related backlog items:** `INGESTION_PLATFORM_ARCHITECTURE.md` §7.9 (full mechanics); `INGESTION_BACKLOG.md`'s outreach table (POST Detroit/Coriander/Senate Theater/Florian East entries); `EPIC-007` (the "lead presence is not evidence" constraint on Radar scoring).
+
+---
+
+### DEC-017 — Monetization adopted as four distinct, diversified revenue streams
+
+**Date:** 2026-10-01
+**Decision:** 313.events will pursue monetization as four structurally different revenue streams rather than betting on one: **passive transactional** (affiliate/referral revenue, `EPIC-014`), **automated transactional** (self-service event promotion, `EPIC-015`), **recurring** (Organizer Pro, `EPIC-017`), and **media** (display advertising, newsletter, and sponsorship, `EPIC-016`) — underpinned by a shared measurement layer (`EPIC-011`) and run alongside, not blocked by, audience-growth and retention work (`EPIC-012`/`EPIC-013`).
+**Context:** An earlier framing in this project treated display advertising dismissively ("programmatic pennies"). The Product Owner revisited that: 313.events' visual brand is strong enough that advertising can be designed inventory rather than ad-tech clutter, and a diversified four-stream model avoids betting the whole business on any single mechanism.
+**Alternatives considered:** A single-revenue-stream approach (e.g., display ads only, or Organizer Pro only) — rejected in favor of diversification.
+**Reason:** Each stream has a different risk/effort profile and a different time horizon (affiliate is near-passive and fast; Organizer Pro is slower but recurring); diversification is explicitly preferred over concentration.
+**Consequences:** `EPIC-011`–`EPIC-017` are the seven epics implementing this decision. Aggregated commercial insights may become a future opportunity, but selling individual user data is explicitly not part of the model (`DEC-021`).
+**Related backlog items:** `EPIC-011` through `EPIC-017`.
+
+---
+
+### DEC-018 — Display advertising is designed inventory, with locked hard requirements and a density ceiling
+
+**Date:** 2026-10-01
+**Decision:** Any display advertising/sponsorship on 313.events is built as a small, deliberate "313 advertising design system" — contextual, Detroit-relevant, visually consistent with the product's own brand — never generic programmatic ad-tech. The following requirements are locked now, not left to later implementation discretion: no popups, no interstitials, no autoplay video/audio, no ads styled or positioned to be mistaken for real events, no giant sticky units obscuring content, no layout shift while ads load, no invasive third-party retargeting by default, and no stacking multiple ad networks to fill every available rectangle. A **density ceiling** applies: advertising may occupy no more than approximately 10% of the primary discovery experience — the exact figure needs real testing, but the principle itself (a hard ceiling exists) is locked now.
+**Context:** Raised alongside `DEC-017`'s adoption of display advertising as a real revenue stream — the Product Owner was explicit that the failure mode to avoid is exactly what makes most ad-supported sites unpleasant (interruption + irrelevance + visual ugliness + tracking + repetition), and that every one of those factors is controllable.
+**Alternatives considered:** Standard programmatic ad-network integration (rejected outright — "I'd rather sell one beautiful $1,500 sponsorship than serve 400,000 garbage impressions to make $300").
+**Reason:** Protects the product's usability and trust (the same "never guess"/"honest-gap" culture this project already applies to data) from being eroded by advertising load, while still allowing real revenue.
+**Consequences:** `EPIC-016`'s entire scope is built against this constraint; any future ad-related proposal must be checked against it before implementation, the same way `EPIC-010` checks future monetization proposals against the editorial firewall.
+**Related backlog items:** `EPIC-016`; `DISCOVERY-018` (exact density-ceiling percentage, open).
+
+---
+
+### DEC-019 — Monetization build order: Measurement → Affiliate → Display/Sponsorship → Self-Service Promotion → Organizer Pro
+
+**Date:** 2026-10-01
+**Decision:** The five revenue-building epics are sequenced `EPIC-011` (Measurement) → `EPIC-014` (Affiliate) → `EPIC-016` (Display/Sponsorship) → `EPIC-015` (Self-Service Promotion) → `EPIC-017` (Organizer Pro), with `EPIC-012` (Audience Growth) and `EPIC-013` (Retention) running alongside the whole sequence rather than waiting behind it. The underlying principle, stated directly: **don't automate a business model before proving somebody will pay for it** — display/sponsorship inventory can be defined and sold manually (a human directly selling and inserting a sponsorship) before any purchase/fulfillment automation exists; automation is built once demand is proven, not before.
+**Context:** The Product Owner explicitly moved display/sponsorship ahead of self-service promotion in this sequencing, reasoning that display doesn't require organizer accounts or self-service tooling to be finished before making a dollar — inventory can exist and be sold before the automation around it does.
+**Alternatives considered:** Building Organizer Pro or self-service promotion automation first (rejected — both require more infrastructure to be built before any revenue is proven, inverting the "prove demand, then automate" principle).
+**Reason:** Minimizes wasted engineering effort on automating a business model that hasn't yet been shown to have real paying demand.
+**Consequences:** `EPIC-015` and `EPIC-017` are both explicitly *not* broken into implementation-ready stories yet, by design — scoping them further now would front-run the evidence this build order is meant to gather first.
+**Related backlog items:** `EPIC-011`, `EPIC-012`, `EPIC-013`, `EPIC-014`, `EPIC-015`, `EPIC-016`, `EPIC-017`.
+
+---
+
+### DEC-020 — Sponsorship may support a section; it may never determine editorial selection (Radar firewall, extended)
+
+**Date:** 2026-10-01
+**Decision:** A sponsor may be named as supporting the "On the Radar" section (e.g. "Presented by [brand]"), and may similarly support other curated/geographic sections (Neighborhood Partner, Orbit Partner). A sponsor may never determine, or appear to determine, which events are selected into any of those sections. For On the Radar specifically, the public-facing copy must say so explicitly: "Sponsors support On the Radar. Sponsors do not determine On the Radar selections."
+**Context:** This extends `DEC-015`'s editorial/commercial firewall (established for the Discovery + Editorial Intelligence initiative, before any sponsorship inventory existed) to the specific case of a named, paying sponsor attached to a curated section — the highest-trust-risk placement in the entire display-advertising program (`EPIC-016`). It also formalizes a promise `editorial-policy.html` already makes publicly: paid placement "will never secretly determine what we choose to cover editorially... Our editorial judgment on 'On the Radar'... remains independent of any advertising or sponsorship relationship."
+**Alternatives considered:** Allowing a sponsor to influence selection in exchange for a larger placement fee (not proposed by the Product Owner; rejected implicitly by the firewall's own framing as a line that must not blur).
+**Reason:** Editorial trust, once visibly compromised, is far more expensive to rebuild than any single sponsorship is worth.
+**Consequences:** `EPIC-007`'s Radar Candidate Score and `EPIC-008`'s editorial decision workflow must have no input, join, or parameter sourced from sponsorship/placement data, by construction — the same structural guarantee `DEC-015`/`EPIC-010` already require, now explicitly extended to cover Neighborhood Partner and Orbit Partner placements too.
+**Related backlog items:** `EPIC-010`, `EPIC-016`, `EPIC-007`, `EPIC-008`.
+
+---
+
+### DEC-021 — No individual user data is sold; commercial data products are aggregate-only
+
+**Date:** 2026-10-01
+**Decision:** 313.events will not sell individual-level user data as part of its business model. Aggregated commercial insights (e.g., "your sponsorship reached 34,218 Detroit-area event seekers") may become a future opportunity, but any such product must be built from aggregate rollups, never from exported or sold per-visitor profiles, and must be handled with explicit privacy care.
+**Context:** Reaffirms, for the new monetization program specifically, a commitment `privacy.html` already makes today: "We don't sell your information. We share information only with the service providers described above... or if required by law." This decision makes clear that commitment is not superseded by any of `EPIC-011`'s analytics, `EPIC-013`'s email capture, `EPIC-016`'s sponsor reporting, or `EPIC-017`'s organizer analytics — all of which must be designed to keep it true, not treated as edge cases that might need revisiting later.
+**Alternatives considered:** Treating aggregated behavioral data as a sellable product on its own (explicitly flagged by the Product Owner as something to be "extremely careful" with and not to pursue as part of the business model).
+**Reason:** Consistent with the product's existing privacy posture and with the general principle that commercial pressure should never be allowed to erode a trust commitment already made publicly.
+**Consequences:** `EPIC-011`'s rollups are aggregate-only by design (see that epic's own scope). Any future proposal to monetize user-level data directly must be checked against this decision and would require it to be explicitly revisited, not quietly reinterpreted.
+**Related backlog items:** `EPIC-011`, `EPIC-013`, `EPIC-016`, `EPIC-017`.
+
+---
+
 ## Open, not yet decided
 
 These have been *raised* and researched but are explicitly **not** settled — listed here only so they aren't rediscovered as if new. See `PRODUCT.md`'s "Product decisions required" section and `BACKLOG.md` for the tracked items.
@@ -170,3 +266,13 @@ These have been *raised* and researched but are explicitly **not** settled — l
 - The 12 Appendix A decisions (A1–A12) — auto-venue-creation policy, Canadian geocoding provider, JS-rendering worker, auto-publish thresholds, and others. Preserved with their original identifiers in `epics/EPIC-001-ingestion-platform-scaling/APPENDIX-A-DECISIONS.md`, which tracks exactly what each one blocks. None decided.
 - **DISCOVERY-009 — `organizations` (WP 4.13) vs. `DEC-005`'s "source ≠ organizer" rule.** The approved architecture's WP 4.13 populates one organization per *source*, which reads as different from — and possibly in tension with — `DEC-005`'s rule that organizers are hand-curated only and never auto-derived from `source`. Raised during the ingestion-program import (2026-09-21); not resolved. See `BACKLOG.md`.
 - Whether to pursue the social/community layer at all (`EPIC-005`). Not decided.
+- **DISCOVERY-010 — "On the Radar" naming collision.** `radar.html`/`index.html`'s existing "radar" filter chip (press-coverage match, live today) vs. `DEC-014`'s new human-curated "On the Radar" concept — same name, different meaning, not reconciled. See `BACKLOG.md` and `EPIC-009`.
+- **DISCOVERY-011 — Radar candidate persistence/decision-log schema** (`EPIC-007` V1 persistence and `EPIC-008`'s decision log are the same schema conversation, not decided independently). Not decided.
+- **DISCOVERY-012 — Public naming for commercial placement** ("Featured" vs. an alternative — "Featured" risks reading as editorial). Not decided. See `EPIC-010`.
+- **DISCOVERY-013 — Commercial-placement schema separation** (a fully separate table vs. tightly-reviewed columns on `events`). Not decided. See `EPIC-010`.
+- **DISCOVERY-014 — Event Connections funnel/metric definition.** Which actions count, and how they're weighted, is a product definition call, not yet made. See `EPIC-011`.
+- **DISCOVERY-015 — Email-capture consent/compliance specifics** (first real marketing-email collection this product will have had — `privacy.html`/CAN-SPAM-style preference/unsubscribe handling needs a real design pass). Not decided. See `EPIC-013`.
+- **DISCOVERY-016 — Which ticketing platforms beyond Ticketmaster offer a usable affiliate program.** Genuinely unresearched. See `EPIC-014`.
+- **DISCOVERY-017 — Self-service promotion package pricing and payment processor.** No evidence yet; explicitly deferred until `EPIC-016` demonstrates paid demand. See `EPIC-015`.
+- **DISCOVERY-018 — Exact advertising density-ceiling percentage.** Principle locked at "~10% of the primary discovery experience" (`DEC-018`); the number itself needs real testing. See `EPIC-016`.
+- **DISCOVERY-019 — Venue/organizer claim-verification mechanism, and whether it's a new trust category or governed by `DEC-005`'s existing hand-curation rule.** Not decided. See `EPIC-017`.

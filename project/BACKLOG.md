@@ -45,8 +45,23 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 | EPIC-004 | Admin & Editorial Workflow Improvements | BACKLOG | Low-Medium | `epics/EPIC-004-admin-editorial-ux.md` |
 | EPIC-005 | Social / Community Layer | IDEA | Unscored | `epics/EPIC-005-social-community-layer.md` |
 | EPIC-006 | Metadata Self-Healing | **No remaining acceptance blocker (2026-10-01)** — SH.1/SH.2/SH.5/SH.9 complete & production-verified; SH.N/SH.8/SH.3/SH.6/SH.7 `ACCEPTED`; SH.4 deployed, correct, currently unverifiable only because its source (Metro Times) has zero live rows. Formal epic-level `ACCEPTED`/`DONE` is Jody's call. | High | `epics/EPIC-006-metadata-self-healing.md` |
+| EPIC-007 | Radar Candidate Intelligence | BACKLOG (documentation/scoping only, captured 2026-10-01) | Unscored | `epics/EPIC-007-radar-candidate-intelligence.md` |
+| EPIC-008 | Editorial Radar Workbench | BACKLOG — hard dependency on EPIC-007 | Unscored | `epics/EPIC-008-editorial-radar-workbench.md` |
+| EPIC-009 | Consumer Discovery Surfaces | BACKLOG — blocked on the "On the Radar" naming decision (`DISCOVERY-010`) for part of its scope | Unscored | `epics/EPIC-009-consumer-discovery-surfaces.md` |
+| EPIC-010 | Editorial vs. Paid Promotion / Trust Architecture | BACKLOG — principle decided (`DEC-015`), naming/implementation open | Unscored | `epics/EPIC-010-editorial-trust-architecture.md` |
+| EPIC-011 | Event Connections + Commercial Analytics | BACKLOG — foundational to EPIC-012–017 (documentation/scoping only, captured 2026-10-01) | Unscored | `epics/EPIC-011-event-connections-commercial-analytics.md` |
+| EPIC-012 | Audience Growth Engine | BACKLOG — runs alongside the revenue epics per `DEC-019` | Unscored | `epics/EPIC-012-audience-growth-engine.md` |
+| EPIC-013 | Retention + Personal Discovery | BACKLOG — runs alongside the revenue epics per `DEC-019` | Unscored | `epics/EPIC-013-retention-personal-discovery.md` |
+| EPIC-014 | Commerce + Affiliate Revenue | BACKLOG — partially live already (Ticketmaster affiliate link); build-order priority 2 | Unscored | `epics/EPIC-014-commerce-affiliate-revenue.md` |
+| EPIC-015 | Self-Service Event Promotion | BACKLOG — not yet scoped into stories; waits on EPIC-016 proving demand per `DEC-019` | Unscored | `epics/EPIC-015-self-service-event-promotion.md` |
+| EPIC-016 | Native Display Advertising + Sponsorship | BACKLOG — build-order priority 3; hard requirements + density ceiling locked (`DEC-018`) | Unscored | `epics/EPIC-016-native-display-advertising-sponsorship.md` |
+| EPIC-017 | Organizer Pro + Commercial Intelligence | BACKLOG — not yet scoped into stories; last in build order per `DEC-019` | Unscored | `epics/EPIC-017-organizer-pro-commercial-intelligence.md` |
 
 **EPIC-006 note (updated 2026-10-01, closure audit — supersedes all prior status in this entry):** every work package now has deployed, tested code; `git merge-base --is-ancestor` confirms every named commit below is live. **SH.1** (venue address/city repair), **SH.2** (generated descriptions), and **SH.9** (Redford Theatre recovery) are **complete and production-verified** by direct live-data queries (anon key, 2026-10-01) — e.g. 524 live `venue_id`-linked events now show canonical-matching addresses, 110 live rows carry `description_source='generated'`, 93% of live Redford Theatre events now have a description. **SH.N** and **SH.8** remain `ACCEPTED` (Product Owner, 2026-09-21); **SH.4**'s code is deployed and tested but its target source (Metro Times) currently has zero live rows to verify against — a source-volume fact, not a defect, same as SH.8's target (Cinema Detroit). **SH.6** (field-level provenance) and **SH.7** (Needs Follow-up exception queue) are both implemented and production-verified, but in deliberately narrower forms than their original written specs — sufficient for what they actually gate/serve today (SH.6: one column gating SH.2's description generation; SH.7: `admin.html`'s source-limited exclusion list, closed 2026-09-23 per `NEEDS_FOLLOWUP_CLOSURE.md`) — whether the broader originally-specified versions are still wanted is a Product Owner call, not an open engineering gap. **SH.3**'s original scope (event-specific link repair, explicitly prohibiting a generic venue/calendar URL in `ticket_url`/`event_url`) is superseded by a later, broader mechanism (`generic-metadata-enrichment.js`'s tiered link resolution, confirmed live — Trinosophes: 14/22 current events now have a link despite that source never providing one) whose last-resort "digital home" tier appears to do the exact thing SH.3's own acceptance criteria prohibited; flagged for Product Owner review, not silently resolved. **2026-10-01 closure decisions (Product Owner) and confirmation:** **SH.3 approved** — the live digital-home fallback is a deliberate supersession of the older "never write a generic link" criterion, with a revised, binding fallback hierarchy (direct ticket link → event-specific authoritative page → official venue/organizer site → official Facebook/social/digital home → unresolved), a generic-but-verified digital home acceptable only as a last resort and never represented as event-specific. **SH.6 and SH.7 accepted as their current V1 implementations** — general field-level provenance (SH.6) and the richer multi-state exception queue (SH.7) are not required to close this epic and are moved to future backlog/debt. **SH.5 implemented, deployed, and confirmed live**: `api/cron-enrichment.js` now logs to `source_runs` via the same `startRun()`/`finishRun()` pattern every ingestion connector uses (a new, deliberately narrow, named `"enrichment"` slug — not a reopening of WP 0.5's ingestion-only scope), with a new top-level `try`/`catch` so a failure in the one previously-unwrapped repair step now logs `outcome='failed'` instead of crashing with nothing recorded. Pushed to `origin/main` (`4b7230a`) by Jody; the very next regularly-scheduled Vercel invocation (`User-Agent: vercel-cron/1.0`, not a manual trigger) produced a real `source_runs` row (`outcome='success'`, `records_written=0`, `error_sample=null`) — direct proof the cron fires on its own schedule and telemetry captures it, which is exactly what was missing before today. New test file `test/cron-enrichment-runlog.test.js` (4 cases) plus an updated `test/source-slugs.test.js` pass; full regression suite (67 files) passes except the pre-existing, unrelated `cron-bigtimebingo-runlog.test.js` flake. **EPIC-006 has no remaining acceptance blocker.** Full detail, including the live `source_runs` row, is in `epics/EPIC-006-metadata-self-healing.md`'s "2026-10-01" sections (closure audit, closure decisions, SH.5 implementation note, and final verdict). Formal epic-level `ACCEPTED`/`DONE` remains Jody's call per this file's own status vocabulary.
+
+**EPIC-007–EPIC-010 note (added 2026-10-01):** this is the "Discovery + Editorial Intelligence" initiative — documentation/scoping only, captured per Product Owner request. **Not sequenced into "Product priorities (current)" below** — these four epics are preserved in the backlog for deliberate future scheduling, not treated as next-up work. Sequencing is EPIC-007 → EPIC-008 → (EPIC-009's public "On the Radar" surface); EPIC-009's V0 lenses that don't depend on Radar signals (Just Added, One Night Only) have no dependency and could be pulled independently; EPIC-010 is a standing constraint reviewed alongside the others, not a build in sequence with them. See each epic file for its own V0 (buildable now, existing data) vs. V1+ (needs schema/AI/learning) split — none of the V1+ scope is broken into stories yet, deliberately, per the Product Owner's own instruction to investigate existing-data opportunities first.
+
+**EPIC-011–EPIC-017 note (added 2026-10-01):** the "Monetization & Growth Program" — documentation/scoping only, captured per Product Owner request. **Not sequenced into "Product priorities (current)" below** — preserved in the backlog for deliberate future scheduling. Build order is itself a decision (`DEC-019`): Measurement (`EPIC-011`) → Affiliate (`EPIC-014`) → Display/Sponsorship (`EPIC-016`) → Self-Service Promotion (`EPIC-015`) → Organizer Pro (`EPIC-017`), with Audience Growth (`EPIC-012`) and Retention (`EPIC-013`) running throughout rather than waiting in sequence. `EPIC-015` and `EPIC-017` are deliberately left without implementation-ready stories — scoping them further now would front-run the "prove demand before automating" principle the build order itself is built on.
 
 **EPIC-001 note:** the architecture is approved as technical direction (`DEC-013`). The full 143-work-package phased backlog is imported into managed tracking under `epics/EPIC-001-ingestion-platform-scaling/` (one file per phase, 0–9, plus `APPENDIX-A-DECISIONS.md` for the still-undecided A1–A12) — not duplicated in this file. `INGESTION_BACKLOG.md` (repo root) remains the authoritative detailed technical specification. **WP 0.17 (status-lookup safety) is `REVIEW`** — implemented 2026-09-22 (local acceptance criteria pass, full regression suite green; production verification of the 2026-09-17 dedupe-batch rejections deferred by `DEBT-002`); see `epics/EPIC-001-ingestion-platform-scaling/phase-0-stabilize-instrument.md`. No other work package has been pulled.
 
@@ -140,6 +155,171 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** mirror the event-flyer upload pattern rather than building a new one.
 - **Discovered Work:** —
 - **Product Decisions Required:** none.
+
+### STORY-008 — Radar Candidate Score v0: deterministic scoring query + explainability
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-007 · **Recommended Model:** Opus 5 (cross-cutting scoring logic touching several tables; get the shape right once) · **Complexity:** Medium
+- **Dependencies:** None for a first pass — reads only already-live columns (`is_recurring`, `venue_id`, `category`, `end_date`/`start_date`, `created_at`) and the already-live `editorial_article_events` join. No migration.
+- **Problem/User Need:** No mechanism anywhere in the product surfaces "this event is unusually interesting" independent of whether the press happened to cover it. An editor has no way to find Radar-worthy candidates except noticing them by chance.
+- **Acceptance Criteria:** a query (shared helper under `api/_lib/`, following the existing `venue-lookup.js`-style convention) returns, for a given upcoming-events window, each event's matched signal list (e.g. `one_time`, `rarely_activated_venue`, `multi_source_press`) from the V0 signal set in `EPIC-007`; the score/reasons are computed, never stored (no new column/table in this story); nothing in `events_public` or any anon-key-reachable query exposes the score or reasons; the query runs correctly against a realistic live-data sample with no events miscounted due to null/missing fields (e.g. an event with `venue_id = null` must not crash the venue-activation-frequency signal, just skip it).
+- **Implementation Notes:** see `epics/EPIC-007-radar-candidate-intelligence.md`'s V0 table for the exact signal-to-field mapping. Explainability (the reasons list) is mandatory from this first version, not a follow-on.
+- **Discovered Work:** —
+- **Product Decisions Required:** none for this story specifically — the broader V1+ signal questions are tracked in `EPIC-007`'s own open questions, not blocking this V0 slice.
+
+### STORY-009 — Negative/routine-signal detection for Radar scoring
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-007 · **Recommended Model:** Sonnet 5 · **Complexity:** Small–Medium
+- **Dependencies:** STORY-008 (this extends the same scoring query with downranking signals). Reuses `EPIC-006`'s Needs Follow-up field-completeness logic (`admin.html`'s `getMissingFields()`) rather than re-deriving it.
+- **Problem/User Need:** Without downranking, a routine weekly happy-hour or trivia night with a complete, well-formed record could rank alongside a genuinely rare event purely on structural completeness — the product brief is explicit that negative signals should reduce editorial-review *priority* only, never remove an event from the comprehensive calendar.
+- **Acceptance Criteria:** routine recurring patterns (long-running `is_recurring = true` series, category/title patterns matching known recurring-promo shapes) and incomplete-metadata events (via the reused `getMissingFields()` logic) reduce — never zero out destructively or hide — an event's candidate ranking; a unit test confirms a negatively-signaled event still appears in `events_public`/every public query unchanged.
+- **Implementation Notes:** —
+- **Discovered Work:** —
+- **Product Decisions Required:** none.
+
+### STORY-010 — Admin "Radar Candidates" tab + candidate cards
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-008 · **Recommended Model:** Sonnet 5 · **Complexity:** Medium
+- **Dependencies:** STORY-008 (hard — nothing to render without the scoring query).
+- **Problem/User Need:** An editor has no single place to review Radar candidates; today they'd have to notice something while working in an unrelated queue.
+- **Acceptance Criteria:** a new `admin.html` tab, following the existing tabbed-layout/badge-count convention (`EPIC-004`), lists ranked candidates from STORY-008's query, 20–40 at a time (not the full upcoming-events table); each card shows title, date/time, venue, city/neighborhood, category, image where present, source/provenance, the matched signal reasons, recurrence info, and any existing press coverage (`editorial_article_events`, reused from the existing editorial-review tab's query, not re-derived).
+- **Implementation Notes:** see `epics/EPIC-008-editorial-radar-workbench.md`.
+- **Discovered Work:** —
+- **Product Decisions Required:** exact tab label (implementation-level, not blocking).
+
+### STORY-011 — Three-action editorial decision recording (On the Radar / Pass / Not noteworthy)
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-008 · **Recommended Model:** Sonnet 5 · **Complexity:** Medium (new schema)
+- **Dependencies:** STORY-010 (the tab these actions live on).
+- **Problem/User Need:** Without a recorded decision, there's no way to answer "why was this put On the Radar" later, and `EPIC-007`'s feedback loop has nothing to learn from.
+- **Acceptance Criteria:** each of the three actions (On the Radar/Feature, Pass, Not noteworthy/Routine — no additional states) records who/when/which action against the candidate; a passed candidate can resurface later if its score changes; a "not noteworthy" decision is retrievable by `EPIC-007`'s future feedback-loop work without this story needing to implement that loop itself.
+- **Implementation Notes:** schema for this decision log should be designed together with `EPIC-007`'s V1 persistence question (`DISCOVERY-011`), not independently — may end up as one table, not two.
+- **Discovered Work:** —
+- **Product Decisions Required:** `DISCOVERY-011` (shared schema shape) should be resolved before this is scheduled, or explicitly deferred with a placeholder shape accepted as a known migration risk.
+
+### STORY-012 — "Just Added" and "One Night Only" discovery lenses
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-009 · **Recommended Model:** Sonnet 5 · **Complexity:** Small
+- **Dependencies:** None — both read only already-live fields (`created_at`; `is_recurring` + `end_date`).
+- **Problem/User Need:** No existing lens surfaces recently-added events or genuinely one-off events; both are directly computable today.
+- **Acceptance Criteria:** "Just Added" surfaces events added within a configurable recent window (newest-first); "One Night Only" surfaces non-recurring, single-date events; both are additive entry points (e.g. homepage cards or chips) and do not alter the underlying comprehensive calendar/search behavior.
+- **Implementation Notes:** keep each lens visually distinct from any future editorial ("On the Radar") surface per `EPIC-010`'s firewall and `EPIC-009`'s "editorial vs. algorithmic must be distinguishable" requirement.
+- **Discovered Work:** —
+- **Product Decisions Required:** none.
+
+### STORY-013 — "Free" lens homepage surfacing
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-009 · **Recommended Model:** Sonnet 5 · **Complexity:** Small
+- **Dependencies:** None — `is_free` filtering already exists in `index.html`; this is a discoverability/entry-point story, not new filter logic.
+- **Problem/User Need:** The free-only toggle exists but isn't surfaced as its own discovery entry point the way a dedicated "Free" lens would be.
+- **Acceptance Criteria:** a homepage entry point applies the existing free-only filter with a single click/tap, consistent with however `EPIC-009`'s other lenses are surfaced.
+- **Implementation Notes:** coordinate with whatever homepage IA `EPIC-009`'s other lens stories settle on — don't build a one-off entry point inconsistent with the rest.
+- **Discovered Work:** —
+- **Product Decisions Required:** none.
+
+### STORY-014 — Document the editorial/commercial trust firewall
+
+- **Type:** STORY · **Status:** REVIEW · **Priority:** Unscored
+- **Epic:** EPIC-010 · **Recommended Model:** N/A — documentation only · **Complexity:** Small
+- **Dependencies:** None.
+- **Problem/User Need:** The firewall between editorial selection and commercial placement needed to be written down as a binding principle before any monetization feature is ever proposed, per the Product Owner's explicit request.
+- **Acceptance Criteria:** the principle is recorded in `PRODUCT.md` ("Discovery & editorial intelligence" section) and `DECISIONS.md` (`DEC-015`); the open naming/schema questions it doesn't resolve are tracked separately (`DISCOVERY-012`, `DISCOVERY-013`), not silently decided.
+- **Implementation Notes:** satisfied by this same 2026-10-01 documentation pass — see `PRODUCT.md` and `DECISIONS.md`. Left `REVIEW` rather than `DONE`/`ACCEPTED` per this file's own status vocabulary (only Jody moves an item to `ACCEPTED`).
+- **Discovered Work:** —
+- **Product Decisions Required:** none for this story itself — see `EPIC-010`'s own open questions for what it deliberately leaves unresolved.
+
+### STORY-015 — Define and record the Event Connections funnel/metric
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-011 · **Recommended Model:** N/A until READY — this is primarily a product-definition deliverable · **Complexity:** Small (definition) / Medium (if it includes the rollup query design)
+- **Dependencies:** None.
+- **Problem/User Need:** Every later monetization epic needs to report a real, consistent number to a promoter or sponsor. No such number is defined today, and inventing one ad hoc per feature would produce inconsistent, untrustworthy reporting.
+- **Acceptance Criteria:** a written, Product-Owner-approved definition of "Event Connection" exists (which funnel stages count, with what weighting if any), recorded in `DECISIONS.md`; it's referenced, not redefined, by every later epic's own reporting scope.
+- **Implementation Notes:** do this before STORY-016's instrumentation is built, so the instrumentation captures exactly what the definition needs — not the reverse.
+- **Discovered Work:** —
+- **Product Decisions Required:** the funnel-stage weighting question itself (`DISCOVERY-014`).
+
+### STORY-016 — Outbound-click instrumentation + privacy policy update
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-011 · **Recommended Model:** Sonnet 5 · **Complexity:** Medium
+- **Dependencies:** STORY-015 (needs the metric definition first).
+- **Problem/User Need:** No outbound-click tracking exists on `ticket_url`/`event_url` anywhere today — only page-level GA4/Metricool analytics.
+- **Acceptance Criteria:** outbound ticket/event/official-site link clicks are instrumented (extending GA4 via custom events, not a parallel tracking system); `privacy.html` is updated the same release to accurately describe the new tracking — treated as one acceptance unit, not a follow-up task; no per-visitor profile is exported or persisted beyond what the rollup needs (aggregate-only, per `DEC-021`).
+- **Implementation Notes:** —
+- **Discovered Work:** —
+- **Product Decisions Required:** none beyond STORY-015's.
+
+### STORY-017 — Programmatic date/category/city landing pages
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-012 · **Recommended Model:** Sonnet 5 · **Complexity:** Medium
+- **Dependencies:** None — pure query-driven pages over existing `events`/`venues`/`neighborhoods` data, no schema change.
+- **Problem/User Need:** No programmatic landing-page layer exists for date ranges, categories, cities, or seasonal themes — only individual event/venue pages and a handful of static directory pages are indexable today.
+- **Acceptance Criteria:** a landing page per date-range/category/city combination is generated from live query results, not hand-authored; each page is genuinely useful on its own (real current listings, not an SEO shell); neighborhood landing pages extend `neighborhoods.html` rather than forking it.
+- **Implementation Notes:** see `epics/EPIC-012-audience-growth-engine.md` for the full page-type list and the "genuinely useful, not filler" requirement.
+- **Discovered Work:** —
+- **Product Decisions Required:** which page types to build first (sequencing, not a blocking decision).
+
+### STORY-018 — Schema.org JSON-LD emission on event/venue/landing pages
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-012 · **Recommended Model:** Sonnet 5 · **Complexity:** Small–Medium
+- **Dependencies:** None for event/venue pages; depends on STORY-017 for landing pages specifically.
+- **Problem/User Need:** 313.events consumes JSON-LD from other sites (`EPIC-001` §7.4) but doesn't emit any of its own, missing an easy, well-understood search-engine enhancement.
+- **Acceptance Criteria:** `event-template.html`/`venue-template.html` emit valid schema.org `Event`/`Place` JSON-LD, validated against Google's Rich Results Test or equivalent; landing pages do the same once they exist.
+- **Implementation Notes:** —
+- **Discovered Work:** —
+- **Product Decisions Required:** none.
+
+### STORY-019 — Device-local event saves (no account)
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-013 · **Recommended Model:** Sonnet 5 · **Complexity:** Small
+- **Dependencies:** None.
+- **Problem/User Need:** No way for a visitor to save an event for later without an account.
+- **Acceptance Criteria:** a visitor can save an event (device/browser-local storage, no account or email required); saved events are viewable in one place on the same device; nothing about saving requires identity.
+- **Implementation Notes:** this is the minimal V0 slice — durable cross-device saves need STORY-020's email capture.
+- **Discovered Work:** —
+- **Product Decisions Required:** whether this ships standalone or alongside STORY-020 (sequencing, not blocking — see `DISCOVERY-015`-adjacent note in `EPIC-013`'s open questions).
+
+### STORY-020 — Lightweight email capture + Weekend Signal digest
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-013 · **Recommended Model:** Sonnet 5 · **Complexity:** Medium
+- **Dependencies:** Reuses the already-live Resend transactional-email integration. Content source is `EPIC-009`'s Tonight/This Weekend lens, once it exists.
+- **Problem/User Need:** No way to opt into recurring content (a weekend digest) without creating a full account; no marketing-email capability exists today (Resend is transactional-only so far).
+- **Acceptance Criteria:** an email-capture form collects an address plus basic preferences (categories/neighborhoods), with clear, working unsubscribe/preference management from message one; a "Weekend Signal" digest email is sent on a schedule, sourced from the same lens logic `EPIC-009` builds for the public site, not a separate selection.
+- **Implementation Notes:** consult `DISCOVERY-015` (consent/compliance) before this ships, not after.
+- **Discovered Work:** —
+- **Product Decisions Required:** `DISCOVERY-015`.
+
+### STORY-021 — Research which ticketing platforms offer a usable affiliate program
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-014 · **Recommended Model:** Sonnet 5 (research/web-verification task, not implementation) · **Complexity:** Small
+- **Dependencies:** None.
+- **Problem/User Need:** Only Ticketmaster's affiliate program is confirmed live today; whether Eventbrite (organizer-authorized), Fever, Humanitix, or others in the connector roster offer a comparable program is unresearched.
+- **Acceptance Criteria:** a findings document (matching this project's existing research-before-build convention, e.g. `NEW_SOURCES_RESEARCH.md`'s format) lists each platform checked, whether an affiliate/referral program exists, its terms, and a recommendation — no link-rewriting code is written until this exists.
+- **Implementation Notes:** —
+- **Discovered Work:** —
+- **Product Decisions Required:** none for the research itself; findings feed `DISCOVERY-016`.
+
+### STORY-022 — 313 advertising design system (placement components + mandatory labeling)
+
+- **Type:** STORY · **Status:** BACKLOG · **Priority:** Unscored
+- **Epic:** EPIC-016 · **Recommended Model:** Sonnet 5 · **Complexity:** Medium
+- **Dependencies:** None to build the components; needs `EPIC-008` to have produced real Radar selections before the Radar-sponsorship placement specifically means anything.
+- **Problem/User Need:** No sponsorship/advertising placement components or labeling convention exist yet — needed before the first sponsorship can be sold and shown, per `DEC-019`'s "sell manually first" build order.
+- **Acceptance Criteria:** at minimum, Signal Sponsor and Calendar-placement components exist, visually consistent with the product's brand, always carrying a clear "sponsored"/"promoted" label; the components respect the density ceiling and every hard requirement in `DEC-018` (no popups/interstitials/autoplay/layout-shift/etc.); the Radar-sponsorship variant includes the exact firewall copy from `DEC-020` and is not enabled until `EPIC-008` has real selections to attach it to.
+- **Implementation Notes:** build this before any sponsor is sold, so the first sale has a real placement to show, per the epic's own build-order rationale.
+- **Discovered Work:** —
+- **Product Decisions Required:** none for the components themselves; see `DISCOVERY-018` for the exact density-ceiling number.
 
 ---
 
@@ -338,3 +518,63 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Status:** BACKLOG · **Priority:** Medium · **Epic:** — (cross-cutting)
 - **Problem:** See `DEBT-001`. Which write paths (manual admin entry, single submission, feed events, each individual cron) actually need a hard server-side Orbit check, versus relying on upstream source curation?
 - **Product Decisions Required:** the enforcement scope itself, before `DEBT-001` can be scoped into an implementable ticket.
+
+### DISCOVERY-010 — "On the Radar" naming collision between the live press-coverage page and the new human-curated layer
+
+- **Status:** BACKLOG · **Priority:** Medium · **Epic:** EPIC-009
+- **Problem:** `radar.html` and `index.html`'s "radar" filter chip are live today and mean "has press/editorial coverage" (automatic `editorial_article_events` match). `DEC-014` establishes a new, different "On the Radar" concept (human-selected as noteworthy, independent of press coverage). Same name, different meaning, both real — not reconciled.
+- **Product Decisions Required:** rename the existing press-coverage page/filter and free up the name for the new layer; keep the existing name and label the new layer differently; or merge the two (press coverage becomes one visible signal on a Radar card, and the public "On the Radar" surface becomes the human-curated layer). See `EPIC-009` for the full option list.
+
+### DISCOVERY-011 — Radar candidate persistence and editorial decision-log schema
+
+- **Status:** BACKLOG · **Priority:** Low (not urgent — no V0 work is blocked by this) · **Epic:** EPIC-007 / EPIC-008
+- **Problem:** `EPIC-007`'s V1 persisted-score design and `EPIC-008`'s editorial decision log are the same schema conversation (a decision is about a nomination, which may or may not correspond to a persisted candidate row) but haven't been designed together yet, since `EPIC-008` depends on `EPIC-007`'s V0 (unpersisted) query existing first.
+- **Product Decisions Required:** whether to persist Radar candidates at all before the workbench (`EPIC-008`) proves it's needed, and if so, whether the decision log references a persisted candidate row or stands alone against `events.id` directly.
+
+### DISCOVERY-012 — Public naming for future commercial placement ("Featured" or an alternative)
+
+- **Status:** BACKLOG · **Priority:** Low (no commercial feature exists yet to need this) · **Epic:** EPIC-010
+- **Problem:** "Featured" is a natural word for commercial placement but also reads as editorial endorsement — exactly the ambiguity `DEC-015`'s firewall exists to prevent. The Product Owner flagged this as explicitly unresolved, not defaulted.
+- **Product Decisions Required:** the public label itself (`Featured` reserved for commercial only, with Radar-side language kept clearly distinct; or a different word entirely for commercial placement, e.g. `Promoted`/`Sponsored`/`Partner Pick`).
+
+### DISCOVERY-013 — Commercial-placement schema separation
+
+- **Status:** BACKLOG · **Priority:** Low (no commercial feature exists yet to need this) · **Epic:** EPIC-010
+- **Problem:** If a future commercial-placement feature is built, should it live in a fully separate table (so `EPIC-007`'s Radar scoring query has no join path to it even by accident) or as reviewed columns alongside existing tables (e.g. on `events`, next to any future Radar-related columns)?
+- **Product Decisions Required:** the schema-separation question itself — recommended answer (a separate table) is given in `EPIC-010`'s own reasoning, but not mandated as decided.
+
+### DISCOVERY-014 — Event Connections funnel/metric definition
+
+- **Status:** BACKLOG · **Priority:** Medium (blocks reporting in EPIC-011/014/015/016/017) · **Epic:** EPIC-011
+- **Problem:** "Event Connections" is named as the product's core commercial metric, but which funnel actions count (impression, open, ticket click, official-site click, save, share, directions, follow, promotion interaction) and how they're weighted relative to each other hasn't been decided.
+- **Product Decisions Required:** the funnel definition itself — see `STORY-015`.
+
+### DISCOVERY-015 — Email-capture consent/compliance design
+
+- **Status:** BACKLOG · **Priority:** Medium · **Epic:** EPIC-013
+- **Problem:** 313.events has only ever sent transactional email (submission/feed confirmations via Resend). Marketing-style email capture (the Weekend Signal digest) is a new category with real compliance considerations (consent language, unsubscribe handling, preference granularity) that `privacy.html` doesn't currently address.
+- **Product Decisions Required:** the specific consent/preference-management design — not yet scoped, flagged before `STORY-020` ships rather than after.
+
+### DISCOVERY-016 — Which ticketing platforms beyond Ticketmaster offer a usable affiliate program
+
+- **Status:** BACKLOG · **Priority:** Medium · **Epic:** EPIC-014
+- **Problem:** Only Ticketmaster's affiliate program is confirmed live and disclosed (`terms.html`). Whether Eventbrite, Fever, Humanitix, or other roster/planned platforms offer comparable programs is unresearched.
+- **Product Decisions Required:** none yet — this is a research gap (`STORY-021`), not a judgment call, until findings exist.
+
+### DISCOVERY-017 — Self-service promotion package pricing and payment processor
+
+- **Status:** BACKLOG · **Priority:** Low (explicitly deferred — see `DEC-019`) · **Epic:** EPIC-015
+- **Problem:** No pricing evidence exists yet for Boost/Weekend Boost/Category Boost/Orbit Boost packages, and no payment processor has been selected.
+- **Product Decisions Required:** both — deliberately left open until `EPIC-016` proves paid demand for the simpler, manually-sold sponsorship inventory first.
+
+### DISCOVERY-018 — Exact advertising density-ceiling percentage
+
+- **Status:** BACKLOG · **Priority:** Low (principle is locked; only the number is open) · **Epic:** EPIC-016
+- **Problem:** `DEC-018` locks the *principle* of a density ceiling (~10% of the primary discovery experience) but not the exact, tested figure.
+- **Product Decisions Required:** the final percentage, pending real testing once inventory exists.
+
+### DISCOVERY-019 — Venue/organizer claim-verification mechanism and its relationship to DEC-005
+
+- **Status:** BACKLOG · **Priority:** Low (no near-term work blocked) · **Epic:** EPIC-017
+- **Problem:** `EPIC-017`'s free-tier "claim venue" flow needs some verification mechanism, and it's not yet decided whether a verified self-claim is governed by `DEC-005`'s existing hand-curation-only rule for `organizers`, or constitutes a new, distinct trust category.
+- **Product Decisions Required:** both the verification mechanism and its relationship to `DEC-005` — not yet designed.

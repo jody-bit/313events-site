@@ -25,6 +25,32 @@ The service area is a 75-statute-mile radius, measured from **Detroit's actual m
 
 Grow from the current source set (23 scheduled cron jobs, one per source, plus a generic self-service ICS feed poller) toward comprehensive coverage of the full Detroit Orbit — potentially hundreds to thousands of sources — without the ingestion system becoming more fragile as it scales. This is the subject of the proposed Ingestion Platform Scaling initiative (`ROADMAP.md`, `epics/EPIC-001-ingestion-platform-scaling.md`); it is a proposed design awaiting Product Owner review, not yet an accepted architecture.
 
+## Discovery & editorial intelligence — comprehensive by default, curated by choice
+
+Captured 2026-10-01 as a four-epic initiative (`EPIC-007`–`EPIC-010`, `ROADMAP.md`), in direct response to a real consequence of the coverage goal above: as the database grows toward hundreds or thousands of events, comprehensiveness itself creates a second problem — nobody can evaluate that much undifferentiated volume as though every event deserves equal attention. The product now has three distinct, coexisting layers (`DEC-014`):
+
+1. **Calendar/database — comprehensive.** Unchanged by this initiative. Search, filters, map, neighborhoods, categories, dates, free events, and every other existing browsing tool keep operating across the full database; a routine or editorially-unremarkable event is never culled or hidden because it isn't noteworthy.
+2. **Discovery lenses — algorithmic/contextual.** Ways to navigate abundance (Tonight, This Weekend, Free, Just Added, One Night Only, and others) that generally derive from structured facts already in the database, implying no editorial endorsement. See `EPIC-009`.
+3. **On the Radar — human editorial curation.** An editorial layer for events that deserve additional attention — explicitly not a function of size, popularity, ticket sales, attendance, or advertiser status. Automation (`EPIC-007`) narrows what a human reviews; a human (Jody) still makes every editorial call (`EPIC-008`). **The machine nominates, a human curates** — this is the same moderation-authority principle already established for submissions/feeds above, extended to a new kind of decision.
+
+**A real naming collision exists and is not yet resolved.** `radar.html` and `index.html`'s "radar" filter chip are live today and already mean "has press/editorial coverage" (an automatic `editorial_article_events` match, zero human curation step) — a different concept from this section's "On the Radar" (human-selected as noteworthy, independent of press coverage). See `PRODUCT DECISION REQUIRED` below and `DISCOVERY-010` in `BACKLOG.md`.
+
+**Editorial/commercial firewall (`DEC-015`).** 313.events has no monetization feature today. Before one is built, the principle is already set: On the Radar cannot be purchased and is independent of advertiser/sponsor status; any future commercial placement ("Featured"/"Promoted"/"Sponsored" — exact public label not yet decided) must be visibly identified as such and must never imply editorial selection; paid placement must never influence Radar scoring or editorial selection. See `EPIC-010`.
+
+## Monetization & growth
+
+Captured 2026-10-01 as a seven-epic program (`EPIC-011`–`EPIC-017`, `ROADMAP.md`), documentation/scoping only — no payment processing, advertising, or new tracking code exists yet. 313.events adopts four structurally diversified revenue streams (`DEC-017`): passive transactional (affiliate/referral, `EPIC-014`), automated transactional (self-service event promotion, `EPIC-015`), recurring (Organizer Pro, `EPIC-017`), and media (display advertising/sponsorship, `EPIC-016`) — built on a shared measurement layer (`EPIC-011`) and alongside continuous audience-growth (`EPIC-012`) and retention (`EPIC-013`) work.
+
+**This program builds on real, already-live facts, not a blank slate.** `terms.html` already discloses and already operates a Ticketmaster affiliate-link relationship. `editorial-policy.html` already publicly promises that any future sponsored content will be clearly labeled and will never secretly influence editorial coverage. Resend already provides transactional email. GA4 and Metricool already provide page-level analytics. The program extends each of these rather than replacing or duplicating them.
+
+**Build order is a deliberate decision, not just a priority list (`DEC-019`):** Measurement → Affiliate → Display/Sponsorship → Self-Service Promotion → Organizer Pro. The operating principle: **don't automate a business model before proving somebody will pay for it** — sponsorship inventory is sold manually, by a human, before any purchase/fulfillment automation is built for it.
+
+**Display advertising is designed inventory, not ad-tech (`DEC-018`).** A locked set of hard requirements (no popups, interstitials, autoplay, layout shift, ads disguised as events, invasive default retargeting, or multi-network rectangle-filling) and a density ceiling (~10% of the primary discovery experience, exact figure pending testing) apply to any future display/sponsorship work from day one.
+
+**The editorial/commercial firewall (`DEC-015`) extends explicitly to sponsorship (`DEC-020`).** A sponsor may support a section (On the Radar, a neighborhood page, a regional discovery page); a sponsor may never determine, or appear to determine, what gets selected or which events appear. On the Radar sponsorship specifically must carry explicit public copy saying so.
+
+**No individual user data is sold (`DEC-021`).** Aggregated commercial reporting (to promoters, sponsors, or organizers) is built from rollups, never from exported or sold per-visitor profiles — consistent with `privacy.html`'s existing "we don't sell your information" commitment.
+
 ## Capabilities that exist today (verified against code, 2026-09-21)
 
 **Public site** (static HTML/CSS/vanilla JS, no framework/build step): `index.html` (calendar — month/list view, category chips, free-only toggle, text search, day-detail panel, static-data fallback if Supabase is unreachable), `calendar.html`, `map.html`, `radar.html`, `venues.html`, `event-template.html` + `venue-template.html` (server-rendered per-entity pages with dynamic OG cards via `api/event-meta.js` / `api/venue-meta.js`), `sources.html` (public transparency page listing data sources and their real connection status), `install.html`.
@@ -90,6 +116,15 @@ The following are open questions this file cannot answer from the repo alone. Ea
 - **`PRODUCT DECISION REQUIRED`** — Is the `sources` table (migration_004, currently fully disconnected from the live pipeline) still the intended registry layer, or superseded by the Ingestion Platform architecture's proposed `source_records`/ledger model? `SOURCE_REGISTRY_ARCHITECTURE.md`'s four-phase plan and the new architecture doc were written five weeks apart and were not explicitly reconciled with each other.
 - **`PRODUCT DECISION REQUIRED`** — Should Organizers (schema exists, deliberately unpopulated beyond Paxahau) be actively built out as a curated feature, and if so, on what timeline relative to the Ingestion Platform work?
 - **`PRODUCT DECISION REQUIRED`** — Is the Detroit Orbit boundary check meant to be enforced server-side on every ingestion path (not just Ticketmaster), including manual admin entry and self-service feeds? Today an out-of-Orbit event could be entered through any of those paths with nothing stopping it.
+- **`PRODUCT DECISION REQUIRED`** — The "On the Radar" naming collision (see above): rename the existing live press-coverage page/filter, give the new human-curated layer a different public name, or merge press coverage into the new layer as one visible signal among several? See `EPIC-009`, `DISCOVERY-010`.
+- **`PRODUCT DECISION REQUIRED`** — Public-facing label for future commercial placement ("Featured" risks reading as editorial selection rather than paid placement). See `EPIC-010`, `DISCOVERY-012`.
+- **`PRODUCT DECISION REQUIRED`** — Schema shape for any future commercial-placement feature: a fully separate table (so `EPIC-007`'s scoring query has no path to it even by accident) vs. tightly-reviewed columns alongside existing tables. See `EPIC-010`, `DISCOVERY-013`.
+- **`PRODUCT DECISION REQUIRED`** — Event Connections funnel definition: which actions count, and how they're weighted. See `EPIC-011`, `DISCOVERY-014`.
+- **`PRODUCT DECISION REQUIRED`** — Email-capture consent/preference-management design for the Weekend Signal digest — the first marketing (not transactional) email this product will send. See `EPIC-013`, `DISCOVERY-015`.
+- **`PRODUCT DECISION REQUIRED`** — Which ticketing platforms beyond Ticketmaster offer a usable affiliate program (currently unresearched). See `EPIC-014`, `DISCOVERY-016`.
+- **`PRODUCT DECISION REQUIRED`** — Self-service promotion package pricing and payment processor — explicitly deferred until display/sponsorship (`EPIC-016`) proves paid demand. See `EPIC-015`, `DISCOVERY-017`.
+- **`PRODUCT DECISION REQUIRED`** — Exact advertising density-ceiling percentage (principle locked at ~10%, number pending testing). See `EPIC-016`, `DISCOVERY-018`.
+- **`PRODUCT DECISION REQUIRED`** — Venue/organizer claim-verification mechanism, and whether it's governed by `DEC-005`'s existing hand-curation rule or is a new trust category. See `EPIC-017`, `DISCOVERY-019`.
 
 ## Sources ruled out for automation (current, verified against README.md and NEW_SOURCES_RESEARCH.md)
 
