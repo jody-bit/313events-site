@@ -17,18 +17,23 @@ const {
 } = require(`${REPO_DIR}/api/_lib/source-slugs.js`);
 
 function run() {
-  // --- 1. exactly one canonical slug per expected ingestion source ---
+  // --- 1. exactly one canonical slug per expected ingestion source, plus
+  // the one named non-ingestion exception ---
   // 20 at WP 0.5's original scope lock (2026-09-21), grown to 21 on
   // 2026-09-22 when cron-gottagacha.js was added, then to 22 later the
   // same day when cron-bigtimebingo.js was added, then to 23 on
   // 2026-09-25 when "resident-advisor" was added (RA architecture
-  // simplification -- see scripts/ra-sync.js) -- see source-slugs.js's
-  // own SCOPE comment for why this number is expected to keep growing.
-  assert.strictEqual(SOURCE_SLUGS.length, 23, "WP 0.5 scope (20) plus cron-gottagacha.js, cron-bigtimebingo.js, and resident-advisor = 23 event-ingestion handlers");
+  // simplification -- see scripts/ra-sync.js), then to 24 on 2026-10-01
+  // when "enrichment" was added by explicit Product Owner decision closing
+  // EPIC-006 SH.5 -- a deliberate, named, one-off scope extension (see
+  // source-slugs.js's own SCOPE comment), not a reopening of the
+  // ingestion-only rule for scheduled crons in general.
+  assert.strictEqual(SOURCE_SLUGS.length, 24, "WP 0.5 scope (20) plus cron-gottagacha.js, cron-bigtimebingo.js, resident-advisor, and the SH.5 'enrichment' exception = 24 registry entries");
   const slugs = listSourceSlugs();
-  assert.strictEqual(new Set(slugs).size, 23, "every slug must be unique");
+  assert.strictEqual(new Set(slugs).size, 24, "every slug must be unique");
   assert.ok(slugs.includes("resident-advisor"), "resident-advisor must be registered (scripts/ra-sync.js)");
-  console.log("PASS: registry has exactly 23 unique canonical slugs, including resident-advisor");
+  assert.ok(slugs.includes("enrichment"), "enrichment must be registered (cron-enrichment.js, EPIC-006 SH.5)");
+  console.log("PASS: registry has exactly 24 unique canonical slugs, including resident-advisor and enrichment");
 
   // --- every entry's file actually exists in api/, and is a real cron file ---
   for (const entry of SOURCE_SLUGS) {
@@ -70,8 +75,18 @@ function run() {
   assert.strictEqual(SLUGS.feeds, "feeds");
   assert.strictEqual(SLUGS.detroitmonthofdesign, "detroitmonthofdesign", "a slug with no internal hyphens keys itself unchanged");
   assert.strictEqual(SLUGS.residentAdvisor, "resident-advisor");
-  assert.strictEqual(Object.keys(SLUGS).length, 23);
+  assert.strictEqual(SLUGS.enrichment, "enrichment");
+  assert.strictEqual(Object.keys(SLUGS).length, 24);
   console.log("PASS: SLUGS lookup object exposes every canonical slug under a camelCase key");
+
+  // --- the 'enrichment' entry is the one deliberate, named, non-ingestion
+  // exception -- distinct in kind from cron-editorial.js/cron-healthcheck.js/
+  // cron-post-to-facebook.js (still correctly excluded above), not a sign
+  // the scope rule has quietly loosened ---
+  const enrichmentEntry = SOURCE_SLUGS.find((s) => s.slug === "enrichment");
+  assert.ok(enrichmentEntry, "an 'enrichment' entry must exist");
+  assert.strictEqual(enrichmentEntry.file, "cron-enrichment.js");
+  console.log("PASS: 'enrichment' is registered as a deliberate, named, one-off exception to the ingestion-only scope rule");
 
   // --- duplicate detection -- proven against a deliberately-broken list, not just the real one ---
   assert.doesNotThrow(() => assertNoDuplicateSlugs(SOURCE_SLUGS), "the real registry must not throw");

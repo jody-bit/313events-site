@@ -28,6 +28,15 @@
 //     invocation-level counts across whatever feeds were polled where
 //     that's reliable; feed_sources.last_polled_at/last_poll_result stays
 //     the per-feed observability mechanism, unchanged by WP 0.5.
+//   - 'enrichment' (cron-enrichment.js) was added 2026-10-01, by explicit
+//     Product Owner decision closing EPIC-006 SH.5 -- a deliberate, named
+//     extension of this registry's scope, not a reopening of it. This is
+//     still NOT an event-ingestion connector (it repairs/enriches existing
+//     events, same category as cron-editorial.js above); it gets a slug
+//     here because the Product Owner specifically asked for this one
+//     scheduled repair cron to get the same lightweight run-tracking, to
+//     answer "did this actually fire on schedule" -- not because the
+//     ingestion-only scope rule above has changed for crons in general.
 //
 // Each slug matches its connector's own cron endpoint name (vercel.json's
 // `/api/cron-<slug>` path, minus the `cron-` prefix) exactly, so a slug is
@@ -70,6 +79,10 @@ const SOURCE_SLUGS = Object.freeze([
   // mechanism: one row per session, this slug, session-specific extra
   // state in source_runs.session_data (migration_039).
   { slug: "resident-advisor", file: "cron-ra.js", label: "Resident Advisor" },
+  // Added 2026-10-01 -- EPIC-006 SH.5 closure (see header note above). Not
+  // an ingestion connector; a scheduled repair/enrichment cron given the
+  // same run-tracking by explicit, named Product Owner decision.
+  { slug: "enrichment", file: "cron-enrichment.js", label: "Scheduled metadata enrichment/repair (SH.1/SH.2/SH.3/SH.5 repair steps)" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human

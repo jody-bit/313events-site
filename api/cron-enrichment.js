@@ -1,4 +1,6 @@
 const crypto = require("crypto");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 
 // Vercel Cron job — 2026-09-23, "Automatic, not button-dependent" (Admin
 // stabilization follow-up). Before this, the enrichment sequence sitting
@@ -37,6 +39,46 @@ const crypto = require("crypto");
 // fails closed only when CRON_SECRET is actually configured (matching
 // every cron here, and exactly what cron-healthcheck.js's own auth-probe
 // checks are designed to catch if this ever regresses).
+//
+// TELEMETRY (2026-10-01, EPIC-006 SH.5 closure — Product Owner decision):
+// this cron previously wrote no source_runs row at all, which meant no
+// database query -- not even one run with the service-role key -- could
+// confirm whether Vercel had ever actually fired it on its own schedule,
+// as opposed to its six repair steps only ever having run via Jody's
+// Admin Auto-Repair button (api/admin-events.js's "auto_repair_venue"
+// action, which calls an overlapping-but-not-identical set of the same
+// scripts). Fixed the same way every ingestion connector already does it:
+// api/_lib/run-log.js's startRun()/finishRun() against the existing,
+// already-provisioned source_runs table (migration_035). Deliberately
+// narrow, per explicit Product Owner instruction: this proves whether
+// cron-enrichment ran, its outcome, and repair counts -- nothing more. No
+// new telemetry table, no new fields on source_runs, no change to any of
+// the six repair steps' own logic or failure-isolation. The one structural
+// addition this requires is a top-level try/catch around the full step
+// sequence below: previously an unhandled throw from the one step that
+// wasn't itself wrapped (repairExistingEvents, the SH.1 repair) would
+// crash the handler with nothing recorded anywhere -- now it is caught,
+// logged to source_runs as outcome='failed' with a sanitized error_sample,
+// and still returns a normal (200, ok:false) response, matching this
+// project's existing "a cron failure is not a 500 that pages someone"
+// convention (see e.g. cron-healthcheck.js).
+//
+// SOURCE_SLUGS SCOPE NOTE: api/_lib/source-slugs.js's own header documents
+// WP 0.5 telemetry as deliberately scoped to event-ingestion connectors,
+// explicitly naming cron-editorial.js/cron-healthcheck.js/cron-post-to-
+// facebook.js as out of scope ("not ingestion sources"). cron-enrichment.js
+// is the same non-ingestion category as those three. The Product Owner's
+// 2026-10-01 SH.5 closure decision explicitly extends source_runs'
+// lightweight run-tracking to this one additional, named cron -- not a
+// general reopening of that scope boundary to every scheduled job. See the
+// "enrichment" entry in source-slugs.js for the matching note.
+//
+// VERIFICATION: per explicit instruction, this was verified by invoking
+// the deployed endpoint directly and confirming it produces the expected
+// source_runs row (an endpoint/run-log correctness check) -- not by
+// waiting for a future scheduled Vercel invocation, which is a distinct
+// claim this check does not make. See EPIC-006-metadata-self-healing.md's
+// SH.5 note for that verification's result.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -67,88 +109,112 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // Same five steps, same order, same failure isolation as api/admin-
-  // events.js's "auto_repair_venue" action — see that file's own header
-  // comment for the full reasoning behind each step. Duplicated here
-  // deliberately (see this file's own header) rather than factored into a
-  // shared module.
-  const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
-  const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+  const runHandle = await startRun(SLUGS.enrichment);
 
-  let descriptionCounts = null;
-  let outerLimitsDescriptionError = null;
   try {
-    const { repairOuterLimitsDescriptions } = require("../scripts/outerlimits-description-repair");
-    descriptionCounts = await repairOuterLimitsDescriptions({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-  } catch (descErr) {
-    outerLimitsDescriptionError = descErr.message;
+    // Same five steps, same order, same failure isolation as api/admin-
+    // events.js's "auto_repair_venue" action — see that file's own header
+    // comment for the full reasoning behind each step. Duplicated here
+    // deliberately (see this file's own header) rather than factored into a
+    // shared module.
+    const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
+    const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+
+    let descriptionCounts = null;
+    let outerLimitsDescriptionError = null;
+    try {
+      const { repairOuterLimitsDescriptions } = require("../scripts/outerlimits-description-repair");
+      descriptionCounts = await repairOuterLimitsDescriptions({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (descErr) {
+      outerLimitsDescriptionError = descErr.message;
+    }
+
+    let dossinCounts = null;
+    let dossinMetadataError = null;
+    try {
+      const { repairDossinMetadata } = require("../scripts/dossin-metadata-repair");
+      dossinCounts = await repairDossinMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (dossinErr) {
+      dossinMetadataError = dossinErr.message;
+    }
+
+    let redfordCounts = null;
+    let redfordMetadataError = null;
+    try {
+      const { repairRedfordMetadata } = require("../scripts/redford-metadata-repair");
+      redfordCounts = await repairRedfordMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (redfordErr) {
+      redfordMetadataError = redfordErr.message;
+    }
+
+    let genericCounts = null;
+    let genericEnrichmentError = null;
+    try {
+      const { repairGenericMetadata } = require("../scripts/generic-metadata-enrichment");
+      genericCounts = await repairGenericMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (genericErr) {
+      genericEnrichmentError = genericErr.message;
+    }
+
+    // 2026-09-30 ("self-healing/enrichment pivot" root-cause fix -- see
+    // NEEDS_FOLLOWUP_ROOT_CAUSE.md and scripts/venue-raw-reparse-repair.js's
+    // own header): same generalized re-parse step api/admin-events.js's
+    // "auto_repair_venue" action now also runs (its Step 7) -- re-runs the
+    // now-fixed api/_lib/ics-location.js parser against any event whose
+    // venue_name_raw is still holding an un-split raw location string from
+    // before the grammar fix landed. Same failure isolation as every other
+    // step above.
+    let venueRawReparseCounts = null;
+    let venueRawReparseError = null;
+    try {
+      const { repairVenueRawReparse } = require("../scripts/venue-raw-reparse-repair");
+      venueRawReparseCounts = await repairVenueRawReparse({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (reparseErr) {
+      venueRawReparseError = reparseErr.message;
+    }
+
+    const venueWrittenIds = venueCounts.writtenIds || [];
+    const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
+    const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
+    const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
+    const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
+    const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
+    const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds]);
+
+    // Step-level failures stay isolated (unchanged) -- but a run where any
+    // step errored is not a clean 'success' for telemetry purposes either.
+    // 'partial' mirrors the outcome vocabulary every ingestion connector
+    // already uses for "ran, wrote some things, but not everything went
+    // cleanly" (migration_035's own outcome check constraint).
+    const stepErrors = [outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError].filter(Boolean);
+    await finishRun(runHandle, {
+      outcome: stepErrors.length ? "partial" : "success",
+      records_written: combinedWrittenIds.size,
+      error_sample: stepErrors.length ? stepErrors.join(" | ") : undefined,
+    });
+
+    res.status(200).json({
+      ok: true,
+      written: combinedWrittenIds.size,
+      venue: venueCounts,
+      outerLimitsDescription: descriptionCounts,
+      outerLimitsDescriptionError,
+      dossinMetadata: dossinCounts,
+      dossinMetadataError,
+      redfordMetadata: redfordCounts,
+      redfordMetadataError,
+      genericEnrichment: genericCounts,
+      genericEnrichmentError,
+      venueRawReparse: venueRawReparseCounts,
+      venueRawReparseError,
+    });
+  } catch (err) {
+    // Previously unreachable safety net -- see this file's header TELEMETRY
+    // note. Only a hard failure in the one step that wasn't already
+    // individually try/caught (repairExistingEvents) or a genuinely
+    // unexpected error reaches here; every named repair step's own failure
+    // is still isolated above exactly as before.
+    await finishRun(runHandle, { outcome: "failed", error_sample: err && err.message ? err.message : String(err) });
+    res.status(200).json({ ok: false, error: err && err.message ? err.message : String(err) });
   }
-
-  let dossinCounts = null;
-  let dossinMetadataError = null;
-  try {
-    const { repairDossinMetadata } = require("../scripts/dossin-metadata-repair");
-    dossinCounts = await repairDossinMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-  } catch (dossinErr) {
-    dossinMetadataError = dossinErr.message;
-  }
-
-  let redfordCounts = null;
-  let redfordMetadataError = null;
-  try {
-    const { repairRedfordMetadata } = require("../scripts/redford-metadata-repair");
-    redfordCounts = await repairRedfordMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-  } catch (redfordErr) {
-    redfordMetadataError = redfordErr.message;
-  }
-
-  let genericCounts = null;
-  let genericEnrichmentError = null;
-  try {
-    const { repairGenericMetadata } = require("../scripts/generic-metadata-enrichment");
-    genericCounts = await repairGenericMetadata({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-  } catch (genericErr) {
-    genericEnrichmentError = genericErr.message;
-  }
-
-  // 2026-09-30 ("self-healing/enrichment pivot" root-cause fix -- see
-  // NEEDS_FOLLOWUP_ROOT_CAUSE.md and scripts/venue-raw-reparse-repair.js's
-  // own header): same generalized re-parse step api/admin-events.js's
-  // "auto_repair_venue" action now also runs (its Step 7) -- re-runs the
-  // now-fixed api/_lib/ics-location.js parser against any event whose
-  // venue_name_raw is still holding an un-split raw location string from
-  // before the grammar fix landed. Same failure isolation as every other
-  // step above.
-  let venueRawReparseCounts = null;
-  let venueRawReparseError = null;
-  try {
-    const { repairVenueRawReparse } = require("../scripts/venue-raw-reparse-repair");
-    venueRawReparseCounts = await repairVenueRawReparse({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
-  } catch (reparseErr) {
-    venueRawReparseError = reparseErr.message;
-  }
-
-  const venueWrittenIds = venueCounts.writtenIds || [];
-  const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
-  const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
-  const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
-  const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
-  const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-  const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds]);
-
-  res.status(200).json({
-    ok: true,
-    written: combinedWrittenIds.size,
-    venue: venueCounts,
-    outerLimitsDescription: descriptionCounts,
-    outerLimitsDescriptionError,
-    dossinMetadata: dossinCounts,
-    dossinMetadataError,
-    redfordMetadata: redfordCounts,
-    redfordMetadataError,
-    genericEnrichment: genericCounts,
-    genericEnrichmentError,
-    venueRawReparse: venueRawReparseCounts,
-    venueRawReparseError,
-  });
 };
