@@ -27,13 +27,19 @@ function run() {
   // when "enrichment" was added by explicit Product Owner decision closing
   // EPIC-006 SH.5 -- a deliberate, named, one-off scope extension (see
   // source-slugs.js's own SCOPE comment), not a reopening of the
-  // ingestion-only rule for scheduled crons in general.
-  assert.strictEqual(SOURCE_SLUGS.length, 24, "WP 0.5 scope (20) plus cron-gottagacha.js, cron-bigtimebingo.js, resident-advisor, and the SH.5 'enrichment' exception = 24 registry entries");
+  // ingestion-only rule for scheduled crons in general -- then to 25 later
+  // the same day when "bagleycommunity" was added for the new Bagley
+  // Community Council connector (api/cron-bagleycommunity.js), a normal
+  // ingestion connector, born with source_runs instrumentation from day
+  // one per the standing WP 0.5 convention (not another named exception
+  // like 'enrichment').
+  assert.strictEqual(SOURCE_SLUGS.length, 25, "WP 0.5 scope (20) plus cron-gottagacha.js, cron-bigtimebingo.js, resident-advisor, the SH.5 'enrichment' exception, and cron-bagleycommunity.js = 25 registry entries");
   const slugs = listSourceSlugs();
-  assert.strictEqual(new Set(slugs).size, 24, "every slug must be unique");
+  assert.strictEqual(new Set(slugs).size, 25, "every slug must be unique");
   assert.ok(slugs.includes("resident-advisor"), "resident-advisor must be registered (scripts/ra-sync.js)");
   assert.ok(slugs.includes("enrichment"), "enrichment must be registered (cron-enrichment.js, EPIC-006 SH.5)");
-  console.log("PASS: registry has exactly 24 unique canonical slugs, including resident-advisor and enrichment");
+  assert.ok(slugs.includes("bagleycommunity"), "bagleycommunity must be registered (cron-bagleycommunity.js, Bagley neighborhood + event-source work)");
+  console.log("PASS: registry has exactly 25 unique canonical slugs, including resident-advisor, enrichment, and bagleycommunity");
 
   // --- every entry's file actually exists in api/, and is a real cron file ---
   for (const entry of SOURCE_SLUGS) {
@@ -76,7 +82,8 @@ function run() {
   assert.strictEqual(SLUGS.detroitmonthofdesign, "detroitmonthofdesign", "a slug with no internal hyphens keys itself unchanged");
   assert.strictEqual(SLUGS.residentAdvisor, "resident-advisor");
   assert.strictEqual(SLUGS.enrichment, "enrichment");
-  assert.strictEqual(Object.keys(SLUGS).length, 24);
+  assert.strictEqual(SLUGS.bagleycommunity, "bagleycommunity", "a slug with no internal hyphens keys itself unchanged");
+  assert.strictEqual(Object.keys(SLUGS).length, 25);
   console.log("PASS: SLUGS lookup object exposes every canonical slug under a camelCase key");
 
   // --- the 'enrichment' entry is the one deliberate, named, non-ingestion

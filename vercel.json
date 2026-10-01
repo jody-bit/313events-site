@@ -103,6 +103,10 @@
     {
       "path": "/api/cron-enrichment",
       "schedule": "30 12 * * *"
+    },
+    {
+      "path": "/api/cron-bagleycommunity",
+      "schedule": "45 12 * * *"
     }
   ],
   "functions": {

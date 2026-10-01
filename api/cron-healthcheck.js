@@ -100,6 +100,9 @@ const CRON_ENDPOINTS = [
   // specifically would have gone uncaught even though every other cron's
   // was covered.
   "cron-ra",
+  // 2026-10-01 -- Bagley neighborhood + event-source Product Owner request.
+  // See api/cron-bagleycommunity.js.
+  "cron-bagleycommunity",
 ];
 const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial", "admin-venues"];
 const PAGES = ["/", "/calendar.html", "/map.html", "/submit.html", "/sources.html", "/event.html", "/admin.html"];
@@ -216,6 +219,12 @@ const SOURCE_FRESHNESS_TARGETS = [
   // same "avoid paging over a normal quiet week" reasoning this file
   // already documents for small single-venue calendars above.
   { source: "Resident Advisor", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  // 2026-10-01 -- Bagley Community Council. QUIET (7d): a single small
+  // community-council calendar (one recurring monthly General Meeting plus
+  // occasional one-off public events), not a high-volume venue -- same
+  // "avoid paging over a normal quiet week" reasoning as the other small
+  // single-source calendars above.
+  { source: "Bagley Community Council", days: SOURCE_FRESHNESS_DAYS_QUIET },
 ];
 
 // ADVISORY ONLY, by design (see 2026-09-23 header comment above): this never
@@ -378,6 +387,10 @@ const SOURCE_NAME_TO_SLUG = {
   // advisory-only freshness check every other now-registered source moved
   // off of.
   "Resident Advisor": SLUGS.residentAdvisor,
+  // 2026-10-01 -- Bagley Community Council. api/cron-bagleycommunity.js
+  // calls startRun(SLUGS.bagleycommunity)/finishRun() on every run, same as
+  // every other WP 0.5-instrumented connector.
+  "Bagley Community Council": SLUGS.bagleycommunity,
 };
 
 // checkSourceHealth(target) -> Promise<string detail>, or throws (a failure)

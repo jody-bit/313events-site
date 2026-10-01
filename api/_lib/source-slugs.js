@@ -83,6 +83,12 @@ const SOURCE_SLUGS = Object.freeze([
   // an ingestion connector; a scheduled repair/enrichment cron given the
   // same run-tracking by explicit, named Product Owner decision.
   { slug: "enrichment", file: "cron-enrichment.js", label: "Scheduled metadata enrichment/repair (SH.1/SH.2/SH.3/SH.5 repair steps)" },
+  // Added 2026-10-01 -- Bagley neighborhood + event-source Product Owner
+  // request. A normal ingestion connector, born with source_runs
+  // instrumentation from day one per the standing WP 0.5 convention. See
+  // api/cron-bagleycommunity.js's own header for the two-tier source shape
+  // (event_listing REST CPT + posts title-pattern matching).
+  { slug: "bagleycommunity", file: "cron-bagleycommunity.js", label: "Bagley Community Council" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human
