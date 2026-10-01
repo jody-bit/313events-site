@@ -21,7 +21,6 @@ on:
     paths:
       - 'ra-sync/inbox/start-*.json'
       - 'ra-sync/inbox/complete-*.json'
-      - 'ra-sync/inbox/promote-*.json'
 
 permissions:
   contents: write   # only to push the response tag(s) -- no other write
