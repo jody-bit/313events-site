@@ -199,6 +199,37 @@ function classifyTrailingSegments(rest) {
 // spelled.
 function tryTribeGrammar(cleaned) {
   const segments = cleaned.split(",").map((s) => s.trim());
+
+  // 2026-10-01 (parser generalization pass, Downtown Windsor BIA): a real,
+  // confirmed, EXACTLY-3-segment shape -- "<Venue>, <Street>, <City>" with
+  // no trailing region/postal/country field at all, e.g. "Vito's on
+  // Ouellette, 375 Ouellette Ave, Windsor". The usual 4+-segment anchor
+  // (a postal/region/full-region-name trailing field) can never apply
+  // here since there IS no trailing field -- so this variant anchors on
+  // the address segment itself instead: a DIGIT-LED second segment is as
+  // strong a structural signal of "this really is street, not more prose"
+  // as a zip code is for the 4+-segment shape. Confirmed against the full
+  // current production candidate pool (2026-10-01): exactly one real
+  // string matches this exact shape (segments.length===3 AND a digit-led
+  // 2nd segment) across every currently-unresolved event on the site --
+  // no false positives found, so this stays narrow (digit-led only, never
+  // a bare word) rather than accepting any 3-segment string.
+  if (segments.length === 3) {
+    const [name3, address3, city3] = segments;
+    if (name3 && address3 && city3 && /^\d/.test(address3)) {
+      return {
+        status: "parsed",
+        candidateName: name3,
+        candidateAddress: address3,
+        candidateCity: city3,
+        candidateRegion: null,
+        candidatePostal: null,
+        candidateCountry: null,
+      };
+    }
+    return null;
+  }
+
   if (segments.length < 4) return null; // need name, street, city, + at least one trailing field to anchor on
   const [name, address, city, ...rest] = segments;
   if (!name || !address || !city) return null;

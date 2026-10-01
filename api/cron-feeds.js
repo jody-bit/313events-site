@@ -3,6 +3,8 @@ const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair, resolveVenueFromCandidate } = require("./_lib/venue-lookup");
 const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
+const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
 // "Production track record") — scripts/press-coverage-linking.js's
 // extractCategory() already does keyword-based category derivation against
@@ -294,6 +296,13 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
   const rows = [];
   for (const ev of icsEvents) {
     if (!ev.dtstart) continue; // no start date at all — can't place this on the calendar
+    // 2026-10-01 (Needs Follow-up remaining-gap product pass, Jody: a
+    // "closed to the public" listing "should be skipped all together --
+    // we don't want that listing in the site AT ALL"). Confirmed real
+    // case: The Congregation's own feed publishes a literal "CLOSED FOR
+    // PRIVATE EVENT" entry — skipped entirely here, before any row is
+    // ever built, rather than ingested and hidden afterward.
+    if (isLikelyNotARealEvent({ title: ev.summary })) continue;
     const start = parseIcsDate(ev.dtstart.value, ev.dtstart.params);
     if (!start) continue;
     const end = ev.dtend ? parseIcsDate(ev.dtend.value, ev.dtend.params) : null;
@@ -338,12 +347,47 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // since category derivation doesn't depend on which venue-resolution
       // branch ran above.
       category: extractCategory(ev.summary, ev.description) || feedSource.default_category,
+      // 2026-10-01 (Needs Follow-up remaining-gap product pass): this
+      // shared helper (migration_040_no_fixed_venue.sql) already existed
+      // for exactly this — "does this event legitimately have no
+      // conventional fixed venue" — but was only ever wired into
+      // cron-visitdetroit.js, never into this generic ICS pipeline. A real
+      // confirmed case it already safely catches once wired in: City of
+      // Northville's own "Northville High School Homecoming Parade" (the
+      // existing TITLE_KEYWORD_RE already matches "parade" as a whole
+      // word) — it was stuck in Needs Follow-up under VENUE ADDRESS/CITY
+      // for a route description with no conventional street address, not
+      // because the parser failed but because no_fixed_venue was never
+      // being set for this pipeline at all. No structured per-event
+      // category data exists in a generic ICS feed the way VisitDetroit's
+      // Algolia index has eventCategories, so only the title-keyword
+      // fallback applies here — same safe, narrow, never-a-guess posture
+      // as cron-visitdetroit.js's own usage.
+      no_fixed_venue: isLikelyNoFixedVenue({ title: ev.summary }),
       ...venueFields,
       start_date: start.date,
       // All-day multi-day spans only (start.hour === null) — a timed event's
       // DTEND is just its own end time, already folded into time_display
       // above, not a separate calendar day.
       end_date: (end && end.date && end.date !== start.date && start.hour === null) ? end.date : null,
+      // 2026-10-01 bug fix (Needs Follow-up start-time investigation): this
+      // row never set is_all_day at all, so every event ever ingested
+      // through this generic ICS pipeline silently kept the column's own
+      // `false` default -- regardless of whether the source's own DTSTART
+      // was a genuine VALUE=DATE all-day value. Confirmed live: Royal
+      // Oak's multi-day senior-center trips and Mount Clemens Library's
+      // "Ask an Expert Coffee Hour" all publish "Time: All Day" on their
+      // own authoritative event pages, yet landed in admin.html's Needs
+      // Follow-up under START TIME -- because is_all_day was never
+      // reaching the row, not because no time exists to find. parseIcsDate
+      // already correctly derives hour===null for a date-only DTSTART (see
+      // its own isDateOnly check above); this just finally carries that
+      // signal through. admin.html's own classifyMissingFields already
+      // skips the start-time check entirely when is_all_day is true (see
+      // its own "check when a source has explicitly set is_all_day=true"
+      // comment) -- so this one field fixes the false positive at its
+      // source rather than papering over it downstream.
+      is_all_day: start.hour === null,
       time_display: timeDisplay,
       ticket_url: ev.url || null,
       image_url: ev.image || null,

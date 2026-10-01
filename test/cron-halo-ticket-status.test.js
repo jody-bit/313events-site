@@ -158,6 +158,53 @@ async function run() {
   }
   console.log("PASS: full handler run for HOT ASH CIGAR & PIPE SOCIAL's real RSVP structure produces event_url + ticket_status='rsvp_no_advance_sale', no ticket_url");
 
+  // --- 2026-10-01 (Jody, site owner): HALO Detroit is confirmed pay-at-
+  // the-door across the board -- when a listing has no action button/link
+  // AT ALL (the old-style bracket-text fixture shape, no real <a href>),
+  // ticket_status now defaults to migration_041's 'door' value instead of
+  // staying null, so this isn't mistaken for an unexplained gap in
+  // admin.html's Needs Follow-up queue or left with nothing to show a
+  // visitor on the public site. ---
+  {
+    const SOURCE_URL = "https://www.thehalodetroit.com/currentevents";
+    const SUPABASE_URL = "https://example.supabase.co";
+    process.env.SUPABASE_URL = SUPABASE_URL;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+    delete process.env.CRON_SECRET;
+
+    const handler = freshHalo();
+    let upsertedRows = null;
+    const html = [
+      "<div>Sun, Aug 23</div>",
+      "<div>Curtain Call Cabaret /</div>",
+      "<div>HALO DETROIT - Bar and Lounge</div>",
+      "<div>[Buy Tickets]</div>",
+      "<div>Aug 23, 2026, 7:00 PM – 11:00 PM</div>",
+    ].join("");
+    global.fetch = async (url, opts = {}) => {
+      if (url === SOURCE_URL) return { ok: true, status: 200, text: async () => html };
+      if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
+      if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
+      if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return { ok: true, status: 204, json: async () => ({}) };
+      if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
+      if (url.includes("/rest/v1/events") && opts.method === "POST") {
+        upsertedRows = JSON.parse(opts.body);
+        return { ok: true, status: 201, text: async () => "" };
+      }
+      throw new Error("unmocked URL in test: " + url);
+    };
+    const res = { _status: null, _body: null, status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } };
+    await handler({ headers: {} }, res);
+
+    assert.strictEqual(res._status, 200);
+    assert.ok(Array.isArray(upsertedRows) && upsertedRows.length === 1);
+    const row = upsertedRows[0];
+    assert.strictEqual(row.ticket_url, null);
+    assert.strictEqual(row.event_url, null);
+    assert.strictEqual(row.ticket_status, "door", "no action link at all must default to ticket_status='door', not null");
+  }
+  console.log("PASS: a listing with no action link at all defaults to ticket_status='door' (confirmed HALO site-wide pay-at-the-door characteristic)");
+
   console.log("\ncron-halo-ticket-status.test.js: all assertions passed");
 }
 

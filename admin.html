@@ -883,6 +883,7 @@ function renderIncompleteList(flagged) {
       <div class="actions">
         <button class="btn-approve" onclick="saveIncompleteFields('${e.id}')">Save</button>
         <button class="btn-reject" onclick="dismissFollowUp('${e.id}')" title="Reviewed — this gap can't actually be filled in (e.g. the source itself never discloses it). Stops this row from reappearing; a future real fix from its source still lands normally.">Not fixable — dismiss</button>
+        <button class="btn-hide" id="followup-hide-btn-${e.id}" onclick="hideFollowUpEvent('${e.id}')" title="Removes this listing from the public site entirely (same reversible hide used in Live Events — it shows up in Recently hidden and can be restored).">Remove from site</button>
       </div>
       <div class="err" id="incomplete-err-${e.id}" style="display:none;"></div>
     </div>
@@ -1647,9 +1648,20 @@ function renderLiveResults(events) {
 // it and relabels the button; a second click within 4 seconds actually
 // hides the event. Any other action outside that window just quietly
 // resets — nothing happens on a single accidental click.
+//
+// 2026-10-01: generalized to take the card/button element ids and an
+// onHidden callback, so the same reversible hide action (and the same
+// two-step-confirm safety UX) can be reused from the Needs Follow-up
+// queue's own card template (hideFollowUpEvent below) — a listing like
+// "CLOSED FOR PRIVATE EVENT" or a Ticketmaster "Suite Rental" row is
+// sometimes spotted there, and switching to this separate Live Events
+// search box just to remove it was unnecessary friction. The action
+// itself, the server endpoint, and the "always undoable via Recently
+// hidden" guarantee are all unchanged — this only changes which DOM
+// element disappears and what refreshes afterward.
 const _pendingHides = {};
-async function hideEvent(id) {
-  const btn = document.getElementById('hide-btn-' + id);
+async function hideEventGeneric(id, cardElId, btnElId, onHidden) {
+  const btn = document.getElementById(btnElId);
   if (!_pendingHides[id]) {
     _pendingHides[id] = setTimeout(() => {
       delete _pendingHides[id];
@@ -1662,7 +1674,7 @@ async function hideEvent(id) {
   clearTimeout(_pendingHides[id]);
   delete _pendingHides[id];
 
-  const card = document.getElementById('live-card-' + id);
+  const card = document.getElementById(cardElId);
   card.style.opacity = '0.5';
   try {
     const resp = await fetch('/api/admin-events', {
@@ -1673,11 +1685,23 @@ async function hideEvent(id) {
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     card.remove();
-    await loadHidden(); // it now shows up in the undo list
+    await onHidden();
   } catch (err) {
     card.style.opacity = '1';
     alert(err.message);
   }
+}
+
+async function hideEvent(id) {
+  await hideEventGeneric(id, 'live-card-' + id, 'hide-btn-' + id, loadHidden); // it now shows up in the undo list
+}
+
+// Needs Follow-up's own "Remove from site" — same reversible hide action,
+// same undo list, just entered from a different card template. Refreshes
+// loadHidden() too (not just the Needs Follow-up list) for the same reason
+// hideEvent() above does.
+async function hideFollowUpEvent(id) {
+  await hideEventGeneric(id, 'incomplete-' + id, 'followup-hide-btn-' + id, loadHidden);
 }
 
 // ---- Recently hidden (undo) ----

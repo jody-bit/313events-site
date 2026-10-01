@@ -274,16 +274,27 @@ const haloHandler = async (req, res) => {
   // actionHref didn't resolve to a real absolute URL (resolveHaloUrl
   // returns null), the corresponding field is simply left null, same as
   // before this change.
+  //
+  // 2026-10-01 (Jody, site owner, confirming a Needs Follow-up
+  // investigation): "HALO we already know they do not have tickets, you
+  // pay at the door." That's an authoritative, source-level fact about
+  // this whole venue, not a per-event unknown -- so when a HALO event's
+  // own page has no action button/link AT ALL (no "Buy Tickets", no
+  // "RSVP", nothing), ticket_status now defaults to migration_041's
+  // 'door' value instead of staying null. This is the one place in this
+  // function that's about the VENUE, not about what a specific event's
+  // page showed -- every other branch above is still driven purely by
+  // that event's own scraped action button, unchanged.
   function ticketFieldsFor(e) {
     const url = resolveHaloUrl(e.actionHref);
-    if (!url) return { ticket_url: null, event_url: null, ticket_status: null };
+    if (!url) return { ticket_url: null, event_url: null, ticket_status: "door" };
     if (e.actionLabel === "buy tickets" || e.actionLabel === "get tickets") {
       return { ticket_url: url, event_url: null, ticket_status: null };
     }
     if (e.actionLabel === "rsvp" || e.actionLabel === "details") {
       return { ticket_url: null, event_url: url, ticket_status: "rsvp_no_advance_sale" };
     }
-    return { ticket_url: null, event_url: null, ticket_status: null };
+    return { ticket_url: null, event_url: null, ticket_status: "door" };
   }
 
   const rawRows = parsed.map((e) => ({

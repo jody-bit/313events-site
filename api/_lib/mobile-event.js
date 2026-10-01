@@ -43,7 +43,18 @@ const KNOWN_MOBILE_CATEGORY_LABELS = new Set(
   ["tours", "tour", "excursions", "excursion", "walking tours", "bus tours"].map((s) => s.toLowerCase())
 );
 
-const TITLE_KEYWORD_RE = /\b(bus tour|walking tour|food tour|coach tour|city tour|pub crawl|bar crawl|excursion|parade|group ride|bike ride)\b/i;
+// 2026-10-01 addition (Needs Follow-up remaining-gap product pass, first
+// real use of this generic helper outside VisitDetroit — see
+// api/cron-feeds.js): "social district" added from a real, confirmed case
+// — St. Clair Shores' own "Downtown Social District" events, whose venue
+// text is an officially-designated open-container district spanning
+// Greater Mack Ave. from 9 Mile to 9 Mack/Cavalier Drive, not a single
+// bookable address. A municipality's "social district" is a defined,
+// multi-establishment zone by definition (the same concept behind
+// Michigan's Social District Act), narrow enough not to false-positive on
+// an ordinary single-venue event the way a bare word like "district" or
+// "downtown" alone would.
+const TITLE_KEYWORD_RE = /\b(bus tour|walking tour|food tour|coach tour|city tour|pub crawl|bar crawl|excursion|parade|group ride|bike ride|social district)\b/i;
 
 function isLikelyNoFixedVenue({ title, sourceCategories } = {}) {
   if (Array.isArray(sourceCategories)) {

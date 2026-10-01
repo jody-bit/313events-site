@@ -375,6 +375,32 @@ function run() {
     assert.strictEqual(result.candidateCity, "Canton");
   }
 
+  // --- 15. Tribe grammar, exactly-3-segment variant with NO trailing
+  //     region/postal/country field at all (2026-10-01 generalization
+  //     pass, Downtown Windsor BIA). Real, live venue_name_raw, captured
+  //     2026-10-01: "Vito's on Ouellette, 375 Ouellette Ave, Windsor" --
+  //     anchored on the digit-led address segment itself rather than a
+  //     trailing postal/region field, since there isn't one. ---
+  {
+    const result = parseIcsLocation("Vito’s on Ouellette, 375 Ouellette Ave, Windsor");
+    assert.strictEqual(result.status, "parsed");
+    assert.strictEqual(result.candidateName, "Vito’s on Ouellette");
+    assert.strictEqual(result.candidateAddress, "375 Ouellette Ave");
+    assert.strictEqual(result.candidateCity, "Windsor");
+    assert.strictEqual(result.candidateRegion, null);
+    assert.strictEqual(result.candidatePostal, null);
+  }
+
+  // --- 16. Regression guard: a 3-segment string whose middle segment is
+  //     NOT digit-led (ordinary prose, no real street-address signal) must
+  //     still fall through to unparseable, exactly as before this
+  //     generalization -- the new variant only fires on a genuine
+  //     digit-led address, never a bare 3-comma string. ---
+  {
+    const result = parseIcsLocation("Some Place, Near the river, Detroit");
+    assert.strictEqual(result.status, "unparseable");
+  }
+
   console.log("ics-location.test.js: all assertions passed");
 }
 

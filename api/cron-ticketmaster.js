@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
 // Discovery API and upserts them straight into Supabase as status='approved'
@@ -196,6 +197,13 @@ async function fetchTicketmasterEvents() {
 }
 
 function shapeForDb(e, venueMap) {
+  // 2026-10-01 (Needs Follow-up remaining-gap product pass): Ticketmaster's
+  // Discovery API returns a separate "<Artist> - Suite Rental" listing
+  // alongside the real underlying concert — a corporate-box upsell
+  // add-on, not a standalone public event. Skipped here, before category
+  // mapping, same as the `!cat` early-return below.
+  if (isLikelyNotARealEvent({ title: e.name })) return null;
+
   const cat = mapCategory(e.classifications);
   if (!cat) return null;
 
@@ -400,3 +408,10 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+// Exposed for direct unit testing (test/cron-ticketmaster-non-event-filter.test.js)
+// — this file had no prior test coverage/export surface, and building a
+// full mocked-Discovery-API handler harness is unwarranted just to verify
+// a single early-return filter. The default export above (Vercel's actual
+// entry point) is unchanged.
+module.exports.shapeForDb = shapeForDb;

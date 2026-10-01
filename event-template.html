@@ -254,6 +254,7 @@
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
 
       <div class="evt-detail-actions" id="evtActions"></div>
+      <div class="evt-detail-note" id="evtTicketStatusNote" style="display:none;"></div>
 
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
       <div class="evt-tag-clothing-optional" id="evtClothingOptional" style="display:none;">Clothing optional</div>
@@ -340,6 +341,31 @@ function sourceSearchUrl(source){
   const s = String(source).toLowerCase();
   if(s.includes('resident advisor')) return 'https://ra.co/events/us/detroit';
   return null;
+}
+
+// Ticket-status fallback text (2026-10-01, Jody: HALO Detroit events with
+// no ticket/event link aren't a data gap at all -- "they do not have
+// tickets, you pay at the door" -- and a blank actions area reads as
+// broken rather than as "nothing to buy here." migration_041's
+// ticket_status column already records exactly this distinction
+// cross-source (door / rsvp_no_advance_sale / free / registration_required
+// -- see that migration's column comment for the full cross-source
+// definitions), but until now it was only ever read internally by
+// admin.html's Needs Follow-up queue, never shown to an actual visitor.
+// Deliberately plain, factual text, never a link (there's nothing to link
+// to) -- and only ever shown when there's truly no ticketUrl/eventPageUrl
+// to offer instead (see the call site), so a real link always wins.
+const TICKET_STATUS_NOTES = {
+  door: 'Pay at the door — no advance tickets for this one.',
+  rsvp_no_advance_sale: 'RSVP required — no advance ticket purchase for this one.',
+  free: 'Free — no ticket required.',
+  registration_required: 'Registration required — check with the organizer for how to sign up.',
+};
+function ticketStatusNoteHtml(e){
+  if(e.ticketUrl && safeUrl(e.ticketUrl)) return null;
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return null;
+  if(!e.ticketStatus) return null;
+  return TICKET_STATUS_NOTES[e.ticketStatus] || null;
 }
 
 // Resale marketplace search links (2026-09-16, Jody: "see if the event is
@@ -707,6 +733,15 @@ function renderEvent(e){
   actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
+
+  const ticketStatusNote = ticketStatusNoteHtml(e);
+  const ticketStatusNoteEl = document.getElementById('evtTicketStatusNote');
+  if(ticketStatusNote){
+    ticketStatusNoteEl.textContent = ticketStatusNote;
+    ticketStatusNoteEl.style.display = 'block';
+  } else {
+    ticketStatusNoteEl.style.display = 'none';
+  }
 
   // ---- description / note / source ----
   if(e.description){

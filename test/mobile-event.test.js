@@ -45,6 +45,23 @@ function run() {
   assert.strictEqual(isLikelyNoFixedVenue({ title: "Annual Holiday Parade" }), true);
   console.log("PASS: generic title-keyword fallback works with no category data at all (source-agnostic)");
 
+  // --- 2026-10-01: real City of Northville title ("parade" already
+  // matched before this change -- the real gap was that cron-feeds.js
+  // never called this function at all, not that the keyword was missing;
+  // see test/cron-feeds-no-fixed-venue.test.js for the wiring itself), and
+  // the real St. Clair Shores title that motivated this pass's one new
+  // keyword addition ("social district"). ---
+  assert.strictEqual(isLikelyNoFixedVenue({ title: "Northville High School Homecoming Parade" }), true);
+  assert.strictEqual(isLikelyNoFixedVenue({ title: "Downtown Social District" }), true);
+  console.log("PASS: real Northville parade and St. Clair Shores Social District titles are detected");
+
+  // --- Never a guess: a bare "district" or "downtown" alone (without the
+  // specific "social district" phrase) must NOT be flagged -- the new
+  // keyword is the narrow compound phrase, not either word alone. ---
+  assert.strictEqual(isLikelyNoFixedVenue({ title: "Downtown Jazz Festival" }), false);
+  assert.strictEqual(isLikelyNoFixedVenue({ title: "Historic District Walking Club Meetup" }), false);
+  console.log("PASS: \"downtown\"/\"district\" alone, without the full \"social district\" phrase, are never falsely flagged");
+
   // --- Never a guess: an ordinary fixed-venue event is NOT flagged ---
   assert.strictEqual(isLikelyNoFixedVenue({ title: "Live Jazz Night", sourceCategories: ["Music & Concerts"] }), false);
   assert.strictEqual(isLikelyNoFixedVenue({ title: "Cookie Decorating Class", sourceCategories: ["Food & Drink"] }), false);
