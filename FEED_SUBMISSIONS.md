@@ -176,6 +176,150 @@ today — only ICS.
   in a browser) — there's no in-app "here's what we'd pull" dry run yet.
   Worth adding if a bad feed ever gets approved by mistake.
 
+## Future: Self-Service Calendar Connection (concept captured 2026-10-02, not built)
+
+Today's self-service path is narrower than the long-term shape this is
+heading toward. `submit.html`'s two tabs are **Submit one event**
+(single-event form) and **Submit your event feed** (ICS URL only, via
+`feed_sources`/`cron-feeds.js` above). Meanwhile, the ingestion side has
+started building real, reusable multi-tenant adapters of its own —
+`cron-eventbrite.js` (organizer-authorized Eventbrite API, WP 6.12) and
+`cron-localist.js` (multi-tenant campus/institutional API, WP 6.1/6.2) —
+each currently onboarded by hand (a developer adding a config-array entry
+and, for Eventbrite, an organizer's token as a Vercel env var). The
+product direction captured here, **not implemented yet**, is to let
+`submit.html` itself be the on-ramp for both of these adapters (and every
+future one), instead of a developer doing it by hand per source.
+
+**Two concepts, not one, on the Submit page:**
+
+- **Submit an Event** — today's existing single-event form, unchanged.
+- **Add an Organization / Calendar** — new. Organizer-facing language
+  describes the *capability*, never the underlying adapter/mechanism:
+  *"Run events regularly? Connect your calendar once and 313.events can
+  keep your upcoming events updated automatically."* The person submitting
+  does not need to know or care whether their calendar happens to be
+  Localist, Tribe, CivicPlus, a plain ICS export, or Eventbrite — they
+  give us a URL (or, for Eventbrite, connect an account — see below) and
+  the system figures out the rest.
+
+**A second, distinct use case the same surface must preserve:** someone
+who does not run the organization but knows of a calendar 313.events
+should be following — *"I found a calendar 313.events should follow."*
+This is the suggestion-only path: an ordinary visitor can point at an
+authoritative public source (a public Localist/Tribe/CivicPlus/ICS
+calendar) without needing to own or authorize anything, matching how
+`NEW_SOURCES_RESEARCH.md` candidates get surfaced today, just opened up to
+anyone instead of staying an internal research exercise. Critically, this
+suggestion path can **never** stand in for the first one where
+authorization is actually required: a visitor can suggest "here's a
+calendar worth following," but cannot authorize access to somebody else's
+Eventbrite organization on that organization's behalf (see the Eventbrite
+amendment below) — "I run this" and "I found this" are different trust
+levels, not two labels for the same action.
+
+**Future behavior (not built):**
+
+```
+calendar URL → platform detection → source validation → adapter selection
+  → source registration → normal ingestion/dedupe/self-healing
+```
+
+Platform detection and adapter selection are what let one submission box
+cover every mechanism this project already has, or plans to have:
+Localist, Tribe/The Events Calendar, CivicPlus, plain ICS, Eventbrite, and
+whatever future adapter joins them. A public/permitted source (Localist,
+Tribe, CivicPlus, ICS) needs only validation + registration, the same
+admin-approval-then-poll shape `feed_sources` already uses today. A source
+that requires the owner's own authorization (Eventbrite today; potentially
+others later) needs an actual consent/authentication step before
+registration — see the Eventbrite-specific amendment immediately below for
+what that looks like end to end.
+
+This is a product-direction placeholder, not a spec: real design work
+(exact platform-detection heuristics, the validation/dry-run UX, how
+adapter selection maps a detected platform to one of the existing
+`api/cron-*.js` handlers vs. a future generic registry-row model per
+`INGESTION_PLATFORM_ARCHITECTURE.md`) is still to be done. Recorded here
+so neither `cron-eventbrite.js` nor `cron-localist.js` (nor any future
+multiplier adapter) is designed as a dead end that only a developer can
+ever onboard a new tenant into.
+
+### Eventbrite Organizer Connection (amendment, 2026-10-02)
+
+Eventbrite is the one mechanism in the list above that cannot be
+"validate and register" like a public feed — per `cron-eventbrite.js`'s
+own header and the activation research behind it, Eventbrite requires the
+organizer's own affirmative authorization before their events are
+reachable at all (there is no general-purpose token that reaches an
+arbitrary organizer). The future **Add an Organization / Calendar** flow
+must therefore support Eventbrite as an *authenticated* calendar
+connection, distinct from the unauthenticated validate-and-register path
+public sources use:
+
+> *"Use Eventbrite for your events? Connect your Eventbrite account and
+> 313.events can automatically keep your events up to date."*
+
+Future flow: **Connect my Eventbrite → Eventbrite OAuth consent →
+organization authorized → token securely stored → organization registered
+as an ingestion source → events continuously synchronized through the
+generalized `eventbrite-org` adapter.** The organizer should never need to
+understand API tokens, environment variables, organizer IDs, cron jobs, or
+adapters — all of that stays implementation detail behind one "Connect"
+button.
+
+Requirements to preserve for whenever this is actually implemented:
+
+- One 313.events Eventbrite OAuth application (registered once, not
+  per-organizer — see the activation research for why this differs from
+  today's MVP per-organizer-private-token model).
+- The organizer explicitly authorizes access through Eventbrite's own
+  consent screen — never implied, never defaulted.
+- Discover/select the authorized Eventbrite organization(s) where an
+  account manages more than one.
+- Store the resulting authorization securely in the database (a real
+  table, analogous to `feed_sources`), not as a Vercel environment
+  variable per organizer — today's `EVENTBRITE_TOKEN_<NAME>` env-var
+  pattern is the proof-of-ingestion MVP, not the onboarding mechanism this
+  is meant to replace.
+- Connect that stored authorization to the existing, unmodified
+  generalized `eventbrite-org` adapter (`cron-eventbrite.js`'s `ORGANIZERS`
+  config shape would need to become data-driven from this table instead of
+  a frozen in-code array, but the adapter's own parsing/venue/category/
+  status logic does not change).
+- Automatic, continuous future synchronization once connected — no
+  further manual steps.
+- Source-health monitoring per connected organization, and detection of an
+  expired/revoked/invalid authorization (Eventbrite's own OAuth token
+  lifecycle is not well documented publicly — see the activation
+  research — so this needs to be observed defensively, the same fail-safe
+  posture `cron-eventbrite.js` already takes toward a 401/403).
+- An organizer-facing reconnect flow for exactly that expired/revoked
+  case.
+- An organizer-facing disconnect flow. Disconnecting stops future
+  acquisition only — it must never delete the organization's legitimate
+  historical event records.
+- Every event that arrives this way still goes through 313.events' normal
+  dedupe, canonicalization, and self-healing/review rules — connecting
+  Eventbrite is an acquisition mechanism, not a bypass.
+- Connecting Eventbrite does not, by itself, grant publication or
+  editorial privileges beyond 313.events' normal policy — authorizing
+  ingestion is not the same thing as earning auto-approval.
+
+And, restating the general distinction above in Eventbrite-specific terms:
+**"I run this organization"** can connect an authenticated system like
+Eventbrite on that organization's behalf. **"I found a calendar 313.events
+should follow"** can suggest a public, authoritative source, but can never
+authorize somebody else's Eventbrite organization — that consent can only
+come from Eventbrite's own OAuth screen, completed by someone with real
+access to that organization's Eventbrite account.
+
+**Not building this now.** The existing per-organizer, env-var-token
+`eventbrite-org` adapter remains the technical MVP and the actual proof
+that ingestion works end to end. OAuth is the self-service onboarding
+*layer on top of* that adapter, to be designed and built separately, once
+prioritized.
+
 ## Files touched
 
 - `supabase/migration_008_feed_sources.sql` — new `feed_sources` table,
