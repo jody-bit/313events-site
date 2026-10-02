@@ -107,6 +107,10 @@
     {
       "path": "/api/cron-bagleycommunity",
       "schedule": "45 12 * * *"
+    },
+    {
+      "path": "/api/cron-eventbrite",
+      "schedule": "15 13 * * *"
     }
   ],
   "functions": {
@@ -115,6 +119,9 @@
     },
     "api/venue-meta.js": {
       "includeFiles": "venue-template.html"
+    },
+    "api/cron-eventbrite.js": {
+      "maxDuration": 60
     },
     "api/cron-metrotimes.js": {
       "maxDuration": 60

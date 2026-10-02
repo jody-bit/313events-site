@@ -17,6 +17,12 @@
 // instrumentation... Do not create another connector that immediately
 // becomes observability debt"), so the registry is expected to keep
 // growing by exactly one entry per new connector, not re-locked at 20.
+//   - 'eventbrite-org' (cron-eventbrite.js) was added 2026-10-01 --
+//     INGESTION_BACKLOG.md's WP 6.12 adapter, shipped against this
+//     project's current connector architecture rather than the separate,
+//     not-yet-started platform rewrite WP 6.12 is nominally filed under
+//     (see cron-eventbrite.js's own header for the full reasoning). A
+//     normal ingestion connector, same as every entry above.
 //   - cron-editorial.js is explicitly OUT OF SCOPE: it writes
 //     editorial_articles/editorial_article_events, never events.
 //     source_runs represents event-source ingestion runs, not editorial
@@ -89,6 +95,11 @@ const SOURCE_SLUGS = Object.freeze([
   // api/cron-bagleycommunity.js's own header for the two-tier source shape
   // (event_listing REST CPT + posts title-pattern matching).
   { slug: "bagleycommunity", file: "cron-bagleycommunity.js", label: "Bagley Community Council" },
+  // Added 2026-10-01 -- WP 6.12's organizer-authorized Eventbrite adapter.
+  // See api/cron-eventbrite.js's own header for the full design and scope
+  // note (built against today's connector architecture, not the separate
+  // unstarted platform rewrite WP 6.12 is filed under).
+  { slug: "eventbrite-org", file: "cron-eventbrite.js", label: "Eventbrite (organizer-authorized adapter)" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human
