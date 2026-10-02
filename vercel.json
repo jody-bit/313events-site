@@ -109,10 +109,6 @@
       "schedule": "45 12 * * *"
     },
     {
-      "path": "/api/cron-eventbrite",
-      "schedule": "15 13 * * *"
-    },
-    {
       "path": "/api/cron-localist",
       "schedule": "30 13 * * *"
     }
