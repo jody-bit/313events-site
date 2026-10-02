@@ -100,6 +100,15 @@ const SOURCE_SLUGS = Object.freeze([
   // note (built against today's connector architecture, not the separate
   // unstarted platform rewrite WP 6.12 is filed under).
   { slug: "eventbrite-org", file: "cron-eventbrite.js", label: "Eventbrite (organizer-authorized adapter)" },
+  // Added 2026-10-02 -- WP 6.1/6.2's generalized Localist adapter (the
+  // first "platform multiplier" in the build order). One slug for the
+  // whole multi-tenant invocation, same aggregate-run convention as
+  // 'feeds' and 'eventbrite-org' above -- see api/cron-localist.js's own
+  // header for which of the originally-proposed six campuses were
+  // actually confirmed as Localist tenants (two: BGSU, Macomb CC) versus
+  // ruled out after direct verification (three: UMich, MSU, UToledo) or
+  // left unconfirmed (one: Wayne State).
+  { slug: "localist", file: "cron-localist.js", label: "Localist (multi-tenant campus/institutional adapter)" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human

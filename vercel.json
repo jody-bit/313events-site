@@ -111,6 +111,10 @@
     {
       "path": "/api/cron-eventbrite",
       "schedule": "15 13 * * *"
+    },
+    {
+      "path": "/api/cron-localist",
+      "schedule": "30 13 * * *"
     }
   ],
   "functions": {
@@ -121,6 +125,9 @@
       "includeFiles": "venue-template.html"
     },
     "api/cron-eventbrite.js": {
+      "maxDuration": 60
+    },
+    "api/cron-localist.js": {
       "maxDuration": 60
     },
     "api/cron-metrotimes.js": {

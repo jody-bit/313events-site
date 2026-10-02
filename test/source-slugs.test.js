@@ -34,15 +34,19 @@ function run() {
   // one per the standing WP 0.5 convention (not another named exception
   // like 'enrichment'), then to 26 later the same day when
   // "eventbrite-org" was added for WP 6.12's organizer-authorized
-  // Eventbrite adapter (api/cron-eventbrite.js).
-  assert.strictEqual(SOURCE_SLUGS.length, 26, "WP 0.5 scope (20) plus cron-gottagacha.js, cron-bigtimebingo.js, resident-advisor, the SH.5 'enrichment' exception, cron-bagleycommunity.js, and cron-eventbrite.js = 26 registry entries");
+  // Eventbrite adapter (api/cron-eventbrite.js), then to 27 on 2026-10-02
+  // when "localist" was added for WP 6.1/6.2's generalized, multi-tenant
+  // Localist adapter (api/cron-localist.js) -- also a normal ingestion
+  // connector, one aggregate slug across every configured tenant.
+  assert.strictEqual(SOURCE_SLUGS.length, 27, "WP 0.5 scope (20) plus cron-gottagacha.js, cron-bigtimebingo.js, resident-advisor, the SH.5 'enrichment' exception, cron-bagleycommunity.js, cron-eventbrite.js, and cron-localist.js = 27 registry entries");
   const slugs = listSourceSlugs();
-  assert.strictEqual(new Set(slugs).size, 26, "every slug must be unique");
+  assert.strictEqual(new Set(slugs).size, 27, "every slug must be unique");
   assert.ok(slugs.includes("resident-advisor"), "resident-advisor must be registered (scripts/ra-sync.js)");
   assert.ok(slugs.includes("enrichment"), "enrichment must be registered (cron-enrichment.js, EPIC-006 SH.5)");
   assert.ok(slugs.includes("bagleycommunity"), "bagleycommunity must be registered (cron-bagleycommunity.js, Bagley neighborhood + event-source work)");
   assert.ok(slugs.includes("eventbrite-org"), "eventbrite-org must be registered (cron-eventbrite.js, WP 6.12)");
-  console.log("PASS: registry has exactly 26 unique canonical slugs, including resident-advisor, enrichment, bagleycommunity, and eventbrite-org");
+  assert.ok(slugs.includes("localist"), "localist must be registered (cron-localist.js, WP 6.1/6.2)");
+  console.log("PASS: registry has exactly 27 unique canonical slugs, including resident-advisor, enrichment, bagleycommunity, eventbrite-org, and localist");
 
   // --- every entry's file actually exists in api/, and is a real cron file ---
   for (const entry of SOURCE_SLUGS) {
@@ -87,7 +91,8 @@ function run() {
   assert.strictEqual(SLUGS.enrichment, "enrichment");
   assert.strictEqual(SLUGS.bagleycommunity, "bagleycommunity", "a slug with no internal hyphens keys itself unchanged");
   assert.strictEqual(SLUGS.eventbriteOrg, "eventbrite-org");
-  assert.strictEqual(Object.keys(SLUGS).length, 26);
+  assert.strictEqual(SLUGS.localist, "localist");
+  assert.strictEqual(Object.keys(SLUGS).length, 27);
   console.log("PASS: SLUGS lookup object exposes every canonical slug under a camelCase key");
 
   // --- the 'enrichment' entry is the one deliberate, named, non-ingestion
