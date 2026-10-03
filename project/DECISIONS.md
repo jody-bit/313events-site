@@ -258,6 +258,66 @@ All entries below are reconstructed from decisions already made and recorded in 
 
 ---
 
+### DEC-022 — One shared discovery layer: presentation varies by surface, filter semantics do not
+
+**Date:** 2026-10-03
+**Decision:** WHEN + WHERE + WHAT + SEARCH is a universal discovery grammar, defined once in `discovery.js` (plain shared vanilla JS; definitions, canonical state and semantics only — no DOM, no network, no stored state, no framework, no build step) and consumed by every discovery surface. Category filtering is positive and additive: nothing selected means ALL EVENTS, a selection shows that category, selections are OR'd within WHAT, and WHEN/WHERE/WHAT/SEARCH are AND'd with each other. Discovery state has one canonical shape and one URL codec, so a state can travel between pages; parameter names already live (`when`, `cats`, `free`, `features`, `q`, `loc`, `radius`, `neighborhood`) are kept and legacy forms are still read. A bare `cats=` means all events (it used to mean none). Category selections are paths, so `category → genre → subgenre` can be added later without changing state, URL or matching; no genre is exposed or inferred until the data supports it. A surface may differ only in its presentation and in its own default view.
+**Context:** The homepage UX evolution was about to add a fourth private copy of the filter rules. `index.html`, `calendar.html` and `map.html` each carried their own category list, places table, date rules, predicate and URL handling, and the copies had already drifted: search matched seven fields on the homepage and two elsewhere; the Detroit Orbit was measured from Detroit's border on the homepage and from its centre on Calendar and Map (contrary to `DEC-003`); `?when=tomorrow` was honoured by one page and silently ignored by the others.
+**Alternatives considered:** Rewriting filtering inside `index.html` only (the first plan; rejected by the Product Owner: "I do NOT want the new discovery/filter behavior to become another homepage-specific implementation"). A framework or component layer (rejected: keep it lightweight vanilla JS, no broad refactor).
+**Reason:** One definition cannot drift, and makes the planned Calendar and Map work an adoption rather than a rewrite.
+**Consequences:** Sequence approved: (1) `discovery.js` and tests, no page changed; (2) homepage adopts it with no visual redesign; (3) homepage UX evolution; (4) Product Owner review; (5) Calendar and Map adopt it, with Calendar receiving the new exhaustive-discovery UX rather than keeping its old interface. Until a page adopts it, its own copies remain and `test/discovery-compat.test.js` fails if any copy of the category list, places table, boundary, feature list or blocked names diverges from the canonical one. Until Calendar and Map adopt it, links from the homepage carry categories, free, search, place + radius, tonight/weekend/today and a single picked day; tomorrow, next 7 days, week, date ranges and neighborhood are not honoured there yet.
+**Related backlog items:** `STORY-024`; supersedes the per-page approach in `EPIC-002`/`STORY-003`/`STORY-005`/`STORY-006`; `DISCOVERY-007` (genre drill-down — the structure is ready, the data decision is unchanged).
+
+---
+
+### DEC-023 — "Current + upcoming" includes events in progress
+
+**Date:** 2026-10-03
+**Decision:** "Current + Upcoming" means approved events that are still happening or occur in the future. An event that began before today but has not ended is current and belongs both in the count and in appropriate homepage discovery. An event with no end date (or an end date before its start) is a single-day event: it is current on its start date only. The number is always computed, never hardcoded.
+**Context:** The homepage's existing exact count covered only events starting today or later (1,901 on 2026-10-03) and its list hid every event already in progress (19 that day, including a festival's final weekend); 33 in-progress events made the inclusive figure 1,934.
+**Alternatives considered:** Counting only events that start today or later.
+**Reason:** A festival on its second day, or an exhibition mid-run, is exactly what a visitor can still go to.
+**Consequences:** Defined once in `discovery.js`: `inventoryFilter()` for the database total (`start_date >= today OR end_date >= today`) and `matches()` for lists, which agree on which events are current. In lists an event additionally stops being current on its last day once its known end time has passed. The total trusts `end_date`; a wrong end date in the data will be counted until corrected.
+**Related backlog items:** `STORY-024`; `DEBT-003` (Calendar load window must also keep long-running events).
+
+---
+
+### DEC-024 — Declared features and derived features are distinct; clothing-optional is a declared feature
+
+**Date:** 2026-10-03
+**Decision:** DECLARED FEATURES are explicitly supplied by an organizer, promoter or authoritative source. DERIVED FEATURES are properties 313.events determines structurally (has tickets, has photo, community-submitted, press coverage). `is_clothing_optional = true` is a declared feature and may produce both a visible CLOTHING OPTIONAL label and a Clothing Optional discovery filter. False or unset produces no public assertion; "clothing required" is never inferred from false/unset. Promoter-declared event features will be designed coherently as part of the Discovery system, not added piecemeal.
+**Context:** A promoter reported the clothing-optional question felt out of place after submitting (it was the confirmation panel echoing `"clothingOptional": false`; fixed and deployed 2026-10-03). The follow-up question was whether the attribute should be a label, a filter, or both.
+**Alternatives considered:** Label only; filter only.
+**Reason:** Promoter-supplied structured metadata can become a trustworthy filter; a fact inferred from a description cannot. Absence of a declaration is not a declaration of the opposite.
+**Consequences:** `discovery.js` carries a `kind` on every feature and defines `clothing_optional` as strictly `=== true`; there is no negative feature, label or filter, and tests assert none exists. `STORY-023` (an Event Features group in the submission form) stays in the backlog, unbuilt.
+**Related backlog items:** `STORY-023`, `STORY-024`.
+
+---
+
+### DEC-025 — "Don't Miss" is a temporary editorial placement, not a property of the event
+
+**Date:** 2026-10-03
+**Decision:** The homepage "Don't Miss" module is modelled as a temporary editorial placement (a record pointing at an event for a period, with a reason, that expires on its own), not as a boolean on the event. It is human-curated and scarce (typically 1–3 events, sometimes 0). No candidate is published until its exceptional factual claim has been verified against an authoritative source; an ingested or machine-written event description is not sufficient evidence.
+**Context:** Raised during the homepage UX evolution. A column on `events` would have no start or end, keep no record of what was chosen and why, sit on a row ingestion rewrites daily, and place editorial selection beside any future commercial placement, which `DEC-015` keeps structurally separate. `EPIC-008` had already concluded a decision is about the nomination, not permanently about the event.
+**Alternatives considered:** `events.is_dont_miss` plus reason/sort columns (the first proposal; rejected).
+**Reason:** Being featured is a dated editorial decision, not a fact about the event.
+**Consequences:** Not built yet. Initial shortlist for factual verification, chosen by the Product Owner: Masonic Temple Centennial Gala, The World of Anna Sui, Shortbus 20th Anniversary with John Cameron Mitchell; Andrew Bird with the DSO stays a candidate for later. Shipping "Don't Miss" under its own name leaves the press-coverage "On the Radar" page as it is; `DISCOVERY-010` is not otherwise resolved here.
+**Related backlog items:** `EPIC-008`, `EPIC-009`, `DISCOVERY-010`, `DISCOVERY-011`.
+
+---
+
+### DEC-026 — Homepage hero: one primary total, three supporting stats; venue and city totals held
+
+**Date:** 2026-10-03
+**Decision:** The hero's primary figure is `[N] CURRENT + UPCOMING EVENTS` (per `DEC-023`). Supporting figures are TODAY, THIS WEEK and ACTIVE NEIGHBORHOODS. Venue and city totals are held until normalization and coverage make those numbers trustworthy.
+**Context:** Measured 2026-10-03: 130 venue rows vs 309 distinct venue names among upcoming events (84 linked, none with coordinates); 55 distinct city strings including wrong and unnormalised values.
+**Alternatives considered:** Showing venue and city counts now, as an early design mockup did.
+**Reason:** A headline number the site cannot defend undermines the ones it can.
+**Consequences:** Not built yet (homepage UX evolution). See `DEBT-004`, `DEBT-005`, `DEBT-006` for the coverage work that would unlock the held figures.
+**Related backlog items:** `DEBT-004`, `DEBT-005`, `DEBT-006`.
+
+---
+
 ## Open, not yet decided
 
 These have been *raised* and researched but are explicitly **not** settled — listed here only so they aren't rediscovered as if new. See `PRODUCT.md`'s "Product decisions required" section and `BACKLOG.md` for the tracked items.
