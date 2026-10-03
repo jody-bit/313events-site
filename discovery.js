@@ -51,8 +51,16 @@
 //           date; with no end date (or an end before its start) it is a
 //           single-day event. It is CURRENT or UPCOMING until its last day
 //           has passed — or, on its last day, until its known end time has
-//           passed. Events that are over are never matched unless
-//           ctx.includePast is set (Calendar's history browsing).
+//           passed.
+//           FORWARD-LOOKING modes — a surface's default view, today,
+//           tonight, tomorrow, weekend, week, next7, all — start at today
+//           and never match an event that is already over.
+//           AN EXPLICIT DATE OR DATE RANGE ('dates') is the opposite: it is
+//           taken exactly as chosen, past or future, and returns every
+//           event that occupied those dates, completed or not. Being over
+//           now does not erase an event from the period it belonged to.
+//           (ctx.includePast lifts the forward-looking floor for the other
+//           modes too — Calendar's history browsing.)
 //           tonight = today + a start at 5pm or later ("Evening" counts;
 //           an unknown time does not). weekend = Fri–Sun. week = Mon–Sun.
 //           next7 = today plus six days. all = today onward.
@@ -765,10 +773,7 @@
       var params = queryParams(s);
       var singleDay = s.when.mode === "today" || s.when.mode === "tonight" || s.when.mode === "tomorrow" ||
         (s.when.mode === "dates" && s.when.from === s.when.to);
-      if (surface === "calendar" && singleDay) {
-        var w = windowOf(s, resolveCtx(ctx));
-        if (!w.empty) params.push(["date", w.from]);
-      }
+      if (surface === "calendar" && singleDay) params.push(["date", windowOf(s, resolveCtx(ctx)).from]);
       var qs = encode(params);
       return qs ? base + "?" + qs : base;
     }
@@ -795,13 +800,19 @@
       else if (mode === "next7") { from = today; to = addDays(today, 6); }
       else if (mode === "dates") { from = s.when.from; to = s.when.to; }
       // 'all': open-ended.
-      if (!c.includePast && (from === null || from < today)) from = today;
-      return { mode: mode, from: from, to: to, evening: evening, empty: !!(from && to && to < from) };
+      //
+      // Forward-looking: every mode except an explicit date pick, unless
+      // history is on. Forward-looking windows start at today (what is left
+      // of the weekend, of the week) and exclude events that are over. An
+      // explicit date or range is never moved, clipped or emptied.
+      var forward = mode !== "dates" && !c.includePast;
+      if (forward && (from === null || from < today)) from = today;
+      return { mode: mode, from: from, to: to, evening: evening, forward: forward };
     }
 
     function windowFor(state, ctx) {
       var w = windowOf(normalize(state), resolveCtx(ctx));
-      return { mode: w.mode, from: w.from, to: w.to, empty: w.empty };
+      return { mode: w.mode, from: w.from, to: w.to };
     }
 
     function isBlocked(e) {
@@ -866,12 +877,11 @@
       if (typeof start !== "string") return false;
       // No end date, or an end before the start, is a single-day event.
       var end = (typeof e.endDate === "string" && e.endDate > start) ? e.endDate : start;
-      if (!c.includePast) {
+      var w = windowOf(s, c);
+      if (w.forward) {
         if (end < c.today) return false;                                         // its last day has passed
         if (end === c.today && endedByClock(e.time, c.minutes)) return false;    // last day, and it has ended
       }
-      var w = windowOf(s, c);
-      if (w.empty) return false;
       if (w.from !== null && end < w.from) return false;
       if (w.to !== null && start > w.to) return false;
       if (w.evening && !isEvening(e.time)) return false;

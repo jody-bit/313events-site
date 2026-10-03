@@ -31,6 +31,7 @@ const st = (patch) => D.change(D.defaults(), patch);
 const yes = (e, s, ctx, msg) => assert.strictEqual(D.matches(e, s, ctx || CTX), true, msg);
 const no = (e, s, ctx, msg) => assert.strictEqual(D.matches(e, s, ctx || CTX), false, msg);
 const plain = (x) => JSON.parse(JSON.stringify(x));
+const shortLabel = (iso) => ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][+iso.slice(5, 7) - 1] + " " + (+iso.slice(8, 10));
 
 function run() {
   // =================================================================
@@ -330,12 +331,17 @@ function run() {
     yes(ev({ time: "1:00 PM" }), today, CTX, "began already, no known end: still shown");
     yes(ev({ time: "Morning" }), today); yes(ev({ time: "" }), today);
     yes(ev({ time: "10:00 PM–2:00 AM" }), today, { now: new Date("2026-10-04T03:30:00Z") }, "a range that crosses midnight is not cut off early");
-    no(ev({ time: "10:00 AM–2:00 PM" }), all, CTX, "an event that is over is over in every forward-looking view");
-    no(ev({ time: "10:00 AM–2:00 PM" }), st({ when: "weekend" })); no(ev({ time: "10:00 AM–2:00 PM" }), st({ when: "week" })); no(ev({ time: "10:00 AM–2:00 PM" }), st({ when: { from: day(0), to: day(0) } }));
+    // Forward-looking views never show an event that is already over…
+    const overNow = () => ev({ time: "10:00 AM–2:00 PM" });
+    no(overNow(), all, CTX, "All Upcoming"); no(overNow(), today, CTX, "Today"); no(overNow(), D.defaults(), { now: NOW, defaultWhen: "today" }, "the homepage's default view");
+    no(overNow(), D.defaults(), CTX, "a surface default of 'all'"); no(overNow(), st({ when: "weekend" })); no(overNow(), st({ when: "week" })); no(overNow(), st({ when: "next7" }));
+    no(ev({ time: "5:00 PM–6:00 PM" }), st({ when: "tonight" }), { now: new Date("2026-10-03T23:00:00Z") }, "Tonight, at 7 PM, does not list a 5–6 PM event");
+    // …but an explicitly chosen date does: it is a statement about that date.
+    yes(overNow(), st({ when: { from: day(0), to: day(0) } }), CTX, "today, chosen explicitly, includes what already happened today");
     yes(ev({ date: day(-1), endDate: day(1), time: "9:00 AM–1:00 PM" }), today, CTX, "a multi-day event is not over just because today's hours have passed — it runs tomorrow");
     no(ev({ date: day(-1), endDate: day(0), time: "9:00 AM–1:00 PM" }), today, CTX, "…but on its last day, it is");
   }
-  console.log("PASS: WHEN — current vs over: in-progress events are current; no end date is single-day; over only after the last day's known end");
+  console.log("PASS: WHEN — current vs over: in-progress events are current; no end date is single-day; forward-looking views drop what is over, an explicit date does not");
 
   {
     const tonight = st({ when: "tonight" });
@@ -350,21 +356,49 @@ function run() {
     // next7 = today plus six days
     const next7 = st({ when: "next7" });
     yes(ev({ date: day(0) }), next7); yes(ev({ date: day(6) }), next7); no(ev({ date: day(7) }), next7);
-    assert.deepStrictEqual(plain(D.window(next7, CTX)), { mode: "next7", from: day(0), to: day(6), empty: false });
+    assert.deepStrictEqual(plain(D.window(next7, CTX)), { mode: "next7", from: day(0), to: day(6) });
 
     // dates
     const range = st({ when: { from: day(9), to: day(15) } });
     yes(ev({ date: day(9) }), range); yes(ev({ date: day(15) }), range); no(ev({ date: day(8) }), range); no(ev({ date: day(16) }), range);
     yes(ev({ date: day(5), endDate: day(10) }), range, CTX, "a run overlapping the range is in it");
-    const pastPick = st({ when: { from: day(-5), to: day(-3) } });
-    no(ev({ date: day(-4) }), pastPick, CTX, "a past date pick shows nothing on a forward-looking surface");
-    assert.strictEqual(D.window(pastPick, CTX).empty, true, "…and says so, so a surface can respond");
-    yes(ev({ date: day(-4) }), pastPick, { now: NOW, includePast: true });
 
-    assert.deepStrictEqual(plain(D.window(st({ when: "all" }), CTX)), { mode: "all", from: TODAY, to: null, empty: false });
-    assert.deepStrictEqual(plain(D.window(tomorrow, CTX)), { mode: "tomorrow", from: day(1), to: day(1), empty: false });
+    // An explicit date or range is taken exactly as chosen — past, present
+    // or future — and returns what occupied it, completed or not.
+    const pastPick = st({ when: { from: day(-5), to: day(-3) } });
+    assert.deepStrictEqual(plain(pastPick.when), { mode: "dates", from: day(-5), to: day(-3) }, "a past range is a normal, canonical selection");
+    assert.deepStrictEqual(plain(D.window(pastPick, CTX)), { mode: "dates", from: day(-5), to: day(-3) }, "…not moved, clipped or emptied");
+    yes(ev({ date: day(-4) }), pastPick, CTX, "a completed event is returned for the period it belonged to");
+    yes(ev({ date: day(-5) }), pastPick); yes(ev({ date: day(-3) }), pastPick);
+    no(ev({ date: day(-6) }), pastPick); no(ev({ date: day(-2) }), pastPick); no(ev({ date: day(0) }), pastPick, CTX, "and nothing from outside it");
+    yes(ev({ date: day(-10), endDate: day(-4) }), pastPick, CTX, "a run that finished inside the range");
+    yes(ev({ date: day(-20), endDate: day(20) }), pastPick, CTX, "a run still going");
+    yes(ev({ date: day(-4), time: "10:00 AM–2:00 PM" }), pastPick);
+    const yesterday = st({ when: { from: day(-1) } });
+    yes(ev({ date: day(-1) }), yesterday); no(ev({ date: day(0) }), yesterday);
+    // A range that straddles today returns both sides of it.
+    const straddle = st({ when: { from: day(-2), to: day(2) } });
+    [-2, -1, 0, 1, 2].forEach((n) => yes(ev({ date: day(n) }), straddle, CTX, `day ${n} of a range around today`));
+    no(ev({ date: day(-3) }), straddle); no(ev({ date: day(3) }), straddle);
+    // The other dimensions still apply to a historical selection.
+    no(ev({ date: day(-4), cat: "film" }), D.change(pastPick, { what: { only: "music" } }));
+    yes(ev({ date: day(-4), cat: "music" }), D.change(pastPick, { what: { only: "music" } }));
+    no(ev({ date: day(-4), title: "Augustus Williams" }), pastPick, CTX, "blocked names stay blocked in the past too");
+    assert.strictEqual(D.count([ev({ date: day(-4) }), ev({ date: day(-4) }), ev({ date: day(4) })], pastPick, CTX), 2, "count() and facets() follow the same rule");
+    assert.strictEqual(D.facets([ev({ date: day(-4), cat: "film" }), ev({ date: day(4), cat: "film" })], pastPick, CTX, "category").get("film"), 1);
+    // The round trip keeps it.
+    assert.deepStrictEqual(plain(D.fromQuery(D.toQuery(pastPick))), plain(pastPick));
+    assert.strictEqual(D.describe(pastPick)[0].label, shortLabel(day(-5)) + "\u2013" + shortLabel(day(-3)));
+    // Relative modes stay forward-looking: nothing above leaks into them.
+    no(ev({ date: day(-1) }), st({ when: "week" }), CTX, "'this week' is what is left of it");
+    no(ev({ date: day(-1) }), st({ when: "weekend" }), CTX, "Friday is over by Saturday afternoon");
+    no(ev({ date: day(-1) }), st({ when: "all" }));
+
+    assert.deepStrictEqual(plain(D.window(st({ when: "all" }), CTX)), { mode: "all", from: TODAY, to: null });
+    assert.deepStrictEqual(plain(D.window(tomorrow, CTX)), { mode: "tomorrow", from: day(1), to: day(1) });
+    assert.deepStrictEqual(Object.keys(D.window(D.defaults(), CTX)), ["mode", "from", "to"], "a window is just its mode and dates");
   }
-  console.log("PASS: WHEN — tonight (5 PM or later, 'Evening', unknown excluded), tomorrow, next 7 days, picked dates and ranges");
+  console.log("PASS: WHEN — tonight, tomorrow, next 7 days; an explicit date or range (past, present or future) returns what occupied it, completed or not");
 
   {
     // weekend = Fri–Sun, week = Mon–Sun, evaluated on every day of a week.
@@ -406,7 +440,7 @@ function run() {
     // Calendar history.
     const hist = { now: NOW, includePast: true };
     yes(ev({ date: day(-200) }), none, hist); yes(ev({ time: "10:00 AM–2:00 PM" }), none, hist, "with history on, an ended event still matches");
-    assert.deepStrictEqual(plain(D.window(none, hist)), { mode: "all", from: null, to: null, empty: false });
+    assert.deepStrictEqual(plain(D.window(none, hist)), { mode: "all", from: null, to: null });
     no(ev({ date: day(-200) }), st({ when: "today" }), hist, "an explicit WHEN is still relative to today");
     no(ev({ date: day(-1) }), none, CTX, "without history, the past never matches");
   }
@@ -600,7 +634,7 @@ function run() {
     assert.strictEqual(D.href("calendar", st({ when: "tonight" }), CTX), `/calendar.html?when=tonight&date=${TODAY}`);
     assert.strictEqual(D.href("calendar", st({ when: { from: "2026-11-14" } }), CTX), "/calendar.html?when=dates&from=2026-11-14&date=2026-11-14");
     assert.strictEqual(D.href("calendar", st({ when: { from: "2026-11-14", to: "2026-11-20" } }), CTX), "/calendar.html?when=dates&from=2026-11-14&to=2026-11-20", "a range has no single day to open");
-    assert.strictEqual(D.href("calendar", st({ when: { from: day(-9) } }), CTX), `/calendar.html?when=dates&from=${day(-9)}`, "a past pick opens no day");
+    assert.strictEqual(D.href("calendar", st({ when: { from: day(-9) } }), CTX), `/calendar.html?when=dates&from=${day(-9)}&date=${day(-9)}`, "a past day opens that day too");
     assert.strictEqual(D.href("map", st({ when: "tomorrow" }), CTX), "/map.html?when=tomorrow", "only Calendar has a `date`");
     // The state itself is unchanged by travelling.
     assert.deepStrictEqual(plain(D.fromQuery(D.href("calendar", st({ when: "tomorrow" }), CTX))), plain(st({ when: "tomorrow" })));

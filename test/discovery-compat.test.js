@@ -237,7 +237,11 @@ function parity(label, nowMs) {
   const states = legacyStates(dayISO);
   const known = new Set(D.categories.map((c) => c.key));
   const tally = { compared: 0, exact: 0, inProgress: 0, overlapsWindow: 0, firstDayHoursPassed: 0, overHiddenNow: 0, unknownCategory: 0 };
-  const LEGACY_SHOWS_ENDED = new Set(["tonight", "weekend", "thisweek", "date", "range"]);
+  // Forward-looking shortcuts in which the old code kept listing an event
+  // that had already ended today. (A picked date or range is not in this
+  // list: there, old and shared code agree — a chosen date shows what
+  // happened on it.)
+  const LEGACY_SHOWS_ENDED = new Set(["tonight", "weekend", "thisweek"]);
 
   states.forEach((ls) => {
     sb.__state = ls;
@@ -339,6 +343,8 @@ function run() {
     assert.deepStrictEqual(when("when=date&picked=2026-10-12"), { mode: "dates", from: "2026-10-12", to: "2026-10-12" });
     assert.deepStrictEqual(when("when=range&rangeStart=2026-10-12&rangeEnd=2026-10-18"), { mode: "dates", from: "2026-10-12", to: "2026-10-18" });
     assert.deepStrictEqual(when("when=date"), { mode: null, from: null, to: null }, "a date mode with no date is nothing");
+    assert.deepStrictEqual(when("when=date&picked=2025-06-01"), { mode: "dates", from: "2025-06-01", to: "2025-06-01" }, "an old link to a date now in the past still means that date (the old homepage discarded it and showed today)");
+    assert.deepStrictEqual(when("when=range&rangeStart=2025-06-01&rangeEnd=2025-06-07"), { mode: "dates", from: "2025-06-01", to: "2025-06-07" });
     assert.deepStrictEqual(when("when=range&rangeStart=2026-10-12"), { mode: "dates", from: "2026-10-12", to: "2026-10-12" });
     // The old subtractive category model
     const all = D.categories.map((c) => c.key);
