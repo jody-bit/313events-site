@@ -61,10 +61,15 @@ function extract(html, pattern, label) {
 
 // Runs one page's real loadSupabaseEvents() in a sandbox and returns what
 // it left in EVENTS.
-async function runPageLoader(file, floorDaysBack) {
+async function runPageLoader(file, floorDaysBack, extraRows) {
   const html = read(file);
   const loader = extract(html, /async function loadSupabaseEvents\(\) \{[\s\S]*?\n\}\n/, `${file} loadSupabaseEvents`);
-  const api = makeMockPostgrest(tables(), { cap: 1000 });
+  const data = tables();
+  if (extraRows) {
+    data.events = data.events.concat(extraRows);
+    data.events_public = data.events_public.concat(extraRows.filter((r) => r.status === "approved").map(({ status, ...rest }) => rest));
+  }
+  const api = makeMockPostgrest(data, { cap: 1000 });
   const calls = { render: 0, buildFilterBar: 0, renderNeighborhoodsRail: 0 };
   const sandbox = {
     fetch: api.fetch,
@@ -147,6 +152,35 @@ async function run() {
     assert.ok(events.every((e) => e.date >= floor), "nothing older than the load floor");
     assert.ok(calls.renderNeighborhoodsRail >= 1, "neighborhood rail re-rendered from the complete set");
     console.log(`PASS: index.html holds all ${events.length} events from its load floor forward (${upcoming} upcoming, through ${lastDate})`);
+  }
+
+  // --- HOMEPAGE: plus everything still running, however long ago it began
+  //     (DEBT-008, 2026-10-03) — and no other history ---
+  {
+    const floor = isoPlusDays(TODAY, -8);
+    const extra = (id, start, end, status) => ({ id, title: id, start_date: start, end_date: end, status: status || "approved", category: "museum", venue_id: null, venue_name_raw: "Museum", neighborhood: null });
+    const EXTRA = [
+      extra("running-since-january", "2026-01-01", "2027-01-18"),                  // the longest run measured in production: 364+ days
+      extra("running-ends-today", isoPlusDays(floor, -1), TODAY),                   // began the day before the back-buffer; today is its last day
+      extra("long-run-ended-yesterday", "2026-06-01", isoPlusDays(TODAY, -1)),     // history
+      extra("single-day-in-august", "2026-08-01", null),                           // history
+      extra("running-but-not-approved", "2026-01-01", "2027-01-18", "pending_review"),
+    ];
+    const base = APPROVED.filter((r) => r.start_date >= floor).length;
+    const { events, requests } = await runPageLoader("index.html", 8, EXTRA);
+    const ids = new Set(events.map((e) => e.id));
+    assert.ok(ids.has("running-since-january") && ids.has("running-ends-today"), "events still running are loaded however long ago they began");
+    assert.ok(!ids.has("long-run-ended-yesterday") && !ids.has("single-day-in-august"), "finished events from before the back-buffer are not — no unrestricted history");
+    assert.ok(!ids.has("running-but-not-approved"), "and never an unapproved one");
+    assert.strictEqual(events.length, base + 2, "exactly the two running events were added to what the page loaded before");
+    assert.ok(events.every((e) => e.date >= floor || e.endDate >= TODAY), "every loaded event is in the back-buffer or still running");
+    // Everything the database counts as current + upcoming is loaded.
+    const inventory = APPROVED.concat(EXTRA.filter((r) => r.status === "approved")).filter((r) => r.start_date >= TODAY || (r.end_date && r.end_date >= TODAY));
+    inventory.forEach((r) => assert.ok(ids.has(r.id), `${r.id} is current or upcoming, so the homepage loads it`));
+    const loads = requests.filter((r) => r.table === "events_public").map((r) => decodeURIComponent(r.url));
+    assert.ok(loads.length >= 3 && loads.every((u) => u.includes(`or=(start_date.gte.${floor},end_date.gte.${TODAY})`)), "every page of the query carries the bounded filter");
+    assert.ok(loads.every((u) => !/[?&]start_date=|[?&]end_date=/.test(u)), "with no second, narrower date filter alongside it");
+    console.log(`PASS: index.html also loads every event still running (${events.length - base} here, one begun in January) and nothing else from before its back-buffer — all ${inventory.length} current + upcoming events are loaded`);
   }
 
   // --- MAP: same window as the homepage ---

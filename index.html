@@ -4401,10 +4401,11 @@
            the page's default today-onward view. "Today" was removed at the
            same time, then explicitly restored (2026-08-27, later same day)
            top-nav-only, deliberately NOT re-added to the When sheet/filter
-           section — it's a pure "bring the list into focus" jump-to-list
-           shortcut (viewToday(), see script below), not a filter control, so
-           it doesn't use the .when-btn/data-when wiring and never shows as
-           an active-filter chip.
+           section — it's a "bring the list into focus" jump-to-list
+           shortcut (viewToday(), see script below), so it doesn't use the
+           .when-btn/data-when wiring and is never drawn as an active button.
+           It sets the shared Today view (shown as a "Today" chip in the
+           Showing: tray), not a picked date.
            "Tonight" was also removed 2026-08-27 (swapped for Tomorrow), then
            restored 2026-08-28 as a P0 product-audit fix — see the
            WHEN_LABELS comment in the script below for the full reasoning. -->
@@ -4700,6 +4701,11 @@ Discovery.categories.forEach(c => {
   CATS[c.key] = {label: c.label, color: CAT_COLORS[c.key] || "var(--ink-soft)"};
 });
 
+// "Today" as a state, for getTodayISO() (further down). Declared up here
+// because the very first indexing pass over the fallback events, just below,
+// can already need today's date.
+const TODAY_STATE = Discovery.change(Discovery.defaults(), {when: 'today'});
+
 // The places behind location search and distance filtering (cities and
 // Detroit neighborhoods, with city-centre coordinates) are
 // Discovery.places; the 75-mile Detroit Orbit is measured from Detroit's
@@ -4958,11 +4964,19 @@ let venueDirectoryTotal = null;
 // year pasted into the wrong field) silently exploding this into thousands
 // of entries; a same-day event (the overwhelming majority) always takes the
 // 1-iteration fast path.
+//
+// floorIso (2026-10-03): the page now loads events that began before its
+// load window and are still running (see loadSupabaseEvents()). Such an
+// event is listed from the window's first day, not from its own long-past
+// start — otherwise the 60-day guard would be spent entirely on days this
+// page never shows, and an exhibition that opened in the spring would never
+// appear under today. The guard itself is unchanged: 60 listed days.
 const MAX_EVENT_SPAN_DAYS = 60;
-function expandDateRange(startIso, endIso){
+function expandDateRange(startIso, endIso, floorIso){
   if(!endIso || endIso <= startIso) return [startIso];
+  const firstIso = (floorIso && floorIso > startIso && floorIso <= endIso) ? floorIso : startIso;
   const dates = [];
-  let cur = new Date(startIso+"T12:00:00");
+  let cur = new Date(firstIso+"T12:00:00");
   const end = new Date(endIso+"T12:00:00");
   let guard = 0;
   while(cur <= end && guard < MAX_EVENT_SPAN_DAYS){
@@ -4974,7 +4988,8 @@ function expandDateRange(startIso, endIso){
   return dates;
 }
 function addToByDate(target, e){
-  expandDateRange(e.date, e.endDate).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+  const multiDay = !!e.endDate && e.endDate > e.date;
+  expandDateRange(e.date, e.endDate, multiDay ? loadFloorISO() : null).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
 }
 
 let byDate = {};
@@ -5077,7 +5092,6 @@ function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).p
 // visitor's own device clock. (Before 2026-10-03 this read the device's
 // local date, so a visitor in another timezone could see a different
 // "today" than the events themselves are dated in.)
-const TODAY_STATE = Discovery.change(Discovery.defaults(), {when: 'today'});
 function getTodayISO(){
   return Discovery.window(TODAY_STATE, {now: new Date()}).from;
 }
@@ -5202,8 +5216,9 @@ function currentListMeta(){
   }
   if(mode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
   if(mode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
-  // 'today' and 'next7' have no button on this page; they arrive only in a
-  // link (from another surface, or an old ?when=now / ?when=today).
+  // 'today' is the header's Today and the Free Today card (and Calendar's /
+  // Map's ?when=now). 'next7' has no button on this page; it arrives only
+  // in a link.
   if(mode === 'today') return {scopeLabel: 'today', countLabel: 'today'};
   if(mode === 'next7') return {scopeLabel: 'the next 7 days', countLabel: 'in the next 7 days'};
   if(mode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
@@ -6053,14 +6068,16 @@ function viewThisWeek(){
 // Top-nav "Today" shortcut (restored 2026-08-27, top-nav-only per Jody — see
 // the site-nav comment above). Unlike viewThisWeek()/viewNeighborhood(), this
 // deliberately does NOT reset category/free/search/location — it's a peer to
-// the Tomorrow/This Weekend when-shortcuts (it picks today's date, exactly as
-// the When sheet's "From" input would), just invoked directly so it can also carry the
+// the Tomorrow/This Weekend when-shortcuts (it sets Discovery's own Today
+// mode — "today in Detroit, whenever this is opened" — so a shared Today link
+// never goes stale, and events that have already ended are left out; picking
+// today's DATE in the When sheet is a different thing, a fixed date that
+// stays that date), just invoked directly so it can also carry the
 // "bring the list into focus" scroll Jody asked for, without adding a Today
 // button back into the When sheet/filter section.
 function viewToday(){
-  const today = getTodayISO();
-  setState({when: {from: today, to: today}});
-  setWhenInputs(today, '');
+  setState({when: 'today'});
+  setWhenInputs('', ''); // a shortcut, like Tonight/Tomorrow: not a picked date
   updateWhenButtons();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
@@ -6356,16 +6373,15 @@ function viewMyOrbit(){
   );
 }
 
+const FREE_TODAY_STATE = Discovery.change(Discovery.defaults(), {when: 'today', free: true, where: {radius: 'orbit'}});
+
 function renderFreeTodayCard(){
   const el = document.getElementById('freeTodayCard');
   if(!el) return;
-  // Free events on today's date, inside the Detroit Orbit, whatever the
-  // visitor has filtered — the same explicit pick of today's date that
-  // viewFreeToday() applies below.
-  const todayIso = getTodayISO();
-  const count = Discovery.count(EVENTS, Discovery.change(Discovery.defaults(), {
-    when: {from: todayIso, to: todayIso}, free: true, where: {radius: 'orbit'}
-  }), inventoryCtx());
+  // Free events today (Discovery's Today: what is still on or still to come
+  // today in Detroit), inside the Detroit Orbit, whatever the visitor has
+  // filtered — the same Today + Free that viewFreeToday() applies below.
+  const count = Discovery.count(EVENTS, FREE_TODAY_STATE, inventoryCtx());
   el.innerHTML = `
     <div class="side-card-head"><h2>Free Today</h2></div>
     <div class="side-card-number">${count}</div>
@@ -6375,12 +6391,11 @@ function renderFreeTodayCard(){
 }
 
 function viewFreeToday(){
-  // Today/Now were removed as standalone When shortcuts (2026-08-27), so
-  // this picks today's date directly — the same single-day pick the When
-  // sheet's "From" input makes — plus Free only.
-  const today = getTodayISO();
-  setState({free: true, when: {from: today, to: today}});
-  setWhenInputs(today, '');
+  // Today + Free only, added to whatever else is filtered. Today here is
+  // Discovery's Today mode, not a picked date, so the link it leaves in the
+  // address bar means "free today" on whatever day it is opened.
+  setState({free: true, when: 'today'});
+  setWhenInputs('', '');
   updateWhenButtons();
   render();
 }
@@ -7285,6 +7300,12 @@ function mapSupabaseRow(row) {
 // always has data for the whole Mon-Sun week even when today is, say,
 // Saturday — it needs Monday's count too. 8 days covers any day-of-week /
 // timezone edge case with a day to spare.
+//
+// This is the earliest START date the page loads for events that are
+// already finished. It is NOT a limit on events still running: those are
+// loaded however long ago they began (see the query in loadSupabaseEvents()).
+// Anything older than this that has finished is history, and history is the
+// Calendar page's job, not this one's.
 function loadFloorISO(){
   const d = new Date(getTodayISO()+"T12:00:00");
   d.setDate(d.getDate()-8);
@@ -7327,7 +7348,18 @@ async function loadSupabaseEvents() {
     // the whole result instead; see that file's header for the mechanism.
     // `id.asc` is the tiebreak that makes the order total, which paging
     // needs (hundreds of events share a start_date).
-    const url = `${SUPABASE_URL}/rest/v1/events_public?start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from,is_clothing_optional,ticket_status&order=start_date.asc,id.asc`;
+    //
+    // 2026-10-03 (DEBT-008): the filter used to be start_date >= the load
+    // floor alone, which left out every event that began more than eight
+    // days ago and is STILL RUNNING — a long exhibition, a season-long
+    // market — even though those are part of the current + upcoming
+    // inventory (DEC-023) and counted in the site total. It is now
+    //     start_date >= floor   OR   end_date >= today
+    // i.e. the same back-buffer as before, plus everything still running.
+    // That is the whole change: no other history is loaded (measured on
+    // production the day it was made: 2,216 -> 2,230 rows, the 14 added all
+    // in progress, the same three pages).
+    const url = `${SUPABASE_URL}/rest/v1/events_public?or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from,is_clothing_optional,ticket_status&order=start_date.asc,id.asc`;
     const { rows } = await fetchAllRows(url, {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,

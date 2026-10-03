@@ -66,9 +66,10 @@ const ROWS = [
   row("c04", "Wednesday Social", day(4), { category: "community", neighborhood: "Corktown", is_free: true, source: "Venue Submission", is_clothing_optional: true, time_display: "2:00 PM", note: "Bring a towel" }),
   row("c05", "Fall Festival", day(6), { end_date: day(8), category: "fest", neighborhood: "Downtown", image_url: "/assets/x.webp", time_display: "Noon–10:00 PM" }),
   row("c06", "Big Game", day(20), { category: "sports", venue_city: "Lansing", time_display: "1:00 PM", ticket_url: "https://tickets.example/game" }),
-  // older than the page loads
-  row("z01", "Long Gone", day(-20), { category: "visual" }),
-  row("z02", "Before The Floor", day(-20), { end_date: day(10), category: "museum", neighborhood: "Midtown" }),                 // still running, but started before the load floor
+  // began long before the page's eight-day back-buffer
+  row("z01", "Long Gone", day(-20), { category: "visual" }),                                                                    // finished: history, never loaded
+  row("z02", "Season Exhibition", day(-200), { end_date: day(120), category: "museum", neighborhood: "Midtown" }),              // STILL RUNNING: current, must be loaded and listed
+  row("z03", "Closed Yesterday", day(-30), { end_date: day(-1), category: "visual", neighborhood: "Midtown" }),                 // a long run that ended yesterday: history, never loaded
   // never public
   row("p01", "Not Approved", day(0), { status: "pending_review" }),
 ];
@@ -164,13 +165,14 @@ async function run() {
   {
     const page = await open("/");
     const v = view(page);
-    assert.strictEqual(page.get("EVENTS.length"), 15, "everything approved from the load floor forward is loaded");
+    assert.strictEqual(page.get("EVENTS.length"), 16, "loaded: everything approved that starts within the 8-day back-buffer or later, plus everything still running");
     assert.deepStrictEqual(v.state, plain(D.defaults()), "no filters");
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(0))], "the resting view is today only");
     // Listed in start-time order; unknown times last. Morning Market
     // (ended 2 PM) and Finished Fair (last day, ended 1 PM) are over; the
-    // blocked name never shows; Running Exhibit is in progress and DOES.
-    assert.deepStrictEqual(v.days[0].titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Late Set", "Matinee Somewhere"]);
+    // blocked name never shows; Running Exhibit is in progress and DOES —
+    // and so does Season Exhibition, which opened 200 days ago.
+    assert.deepStrictEqual(v.days[0].titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
     assert.strictEqual(v.scopeNote, true, '"Showing today — see everything" is shown');
     assert.strictEqual(v.heading, null, "no count heading on the plain default view");
     assert.deepStrictEqual(v.tray, [], "the Showing: tray is hidden");
@@ -187,39 +189,55 @@ async function run() {
     assert.strictEqual(page.el("whenDateInput").min, day(0));
 
     // Cards. Hero: what is left of this Mon–Sun week IN THE ORBIT, as
-    // distinct events: 5 today + Sunday Show (Ferndale). Out There is this
+    // distinct events: 6 today + Sunday Show (Ferndale). Out There is this
     // Sunday too, but its city cannot be placed, so it is not counted as
     // inside the Orbit.
-    assert.strictEqual(page.el("heroStatNumber").textContent, "6");
+    assert.strictEqual(page.el("heroStatNumber").textContent, "7");
     assert.strictEqual(page.el("heroStatCaption").textContent, "Things left this week in the Detroit Orbit.");
     // Week strip: every day of the week counted as that day, past days included.
     const strip = [...page.el("viewCalendarCard").innerHTML.matchAll(/calendar\.html\?date=(\d{4}-\d{2}-\d{2})"[^>]*aria-label="[^"]*, (\d+) events?"/g)].map((m) => [m[1], +m[2]]);
-    assert.deepStrictEqual(strip, [[day(-5), 0], [day(-4), 0], [day(-3), 1], [day(-2), 2], [day(-1), 3], [day(0), 7], [day(1), 3]],
-      "the week strip counts each day as that day — completed events included, blocked excluded");
+    assert.deepStrictEqual(strip, [[day(-5), 1], [day(-4), 1], [day(-3), 2], [day(-2), 3], [day(-1), 4], [day(0), 8], [day(1), 4]],
+      "the week strip counts each day as that day — completed events included, blocked excluded, the long-running exhibition on every day");
     // Map + Near You teasers: the database's own current + upcoming count
     // (starts today or later, OR still running) — includes Running Exhibit,
-    // Finished Fair's last day, and Before The Floor.
+    // Finished Fair's last day, and Season Exhibition.
     const countRequest = page.requests.find((r) => r.table === "events");
     assert.ok(countRequest.url.includes("or=(start_date.gte." + day(0) + ",end_date.gte." + day(0) + ")") || decodeURIComponent(countRequest.url).includes("or=(start_date.gte." + day(0) + ",end_date.gte." + day(0) + ")"), "the site total asks for Discovery.inventoryFilter()");
     assert.ok(/status=eq\.approved/.test(countRequest.url), "…of approved events only");
     assert.ok(/<div class="side-card-number">15<\/div>/.test(page.el("mapCard").innerHTML), "map card: 15 current + upcoming approved events");
     assert.ok(/<div class="side-card-number">15<\/div>/.test(page.el("nearYouCard").innerHTML));
-    // Free Today: free, on today's date, in the Orbit — Morning Market (over, but it WAS today), Matinee Somewhere, Running Exhibit. Not the blocked one.
-    assert.ok(/<div class="side-card-number">3<\/div>/.test(page.el("freeTodayCard").innerHTML), "free today: 3");
+    // Free Today: free, still on or still to come today (Discovery's Today), in the Orbit —
+    // Matinee Somewhere and Running Exhibit. Not Morning Market (free, but over since 2 PM); not the blocked one.
+    assert.ok(/<div class="side-card-number">2<\/div>/.test(page.el("freeTodayCard").innerHTML), "free today: 2");
     // Neighborhoods: distinct current + upcoming events, most first, ties A–Z.
     const rail = [...page.el("neighborhoodsRail").innerHTML.matchAll(/data-neighborhood="([^"]+)"[\s\S]*?neigh-count">(\d+)</g)].map((m) => m[1] + "=" + m[2]);
-    assert.deepStrictEqual(rail, ["Corktown=2", "Downtown=1", "Midtown=1"], "one per event (Fall Festival runs three days and counts once); the blocked Corktown event is not counted");
+    assert.deepStrictEqual(rail, ["Corktown=2", "Midtown=2", "Downtown=1"], "one per event (Fall Festival runs three days and counts once; Season Exhibition counts for Midtown); the blocked Corktown event is not counted");
     // On the Radar lists the covered upcoming event — not the covered event
     // that is already over today, and never the blocked one.
     const radar = page.el("onRadarCard").innerHTML;
     assert.ok(/Sunday Show/.test(radar) && !/Morning Market/.test(radar) && !/Augustus/.test(radar));
 
-    // KNOWN GAP, pinned (DEBT-008): the page loads events that START within
-    // 8 days back, so an event that started earlier and is still running is
-    // counted by the database total above but is not in the list.
-    assert.ok(!page.get("EVENTS").some((e) => e.id === "z02"), "Before The Floor (running, started 20 days ago) is not loaded");
+    // THE LOAD WINDOW (DEBT-008, corrected 2026-10-03). The page asks for
+    //   start_date >= today − 8 days   OR   end_date >= today
+    // — its back-buffer for the week strip, plus everything still running —
+    // so every event in the current + upcoming inventory can be listed, and
+    // nothing else from history is loaded.
+    const loadRequests = page.requests.filter((r) => r.table === "events_public").map((r) => decodeURIComponent(r.url));
+    assert.ok(loadRequests.length && loadRequests.every((u) => u.includes(`or=(start_date.gte.${day(-8)},end_date.gte.${day(0)})`)), "every page of the load uses the bounded filter");
+    const loaded = plain(page.get("EVENTS"));
+    const inventory = TABLES.events_public.filter((r) => r.start_date >= day(0) || (r.end_date && r.end_date >= day(0)));
+    assert.strictEqual(inventory.length, 15);
+    inventory.forEach((r) => assert.ok(loaded.some((e) => e.id === r.id), `${r.title} is in the current + upcoming inventory, so it is loaded`));
+    assert.ok(loaded.some((e) => e.id === "z02"), "Season Exhibition (opened 200 days ago, runs 120 more) is loaded");
+    assert.ok(!loaded.some((e) => e.id === "z01") && !loaded.some((e) => e.id === "z03"), "finished events from before the back-buffer are not loaded, however long they ran — that is history, and history is Calendar's");
+    assert.strictEqual(loaded.filter((e) => e.date < day(-8)).length, 1, "exactly one event from before the back-buffer is loaded: the one still running");
+    // …and it is listed from the window's first day, not from its long-past
+    // start (the 60-listed-days guard is unchanged).
+    const seasonDays = Object.keys(plain(page.get("byDate"))).filter((iso) => plain(page.get("byDate"))[iso].some((e) => e.id === "z02")).sort();
+    assert.deepStrictEqual([seasonDays[0], seasonDays.length], [day(-8), 60]);
+    assert.strictEqual(D.count(loaded, D.defaults(), { now: new Date(NOW), defaultWhen: "all" }), 12, "12 of the 15 are still current at 3 PM (two ended earlier today; one is blocked)");
   }
-  console.log("PASS: B. default view — today only, in-progress shown, over and blocked hidden, clean URL, every card's number from Discovery");
+  console.log("PASS: B. default view — today only, in-progress shown (however long ago it began), over and blocked hidden, clean URL, every card's number from Discovery; the bounded load window");
 
   // =====================================================================
   // C. WHEN
@@ -238,21 +256,22 @@ async function run() {
 
     whenBtn(page, "tomorrow").click();
     v = view(page);
-    assert.deepStrictEqual(v.rows, [`${heading(day(1))} | Running Exhibit`, `${heading(day(1))} | Out There`, `${heading(day(1))} | Sunday Show`], "tomorrow: includes the exhibit still running tomorrow");
-    assert.strictEqual(v.heading, "Showing 3 events tomorrow");
+    assert.deepStrictEqual(v.rows, [`${heading(day(1))} | Running Exhibit`, `${heading(day(1))} | Out There`, `${heading(day(1))} | Sunday Show`, `${heading(day(1))} | Season Exhibition`], "tomorrow: includes the exhibits still running tomorrow");
+    assert.strictEqual(v.heading, "Showing 4 events tomorrow");
     assert.strictEqual(v.url, "/?when=tomorrow");
 
     whenBtn(page, "weekend").click();
     v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(0)), heading(day(1))], "what is left of this weekend: today and Sunday (Friday has passed)");
-    assert.deepStrictEqual(sorted(v.titles), sorted(["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Late Set", "Matinee Somewhere", "Running Exhibit", "Out There", "Sunday Show"]));
-    assert.strictEqual(v.heading, "Showing 7 events this weekend", "7 distinct events — the exhibit is listed under both days but is one event");
+    assert.deepStrictEqual(sorted(v.titles), sorted(["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere", "Running Exhibit", "Out There", "Sunday Show", "Season Exhibition"]));
+    assert.strictEqual(v.heading, "Showing 8 events this weekend", "8 distinct events — each exhibit is listed under both days but is one event");
     assert.ok(!v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "already-over events are not listed in a forward-looking view");
 
     whenBtn(page, "all").click();
     v = view(page);
-    assert.strictEqual(v.heading, "Showing 11 events upcoming — every date");
-    assert.deepStrictEqual(sorted(Array.from(new Set(v.titles))), sorted(["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Late Set", "Matinee Somewhere", "Sunday Show", "No Category", "Out There", "Wednesday Social", "Fall Festival", "Big Game"]));
+    assert.strictEqual(v.heading, "Showing 12 events upcoming — every date");
+    assert.deepStrictEqual(sorted(Array.from(new Set(v.titles))), sorted(["Running Exhibit", "Season Exhibition", "Afternoon Play", "Jazz at Seven", "Late Set", "Matinee Somewhere", "Sunday Show", "No Category", "Out There", "Wednesday Social", "Fall Festival", "Big Game"]));
+    assert.strictEqual(D.count(plain(page.get("EVENTS")), D.defaults(), { now: new Date(NOW), defaultWhen: "all" }), 12, "the list shows every loaded current + upcoming event: none is loaded but unlisted");
     assert.strictEqual(v.rows.filter((r) => r.endsWith("| Fall Festival")).length, 3, "a three-day festival is listed under each of its three days");
     assert.strictEqual(v.scopeNote, false);
     assert.strictEqual(v.url, "/?when=all");
@@ -270,32 +289,63 @@ async function run() {
     v = view(page);
     assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "week" })), "resets search and sets This Week");
     assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(v.heading, "Showing 7 events this week", "the list is everything this week; the hero's 6 is the part of it inside the Orbit");
+    assert.strictEqual(v.heading, "Showing 8 events this week", "the list is everything this week; the hero's 7 is the part of it inside the Orbit");
     assert.deepStrictEqual(v.tray, ["This Week"]);
     assert.strictEqual(v.url, "/?when=week");
 
-    // Header "Today": today's date, picked — the same as typing it into From.
+    // Header "Today" is the canonical Today (2026-10-03 correction): "today
+    // in Detroit, whenever this is opened" — not a picked date. It leaves
+    // out what has already ended, and its link never goes stale.
     page.el("todayNavBtn").click();
     v = view(page);
+    assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "today" })), "when.mode = 'today', nothing else");
+    assert.deepStrictEqual(v.state.when, { mode: "today", from: null, to: null });
+    assert.strictEqual(v.url, "/?when=today", "no date in the link");
+    assert.deepStrictEqual(v.tray, ["Today"]);
+    assert.strictEqual(page.el("whenTriggerSub").textContent, "Today");
+    assert.strictEqual(v.heading, "Showing 6 events today");
+    assert.deepStrictEqual(v.titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
+    assert.ok(!v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "events that have already ended today are not listed");
+    assert.ok(!v.titles.includes("Augustus Williams Live"));
+    assert.strictEqual(page.el("whenDateInput").value, "", "a shortcut blanks the date inputs, like Tonight and Tomorrow");
+    assert.ok(!page.el("whenDateInput").closest(".when-date-picker").classList.contains("active"), "the date picker is not shown as the active choice");
+    // Opened tomorrow, the same link means tomorrow's today.
+    {
+      const nextDay = await open("/?when=today", { now: "2026-10-04T19:00:00Z" });
+      const nv = view(nextDay);
+      assert.deepStrictEqual(nv.days.map((d) => d.day), [heading(day(1))], "the Today link opened on Sunday lists Sunday");
+      assert.deepStrictEqual(sorted(nv.titles), ["Out There", "Running Exhibit", "Season Exhibition", "Sunday Show"]);
+      assert.strictEqual(nv.url, "/?when=today");
+    }
+
+    // A literal date is a different thing: a stable selection that stays
+    // that date, serializes as that date, and shows everything that was on
+    // it — including what is already over.
+    page.fire("whenDateInput", "change", { value: day(0) });
+    v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(0), to: day(0) });
-    assert.strictEqual(page.el("whenDateInput").value, day(0));
-    assert.deepStrictEqual(v.tray, [new Date(day(0) + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })], 'the chip reads "Sat, Oct 3", as before');
-    assert.strictEqual(v.heading, "Showing 7 events Saturday, October 3");
+    assert.strictEqual(v.url, `/?when=dates&from=${day(0)}`);
+    assert.deepStrictEqual(v.tray, [new Date(day(0) + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })], 'the chip names the date: "Sat, Oct 3"');
+    assert.strictEqual(v.heading, "Showing 8 events Saturday, October 3");
     assert.ok(v.titles.includes("Morning Market") && v.titles.includes("Finished Fair"), "a picked date shows everything that was on it, over or not");
     assert.ok(!v.titles.includes("Augustus Williams Live"));
-    assert.strictEqual(v.url, `/?when=dates&from=${day(0)}`);
+    {
+      const nextDay = await open(`/?when=dates&from=${day(0)}`, { now: "2026-10-04T19:00:00Z" });
+      assert.deepStrictEqual(view(nextDay).days.map((d) => d.day), [heading(day(0))], "opened on Sunday, the dated link still shows Saturday");
+      assert.strictEqual(view(nextDay).url, `/?when=dates&from=${day(0)}`);
+    }
 
     // Date inputs: From alone is a day; adding To makes a range; clearing To goes back.
     page.fire("whenDateInput", "change", { value: day(4) });
     v = view(page);
-    assert.deepStrictEqual(v.titles, ["Wednesday Social"]);
-    assert.strictEqual(v.heading, "Showing 1 event Wednesday, October 7");
+    assert.deepStrictEqual(v.titles, ["Wednesday Social", "Season Exhibition"]);
+    assert.strictEqual(v.heading, "Showing 2 events Wednesday, October 7");
     assert.strictEqual(page.el("whenDateEndInput").min, day(4), '"To" cannot be before "From"');
     page.fire("whenDateEndInput", "change", { value: day(7) });
     v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(4), to: day(7) });
-    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(6))} | Fall Festival`, `${heading(day(7))} | Fall Festival`]);
-    assert.strictEqual(v.heading, "Showing 2 events Oct 7–Oct 10");
+    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`, `${heading(day(5))} | Season Exhibition`, `${heading(day(6))} | Fall Festival`, `${heading(day(6))} | Season Exhibition`, `${heading(day(7))} | Fall Festival`, `${heading(day(7))} | Season Exhibition`]);
+    assert.strictEqual(v.heading, "Showing 3 events Oct 7–Oct 10");
     assert.deepStrictEqual(v.tray, ["Oct 7–Oct 10"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7–Oct 10");
     assert.strictEqual(v.url, `/?when=dates&from=${day(4)}&to=${day(7)}`);
@@ -303,7 +353,7 @@ async function run() {
     assert.deepStrictEqual(view(page).state.when, { mode: "dates", from: day(4), to: day(4) });
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7");
   }
-  console.log("PASS: C. When — Tonight, Tomorrow, This Weekend, All Upcoming, This Week (hero), Today (header), a picked date and a date range, each with its list, heading, tray, buttons and URL");
+  console.log("PASS: C. When — Tonight, Tomorrow, This Weekend, All Upcoming, This Week (hero), Today (header: the canonical Today, evergreen link), a picked date (stable, dated link) and a date range, each with its list, heading, tray, buttons and URL");
 
   // =====================================================================
   // D. An explicit date in the past is a real selection (2026-10-03 correction)
@@ -312,8 +362,8 @@ async function run() {
     let page = await open(`/?when=dates&from=${day(-2)}`);
     let v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(-2))], "one day: the one that was picked");
-    assert.deepStrictEqual(sorted(v.titles), ["Finished Fair", "Running Exhibit"], "a past date shows the events that were on it, completed or not");
-    assert.strictEqual(v.heading, `Showing 2 events ${new Date(day(-2) + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`);
+    assert.deepStrictEqual(sorted(v.titles), ["Finished Fair", "Running Exhibit", "Season Exhibition"], "a past date shows the events that were on it, completed or not");
+    assert.strictEqual(v.heading, `Showing 3 events ${new Date(day(-2) + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`);
     assert.strictEqual(page.el("whenDateInput").value, day(-2));
     assert.strictEqual(v.url, `/?when=dates&from=${day(-2)}`, "and the link is kept as that date, not rewritten to today");
 
@@ -321,7 +371,7 @@ async function run() {
     v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(-2)), heading(day(-1)), heading(day(0))]);
     assert.ok(v.titles.includes("Yesterday Opening") && v.titles.includes("Morning Market"), "a range reaching back includes what has finished");
-    assert.strictEqual(v.heading, "Showing 8 events Oct 1–Oct 3", "Finished Fair, Running Exhibit, Yesterday Opening and today's five (not the blocked one)");
+    assert.strictEqual(v.heading, "Showing 9 events Oct 1–Oct 3", "Finished Fair, Running Exhibit, Season Exhibition, Yesterday Opening and today's five (not the blocked one)");
 
     // The forward-looking modes are unchanged by that: nothing over, nothing before today.
     page = await open("/?when=week");
@@ -329,9 +379,11 @@ async function run() {
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(0)), heading(day(1))]);
     assert.ok(!v.titles.includes("Yesterday Opening") && !v.titles.includes("Morning Market"));
 
-    // KNOWN GAP, pinned (DEBT-008): a date older than the page's 8-day load
-    // window is honoured as a selection, but the page has no events loaded
-    // for it — so it shows an empty state, not what happened that day.
+    // BY DECISION (Product Owner, 2026-10-03): deep history is Calendar's
+    // concern, not the homepage's. A date older than the page's 8-day
+    // back-buffer is honoured as a selection, but the homepage does not load
+    // history for it (and lists a long-running event only from the
+    // back-buffer's first day), so it shows an empty state.
     page = await open(`/?when=dates&from=${day(-20)}`);
     v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(-20), to: day(-20) });
@@ -373,7 +425,7 @@ async function run() {
     v = view(page);
     assert.deepStrictEqual(v.state.what.paths, [], "turning the last chip off returns to ALL events (approved: there is no show-nothing state)");
     assert.deepStrictEqual(litCats(page), ALL_CATS);
-    assert.strictEqual(v.heading, "Showing 11 events upcoming — every date");
+    assert.strictEqual(v.heading, "Showing 12 events upcoming — every date");
 
     // Tray ✕ on the category chip, and "All types".
     chip(page, '.chip[data-cat="sports"]').click();
@@ -432,7 +484,7 @@ async function run() {
     assert.deepStrictEqual(finds("the loft"), ["Sunday Show"], "venue");
     assert.deepStrictEqual(finds("ANN ARBOR"), ["Matinee Somewhere"], "city, any case");
     assert.deepStrictEqual(finds("festivals & parades"), ["Fall Festival"], "category label");
-    assert.deepStrictEqual(finds("midtown"), ["Running Exhibit"], "neighborhood");
+    assert.deepStrictEqual(finds("midtown"), ["Running Exhibit", "Season Exhibition"], "neighborhood");
     assert.deepStrictEqual(finds("venue submission"), ["Wednesday Social"], "source");
     assert.deepStrictEqual(finds("towel"), ["Wednesday Social"], "note");
     assert.deepStrictEqual(finds("augustus"), [], "a blocked event is not findable");
@@ -475,7 +527,7 @@ async function run() {
     assert.ok(/<div class="side-card-number">1<\/div>/.test(page.el("mapCard").innerHTML) && /within 10 mi of you/.test(page.el("mapCard").innerHTML));
     // Near You: within 75 mi of that point (the card's own arithmetic — see DEBT-009): everything placeable is that close to Ann Arbor.
     assert.ok(/Within 75 mi of Ann Arbor/.test(page.el("nearYouCard").innerHTML));
-    assert.strictEqual((/<div class="side-card-number">(\d+)<\/div>/.exec(page.el("nearYouCard").innerHTML) || [])[1], "10", "10 current + upcoming events in cities the page can place (not Richmond; not the over or blocked ones), each counted once");
+    assert.strictEqual((/<div class="side-card-number">(\d+)<\/div>/.exec(page.el("nearYouCard").innerHTML) || [])[1], "11", "11 current + upcoming events in cities the page can place (not Richmond; not the over or blocked ones), each counted once");
 
     // Expand radius walks Discovery's tiers.
     page.run("expandRadius()"); assert.strictEqual(view(page).state.where.radius, 25);
@@ -535,19 +587,30 @@ async function run() {
     page.run("viewNeighborhood('Midtown')"); trayRemove(page, "Midtown");
     assert.strictEqual(view(page).state.where.neighborhood, null);
 
-    page.fire("search", "input", { value: "e" });
+    // Free Today = the canonical Today + Free (2026-10-03 correction).
     page.run("viewFreeToday()");
     v = view(page);
-    assert.deepStrictEqual([v.state.what.free, v.state.when, v.state.q], [true, { mode: "dates", from: day(0), to: day(0) }, "e"], "Free Today adds Free + today's date and keeps the other filters");
+    assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "today", free: true })), "when.mode = 'today' and free — no date");
+    assert.strictEqual(v.url, "/?when=today&free=1", "a link that means free-today on whatever day it is opened");
+    assert.deepStrictEqual(v.tray, ["Today", "Free only"]);
     assert.ok(chip(page, "#freeChip").classList.contains("active"));
-    assert.deepStrictEqual(sorted(v.titles), ["Matinee Somewhere", "Morning Market", "Running Exhibit"], "the same three the card counted");
+    assert.strictEqual(page.el("whenDateInput").value, "");
+    assert.strictEqual(v.heading, "Showing 2 events today");
+    assert.deepStrictEqual(sorted(v.titles), ["Matinee Somewhere", "Running Exhibit"], "the same two the card counted — not Morning Market, which is free but ended at 2 PM");
+    // It adds to whatever else is filtered.
+    page.el("browseBtn").click();
+    page.fire("search", "input", { value: "matinee" });
+    page.run("viewFreeToday()");
+    v = view(page);
+    assert.deepStrictEqual([v.state.what.free, v.state.when.mode, v.state.q], [true, "today", "matinee"], "Free Today keeps the other filters");
+    assert.deepStrictEqual(v.titles, ["Matinee Somewhere"]);
 
     page.el("browseBtn").click();
     v = view(page);
     assert.deepStrictEqual(v.state, plain(D.defaults()), "Browse clears everything");
     assert.strictEqual(page.el("search").value, ""); assert.strictEqual(page.el("whenDateInput").value, day(0));
   }
-  console.log("PASS: H. neighborhood cards (count = list), Free Today (count = list), Browse");
+  console.log("PASS: H. neighborhood cards (count = list), Free Today (canonical Today + free; count = list), Browse");
 
   // =====================================================================
   // I. Old links still open the same view; the address bar is rewritten in the shared form
@@ -599,9 +662,9 @@ async function run() {
     assert.deepStrictEqual(litCats(page), ALL_CATS);
     assert.strictEqual(view(page).days.length, 1);
     page = await open(`/?when=date&picked=${day(-1)}`);
-    assert.deepStrictEqual(sorted(view(page).titles), ["Finished Fair", "Running Exhibit", "Yesterday Opening"], "an old link to a date now in the past opens that date (was: ignored, showed today)");
+    assert.deepStrictEqual(sorted(view(page).titles), ["Finished Fair", "Running Exhibit", "Season Exhibition", "Yesterday Opening"], "an old link to a date now in the past opens that date (was: ignored, showed today)");
     page = await open("/?when=now");
-    assert.deepStrictEqual([view(page).state.when.mode, view(page).tray, view(page).heading], ["today", ["Today"], "Showing 5 events today"], "when=now (Calendar's and Map's word) is Today here too");
+    assert.deepStrictEqual([view(page).state.when.mode, view(page).tray, view(page).heading], ["today", ["Today"], "Showing 6 events today"], "when=now (Calendar's and Map's word) is Today here too");
     page = await open("/?radius=all&when=all");
     assert.deepStrictEqual([view(page).tray, page.el("whereTriggerSub").textContent], [["All Upcoming", "Detroit Orbit"], "Detroit Orbit"], "radius=all with no place is the Detroit Orbit");
     assert.ok(!view(page).titles.includes("Out There"));
