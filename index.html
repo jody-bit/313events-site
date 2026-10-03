@@ -4380,6 +4380,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
+<script src="/discovery.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -4658,242 +4659,52 @@
 </div>
 
 <script>
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
+// ---- Discovery: shared rules, this page's presentation ----
+// What discovery MEANS on 313.events — the category list, the places
+// table, the Detroit Orbit and its boundary, what "today" is, the date
+// rules, search, the blocked-names list, which events match which filters,
+// how many, and how filters are written into and read out of a URL — is
+// defined once, in /discovery.js (loaded in <head>), and shared with every
+// other surface. See DEC-022 and that file's header.
+//
+// This page used to carry its own copy of all of it (CATS labels,
+// LOCATIONS, CITY_LOOKUP, DETROIT_BOUNDARY and its distance maths,
+// BLOCKED_NAMES, FEATURE_CHIPS, the date helpers, matchesFilters(),
+// syncURL()/readStateFromURL()). Those copies are gone (2026-10-03). What
+// stays here is what is genuinely this page's own: layout, copy, colour,
+// fetching and rendering. The page holds ONE filter state (`state`, below),
+// changes it only through Discovery.change(), and asks Discovery what
+// matches. Do not re-add a local copy of a rule — change discovery.js.
+//
+// Category colour is presentation, so it lives here. Keys, labels and order
+// come from Discovery.categories.
+const CAT_COLORS = {
+  music:    "var(--c-music)",
+  theatre:  "var(--c-theatre)",
+  dance:    "var(--c-dance)",
+  visual:   "var(--c-visual)",
+  museum:   "var(--c-museum)",
+  family:   "var(--c-family)",
+  fest:     "var(--c-fest)",
+  food:     "var(--c-food)",
+  film:     "var(--c-film)",
+  nightlife:"var(--c-night)",
+  sports:   "var(--c-sports)",
+  community:"var(--c-community)",
+  vendor:   "var(--c-vendor)",
+  training: "var(--c-training)",
+  gaming:   "var(--c-gaming)"
 };
+const CATS = {};
+Discovery.categories.forEach(c => {
+  CATS[c.key] = {label: c.label, color: CAT_COLORS[c.key] || "var(--ink-soft)"};
+});
 
-// ---- Location reference data (Phase 1 Chunk 3) ----
-// Static, hand-curated dataset backing predictive location search and
-// city-level radius filtering — see DISCOVERY_PHASE1_AUDIT.md §2/§3 for the
-// full reasoning. No geocoding API, no per-venue backfill: this alone covers
-// autocomplete and city-level distance math. Two tiers:
-//   - type:'neighborhood' — Detroit's 39 named areas (Detroit-only by
-//     design; see SERVICE_AREA.md's "Neighborhood scope — resolved" note).
-//     Selectable as a search origin only — events don't carry neighborhood
-//     data yet (the venue_id gap, see audit §1), so these never match an
-//     event's own location, only the chosen "from here" point.
-//   - type:'city' — every city SERVICE_AREA.md names as inside the 75-mile
-//     boundary, plus a supplementary set of well-known Detroit-metro
-//     suburbs (all comfortably inside 75mi already) added so real
-//     venue_city_raw values — which come straight from Ticketmaster's own
-//     venue data and can legitimately be any city in the region — have a
-//     real chance of resolving to coordinates. Only this tier is matched
-//     against event data; see CITY_LOOKUP below.
-// Coordinates are hand-sourced city-centroid estimates, not survey-grade —
-// entirely adequate for bucketing into 5/10/25/50/75-mile rings, not meant
-// for turn-by-turn precision. Re-derivable/correctable independently of
-// event data since this ships as a plain static list, not a migration.
-const LOCATIONS = [
-  {name:"Detroit", type:"city", region:"Michigan", lat:42.3314, lng:-83.0458},
-
-  // --- Detroit neighborhoods (39) — see migration_002_neighborhoods_and_organizers.sql ---
-  {name:"Downtown", type:"neighborhood", region:"Detroit", lat:42.3316, lng:-83.0466},
-  {name:"Midtown", type:"neighborhood", region:"Detroit", lat:42.3536, lng:-83.0666},
-  {name:"New Center", type:"neighborhood", region:"Detroit", lat:42.3707, lng:-83.0710},
-  {name:"Corktown", type:"neighborhood", region:"Detroit", lat:42.3308, lng:-83.0680},
-  {name:"North Corktown", type:"neighborhood", region:"Detroit", lat:42.3385, lng:-83.0710},
-  {name:"Core City", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-83.0790},
-  {name:"Woodbridge", type:"neighborhood", region:"Detroit", lat:42.3480, lng:-83.0790},
-  {name:"Eastern Market", type:"neighborhood", region:"Detroit", lat:42.3459, lng:-83.0416},
-  {name:"Brush Park", type:"neighborhood", region:"Detroit", lat:42.3435, lng:-83.0530},
-  {name:"Lafayette Park", type:"neighborhood", region:"Detroit", lat:42.3350, lng:-83.0290},
-  {name:"Rivertown", type:"neighborhood", region:"Detroit", lat:42.3395, lng:-83.0180},
-  {name:"Indian Village", type:"neighborhood", region:"Detroit", lat:42.3660, lng:-82.9840},
-  {name:"West Village", type:"neighborhood", region:"Detroit", lat:42.3610, lng:-82.9910},
-  {name:"Islandview", type:"neighborhood", region:"Detroit", lat:42.3630, lng:-82.9950},
-  {name:"Milwaukee Junction", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0570},
-  {name:"North End", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.0660},
-  {name:"Poletown East", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0330},
-  {name:"Jefferson-Chalmers", type:"neighborhood", region:"Detroit", lat:42.4000, lng:-82.9350},
-  {name:"Belle Isle", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-82.9700},
-  {name:"Morningside", type:"neighborhood", region:"Detroit", lat:42.4070, lng:-82.9550},
-  {name:"East English Village", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-82.9420},
-  {name:"Boston-Edison", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.1010},
-  {name:"Arden Park-East Boston", type:"neighborhood", region:"Detroit", lat:42.3830, lng:-83.0900},
-  {name:"University District", type:"neighborhood", region:"Detroit", lat:42.4150, lng:-83.1350},
-  {name:"Palmer Park", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1350},
-  {name:"Palmer Woods", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1400},
-  {name:"Sherwood Forest", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1470},
-  {name:"Bagley", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1500},
-  {name:"Russell Woods", type:"neighborhood", region:"Detroit", lat:42.3860, lng:-83.1450},
-  {name:"Fitzgerald", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.1670},
-  {name:"Grandmont-Rosedale", type:"neighborhood", region:"Detroit", lat:42.4080, lng:-83.2000},
-  {name:"Old Redford", type:"neighborhood", region:"Detroit", lat:42.4090, lng:-83.2260},
-  {name:"Warrendale", type:"neighborhood", region:"Detroit", lat:42.3670, lng:-83.2100},
-  {name:"Brightmoor", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.2350},
-  {name:"Mexicantown / Southwest Detroit", type:"neighborhood", region:"Detroit", lat:42.3210, lng:-83.0940},
-  {name:"Springwells", type:"neighborhood", region:"Detroit", lat:42.3110, lng:-83.1170},
-  {name:"Delray", type:"neighborhood", region:"Detroit", lat:42.2900, lng:-83.1180},
-  {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
-  {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
-
-  // Added 2026-09-14: renamed from an earlier placeholder ("Elmwood Park") —
-  // see supabase/update_2026-09-14_eastside-historic-cemetery-district.sql.
-  // Coordinates are the NRHP-listed centroid (Wikipedia, "Eastside Historic
-  // Cemetery District", ref #82000550), not a hand estimate like most of
-  // the list above.
-  {name:"Eastside Historic Cemetery District", type:"neighborhood", region:"Detroit", lat:42.3497, lng:-83.0181},
-
-  // --- SERVICE_AREA.md cities (75-mile boundary), nearest to farthest ---
-  {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
-  {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
-  {name:"Rochester", type:"city", region:"Michigan", lat:42.6806, lng:-83.1341},
-  {name:"Pontiac", type:"city", region:"Michigan", lat:42.6389, lng:-83.2910},
-  {name:"Ypsilanti", type:"city", region:"Michigan", lat:42.2411, lng:-83.6130},
-  {name:"Milford", type:"city", region:"Michigan", lat:42.5926, lng:-83.6002},
-  {name:"Clarkston", type:"city", region:"Michigan", lat:42.7364, lng:-83.4199},
-  {name:"Monroe", type:"city", region:"Michigan", lat:41.9164, lng:-83.3977},
-  {name:"Ann Arbor", type:"city", region:"Michigan", lat:42.2808, lng:-83.7430},
-  {name:"Brighton", type:"city", region:"Michigan", lat:42.5297, lng:-83.7796},
-  {name:"Chatham", type:"city", region:"Ontario", lat:42.4048, lng:-82.1910},
-  {name:"Fenton", type:"city", region:"Michigan", lat:42.7970, lng:-83.7054},
-  {name:"Howell", type:"city", region:"Michigan", lat:42.6072, lng:-83.9294},
-  {name:"Toledo", type:"city", region:"Ohio", lat:41.6528, lng:-83.5379},
-  {name:"Port Huron", type:"city", region:"Michigan", lat:42.9709, lng:-82.4252},
-  {name:"Sarnia", type:"city", region:"Ontario", lat:42.9748, lng:-82.4066},
-  {name:"Flint", type:"city", region:"Michigan", lat:43.0125, lng:-83.6875},
-  {name:"Adrian", type:"city", region:"Michigan", lat:41.8975, lng:-84.0372},
-  {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
-  {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
-
-  // Added 2026-09-20, newly in scope after the center->border measurement
-  // switch (SERVICE_AREA.md): Lansing is 67.5mi from Detroit's actual
-  // border (was 81.5mi from Detroit's center, just outside the old
-  // boundary). East Lansing (MSU's campus town, the specific "huge college
-  // town" Jody flagged) is 64.3mi, with even more margin.
-  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56000},
-  {name:"East Lansing", type:"city", region:"Michigan", lat:42.7370, lng:-84.4839},
-
-  // --- Supplementary Detroit-metro suburbs (added for venue-city match
-  // coverage beyond the SERVICE_AREA.md boundary-illustration list above —
-  // all comfortably inside the 75-mile radius already established there) ---
-  {name:"Hamtramck", type:"city", region:"Michigan", lat:42.3922, lng:-83.0497},
-  {name:"Highland Park", type:"city", region:"Michigan", lat:42.4054, lng:-83.0997},
-  {name:"Dearborn", type:"city", region:"Michigan", lat:42.3223, lng:-83.1763},
-  {name:"Dearborn Heights", type:"city", region:"Michigan", lat:42.3373, lng:-83.2733},
-  {name:"Ferndale", type:"city", region:"Michigan", lat:42.4606, lng:-83.1344},
-  {name:"Royal Oak", type:"city", region:"Michigan", lat:42.4895, lng:-83.1446},
-  {name:"Berkley", type:"city", region:"Michigan", lat:42.5023, lng:-83.1838},
-  {name:"Oak Park", type:"city", region:"Michigan", lat:42.4595, lng:-83.1830},
-  {name:"Southfield", type:"city", region:"Michigan", lat:42.4734, lng:-83.2219},
-  {name:"Birmingham", type:"city", region:"Michigan", lat:42.5467, lng:-83.2113},
-  {name:"Troy", type:"city", region:"Michigan", lat:42.6064, lng:-83.1499},
-  {name:"Sterling Heights", type:"city", region:"Michigan", lat:42.5803, lng:-83.0302},
-  {name:"Warren", type:"city", region:"Michigan", lat:42.5145, lng:-83.0147},
-  {name:"Madison Heights", type:"city", region:"Michigan", lat:42.5292, lng:-83.1057},
-  {name:"Auburn Hills", type:"city", region:"Michigan", lat:42.6875, lng:-83.2341},
-  {name:"Rochester Hills", type:"city", region:"Michigan", lat:42.6583, lng:-83.1499},
-  {name:"Waterford", type:"city", region:"Michigan", lat:42.6892, lng:-83.3585},
-  {name:"Novi", type:"city", region:"Michigan", lat:42.4806, lng:-83.4755},
-  {name:"Farmington Hills", type:"city", region:"Michigan", lat:42.4989, lng:-83.3677},
-  {name:"Livonia", type:"city", region:"Michigan", lat:42.3684, lng:-83.3527},
-  {name:"Westland", type:"city", region:"Michigan", lat:42.3242, lng:-83.4002},
-  {name:"Taylor", type:"city", region:"Michigan", lat:42.2409, lng:-83.2699},
-  {name:"Lincoln Park", type:"city", region:"Michigan", lat:42.2506, lng:-83.1785},
-  {name:"Wyandotte", type:"city", region:"Michigan", lat:42.2142, lng:-83.1499},
-  {name:"Grosse Pointe", type:"city", region:"Michigan", lat:42.3861, lng:-82.9116},
-  {name:"St. Clair Shores", type:"city", region:"Michigan", lat:42.4970, lng:-82.8888},
-  {name:"Roseville", type:"city", region:"Michigan", lat:42.4973, lng:-82.9371},
-  {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
-  {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
-  {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
-  {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.9200},
-  {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
-  {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
-];
-
-// Only cities are matched against event data (venue_city_raw) — neighborhoods
-// are origin-only, see the note above LOCATIONS.
-const CITY_LOOKUP = new Map(
-  LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
-);
-
-// Great-circle distance in miles — matches the method used to derive
-// SERVICE_AREA.md's own boundary table, so radius math stays consistent
-// with the reasoning that document already documents.
-function haversineMiles(lat1, lng1, lat2, lng2){
-  const R = 3958.8;
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
-  return R * 2 * Math.asin(Math.sqrt(a));
-}
-
-// Detroit's official city-boundary polygon, used only for the two "is this
-// within the Detroit Orbit / real service area" checks below (isInDetroitOrbit
-// and matchesFilters()'s Detroit-Orbit branch) — NOT for isWithinRadius(),
-// which measures from an arbitrary chosen origin (the user's own location or
-// a picked city/neighborhood) and correctly stays plain center-point math,
-// since "distance from Detroit's border" isn't a meaningful concept for a
-// point that isn't Detroit.
-//
-// Switched 2026-09-20 from a Detroit-center-point + 75mi radius to this
-// border-based measurement — same 75-mile figure, more honest reference
-// point (a real city has real physical extent; measuring from an abstract
-// center systematically under-counted real nearby places, Lansing/MSU being
-// the case that prompted the fix). See SERVICE_AREA.md for the full
-// reasoning, and api/_lib/detroit-boundary.js for the server-side copy of
-// this same data/logic (this page is a self-contained static file with no
-// shared JS module across pages, so it can't require() that file — keep
-// both in sync if the boundary source or simplification ever changes).
-//
-// Source: the City of Detroit's own open-data GIS layer,
-// `City_of_Detroit_Boundary` (ArcGIS Feature Layer, serviceItemId
-// 86b221bb68ca4364afe81d156e54f95c), queried 2026-09-20 at
-// https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/city_of_detroit_boundary/FeatureServer/0 .
-// The real outer boundary ring has 1,090 vertices; simplified via
-// Douglas-Peucker (tolerance ~0.05mi) down to 70 points here so it's cheap
-// to embed and iterate over — verified during development to reproduce the
-// full-precision distance to the fraction-of-a-mile for every city checked
-// (Lansing, Saginaw, Bowling Green OH). The interior ring (a hole around the
-// Hamtramck/Highland Park enclaves) isn't included — it can never be the
-// nearest edge to a point outside Detroit.
-const DETROIT_BOUNDARY = [[-82.91625,42.42135],[-82.91034,42.41902],[-82.91055,42.41719],[-82.91863,42.39956],[-82.92149,42.39546],[-82.93542,42.38978],[-82.9468,42.38699],[-82.93027,42.36214],[-82.93087,42.3619],[-82.92859,42.358],[-82.92397,42.35212],[-82.94541,42.3474],[-82.95977,42.33977],[-82.98912,42.33248],[-83.01895,42.33062],[-83.06356,42.31686],[-83.07994,42.30717],[-83.0999,42.2867],[-83.11463,42.29018],[-83.11813,42.28973],[-83.11987,42.28755],[-83.11764,42.28041],[-83.11877,42.27913],[-83.13745,42.28279],[-83.16097,42.25496],[-83.16635,42.25968],[-83.16811,42.26391],[-83.16983,42.26458],[-83.15816,42.27884],[-83.167,42.28957],[-83.16166,42.29178],[-83.15825,42.29202],[-83.15769,42.29496],[-83.15169,42.29626],[-83.14999,42.29583],[-83.14894,42.29341],[-83.14724,42.29257],[-83.14256,42.29441],[-83.14045,42.29775],[-83.14242,42.30569],[-83.1406,42.30668],[-83.13964,42.30866],[-83.1407,42.31101],[-83.15313,42.32809],[-83.15647,42.32724],[-83.1569,42.33696],[-83.15296,42.33759],[-83.14994,42.33984],[-83.14835,42.34469],[-83.14766,42.35192],[-83.19653,42.35089],[-83.19606,42.33644],[-83.21534,42.33614],[-83.21528,42.32902],[-83.22514,42.32881],[-83.22783,42.3326],[-83.23458,42.32984],[-83.23503,42.33584],[-83.23749,42.33574],[-83.23777,42.34309],[-83.26384,42.34169],[-83.26591,42.35705],[-83.26658,42.37879],[-83.27491,42.37859],[-83.27586,42.40728],[-83.28638,42.407],[-83.28773,42.44268],[-82.94053,42.45037],[-82.95128,42.43581],[-82.91625,42.42135]];
-
-// Local equirectangular projection centered near Detroit — accurate to
-// ~0.15mi against the full-precision haversine figure at the ~65-130 mile
-// distances this is actually evaluated at, more than enough for a "within
-// 75 miles" cutoff that was never a survey-grade line to begin with.
-const DB_LAT0 = 42.35;
-const DB_MILES_PER_DEG_LAT = 69.0;
-const DB_MILES_PER_DEG_LON = 69.0 * Math.cos(DB_LAT0 * Math.PI / 180);
-function dbToXY(lon, lat){
-  return [(lon + 83.4) * DB_MILES_PER_DEG_LON, (lat - DB_LAT0) * DB_MILES_PER_DEG_LAT];
-}
-function dbDistPointToSeg(px, py, ax, ay, bx, by){
-  const dx = bx - ax, dy = by - ay;
-  const len2 = dx*dx + dy*dy;
-  let t = len2 === 0 ? 0 : ((px-ax)*dx + (py-ay)*dy) / len2;
-  t = Math.max(0, Math.min(1, t));
-  const cx = ax + t*dx, cy = ay + t*dy;
-  return Math.hypot(px-cx, py-cy);
-}
-function milesFromDetroitBorder(lat, lng){
-  const [px, py] = dbToXY(lng, lat);
-  let minDist = Infinity;
-  for(let i=0; i<DETROIT_BOUNDARY.length-1; i++){
-    const [alon,alat] = DETROIT_BOUNDARY[i];
-    const [blon,blat] = DETROIT_BOUNDARY[i+1];
-    const [ax,ay] = dbToXY(alon,alat), [bx,by] = dbToXY(blon,blat);
-    const d = dbDistPointToSeg(px,py,ax,ay,bx,by);
-    if(d < minDist) minDist = d;
-  }
-  return minDist;
-}
+// The places behind location search and distance filtering (cities and
+// Detroit neighborhoods, with city-centre coordinates) are
+// Discovery.places; the 75-mile Detroit Orbit is measured from Detroit's
+// border inside Discovery.matches(). See SERVICE_AREA.md for the reasoning,
+// and api/_lib/detroit-boundary.js for the server-side copy of the boundary.
 
 // Real, sourced Detroit events, Aug 19 - Oct 31 2026.
 // date: YYYY-MM-DD. time: display string. free: boolean. note: optional caveat.
@@ -5183,20 +4994,9 @@ const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth
 // replaced it.
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
 
-// Hard content block: events matching any name on this list are excluded
-// from every view (calendar, list, Today strip) regardless of source —
-// checked against the event title and note/description, case-insensitively.
-// This is a manual, always-on suppression list independent of the normal
-// category/free/search/when filters. Add additional blocked names as
-// simple strings.
-const BLOCKED_NAMES = ["Augustus Williams"];
-function isBlockedEvent(e){
-  return BLOCKED_NAMES.some(name => {
-    const n = name.toLowerCase();
-    return (e.title && e.title.toLowerCase().includes(n)) ||
-           (e.note && e.note.toLowerCase().includes(n));
-  });
-}
+// The hard content block (events naming anyone on the always-on suppression
+// list) is applied inside Discovery.matches(), so every list, count and
+// card on this page gets it without having to remember to ask.
 
 // Secondary "Features" filters (added 2026-08-28, from the Product Strategy
 // & UX Audit doc's own data-completeness table in Section 7) — 313.events'
@@ -5204,167 +5004,97 @@ function isBlockedEvent(e){
 // filter set competitors like Metro Times expose. Deliberately NOT a
 // wholesale copy of that: the audit's "Things We Should Not Build" section
 // warns against a big always-visible filter expansion (Finding 5: most
-// visitors touch only one or two filters), and its own Gap 6 reasoning
-// gates any new filter on whether the underlying data can actually support
-// it honestly. Each of these four maps to a column the audit's Section 7
-// table already calls "solid" — ticket_url, image_url, and source are all
-// populated reliably today, unlike cancellation status or a recurrence
-// field, which the same table flags as incomplete/nonexistent and are
-// deliberately left out of this set rather than filtering over mostly-null
-// data. 'radar' (On the Radar) doubles as the audit's Gap 5/8 push to make
-// the editorial-coverage integration more visible, not just a filter.
-const FEATURE_CHIPS = [
-  { key: 'tickets', label: 'Tickets available' },
-  { key: 'photo', label: 'Has photo' },
-  { key: 'submitted', label: 'Community submitted' },
-  { key: 'radar', label: 'On the Radar' },
-];
-
-let activeCats = new Set(Object.keys(CATS));
-let freeOnly = false;
-// Zero or more of FEATURE_CHIPS' keys — AND'd together with every other
-// filter dimension, same as freeOnly, rather than OR'd against each other:
-// at the "one or two filters touched" usage level Finding 5 describes,
-// AND-narrowing is simpler to reason about than a mixed AND/OR model and
-// matches how freeOnly already behaves.
-let activeFeatures = new Set();
-let query = "";
-// The homepage is List-only (the mockup's primary view) — there is no
-// Month grid here at all. The full Month-grid experience lives on the
-// separate calendar.html page, which keeps its own independent default.
-// Active time-range shortcut from the discovery bar: null | 'tomorrow' |
-// 'weekend' | 'date' | 'range' | 'thisweek'. Independent of category/free/
-// search filters — see matchesFilters() below, which combines all of them.
+// visitors touch only one or two filters).
 //
-// null ("no shortcut picked") is the resting state — "Browse" and "Reset
-// filters" explicitly return here via clearAllFilters(). It is NOT the same
-// as "no restriction at all": matchesFilters() always applies its own
-// baseline floor+hour narrowing (today onward, and today's own past hours
-// hidden) regardless of whenMode, so the list still "begins with NOW" by
-// default without whenMode itself needing to fake-select a shortcut.
-let whenMode = null;
-// Only meaningful while whenMode === 'date' — the single ISO date chosen
-// via the When sheet's date-picker "From" input.
-let pickedDate = null;
-// Only meaningful while whenMode === 'range' — both set, inclusive, when the
-// From/To pair together form a date range rather than a single day. Kept as
-// two separate globals (rather than reusing pickedDate for the start) so
-// 'date' and 'range' modes can't be confused with each other in
-// matchesFilters()/currentDateList().
-let rangeStart = null;
-let rangeEnd = null;
-// Shared between renderActiveFilters() and updateMobileTriggers() — one
-// definition so the two labels never drift out of sync with each other.
-// 'date' and 'range' aren't listed here since their chip/trigger label is
-// built from the actual picked date(s) at display time, not a fixed word.
-// 'now'/'today' were removed 2026-08-27 (Jody: redundant once the homepage's
-// own default view already opens on today) — 'thisweek' backs the hero's
-// "View all events" link (see viewThisWeek()). 'tonight' was ALSO removed
-// that same day (replaced with Tomorrow) but restored 2026-08-28 as part of
-// the product audit's P0 list (Finding 2/15 — "what's on tonight" is a
-// high-intent, time-sensitive question the homepage otherwise couldn't
-// answer in one tap; only calendar.html had it). Worth reconsidering now
-// specifically because the "hides too soon" bug that made the page's own
-// default view unreliable for evening plans (an event vanishing from the
-// list the moment its start hour passed, fixed earlier 2026-08-28) is what
-// made a dedicated Tonight shortcut feel most redundant with the default
-// view in the first place — that's fixed now, so Tonight earns its slot
-// back. 'all' is the new P0 "All Upcoming" shortcut (Gap 2) — see
-// currentDateList()/matchesFilters() for what it actually does.
-const WHEN_LABELS = {tomorrow:'Tomorrow', tonight:'Tonight', weekend:'This Weekend', thisweek:'This Week', all:'All Upcoming'};
-// Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
-// currently in scope. Recomputed each time weekend mode is (re)activated,
-// not on every render, since "this weekend" only changes at midnight.
-let cachedWeekendDates = [];
-// originLocation: the chosen search-radius origin — {name, type, region,
-// lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
-// null means no location filter is active at all.
-let originLocation = null;
-// radiusMiles: 5/10/25/50 (number) or 'all' — labeled "Detroit Orbit" in the
-// UI, this is the widest tier and the default. It is NOT narrowed by
-// whatever origin the user searched (that's what makes it the widest tier),
-// but matchesFilters() still hard-caps it at 75 miles from Detroit's own
-// city BORDER specifically (switched 2026-09-20 from a center-point
-// measurement) — the fixed definition of the Detroit Orbit boundary, per
-// SERVICE_AREA.md — so results can never drift outside the site's real
-// coverage area regardless of the chosen origin. A separate
-// literal "75 mi" option (measured from the user's origin, like the other
-// numeric tiers) used to exist alongside it, which was a redundant way of
-// saying almost the same boundary twice; removed 2026-08-26 in favor of
-// "Detroit Orbit" being the one Detroit-anchored 75-mile option. Only
-// meaningful while originLocation is set.
-let radiusMiles = null;
+// The chips shown are Discovery's DERIVED features — things 313.events
+// determines structurally (has a ticket link, has a photo, was community
+// submitted, has press coverage). A DECLARED feature (clothing_optional —
+// supplied by the organizer, see DEC-024) has no chip here yet (STORY-023);
+// a link carrying features=clothing_optional is still honoured, and shows
+// in the "Showing:" tray like any other filter.
+const FEATURE_CHIPS = Discovery.features.filter(f => f.kind === 'derived');
+const CLOTHING_OPTIONAL_LABEL = (Discovery.features.find(f => f.key === 'clothing_optional') || {}).label || 'Clothing optional';
 
-// Set by clicking a card in the Explore Neighborhoods rail. Deliberately an
-// EXACT match against e.neighborhood (the same venues->neighborhoods lookup
-// the rail's own counts are built from) rather than a radius/distance
-// filter — so clicking "23 events in Corktown" always lands on exactly the
-// 23 events that count came from, never a different number from a fuzzy
-// proximity search.
-let neighborhoodFilter = null;
+// ---- The one filter state ----
+// The canonical discovery state, as defined in discovery.js:
+//   { when:{mode,from,to}, where:{place,radius,neighborhood,here},
+//     what:{paths,free,features}, q }
+// It replaces what used to be eleven separate globals (activeCats, freeOnly,
+// activeFeatures, query, whenMode, pickedDate, rangeStart, rangeEnd,
+// originLocation, radiusMiles, neighborhoodFilter). It is frozen: the only
+// way to change it is setState(patch), which goes through
+// Discovery.change(). Returns true if anything actually changed.
+let state = Discovery.defaults();
+function setState(patch){
+  const next = Discovery.change(state, patch);
+  const changed = next !== state;
+  state = next;
+  return changed;
+}
+
+// What Discovery needs to know about this surface and this moment.
+//   defaultWhen — the homepage's own resting view when no When is picked:
+//     today only (Jody, 2026-09-04: a longer default list pushed the rest of
+//     the page out of reach) — unless a search or a neighborhood is active,
+//     which look across everything upcoming (2026-09-16: "search never works
+//     for me" — a match on another date was silently hidden).
+//   coverage — which events have press coverage, for the "On the Radar"
+//     feature filter.
+function discoveryCtx(){
+  return {
+    now: new Date(),
+    defaultWhen: (state.q || state.where.neighborhood) ? 'all' : 'today',
+    coverage: editorialByEvent,
+  };
+}
+// The site's current + upcoming inventory, whatever the visitor has
+// filtered: used by the cards that are meant to be a constant pulse of the
+// whole city (hero, map, neighborhoods, free today).
+function inventoryCtx(){
+  return {now: new Date(), defaultWhen: 'all', coverage: editorialByEvent};
+}
+
+// The chosen "from here" point in the shape the location controls use:
+// a place from Discovery.places, or the visitor's own device location
+// (which is never written to the URL). null when no origin is set.
+function originLocation(){
+  if(state.where.here) return {name: 'Your location', type: 'here', region: '', lat: state.where.here.lat, lng: state.where.here.lng};
+  if(state.where.place) return Discovery.places.find(p => p.name === state.where.place) || null;
+  return null;
+}
+
+// The two date inputs in the When sheet are a display of the state, set
+// explicitly at the same moments the page has always set them.
+function setWhenInputs(fromIso, toIso){
+  document.getElementById('whenDateInput').value = fromIso || '';
+  document.getElementById('whenDateEndInput').value = toIso || '';
+}
 
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 
-// Uses local date components (not toISOString(), which is UTC) — Detroit is
-// UTC-4/-5, so late evening through midnight local time would otherwise
-// read as tomorrow.
+// "Today" is the date in Detroit (America/Detroit), from Discovery — the
+// same "today" every filter and count on this page uses — not the
+// visitor's own device clock. (Before 2026-10-03 this read the device's
+// local date, so a visitor in another timezone could see a different
+// "today" than the events themselves are dated in.)
+const TODAY_STATE = Discovery.change(Discovery.defaults(), {when: 'today'});
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-function getTomorrowISO(){
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-// Best-effort parse of the free-text time_display field ("7:30 PM",
-// "12:00–3:00 PM", "Evening", "3:00 & 7:00 PM"...) into a 24h hour number.
-// This is a soft convenience signal for the NOW shortcut and the page's own
-// baseline hour-narrowing (see matchesFilters()), not
-// authoritative scheduling data — see DISCOVERY_PHASE1_AUDIT.md. For a
-// range like "12:00–3:00 PM" this returns whichever time the regex finds
-// first (often the end of the range, since the start half usually has no
-// AM/PM of its own) — good enough to classify "roughly when", not precise
-// enough for anything that needs a real start time. Returns null when
-// nothing parseable is found; callers decide how to treat that.
-// "This weekend" = the Friday/Saturday/Sunday currently in progress or the
-// next upcoming one — never a weekend that's already fully over. Returns 3
-// ISO date strings.
-function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay(); // 0=Sun..6=Sat
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
-  return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
-  });
+  return Discovery.window(TODAY_STATE, {now: new Date()}).from;
 }
 
 // The current Monday-Sunday calendar week (per Jody: the week runs
 // Monday-Sunday, not Sun-Sat and not a rolling 7-day-from-today window) —
-// backs the hero's "N things happening this week" stat. Widened from a
-// single-day count (2026-08-26) because on lighter data days "today" alone
-// reads as too thin a number; a full week gives a steadier, still-real count
-// while more sources get added. Revisit narrowing this back to today once
-// daily volume no longer needs the wider window.
+// all seven days, including the ones already past, for the View Calendar
+// card's week strip. Which week that is comes from Discovery's 'week'
+// window; includePast keeps Monday in it when today is, say, Thursday.
+const WEEK_STATE = Discovery.change(Discovery.defaults(), {when: 'week'});
 function getCalendarWeekDates(){
-  const todayIso = getTodayISO();
-  const t = new Date(todayIso+"T12:00:00");
-  const dow = t.getDay(); // 0=Sun..6=Sat
-  const deltaToMonday = dow === 0 ? -6 : 1 - dow;
-  const mon = new Date(t); mon.setDate(t.getDate() + deltaToMonday);
-  return Array.from({length:7}, (_,i)=>{
-    const d = new Date(mon); d.setDate(mon.getDate()+i);
-    return toISO(d.getFullYear(), d.getMonth(), d.getDate());
-  });
+  const w = Discovery.window(WEEK_STATE, {now: new Date(), includePast: true});
+  return datesInRange(w.from, w.to);
 }
 
-// All ISO dates from startIso through endIso, inclusive — backs whenMode
-// 'range' (the When sheet's From/To date-range picker).
+// All ISO dates from startIso through endIso, inclusive — the days of the
+// View Calendar card's week strip.
 function datesInRange(startIso, endIso){
   const out = [];
   let d = new Date(startIso+"T12:00:00");
@@ -5395,17 +5125,6 @@ function rollingWindowDates(days){
     const d = new Date(start); d.setDate(d.getDate()+i);
     return toISO(d.getFullYear(), d.getMonth(), d.getDate());
   });
-}
-
-// Every date (today onward) that actually has at least one event on it —
-// deliberately unbounded, not capped to the 30-day default window. Used
-// when a neighborhood is selected, so the list can reach every one of that
-// neighborhood's upcoming events and its count always matches the
-// neighborhood card's own (also-unbounded) count exactly — see
-// computeNeighborhoodCounts() and viewNeighborhood().
-function upcomingDatesWithEvents(){
-  const todayIso = getTodayISO();
-  return Object.keys(byDate).filter(iso => iso >= todayIso).sort();
 }
 
 // Short "Aug 28" / "Aug 28–Sep 3" label for a single date or a date range —
@@ -5450,239 +5169,61 @@ function ticketStatusNoteHtml(e){
 }
 
 // The single source of truth for "which dates does the list currently
-// show" — every render() call funnels through here instead of each mode
-// scattering its own date-list logic. Order matters: a specific When
-// shortcut/range takes priority over the neighborhood's unbounded window,
-// which in turn takes priority over the plain rolling-window default.
+// show" — every render() call funnels through here. The window itself
+// (today only / tonight / tomorrow / the weekend / the week / a picked date
+// or range / everything upcoming) is Discovery's; this just lists the days
+// inside it that have anything on them, in order, for the list's day
+// headings. A forward-looking window starts at today; a picked date or
+// range is taken exactly as chosen, past or future.
 function currentDateList(){
-  if(whenMode === 'weekend') return cachedWeekendDates;
-  if(whenMode === 'thisweek') return getCalendarWeekDates();
-  if(whenMode === 'range' && rangeStart && rangeEnd) return datesInRange(rangeStart, rangeEnd);
-  if(whenMode === 'date' && pickedDate) return [pickedDate];
-  if(whenMode === 'tomorrow') return [getTomorrowISO()];
-  if(whenMode === 'tonight') return [getTodayISO()];
-  // "All Upcoming" (P0, 2026-08-28 product audit Gap 2) — the same
-  // deliberately-unbounded "every date that actually has an event" function
-  // the neighborhood rail already relies on, reused rather than duplicated.
-  // This is what makes "show me everything" a real, one-click, zero-query
-  // answer instead of the silent 30-day default below.
-  if(whenMode === 'all') return upcomingDatesWithEvents();
-  if(neighborhoodFilter) return upcomingDatesWithEvents();
-  // Search should look across every upcoming date, not just today's — with
-  // no When/neighborhood scope active, the plain default below collapses
-  // to "today only," which silently hid every non-today match no matter
-  // how exact the query was. Fixed 2026-09-16 after Jody reported "search
-  // never works for me" (searching "bahamas" found nothing even though
-  // the Bahamas @ El Club show, 2026-09-30, was loaded and a correct
-  // match — it just wasn't on today's date list).
-  if(query) return upcomingDatesWithEvents();
-  // Default resting state: today only, not a rolling multi-week window.
-  // Jody, 2026-09-04: a 30-day list made the page's own scroll so long that
-  // a visitor would never actually reach whatever lives in the layout's
-  // right-hand column (Explore Neighborhoods, View Calendar, etc.) — they'd
-  // have scrolled past dozens of days of cards long before getting there.
-  // "See everything" (All Upcoming, one tap away via the scope note below)
-  // is still the full unbounded list; this just keeps the FIRST thing a
-  // visitor sees short enough that the rest of the page is still reachable.
-  return [getTodayISO()];
+  const w = Discovery.window(state, discoveryCtx());
+  return Object.keys(byDate)
+    .filter(iso => (w.from === null || iso >= w.from) && (w.to === null || iso <= w.to))
+    .sort();
 }
 
 // Paired with currentDateList() — the human-readable scope behind whatever
 // it just returned, fed to renderList() for the "Showing N events ___"
 // heading and the empty-state copy. null means "the plain default view",
 // which gets neither a count heading nor an "in ___" empty-state suffix.
+// (This is the homepage's own wording; which events are in scope is
+// Discovery's.)
 function currentListMeta(){
-  if(whenMode === 'thisweek') return {scopeLabel: 'this week', countLabel: 'this week'};
-  if(whenMode === 'weekend') return {scopeLabel: 'this weekend', countLabel: 'this weekend'};
-  if(whenMode === 'range' && rangeStart && rangeEnd){
-    const label = formatRangeLabel(rangeStart, rangeEnd);
+  const mode = state.when.mode;
+  if(mode === 'week') return {scopeLabel: 'this week', countLabel: 'this week'};
+  if(mode === 'weekend') return {scopeLabel: 'this weekend', countLabel: 'this weekend'};
+  if(mode === 'dates' && state.when.from !== state.when.to){
+    const label = formatRangeLabel(state.when.from, state.when.to);
     return {scopeLabel: label, countLabel: label};
   }
-  if(whenMode === 'date' && pickedDate){
-    const label = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  if(mode === 'dates'){
+    const label = new Date(state.when.from+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
     return {scopeLabel: label, countLabel: label};
   }
-  if(whenMode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
-  if(whenMode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
-  if(whenMode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
-  if(neighborhoodFilter) return {scopeLabel: neighborhoodFilter, countLabel: `in ${neighborhoodFilter}`};
-  // Paired with the currentDateList() search-widening fix above (2026-09-16)
-  // — once a query expands the date list to every upcoming date, it should
-  // say so, the same way every other non-default scope does: a "Showing N
-  // events matching ___" heading, and "matching ___" appended to the
-  // empty-state copy when a search genuinely comes up empty.
-  if(query) return {scopeLabel: `matching "${query}"`, countLabel: `matching "${query}"`};
+  if(mode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
+  if(mode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
+  // 'today' and 'next7' have no button on this page; they arrive only in a
+  // link (from another surface, or an old ?when=now / ?when=today).
+  if(mode === 'today') return {scopeLabel: 'today', countLabel: 'today'};
+  if(mode === 'next7') return {scopeLabel: 'the next 7 days', countLabel: 'in the next 7 days'};
+  if(mode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
+  if(state.where.neighborhood) return {scopeLabel: state.where.neighborhood, countLabel: `in ${state.where.neighborhood}`};
+  // Paired with the search-widening rule in discoveryCtx() (2026-09-16) —
+  // once a query expands the list to every upcoming date, it should say so,
+  // the same way every other non-default scope does: a "Showing N events
+  // matching ___" heading, and "matching ___" appended to the empty-state
+  // copy when a search genuinely comes up empty.
+  if(state.q) return {scopeLabel: `matching "${state.q}"`, countLabel: `matching "${state.q}"`};
   return {scopeLabel: null, countLabel: null};
 }
 
-// Every "narrow the list" filter EXCEPT date-scoping: category, free-only,
-// neighborhood, search, and location/radius. Split out from matchesFilters()
-// (2026-08-27) because a widget that shows several distinct dates at once —
-// the View Calendar sidebar's Mon-Sun week strip — needs to count each of
-// its own days on its own terms, not through the single-current-scope date
-// logic below. Before this split, that strip called the full matchesFilters()
-// per day and got zeroed out for every already-passed day in the week (today
-// floor) and for every day but one whenever a When shortcut like Tomorrow was
-// active (its date-equality checks) — a real regression Jody caught: past
-// days in "This week" should still show their real counts, always.
-function matchesNonDateFilters(e){
-  if(isBlockedEvent(e)) return false;
-  if(!activeCats.has(e.cat)) return false;
-  if(freeOnly && !e.free) return false;
-  // FEATURE_CHIPS filters (see their declaration above for the reasoning).
-  // 'radar' reads editorialByEvent directly, the same lookup
-  // editorialLinkHtml()/renderOnRadarCard() already use, rather than a
-  // second copy of "is this event on the radar" logic.
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
-  if(activeFeatures.has('photo') && !e.imageUrl) return false;
-  if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
-  if(activeFeatures.has('radar') && !(e.id != null && editorialByEvent[e.id])) return false;
-  if(neighborhoodFilter && e.neighborhood !== neighborhoodFilter) return false;
-  if(query){
-    // Search matches everywhere in the event's metadata, not just title/venue —
-    // Jody: "search should search for anything in the metadata" (2026-08-27).
-    // Covers every text field already loaded client-side: title, venue, city,
-    // category label, neighborhood, source, and any editorial note. Does NOT
-    // reach the events.description column, since that's not fetched by
-    // loadSupabaseEvents() today — adding it would mean pulling extra text for
-    // every one of the (1,275+ and growing) approved rows just for search, so
-    // it's left out until that's worth the payload cost.
-    const q = query.toLowerCase();
-    const haystack = [
-      e.title, e.venue, e.city, CATS[e.cat] ? CATS[e.cat].label : '',
-      e.neighborhood, e.source, e.note
-    ].filter(Boolean).join(' ').toLowerCase();
-    if(!haystack.includes(q)) return false;
-  }
-  if(originLocation && radiusMiles !== null){
-    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
-    // An event whose city isn't in the reference table has no resolvable
-    // distance from the chosen origin — excluded rather than guessed at
-    // (this is an active, opt-in radius filter, not a safety net like NOW).
-    if(!loc) return false;
-    if(radiusMiles === 'all'){
-      // Detroit Orbit: not narrowed by the chosen origin location itself
-      // (that's what makes it the widest tier), but still hard-capped at 75
-      // miles from Detroit's own city BORDER (switched 2026-09-20 from a
-      // center-point measurement, see the DETROIT_BOUNDARY comment above)
-      // — the fixed definition of the Detroit Orbit boundary — so results
-      // never drift outside the site's real coverage area no matter where
-      // the user searched from.
-      if(milesFromDetroitBorder(loc.lat, loc.lng) > 75) return false;
-    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
-      return false;
-    }
-  }
-  return true;
-}
-
-// Evening classifier for the Tonight quick filter (restored 2026-08-28 —
-// see WHEN_LABELS above for why). A bare "Evening" string in time_display
-// counts directly, same vocabulary calendar.html's own time parsing already
-// treats as evening; otherwise the event needs a parseable start time of
-// 5pm or later. Unparseable/blank times are excluded — TONIGHT is a
-// deliberate narrowing (unlike the default view's "still happening" safety
-// net below), so an unknown time shouldn't silently qualify.
-function isEveningTime(timeStr){
-  if(!timeStr) return false;
-  if(/evening/i.test(timeStr)) return true;
-  const range = parseTimeRange(timeStr);
-  return !!(range && range.start.h >= 17);
-}
-
-function matchesFilters(e){
-  if(!matchesNonDateFilters(e)) return false;
-  const todayIso = getTodayISO();
-  // Baseline floor: the homepage list never shows a date before today, no
-  // matter which month is being paged through or which time-range shortcut
-  // (if any) is active — Jody: "I don't want events in the past to show up
-  // as the first thing you see... those should only be available if a user
-  // needs to go back in time," which is exactly what the dedicated
-  // calendar.html page is for (it keeps its own independent month-browsing
-  // and doesn't share this restriction).
-  if(e.date < todayIso) return false;
-  // 'all' (All Upcoming, P0 2026-08-28) deliberately has NO branch of its
-  // own here — currentDateList() already scopes it to every date with an
-  // event, unbounded, so nothing here needs to narrow by date again. It
-  // still falls through to the today-only "hide once ended" block below
-  // (grouped with the plain default state, not the whenMode chain), so
-  // "show me everything" doesn't include a today event that's already
-  // completely over — same "still happening or midnight" rule as the
-  // default view, just without the 30-day ceiling.
-  if(whenMode && whenMode !== 'all'){
-    if(whenMode === 'weekend'){
-      if(!cachedWeekendDates.includes(e.date)) return false;
-    } else if(whenMode === 'thisweek'){
-      // Backs the hero stat's "View all events" link (viewThisWeek()) — the
-      // exact same Monday-Sunday window renderHeroToday() counted, so the
-      // list a visitor lands on always shows precisely the number the hero
-      // just told them, never a different (e.g. 30-day-window) count.
-      if(!getCalendarWeekDates().includes(e.date)) return false;
-    } else if(whenMode === 'range'){
-      // A user-picked From/To range (see the When sheet's date-range
-      // picker) — both ends inclusive, both always today or later since the
-      // inputs' own min= floors match the restriction above.
-      if(e.date < rangeStart || e.date > rangeEnd) return false;
-    } else if(whenMode === 'date'){
-      // A single arbitrary user-picked date (the When sheet's "From" input
-      // with no "To") — always today or later, same reasoning as above.
-      if(e.date !== pickedDate) return false;
-    } else if(whenMode === 'tomorrow'){
-      if(e.date !== getTomorrowISO()) return false;
-    } else if(whenMode === 'tonight'){
-      if(e.date !== todayIso || !isEveningTime(e.time)) return false;
-    }
-  } else if((!whenMode || whenMode === 'all') && e.date === todayIso){
-    // No explicit time-range shortcut active (the page's own default
-    // state), OR "All Upcoming" — both share this same today-only
-    // narrowing. Previously hid a today event the moment its START hour
-    // passed — Jody, 2026-08-28: "just because it began already doesn't
-    // mean the user cannot still go or be interested," which is exactly
-    // right: that rule dropped an event from the list while it was still
-    // actively happening (a 6pm show vanished at 7pm). Now it only hides
-    // once the event's own parsed END time has passed — "still happening
-    // or midnight, whichever happens first." An event with no parseable
-    // end time (a bare start time with no range, or a vague string like
-    // "Evening") has no early cutoff at all and stays visible the rest of
-    // the day; the date-floor check above is what drops it once the
-    // calendar date itself rolls over to tomorrow — that's the "midnight"
-    // half of the rule.
-    const range = parseTimeRange(e.time);
-    if(range && range.end && range.end.h >= range.start.h){
-      // The >= guard skips a range that crosses midnight (e.g. 10pm-2am):
-      // it's still legitimately "today" all the way through, so there's
-      // nothing to cut off early — the date-floor check handles it
-      // naturally once the date itself moves to tomorrow.
-      const nowHour = new Date().getHours() + new Date().getMinutes()/60;
-      const endHour = range.end.h + range.end.m/60;
-      if(endHour < nowHour) return false;
-    }
-  }
-  return true;
-}
-
-// Is this event within 75 miles of Detroit's own border — the fixed
-// definition of "the Detroit Orbit"? (Switched 2026-09-20 from a
-// center-point measurement, see the DETROIT_BOUNDARY comment above.) Unlike
-// the Detroit-Orbit branch inside matchesFilters() above, this is NOT gated
-// on the visitor having picked an origin location or radius; it backs the
-// homepage hero's "N things happening today in the Detroit Orbit" stat,
-// which is meant to be a constant, site-wide count, not something that
-// changes as someone filters the calendar below it.
-function isInDetroitOrbit(e){
-  const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
-  if(!loc) return false;
-  return milesFromDetroitBorder(loc.lat, loc.lng) <= 75;
-}
-
-// Generic version of the above, parameterized on an arbitrary origin/radius
-// — backs the "Near You" sidebar card, which needs the user's own chosen
-// location (once set) rather than the fixed Detroit-center/75mi orbit.
-function isWithinRadius(e, lat, lng, miles){
-  const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
-  if(!loc) return false;
-  return haversineMiles(lat, lng, loc.lat, loc.lng) <= miles;
-}
+// Whether an event belongs in a view — category, free-only, features,
+// neighborhood, search, location/radius, dates, "is it already over", the
+// blocked-names list — is answered by Discovery.matches(event, state, ctx)
+// and nowhere else. This page used to carry its own matchesFilters() /
+// matchesNonDateFilters() / isEveningTime() / isInDetroitOrbit() /
+// isWithinRadius(); they were removed 2026-10-03 when it adopted the
+// shared layer.
 
 function buildFilterBar(){
   const bar = document.getElementById('filterBar');
@@ -5707,14 +5248,11 @@ function buildFilterBar(){
 
   // "All types" — a single, explicit way back to the unfiltered Event Type
   // state, distinct from "Reset filters" below (which also clears When,
-  // Where, and search). Active whenever every category is currently
-  // selected, i.e. nothing has actually been narrowed yet.
+  // Where, and search). Active whenever no category has been narrowed.
   const allChip = document.createElement('button');
   allChip.type = 'button';
-  const allActive = activeCats.size === Object.keys(CATS).length;
-  allChip.className = 'chip' + (allActive ? ' active' : '');
+  allChip.className = 'chip';
   allChip.id = 'allTypesChip';
-  allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
   // Taxonomy-lock amendment (2026-08-26 clarification): the preserved list is
   // "All types" (sentence case) plus the categories below, unchanged and
   // unreordered. The amendment is explicit that it locks the taxonomy only,
@@ -5725,8 +5263,7 @@ function buildFilterBar(){
   // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
   allChip.textContent = 'All types';
   allChip.onclick = ()=>{
-    activeCats = new Set(Object.keys(CATS));
-    buildFilterBar();
+    setState({what: {clear: true}});
     render();
   };
   bar.appendChild(allChip);
@@ -5734,34 +5271,25 @@ function buildFilterBar(){
   Object.entries(CATS).forEach(([key,c])=>{
     const chip = document.createElement('button');
     chip.type = 'button';
-    // Reflects actual activeCats state (not hardcoded active) — matters once
-    // state can also arrive from the URL or a "Clear All" that only clears
-    // some dimensions, not just from clicking chips one at a time.
-    chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
+    chip.className = 'chip';
     chip.dataset.cat = key;
-    chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
     // Per-category dot restored per Jody's 2026-08-26 note: keep the color
     // variety for scanability, just made cohesive (see the --c-* "UV signal"
     // palette above). Active/selected state is still Signal Chartreuse only.
     chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
     chip.onclick = ()=>{
-      if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
-      else { activeCats.add(key); chip.classList.add('active'); }
-      chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
+      toggleCategory(key);
       render();
     };
     bar.appendChild(chip);
   });
   const freeChip = document.createElement('button');
   freeChip.type = 'button';
-  freeChip.className = 'chip' + (freeOnly ? ' active' : '');
+  freeChip.className = 'chip';
   freeChip.id = 'freeChip';
-  freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
   freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
   freeChip.onclick = ()=>{
-    freeOnly = !freeOnly;
-    freeChip.classList.toggle('active');
-    freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
+    setState({free: !state.what.free});
     render();
   };
   bar.appendChild(freeChip);
@@ -5772,14 +5300,11 @@ function buildFilterBar(){
   FEATURE_CHIPS.forEach(({key, label})=>{
     const chip = document.createElement('button');
     chip.type = 'button';
-    chip.className = 'chip' + (activeFeatures.has(key) ? ' active' : '');
+    chip.className = 'chip';
     chip.dataset.feature = key;
-    chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
     chip.textContent = label;
     chip.onclick = ()=>{
-      if(activeFeatures.has(key)){ activeFeatures.delete(key); chip.classList.remove('active'); }
-      else { activeFeatures.add(key); chip.classList.add('active'); }
-      chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+      setState({feature: state.what.features.includes(key) ? {remove: key} : {add: key}});
       render();
     };
     bar.appendChild(chip);
@@ -5792,6 +5317,51 @@ function buildFilterBar(){
   clearChip.textContent = 'Reset filters';
   clearChip.onclick = ()=>{ clearAllFilters(); };
   bar.appendChild(clearChip);
+
+  syncFilterBar();
+}
+
+// The chip row keeps its existing look and feel on top of the shared
+// category model: every category chip is lit when nothing is narrowed, and
+// clicking a lit chip turns that category off.
+//   - In the shared state, "no categories selected" MEANS all events. So
+//     turning the first chip off selects the other fourteen; turning chips
+//     back on until all fifteen are lit is "all events" again.
+//   - Turning the LAST lit chip off returns to all events too (there is no
+//     "show nothing" state in the shared model — approved 2026-10-03; this
+//     page used to show an empty list with zero chips lit).
+function toggleCategory(key){
+  const selected = state.what.paths;
+  if(!selected.length){
+    Discovery.categories.forEach(c => { if(c.key !== key) setState({what: {add: c.key}}); });
+  } else if(selected.includes(key)){
+    setState({what: {remove: key}});
+  } else {
+    setState({what: {add: key}});
+  }
+}
+
+// Lights each chip from the one state — called from buildFilterBar() and
+// from every render(), so the row can never disagree with what the list is
+// actually showing (state can change from the URL, the tray, a sidebar
+// card or a reset, not only from clicking these chips). Updates the
+// existing buttons in place rather than rebuilding them, so keyboard focus
+// stays on the chip that was just pressed.
+function syncFilterBar(){
+  const bar = document.getElementById('filterBar');
+  if(!bar) return;
+  const selected = state.what.paths;
+  const all = selected.length === 0;
+  const light = (el, on)=>{
+    el.classList.toggle('active', on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  };
+  const allChip = document.getElementById('allTypesChip');
+  if(allChip) light(allChip, all);
+  bar.querySelectorAll('.chip[data-cat]').forEach(chip => light(chip, all || selected.includes(chip.dataset.cat)));
+  const freeChip = document.getElementById('freeChip');
+  if(freeChip) light(freeChip, state.what.free);
+  bar.querySelectorAll('.chip[data-feature]').forEach(chip => light(chip, state.what.features.includes(chip.dataset.feature)));
 }
 
 // Resets every discovery dimension at once: categories, free-only, search
@@ -5799,88 +5369,56 @@ function buildFilterBar(){
 // what BROWSE means ("clear every narrowing dimension, see everything").
 // Used by the category bar's "Reset filters" chip, the active-filter tray's
 // "Clear All", AND the header's Browse button, so there's exactly one reset
-// behavior instead of several subtly different ones. Since the resting
-// (whenMode null) state's own currentDateList() is a rolling window from
-// today, a reset also naturally lands back on today onward — no separate
-// "jump back to this month" step needed the way the old month-paging system
-// required.
+// behavior instead of several subtly different ones.
 function clearAllFilters(){
-  activeCats = new Set(Object.keys(CATS));
-  freeOnly = false;
-  activeFeatures = new Set();
+  setState({reset: true});
   document.getElementById('search').value = '';
-  query = '';
-  whenMode = null;
-  pickedDate = null;
-  rangeStart = null;
-  rangeEnd = null;
-  document.getElementById('whenDateInput').value = getTodayISO(); // Anytime's baseline "From" default (Jody, 2026-08-27) — see initWhenDatePicker()
-  document.getElementById('whenDateEndInput').value = '';
+  setWhenInputs(getTodayISO(), ''); // Anytime's baseline "From" default (Jody, 2026-08-27) — see initWhenDatePicker()
   clearLocation({skipRender: true});
-  neighborhoodFilter = null;
-  buildFilterBar();
   render();
   renderNeighborhoodsRail();
 }
 
+// Removes one active filter (an entry from Discovery.describe(), which
+// carries the exact change that removes it) and puts back whatever control
+// was showing it — the tray's ✕ buttons.
+function removeFilter(entry){
+  if(entry.dim === 'where' && entry.key === 'origin'){ clearLocation(); return; }
+  setState(entry.remove);
+  if(entry.dim === 'when') setWhenInputs(getTodayISO(), '');
+  if(entry.dim === 'search') document.getElementById('search').value = '';
+  if(entry.dim === 'where' && entry.key === 'neighborhood') renderNeighborhoodsRail();
+  render();
+}
+
 // Renders the "what am I looking at" summary tray above the calendar/list —
 // each active dimension shown as its own removable chip, per the brief's
-// "filter state must be visible" requirement. Categories only show up here
-// when narrowed below the full set (showing all 11 active chips twice, once
-// in the category bar and again here, would just be noise).
+// "filter state must be visible" requirement. What is active, what each is
+// called, and how to remove it all come from Discovery.describe(); this
+// page chooses the order it has always shown them in, and collapses the
+// selected categories into one "N of 15 categories" chip (showing up to
+// fourteen category chips here, on top of the chip row itself, would just
+// be noise).
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
+  const entries = Discovery.describe(state);
+  const isCategory = e => e.dim === 'what' && Object.prototype.hasOwnProperty.call(CATS, e.key);
   const chips = [];
+  const add = e => chips.push({label: e.label, onRemove: ()=> removeFilter(e)});
 
-  if(whenMode === 'date' && pickedDate){
-    const label = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    chips.push({label, onRemove: ()=>{ whenMode = null; pickedDate = null; document.getElementById('whenDateInput').value = getTodayISO(); updateWhenButtons(); render(); }});
-  } else if(whenMode === 'range' && rangeStart && rangeEnd){
-    chips.push({label: formatRangeLabel(rangeStart, rangeEnd), onRemove: ()=>{
-      whenMode = null; rangeStart = null; rangeEnd = null;
-      document.getElementById('whenDateInput').value = getTodayISO();
-      document.getElementById('whenDateEndInput').value = '';
-      updateWhenButtons(); render();
-    }});
-  } else if(whenMode && WHEN_LABELS[whenMode]){
-    chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; document.getElementById('whenDateInput').value = getTodayISO(); updateWhenButtons(); render(); }});
-  }
-  if(freeOnly){
-    chips.push({label: 'Free only', onRemove: ()=>{
-      freeOnly = false;
-      document.getElementById('freeChip').classList.remove('active');
+  entries.filter(e => e.dim === 'when').forEach(add);
+  entries.filter(e => e.dim === 'what' && e.key === 'free').forEach(add);
+  entries.filter(e => e.dim === 'what' && e.key !== 'free' && !isCategory(e)).forEach(add); // features
+  entries.filter(e => e.dim === 'search').forEach(add);
+  const selectedCats = entries.filter(isCategory).length;
+  if(selectedCats){
+    chips.push({label: `${selectedCats} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
+      setState({what: {clear: true}});
       render();
     }});
   }
-  FEATURE_CHIPS.forEach(({key, label})=>{
-    if(!activeFeatures.has(key)) return;
-    chips.push({label, onRemove: ()=>{
-      activeFeatures.delete(key);
-      buildFilterBar();
-      render();
-    }});
-  });
-  if(query){
-    chips.push({label: `"${query}"`, onRemove: ()=>{
-      query = '';
-      document.getElementById('search').value = '';
-      render();
-    }});
-  }
-  if(activeCats.size < Object.keys(CATS).length){
-    chips.push({label: `${activeCats.size} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
-      activeCats = new Set(Object.keys(CATS));
-      buildFilterBar();
-      render();
-    }});
-  }
-  if(originLocation){
-    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
-    chips.push({label: `${radiusLabel} · ${originLocation.name}`, onRemove: ()=> clearLocation()});
-  }
-  if(neighborhoodFilter){
-    chips.push({label: neighborhoodFilter, onRemove: ()=>{ neighborhoodFilter = null; renderNeighborhoodsRail(); render(); }});
-  }
+  entries.filter(e => e.dim === 'where' && e.key === 'origin').forEach(add);
+  entries.filter(e => e.dim === 'where' && e.key === 'neighborhood').forEach(add);
 
   if(!chips.length){ tray.style.display = 'none'; tray.innerHTML = ''; return; }
 
@@ -6301,12 +5839,16 @@ function renderList(dateList, meta){
   const isos = dateList;
   let html = '';
   let any = false;
-  let matchCount = 0;
+  const ctx = discoveryCtx();
+  const shown = [];
   for(const iso of isos){
-    const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
+    // byDate[iso] is every event that occupies this day (a multi-day event is
+    // listed under each day of its run); Discovery decides which belong in
+    // the current view.
+    const events = (byDate[iso]||[]).filter(e=>Discovery.matches(e, state, ctx));
     if(!events.length) continue;
     any = true;
-    matchCount += events.length;
+    events.forEach(e=>shown.push(e));
     const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
       events.map(e=>`
@@ -6319,7 +5861,7 @@ function renderList(dateList, meta){
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-                ${e.clothingOptional?`<div class="evt-tag-clothing-optional">Clothing optional</div>`:''}
+                ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
                 ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
                 ${multiDayNoteHtml(e)}
                 ${editorialLinkHtml(e)}
@@ -6335,7 +5877,7 @@ function renderList(dateList, meta){
             </div>
           </div>
           <div class="evt-side">
-            <div class="evt-cat" style="color:${CATS[e.cat].color}">${CATS[e.cat].label}</div>
+            <div class="evt-cat" style="color:${CATS[e.cat]?CATS[e.cat].color:'inherit'}">${CATS[e.cat]?CATS[e.cat].label:''}</div>
             ${priceTag(e)}
           </div>
         </div>
@@ -6350,9 +5892,13 @@ function renderList(dateList, meta){
   // 2026-09-04 (Jody: the old 30-day list scrolled so long that visitors
   // never reached the page's right-hand column) — the "see everything" tap
   // target stays the same one-click escape hatch to the full unbounded list.
-  const scopeNote = (any && !whenMode && !neighborhoodFilter)
+  const scopeNote = (any && !state.when.mode && !state.where.neighborhood)
     ? `<div class="list-scope-note">Showing today — <button type="button" onclick="activateWhen('all')">see everything &rarr;</button></div>`
     : '';
+  // "N events" means N distinct events (Discovery.count), not N rows: an
+  // event that runs for several days appears under each of its days above
+  // but is one event. (Before 2026-10-03 this was the row count.)
+  const matchCount = Discovery.count(shown, state, ctx);
   const countHeading = (any && meta.countLabel)
     ? `<div class="list-count-heading">Showing ${matchCount} event${matchCount===1?'':'s'} ${meta.countLabel}</div>`
     : '';
@@ -6362,15 +5908,15 @@ function renderList(dateList, meta){
 // The homepage's real, always-on stat (approved: homepage defaults to
 // TODAY). Per the mockup, this is a fixed "N things happening this week in
 // the Detroit Orbit" count rather than an inline preview of individual
-// events — deliberately independent of whenMode AND of
-// activeCats/freeOnly/query, so it reads as a constant pulse of the whole
+// events — deliberately independent of the visitor's own When, category,
+// free and search choices, so it reads as a constant pulse of the whole
 // city rather than a number that shrinks as someone narrows their own
 // filters below. Scoped to the current Monday-Sunday week rather than just
 // today (2026-08-26: too few events land on any single day yet for a
 // same-day count to read as a real number — revisit narrowing this back to
 // today once daily volume no longer needs the wider window). Real count,
-// from real data (byDate + isInDetroitOrbit + getCalendarWeekDates) — never
-// fabricated.
+// from real data — Discovery.count() over the loaded events, with
+// Discovery's own 'week' window and Detroit Orbit rule — never fabricated.
 // Hero stat count-up (2026-09-13, Jody: the hero number starts small on
 // FALLBACK_EVENTS, then a few seconds later loadSupabaseEvents() replaces it
 // with the real (larger) count — previously an abrupt jump, which read as
@@ -6383,7 +5929,7 @@ function renderList(dateList, meta){
 // started toward (not just "last count computed") so that render() being
 // re-invoked for an unrelated reason (search input, a filter chip, paging
 // the calendar — none of which change this count, since it deliberately
-// ignores every filter, see the isInDetroitOrbit()-only calc below) doesn't
+// ignores every filter, see HERO_STATE below) doesn't
 // re-trigger the animation against an unchanged number. heroCountFrame
 // holds the in-flight requestAnimationFrame id so a second call arriving
 // mid-animation (e.g. two quick successive loads) cancels the first cleanly
@@ -6430,20 +5976,19 @@ function animateHeroCount(el, from, to){
   heroCountFrame = requestAnimationFrame(step);
 }
 
+// What the hero counts: what is LEFT of this Monday-Sunday week, inside the
+// Detroit Orbit, whatever the visitor has filtered below. 'week' is a
+// forward-looking window in Discovery: it starts at today (Monday's and
+// Tuesday's events are not "left" on a Thursday) and leaves out anything
+// already over.
+const HERO_STATE = Discovery.change(Discovery.defaults(), {when: 'week', where: {radius: 'orbit'}});
+
 function renderHeroToday(){
   const el = document.getElementById('heroToday');
   if(!el) return;
-  const weekDates = getCalendarWeekDates();
-  const todayIso = getTodayISO();
-  // Excludes any day of this Mon-Sun week that's already past (2026-08-27
-  // fix) — without this, the count could include Monday/Tuesday/etc. events
-  // that already happened by the time someone's looking at this on, say, a
-  // Thursday, which both overstates "happening this week" and used to
-  // silently disagree with what clicking "View all events" (viewThisWeek(),
-  // via the same today-onward floor in matchesFilters()) actually showed.
-  const count = weekDates.reduce((total, iso) =>
-    total + (iso < todayIso ? 0 : (byDate[iso]||[]).filter(e=>!isBlockedEvent(e) && isInDetroitOrbit(e)).length)
-  , 0);
+  // Distinct events (Discovery.count). Before 2026-10-03 this added up each
+  // remaining day's list, so a three-day festival counted three times.
+  const count = Discovery.count(EVENTS, HERO_STATE, inventoryCtx());
   // 2026-09-13 (Jody): make clear this is a countdown, not just a tally —
   // "left" instead of "happening" signals the number only shrinks as the
   // week goes on, which is what the "new week starts Monday" note on the
@@ -6495,20 +6040,10 @@ function viewThisWeek(){
   // same as clearAllFilters(), rather than just swapping the date scope and
   // leaving some other filter active to quietly shrink the count below what
   // the hero stat just told the visitor.
-  activeCats = new Set(Object.keys(CATS));
-  freeOnly = false;
-  activeFeatures = new Set();
+  setState({reset: true, when: 'week'});
   document.getElementById('search').value = '';
-  query = '';
   clearLocation({skipRender: true});
-  neighborhoodFilter = null;
-  whenMode = 'thisweek';
-  pickedDate = null;
-  rangeStart = null;
-  rangeEnd = null;
-  document.getElementById('whenDateInput').value = '';
-  document.getElementById('whenDateEndInput').value = '';
-  buildFilterBar();
+  setWhenInputs('', '');
   renderNeighborhoodsRail();
   updateWhenButtons();
   render();
@@ -6518,17 +6053,14 @@ function viewThisWeek(){
 // Top-nav "Today" shortcut (restored 2026-08-27, top-nav-only per Jody — see
 // the site-nav comment above). Unlike viewThisWeek()/viewNeighborhood(), this
 // deliberately does NOT reset category/free/search/location — it's a peer to
-// the Tomorrow/This Weekend when-shortcuts (same single-day 'date' scoping
-// activateWhen() itself uses), just invoked directly so it can also carry the
+// the Tomorrow/This Weekend when-shortcuts (it picks today's date, exactly as
+// the When sheet's "From" input would), just invoked directly so it can also carry the
 // "bring the list into focus" scroll Jody asked for, without adding a Today
 // button back into the When sheet/filter section.
 function viewToday(){
-  whenMode = 'date';
-  pickedDate = getTodayISO();
-  rangeStart = null;
-  rangeEnd = null;
-  document.getElementById('whenDateInput').value = pickedDate;
-  document.getElementById('whenDateEndInput').value = '';
+  const today = getTodayISO();
+  setState({when: {from: today, to: today}});
+  setWhenInputs(today, '');
   updateWhenButtons();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
@@ -6554,23 +6086,23 @@ const VC_DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 // A single real week (Mon-Sun, via getCalendarWeekDates()) — not a full
 // month grid — per "have it focused on the week that we are on... show the
 // same amount of calendar as in the mock." Counts respect the visitor's own
-// active filters (category/free/search/location) via matchesNonDateFilters()
-// — deliberately NOT the full matchesFilters(), whose today-floor and
-// whenMode date-narrowing are meant for the single-scope main list, not a
-// strip that shows all 7 days (past and future) of the current week at once.
-// Using the full matchesFilters() here used to zero out every already-passed
-// day (Mon/Tue/Wed showing 0 once the week was underway) — a real bug Jody
-// caught, since this widget's whole point is showing the real count for
-// every day in the week, not just today-onward. Each day links to the
-// dedicated calendar page.
+// active filters (category/free/search/location) but NOT their When choice:
+// each day is counted as that day, picked explicitly — and in Discovery an
+// explicitly picked date shows everything that was on it, already over or
+// not. Counting through the main list's own forward-looking window here
+// used to zero out every already-passed day (Mon/Tue/Wed showing 0 once
+// the week was underway) — a real bug Jody caught, since this widget's
+// whole point is showing the real count for every day in the week, not
+// just today-onward. Each day links to the dedicated calendar page.
 function renderViewCalendarCard(){
   const el = document.getElementById('viewCalendarCard');
   if(!el) return;
   const todayIso = getTodayISO();
   const weekDates = getCalendarWeekDates();
+  const ctx = discoveryCtx();
   const cells = weekDates.map(iso=>{
     const d = new Date(iso+"T12:00:00");
-    const count = (byDate[iso]||[]).filter(e=>matchesNonDateFilters(e)).length;
+    const count = Discovery.count(byDate[iso]||[], Discovery.change(state, {when: {from: iso, to: iso}}), ctx);
     const isToday = iso === todayIso;
     return `<a class="vc-day${isToday ? ' today' : ''}" href="calendar.html?date=${iso}" aria-label="${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${count} event${count===1?'':'s'}">
       <span class="vc-dow">${VC_DOW[d.getDay()]}</span>
@@ -6602,7 +6134,7 @@ function renderViewCalendarCard(){
 // to. This version leads with an EVENT count instead (the thing both
 // map.html and every other sidebar card already count), and does what
 // Jody asked for in order of preference:
-//   1. If the visitor already has a location set (originLocation — from
+//   1. If the visitor already has a location set (originLocation() — from
 //      the neighboring "What's in your Detroit Orbit?" card, or the Where
 //      sheet; this card never prompts for location itself, one "Use my
 //      location" ask on the page is enough) — show real "immediate orbit"
@@ -6649,14 +6181,13 @@ function mapScatterSvg(showYou){
 function renderMapCard(){
   const el = document.getElementById('mapCard');
   if(!el) return;
-  const todayIso = getTodayISO();
+  const ctx = inventoryCtx();
   // Same source/fallback pattern as renderNearYouCard()'s teaser state:
   // orbitEventTotal is Postgres's own exact current+upcoming count, loaded
-  // separately (see loadOrbitEventTotal()) since EVENTS itself is capped by
-  // the main list query's row budget; fall back to counting EVENTS
-  // client-side only until that resolves (or if it fails).
-  const fallbackTotal = EVENTS.filter(e=>!isBlockedEvent(e) && e.date >= todayIso).length;
-  const total = orbitEventTotal !== null ? orbitEventTotal : fallbackTotal;
+  // separately (see loadOrbitEventTotal()); fall back to counting the
+  // loaded events client-side (Discovery's current + upcoming inventory)
+  // only until that resolves (or if it fails).
+  const total = orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), ctx);
   const head = `
     <div class="side-card-head">
       <h2>Detroit Orbit Map</h2>
@@ -6664,12 +6195,13 @@ function renderMapCard(){
     </div>
   `;
 
-  if(originLocation){
-    let nearCount = 0;
-    Object.keys(byDate).forEach(iso=>{
-      if(iso < todayIso) return;
-      nearCount += byDate[iso].filter(e=>!isBlockedEvent(e) && isWithinRadius(e, originLocation.lat, originLocation.lng, IMMEDIATE_ORBIT_MILES)).length;
-    });
+  if(originLocation()){
+    // Current + upcoming events within IMMEDIATE_ORBIT_MILES of the chosen
+    // point — one of Discovery's own radius tiers, measured city centre to
+    // city centre — counted as distinct events.
+    const nearCount = Discovery.count(EVENTS, Discovery.change(Discovery.defaults(), {
+      where: {place: state.where.place, here: state.where.here, radius: IMMEDIATE_ORBIT_MILES}
+    }), ctx);
     el.innerHTML = `
       ${head}
       ${mapScatterSvg(true)}
@@ -6699,24 +6231,50 @@ function renderMapCard(){
 // site) around that real point, with a live count.
 const DETROIT_ORBIT_MILES = 75;
 
+// NOT part of the shared discovery layer (flagged for a decision,
+// 2026-10-03): this card counts events "within 75 mi of {your point}" —
+// a distance from the visitor's own location. Discovery's distance filters
+// are its radius tiers (5/10/25/50 mi from the chosen point) and the
+// Detroit Orbit (75 mi from DETROIT'S BORDER, wherever the visitor is), so
+// this number cannot be asked for through it, and the card's own button
+// applies the Detroit Orbit, not this radius. Until that is settled, this
+// is the card's own arithmetic: great-circle miles between the chosen point
+// and each event's city centre (coordinates from Discovery.places). Which
+// events are current/upcoming and not blocked still comes from
+// Discovery.matches(), and events are counted once each.
+function countEventsWithinMilesOf(origin, miles){
+  const R = 3958.8, rad = Math.PI / 180;
+  const milesTo = city => {
+    const dLat = (city.lat - origin.lat) * rad, dLng = (city.lng - origin.lng) * rad;
+    const a = Math.sin(dLat/2)**2 + Math.cos(origin.lat * rad) * Math.cos(city.lat * rad) * Math.sin(dLng/2)**2;
+    return R * 2 * Math.asin(Math.sqrt(a));
+  };
+  const cities = new Map(Discovery.places.filter(p => p.type === 'city').map(p => [p.name.toLowerCase(), p]));
+  const ctx = inventoryCtx();
+  const current = EVENTS.filter(e => {
+    if(!Discovery.matches(e, Discovery.defaults(), ctx)) return false;
+    const city = cities.get((e.city || 'Detroit').toLowerCase());
+    return !!city && milesTo(city) <= miles;
+  });
+  return Discovery.count(current, Discovery.defaults(), ctx);
+}
+
 function renderNearYouCard(){
   const el = document.getElementById('nearYouCard');
   if(!el) return;
+  const origin = originLocation();
 
-  if(!originLocation){
+  if(!origin){
     // Teaser number before the visitor has a location set (Jody, 2026-08-27:
     // "the total number of current and upcoming events... communicates the
     // value of this site to users, partners, and advertisers") — not a
     // personalized "near you" figure, that's what the CTA below is for.
     // Prefers orbitEventTotal, Postgres's own exact count of current+upcoming
     // approved rows (see loadOrbitEventTotal()) — it's the real site-wide
-    // total. Falls back to counting today-onward EVENTS client-side only
-    // until that dedicated request resolves (or if it fails); EVENTS.length
-    // alone is never used here since it's capped by the main list query's
-    // own row budget, not a real total.
-    const todayIso = getTodayISO();
-    const fallbackCount = EVENTS.filter(e=>!isBlockedEvent(e) && e.date >= todayIso).length;
-    const totalLoaded = orbitEventTotal !== null ? orbitEventTotal : fallbackCount;
+    // total. Falls back to counting the loaded current + upcoming events
+    // client-side (Discovery.count) only until that dedicated request
+    // resolves (or if it fails).
+    const totalLoaded = orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), inventoryCtx());
     el.innerHTML = `
       <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
       <div class="ny-radar" aria-hidden="true">
@@ -6734,12 +6292,7 @@ function renderNearYouCard(){
     return;
   }
 
-  const todayIso = getTodayISO();
-  let count = 0;
-  Object.keys(byDate).forEach(iso=>{
-    if(iso < todayIso) return;
-    count += byDate[iso].filter(e=>!isBlockedEvent(e) && isWithinRadius(e, originLocation.lat, originLocation.lng, DETROIT_ORBIT_MILES)).length;
-  });
+  const count = countEventsWithinMilesOf(origin, DETROIT_ORBIT_MILES);
   el.innerHTML = `
     <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
     <div class="ny-radar" aria-hidden="true">
@@ -6749,7 +6302,7 @@ function renderNearYouCard(){
       <span class="ny-ping"></span>
       <span class="ny-dot"></span>
     </div>
-    <p class="side-card-sub">Within ${DETROIT_ORBIT_MILES} mi of ${escapeHtml(originLocation.name)}</p>
+    <p class="side-card-sub">Within ${DETROIT_ORBIT_MILES} mi of ${escapeHtml(origin.name)}</p>
     <div class="side-card-number">${count}</div>
     <p class="side-card-caption">upcoming event${count === 1 ? '' : 's'}</p>
     <button type="button" class="side-card-cta" onclick="viewMyOrbit()">View what's nearby you &rarr;</button>
@@ -6765,8 +6318,8 @@ function renderNearYouCard(){
 // list, scrolled into view — the CTA IS the whole interaction, no separate
 // second "now view it" step.
 function viewMyOrbit(){
-  if(originLocation){
-    radiusMiles = 'all';
+  if(originLocation()){
+    setState({where: {radius: 'orbit'}});
     updateLocationControlUI();
     render(); // render() -> renderSidebar() -> renderNearYouCard(), so the card refreshes as part of this same call
     document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
@@ -6787,8 +6340,7 @@ function viewMyOrbit(){
   if(btn){ btn.textContent = 'Locating…'; btn.disabled = true; }
   navigator.geolocation.getCurrentPosition(
     (pos)=>{
-      originLocation = {name: 'Your location', type: 'here', region: '', lat: pos.coords.latitude, lng: pos.coords.longitude};
-      radiusMiles = 'all';
+      setState({where: {here: {lat: pos.coords.latitude, lng: pos.coords.longitude}, radius: 'orbit'}});
       updateLocationControlUI();
       render(); // render() -> renderSidebar() -> renderNearYouCard(), so the card refreshes as part of this same call
       document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
@@ -6807,8 +6359,13 @@ function viewMyOrbit(){
 function renderFreeTodayCard(){
   const el = document.getElementById('freeTodayCard');
   if(!el) return;
+  // Free events on today's date, inside the Detroit Orbit, whatever the
+  // visitor has filtered — the same explicit pick of today's date that
+  // viewFreeToday() applies below.
   const todayIso = getTodayISO();
-  const count = (byDate[todayIso]||[]).filter(e=>!isBlockedEvent(e) && e.free && isInDetroitOrbit(e)).length;
+  const count = Discovery.count(EVENTS, Discovery.change(Discovery.defaults(), {
+    when: {from: todayIso, to: todayIso}, free: true, where: {radius: 'orbit'}
+  }), inventoryCtx());
   el.innerHTML = `
     <div class="side-card-head"><h2>Free Today</h2></div>
     <div class="side-card-number">${count}</div>
@@ -6818,19 +6375,12 @@ function renderFreeTodayCard(){
 }
 
 function viewFreeToday(){
-  freeOnly = true;
-  buildFilterBar();
   // Today/Now were removed as standalone When shortcuts (2026-08-27), so
-  // this reuses the single-day 'date' mechanism directly instead of the
-  // (now-gone) activateWhen('today') — same date-scoping machinery
-  // (matchesFilters()'s whenMode==='date' branch), just invoked
-  // programmatically rather than through the date-picker input.
-  whenMode = 'date';
-  pickedDate = getTodayISO();
-  rangeStart = null;
-  rangeEnd = null;
-  document.getElementById('whenDateInput').value = pickedDate;
-  document.getElementById('whenDateEndInput').value = '';
+  // this picks today's date directly — the same single-day pick the When
+  // sheet's "From" input makes — plus Free only.
+  const today = getTodayISO();
+  setState({free: true, when: {from: today, to: today}});
+  setWhenInputs(today, '');
   updateWhenButtons();
   render();
 }
@@ -6864,10 +6414,11 @@ function renderExploreVenuesCard(){
 // that resolves it), NOT a lat/lng-radius guess: a venue with no confirmed
 // neighborhood contributes to no card here, rather than being force-assigned
 // to the nearest point on a map. Counts are a constant discovery signal like
-// the hero stat / Near You / Free Today — independent of
-// activeCats/freeOnly/query/whenMode — but DO respect neighborhoodFilter's
-// own "today or later" floor, same as
-// everywhere else on the homepage.
+// the hero stat / Near You / Free Today — independent of whatever the
+// visitor has filtered — over the site's current + upcoming inventory
+// (Discovery.facets: distinct events that are not over, blocked names
+// excluded, most events first), the same inventory a neighborhood card
+// opens onto when clicked.
 // Raised 10 -> 20, 2026-10-01 (Jody's decision, after live verification
 // showed Bagley -- correctly built and correctly counted at 1 upcoming
 // event -- ranked 19th of 19 active neighborhoods and so never cleared
@@ -6879,17 +6430,7 @@ function renderExploreVenuesCard(){
 const NEIGHBORHOOD_RAIL_LIMIT = 20;
 
 function computeNeighborhoodCounts(){
-  const todayIso = getTodayISO();
-  const counts = new Map();
-  Object.keys(byDate).forEach(iso=>{
-    if(iso < todayIso) return;
-    (byDate[iso]||[]).forEach(e=>{
-      if(isBlockedEvent(e)) return;
-      if(!e.neighborhood) return;
-      counts.set(e.neighborhood, (counts.get(e.neighborhood)||0) + 1);
-    });
-  });
-  return [...counts.entries()].sort((a,b)=> b[1]-a[1]);
+  return Array.from(Discovery.facets(EVENTS, Discovery.defaults(), inventoryCtx(), 'neighborhood').entries());
 }
 
 // Real per-neighborhood photography, added as it exists. Two sources now:
@@ -7042,7 +6583,7 @@ function renderNeighborhoodsRail(){
       ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt || name)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
       : '';
     return `
-    <button type="button" class="neigh-card${photo?' has-photo':''}${neighborhoodFilter===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+    <button type="button" class="neigh-card${photo?' has-photo':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
       ${photoHtml}
       <span class="neigh-name">${escapeHtml(name)}</span>
       <span class="neigh-count">${count}</span>
@@ -7058,30 +6599,23 @@ function renderNeighborhoodsRail(){
 // Toggle: clicking the already-active neighborhood clears it, same pattern
 // as re-clicking an active When/category chip elsewhere on the site.
 function viewNeighborhood(name){
-  const turningOn = neighborhoodFilter !== name;
-  neighborhoodFilter = turningOn ? name : null;
+  const turningOn = state.where.neighborhood !== name;
   if(turningOn){
     // Jody (2026-08-27): "if the tile says 50 events, the list should
     // reflect 50 events and then the user can filter them down from there."
-    // computeNeighborhoodCounts() is a deliberately unfiltered count (today
-    // onward, ignoring category/free/search/date-scope/location) — so
-    // selecting a fresh neighborhood resets every other narrowing dimension
-    // to match it exactly, rather than silently showing fewer than the tile
-    // promised because some other filter was still active from before. The
-    // user can narrow further from that full baseline afterward.
-    activeCats = new Set(Object.keys(CATS));
-    freeOnly = false;
-    activeFeatures = new Set();
+    // computeNeighborhoodCounts() is a deliberately unfiltered count
+    // (current + upcoming, ignoring category/free/search/date-scope/
+    // location) — so selecting a fresh neighborhood resets every other
+    // narrowing dimension to match it exactly, rather than silently showing
+    // fewer than the tile promised because some other filter was still
+    // active from before. The user can narrow further from that full
+    // baseline afterward.
+    setState({reset: true, where: {neighborhood: name}});
     document.getElementById('search').value = '';
-    query = '';
-    whenMode = null;
-    pickedDate = null;
-    rangeStart = null;
-    rangeEnd = null;
-    document.getElementById('whenDateInput').value = getTodayISO();
-    document.getElementById('whenDateEndInput').value = '';
+    setWhenInputs(getTodayISO(), '');
     clearLocation({skipRender: true});
-    buildFilterBar();
+  } else {
+    setState({where: {neighborhood: null}});
   }
   renderNeighborhoodsRail();
   render();
@@ -7093,24 +6627,37 @@ function viewNeighborhood(name){
 // a flat "nothing here."
 function emptyStateMessage(scopeLabel){
   const actions = [];
-  if(whenMode || neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  const mode = state.when.mode, hood = state.where.neighborhood;
+  if(mode || hood) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
   // Nothing today doesn't mean nothing at all — offer the same All Upcoming
   // escape hatch here as the populated default view gets (see
   // .list-scope-note / renderList()) rather than leaving a quiet today
   // looking like a dead end (P0, 2026-08-28 product audit Gap 2/8; default
   // view narrowed from a 30-day window to today-only 2026-09-04).
-  if(!whenMode && !neighborhoodFilter) actions.push(`<button type="button" class="es-action" onclick="activateWhen('all')">See all upcoming events</button>`);
-  if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
-  if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
-  if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
+  if(!mode && !hood) actions.push(`<button type="button" class="es-action" onclick="activateWhen('all')">See all upcoming events</button>`);
+  if(originLocation() && typeof state.where.radius === 'number') actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
+  if(state.what.paths.length) actions.push(`<button type="button" class="es-action" onclick="showAllCategories()">Show all categories</button>`);
+  if(state.q) actions.push(`<button type="button" class="es-action" onclick="clearSearch()">Clear search</button>`);
   const scope = scopeLabel ? ` in ${escapeHtml(scopeLabel)}` : '';
   return `Nothing on the signal here${scope}.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
+}
+
+// The empty state's two one-dimension escapes.
+function showAllCategories(){
+  setState({what: {clear: true}});
+  render();
+}
+function clearSearch(){
+  setState({q: ''});
+  document.getElementById('search').value = '';
+  render();
 }
 
 function render(){
   updateWhenButtons();
   updateRadiusButtons();
   updateMobileTriggers();
+  syncFilterBar();
   renderActiveFilters();
   renderHeroToday();
   renderSidebar();
@@ -7118,33 +6665,25 @@ function render(){
   syncURL();
 }
 
-// Paging to a different month exits the day-scoped Now/Today/Tomorrow/Date
-// narrowing — those only ever match one specific date (see
-// matchesFilters()), so leaving them on while browsing another month would
-// silently show an empty list instead of that month's events.
-document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); render(); });
+// Search-as-you-type. The state holds the trimmed text; the input keeps
+// whatever was typed (a trailing space mid-phrase is not erased).
+document.getElementById('search').addEventListener('input', (e)=>{ setState({q: e.target.value}); render(); });
 
 // ---- Discovery bar (time-range shortcuts) ----
 
 function updateWhenButtons(){
+  const mode = state.when.mode;
+  const isRange = mode === 'dates' && state.when.from !== state.when.to;
   document.querySelectorAll('.when-btn').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.when === whenMode);
+    btn.classList.toggle('active', btn.dataset.when === mode);
   });
-  document.getElementById('whenDateInput').closest('.when-date-picker').classList.toggle('active', whenMode === 'date' || whenMode === 'range');
-  document.getElementById('whenDateEndInput').closest('.when-date-picker').classList.toggle('active', whenMode === 'range');
+  document.getElementById('whenDateInput').closest('.when-date-picker').classList.toggle('active', mode === 'dates');
+  document.getElementById('whenDateEndInput').closest('.when-date-picker').classList.toggle('active', isRange);
 }
 
 function activateWhen(key){
-  whenMode = key;
-  pickedDate = null;
-  rangeStart = null;
-  rangeEnd = null;
-  document.getElementById('whenDateInput').value = '';
-  document.getElementById('whenDateEndInput').value = '';
-
-  if(key === 'weekend'){
-    cachedWeekendDates = getWeekendDates();
-  }
+  setState({when: key});
+  setWhenInputs('', '');
 
   updateWhenButtons();
   render();
@@ -7168,9 +6707,10 @@ document.querySelectorAll('.when-btn').forEach(btn=>{
 // widget, per her "keep it simple, has to work with stumpy fingers on a
 // handset" requirement).
 //
-// "From" alone (no "To") is a single-day pick — whenMode 'date', unchanged
-// from the original single-input behavior. Filling in "To" as well switches
-// to whenMode 'range'. Clearing "To" reverts to the single-day behavior
+// "From" alone (no "To") is a single-day pick. Filling in "To" as well makes
+// it a range. In the shared state both are the same thing — when 'dates',
+// with from/to — a single day simply has from === to. Clearing "To"
+// reverts to the single-day behavior
 // rather than clearing "From" too, since "From" is still a complete,
 // meaningful choice on its own.
 function activateDateFrom(iso){
@@ -7179,18 +6719,13 @@ function activateDateFrom(iso){
   endInput.min = iso; // "To" can never be before "From"
   const endVal = endInput.value;
   if(endVal && endVal >= iso){
-    whenMode = 'range';
-    rangeStart = iso;
-    rangeEnd = endVal;
+    setState({when: {from: iso, to: endVal}});
   } else {
     // No "To" set, or it's now before the new "From" — a stale "To" from a
     // previous pick would silently build an invalid/backwards range, so
     // it's cleared rather than left to produce confusing results.
     if(endVal && endVal < iso) endInput.value = '';
-    whenMode = 'date';
-    pickedDate = iso;
-    rangeStart = null;
-    rangeEnd = null;
+    setState({when: {from: iso, to: iso}});
   }
   updateWhenButtons();
   render();
@@ -7202,14 +6737,10 @@ function activateDateTo(iso){
   const fromVal = fromInput.value;
   if(!iso){
     // "To" cleared — fall back to whatever "From" alone means.
-    if(fromVal){ whenMode = 'date'; pickedDate = fromVal; }
-    else { whenMode = null; pickedDate = null; }
-    rangeStart = null;
-    rangeEnd = null;
+    if(fromVal) setState({when: {from: fromVal, to: fromVal}});
+    else setState({when: null});
   } else if(fromVal && iso >= fromVal){
-    whenMode = 'range';
-    rangeStart = fromVal;
-    rangeEnd = iso;
+    setState({when: {from: fromVal, to: iso}});
   } else {
     return; // "To" before "From" (shouldn't happen given min=, but don't apply an invalid range if it does)
   }
@@ -7236,8 +6767,8 @@ function initWhenDatePicker(){
   // "From" field to today's date rather than leaving it blank — so opening
   // the native date picker starts on today (the same day the default
   // rolling-window list already opens on) instead of an empty field with no
-  // starting point. This is a DISPLAY default only: it does not set whenMode
-  // or pickedDate (that still requires an actual change event, i.e. the user
+  // starting point. This is a DISPLAY default only: it does not change the
+  // filter state (that still requires an actual change event, i.e. the user
   // confirming a date), and readStateFromURL() below still overwrites it
   // whenever a shared link actually specifies a date/range/tomorrow/weekend.
   fromInput.value = todayIso;
@@ -7271,20 +6802,25 @@ document.getElementById('navSearchBtn').onclick = ()=>{
 // ---- Location + radius (Phase 1 Chunk 3) ----
 
 function updateRadiusButtons(){
+  // The chips keep the URL's own names for the tiers: data-radius="all" is
+  // the Detroit Orbit ('orbit' in the shared state).
+  const radius = state.where.radius;
+  const key = radius === 'orbit' ? 'all' : String(radius);
   document.querySelectorAll('.radius-chip').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.radius === String(radiusMiles));
+    btn.classList.toggle('active', btn.dataset.radius === key);
   });
 }
 
 // Keeps the location combobox's visible state (input text, clear button,
-// radius group visibility) in sync with originLocation — needed both after
+// radius group visibility) in sync with the chosen origin — needed both after
 // a manual selection and after restoring state from the URL on load.
 function updateLocationControlUI(){
   const input = document.getElementById('locInput');
   const clearBtn = document.getElementById('locClearBtn');
   const radiusGroup = document.getElementById('radiusGroup');
-  if(originLocation){
-    input.value = originLocation.name;
+  const origin = originLocation();
+  if(origin){
+    input.value = origin.name;
     clearBtn.style.display = 'flex';
     radiusGroup.style.display = 'flex';
   } else {
@@ -7311,7 +6847,7 @@ function renderLocationSuggestions(q){
     return;
   }
   const ql = q.trim().toLowerCase();
-  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
+  const matches = Discovery.places.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
   if(!matches.length){
     box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
   } else {
@@ -7358,12 +6894,13 @@ function setLocHighlight(i){
   }
 }
 
-// Sets the active search-radius origin, defaulting radius to 'all' (visible,
-// non-narrowing) so choosing a location alone never silently hides events —
-// the user has to deliberately pick a mile ring to actually narrow anything.
+// Sets the active search-radius origin. A radius already chosen is kept;
+// with none, Discovery defaults it to the Detroit Orbit (the widest tier),
+// so choosing a location alone never narrows to a mile ring — the user has
+// to deliberately pick one. `loc` is a place from Discovery.places, or the
+// visitor's own device location ({type:'here', lat, lng}).
 function selectLocation(loc){
-  originLocation = loc;
-  if(radiusMiles === null) radiusMiles = 'all';
+  setState({where: loc.type === 'here' ? {here: {lat: loc.lat, lng: loc.lng}} : {place: loc.name}});
   document.getElementById('locSuggestions').style.display = 'none';
   document.getElementById('locSuggestions').innerHTML = '';
   updateLocationControlUI();
@@ -7373,8 +6910,7 @@ function selectLocation(loc){
 // opts.skipRender lets clearAllFilters() reset location state without
 // triggering a second render() right before its own render() call.
 function clearLocation(opts){
-  originLocation = null;
-  radiusMiles = null;
+  setState({where: {place: null, here: null, radius: null}});
   document.getElementById('locInput').value = '';
   document.getElementById('locSuggestions').style.display = 'none';
   updateLocationControlUI();
@@ -7382,9 +6918,9 @@ function clearLocation(opts){
 }
 
 function expandRadius(){
-  const steps = [5, 10, 25, 50, 'all'];
-  const idx = steps.indexOf(radiusMiles);
-  radiusMiles = steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)];
+  const steps = Discovery.radii; // 5, 10, 25, 50, 'orbit'
+  const idx = steps.indexOf(state.where.radius);
+  setState({where: {radius: steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)]}});
   updateRadiusButtons();
   render();
 }
@@ -7443,7 +6979,7 @@ document.getElementById('locClearBtn').onclick = ()=> clearLocation();
 document.getElementById('useMyLocationBtn').onclick = useMyLocation;
 document.querySelectorAll('.radius-chip').forEach(btn=>{
   btn.onclick = ()=>{
-    radiusMiles = btn.dataset.radius === 'all' ? 'all' : parseInt(btn.dataset.radius, 10);
+    setState({where: {radius: btn.dataset.radius === 'all' ? 'orbit' : parseInt(btn.dataset.radius, 10)}});
     updateRadiusButtons();
     render();
   };
@@ -7547,66 +7083,54 @@ window.addEventListener('resize', ()=>{
 // collapsing WHEN/WHERE/FILTER into three buttons never hides what's
 // currently active from someone who hasn't opened a sheet.
 function updateMobileTriggers(){
+  const active = Discovery.describe(state);
+  const mode = state.when.mode;
   const whenSub = document.getElementById('whenTriggerSub');
-  if(whenMode === 'date' && pickedDate){
-    whenSub.textContent = new Date(pickedDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  } else if(whenMode === 'range' && rangeStart && rangeEnd){
-    whenSub.textContent = formatRangeLabel(rangeStart, rangeEnd);
+  if(mode === 'dates'){
+    // This button's own, shorter wording for a picked date ("Oct 3", no weekday).
+    whenSub.textContent = formatRangeLabel(state.when.from, state.when.to);
   } else {
-    whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
+    const when = active.find(e => e.dim === 'when');
+    whenSub.textContent = when ? when.label : 'Anytime';
   }
-  document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!whenMode);
+  document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!mode);
 
   const whereSub = document.getElementById('whereTriggerSub');
-  if(originLocation){
-    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
-    whereSub.textContent = `${radiusLabel} · ${originLocation.name}`;
-  } else {
-    whereSub.textContent = 'Everywhere';
-  }
-  document.getElementById('whereTriggerBtn').classList.toggle('has-value', !!originLocation);
+  const origin = active.find(e => e.dim === 'where' && e.key === 'origin');
+  whereSub.textContent = origin ? origin.label : 'Everywhere';
+  document.getElementById('whereTriggerBtn').classList.toggle('has-value', !!origin);
 
   const filterSub = document.getElementById('filterTriggerSub');
   const totalCats = Object.keys(CATS).length;
+  const selectedCats = state.what.paths.length, features = state.what.features.length;
   const parts = [];
-  if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
-  if(freeOnly) parts.push('Free');
-  if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
+  if(selectedCats) parts.push(`${selectedCats}/${totalCats} cats`);
+  if(state.what.free) parts.push('Free');
+  if(features) parts.push(`${features} feature${features===1?'':'s'}`);
   filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
 // ---- URL state ----
-// Reflects date/view/categories/search/when in the URL so a state can be
-// bookmarked, shared, or reloaded — per the brief's "filter state + URLs"
-// requirement. Uses replaceState (not pushState) on every change so normal
-// browsing doesn't spam browser history with one entry per keystroke/click;
-// the URL still updates live and reloading/sharing it reproduces the view.
+// Reflects the filter state in the URL so a view can be bookmarked, shared,
+// or reloaded — per the brief's "filter state + URLs" requirement. Uses
+// replaceState (not pushState) on every change so normal browsing doesn't
+// spam browser history with one entry per keystroke/click; the URL still
+// updates live and reloading/sharing it reproduces the view.
+//
+// The encoding is Discovery's (toQuery/fromQuery) — the same one every
+// surface reads and writes, so a link carries its filters from page to
+// page. Parameters: when (+ from/to for picked dates), cats, free,
+// features, q, loc, radius, neighborhood. A view with no filters has no
+// query string at all. (Before 2026-10-03 this page wrote its own format —
+// always a date=<today>, when=thisweek, when=date&picked=,
+// when=range&rangeStart=&rangeEnd= — every one of which Discovery still
+// reads, so older links and bookmarks keep working.)
 function syncURL(){
-  const params = new URLSearchParams();
-  // Always today — the homepage's default view no longer has a separately
-  // browsable "current month" to encode (month paging was removed
-  // 2026-08-27), so there's nothing else meaningful to put here.
-  params.set('date', getTodayISO());
-  if(whenMode) params.set('when', whenMode);
-  if(whenMode === 'date' && pickedDate) params.set('picked', pickedDate);
-  if(whenMode === 'range' && rangeStart && rangeEnd){
-    params.set('rangeStart', rangeStart);
-    params.set('rangeEnd', rangeEnd);
-  }
-  if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
-  if(freeOnly) params.set('free', '1');
-  if(activeFeatures.size) params.set('features', Array.from(activeFeatures).join(','));
-  if(query) params.set('q', query);
-  // A geolocation-derived origin (type:'here') has no stable name to
-  // round-trip through a URL — omitted rather than encoding raw coordinates,
-  // which would put the visitor's location in a shareable link.
-  if(originLocation && originLocation.type !== 'here'){
-    params.set('loc', originLocation.name);
-    if(radiusMiles !== null) params.set('radius', String(radiusMiles));
-  }
-  if(neighborhoodFilter) params.set('neighborhood', neighborhoodFilter);
-  const qs = params.toString();
+  // A geolocation-derived origin has no stable name to round-trip through a
+  // URL — Discovery omits it rather than encoding raw coordinates, which
+  // would put the visitor's location in a shareable link.
+  const qs = Discovery.toQuery(state);
   // Wrapped defensively: history.replaceState throws a SecurityError in a
   // sandboxed about:srcdoc context (e.g. an embedded preview iframe, which
   // has no real address of its own to rewrite) — URL bookmarking is a
@@ -7620,86 +7144,30 @@ function syncURL(){
 
 // Reads the above back out on initial load, so a shared/bookmarked link
 // reproduces the same view. Applied once, before the first render() — every
-// later interaction just goes through the normal state variables + syncURL().
+// later interaction just goes through setState() + syncURL().
+//
+// What a link means is decided by Discovery.fromQuery(), including the old
+// forms. Three things read differently from how this page used to read
+// them, each an approved change (see DEC-022 / the 2026-10-03 decisions):
+//   - cats= with nothing valid in it means ALL events (it used to mean
+//     none, an empty list);
+//   - a picked date or range that is now in the past is honoured as that
+//     date (it used to be discarded, showing today instead);
+//   - when=now / when=today (Calendar's and Map's words) mean Today, and
+//     radius=all with no place means the Detroit Orbit (both used to be
+//     ignored here).
+// A place or neighborhood name that no longer matches anything still falls
+// back the way it always has.
 function readStateFromURL(){
-  const params = new URLSearchParams(location.search);
+  state = Discovery.fromQuery(location.search);
 
-  const catsParam = params.get('cats');
-  if(catsParam !== null){
-    // An empty/invalid list intentionally means "show nothing" — matching
-    // whatever state was actually shared, rather than silently falling back
-    // to "show everything" and misrepresenting the link.
-    activeCats = new Set(catsParam.split(',').filter(k=>CATS[k]));
-  }
-
-  if(params.get('free') === '1') freeOnly = true;
-
-  const featuresParam = params.get('features');
-  if(featuresParam){
-    const validKeys = new Set(FEATURE_CHIPS.map(f=>f.key));
-    activeFeatures = new Set(featuresParam.split(',').filter(k=>validKeys.has(k)));
-  }
-
-  const qParam = params.get('q');
-  if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
-
-  // Note: an old bookmarked link with ?view=month has nothing to restore to
-  // anymore — the homepage is List-only now, so that param is simply ignored.
-  // Same (2026-08-27) for ?when=now / ?when=today — both shortcuts were
-  // removed as redundant once the default view already opens on today, so
-  // an old link using either is just ignored. ?when=tonight, briefly in the
-  // same "ignored" category after Tonight was removed 2026-08-27, is back
-  // to being a real, restorable value again as of 2026-08-28 (Tonight was
-  // restored — see WHEN_LABELS above) — same for the new ?when=all.
-  const whenParam = params.get('when');
-  if(whenParam === 'date'){
-    const pickedParam = params.get('picked');
-    if(pickedParam && /^\d{4}-\d{2}-\d{2}$/.test(pickedParam) && pickedParam >= getTodayISO()){
-      whenMode = 'date';
-      pickedDate = pickedParam;
-      document.getElementById('whenDateInput').value = pickedParam;
-    }
-  } else if(whenParam === 'range'){
-    const rs = params.get('rangeStart'), re = params.get('rangeEnd');
-    if(rs && re && /^\d{4}-\d{2}-\d{2}$/.test(rs) && /^\d{4}-\d{2}-\d{2}$/.test(re) && rs <= re && rs >= getTodayISO()){
-      whenMode = 'range';
-      rangeStart = rs;
-      rangeEnd = re;
-      document.getElementById('whenDateInput').value = rs;
-      document.getElementById('whenDateEndInput').value = re;
-    }
-  } else if(whenParam && ['tomorrow','tonight','weekend','thisweek','all'].includes(whenParam)){
-    whenMode = whenParam;
-    if(whenParam === 'weekend'){
-      cachedWeekendDates = getWeekendDates();
-    }
-  }
-
-  // A shared link only restores a NAMED location (a real match in
-  // LOCATIONS) — a one-off geolocation origin was never put in the URL to
-  // begin with (see syncURL), so there's nothing to restore for those.
-  const locParam = params.get('loc');
-  if(locParam){
-    const found = LOCATIONS.find(l => l.name.toLowerCase() === locParam.toLowerCase());
-    if(found){
-      originLocation = found;
-      const radiusParam = params.get('radius');
-      if(radiusParam === 'all') radiusMiles = 'all';
-      else {
-        const n = parseInt(radiusParam, 10);
-        radiusMiles = (!isNaN(n) && [5,10,25,50].includes(n)) ? n : 'all';
-      }
-    }
+  if(state.q) document.getElementById('search').value = state.q;
+  // A picked date / range shows in the When sheet's two inputs. Any other
+  // When choice leaves them as initWhenDatePicker() set them.
+  if(state.when.mode === 'dates'){
+    setWhenInputs(state.when.from, state.when.to !== state.when.from ? state.when.to : '');
   }
   updateLocationControlUI();
-
-  // Restored the same way as `loc` above — a real, human-readable name in
-  // the URL, resolved against live data once it loads rather than trusted
-  // blindly (an old link naming a neighborhood that's since been renamed —
-  // see the Fitzgerald/Rivertown renames — just won't match anything and
-  // quietly falls back to unfiltered, same failure mode as `cats`/`loc`).
-  const neighborhoodParam = params.get('neighborhood');
-  if(neighborhoodParam) neighborhoodFilter = neighborhoodParam;
 }
 
 readStateFromURL();
@@ -7894,7 +7362,11 @@ loadSupabaseEvents();
 async function loadOrbitEventTotal(){
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${getTodayISO()}&select=id`;
+    // "Current + upcoming" is Discovery's definition (DEC-023): an approved
+    // event that starts today or later, OR is still running. Before
+    // 2026-10-03 this asked only for start_date >= today, which left out
+    // every event already in progress.
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&${Discovery.inventoryFilter()}&select=id`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,
@@ -8054,7 +7526,10 @@ function renderOnRadarCard(){
       // only ever needed the single freshest piece, so [0].
       return event ? { event, article: editorialByEvent[eventId][0] } : null;
     })
-    .filter(c => c && c.event.date >= todayIso && !isBlockedEvent(c.event));
+    // Starts today or later (this card is "upcoming events", by start date),
+    // and is in Discovery's current + upcoming inventory: not blocked, and
+    // not already over today.
+    .filter(c => c && c.event.date >= todayIso && Discovery.matches(c.event, Discovery.defaults(), inventoryCtx()));
 
   // 2026-09-04 (Jody, screenshot of 3 identical "Detroit Jazz Festival /
   // WDET" cards: "we can't have dupe articles") — one article can now

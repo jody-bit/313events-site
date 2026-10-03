@@ -12,12 +12,23 @@
 // Same established convention as test/list-card-ticket-status-note.test.js
 // and test/cron-dossin-parse.test.js: this project has no DOM harness, so
 // (a) the pure-data function (computeNeighborhoodCounts, plus the small
-// helpers it calls: getTodayISO/toISO/isBlockedEvent) is extracted
-// verbatim from index.html via regex and actually EXECUTED against
-// synthetic byDate fixtures — proving real behavior, not just structure —
-// and (b) the DOM-touching renderNeighborhoodsRail(), which only wraps (a)
-// in markup, is checked structurally (regex over its own source text)
-// rather than executed, since it needs a real document.
+// helper it calls, inventoryCtx) is extracted verbatim from index.html via
+// regex and actually EXECUTED against synthetic events — proving real
+// behavior, not just structure — and (b) the DOM-touching
+// renderNeighborhoodsRail(), which only wraps (a) in markup, is checked
+// structurally (regex over its own source text) rather than executed,
+// since it needs a real document.
+//
+// 2026-10-03 — the homepage adopted the shared discovery layer (DEC-022).
+// computeNeighborhoodCounts() no longer walks the page's own per-day index
+// applying its own "today or later" and blocked-name rules; it asks
+// Discovery.facets() for the neighborhoods of the site's current + upcoming
+// inventory. Every guarantee below still holds and is still proven by
+// executing the real function (now together with the real discovery.js).
+// Two things about the NUMBER on a card changed with that, both approved:
+// an event is counted once however many days it runs (it used to be
+// counted once per day), and an event that started earlier and is still
+// running is counted (it used to be skipped) — scenarios 9 and 10.
 //
 // Run: node test/dynamic-explore-neighborhoods.test.js
 "use strict";
@@ -34,43 +45,43 @@ function extract(pattern, label) {
   return m[0];
 }
 
-const SRC_TO_ISO = extract(/function toISO\(y,m,d\)\{[^\n]*\}/, "toISO");
-const SRC_GET_TODAY_ISO = extract(/function getTodayISO\(\)\{[\s\S]*?\n\}/, "getTodayISO");
-const SRC_BLOCKED_NAMES = extract(/const BLOCKED_NAMES = \[[^\]]*\];/, "BLOCKED_NAMES");
-const SRC_IS_BLOCKED_EVENT = extract(/function isBlockedEvent\(e\)\{[\s\S]*?\n\}/, "isBlockedEvent");
+const SRC_INVENTORY_CTX = extract(/function inventoryCtx\(\)\{[\s\S]*?\n\}/, "inventoryCtx");
+const SRC_DISCOVERY = fs.readFileSync(`${REPO_DIR}/discovery.js`, "utf8");
 const SRC_RAIL_LIMIT = extract(/const NEIGHBORHOOD_RAIL_LIMIT = \d+;/, "NEIGHBORHOOD_RAIL_LIMIT");
 const SRC_COMPUTE_COUNTS = extract(/function computeNeighborhoodCounts\(\)\{[\s\S]*?\n\}/, "computeNeighborhoodCounts");
 const SRC_RENDER_RAIL = extract(/function renderNeighborhoodsRail\(\)\{[\s\S]*?\n\}/, "renderNeighborhoodsRail");
 const SRC_NEIGHBORHOOD_PHOTOS = extract(/const NEIGHBORHOOD_PHOTOS = \{[\s\S]*?\n\};/, "NEIGHBORHOOD_PHOTOS");
 
-// --- Build a real, executable sandbox from the actual extracted source,
-//     with only `byDate` injectable per scenario (same global the real
-//     page mutates via loadSupabaseEvents()/addToByDate()). ---
-function runComputeNeighborhoodCounts(byDate, { now = new Date("2026-10-01T12:00:00") } = {}) {
-  const sandbox = { byDate, console, Map, Date: makeFixedDate(now) };
+// --- Build a real, executable sandbox from the actual extracted source and
+//     the real discovery.js, with only the loaded events injectable per
+//     scenario (the same EVENTS global the real page fills in
+//     loadSupabaseEvents()). The scenarios are still written as "which
+//     events are on which date", and turned into events here. ---
+function runComputeNeighborhoodCounts(byDate, { now = new Date("2026-10-01T12:00:00-04:00") } = {}) {
+  const EVENTS = [];
+  Object.keys(byDate).forEach((iso) => byDate[iso].forEach((e) => { if (!EVENTS.includes(e)) EVENTS.push(Object.assign(e, { date: e.date || iso })); }));
+  const sandbox = { console };
   vm.createContext(sandbox);
+  // A Date whose no-arg constructor returns a fixed instant, so "today" is
+  // deterministic — every other Date behavior is untouched.
+  vm.runInContext(`
+    var __RealDate = Date;
+    Date = class extends __RealDate {
+      constructor(...a){ if(a.length === 0) super(${now.getTime()}); else super(...a); }
+      static now(){ return ${now.getTime()}; }
+    };`, sandbox);
+  sandbox.__events = EVENTS;
   vm.runInContext(
-    [SRC_TO_ISO, SRC_GET_TODAY_ISO, SRC_BLOCKED_NAMES, SRC_IS_BLOCKED_EVENT, SRC_COMPUTE_COUNTS].join("\n"),
+    [SRC_DISCOVERY, "var EVENTS = __events, editorialByEvent = {};", SRC_INVENTORY_CTX, SRC_COMPUTE_COUNTS].join("\n"),
     sandbox
   );
-  return vm.runInContext("computeNeighborhoodCounts()", sandbox);
+  // JSON round trip: values built inside the sandbox belong to another realm.
+  return JSON.parse(JSON.stringify(vm.runInContext("computeNeighborhoodCounts()", sandbox)));
 }
 
-// A Date subclass whose no-arg constructor returns a fixed instant, so
-// getTodayISO()'s `new Date()` is deterministic in the test — every other
-// Date behavior (explicit-arg construction, etc.) is untouched.
-function makeFixedDate(fixedNow) {
-  class FixedDate extends Date {
-    constructor(...args) {
-      if (args.length === 0) super(fixedNow.getTime());
-      else super(...args);
-    }
-  }
-  return FixedDate;
-}
-
-function evt(title, neighborhood, { note = null } = {}) {
-  return { title, neighborhood, note };
+let nextId = 1;
+function evt(title, neighborhood, { note = null, date = null, endDate = null } = {}) {
+  return { id: "e" + nextId++, title, neighborhood, note, cat: "community", date, endDate };
 }
 
 // =======================================================================
@@ -139,7 +150,7 @@ console.log("PASS (4): an event moving into the past makes its neighborhood disa
 {
   assert.ok(!/neighborhoods\s*\.\s*(delete|splice|pop|shift)/i.test(SRC_COMPUTE_COUNTS), "computeNeighborhoodCounts must never mutate/delete from any neighborhoods collection");
   assert.ok(!/DELETE|delete\s+from\s+neighborhoods/i.test(SRC_RENDER_RAIL), "renderNeighborhoodsRail must never issue a delete against the neighborhoods table");
-  assert.ok(/e\.neighborhood/.test(SRC_COMPUTE_COUNTS), "counts are read from each event's own resolved .neighborhood field, not a separately maintained directory");
+  assert.ok(/Discovery\.facets\(EVENTS, .*'neighborhood'\)/.test(SRC_COMPUTE_COUNTS), "counts come from the loaded events' own resolved neighborhood (Discovery.facets over EVENTS), not a separately maintained directory");
 }
 console.log("PASS (5): the rail computation is read-only — it cannot remove a neighborhood from the canonical geography, only from its own visible output");
 
@@ -181,6 +192,33 @@ console.log("PASS (7): Bagley appears/disappears through the identical generic c
   }
 }
 console.log("PASS (8): neither computeNeighborhoodCounts nor renderNeighborhoodsRail hardcodes any individual neighborhood name");
+
+// --- 9. (2026-10-03, shared discovery layer) A card's number is a count of
+//     EVENTS, not of event-days: a three-day festival is one event. ---
+{
+  const festival = evt("Three-Day Festival", "Eastern Market", { date: "2026-10-09", endDate: "2026-10-11" });
+  const counts = runComputeNeighborhoodCounts({ "2026-10-09": [festival], "2026-10-10": [festival], "2026-10-11": [festival, evt("Sunday Market", "Eastern Market")] });
+  assert.strictEqual(countFor(counts, "Eastern Market"), 2, "a festival listed under three days is still one event: festival + market = 2 (was 4 when each day counted)");
+}
+console.log("PASS (9): an event that runs for several days is counted once on its neighborhood's card");
+
+// --- 10. (2026-10-03) An event that started before today and is still
+//     running keeps its neighborhood on the rail; once its last day has
+//     passed it no longer does. ---
+{
+  const running = runComputeNeighborhoodCounts({ "2026-09-25": [evt("Exhibition", "Midtown", { date: "2026-09-25", endDate: "2026-10-20" })] });
+  assert.strictEqual(countFor(running, "Midtown"), 1, "an event in progress (started Sep 25, runs to Oct 20) counts on Oct 1");
+  const finished = runComputeNeighborhoodCounts({ "2026-09-20": [evt("Exhibition", "Midtown", { date: "2026-09-20", endDate: "2026-09-30" })] });
+  assert.strictEqual(countFor(finished, "Midtown"), 0, "an event whose last day was yesterday does not");
+}
+console.log("PASS (10): an event in progress counts until its last day has passed");
+
+// --- 11. Most events first; equal counts in name order (a stable, explainable order). ---
+{
+  const counts = runComputeNeighborhoodCounts({ "2026-10-05": [evt("A", "Midtown"), evt("B", "Corktown"), evt("C", "Bagley"), evt("D", "Corktown")] });
+  assert.deepStrictEqual(counts, [["Corktown", 2], ["Bagley", 1], ["Midtown", 1]]);
+}
+console.log("PASS (11): the rail is ordered by event count, ties by name");
 
 // =======================================================================
 // Structural checks on renderNeighborhoodsRail() (DOM-touching, not

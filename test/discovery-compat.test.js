@@ -1,25 +1,34 @@
-// test/discovery-compat.test.js — discovery.js against what is live today.
+// test/discovery-compat.test.js — discovery.js against the pages' own rules.
 //
 // test/discovery.test.js proves each rule in isolation. This file proves
-// the shared rules line up with the pages as they are RIGHT NOW, by
-// extracting the pages' real code from their HTML and executing it (the
-// repo's established no-DOM-harness convention), so that the homepage can
-// later be switched to discovery.js knowing exactly what changes:
+// how the shared rules line up with what each page does (or did) on its
+// own, by executing the pages' real code (the repo's established
+// no-DOM-harness convention):
 //
-//   1. PARITY — the homepage's real filter code vs Discovery.matches()
-//      over a few hundred filter states and events. Every difference must
-//      be one of the documented, intended ones; anything else fails.
-//   2. OLD LINKS IN — every URL the homepage can write today (its real
-//      syncURL()) decodes to the equivalent canonical state, plus the
-//      Calendar/Map-only legacy forms.
-//   3. NEW LINKS OUT — URLs written by Discovery.href() fed to each page's
-//      real, unmodified readStateFromURL(): what carries over today is
-//      asserted exactly, and so is what does not (until those pages adopt
-//      the shared file).
+//   1. PARITY — the homepage's own filter code, as it was the day before
+//      it adopted discovery.js, vs Discovery.matches() over a few hundred
+//      filter states and events. Every difference must be one of the
+//      documented, intended ones; anything else fails.
+//   2. OLD LINKS IN — every URL the old homepage could write (its real
+//      syncURL()) decodes to the equivalent canonical state; the old
+//      homepage's own READER is run against Discovery's on the same links,
+//      with every approved difference named; plus the Calendar/Map-only
+//      legacy forms.
+//   3. NEW LINKS OUT — URLs written by Discovery.href() fed to Calendar's
+//      and Map's real, unmodified readStateFromURL(): what carries over
+//      today is asserted exactly, and so is what does not (until those
+//      pages adopt the shared file). The homepage reads the shared codec
+//      itself now — see test/homepage-discovery-adoption.test.js.
 //   4. DRIFT GUARDS — every remaining copy of the category list, the
 //      places table, the boundary, the feature list and the blocked names
 //      is compared with the canonical one, so the copies cannot diverge
 //      quietly while they still exist.
+//
+// THE HOMEPAGE'S OLD CODE. The homepage adopted discovery.js on 2026-10-03
+// and no longer contains its own rules. They are kept, verbatim, in
+// test/fixtures/homepage-before-discovery.js purely so (1) and (2) can go
+// on executing them. Calendar and Map still carry their own copies and are
+// read live from their HTML.
 //
 // Run: node test/discovery-compat.test.js
 "use strict";
@@ -66,10 +75,13 @@ function dummyDocument() {
   return { getElementById: () => el, querySelector: () => el, querySelectorAll: () => [] };
 }
 
-const INDEX = read("index.html"), CALENDAR = read("calendar.html"), MAP = read("map.html");
+const CALENDAR = read("calendar.html"), MAP = read("map.html");
+// The homepage's rules as they were before adoption (see the header).
+const LEGACY_HOME = read("test/fixtures/homepage-before-discovery.js");
+const INDEX = LEGACY_HOME; // sections 1 and 2 read the frozen copy with the same extraction helpers
 
 // =====================================================================
-// 1. PARITY with the homepage's real filter code
+// 1. PARITY with the homepage's own filter code (as it was before adoption)
 // =====================================================================
 function homepageSandbox(nowMs) {
   const sb = { URLSearchParams, console };
@@ -312,7 +324,7 @@ function run() {
     const t = r.tally;
     assert.ok(t.exact > t.compared * 0.95, "the overwhelming majority of comparisons are identical");
     assert.ok(t.inProgress > 0 && t.overlapsWindow > 0 && t.overHiddenNow > 0, "the fixture exercises each intended difference");
-    console.log(`PASS: [${label}] homepage's real filter code vs Discovery.matches — ${r.states} filter states × ${r.events} events = ${t.compared.toLocaleString()} comparisons: ${t.exact.toLocaleString()} identical; intended differences only — in-progress events now shown ${t.inProgress}, multi-day runs overlapping the window ${t.overlapsWindow}, day-one hours passed ${t.firstDayHoursPassed}, already-over events now hidden ${t.overHiddenNow}, uncategorised events now shown ${t.unknownCategory}`);
+    console.log(`PASS: [${label}] the old homepage's own filter code vs Discovery.matches — ${r.states} filter states × ${r.events} events = ${t.compared.toLocaleString()} comparisons: ${t.exact.toLocaleString()} identical; intended differences only — in-progress events now shown ${t.inProgress}, multi-day runs overlapping the window ${t.overlapsWindow}, day-one hours passed ${t.firstDayHoursPassed}, already-over events now hidden ${t.overHiddenNow}, uncategorised events now shown ${t.unknownCategory}`);
     last = Object.assign({ ms }, r);
   });
 
@@ -329,7 +341,68 @@ function run() {
       assert.deepStrictEqual(plain(D.fromQuery(url)), plain(expected), `a URL the homepage writes today must decode to the same filters: ${url}`);
       checked++;
     });
-    console.log(`PASS: all ${checked} URLs written by the homepage's real syncURL() decode to the equivalent canonical state`);
+    console.log(`PASS: all ${checked} URLs the old homepage's syncURL() could write decode to the equivalent canonical state`);
+
+    // The old homepage's own READER against Discovery's, on the same links.
+    // Identical, except the approved differences — each named here.
+    const NOW = last.ms, today = D.window({ when: { mode: "today" } }, { now: new Date(NOW) }).from;
+    const dayISO = (n) => new Date(Date.parse(today + "T12:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+    function legacyRead(url) {
+      const sb = { URLSearchParams, document: dummyDocument(), console };
+      vm.createContext(sb);
+      vm.runInContext(FAKE_DATE(NOW), sb);
+      vm.runInContext([
+        block(LEGACY_HOME, "CATS", "\\};"), block(LEGACY_HOME, "LOCATIONS", "\\];"), block(LEGACY_HOME, "FEATURE_CHIPS", "\\];"),
+        oneLineFn(LEGACY_HOME, "toISO"), fn(LEGACY_HOME, "getTodayISO"), fn(LEGACY_HOME, "getWeekendDates"),
+        `var activeCats = new Set(Object.keys(CATS)), freeOnly = false, activeFeatures = new Set(), query = "", whenMode = null,
+             pickedDate = null, rangeStart = null, rangeEnd = null, originLocation = null, radiusMiles = null, neighborhoodFilter = null, cachedWeekendDates = [];
+         function updateLocationControlUI(){}
+         var location = { search: ${JSON.stringify(url)}, pathname: "/" };`,
+        fn(LEGACY_HOME, "readStateFromURL"), "readStateFromURL();",
+      ].join("\n"), sb);
+      return plain(vm.runInContext(`({ cats: Array.from(activeCats), free: freeOnly, features: Array.from(activeFeatures), q: query, when: whenMode,
+        picked: pickedDate, rangeStart: rangeStart, rangeEnd: rangeEnd, loc: originLocation ? originLocation.name : null, radius: radiusMiles, neighborhood: neighborhoodFilter })`, sb));
+    }
+    const all = D.categories.map((c) => c.key);
+    const SAME = [
+      "", "?date=" + dayISO(0), "?when=tomorrow", "?when=tonight", "?when=weekend", "?when=thisweek", "?when=all",
+      "?when=date&picked=" + dayISO(0), "?when=date&picked=" + dayISO(9), "?when=range&rangeStart=" + dayISO(0) + "&rangeEnd=" + dayISO(6),
+      "?when=date", "?when=someday", "?view=month&date=2026-10-01",
+      "?cats=music,film", "?cats=" + all.join(","), "?cats=" + all.filter((c) => c !== "sports").join(","), "?cats=bogus,music",
+      "?free=1", "?free=0", "?features=tickets,radar", "?features=tickets,nope", "?q=bahamas", "?q=" + encodeURIComponent('a & b "c" 100%'),
+      "?loc=Ann+Arbor&radius=25", "?loc=ann%20arbor&radius=all", "?loc=Ann+Arbor", "?loc=Ann+Arbor&radius=75", "?loc=Corktown&radius=5",
+      "?loc=Elmwood+Park&radius=10", "?radius=10", "?neighborhood=Corktown", "?neighborhood=Fitzgerald-Marygrove",
+      "?when=weekend&cats=music,nightlife&loc=Flint&radius=50&free=1&q=night&neighborhood=Corktown",
+    ];
+    SAME.forEach((url) => {
+      const expected = toDiscovery(legacyRead(url), NOW, {}).state;
+      assert.deepStrictEqual(plain(D.fromQuery(url)), plain(expected), `read the same as the old homepage read it: ${url}`);
+    });
+    // The approved differences: [link, what the old homepage understood, what it means now].
+    const none = { cats: [] }, plainView = {};
+    const DIFFERENT = [
+      ["?cats=", none, D.defaults(), "bare cats= is ALL events (was: none)"],
+      ["?cats=bogus", none, D.defaults(), "a cats= list with nothing valid in it is ALL events (was: none)"],
+      ["?when=date&picked=" + dayISO(-2), plainView, D.change(D.defaults(), { when: { from: dayISO(-2), to: dayISO(-2) } }), "a picked date now in the past is that date (was: discarded)"],
+      ["?when=range&rangeStart=" + dayISO(-3) + "&rangeEnd=" + dayISO(1), plainView, D.change(D.defaults(), { when: { from: dayISO(-3), to: dayISO(1) } }), "a range that began in the past is that range (was: discarded)"],
+      ["?when=range&rangeStart=" + dayISO(3), plainView, D.change(D.defaults(), { when: { from: dayISO(3), to: dayISO(3) } }), "a range link with only a start date is that day (was: discarded)"],
+      ["?when=range&rangeStart=" + dayISO(8) + "&rangeEnd=" + dayISO(2), plainView, D.change(D.defaults(), { when: { from: dayISO(2), to: dayISO(8) } }), "a backwards range is read as the range between its two dates (was: discarded)"],
+      ["?when=now", plainView, D.change(D.defaults(), { when: "today" }), "Calendar/Map's when=now is Today (was: ignored)"],
+      ["?when=today", plainView, D.change(D.defaults(), { when: "today" }), "when=today is Today (was: ignored)"],
+      ["?when=next7", plainView, D.change(D.defaults(), { when: "next7" }), "when=next7 is the next 7 days (was: ignored)"],
+      ["?when=week", plainView, D.change(D.defaults(), { when: "week" }), "when=week is This Week (was: ignored; the old word was thisweek)"],
+      ["?when=dates&from=" + dayISO(2) + "&to=" + dayISO(8), plainView, D.change(D.defaults(), { when: { from: dayISO(2), to: dayISO(8) } }), "the shared from/to form (was: ignored)"],
+      ["?radius=all", plainView, D.change(D.defaults(), { where: { radius: "orbit" } }), "radius=all with no place is the Detroit Orbit (was: ignored)"],
+      ["?features=clothing_optional", plainView, D.change(D.defaults(), { feature: { add: "clothing_optional" } }), "the declared feature is a filter (was: unknown, ignored)"],
+    ];
+    DIFFERENT.forEach(([url, oldMeaning, nowState, why]) => {
+      const old = legacyRead(url);
+      Object.keys(oldMeaning).forEach((k) => assert.deepStrictEqual(old[k], oldMeaning[k], `old homepage on ${url}: ${k}`));
+      if (oldMeaning === plainView) assert.deepStrictEqual(plain(toDiscovery(old, NOW, {}).state), plain(D.defaults()), `the old homepage ignored ${url}`);
+      assert.deepStrictEqual(plain(D.fromQuery(url)), plain(nowState), `${url}: ${why}`);
+      if (oldMeaning === plainView) assert.notDeepStrictEqual(plain(nowState), plain(D.defaults()), `${url} really does mean something now`);
+    });
+    console.log(`PASS: the old homepage's own URL reader and Discovery's read ${SAME.length} links identically; the ${DIFFERENT.length} that read differently are exactly the approved changes (${DIFFERENT.map((d) => d[3].split(" (")[0]).join("; ")})`);
 
     const q = (s) => plain(D.fromQuery(s));
     const when = (s) => q(s).when;
@@ -347,7 +420,6 @@ function run() {
     assert.deepStrictEqual(when("when=range&rangeStart=2025-06-01&rangeEnd=2025-06-07"), { mode: "dates", from: "2025-06-01", to: "2025-06-07" });
     assert.deepStrictEqual(when("when=range&rangeStart=2026-10-12"), { mode: "dates", from: "2026-10-12", to: "2026-10-12" });
     // The old subtractive category model
-    const all = D.categories.map((c) => c.key);
     assert.deepStrictEqual(q("cats=" + all.join(",")).what.paths, [], "an old link with every chip on is no filter");
     assert.deepStrictEqual(q("cats=" + all.filter((c) => c !== "sports").join(",")).what.paths, all.filter((c) => c !== "sports"), "an old link with one chip turned off still shows exactly the other fourteen");
     assert.deepStrictEqual(q("cats=").what.paths, [], "a bare cats= means ALL EVENTS (approved change: it used to mean none)");
@@ -364,13 +436,14 @@ function run() {
   console.log("PASS: legacy link forms — when=now / thisweek / date+picked / range+rangeStart+rangeEnd, old all-chips-on cats lists, radius=all, renamed places");
 
   // =====================================================================
-  // 3. NEW LINKS OUT — into each page's real, unmodified readStateFromURL()
+  // 3. NEW LINKS OUT — into Calendar's and Map's real, unmodified
+  //    readStateFromURL(). (The homepage reads the shared codec itself now;
+  //    its reading is tested in homepage-discovery-adoption.test.js.)
   // =====================================================================
   {
     const NOW = Date.parse("2026-10-03T19:00:00Z");
     const CTX = { now: new Date(NOW) };
     const PAGES = {
-      home: { html: INDEX, understands: new Set(["tomorrow", "tonight", "weekend", "all"]), extra: `var pickedDate = null, rangeStart = null, rangeEnd = null, neighborhoodFilter = null;` },
       calendar: { html: CALENDAR, understands: new Set(["today", "tonight", "weekend"]), extra: `var mode = "month", selectedDate = null, current = new Date(2026, 9, 1), MIN_MONTH = new Date(2025, 9, 1), MAX_MONTH = new Date(2027, 9, 1); function initLeaflet(){}` },
       map: { html: MAP, understands: new Set(["today", "tonight", "weekend"]), extra: `` },
     };
@@ -411,7 +484,7 @@ function run() {
       mk({ when: { from: "2026-11-14" } }), mk({ when: { from: "2026-11-14", to: "2026-11-20" } }),
       mk({ when: "weekend" }, { what: { only: "music" } }, { where: { place: "Flint", radius: 10 } }, { free: true }, { q: "show" }),
     ];
-    const carried = { home: new Set(), calendar: new Set(), map: new Set() }, dropped = { home: new Set(), calendar: new Set(), map: new Set() };
+    const carried = { calendar: new Set(), map: new Set() }, dropped = { calendar: new Set(), map: new Set() };
     Object.keys(PAGES).forEach((surface) => {
       states.forEach((s) => {
         const url = D.href(surface, s, CTX);
@@ -445,9 +518,8 @@ function run() {
           if (single) { assert.strictEqual(got.selectedDate, w.from, `calendar opens ${w.from} for ${url}`); carried.calendar.add("opens the day:" + mode); }
           else if (mode !== "weekend") assert.strictEqual(got.selectedDate, null, `calendar opens no particular day for ${url}`);
         }
-        // Neighborhood: the homepage only.
-        if (surface === "home") { assert.strictEqual(got.neighborhood, s.where.neighborhood, `home: neighborhood ${url}`); if (s.where.neighborhood) carried.home.add("neighborhood"); }
-        else if (s.where.neighborhood) dropped[surface].add("neighborhood");
+        // Neighborhood: neither page has it yet.
+        if (s.where.neighborhood) dropped[surface].add("neighborhood");
       });
     });
     // What the approved plan said would and would not travel before Calendar and Map adopt the shared file.
@@ -456,7 +528,7 @@ function run() {
       for (const gap of ["when:tomorrow", "when:next7", "when:week", "when:all", "when:dates", "neighborhood", "feature:radar", "feature:clothing_optional", "place:Lansing", "orbit with no place"]) assert.ok(dropped[surface].has(gap), `${surface} is expected not to carry ${gap} yet`);
     }
     for (const must of ["opens the day:today", "opens the day:tonight", "opens the day:tomorrow", "opens the day:dates"]) assert.ok(carried.calendar.has(must), `calendar ${must}`);
-    console.log(`PASS: ${states.length} states sent through Discovery.href() into each page's real readStateFromURL() — categories, free, search, known features, place + radius, tonight / weekend / today carry to Calendar and Map now; Calendar opens the right day for single-day states`);
+    console.log(`PASS: ${states.length} states sent through Discovery.href() into Calendar's and Map's real readStateFromURL() — categories, free, search, known features, place + radius, tonight / weekend / today carry to Calendar and Map now; Calendar opens the right day for single-day states`);
     console.log(`      not carried until Calendar and Map adopt the shared file: ${Array.from(dropped.calendar).sort().join(", ")}`);
   }
 
@@ -466,17 +538,22 @@ function run() {
   {
     const canonical = D.categories.map((c) => [c.key, c.label]);
     const evalIn = (src, expr) => { const sb = {}; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
-    // Six pages keep CATS as an object, submit.html as a list.
-    ["index.html", "calendar.html", "map.html", "event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
+    // Five pages still keep their own CATS object, submit.html a list. (The
+    // homepage no longer has a copy: it builds CATS from Discovery.categories.)
+    ["calendar.html", "map.html", "event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
       const cats = evalIn(block(read(f), "CATS", "\\};"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
       assert.deepStrictEqual(plain(cats), canonical, `${f}: CATS keys, labels and order match discovery.js`);
     });
     assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\];"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
+    // The homepage keeps only a COLOUR per category (presentation): exactly one for each canonical key, no extras.
+    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\};"), "Object.keys(CAT_COLORS)");
+    assert.deepStrictEqual(plain(homeColours), canonical.map(([k]) => k), "index.html: a colour for every category, in the canonical order, and for nothing else");
     // admin.html's editorial form lists [key, label] pairs. Same keys, same
     // order. ONE label already differs there today — 'fest' reads
     // "Festivals" in the admin form and "Festivals & Parades" everywhere
     // public. That pre-existing difference is recorded here rather than
-    // silently tolerated: any OTHER difference fails.
+    // silently tolerated (DEBT-007 tracks reconciling it): any OTHER
+    // difference fails.
     const adminBlock = grab(read("admin.html"), /const EDITORIAL_CATEGORIES = \[[\s\S]*?\n\];/, "admin.html EDITORIAL_CATEGORIES");
     const adminPairs = [...adminBlock.matchAll(/\['([a-z]+)',\s*'([^']+)'\]/g)].map((m) => [m[1], m[2]]);
     const KNOWN_ADMIN_LABEL_DIFFERENCES = { fest: "Festivals" };
@@ -487,33 +564,44 @@ function run() {
       const keys = [...body.matchAll(/"([a-z]+)"/g)].map((m) => m[1]).sort();
       assert.deepStrictEqual(keys, canonical.map(([k]) => k).sort(), `${f}: accepted categories match discovery.js`);
     });
-    console.log("PASS: (drift guard) the category list in 7 pages, admin.html and 3 API whitelists matches discovery.js");
+    console.log("PASS: (drift guard) the category list in 6 pages, admin.html and 3 API whitelists matches discovery.js; the homepage has a colour for exactly the canonical categories");
 
-    // Places: the homepage's table is the one discovery.js was built from.
+    // Nothing was lost or altered when the homepage's own tables moved into
+    // discovery.js: the frozen copy of what the homepage had is compared
+    // with the shared one, value for value.
     const sb = {}; vm.createContext(sb);
-    vm.runInContext([block(INDEX, "LOCATIONS", "\\];"), line(INDEX, "DETROIT_BOUNDARY"), line(INDEX, "DB_LAT0"), line(INDEX, "DB_MILES_PER_DEG_LAT"), line(INDEX, "DB_MILES_PER_DEG_LON"), fn(INDEX, "dbToXY"), fn(INDEX, "dbDistPointToSeg"), fn(INDEX, "milesFromDetroitBorder"), line(INDEX, "BLOCKED_NAMES"), block(INDEX, "FEATURE_CHIPS", "\\];")].join("\n"), sb);
-    assert.deepStrictEqual(plain(D.places), plain(vm.runInContext("LOCATIONS", sb)), "places match index.html's LOCATIONS exactly");
+    vm.runInContext([block(LEGACY_HOME, "CATS", "\\};"), block(LEGACY_HOME, "LOCATIONS", "\\];"), line(LEGACY_HOME, "DETROIT_BOUNDARY"), line(LEGACY_HOME, "DB_LAT0"), line(LEGACY_HOME, "DB_MILES_PER_DEG_LAT"), line(LEGACY_HOME, "DB_MILES_PER_DEG_LON"), fn(LEGACY_HOME, "dbToXY"), fn(LEGACY_HOME, "dbDistPointToSeg"), fn(LEGACY_HOME, "milesFromDetroitBorder"), line(LEGACY_HOME, "BLOCKED_NAMES"), block(LEGACY_HOME, "FEATURE_CHIPS", "\\];")].join("\n"), sb);
+    assert.deepStrictEqual(plain(vm.runInContext("Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })", sb)), canonical, "categories match what the homepage had");
+    assert.deepStrictEqual(plain(D.places), plain(vm.runInContext("LOCATIONS", sb)), "places match what the homepage had, exactly");
+    // The boundary: the shared copy, the server's copy and the homepage's old copy are the same polygon.
     const server = require(`${REPO_DIR}/api/_lib/detroit-boundary.js`);
-    assert.deepStrictEqual(plain(vm.runInContext("DETROIT_BOUNDARY", sb)), plain(server.DETROIT_BOUNDARY), "the homepage and server boundary copies agree with each other");
-    // The Orbit decision for every city agrees with the homepage's and the server's own maths.
+    const { _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+    assert.deepStrictEqual(plain(_defaultConfig.boundary), plain(server.DETROIT_BOUNDARY), "discovery.js and the server use the same Detroit boundary");
+    assert.deepStrictEqual(plain(vm.runInContext("DETROIT_BOUNDARY", sb)), plain(server.DETROIT_BOUNDARY), "and it is the one the homepage had");
+    // The Orbit decision for every city agrees with the server's maths and with the homepage's old maths.
     const orbit = D.change(D.defaults(), { where: { radius: "orbit" } });
     D.places.filter((p) => p.type === "city").forEach((p) => {
       sb.__p = p;
       const pageMiles = vm.runInContext("milesFromDetroitBorder(__p.lat, __p.lng)", sb);
+      const serverMiles = server.milesFromDetroitBorder(p.lat, p.lng);
       const inOrbit = D.matches({ id: p.name, date: "2026-10-03", cat: "music", city: p.name === "Detroit" ? undefined : p.name }, orbit, { now: new Date("2026-10-03T19:00:00Z") });
-      assert.strictEqual(inOrbit, pageMiles <= 75, `${p.name}: Orbit membership matches the homepage (${pageMiles.toFixed(1)} mi from the border)`);
-      assert.ok(Math.abs(server.milesFromDetroitBorder(p.lat, p.lng) - pageMiles) < 1e-9, `${p.name}: server and homepage distances agree`);
+      assert.strictEqual(inOrbit, serverMiles <= 75, `${p.name}: Orbit membership matches the server (${serverMiles.toFixed(1)} mi from the border)`);
+      assert.ok(Math.abs(serverMiles - pageMiles) < 1e-9, `${p.name}: server and old-homepage distances agree`);
     });
     // A point just inside and just outside the line, to pin the boundary data itself.
     const probe = _probeOrbit();
     assert.strictEqual(probe.inside, true); assert.strictEqual(probe.outside, false);
     // Derived features and blocked names.
     const chips = plain(vm.runInContext("FEATURE_CHIPS", sb));
-    assert.deepStrictEqual(D.features.filter((f) => f.kind === "derived").map((f) => ({ key: f.key, label: f.label })), chips, "derived features match the homepage's FEATURE_CHIPS");
+    assert.deepStrictEqual(D.features.filter((f) => f.kind === "derived").map((f) => ({ key: f.key, label: f.label })), chips, "derived features match what the homepage's FEATURE_CHIPS had");
     const blocked = plain(vm.runInContext("BLOCKED_NAMES", sb));
     blocked.forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${name} is blocked`));
-    ["calendar.html", "map.html"].forEach((f) => assert.deepStrictEqual(plain(evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES")), blocked, `${f} blocked names match`));
-    console.log("PASS: (drift guard) places, Orbit membership of every city, derived features and blocked names match the live copies");
+    // Calendar and Map still carry their own copies of these.
+    ["calendar.html", "map.html"].forEach((f) => {
+      assert.deepStrictEqual(plain(evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES")), blocked, `${f} blocked names match`);
+      evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES").forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", note: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${f}: ${name} is blocked by discovery.js too`));
+    });
+    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and Calendar's and Map's remaining copies");
   }
 
   console.log("\nAll discovery compatibility tests passed.");
