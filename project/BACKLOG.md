@@ -426,6 +426,20 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### BUG-005 — Public pages silently lost every event past the API's 1,000-row cap (Calendar showed no upcoming events)
+
+- **Type:** BUG · **Status:** REVIEW (fix implemented and verified against production data 2026-10-03; **not deployed** — awaiting Product Owner approval) · **Priority:** Critical
+- **Epic:** none (production correctness; prerequisite for the discovery-foundation work that follows it, but deliberately kept separable from it)
+- **Dependencies:** None.
+- **Discovered:** 2026-10-03, while measuring real counts for the homepage UX-evolution plan.
+- **Problem/User Need:** Supabase returns at most its "Max rows" setting (1,000) per request regardless of the `limit=` a query asks for, with a success status and no error. Every public page made one un-paged event request (`limit=2000`/`5000`, added by earlier "audit fixes" on the belief that an explicit limit lifts the cap — it does not). Measured in production 2026-10-03: `calendar.html` (no date floor, oldest first) held the oldest 1,000 approved events, ending 2026-10-02 — **zero events starting today or later** (today's cell showed 19 of 151; all of October showed 438 event-days of 1,678). `index.html` and `map.html` held 686 of 1,902 upcoming events and nothing after 2026-10-20, so search, "All upcoming", date picks, neighborhood counts and radius filtering all stopped there. `venues.html`'s per-venue count query was at 822 rows, 178 from the same failure.
+- **Acceptance Criteria (Product Owner, 2026-10-03):** not merely "pagination exists" — verified against production-equivalent data that events beyond the first 1,000 rows are actually available to each affected surface, and that the Calendar can represent the complete October inventory. Kept separable from the redesign. Not deployed without approval.
+- **Implementation Notes:** new shared static include `paged-fetch.js` (same pattern as `legal-snippets.js`) exposing one function, `fetchAllRows()`: one exact-count request, then every page requested at once; trusted only if as many rows come back as the count promised, otherwise it falls back to one page at a time, advancing by however many rows actually came back — so it never assumes the cap is 1,000. Applied to the event queries in `calendar.html`, `index.html`, `map.html` and to both list queries in `venues.html`; each paged query's `order=` now ends in `id.asc` so the order is total. Tests: `test/paged-fetch.test.js` (helper, against a cap-enforcing mock API) and `test/paged-loading-pages.test.js` (each page's real `loadSupabaseEvents()` extracted and executed against a production-shaped 2,954-row data set; confirmed to FAIL against the unfixed pages). Production verification: each fixed page was run, byte-identical to this commit, against live data and compared with an independently paged copy of the database — Calendar 2,954 of 2,954 rows and all 31 October days matching; Homepage and Map 2,216 of 2,216 from their load floor (1,902 upcoming); Venues 822 of 822.
+- **Discovered Work:** see `DEBT-003` (other queries still un-paged and the Calendar's unbounded history load), `DEBT-004`, `DEBT-005`, `DEBT-006` (data-coverage findings from the same measurement).
+- **Product Decisions Required:** approval to deploy.
+
+---
+
 ## Tech debt
 
 ### DEBT-001 — Detroit Orbit boundary is not enforced server-side outside cron-ticketmaster.js
@@ -455,6 +469,62 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** do not design or implement a solution unless Jody explicitly asks — nothing currently depends on it. Still distinct from the separate, already-tracked GitHub-authentication gap (no git push credential configured in these environments), which is unaffected by this correction.
 - **Discovered Work:** —
 - **Product Decisions Required:** none urgent. Only if Jody wants Claude to query RLS-protected tables directly (e.g. `source_runs`) or write outside the cron/admin-action pattern: whether to open network egress and provision a scoped Postgres role.
+
+---
+
+### DEBT-003 — Remaining un-paged queries, and the Calendar's unbounded history load
+
+- **Type:** DEBT · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** none (follow-up to `BUG-005`)
+- **Dependencies:** `BUG-005`'s `paged-fetch.js`.
+- **Discovered:** 2026-10-03, during `BUG-005`.
+- **Problem/User Need:** `BUG-005` was deliberately limited to Calendar, Homepage, Map and Venues. The same single-request pattern remains in queries that are under the 1,000-row cap today but will fail the same silent way when they cross it (row counts measured 2026-10-03): `neighborhoods.html`'s per-neighborhood event rows (380); `radar.html`'s `editorial_articles` (114); `index.html`'s `editorial_article_events` (139); the venue-coordinate lookups in `calendar.html`/`map.html` (0 today). Separately, `calendar.html` loads every approved event ever (2,954 rows, about 2.8 MB of JSON before compression, in three requests) though it can only navigate 12 months back; that load grows without bound as history accumulates, and all but one of today's rows are less than 12 months old, so the cost is ahead, not behind.
+- **Acceptance Criteria:** every list query a public page makes either pages through `fetchAllRows()` or is provably bounded; `calendar.html` loads only what its navigable window can show (events that start or are still running within it), with nothing currently visible lost.
+- **Implementation Notes:** the Calendar floor must keep long-running events that started before the window (`or=(start_date.gte.FLOOR,end_date.gte.FLOOR)`), not just floor on `start_date`.
+- **Discovered Work:** —
+- **Product Decisions Required:** none.
+
+---
+
+### DEBT-004 — Neighborhood coverage: only about 1 in 5 upcoming events has a neighborhood
+
+- **Type:** DEBT (data coverage) · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** EPIC-003 (entity identity) / EPIC-006
+- **Dependencies:** venue linkage (`DEBT-006`) — neighborhood resolves only through `events.venue_id → venues.neighborhood_id`.
+- **Discovered:** 2026-10-03 (Product Owner asked for this to be visible in the backlog; recorded, not solved).
+- **Problem/User Need:** measured 2026-10-03, 380 of 1,901 upcoming approved events carry a neighborhood, across 20 of the 45 neighborhoods in the table. Every neighborhood-based surface (Explore Neighborhoods cards, the neighborhood filter, `neighborhoods.html`, the planned "active neighborhoods" hero stat) therefore describes a fifth of the inventory. Neighborhood counts on the homepage are additionally counted in event-days, not events (a multi-day run counts once per day).
+- **Acceptance Criteria:** to be set with the Product Owner — at minimum a tracked coverage figure and a target.
+- **Implementation Notes:** do not guess a neighborhood from a name or address (`DEC-012`). Counting by distinct event is addressed separately by the shared discovery layer's counting rule.
+- **Discovered Work:** —
+- **Product Decisions Required:** coverage target; whether DEC-004's Detroit-only neighborhood granularity still stands as the site covers more of the Orbit.
+
+---
+
+### DEBT-005 — Events in cities missing from the places table disappear under location filtering
+
+- **Type:** DEBT (data coverage) · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** EPIC-002 / EPIC-009
+- **Dependencies:** None.
+- **Discovered:** 2026-10-03 (Product Owner asked for this to be visible in the backlog; recorded, not solved).
+- **Problem/User Need:** location filtering and the map resolve an event's position by looking its city up in a hand-maintained places table. Measured 2026-10-03, at least 140 upcoming events are in cities that table does not contain (Richmond 46, Redford 27, Canton 16, Bowling Green 14, Plymouth 13, Macomb 8, Belleville 6, and others), so they are excluded whenever any radius filter is active and cannot be placed on the map (178 events in the Map's current load window are unplaceable). The places table has also drifted between pages: `index.html` has 96 entries; `calendar.html` and `map.html` have 92 (missing Lansing, East Lansing, Clinton Township and one neighborhood) and still measure the Orbit from Detroit's centre rather than its border, contrary to `DEC-003`.
+- **Acceptance Criteria:** every city with upcoming events is either in the places table (verified inside the Orbit per `SERVICE_AREA.md`) or explicitly reported as out of area; surfaces say how many events they could not place rather than dropping them silently.
+- **Implementation Notes:** the page-to-page drift is resolved by the shared discovery layer holding one places table; the missing cities are a data task on top of that. Some city values are themselves wrong at the source (e.g. suburban-library events stored with city "Detroit") — a separate ingestion-quality issue.
+- **Discovered Work:** —
+- **Product Decisions Required:** confirm each added city against the service area.
+
+---
+
+### DEBT-006 — Venue linkage is too thin for a trustworthy venue count
+
+- **Type:** DEBT (data quality) · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** EPIC-003
+- **Dependencies:** `DEC-012` (venue resolution is going-forward-only, exact-match, no auto-creation).
+- **Discovered:** 2026-10-03 (Product Owner asked for this to be visible in the backlog; recorded, not solved).
+- **Problem/User Need:** measured 2026-10-03, the `venues` table has 130 rows; upcoming events name 309 distinct venues as free text; 84 venue rows are linked from upcoming events; 821 of 1,901 upcoming events have a `venue_id`; and 0 of 130 venue rows have coordinates. No single number among these is a defensible "venues" headline, so the Product Owner has held venue and city totals out of the homepage hero until this improves.
+- **Acceptance Criteria:** to be set with the Product Owner — a venue count the site can state publicly without qualification.
+- **Implementation Notes:** coordinates matter independently: without them every map position is a city centre.
+- **Discovered Work:** —
+- **Product Decisions Required:** what coverage level makes a venue count publishable.
 
 ---
 
