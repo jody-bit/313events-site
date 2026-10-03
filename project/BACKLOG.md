@@ -490,6 +490,19 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Discovered Work:** see `DEBT-003` (other queries still un-paged and the Calendar's unbounded history load), `DEBT-004`, `DEBT-005`, `DEBT-006` (data-coverage findings from the same measurement).
 - **Product Decisions Required:** none outstanding (deployment approved and verified; formal acceptance is the Product Owner's to record).
 
+### BUG-006 — Homepage header: search + Submit Event wrapped onto a second row at every desktop width
+
+- **Type:** BUG · **Status:** REVIEW (fixed 2026-10-03; not merged, not deployed; awaiting Product Owner review) · **Priority:** High
+- **Epic:** EPIC-002
+- **Dependencies:** None.
+- **Discovered:** 2026-10-03, reported by the Product Owner on desktop Safari after the Discovery / homepage-adoption deployment and treated as a regression from it.
+- **Problem/User Need:** search + Submit Event sat on a second row at the far left, under the logo, instead of at the right end of the header row.
+- **Root cause (measured, not inferred):** not the Discovery deployment — the header's markup and every CSS rule are byte-identical before and after it, and the pre-Discovery production deployment renders the header at the same coordinates in the same browser. The cause is the ninth nav link, Neighborhoods, added 2026-10-01 (`07580f3`): `[logo 157] + [nine links 22px apart 806] + [search + submit 169] + [two 16px gaps]` is about 1,164px in a 1,140px header, so the last flex item wrapped at every desktop width, in every browser. The first fix (`77c45fe`, 2026-10-03: `min-width:0` on the nav, `flex-shrink:0` on the group) could not work: with `flex-wrap:wrap` a row breaks into lines before any item may shrink.
+- **Acceptance Criteria:** on desktop the header is one row — logo, nav, search, Submit Event — with search + Submit Event at the right end; no change at tablet and mobile widths; no header redesign.
+- **Implementation Notes:** `index.html` only, two CSS rules: `@media (min-width:901px){header.site{flex-wrap:nowrap;}}` and the nav's link gap 22px → 16px. With that, the logo, search and Submit Event are at exactly the coordinates they had when the header last fitted on one row (before the ninth link); between 901px and about 1,170px wide the nav wraps its links onto two lines and Submit Event stays top right; at 900px and below nothing changes (pixel-identical). `calendar.html` and `map.html` have seven links and were never affected. Test: `test/homepage-header-layout.test.js`. Verified in Chromium at 23 widths with the site's real fonts and in Chrome on macOS against production; Safari could not be driven from the build environment — a check page for it was left in the repo's git-ignored `_to_delete/` folder.
+- **Discovered Work:** the nine-link nav has about 24px of slack on one row; a tenth link will not fit without another change.
+- **Product Decisions Required:** approve the 16px link spacing (the alternative is fewer or shorter links), then approve deployment.
+
 ---
 
 ## Tech debt
