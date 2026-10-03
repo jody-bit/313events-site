@@ -302,7 +302,7 @@ All entries below are reconstructed from decisions already made and recorded in 
 **Alternatives considered:** `events.is_dont_miss` plus reason/sort columns (the first proposal; rejected).
 **Reason:** Being featured is a dated editorial decision, not a fact about the event.
 **Consequences:** Not built yet. Initial shortlist for factual verification, chosen by the Product Owner: Masonic Temple Centennial Gala, The World of Anna Sui, Shortbus 20th Anniversary with John Cameron Mitchell; Andrew Bird with the DSO stays a candidate for later. Shipping "Don't Miss" under its own name leaves the press-coverage "On the Radar" page as it is; `DISCOVERY-010` is not otherwise resolved here.
-**Related backlog items:** `EPIC-008`, `EPIC-009`, `DISCOVERY-010`, `DISCOVERY-011`.
+**Related backlog items:** `EPIC-008`, `EPIC-009`, `DISCOVERY-010`, `DISCOVERY-011`. Added 2026-10-03: `EPIC-007` (candidate criteria, including Detroit routing significance — an added criterion; the decision above is unchanged) and `DISCOVERY-021`.
 
 ---
 
@@ -348,3 +348,4 @@ These have been *raised* and researched but are explicitly **not** settled — l
 - **DISCOVERY-017 — Self-service promotion package pricing and payment processor.** No evidence yet; explicitly deferred until `EPIC-016` demonstrates paid demand. See `EPIC-015`.
 - **DISCOVERY-018 — Exact advertising density-ceiling percentage.** Principle locked at "~10% of the primary discovery experience" (`DEC-018`); the number itself needs real testing. See `EPIC-016`.
 - **DISCOVERY-019 — Venue/organizer claim-verification mechanism, and whether it's a new trust category or governed by `DEC-005`'s existing hand-curation rule.** Not decided. See `EPIC-017`.
+- **DISCOVERY-021 — Evidence sources for Detroit routing significance** (a "Don't Miss" candidate criterion, `EPIC-007`). No act/artist entity, appearance history, tour-routing or momentum data exists today; no source chosen. Not decided. See `EPIC-007`.

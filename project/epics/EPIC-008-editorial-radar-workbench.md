@@ -49,6 +49,10 @@ Low-to-medium. The main risk is building more workflow states or automation than
 
 Exact tab label and card layout (implementation-level, not a product decision). See `DISCOVERY-011` (decision-log schema shared with `EPIC-007`'s V1 persistence) in `BACKLOG.md`.
 
+## Amendment note (2026-10-03) — Detroit routing significance
+
+`EPIC-007` now carries one additional candidate criterion, Detroit routing significance (see that epic's "Amendment (2026-10-03)" section; it is also a candidate criterion for "Don't Miss", `DEC-025`). Nothing in this epic changes: when that evidence exists it appears on a candidate card as one more matched reason, with the evidence it rests on, and the editor still decides. The three actions, the decision record and the "no autonomous publication" rule above are unchanged. The engine surfaces evidence for editorial review; it does not declare an event "Don't Miss".
+
 ## Relevant decisions
 
 `DEC-014` (three-layer discovery model; "the machine nominates, a human curates" is this epic's entire reason for existing). `DEC-015` (editorial/commercial firewall — a Radar/Feature action in this workbench must never be influenced by, or imply, any commercial relationship — see `EPIC-010`).

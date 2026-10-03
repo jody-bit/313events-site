@@ -40,6 +40,7 @@ See `DISCOVERY-010` in `BACKLOG.md`. No public UI story in this epic that uses t
 - **Only in Detroit / distinctly Detroit.** Depends entirely on `EPIC-007`'s V1 "Detroit/regional significance" signal — nothing to build here until that exists.
 - **First time / debut / premiere.** Same dependency as `EPIC-007`'s debut/premiere signal (V1, AI-assisted-extraction-gated).
 - **On the Radar (public surface).** Blocked on the naming decision above, and on `EPIC-008` producing real editorial selections to display — there is nothing to show until an editor has actually used the workbench.
+- **"Don't Miss" (homepage module).** Modelled by `DEC-025` (a temporary, human-curated, verified editorial placement; typically 1–3 events, sometimes 0); not built. This epic only displays what an editor has placed. Candidate criteria live in `EPIC-007`, including Detroit routing significance (added 2026-10-03) — not duplicated here.
 
 ## Out of scope
 
