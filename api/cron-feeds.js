@@ -29,15 +29,41 @@ const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press
 // deployment — only a human approval. See migration_008_feed_sources.sql
 // for the full reasoning and the trust model this implements.
 //
-// ** v1 SCOPE — ICS ONLY **
-// feed_sources.feed_format can be 'ics' or 'rss', but only 'ics' is
-// actually parsed here. Generic RSS has no reliable event start-date
-// semantics (a <pubDate> is when the item was posted, not when the event
-// IS) — auto-parsing it risks silently wrong dates, which is exactly the
-// kind of silent-wrongness this project has already been burned by once
-// (see the HTML-entity leak fix). An 'rss' row is left alone — recorded as
-// "not polled" every run — rather than guessed at. Worth building properly
-// later, not stubbed out badly now.
+// ** v1 SCOPE — ICS, now also RSS (best-effort) and 'manual' (never polled) **
+// feed_sources.feed_format is 'ics', 'rss', or 'manual' (migration_044,
+// 2026-10-03 — see that migration's header for why).
+//
+// 'ics' — parsed in full, as always (DTSTART/DTEND/LOCATION are real,
+// structured fields — see icsEventsToRows() below).
+//
+// 'rss' — as of 2026-10-03, actually polled and parsed (see
+// rssEventsToRows() below), but on an explicitly best-effort basis: a
+// generic RSS <pubDate> is when the item was POSTED, not necessarily when
+// the event IS, and most RSS feeds carry no other structured date field at
+// all. This project has a specific, hard-won reason to be careful about
+// silently-wrong dates (see the HTML-entity leak fix) — so rather than
+// trusting pubDate blindly, every RSS item's own title+description is
+// first searched for an explicit, fully-qualified date (month/day/year).
+// When one is found, that's used and the row still lands at the feed's
+// normal trust tier. When none is found, pubDate is used as a last-resort
+// placeholder, but the row is forced to status='pending_review' (never
+// auto-published) with a visible note asking for a human to verify the
+// date against the source — never silently treated as equally trustworthy
+// as an ICS DTSTART. An item with no date signal at all (no extractable
+// date AND no pubDate) is skipped entirely, same as an ICS VEVENT with no
+// DTSTART.
+//
+// 'manual' — NOT a feed. The venue/organizer has no calendar export of any
+// kind (the MBMC / Detroit History Tours pattern, 2026-10-03) and
+// submitted feed_url as just "a link to where their events are listed" —
+// never fetched, never scraped, never parsed here. This row exists purely
+// so it shows up in admin.html's queue for a human to follow up on by hand
+// (a one-time manual pull, same as those two sources), not for this cron
+// to act on automatically. Generic HTML scraping of an arbitrary site
+// structure is deliberately NOT attempted — this project's own convention
+// is "never invent, always flag" (see FEED_SUBMISSIONS.md), and a generic
+// scraper would have no way to honestly tell a real event date from
+// unrelated page text the way the ICS/RSS parsers above can.
 //
 // ** No RRULE expansion. ** A VEVENT with a recurrence rule and no further
 // explicit instances is read as its single DTSTART occurrence only, not
@@ -73,6 +99,15 @@ function timingSafeStringEqual(a, b) {
 }
 
 const DEFAULT_STATUS = "approved";
+// Used instead of DEFAULT_STATUS for a brand-new row derived from an RSS
+// item whose date came from a best-effort extraction rather than a real
+// structured date field (see rssEventsToRows() below). Matches
+// api/submit.js's own single-submission default — "needs a human look
+// before it's trusted," not "auto-published at the feed's trust tier."
+// Never applied to a row whose external_id already has a status an admin
+// set (the same existingStatusByExternalId lookup that protects ICS rows
+// protects these too — see the main loop below).
+const RSS_FALLBACK_STATUS = "pending_review";
 
 // Same generic numeric-entity decoder used across the other crons (see e.g.
 // cron-wdet.js) — applied defensively here too, since an organizer's feed
@@ -426,6 +461,218 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
   return rows;
 }
 
+// ---- RSS (best-effort) parsing, added 2026-10-03 (migration_044) ----
+//
+// Deliberately NOT a general XML parser — same hand-rolled, no-new-deps
+// style as the ICS parser above. RSS 2.0's actual grammar is small enough
+// (a flat list of <item> blocks, each with a handful of known child tags)
+// that a general XML library would be more surface area than this needs.
+
+// Strips a CDATA wrapper if present, then runs the same HTML-entity
+// decoder the ICS pipeline already uses — a title/description can come
+// HTML-escaped either way, same reasoning as decodeEntities()'s own
+// comment above.
+function decodeRssText(raw) {
+  if (raw == null) return null;
+  const cdataMatch = /^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/.exec(raw);
+  const inner = cdataMatch ? cdataMatch[1] : raw;
+  return decodeEntities(inner.trim());
+}
+
+// Pulls one tag's text content out of an <item> block. Not namespace-aware
+// (no <dc:date> etc.) — v1 scope is the plain RSS 2.0 tags every common
+// platform (WordPress's default feed, Squarespace, etc.) already emits.
+function rssTag(itemXml, tagName) {
+  const re = new RegExp(`<${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tagName}>`, "i");
+  const m = re.exec(itemXml);
+  return m ? decodeRssText(m[1]) : null;
+}
+
+function parseRssItems(xmlText) {
+  const items = [];
+  const itemRe = /<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi;
+  let m;
+  while ((m = itemRe.exec(xmlText))) {
+    const block = m[1];
+    items.push({
+      title: rssTag(block, "title"),
+      link: rssTag(block, "link"),
+      description: rssTag(block, "description") || rssTag(block, "content:encoded"),
+      pubDate: rssTag(block, "pubDate"),
+      guid: rssTag(block, "guid"),
+    });
+  }
+  return items;
+}
+
+// Full month name + common abbreviations -> 1-12. Used only by
+// extractExplicitDateFromText below.
+const MONTH_NAMES = {
+  jan: 1, january: 1, feb: 2, february: 2, mar: 3, march: 3, apr: 4, april: 4,
+  may: 5, jun: 6, june: 6, jul: 7, july: 7, aug: 8, august: 8,
+  sep: 9, sept: 9, september: 9, oct: 10, october: 10, nov: 11, november: 11,
+  dec: 12, december: 12,
+};
+
+// Searches free text (an RSS item's own title+description) for an
+// explicit, fully-qualified (month+day+YEAR) date — never a bare
+// month/day with no year, since guessing a year would be exactly the kind
+// of invented-not-found information this project's "never invent, always
+// flag" convention exists to avoid. Tries, in order: "Month D, YYYY" (or
+// "Mon D YYYY"), "M/D/YYYY", and ISO "YYYY-MM-DD". Returns
+// { date: 'YYYY-MM-DD' } for the first confident match, or null if none of
+// these specific, unambiguous shapes appears anywhere in the text.
+function extractExplicitDateFromText(text) {
+  if (!text) return null;
+
+  const monthNameRe = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/i;
+  let m = monthNameRe.exec(text);
+  if (m) {
+    const month = MONTH_NAMES[m[1].toLowerCase()];
+    const day = parseInt(m[2], 10);
+    const year = parseInt(m[3], 10);
+    if (month && day >= 1 && day <= 31) {
+      return { date: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}` };
+    }
+  }
+
+  const slashRe = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/;
+  m = slashRe.exec(text);
+  if (m) {
+    const month = parseInt(m[1], 10);
+    const day = parseInt(m[2], 10);
+    const year = parseInt(m[3], 10);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return { date: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}` };
+    }
+  }
+
+  const isoRe = /\b(\d{4})-(\d{2})-(\d{2})\b/;
+  m = isoRe.exec(text);
+  if (m) {
+    const month = parseInt(m[2], 10);
+    const day = parseInt(m[3], 10);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return { date: m[0] };
+    }
+  }
+
+  return null;
+}
+
+// RFC 822-ish pubDate (e.g. "Tue, 03 Oct 2026 14:00:00 GMT") -> 'YYYY-MM-DD',
+// converted to America/Detroit the same way parseIcsDate's UTC branch does.
+// Returns null for anything JS's Date can't parse rather than guessing.
+function parseRssPubDate(pubDate) {
+  if (!pubDate) return null;
+  const d = new Date(pubDate);
+  if (Number.isNaN(d.getTime())) return null;
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Detroit", year: "numeric", month: "2-digit", day: "2-digit",
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(d).map((p) => [p.type, p.value]));
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+// Converts parsed RSS items into rows shaped for the `events` table, one
+// feed_source at a time — the RSS analog of icsEventsToRows() above, but
+// deliberately simpler: no location_per_event branch (not requested for
+// v1), no end_date/time_display (RSS carries no reliable structured time
+// at all, so none is invented), and every row carries an honest
+// date-confidence note rather than presenting a guessed date the same way
+// as a real DTSTART.
+function rssEventsToRows(rssItems, feedSource, venueMap) {
+  const rows = [];
+  for (const item of rssItems) {
+    if (!item.title && !item.description) continue; // nothing to even derive a category/title from
+    if (isLikelyNotARealEvent({ title: item.title })) continue;
+
+    const combinedText = `${item.title || ""} ${item.description || ""}`;
+    const explicit = extractExplicitDateFromText(combinedText);
+    const pubDateFallback = !explicit ? parseRssPubDate(item.pubDate) : null;
+    const dateStr = explicit ? explicit.date : pubDateFallback;
+    if (!dateStr) continue; // no date signal at all — can't place this on the calendar, same as ICS's missing-DTSTART skip
+
+    const uidOrHash = item.guid || item.link || `${dateStr}-${(item.title || "").slice(0, 40)}`;
+
+    const row = {
+      external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
+      title: item.title || "Untitled event",
+      description: item.description ? item.description.slice(0, 1000) : null,
+      category: extractCategory(item.title, item.description) || feedSource.default_category,
+      no_fixed_venue: isLikelyNoFixedVenue({ title: item.title }),
+      venue_name_raw: feedSource.venue_name,
+      venue_id: resolveVenueId(venueMap, feedSource.venue_name),
+      venue_address_raw: null,
+      venue_city_raw: null,
+      start_date: dateStr,
+      end_date: null,
+      is_all_day: true, // no reliable per-event time signal in generic RSS — never invented
+      time_display: null,
+      ticket_url: item.link || null,
+      image_url: null,
+      source: feedSource.venue_name,
+      feed_source_id: feedSource.id,
+      // Visible, honest flag distinguishing the two ways this row's date
+      // was produced — never silently indistinguishable from a real ICS
+      // DTSTART. explicit._confidence is read by the caller below to pick
+      // this row's status (pending_review for the fallback case).
+      note: explicit
+        ? "Date auto-extracted from this feed's own RSS item text — please verify it matches the source before relying on it."
+        : "No explicit date found in this RSS item's own text — the date shown is a rough placeholder from the feed's publish date (pubDate), which is very likely wrong. Please verify against the source before publishing.",
+      _dateConfidence: explicit ? "extracted" : "pubdate-fallback",
+    };
+
+    rows.push(row);
+  }
+  return rows;
+}
+
+// Shared by the ics and rss branches of the main loop below: looks up each
+// row's current status (so an admin's prior approve/reject on an existing
+// external_id is never clobbered — see WP 0.17's fail-closed comment on
+// the original ICS-only version of this logic), then upserts. `statusForRow`
+// picks the DEFAULT status for a genuinely NEW row only (ics: always
+// DEFAULT_STATUS; rss: DEFAULT_STATUS for an explicit-date row,
+// RSS_FALLBACK_STATUS for a pubDate-fallback row — see rssEventsToRows()'s
+// _dateConfidence field). Returns { pollResult, upserted } on success, or
+// null after already writing a 502 response itself (status-lookup failure
+// aborts the WHOLE run, same fail-closed posture as before this was
+// factored out — never silently falls back to an empty map).
+async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
+  let existingStatusByExternalId;
+  try {
+    existingStatusByExternalId = await lookupExistingStatuses(
+      SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY,
+      rows.map((r) => r.external_id)
+    );
+  } catch (lookupErr) {
+    res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+    return null;
+  }
+  const rowsWithStatus = rows.map((row) => {
+    // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
+    // sent to Supabase as a column.
+    const { _dateConfidence, ...cleanRow } = row;
+    return {
+      ...cleanRow,
+      status: existingStatusByExternalId.get(row.external_id) || statusForRow(row),
+    };
+  });
+
+  const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
+    method: "POST",
+    headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify(rowsWithStatus),
+  });
+  if (!upsertResp.ok) {
+    const errText = await upsertResp.text();
+    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: 0 };
+  }
+  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found`, upserted: rows.length };
+}
+
 async function patchFeedSource(id, patch, sbHeaders) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/feed_sources?id=eq.${encodeURIComponent(id)}`, {
@@ -486,8 +733,40 @@ module.exports = async (req, res) => {
   for (const feedSource of feedSources) {
     let pollResult;
     try {
-      if (feedSource.feed_format !== "ics") {
-        pollResult = "Skipped — only .ics feeds are polled in this version (see cron-feeds.js header note)";
+      if (feedSource.feed_format === "manual") {
+        // Never fetched, never scraped — see this file's header and
+        // migration_044. This row exists purely for admin.html's queue;
+        // a human follows up by hand (a one-time manual pull, same as
+        // MBMC/Detroit History Tours), not this cron.
+        pollResult = "Not polled automatically — no feed/export exists for this source; awaiting manual follow-up (see admin.html's Feed sources queue).";
+      } else if (feedSource.feed_format === "rss") {
+        const r = await fetch(feedSource.feed_url, {
+          headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
+        });
+        if (!r.ok) {
+          pollResult = `Fetch failed: HTTP ${r.status}`;
+        } else {
+          const text = await r.text();
+          const rssItems = parseRssItems(text);
+          const rows = rssEventsToRows(rssItems, feedSource, venueMap);
+
+          if (!rows.length) {
+            pollResult = "Fetched OK — 0 events found (feed may be empty, all-past, or carry no extractable date)";
+          } else {
+            const statusForRow = (row) => (row._dateConfidence === "extracted" ? DEFAULT_STATUS : RSS_FALLBACK_STATUS);
+            const outcome = await upsertParsedRows(rows, statusForRow, sbHeaders, res);
+            if (outcome === null) return; // upsertParsedRows already wrote the 502 response
+            totalUpserted += outcome.upserted;
+            const lowConfidenceCount = rows.filter((r) => r._dateConfidence !== "extracted").length;
+            pollResult = outcome.upserted
+              ? `${outcome.pollResult}${lowConfidenceCount ? ` (${lowConfidenceCount} with a pubDate-fallback date, needs human verification)` : ""}`
+              : outcome.pollResult;
+          }
+        }
+      } else if (feedSource.feed_format !== "ics") {
+        // Unrecognized/future format value this deployment doesn't know
+        // about yet — fail closed (skip), never guess at a parser.
+        pollResult = `Skipped — unrecognized feed_format '${feedSource.feed_format}'`;
       } else {
         const r = await fetch(feedSource.feed_url, {
           headers: { "User-Agent": "313.events event calendar (feed submitted directly by this venue/organizer)" },
@@ -506,42 +785,13 @@ module.exports = async (req, res) => {
             // admin's approve/reject decision on an existing row isn't reset
             // to DEFAULT_STATUS by this merge-duplicates upsert. 2026-09-02
             // fix for the status-clobbering bug — see cron-lagerhouse.js's
-            // header comment for the full story.
-            // WP 0.17 (2026-09-22): fail-closed status lookup -- a failed lookup
-            // (non-OK response, thrown network error, or an unusable response body)
-            // must never silently default every row to DEFAULT_STATUS (D7). See
-            // api/_lib/status-lookup.js for the full rationale and the chunking
-            // (<=100 ids/request) this also fixes. Any failure aborts this run
-            // entirely -- zero event writes, HTTP 502 -- rather than falling back
-            // to an empty map the way this connector used to.
-            let existingStatusByExternalId;
-            try {
-              existingStatusByExternalId = await lookupExistingStatuses(
-                SUPABASE_URL,
-                SUPABASE_SERVICE_ROLE_KEY,
-                rows.map((r) => r.external_id)
-              );
-            } catch (lookupErr) {
-              res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
-              return;
-            }
-            const rowsWithStatus = rows.map((row) => ({
-              ...row,
-              status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-            }));
-
-            const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-              method: "POST",
-              headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-              body: JSON.stringify(rowsWithStatus),
-            });
-            if (!upsertResp.ok) {
-              const errText = await upsertResp.text();
-              pollResult = `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`;
-            } else {
-              totalUpserted += rows.length;
-              pollResult = `${rows.length} event${rows.length === 1 ? "" : "s"} found`;
-            }
+            // header comment for the full story. WP 0.17 (2026-09-22):
+            // fail-closed status lookup — see upsertParsedRows() above,
+            // which this now shares with the rss branch.
+            const outcome = await upsertParsedRows(rows, () => DEFAULT_STATUS, sbHeaders, res);
+            if (outcome === null) return; // upsertParsedRows already wrote the 502 response
+            totalUpserted += outcome.upserted;
+            pollResult = outcome.pollResult;
           }
         }
       }

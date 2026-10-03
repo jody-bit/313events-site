@@ -272,7 +272,7 @@
     <div class="tab-panel" data-tab-panel="feeds">
       <section class="block" style="margin-top:0;">
         <h2>Feed sources</h2>
-        <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form. Approving one does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. Each feed's own events then land pre-approved, since the feed itself was the thing reviewed.</div>
+        <div class="sub">Ongoing calendar feeds organizers registered via submit.html's "Submit your event feed" form — ICS (fully trusted) and RSS (best-effort dates, see each card) — plus "needs manual follow-up" rows from organizers with no feed at all (migration_044). Approving an ICS/RSS feed does not publish anything by itself — it lets api/cron-feeds.js start pulling from that URL on its normal daily schedule. A "needs manual follow-up" row is never auto-polled; approving it is just your record that someone should reach out or do a one-time manual pull, same as the MBMC/Detroit History Tours pattern.</div>
         <div id="feedList"></div>
       </section>
     </div>
@@ -1210,6 +1210,39 @@ function feedActionsFor(f) {
   return ''; // rejected — no further action in v1
 }
 
+// 2026-10-03 (migration_044): 'manual' feed_sources aren't a feed at all —
+// their feed_url is just "a link to where their events are listed", so the
+// old flat "Feed (FORMAT): <url>" line would have been misleading (it reads
+// as "we're pulling from this," which is never true for 'manual'). Splits
+// the three formats out explicitly rather than papering over the
+// difference with one generic label.
+function feedLinkLineFor(f) {
+  const url = `<a href="${escapeHtml(f.feed_url)}" target="_blank" rel="noopener">${escapeHtml(f.feed_url)}</a>`;
+  if (f.feed_format === 'manual') {
+    return `No feed/export — their events page: ${url}<br>`;
+  }
+  if (f.feed_format === 'rss') {
+    return `Feed (RSS, best-effort dates — see each event's own note after approval): ${url}<br>`;
+  }
+  return `Feed (${escapeHtml((f.feed_format || '').toUpperCase())}): ${url}<br>`;
+}
+
+// Same "not polled yet" line as before, but 'manual' gets its own honest
+// wording — it is NEVER polled by api/cron-feeds.js (see that file's
+// manual-skip branch), so "runs on cron-feeds.js's next scheduled pass"
+// would be a lie for this format specifically.
+function feedPollStatusLineFor(f) {
+  if (f.feed_format === 'manual') {
+    return f.status === 'approved'
+      ? '<br><i>Marked for manual follow-up — this is never polled automatically. Someone needs to reach out / do a one-time pull by hand.</i>'
+      : '';
+  }
+  if (f.last_polled_at) {
+    return '<br>Last polled: ' + escapeHtml(new Date(f.last_polled_at).toLocaleString()) + ' — ' + escapeHtml(f.last_poll_result || '—');
+  }
+  return f.status === 'approved' ? '<br><i>Not polled yet — runs on api/cron-feeds.js\'s next scheduled pass.</i>' : '';
+}
+
 function renderFeedList(feeds) {
   const list = document.getElementById('feedList');
   // Badge counts only the ones actually waiting on a yes/no decision —
@@ -1224,13 +1257,13 @@ function renderFeedList(feeds) {
     if (!rows.length) return '';
     const cards = rows.map(f => `
       <div class="card" id="feed-card-${f.id}">
-        <h3>${escapeHtml(f.venue_name)} <span class="status-badge ${escapeHtml(f.status)}">${escapeHtml(f.status.replace('_',' '))}</span></h3>
+        <h3>${escapeHtml(f.venue_name)} <span class="status-badge ${escapeHtml(f.status)}">${escapeHtml(f.status.replace('_',' '))}</span>${f.feed_format === 'manual' ? ' <span class="status-badge" style="background:#999;">needs manual follow-up</span>' : ''}</h3>
         <div class="meta">
-          Feed (${escapeHtml((f.feed_format || '').toUpperCase())}): <a href="${escapeHtml(f.feed_url)}" target="_blank" rel="noopener">${escapeHtml(f.feed_url)}</a><br>
+          ${feedLinkLineFor(f)}
           Default category: <b>${escapeHtml(f.default_category)}</b>
           ${f.website ? ' · <a href="' + escapeHtml(f.website) + '" target="_blank" rel="noopener">website</a>' : ''}<br>
           Submitted by: <b>${escapeHtml(f.contact_email)}</b>
-          ${f.last_polled_at ? '<br>Last polled: ' + escapeHtml(new Date(f.last_polled_at).toLocaleString()) + ' — ' + escapeHtml(f.last_poll_result || '—') : (f.status === 'approved' ? '<br><i>Not polled yet — runs on api/cron-feeds.js\'s next scheduled pass.</i>' : '')}
+          ${feedPollStatusLineFor(f)}
           ${f.notes ? '<br><br>' + escapeHtml(f.notes) : ''}
         </div>
         <div class="actions">${feedActionsFor(f)}</div>

@@ -419,7 +419,7 @@
   <div id="feedPane" role="tabpanel" style="display:none;">
 
     <div class="notice">
-      <b>What this is:</b> if you already publish your own calendar somewhere &mdash; Google Calendar, Eventbrite, WordPress's Events Calendar plugin, or similar &mdash; give us that feed's link once instead of re-entering every event by hand. We review the feed itself before turning it on; after that, your events appear automatically as you publish them, with no need to resubmit anything.
+      <b>What this is:</b> if you already publish your own calendar somewhere &mdash; Google Calendar, Eventbrite, WordPress's Events Calendar plugin, an RSS feed, or similar &mdash; give us that link once instead of re-entering every event by hand. Don't have anything like that? Tell us anyway &mdash; pick "No feed/export at all" below. We review what you submit before turning anything on; after that, your events appear automatically as you publish them, with no need to resubmit anything.
     </div>
 
     <form id="feedForm" novalidate>
@@ -434,9 +434,17 @@
       <fieldset>
         <legend>Your feed</legend>
         <div class="field">
-          <label for="feedUrl">iCalendar (.ics) feed URL <span class="req">*</span></label>
+          <label for="feedFormat">What do you have? <span class="req">*</span></label>
+          <select id="feedFormat" name="feedFormat">
+            <option value="ics">An iCalendar (.ics) feed URL</option>
+            <option value="rss">An RSS feed URL</option>
+            <option value="manual">No feed/export at all &mdash; just my website</option>
+          </select>
+          <div class="hint" id="feedFormatHint"><!-- filled in by updateFeedFormatUI() below --></div>
+        </div>
+        <div class="field">
+          <label for="feedUrl" id="feedUrlLabel">iCalendar (.ics) feed URL <span class="req">*</span></label>
           <input type="url" id="feedUrl" name="feedUrl" required placeholder="https://…/events.ics">
-          <div class="hint">Most calendar platforms already have one: Google Calendar's "Secret address in iCal format" (Calendar settings &rarr; Integrate calendar), WordPress's Events Calendar plugin (add <code>?ical=1</code> to your calendar's URL), or Eventbrite's organizer-side calendar export. RSS-only feeds aren't parsed automatically yet &mdash; email us instead if that's all you have.</div>
         </div>
       </fieldset>
 
@@ -806,6 +814,42 @@ function submitAnother(){
 const feedForm = document.getElementById('feedForm');
 const feedErrorBox = document.getElementById('feedFormError');
 
+// Relabels/reworks the single feedUrl field + its hint text depending on
+// which format is selected — one field does triple duty (ics/rss/manual)
+// rather than three near-identical fields, same "one field, context
+// changes its meaning" approach as the main form's admission/price pair.
+// See migration_044 (2026-10-03) for why 'manual' exists: a venue with no
+// feed/export at all can still tell us about themselves — this is NOT
+// parsed automatically; it just gets them into admin.html's queue for a
+// human to follow up on, same pattern as this project's own MBMC/Detroit
+// History Tours one-time manual pulls.
+const FEED_FORMAT_UI = {
+  ics: {
+    label: 'iCalendar (.ics) feed URL',
+    placeholder: 'https://…/events.ics',
+    hint: 'Most calendar platforms already have one: Google Calendar\'s "Secret address in iCal format" (Calendar settings &rarr; Integrate calendar), WordPress\'s Events Calendar plugin (add <code>?ical=1</code> to your calendar\'s URL), or Eventbrite\'s organizer-side calendar export.',
+  },
+  rss: {
+    label: 'RSS feed URL',
+    placeholder: 'https://…/feed.xml',
+    hint: 'We\'ll pull from this automatically, but RSS feeds don\'t have a real "event date" field the way a calendar export does &mdash; we do our best to find a date in each item\'s own text, and anything we can\'t confidently date gets held for a quick human check before it goes live. If your dates come through wrong, a .ics/.ical feed (above) is always more reliable when you have one.',
+  },
+  manual: {
+    label: 'Link to where your events are listed',
+    placeholder: 'https://…',
+    hint: 'No feed or calendar export needed &mdash; just a link to your events page, even a plain one. We don\'t parse this automatically; it lets us know you exist so we can reach out about adding your events by hand, or let you know once we can connect to it automatically.',
+  },
+};
+function updateFeedFormatUI(){
+  const format = document.getElementById('feedFormat').value;
+  const cfg = FEED_FORMAT_UI[format] || FEED_FORMAT_UI.ics;
+  document.getElementById('feedUrlLabel').innerHTML = `${cfg.label} <span class="req">*</span>`;
+  document.getElementById('feedUrl').placeholder = cfg.placeholder;
+  document.getElementById('feedFormatHint').innerHTML = cfg.hint;
+}
+document.getElementById('feedFormat').addEventListener('change', updateFeedFormatUI);
+updateFeedFormatUI();
+
 feedForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const data = new FormData(feedForm);
@@ -824,7 +868,12 @@ feedForm.addEventListener('submit', async (e)=>{
   const catLabel = CATS.find(c=>c.key===defaultCategory)?.label || defaultCategory;
   const payload = {
     feedUrl: data.get('feedUrl'),
-    feedFormat: 'ics', // only format offered in the UI today — see api/cron-feeds.js's v1 scope note
+    // 2026-10-03 (migration_044): now a real user choice — ics/rss/manual
+    // — see FEED_FORMAT_UI/updateFeedFormatUI() above and api/cron-feeds.js's
+    // per-format handling. Previously hardcoded to 'ics' (the only option
+    // the UI offered); api/submit-feed.js's own validation always accepted
+    // 'rss' too, so this was a UI gap more than a backend one.
+    feedFormat: data.get('feedFormat'),
     defaultCategory,
     venueName: data.get('feedVenueName'),
     website: data.get('feedWebsite') || null,

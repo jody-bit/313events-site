@@ -1,0 +1,39 @@
+-- Migration 044: RSS best-effort polling + manual (no-feed) intake for
+-- feed_sources.
+--
+-- Context (2026-10-03, Jody: "do we have in the submit form for venues and
+-- promoters to be able to add the multitude of ways we are seeing events
+-- feeds but being blocked?"): migration_008 shipped feed_sources ICS-only
+-- on purpose, with 'rss' accepted by the enum but never actually polled
+-- (see migration_008's own header and FEED_SUBMISSIONS.md's "Format:
+-- iCalendar" section) -- and had no path at all for a venue/organizer with
+-- NO feed or export whatsoever (the MBMC / Detroit History Tours pattern
+-- this project hit the same day, both handled as one-time manual SQL pulls
+-- instead of a standing self-service option).
+--
+-- This migration does ONE thing: adds 'manual' to feed_format so a
+-- venue/organizer with no feed at all can still register through
+-- submit.html (their feed_url field becomes "a link to where your events
+-- are listed", not a machine-readable feed) and show up in admin.html's
+-- existing Feed sources queue for a human to follow up on -- never
+-- auto-polled, never auto-scraped (see api/cron-feeds.js's own comment on
+-- why generic HTML scraping stays a manual/human decision, not an
+-- automated one).
+--
+-- 'rss' already existed in the enum (migration_008) -- no enum change
+-- needed for that side. What changes for RSS is purely in application code
+-- (api/cron-feeds.js now actually polls+parses it, best-effort, see that
+-- file's own header) and in submit.html's UI (RSS is now offered as a
+-- real option, no longer punted to "email us instead"). Documented here
+-- so the one enum change this migration makes isn't read as the whole
+-- story.
+--
+-- Run this once in Supabase's SQL Editor; safe to re-run (IF NOT EXISTS
+-- throughout, same convention as every migration before this one).
+--
+-- Note: ALTER TYPE ... ADD VALUE cannot run inside the do $$ ... $$ block
+-- pattern migration_008 used for the enum's original creation (Postgres
+-- disallows ADD VALUE inside a transaction block in some versions) -- it's
+-- a plain top-level statement instead. IF NOT EXISTS (supported since PG
+-- 12) makes it safe to re-run.
+alter type feed_format add value if not exists 'manual';

@@ -46,15 +46,14 @@ It carries real `DTSTART`/`DTEND`/`LOCATION` fields, unlike generic RSS/XML
 feeds, which have no native event-date semantics at all (a `<pubDate>` is
 when the item was *posted*, not when the event *is*).
 
-`feed_sources.feed_format` accepts `'rss'` too (so the schema doesn't need
-a migration later), but **`api/cron-feeds.js` only actually parses
-`'ics'`** — an `'rss'` row is recorded every run as "not polled" rather than
-guessed at. Auto-parsing generic RSS into event dates would risk silently
-wrong information, which this project has a specific, hard-won reason to
-avoid (see the HTML-entity-leak fix earlier this project). Shipping
-ICS-only now and documenting RSS as a real but unfinished case beats
-half-supporting it. The submit form doesn't even offer RSS as an option
-today — only ICS.
+`feed_sources.feed_format` accepted `'rss'` from the start (so the schema
+wouldn't need a migration later), but until 2026-10-03 `api/cron-feeds.js`
+only actually parsed `'ics'` — an `'rss'` row was recorded every run as
+"not polled" rather than guessed at. **As of migration_044 (2026-10-03),
+RSS is actually polled too, best-effort** — see "RSS and manual intake
+(2026-10-03 update)" below for what changed and, more importantly, what
+didn't: this is still not treated as equally trustworthy as a real ICS
+`DTSTART`.
 
 ## How it works end to end
 
@@ -141,6 +140,70 @@ today — only ICS.
   `admin.html`'s existing Auto-Repair action once it exists — no code
   change required for the backfill itself.
 
+## RSS and manual intake (2026-10-03 update)
+
+Prompted by Jody: *"do we have in the submit form for venues and promoters
+to be able to add the multitude of ways we are seeing events feeds but
+being blocked?"* — surfaced while onboarding Midwest Buddhist Meditation
+Center and Detroit History Tours as one-time manual pulls the same day,
+both of which have no feed/export of any kind. Audit found three real
+gaps; migration_044 and this update close two of them and give the third
+an honest home instead of silence:
+
+1. **RSS was accepted by the validator, offered nowhere in the UI, and
+   never actually polled.** Now: `submit.html`'s feed tab has a real
+   format picker (ICS / RSS / "no feed at all"), and `api/cron-feeds.js`
+   polls `'rss'` rows. Per-item date handling is deliberately two-tier,
+   never silently uniform:
+   - An item whose own title/description contains an explicit,
+     fully-qualified date (month+day+**year** — a bare month/day with no
+     year is never guessed at) uses that date and lands at the feed's
+     normal trust tier, same as an ICS event.
+   - An item with no such date falls back to its RSS `<pubDate>` (when
+     the item was *posted*, not necessarily when the event *is*), but is
+     forced to `status='pending_review'` regardless of the feed's own
+     approval, with a visible `note` asking a human to verify it. This is
+     the recommended, explicitly-chosen tradeoff over either (a) treating
+     every RSS date as fully trusted (reintroduces the exact
+     silently-wrong-date risk this file originally called out) or (b)
+     refusing to parse RSS at all (leaves real sources unreachable).
+   - An item with no date signal at all (neither an extractable date nor
+     a `pubDate`) is skipped entirely — same as an ICS `VEVENT` with no
+     `DTSTART`.
+   - An admin's prior approve/reject on an already-ingested row is never
+     clobbered by a re-poll — the same fail-closed status-lookup guard
+     ICS already had (`upsertParsedRows()`) now covers RSS too.
+   - RSS v1 does not support `location_per_event`, `end_date`, or a
+     parsed `time_display` — none of those have a reliable signal in
+     generic RSS, so none are invented. Worth revisiting if a real RSS
+     source needs them.
+2. **No path at all existed for a venue/organizer with no feed or export
+   of any kind** — the MBMC/Detroit History Tours pattern was a one-time
+   manual SQL pull each time, not a standing self-service option. Now:
+   `feed_format = 'manual'` (migration_044). `submit.html`'s format picker
+   offers "No feed/export at all — just my website"; the submitted URL is
+   just a link for a human to look at, never fetched or parsed.
+   `api/cron-feeds.js` always skips a `'manual'` row (never fetches,
+   scrapes, or guesses at its contents — see that file's own header on
+   why generic HTML scraping stays a human decision). It still flows
+   through the exact same `admin.html` queue and `api/admin-feeds.js`
+   approve/reject/pause/resume actions as ICS/RSS — approving one is
+   simply the record that a human should follow up (an outreach email, a
+   one-time manual pull), not a trigger for automated polling.
+3. **`api/submit-feed.js`'s `VALID_CATEGORIES` whitelist was missing
+   `'gaming'`** (added to `api/submit.js`'s own whitelist back on
+   2026-09-22, migration_036/037, but never mirrored here) — a feed
+   source trying to register with `gaming` as its default category would
+   have failed validation even though it's a real, valid category in the
+   database. Fixed in the same pass; `api/submit.js` needed no change
+   (its own whitelist already had `gaming`).
+
+**Automated test coverage added the same day** (`api/submit.js`,
+`api/submit-feed.js`, and `api/admin-feeds.js` had none before this):
+`test/submit-validation.test.js`, `test/submit-feed-validation.test.js`,
+`test/admin-feeds-actions.test.js`, `test/cron-feeds-rss.test.js`,
+`test/cron-feeds-manual-skip.test.js`.
+
 ## Known v1 limitations (real, not silently papered over)
 
 - **No RRULE expansion.** A recurring event with no explicit further
@@ -150,7 +213,15 @@ today — only ICS.
   instances into individual `VEVENT`s on their own, so this covers the
   common case — a feed relying on `RRULE` expansion for far-future dates
   will undercount until re-polled closer to each occurrence.
-- **RSS is schema-ready but not implemented.** See above.
+- **RSS dates are best-effort, not structured.** See "RSS and manual
+  intake" above — an explicit date in the item's own text is trusted at
+  the feed's normal tier; a `pubDate` fallback is always held for human
+  verification; nothing is ever silently guessed beyond that.
+- **'manual' rows are never automated.** By design — see above. If a
+  'manual' source turns out to have a parseable structure after all (the
+  way Detroit History Tours' plain-text calendar page did), building a
+  dedicated `html_recipe`-style connector for it is still a separate,
+  deliberate decision, not something this intake path does on its own.
 - **One feed = one venue, UNLESS `location_per_event` is set.**
   `migration_043_feed_sources_location_per_event.sql` (2026-09-29) added an
   opt-in per-feed switch for exactly the case this limitation used to
@@ -358,3 +429,24 @@ prioritized.
 - `vercel.json` — new daily cron entry + `maxDuration: 60` (same override
   `cron-metrotimes.js` already needed, for the same reason: fetching
   several external URls in one run can run long).
+
+### 2026-10-03 update (RSS + manual intake) — see that section above
+
+- `supabase/migration_044_feed_sources_rss_and_manual.sql` — adds
+  `'manual'` to the `feed_format` enum.
+- `api/submit-feed.js` — accepts `'manual'` as a `feedFormat`; fixed the
+  missing `'gaming'` category; format-aware notification email.
+- `api/cron-feeds.js` — `parseRssItems()`/`extractExplicitDateFromText()`/
+  `parseRssPubDate()`/`rssEventsToRows()` (new); `upsertParsedRows()`
+  factored out and shared by the ics and rss branches (same fail-closed
+  status-lookup guarantee, now in one place); a `'manual'` row is always
+  skipped, never fetched.
+- `submit.html` — feed tab now has a real format picker (ICS / RSS / no
+  feed at all) instead of a hardcoded `'ics'`; per-format label/hint text.
+- `admin.html` — feed cards now render format-aware link/poll-status
+  lines (`feedLinkLineFor()`/`feedPollStatusLineFor()`), and a `'manual'`
+  row gets a visible "needs manual follow-up" badge.
+- `test/submit-validation.test.js`, `test/submit-feed-validation.test.js`,
+  `test/admin-feeds-actions.test.js` (new — these three endpoints had no
+  coverage before this), `test/cron-feeds-rss.test.js`,
+  `test/cron-feeds-manual-skip.test.js`.
