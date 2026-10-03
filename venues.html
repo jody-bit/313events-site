@@ -134,6 +134,7 @@
   footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
+<script src="/paged-fetch.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -281,15 +282,24 @@ async function init(){
   }
   const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   try {
-    const [venuesResp, neighResp, eventsResp] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,neighborhood_id&order=name.asc&limit=2000`, { headers }),
+    // 2026-10-03: the venues list and the per-venue upcoming-event rows
+    // used to be single requests ending in `limit=2000`. Supabase returns
+    // at most its "Max rows" setting (1,000 here) per request no matter
+    // what `limit=` asks for, with no error — the events query was already
+    // at 821 rows, so "N upcoming" counts were about to start silently
+    // under-counting. fetchAllRows() (paged-fetch.js) pages through the
+    // whole result instead; see that file's header for the mechanism. Each
+    // `order=` ends in a unique column so the order is total, which paging
+    // needs. A failed venues load still throws into the catch below (as
+    // before); a failed events load still just means no counts (as before).
+    const [venuesResult, neighResp, eventsResult] = await Promise.all([
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city,neighborhood_id&order=name.asc,id.asc`, headers),
       fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${getTodayISO()}&venue_id=not.is.null&select=venue_id&limit=2000`, { headers }),
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${getTodayISO()}&venue_id=not.is.null&select=id,venue_id&order=id.asc`, headers).catch(() => ({ rows: [] })),
     ]);
-    if(!venuesResp.ok) throw new Error('venues fetch failed');
-    const venueRows = await venuesResp.json();
+    const venueRows = venuesResult.rows;
     const neighRows = neighResp.ok ? await neighResp.json() : [];
-    const eventRows = eventsResp.ok ? await eventsResp.json() : [];
+    const eventRows = eventsResult.rows;
 
     const neighIdToName = new Map((Array.isArray(neighRows) ? neighRows : []).map(n => [n.id, n.name]));
     const countByVenueId = new Map();

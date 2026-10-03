@@ -642,6 +642,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
+<script src="/paged-fetch.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -2948,16 +2949,24 @@ async function loadSupabaseEvents() {
     // today/upcoming events out of the loaded set with no error. 5000 gives
     // more headroom than index.html/map.html's 2000 since this query also
     // covers historical rows those two don't.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status&order=start_date.asc&limit=5000`;
-    const resp = await fetch(url, {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      },
-    });
-    if (!resp.ok) return; // fails silently — fallback data stays on screen
-    const rows = await resp.json();
-    if (!Array.isArray(rows) || !rows.length) return;
+    //
+    // 2026-10-03 CORRECTION to the note above: an explicit `limit=` does NOT
+    // lift the cap. Supabase returns at most its "Max rows" setting (1,000
+    // here) per request no matter what `limit=` asks for — this query's
+    // `limit=5000` came back with exactly 1,000 rows and no error. With no
+    // date floor and oldest-first order, those were the OLDEST 1,000
+    // approved events, which by 2026-10-03 ended on 2026-10-02: this page
+    // was loading zero events that started today or later, and every date
+    // from today on showed only multi-day carryovers (today: 19 of 121).
+    // fetchAllRows() (paged-fetch.js) now pages through the whole result
+    // instead; see that file's header for the mechanism. `id.asc` is the
+    // tiebreak that makes the order total, which paging needs.
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status&order=start_date.asc,id.asc`;
+    const { rows } = await fetchAllRows(url, {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    }); // throws if nothing could be loaded — caught below, fallback data stays on screen
+    if (!rows.length) return;
 
     EVENTS = rows.map(mapSupabaseRow);
     byDate = {};

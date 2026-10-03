@@ -464,6 +464,7 @@
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
+<script src="/paged-fetch.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1909,16 +1910,20 @@ async function loadSupabaseEvents() {
     // needs VENUE_LATLNG_MAP already populated. So the two requests run
     // concurrently via Promise.all rather than one `await` after another;
     // only the mapping step still waits for loadVenueLatLng() to finish.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status&order=start_date.asc&limit=2000`;
-    const [, resp] = await Promise.all([
+    //
+    // 2026-10-03: this query used to end in `limit=2000`, but Supabase
+    // returns at most its "Max rows" setting (1,000 here) per request no
+    // matter what `limit=` asks for, with no error — so this page was
+    // holding 686 of 1,901 upcoming events and nothing after 2026-10-20.
+    // fetchAllRows() (paged-fetch.js) now pages through the whole result
+    // instead; see that file's header for the mechanism. `id.asc` is the
+    // tiebreak that makes the order total, which paging needs.
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status&order=start_date.asc,id.asc`;
+    const [, { rows }] = await Promise.all([
       loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run below, but not before this fetch starts
-      fetch(url, {
-        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
-      }),
+      fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded — caught below
     ]);
-    if (!resp.ok) return;
-    const rows = await resp.json();
-    if (!Array.isArray(rows) || !rows.length) return;
+    if (!rows.length) return;
 
     EVENTS = rows.map(mapSupabaseRow);
     byDate = {};
