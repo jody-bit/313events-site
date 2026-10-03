@@ -114,7 +114,12 @@
      page. The class is still .when-btn for the 3 time-range items (so they
      ride the existing activateWhen()/updateWhenButtons() wiring); this
      scoped override just restyles them to match the nav bar visually. */
-  .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;}
+  /* min-width:0 (2026-10-03 fix, Jody: "the submit button is wrapping" on
+     Safari) — see index.html's identical comment on this same rule for the
+     full explanation. Kept byte-for-byte identical across index.html,
+     calendar.html, and map.html, same as every other duplicated header
+     rule in this file. */
+  .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;min-width:0;}
   .site-nav .when-btn, .site-nav-link{
     border:none;background:none;padding:0 0 4px;border-radius:0;
     font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
@@ -663,7 +668,7 @@
       <a class="site-nav-link" href="venues.html">Venues</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
     </nav>
-    <div style="display:flex;align-items:center;gap:18px;">
+    <div style="display:flex;align-items:center;gap:18px;flex-shrink:0;">
       <button type="button" class="nav-search-btn" id="navSearchBtn" aria-label="Search events and venues">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
       </button>
