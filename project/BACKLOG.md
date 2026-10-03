@@ -341,7 +341,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### STORY-024 — Shared discovery foundation (`discovery.js`)
 
-- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; approved by the Product Owner the same day with one semantic correction, since applied — `DEC-027`; not merged or deployed; first consumer is `STORY-025`) · **Priority:** High
+- **Type:** STORY · **Status:** ACCEPTED — COMPLETE (built and tested 2026-10-03; approved by the Product Owner the same day with one semantic correction, since applied — `DEC-027`; accepted by the Product Owner in the final approval of 2026-10-03; deployed that day as merge commit `b1cae64`; `/discovery.js` verified in production; first consumer is `STORY-025`) · **Priority:** High
 - **Epic:** EPIC-002 / EPIC-009 · **Recommended Model:** Opus 5 · **Complexity:** Large (cross-cutting)
 - **Dependencies:** `BUG-005` (complete data loading — a shared predicate can only filter what a page has loaded).
 - **Problem/User Need:** see `DEC-022`. Three pages each held a private, already-diverged copy of the discovery rules.
@@ -352,7 +352,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### STORY-025 — Homepage adopts the shared discovery layer (no visual redesign)
 
-- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; not merged, not deployed; awaiting Product Owner review) · **Priority:** High
+- **Type:** STORY · **Status:** ACCEPTED — COMPLETE (built and tested 2026-10-03; accepted by the Product Owner in the final approval of 2026-10-03 after two bounded corrections — canonical Today shortcuts and the load window, `DEBT-008`; deployed that day as merge commit `b1cae64`; read-only production smoke test passed on all 19 approved checks) · **Priority:** High
 - **Epic:** EPIC-002 / EPIC-009 · **Recommended Model:** Opus 5 · **Complexity:** Large (one page, every discovery code path)
 - **Dependencies:** `STORY-024` (must be deployed together — `index.html` now loads `/discovery.js`).
 - **Problem/User Need:** see `DEC-022`. The homepage is the first surface to stop carrying its own discovery rules.
@@ -494,7 +494,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### BUG-006 — Homepage header: search + Submit Event wrapped onto a second row at every desktop width
 
-- **Type:** BUG · **Status:** REVIEW (fixed 2026-10-03; not merged, not deployed; awaiting Product Owner review) · **Priority:** High
+- **Type:** BUG · **Status:** ACCEPTED — COMPLETE (fixed 2026-10-03; approved by the Product Owner the same day, including the 16px link spacing and `flex-wrap:nowrap` above 900px; deployed that day as commit `660b81f`; verified in production in Chrome at 19 widths from 360px to 1,920px; Safari is checked visually by the Product Owner) · **Priority:** High
 - **Epic:** EPIC-002
 - **Dependencies:** None.
 - **Discovered:** 2026-10-03, reported by the Product Owner on desktop Safari after the Discovery / homepage-adoption deployment and treated as a regression from it.
@@ -503,7 +503,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Acceptance Criteria:** on desktop the header is one row — logo, nav, search, Submit Event — with search + Submit Event at the right end; no change at tablet and mobile widths; no header redesign.
 - **Implementation Notes:** `index.html` only, two CSS rules: `@media (min-width:901px){header.site{flex-wrap:nowrap;}}` and the nav's link gap 22px → 16px. With that, the logo, search and Submit Event are at exactly the coordinates they had when the header last fitted on one row (before the ninth link); between 901px and about 1,170px wide the nav wraps its links onto two lines and Submit Event stays top right; at 900px and below nothing changes (pixel-identical). `calendar.html` and `map.html` have seven links and were never affected. Test: `test/homepage-header-layout.test.js`. Verified in Chromium at 23 widths with the site's real fonts and in Chrome on macOS against production; Safari could not be driven from the build environment — a check page for it was left in the repo's git-ignored `_to_delete/` folder.
 - **Discovered Work:** the nine-link nav has about 24px of slack on one row; a tenth link will not fit without another change.
-- **Product Decisions Required:** approve the 16px link spacing (the alternative is fewer or shorter links), then approve deployment.
+- **Product Decisions Required:** none remaining — the 16px link spacing, `flex-wrap:nowrap` above 900px and deployment were approved by the Product Owner on 2026-10-03.
 
 ---
 
@@ -611,7 +611,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### DEBT-008 — The homepage loaded only events that START within eight days back
 
-- **Type:** DEBT (data loading) · **Status:** REVIEW (corrected 2026-10-03 by Product Owner direction; part of `STORY-025`; not merged, not deployed) · **Priority:** Medium
+- **Type:** DEBT (data loading) · **Status:** ACCEPTED — COMPLETE (corrected 2026-10-03 by Product Owner direction; part of `STORY-025` and accepted with it; deployed that day as merge commit `b1cae64`; verified in production — every current + upcoming event loads, including long-running events that began before the back-buffer) · **Priority:** Medium
 - **Epic:** EPIC-002
 - **Dependencies:** `STORY-025`; related to `DEBT-003` (Calendar's load window).
 - **Discovered:** 2026-10-03, during the homepage's adoption of the shared discovery layer.
