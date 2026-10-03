@@ -10,6 +10,7 @@
 //   - An offset past the end returns 200 + [] without a count, and
 //     416 (PGRST103) when a count was requested.
 //   - `Range: 0-0` returns a single row.
+//   - `or=(a.op.v,b.op.v)` is supported (the "current + upcoming" filter).
 // An unsupported filter throws rather than being ignored, so a test can
 // never pass by accident because a filter silently did nothing.
 "use strict";
@@ -37,6 +38,20 @@ function makeMockPostgrest(tables, options) {
     const value = expr.slice(dot + 1);
     if (!OPS[op]) throw new Error(`mock-postgrest: unsupported filter ${column}=${expr}`);
     return rows.filter((r) => OPS[op](r[column], value));
+  }
+
+  // or=(start_date.gte.2026-10-03,end_date.gte.2026-10-03) — a row passes
+  // if ANY of the comma-separated `column.op.value` conditions holds.
+  function applyOr(rows, expr) {
+    const m = /^\((.*)\)$/.exec(expr);
+    if (!m) throw new Error(`mock-postgrest: unsupported or= expression ${expr}`);
+    const conditions = m[1].split(",").map((part) => {
+      const dot = part.indexOf(".");
+      return { column: part.slice(0, dot), expr: part.slice(dot + 1) };
+    });
+    const passing = new Set();
+    conditions.forEach((c) => applyFilter(rows, c.column, c.expr).forEach((r) => passing.add(r)));
+    return rows.filter((r) => passing.has(r));
   }
 
   function applyOrder(rows, orderParam) {
@@ -82,6 +97,7 @@ function makeMockPostgrest(tables, options) {
       if (key === "limit") { limit = parseInt(value, 10); continue; }
       if (key === "offset") { offset = parseInt(value, 10); continue; }
       if (key === "order") { order = value; continue; }
+      if (key === "or") { rows = applyOr(rows, value); continue; }
       rows = applyFilter(rows, key, value);
     }
     if (order) rows = applyOrder(rows, order);

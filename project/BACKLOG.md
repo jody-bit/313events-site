@@ -333,7 +333,33 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Acceptance Criteria (proposed, for Product Owner review):** (1) an "Event features" (or "Attendee information") group in the form, placed after Ticketing and before Organizer contact, holding promoter-declared attributes as plain checkboxes/selects with helper text — clothing-optional moves there; `recurring` and `venueTba` stay with Date & time and Location. (2) Each declared attribute is one stored, structured field, exposed through `events_public`, with who declared it (promoter / editor / source) — never inferred from description text. (3) Each one that is filterable appears in the shared Discovery `features` list under one key, marked as *declared* (supplied by the organizer or an editor) as distinct from today's *derived* features (has tickets, has photo, community-submitted, press coverage), so a filter can say what it is based on. (4) The confirmation panel becomes a readable summary instead of JSON. (5) No new attribute is added without a decision on whether it is a positive filter, a caution, or both.
 - **Implementation Notes:** `is_clothing_optional` is already in `events_public` and already loaded by the homepage, so it can become the first declared Discovery feature with no schema change. `venueTba` should become a real field rather than text appended to the venue name (it currently pollutes venue names and venue matching). Do not add attributes speculatively — add one when a source or a promoter can actually supply it.
 - **Discovered Work:** —
-- **Product Decisions Required:** approve the grouping; which attributes to add first; for clothing-optional specifically, whether it is offered as a public filter, shown only as a label, or both.
+- **Product Decisions Required:** approve the grouping; which attributes to add first. **Decided 2026-10-03 (`DEC-024`):** clothing-optional is BOTH an eventual public label and a discovery filter when true; false/unset asserts nothing. **Also decided:** this story stays in the backlog and is not to be built yet — promoter-declared features will be designed coherently as part of the Discovery system rather than added piecemeal.
+
+---
+
+### STORY-024 — Shared discovery foundation (`discovery.js`)
+
+- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; approved by the Product Owner the same day with one semantic correction, since applied — `DEC-027`; not merged or deployed; first consumer is `STORY-025`) · **Priority:** High
+- **Epic:** EPIC-002 / EPIC-009 · **Recommended Model:** Opus 5 · **Complexity:** Large (cross-cutting)
+- **Dependencies:** `BUG-005` (complete data loading — a shared predicate can only filter what a page has loaded).
+- **Problem/User Need:** see `DEC-022`. Three pages each held a private, already-diverged copy of the discovery rules.
+- **Acceptance Criteria (Product Owner, 2026-10-03):** plain shared vanilla JS, no framework/build dependency; pure definitions/state/semantics only — no DOM, network or stored state; canonical WHEN + WHERE + WHAT + SEARCH state; positive/additive category filtering, OR within WHAT, AND across dimensions; canonical URL serialization with legacy URL compatibility; `describe()` and `facets()` kept; genre-ready hierarchy with no genre exposed or inferred; surface-specific defaults preserved; declared vs derived features (`DEC-024`). Scope of this step: the file and its tests only — no page changed, no homepage visual work.
+- **Implementation Notes:** `discovery.js` exposes one global, `Discovery`. Tests: `test/discovery.test.js` (every rule; loads with no DOM/network; mutation-checked — 29 deliberate rule breaks each fail a test) and `test/discovery-compat.test.js` (the homepage's real filter code executed against the shared rules over about 1.1 million comparisons with only the documented intended differences; every URL the homepage writes today decodes to the equivalent state; URLs written by `href()` fed to each page's real, unmodified URL reader; drift guards over every remaining copy of the definitions). Intended differences from today's homepage, for review: events in progress are shown (`DEC-023`); a multi-day run is matched when it overlaps the chosen dates, not only when it starts in them; an event that is already over today is hidden in every forward-looking view, not just the default and All Upcoming; an event in a category the page does not list is no longer hidden when no category is selected; "today" is Detroit time rather than the visitor's clock. Additions to the approved interface, for review: `featuresOf()`, `whens`, `radii`, an optional `ctx` on `href()`, and `inventoryFilter()` accepting a ctx as well as a date.
+- **Discovered Work:** `admin.html`'s editorial form labels the `fest` category "Festivals"; every public page says "Festivals & Parades" (recorded in the drift guard as the one known difference). The stories `STORY-003`, `STORY-005` and `STORY-006` describe a per-page build that `DEC-022` supersedes and should be reconciled.
+- **Product Decisions Required:** none outstanding on the foundation itself — the boundary, the interface additions (`featuresOf()`, `whens`, `radii`, `ctx`, removal patches in `describe()`, expanded `facets()`, broader `change()` patches) and the 51 KB size were approved 2026-10-03, with the historical-date correction recorded as `DEC-027`. Remaining steps, in the approved order: homepage adopts the shared file with no visual redesign (`STORY-025`); homepage UX evolution; review; Calendar and Map adoption.
+
+### STORY-025 — Homepage adopts the shared discovery layer (no visual redesign)
+
+- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; not merged, not deployed; awaiting Product Owner review) · **Priority:** High
+- **Epic:** EPIC-002 / EPIC-009 · **Recommended Model:** Opus 5 · **Complexity:** Large (one page, every discovery code path)
+- **Dependencies:** `STORY-024` (must be deployed together — `index.html` now loads `/discovery.js`).
+- **Problem/User Need:** see `DEC-022`. The homepage is the first surface to stop carrying its own discovery rules.
+- **Acceptance Criteria (Product Owner, 2026-10-03):** replace the homepage's duplicated discovery definitions and semantics with the shared layer wherever its contract covers them; preserve current presentation, layout, event cards and interactions; verify legacy URLs and existing interactions against the adopted layer; report behaviour changes rather than compensating for them; no homepage UX evolution, Don't Miss, Orbit preview, Calendar or Map migration, `STORY-023`, genre UI or unrelated cleanup.
+- **Implementation Notes:** `index.html` loads `/discovery.js`, holds one canonical state changed only through `Discovery.change()`, and takes from Discovery: category keys/labels/order, the places table, the Orbit rule, "today" (Detroit time), every date window, the match predicate, counts (hero, cards, neighborhoods, list heading), the active-filter labels and removals, and URL reading and writing. Removed from the page: its own `CATS` labels, `LOCATIONS`, `CITY_LOOKUP`, the boundary and distance maths, `BLOCKED_NAMES`, `FEATURE_CHIPS`, the date helpers, `matchesFilters()` and friends, and `syncURL()`/`readStateFromURL()`'s own format — the page is about 500 lines shorter. Kept on the page because they are presentation or outside the contract: category colours, wording of headings and empty states, the day-grouped list index, time parsing for sort order and calendar export, and the "within 75 mi of you" count (`DEBT-009`). Tests: `test/homepage-discovery-adoption.test.js` runs the page's real script (with `test/fixtures/fake-dom.js`, a mock database and a fixed clock) through every control, card and old link form; `test/discovery-compat.test.js` now executes a frozen copy of the pre-adoption rules (`test/fixtures/homepage-before-discovery.js`) so the old-vs-shared comparison survives the old code's removal, and compares the old page's own URL reader with Discovery's, naming each approved difference; `test/dynamic-explore-neighborhoods.test.js` runs the adopted neighborhood counter. 35 deliberate breaks of the adopted page each fail a test. Also verified in a real browser before and after (120 states: every list and every card number equals what Discovery gives; all 1,475 event cards present both before and after are byte-identical; screenshots differ only where a number changed and in the "All types" chip) and read-only against production data.
+- **Behaviour changes, for review** (every one measured; production figures from Sat 2026-10-03, 5:35 PM): events in progress are listed (default view 90 → 109 events); already-over events are no longer listed in Tonight / This Weekend / This Week (weekend 151 → 139); a multi-day event is listed on every day it overlaps the chosen dates, not only when it starts in them (tomorrow 30 → 51); "N events" in headings and on cards counts events, not event-days (hero 173 → 129; All Upcoming heading 2,363 → 1,890; Downtown card 106 → 36, and the list it opens now says the same 36 where it used to say 45); the site total includes events in progress (1,902 → 1,935); "today" is Detroit's date, not the device's; the URL is written in the shared form (no `date=`, `when=week`, `when=dates&from=&to=`) and old links still open the same view; bare `cats=` and turning the last category off mean all events (approved); a picked date now in the past is honoured (`DEC-027`); `when=now`/`today`/`next7`/`week`, `radius=all` without a place and `features=clothing_optional` in a link are honoured; the "All types" chip un-lights as soon as a category is turned off; uncategorised events show when no category is filtered; On the Radar no longer lists an event that already ended today.
+- **Two corrections after review (Product Owner, 2026-10-03), both applied:** (1) the header's Today and the Free Today card use the canonical Today mode, not a picked date — "today in Detroit, whenever the link is opened": the link is `?when=today` (`?when=today&free=1`) and never goes stale, the chip reads "Today", and events that have already ended are left out; a literal picked date still serializes as that date and still shows everything that was on it. Production, 6:10 PM: Today lists 123 events where the picked date lists 156 (33 already ended); Free Today card 3 → 4 and its list 2 → 4. (2) the load window, `DEBT-008`: every current + upcoming event is now loaded and listable (default view 90 → 123; site total and loaded inventory both 1,954), with no other history loaded. With (2), the week strip's day counts include the long-running events on every day of the week (Monday 15 → 29).
+- **Discovered Work:** `DEBT-007` (admin label), `DEBT-008` (homepage load window — corrected), `DEBT-009` (homepage rules still outside the shared contract, and decisions they need).
+- **Product Decisions Required:** final approval to merge and deploy (with `STORY-024`). Everything else in the adoption — the behaviour changes above, the interface additions and `DEC-027` — was approved 2026-10-03.
 
 ---
 
@@ -454,7 +480,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### BUG-005 — Public pages silently lost every event past the API's 1,000-row cap (Calendar showed no upcoming events)
 
-- **Type:** BUG · **Status:** REVIEW (fix implemented and verified against production data 2026-10-03; **not deployed** — awaiting Product Owner approval) · **Priority:** Critical
+- **Type:** BUG · **Status:** REVIEW (Product Owner approved deployment 2026-10-03; deployed the same day as commit `ae65cd8`; production smoke check passed on Calendar, Homepage, Map and Venues — every row count matched the database) · **Priority:** Critical
 - **Epic:** none (production correctness; prerequisite for the discovery-foundation work that follows it, but deliberately kept separable from it)
 - **Dependencies:** None.
 - **Discovered:** 2026-10-03, while measuring real counts for the homepage UX-evolution plan.
@@ -462,7 +488,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Acceptance Criteria (Product Owner, 2026-10-03):** not merely "pagination exists" — verified against production-equivalent data that events beyond the first 1,000 rows are actually available to each affected surface, and that the Calendar can represent the complete October inventory. Kept separable from the redesign. Not deployed without approval.
 - **Implementation Notes:** new shared static include `paged-fetch.js` (same pattern as `legal-snippets.js`) exposing one function, `fetchAllRows()`: one exact-count request, then every page requested at once; trusted only if as many rows come back as the count promised, otherwise it falls back to one page at a time, advancing by however many rows actually came back — so it never assumes the cap is 1,000. Applied to the event queries in `calendar.html`, `index.html`, `map.html` and to both list queries in `venues.html`; each paged query's `order=` now ends in `id.asc` so the order is total. Tests: `test/paged-fetch.test.js` (helper, against a cap-enforcing mock API) and `test/paged-loading-pages.test.js` (each page's real `loadSupabaseEvents()` extracted and executed against a production-shaped 2,954-row data set; confirmed to FAIL against the unfixed pages). Production verification: each fixed page was run, byte-identical to this commit, against live data and compared with an independently paged copy of the database — Calendar 2,954 of 2,954 rows and all 31 October days matching; Homepage and Map 2,216 of 2,216 from their load floor (1,902 upcoming); Venues 822 of 822.
 - **Discovered Work:** see `DEBT-003` (other queries still un-paged and the Calendar's unbounded history load), `DEBT-004`, `DEBT-005`, `DEBT-006` (data-coverage findings from the same measurement).
-- **Product Decisions Required:** approval to deploy.
+- **Product Decisions Required:** none outstanding (deployment approved and verified; formal acceptance is the Product Owner's to record).
 
 ---
 
@@ -551,6 +577,55 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** coordinates matter independently: without them every map position is a city centre.
 - **Discovered Work:** —
 - **Product Decisions Required:** what coverage level makes a venue count publishable.
+
+---
+
+### DEBT-007 — Admin editorial form labels the `fest` category "Festivals"; the public label is "Festivals & Parades"
+
+- **Type:** DEBT (taxonomy label) · **Status:** BACKLOG · **Priority:** Low
+- **Epic:** EPIC-004
+- **Dependencies:** None.
+- **Discovered:** 2026-10-03, by the discovery drift guard (`test/discovery-compat.test.js`), which records it as the one known difference so that any other divergence still fails.
+- **Problem/User Need:** `admin.html`'s `EDITORIAL_CATEGORIES` lists `['fest', 'Festivals']`; every public surface, and `discovery.js`, says "Festivals & Parades". Same key, same events — only the admin-side wording differs.
+- **Acceptance Criteria:** the admin label reads "Festivals & Parades" (or the Product Owner chooses a different single label for both); the `KNOWN_ADMIN_LABEL_DIFFERENCES` exception is removed from the drift guard.
+- **Implementation Notes:** deliberately NOT changed as part of the discovery work (Product Owner, 2026-10-03: leave `fest` unchanged; do not mix this correction into Discovery adoption). The category key and the public label are untouched.
+- **Discovered Work:** —
+- **Product Decisions Required:** none beyond confirming the public wording is the one to keep.
+
+---
+
+### DEBT-008 — The homepage loaded only events that START within eight days back
+
+- **Type:** DEBT (data loading) · **Status:** REVIEW (corrected 2026-10-03 by Product Owner direction; part of `STORY-025`; not merged, not deployed) · **Priority:** Medium
+- **Epic:** EPIC-002
+- **Dependencies:** `STORY-025`; related to `DEBT-003` (Calendar's load window).
+- **Discovered:** 2026-10-03, during the homepage's adoption of the shared discovery layer.
+- **Problem/User Need:** `loadSupabaseEvents()` asked for `start_date >= today − 8 days`. An event that began earlier and is still running (a long exhibition, a season-long market) is part of the current + upcoming inventory (`DEC-023`) and counted in the site total, but was never loaded, so it could not be listed — measured 2026-10-03: 14 of 33 in-progress events, the longest running since January.
+- **Decision (Product Owner, 2026-10-03):** fix it so every event eligible for the homepage's current + upcoming inventory can be loaded and displayed; do NOT turn it into unrestricted historical loading to support arbitrary old homepage date links — deep historical discovery remains a Calendar concern.
+- **Acceptance Criteria:** every approved event that starts today or later, or is still running, is loaded and can be listed; no finished event from before the eight-day back-buffer is loaded.
+- **Implementation Notes:** the smallest change with the existing schema is the filter itself: `start_date >= floor` became `start_date >= floor OR end_date >= today` (`or=(start_date.gte.<floor>,end_date.gte.<today>)` on `events_public`) — the same back-buffer, plus everything still running. A long-running event is listed from the back-buffer's first day rather than from its own start (otherwise the 60-listed-days guard, `MAX_EVENT_SPAN_DAYS`, would be spent on days the page never shows); the guard itself is unchanged, so a run longer than 60 days is listed on the next ~52 days. Measured on production 2026-10-03 (6:05 PM): 2,235 → 2,249 rows, the 14 added all in progress, none finished; the same three pages; +18 KB on 2.17 MB of JSON (+0.8%); load time unchanged within noise (medians about 0.56 s and 0.62 s over six runs each, ranges overlapping); all 1,954 events the database counts as current + upcoming are loaded (1,940 before). Tests: `test/paged-loading-pages.test.js` (long-running loaded, finished history not, every page of the query carries the bounded filter) and `test/homepage-discovery-adoption.test.js`.
+- **Discovered Work:** an explicit date older than the back-buffer is still honoured as a selection (`DEC-027`) and still shows an empty list on the homepage — by the decision above, that is Calendar's job; a hand-off link from that empty state could be considered in the homepage UX evolution.
+- **Product Decisions Required:** none outstanding.
+
+---
+
+### DEBT-009 — Homepage rules still outside the shared discovery contract, and the decisions they need
+
+- **Type:** DEBT (discovery follow-ups) · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** EPIC-002 / EPIC-009
+- **Dependencies:** `STORY-025`.
+- **Discovered:** 2026-10-03, during the homepage's adoption of the shared discovery layer. None of these was changed; each is reported rather than compensated for.
+- **Problem/User Need:**
+  1. **"Within 75 mi of you" (the "What's in your Detroit Orbit?" card).** Once a location is set, the card counts events within 75 miles of the visitor's own point. That is not one of Discovery's distance filters (5/10/25/50 mi from the chosen point, or the Detroit Orbit — 75 mi from Detroit's border), so it remains the card's own arithmetic; and the card's button applies the Detroit Orbit, not that radius, so the number and the list it opens are not the same thing (production, from Royal Oak: 1,733 on the card and 1,733 in the Orbit that day — equal only because every placeable event was within both).
+  2. ~~**"Today" (header) and "Free Today" (card) are an explicit pick of today's date.**~~ **Settled 2026-10-03 (Product Owner):** both now use the canonical Today mode (`when.mode = 'today'`; Free Today is Today + free) — see `STORY-025`. A literal picked date remains a stable, dated selection.
+  3. **The "Showing today — see everything" note still appears above search results**, which span every upcoming date (pre-existing wording condition, preserved).
+  4. **A long-running event is listed under every day of its run.** Pre-existing for events starting today or later; now also true of events in progress, so one exhibition can account for dozens of rows in All Upcoming, a neighborhood or a search (production: a "jazz" search went from 7 rows to 66 for 7 events). A presentation question for the event stream in the homepage UX evolution.
+  5. **Rendering cost of the widest views.** All Upcoming renders about 2,500 cards at once and search re-renders on every keystroke (unchanged by the adoption, but heavier since `BUG-005` loaded every event).
+  6. **Time parsing exists twice**: inside `discovery.js` (for "tonight" and "is it over") and on the page (for sort order and calendar export). Not exposed by the contract.
+- **Acceptance Criteria:** each item either decided and implemented, or explicitly accepted as is.
+- **Implementation Notes:** items 2–5 are natural inputs to the homepage UX evolution.
+- **Discovered Work:** —
+- **Product Decisions Required:** item 1.
 
 ---
 
