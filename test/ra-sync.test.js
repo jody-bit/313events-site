@@ -393,6 +393,57 @@ async function run() {
   console.log("PASS: startRaSyncSession -- dedupe, known/new diff, legacy exclusion, session_data persisted, cap-ready shape");
 
   {
+    // identity-widening: a candidate with no row under its own
+    // external_id, but a prior conservative dedupe match recorded in
+    // event_source_identities, must be classified "known", not "new" --
+    // this is the fix for the ra-2547930/ra-2512641/ra-2524562/
+    // ra-2513540 pattern (2026-10-03 coverage review): without this, a
+    // genuinely-represented event keeps reappearing as new forever.
+    const fetchFn = async () => ({ ok: true, text: async () => "" });
+    const lookupExistingRowsFn = async () => new Map(); // nothing known via external_id directly
+    const lookupKnownSourceIdsFn = async (url, key, source, bareIds) => {
+      assert.strictEqual(source, "ra");
+      assert.deepStrictEqual(bareIds.sort(), ["400", "401"]);
+      return new Set(["400"]); // ra-400 has a recorded identity match; ra-401 does not
+    };
+    const startRunFn = async () => ({ runId: "run-identity", startedAtMs: Date.now() });
+
+    const result = await lib.startRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+      candidateIds: ["ra-400", "ra-401"],
+      fetchFn, lookupExistingRowsFn, lookupKnownSourceIdsFn, startRunFn,
+    });
+
+    assert.strictEqual(result.candidateCount, 2);
+    assert.strictEqual(result.knownCount, 1, "ra-400 is known via event_source_identities even with no external_id row");
+    assert.deepStrictEqual(result.ids, ["ra-401"]);
+  }
+  console.log("PASS: startRaSyncSession -- a candidate known only via event_source_identities (no external_id row) is classified known, not new");
+
+  {
+    // the identity-widening lookup itself fails soft -- a lookup error
+    // must fall back to exactly pre-existing behavior (classified by
+    // external_id alone), never abort the run.
+    const fetchFn = async () => ({ ok: true, text: async () => "" });
+    const lookupExistingRowsFn = async () => new Map();
+    const lookupKnownSourceIdsFn = async () => { throw new Error("identities table unreachable"); };
+    const startRunFn = async () => ({ runId: "run-identity-fail", startedAtMs: Date.now() });
+
+    await assert.rejects(
+      () => lib.startRaSyncSession({
+        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds: ["ra-500"],
+        fetchFn, lookupExistingRowsFn, lookupKnownSourceIdsFn, startRunFn,
+      })
+    );
+    // NOTE: the real lookupKnownSourceIds implementation never throws (it
+    // fails soft internally -- see test/event-source-identities.test.js).
+    // This test's throwing mock exists only to document that
+    // startRaSyncSession itself adds no new fail-closed behavior here;
+    // the production default is what actually guarantees soft failure.
+  }
+  console.log("PASS: startRaSyncSession -- identity widening uses the injected function as-is (soft-failure is event-source-identities.js's own contract, not re-implemented here)");
+
+  {
     // maxNewPerRun cap, same as the old ~30/run limit
     const fetchFn = async () => ({ ok: true, text: async () => "" });
     const lookupExistingRowsFn = async () => new Map();
@@ -617,6 +668,39 @@ async function run() {
     assert.ok(!calls.some((c) => c.method === "PATCH" && c.url.includes("events")), "a conservative-dedupe match must never write to the matched event");
   }
   console.log("PASS: completeRaSyncSession -- a conservative cross-source match blocks the new row and never touches the existing one");
+
+  {
+    // event_source_identities persistence (2026-10-03) -- the same
+    // conservative cross-source match above must also persist the RA
+    // identity against the matched event, via the injected
+    // recordSourceIdentityFn, with the exact eventId/source/sourceId the
+    // match found -- and duplicateDetail must reflect that the write
+    // actually succeeded.
+    const { fetchFn } = makeCompleteFetch({
+      run: baseRun,
+      dupeMatch: { id: "evt-legacy-2", title: "RIOT: The Machine World Tour", venue_name_raw: "Elektricity", external_id: null, start_date: "2026-12-12" },
+    });
+    const recorded = [];
+    const result = await lib.completeRaSyncSession({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: "run-1",
+      events: [{ id: "ra-300", title: "RIOT: The Machine World Tour", startDate: "2026-12-12T21:00:00-05:00", venueName: "Elektricity" }],
+      fetchFn,
+      finishRunFn: async () => {},
+      buildVenueNameToIdMapFn: async () => new Map(),
+      lookupExistingRowsFn: async () => new Map(),
+      recordSourceIdentityFn: async (url, key, identity) => {
+        recorded.push(identity);
+        assert.strictEqual(url, SUPABASE_URL);
+        assert.strictEqual(key, SUPABASE_SERVICE_ROLE_KEY);
+        return true;
+      },
+    });
+    assert.strictEqual(result.duplicates, 1);
+    assert.strictEqual(recorded.length, 1, "a duplicate match must have its identity recorded exactly once");
+    assert.deepStrictEqual(recorded[0], { eventId: "evt-legacy-2", source: "ra", sourceId: "300" });
+    assert.strictEqual(result.duplicateDetail[0].identityRecorded, true, "duplicateDetail must reflect that the identity write actually succeeded");
+  }
+  console.log("PASS: completeRaSyncSession -- a conservative cross-source match persists the RA identity via recordSourceIdentityFn with the correct eventId/source/sourceId");
 
   {
     // no session at all

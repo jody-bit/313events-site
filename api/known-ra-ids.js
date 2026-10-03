@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { lookupExistingRows } = require("./_lib/status-lookup");
+const { lookupKnownSourceIds } = require("./_lib/event-source-identities");
 const { parseCandidateIds, computeKnownIds, RaKnownIdsValidationError } = require("./_lib/ra-known-ids");
 
 // Vercel serverless function -- read-only lookup for the external Resident
@@ -141,6 +142,20 @@ module.exports = async (req, res) => {
   }
 
   const existingIdSet = new Set(existingRows.keys());
+
+  // Widen beyond a direct events.external_id match -- see
+  // api/_lib/event-source-identities.js and the identical widening in
+  // scripts/ra-sync.js's startRaSyncSession. Fails soft (empty Set on
+  // error), so a lookup failure here only means an id falls back to
+  // whatever lookupExistingRows alone already determined -- never a
+  // reason to fail this request, which has its own separate fail-closed
+  // contract for the authoritative external_id lookup above.
+  const identityKnownBareIds = await lookupKnownSourceIds(
+    SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, "ra",
+    candidateIds.map((id) => id.replace(/^ra-/, ""))
+  );
+  for (const bareId of identityKnownBareIds) existingIdSet.add(`ra-${bareId}`);
+
   const knownIds = computeKnownIds(candidateIds, existingIdSet);
   res.status(200).json({ knownIds });
 };

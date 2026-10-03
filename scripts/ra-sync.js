@@ -80,6 +80,7 @@ const {
 const { startRun, finishRun } = require("../api/_lib/run-log");
 const { SLUGS } = require("../api/_lib/source-slugs");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
+const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
 const {
   RA_ID_PATTERN,
   parseCandidateIds,
@@ -536,6 +537,7 @@ async function startRaSyncSession(opts) {
     maxNewPerRun = DEFAULT_MAX_NEW_PER_RUN,
     fetchFn = fetch,
     lookupExistingRowsFn = lookupExistingRows,
+    lookupKnownSourceIdsFn = lookupKnownSourceIds,
     startRunFn = startRun,
   } = opts;
 
@@ -545,6 +547,24 @@ async function startRaSyncSession(opts) {
     select: "external_id",
   });
   const existingIdSet = new Set(existingRows.keys());
+
+  // Widen "known" beyond a direct events.external_id match: a candidate
+  // RA already proved (via a conservative cross-source dedupe match in a
+  // prior completeRaSyncSession/promoteRaCandidates run) is the same
+  // real-world event as an existing row gets recorded in
+  // event_source_identities (see api/_lib/event-source-identities.js) --
+  // without this, that candidate would be re-examined as "new" forever,
+  // exactly the ra-2547930/ra-2512641/ra-2524562/ra-2513540 pattern the
+  // 2026-10-03 coverage review found. Fails soft (empty Set on error) --
+  // see lookupKnownSourceIds's own header -- so a lookup failure here
+  // only means a candidate falls back to being re-examined as new,
+  // never a reason to abort the run.
+  const bareIds = parsed.map((id) => id.replace(/^ra-/, ""));
+  const identityKnownBareIds = await lookupKnownSourceIdsFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, "ra", bareIds, {
+    fetchFn,
+  });
+  for (const bareId of identityKnownBareIds) existingIdSet.add(`ra-${bareId}`);
+
   const knownIds = computeKnownIds(parsed, existingIdSet);
   const allNewIds = computeCandidateNewIds(parsed, existingIdSet);
   const newIdsThisRun = allNewIds.slice(0, maxNewPerRun);
@@ -614,6 +634,7 @@ async function completeRaSyncSession(opts) {
     finishRunFn = finishRun,
     buildVenueNameToIdMapFn = buildVenueNameToIdMap,
     lookupExistingRowsFn = lookupExistingRows,
+    recordSourceIdentityFn = recordSourceIdentity,
   } = opts;
 
   if (!runId || typeof runId !== "string") throw new RaSyncSessionError("runId is required");
@@ -661,7 +682,17 @@ async function completeRaSyncSession(opts) {
     }
     const dupe = await findConservativeDuplicate(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, derived.row, fetchFn);
     if (dupe) {
-      duplicates.push({ id, matchedEventId: dupe.id, matchedTitle: dupe.title });
+      // Persist the match so future startRaSyncSession runs report this
+      // id as known instead of re-discovering it as new forever -- see
+      // api/_lib/event-source-identities.js. Fire-and-forget-safe: fails
+      // soft, never affects this run's own (already-correct) decision to
+      // skip inserting a new row for `id`.
+      const identityRecorded = await recordSourceIdentityFn(
+        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+        { eventId: dupe.id, source: "ra", sourceId: id.replace(/^ra-/, "") },
+        { fetchFn }
+      );
+      duplicates.push({ id, matchedEventId: dupe.id, matchedTitle: dupe.title, identityRecorded });
       continue;
     }
     rowsToUpsert.push({ id, row: derived.row });

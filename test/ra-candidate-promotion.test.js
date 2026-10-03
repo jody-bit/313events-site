@@ -286,10 +286,105 @@ async function runSafetyGateTests() {
   console.log("PASS: the RA_CANDIDATE_PROMOTION_ENABLED safety gate forces dry-run until explicitly turned on, overriding any caller-requested dryRun:false");
 }
 
+// 6. event_source_identities widening + persistence (2026-10-03): a
+// candidate already linked to an existing event via a prior conservative
+// dedupe match must be treated as alreadyPresent even with no row of its
+// own under external_id (see api/_lib/event-source-identities.js); and a
+// genuine new duplicate match found THIS run must have that match
+// persisted via recordSourceIdentityFn -- but only when writes are not
+// suppressed by dryRun (the same "dry run = zero writes" contract as the
+// pending_review insert above).
+async function runIdentityWideningTests() {
+  process.env.RA_CANDIDATE_PROMOTION_ENABLED = "true";
+  const lib = freshLib();
+
+  const session = {
+    id: "run-identity",
+    allNewIds: [
+      "ra-4000", // known only via event_source_identities -- no external_id row
+      "ra-4001", // genuine new duplicate match this run -- identity must be recorded
+    ],
+    listingMetadata: {
+      "ra-4000": { title: "Identity-Known Show", date: "2026-12-10T00:00:00.000", venueName: "Venue X" },
+      "ra-4001": { title: "Fresh Dup Show", date: "2026-12-11T00:00:00.000", venueName: "Venue Y" },
+    },
+  };
+
+  // 6a. alreadyPresent widening.
+  {
+    const lookedUpWith = {};
+    const counts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(), // no external_id rows at all
+      lookupKnownSourceIdsFn: async (url, key, source, bareIds) => {
+        lookedUpWith.url = url; lookedUpWith.key = key; lookedUpWith.source = source; lookedUpWith.bareIds = bareIds;
+        return new Set(["4000"]); // only ra-4000's bare id is identity-known
+      },
+      findConservativeDuplicateFn: async (u, k, row) => (row.external_id === "ra-4001" ? { id: "evt-fresh-1", title: "Fresh Dup Show (existing)", external_id: null } : null),
+      insertCandidateRowFn: async () => true,
+    });
+    assert.strictEqual(lookedUpWith.url, SUPABASE_URL);
+    assert.strictEqual(lookedUpWith.key, SUPABASE_KEY);
+    assert.strictEqual(lookedUpWith.source, "ra");
+    assert.deepStrictEqual(lookedUpWith.bareIds.sort(), ["4000", "4001"], "every candidate's bare id must be checked, not just ones already known via external_id");
+    assert.strictEqual(counts.alreadyPresent, 1, "ra-4000 must be counted alreadyPresent via identity widening alone, with no external_id row of its own");
+    assert.strictEqual(counts.duplicates, 1, "ra-4001 is a genuinely new duplicate match, not pre-known");
+  }
+  console.log("PASS: alreadyPresent widens via lookupKnownSourceIdsFn -- a candidate known only through event_source_identities (no external_id row) is skipped, never re-promoted");
+
+  // 6b. identity persistence on a genuine new duplicate match, real run.
+  {
+    const recorded = [];
+    const counts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(),
+      lookupKnownSourceIdsFn: async () => new Set(), // nothing pre-known this time
+      findConservativeDuplicateFn: async (u, k, row) => (row.external_id === "ra-4001" ? { id: "evt-fresh-1", title: "Fresh Dup Show (existing)", external_id: null } : null),
+      insertCandidateRowFn: async () => true,
+      recordSourceIdentityFn: async (url, key, identity) => {
+        recorded.push(identity);
+        assert.strictEqual(url, SUPABASE_URL);
+        assert.strictEqual(key, SUPABASE_KEY);
+        return true;
+      },
+    });
+    assert.strictEqual(counts.duplicates, 1);
+    assert.strictEqual(recorded.length, 1, "a genuine duplicate match must have its identity recorded exactly once");
+    assert.deepStrictEqual(recorded[0], { eventId: "evt-fresh-1", source: "ra", sourceId: "4001" });
+    assert.strictEqual(counts.duplicateDetail[0].identityRecorded, true, "the duplicate-detail entry must reflect that the identity write actually succeeded");
+  }
+  console.log("PASS: a genuine new duplicate match (real run) has its RA identity persisted via recordSourceIdentityFn with the correct eventId/source/sourceId");
+
+  // 6c. dry run must never call recordSourceIdentityFn at all -- "dry run"
+  // means zero writes of any kind, not "no writes except this one".
+  {
+    let recordCalled = false;
+    const counts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      dryRun: true,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => new Map(),
+      lookupKnownSourceIdsFn: async () => new Set(),
+      findConservativeDuplicateFn: async (u, k, row) => (row.external_id === "ra-4001" ? { id: "evt-fresh-1", title: "x" } : null),
+      insertCandidateRowFn: async () => true,
+      recordSourceIdentityFn: async () => { recordCalled = true; return true; },
+    });
+    assert.strictEqual(counts.duplicates, 1, "dry-run must still report the duplicate match itself");
+    assert.strictEqual(recordCalled, false, "recordSourceIdentityFn must never be called during a dry run");
+    assert.strictEqual(counts.duplicateDetail[0].identityRecorded, false, "identityRecorded must be false when no write was attempted");
+  }
+  console.log("PASS: dryRun never calls recordSourceIdentityFn -- 'dry run' means zero writes of any kind, not an exception for identity recording");
+
+  console.log("\nAll event_source_identities widening/persistence tests passed.");
+}
+
 run()
   .then(runSafetyGateTests)
   .then(runMaxPerRunTests)
-  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate + max-per-run cap) passed."))
+  .then(runIdentityWideningTests)
+  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate + max-per-run cap + identity widening/persistence) passed."))
   .catch((err) => {
     console.error(err);
     process.exitCode = 1;

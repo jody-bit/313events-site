@@ -197,6 +197,35 @@ async function run() {
   }
   console.log("PASS: knownIds contains exactly the candidates that exist in production");
 
+  // --- 8b. event_source_identities widening (2026-10-03): a candidate
+  // with NO events.external_id row of its own, but a row in
+  // event_source_identities (a conservative dedupe match recorded by a
+  // prior sync/promotion run), must still be reported as known -- see
+  // api/_lib/event-source-identities.js and the widening this endpoint
+  // performs after its own authoritative external_id lookup. ---
+  {
+    process.env.RA_AUTOMATION_SECRET = RA_SECRET;
+    const handler = freshHandler();
+    const calls = [];
+    global.fetch = async (url) => {
+      calls.push(url);
+      if (url.includes("/event_source_identities")) {
+        // only ra-500's bare id ("500") has a recorded identity row
+        return { ok: true, status: 200, json: async () => [{ source_id: "500" }] };
+      }
+      // the authoritative external_id lookup finds nothing at all --
+      // proves the identity row alone is enough to report "known"
+      return { ok: true, status: 200, json: async () => [] };
+    };
+    const res = makeRes();
+    await handler(makeReq({ auth: `Bearer ${RA_SECRET}`, candidateIds: ["ra-500", "ra-600"] }), res);
+    assert.strictEqual(res._status, 200);
+    assert.deepStrictEqual(res._body.knownIds, ["ra-500"], "ra-500 must be reported known via event_source_identities alone, with no external_id row of its own");
+    assert.ok(!res._body.knownIds.includes("ra-600"), "ra-600 has no identity row and no external_id row -- must not be reported as known");
+    assert.ok(calls.some((u) => u.includes("/event_source_identities") && u.includes("source=eq.ra")), "the widening lookup must actually query event_source_identities scoped to source=ra");
+  }
+  console.log("PASS: a candidate known only through event_source_identities (no events.external_id row) is still reported in knownIds");
+
   // --- 9. legitimately zero known ids: a genuinely successful lookup that
   //     finds nothing is a normal 200 with an empty list -- this must
   //     stay distinguishable from the fail-closed case in #12/#13 below ---
@@ -209,7 +238,11 @@ async function run() {
     await handler(makeReq({ auth: `Bearer ${RA_SECRET}`, candidateIds: ["ra-999"] }), res);
     assert.strictEqual(res._status, 200);
     assert.deepStrictEqual(res._body.knownIds, []);
-    assert.strictEqual(calls.length, 1, "a genuine 'none exist' result still requires an actual successful lookup call");
+    // 2, not 1: the authoritative external_id lookup, plus the
+    // event_source_identities widening lookup api/known-ra-ids.js now
+    // also performs (see api/_lib/event-source-identities.js) -- both
+    // real calls, neither short-circuited.
+    assert.strictEqual(calls.length, 2, "a genuine 'none exist' result still requires both lookup calls to actually run");
   }
   console.log("PASS: a successful lookup that finds nothing returns 200 with an empty knownIds (not an error)");
 

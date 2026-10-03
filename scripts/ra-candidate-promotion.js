@@ -57,6 +57,7 @@ const {
   LISTING_METADATA_FIELDS,
 } = require(path.join(__dirname, "ra-sync"));
 const { lookupExistingRows } = require(path.join(__dirname, "..", "api", "_lib", "status-lookup"));
+const { lookupKnownSourceIds, recordSourceIdentity } = require(path.join(__dirname, "..", "api", "_lib", "event-source-identities"));
 const { SLUGS } = require(path.join(__dirname, "..", "api", "_lib", "source-slugs"));
 const { buildRaDiscoveryNote } = require(path.join(__dirname, "..", "api", "_lib", "ra-provenance-note"));
 
@@ -162,9 +163,11 @@ async function promoteRaCandidates({
   fetchFn = fetch,
   getLatestRaSessionFn = getLatestRaSession,
   lookupExistingRowsFn = lookupExistingRows,
+  lookupKnownSourceIdsFn = lookupKnownSourceIds,
   findConservativeDuplicateFn = findConservativeDuplicate,
   deriveCategoryFn = deriveCategory,
   insertCandidateRowFn = insertCandidateRow,
+  recordSourceIdentityFn = recordSourceIdentity,
   maxPerRun = DEFAULT_MAX_PER_RUN,
 } = {}) {
   // SAFETY GATE (2026-10-01): Product Owner decision 1/2 is explicit --
@@ -230,8 +233,21 @@ async function promoteRaCandidates({
     select: "external_id",
   });
 
+  // Same widening as scripts/ra-sync.js's startRaSyncSession (see
+  // api/_lib/event-source-identities.js): a candidate already linked to
+  // an existing event via a prior conservative dedupe match is
+  // "alreadyPresent" too, even though it has no row of its own under
+  // its own external_id. Fails soft on lookup error (empty Set), so a
+  // failure here only means a candidate is examined as before this
+  // table existed -- never a reason to abort.
+  const identityKnownBareIds = await lookupKnownSourceIdsFn(
+    SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, "ra",
+    allNewIds.map((id) => id.replace(/^ra-/, "")),
+    { fetchFn }
+  );
+
   for (const id of allNewIds) {
-    if (existingRows.has(id)) {
+    if (existingRows.has(id) || identityKnownBareIds.has(id.replace(/^ra-/, ""))) {
       counts.alreadyPresent++;
       continue;
     }
@@ -263,11 +279,27 @@ async function promoteRaCandidates({
     const dupe = await findConservativeDuplicateFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, draftRow, fetchFn);
     if (dupe) {
       counts.duplicates++;
+      // Persist the match -- see api/_lib/event-source-identities.js and
+      // the identical call in scripts/ra-sync.js's completeRaSyncSession.
+      // Gated behind effectiveDryRun exactly like the pending_review
+      // insert below: "dry run" means NO writes of any kind here, not
+      // "no writes except this one" -- a dry-run report should be
+      // reproducible from a clean read with zero side effects, same as
+      // every other write this function makes.
+      let identityRecorded = false;
+      if (!effectiveDryRun) {
+        identityRecorded = await recordSourceIdentityFn(
+          SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+          { eventId: dupe.id, source: "ra", sourceId: id.replace(/^ra-/, "") },
+          { fetchFn }
+        );
+      }
       counts.duplicateDetail.push({
         id,
         matchedEventId: dupe.id,
         matchedTitle: dupe.title,
         matchedExternalId: dupe.external_id || null,
+        identityRecorded,
       });
       continue;
     }
