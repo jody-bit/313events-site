@@ -3428,6 +3428,21 @@
     gap:16px;flex-wrap:wrap;
     padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
   }
+  /* 2026-10-03: the header is ONE row on desktop — logo, nav, search +
+     Submit Event — and it must never break by dropping search + Submit
+     Event onto a row of their own. With flex-wrap:wrap (above), a flex row
+     breaks BEFORE any item is allowed to shrink, and the line-breaking
+     arithmetic uses the nav's full one-line width — so the min-width:0 /
+     flex-shrink:0 pair added for this earlier the same day could never take
+     effect. Above the 900px breakpoint the row therefore does not wrap: if
+     it is ever too narrow, the nav gives way and wraps its own links
+     (.site-nav has flex-wrap:wrap and min-width:0 for exactly that), and
+     search + Submit Event stay where they are. At 900px and below nothing
+     changes: the row still wraps and the nav takes a full row of its own
+     (see the max-width:900px rule below). */
+  @media (min-width:901px){
+    header.site{flex-wrap:nowrap;}
+  }
   /* Primary nav (Tomorrow/This Weekend/Calendar/Browse) — plain uppercase
      text links, not the bordered-chip look .when-btn has elsewhere on the
      page. The class is still .when-btn for the 2 time-range items (so they
@@ -3445,8 +3460,16 @@
      wrap its OWN links internally (it already has flex-wrap:wrap for
      exactly that), so the header row itself only needs to wrap in a
      genuine last-resort case. Paired with the flex-shrink:0 added to the
-     search+submit wrapper div below, in the markup. */
-  .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;min-width:0;}
+     search+submit wrapper div below, in the markup.
+     (That alone did not work — see the nowrap rule above, which is what
+     lets this shrinking actually happen.)
+     gap 22px -> 16px (2026-10-03): the ninth link, Neighborhoods, was added
+     2026-10-01 and made the one-line header 1,164px wide in a 1,140px
+     container — 24px too wide at every desktop width, which is what pushed
+     search + Submit Event onto a second row. At 16px between links the row
+     needs 1,116px and fits again, with the logo and Submit Event back where
+     they were before that link was added. */
+  .site-nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;row-gap:8px;min-width:0;}
   .site-nav .when-btn, .site-nav-link{
     border:none;background:none;padding:0 0 4px;border-radius:0;
     font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
