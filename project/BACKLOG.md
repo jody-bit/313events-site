@@ -339,14 +339,26 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### STORY-024 — Shared discovery foundation (`discovery.js`)
 
-- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; no page uses it yet; awaiting Product Owner review) · **Priority:** High
+- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; approved by the Product Owner the same day with one semantic correction, since applied — `DEC-027`; not merged or deployed; first consumer is `STORY-025`) · **Priority:** High
 - **Epic:** EPIC-002 / EPIC-009 · **Recommended Model:** Opus 5 · **Complexity:** Large (cross-cutting)
 - **Dependencies:** `BUG-005` (complete data loading — a shared predicate can only filter what a page has loaded).
 - **Problem/User Need:** see `DEC-022`. Three pages each held a private, already-diverged copy of the discovery rules.
 - **Acceptance Criteria (Product Owner, 2026-10-03):** plain shared vanilla JS, no framework/build dependency; pure definitions/state/semantics only — no DOM, network or stored state; canonical WHEN + WHERE + WHAT + SEARCH state; positive/additive category filtering, OR within WHAT, AND across dimensions; canonical URL serialization with legacy URL compatibility; `describe()` and `facets()` kept; genre-ready hierarchy with no genre exposed or inferred; surface-specific defaults preserved; declared vs derived features (`DEC-024`). Scope of this step: the file and its tests only — no page changed, no homepage visual work.
 - **Implementation Notes:** `discovery.js` exposes one global, `Discovery`. Tests: `test/discovery.test.js` (every rule; loads with no DOM/network; mutation-checked — 29 deliberate rule breaks each fail a test) and `test/discovery-compat.test.js` (the homepage's real filter code executed against the shared rules over about 1.1 million comparisons with only the documented intended differences; every URL the homepage writes today decodes to the equivalent state; URLs written by `href()` fed to each page's real, unmodified URL reader; drift guards over every remaining copy of the definitions). Intended differences from today's homepage, for review: events in progress are shown (`DEC-023`); a multi-day run is matched when it overlaps the chosen dates, not only when it starts in them; an event that is already over today is hidden in every forward-looking view, not just the default and All Upcoming; an event in a category the page does not list is no longer hidden when no category is selected; "today" is Detroit time rather than the visitor's clock. Additions to the approved interface, for review: `featuresOf()`, `whens`, `radii`, an optional `ctx` on `href()`, and `inventoryFilter()` accepting a ctx as well as a date.
 - **Discovered Work:** `admin.html`'s editorial form labels the `fest` category "Festivals"; every public page says "Festivals & Parades" (recorded in the drift guard as the one known difference). The stories `STORY-003`, `STORY-005` and `STORY-006` describe a per-page build that `DEC-022` supersedes and should be reconciled.
-- **Product Decisions Required:** review of the boundary as built, including the intended differences and the interface additions above. Next steps, in the approved order: homepage adopts the shared file with no visual redesign; homepage UX evolution; review; Calendar and Map adoption.
+- **Product Decisions Required:** none outstanding on the foundation itself — the boundary, the interface additions (`featuresOf()`, `whens`, `radii`, `ctx`, removal patches in `describe()`, expanded `facets()`, broader `change()` patches) and the 51 KB size were approved 2026-10-03, with the historical-date correction recorded as `DEC-027`. Remaining steps, in the approved order: homepage adopts the shared file with no visual redesign (`STORY-025`); homepage UX evolution; review; Calendar and Map adoption.
+
+### STORY-025 — Homepage adopts the shared discovery layer (no visual redesign)
+
+- **Type:** STORY · **Status:** REVIEW (built and tested 2026-10-03; not merged, not deployed; awaiting Product Owner review) · **Priority:** High
+- **Epic:** EPIC-002 / EPIC-009 · **Recommended Model:** Opus 5 · **Complexity:** Large (one page, every discovery code path)
+- **Dependencies:** `STORY-024` (must be deployed together — `index.html` now loads `/discovery.js`).
+- **Problem/User Need:** see `DEC-022`. The homepage is the first surface to stop carrying its own discovery rules.
+- **Acceptance Criteria (Product Owner, 2026-10-03):** replace the homepage's duplicated discovery definitions and semantics with the shared layer wherever its contract covers them; preserve current presentation, layout, event cards and interactions; verify legacy URLs and existing interactions against the adopted layer; report behaviour changes rather than compensating for them; no homepage UX evolution, Don't Miss, Orbit preview, Calendar or Map migration, `STORY-023`, genre UI or unrelated cleanup.
+- **Implementation Notes:** `index.html` loads `/discovery.js`, holds one canonical state changed only through `Discovery.change()`, and takes from Discovery: category keys/labels/order, the places table, the Orbit rule, "today" (Detroit time), every date window, the match predicate, counts (hero, cards, neighborhoods, list heading), the active-filter labels and removals, and URL reading and writing. Removed from the page: its own `CATS` labels, `LOCATIONS`, `CITY_LOOKUP`, the boundary and distance maths, `BLOCKED_NAMES`, `FEATURE_CHIPS`, the date helpers, `matchesFilters()` and friends, and `syncURL()`/`readStateFromURL()`'s own format — the page is about 500 lines shorter. Kept on the page because they are presentation or outside the contract: category colours, wording of headings and empty states, the day-grouped list index, time parsing for sort order and calendar export, and the "within 75 mi of you" count (`DEBT-009`). Tests: `test/homepage-discovery-adoption.test.js` runs the page's real script (with `test/fixtures/fake-dom.js`, a mock database and a fixed clock) through every control, card and old link form; `test/discovery-compat.test.js` now executes a frozen copy of the pre-adoption rules (`test/fixtures/homepage-before-discovery.js`) so the old-vs-shared comparison survives the old code's removal, and compares the old page's own URL reader with Discovery's, naming each approved difference; `test/dynamic-explore-neighborhoods.test.js` runs the adopted neighborhood counter. 35 deliberate breaks of the adopted page each fail a test. Also verified in a real browser before and after (120 states: every list and every card number equals what Discovery gives; all 1,475 event cards present both before and after are byte-identical; screenshots differ only where a number changed and in the "All types" chip) and read-only against production data.
+- **Behaviour changes, for review** (every one measured; production figures from Sat 2026-10-03, 5:35 PM): events in progress are listed (default view 90 → 109 events); already-over events are no longer listed in Tonight / This Weekend / This Week (weekend 151 → 139); a multi-day event is listed on every day it overlaps the chosen dates, not only when it starts in them (tomorrow 30 → 51); "N events" in headings and on cards counts events, not event-days (hero 173 → 129; All Upcoming heading 2,363 → 1,890; Downtown card 106 → 36, and the list it opens now says the same 36 where it used to say 45); the site total includes events in progress (1,902 → 1,935); "today" is Detroit's date, not the device's; the URL is written in the shared form (no `date=`, `when=week`, `when=dates&from=&to=`) and old links still open the same view; bare `cats=` and turning the last category off mean all events (approved); a picked date now in the past is honoured (`DEC-027`); `when=now`/`today`/`next7`/`week`, `radius=all` without a place and `features=clothing_optional` in a link are honoured; the "All types" chip un-lights as soon as a category is turned off; uncategorised events show when no category is filtered; On the Radar no longer lists an event that already ended today.
+- **Discovered Work:** `DEBT-007` (admin label), `DEBT-008` (homepage load window), `DEBT-009` (homepage rules still outside the shared contract, and decisions they need).
+- **Product Decisions Required:** review of the adoption and the behaviour changes above; then approval to merge and deploy (with `STORY-024`).
 
 ---
 
@@ -552,6 +564,54 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** coordinates matter independently: without them every map position is a city centre.
 - **Discovered Work:** —
 - **Product Decisions Required:** what coverage level makes a venue count publishable.
+
+---
+
+### DEBT-007 — Admin editorial form labels the `fest` category "Festivals"; the public label is "Festivals & Parades"
+
+- **Type:** DEBT (taxonomy label) · **Status:** BACKLOG · **Priority:** Low
+- **Epic:** EPIC-004
+- **Dependencies:** None.
+- **Discovered:** 2026-10-03, by the discovery drift guard (`test/discovery-compat.test.js`), which records it as the one known difference so that any other divergence still fails.
+- **Problem/User Need:** `admin.html`'s `EDITORIAL_CATEGORIES` lists `['fest', 'Festivals']`; every public surface, and `discovery.js`, says "Festivals & Parades". Same key, same events — only the admin-side wording differs.
+- **Acceptance Criteria:** the admin label reads "Festivals & Parades" (or the Product Owner chooses a different single label for both); the `KNOWN_ADMIN_LABEL_DIFFERENCES` exception is removed from the drift guard.
+- **Implementation Notes:** deliberately NOT changed as part of the discovery work (Product Owner, 2026-10-03: leave `fest` unchanged; do not mix this correction into Discovery adoption). The category key and the public label are untouched.
+- **Discovered Work:** —
+- **Product Decisions Required:** none beyond confirming the public wording is the one to keep.
+
+---
+
+### DEBT-008 — The homepage loads only events that START within eight days back
+
+- **Type:** DEBT (data loading) · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** EPIC-002
+- **Dependencies:** `STORY-025`; related to `DEBT-003` (Calendar's load window).
+- **Discovered:** 2026-10-03, during the homepage's adoption of the shared discovery layer. Pinned by two "KNOWN GAP" assertions in `test/homepage-discovery-adoption.test.js`.
+- **Problem/User Need:** `loadSupabaseEvents()` asks for `start_date >= today − 8 days`. Two consequences now that the shared rules are in place: (1) an event that started earlier and is still running (a long exhibition) is counted in the site total (`DEC-023`) but is not in the homepage's list — measured 2026-10-03: 14 of 33 in-progress events; (2) an explicit date older than eight days is a valid selection (`DEC-027`) but the homepage has nothing loaded for it, so it shows "Nothing on the signal here" for a day that had events.
+- **Acceptance Criteria:** to be set with the Product Owner. For (1): the homepage loads every current event (`start_date >= floor OR end_date >= today`). For (2): either the homepage fetches the chosen past period on demand, or it hands history to Calendar with a link instead of an empty state.
+- **Implementation Notes:** not changed in `STORY-025` — it is a change to what the page loads, not to how it filters. (1) is a one-line query change plus its test. The day-grouped list also caps a single event's run at 60 listed days (`MAX_EVENT_SPAN_DAYS`), unchanged.
+- **Discovered Work:** —
+- **Product Decisions Required:** how the homepage should treat a request for history.
+
+---
+
+### DEBT-009 — Homepage rules still outside the shared discovery contract, and the decisions they need
+
+- **Type:** DEBT (discovery follow-ups) · **Status:** BACKLOG · **Priority:** Medium
+- **Epic:** EPIC-002 / EPIC-009
+- **Dependencies:** `STORY-025`.
+- **Discovered:** 2026-10-03, during the homepage's adoption of the shared discovery layer. None of these was changed; each is reported rather than compensated for.
+- **Problem/User Need:**
+  1. **"Within 75 mi of you" (the "What's in your Detroit Orbit?" card).** Once a location is set, the card counts events within 75 miles of the visitor's own point. That is not one of Discovery's distance filters (5/10/25/50 mi from the chosen point, or the Detroit Orbit — 75 mi from Detroit's border), so it remains the card's own arithmetic; and the card's button applies the Detroit Orbit, not that radius, so the number and the list it opens are not the same thing (production, from Royal Oak: 1,733 on the card and 1,733 in the Orbit that day — equal only because every placeable event was within both).
+  2. **"Today" (header) and "Free Today" (card) are an explicit pick of today's date**, as before — so they list events that already ended earlier today, and write a link that goes stale tomorrow. Discovery has a real Today mode (forward-looking, evergreen link). Switching is a one-line change each; it changes the chip from "Sat, Oct 3" to "Today" and hides events that have ended.
+  3. **The "Showing today — see everything" note still appears above search results**, which span every upcoming date (pre-existing wording condition, preserved).
+  4. **A long-running event is listed under every day of its run.** Pre-existing for events starting today or later; now also true of events in progress, so one exhibition can account for dozens of rows in All Upcoming, a neighborhood or a search (production: a "jazz" search went from 7 rows to 66 for 7 events). A presentation question for the event stream in the homepage UX evolution.
+  5. **Rendering cost of the widest views.** All Upcoming renders about 2,500 cards at once and search re-renders on every keystroke (unchanged by the adoption, but heavier since `BUG-005` loaded every event).
+  6. **Time parsing exists twice**: inside `discovery.js` (for "tonight" and "is it over") and on the page (for sort order and calendar export). Not exposed by the contract.
+- **Acceptance Criteria:** each item either decided and implemented, or explicitly accepted as is.
+- **Implementation Notes:** items 2–5 are natural inputs to the homepage UX evolution.
+- **Discovered Work:** —
+- **Product Decisions Required:** items 1 and 2.
 
 ---
 

@@ -318,6 +318,18 @@ All entries below are reconstructed from decisions already made and recorded in 
 
 ---
 
+### DEC-027 — Forward-looking views leave out what is over; an explicitly chosen date or range does not
+
+**Date:** 2026-10-03
+**Decision:** "Already over" is not a universal exclusion from discovery. FORWARD-LOOKING modes — a surface's default forward-looking inventory, Today, Tonight, Tomorrow, This Weekend, This Week, Next 7 Days and All Upcoming — start at today and exclude events whose known end has passed. An EXPLICIT date or date-range selection is taken exactly as chosen, past or future, and returns the events of that period, completed or not. A valid explicit past date or range is represented normally: it does not canonicalize to an empty result, and is not moved to today, merely because it is in the past.
+**Context:** The first build of `discovery.js` treated "is it over?" as a rule applied to every mode, and emptied any window that lay wholly in the past. The Product Owner approved the foundation with this one semantic correction before the homepage adopted it.
+**Alternatives considered:** Excluding over events everywhere (the first build; rejected — being over now does not erase an event from the period it belonged to, and Calendar history and any future "what happened that weekend" view depend on it).
+**Reason:** The two kinds of question are different: "what can I still go to" versus "what was on then".
+**Consequences:** Implemented in `discovery.js` (`windowOf()` marks a window forward-looking unless the mode is an explicit `dates` pick or `ctx.includePast` is set; only forward-looking windows are floored at today and filtered for "over"). On the homepage an old link to a picked date that has since passed now opens that date instead of being discarded — but the homepage only loads events that start within eight days back, so a date older than that shows an empty list there (`DEBT-008`). Weekend / Week / Next 7 Days / Tomorrow are treated as forward-looking alongside the modes the Product Owner named.
+**Related backlog items:** `STORY-024`, `STORY-025`, `DEBT-008`.
+
+---
+
 ## Open, not yet decided
 
 These have been *raised* and researched but are explicitly **not** settled — listed here only so they aren't rediscovered as if new. See `PRODUCT.md`'s "Product decisions required" section and `BACKLOG.md` for the tracked items.
