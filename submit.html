@@ -145,6 +145,12 @@
   .checkbox-row{display:flex;align-items:center;gap:8px;}
   .checkbox-row input{width:auto;}
   .checkbox-row label{margin:0;font-weight:600;}
+  /* A checkbox whose label has a line of helper text under it (first used
+     for clothingOptional, 2026-10-03): the box lines up with the label's
+     first line instead of floating at the middle of the two-line block. */
+  .checkbox-row.has-hint{align-items:flex-start;}
+  .checkbox-row.has-hint input{margin-top:2px;}
+  .checkbox-row.has-hint .hint{margin-top:2px;}
 
   .mode-tabs{display:flex;gap:8px;margin-bottom:20px;}
   .mode-tab{
@@ -289,9 +295,19 @@
         <label for="description">Description <span class="opt">(optional)</span></label>
         <textarea id="description" name="description" placeholder="What should attendees know? Lineup, dress code, age restriction, accessibility info, etc."></textarea>
       </div>
-      <div class="field checkbox-row">
-        <input type="checkbox" id="clothingOptional" name="clothingOptional">
-        <label for="clothingOptional">This is a clothing-optional / nudist event</label>
+      <!-- Event attribute, asked here in the main form like any other piece
+           of structured event metadata (2026-10-03, after a promoter said
+           the clothing-optional question felt out of place). Same field as
+           before — id/name "clothingOptional", sent as `clothingOptional`,
+           stored by api/submit.js as events.is_clothing_optional
+           (migration_034) — only its wording changed, and helper text was
+           added. Unchecked by default. -->
+      <div class="field checkbox-row has-hint">
+        <input type="checkbox" id="clothingOptional" name="clothingOptional" aria-describedby="clothingOptionalHint">
+        <div>
+          <label for="clothingOptional">Clothing optional / nudist-friendly</label>
+          <div class="hint" id="clothingOptionalHint">Check if attendees may participate nude or clothing is optional.</div>
+        </div>
       </div>
       <div class="field">
         <label for="imageFile">Event flyer / photo <span class="opt">(optional)</span></label>
@@ -407,7 +423,7 @@
   <div id="confirmPanel" class="confirm-panel">
     <div class="checkmark">✓</div>
     <h2>Submitted for review</h2>
-    <div class="sub">Your event is in the moderation queue and will be reviewed by hand before it appears on the calendar. Here's exactly what was submitted:</div>
+    <div class="sub">Your event is in the moderation queue and will be reviewed by hand before it appears on the calendar. Here's what was submitted:</div>
     <pre id="jsonPreview"></pre>
     <div class="submit-row" style="margin-top:18px;">
       <button type="button" class="btn btn-secondary" onclick="submitAnother()">Submit another event</button>
@@ -691,6 +707,31 @@ async function uploadFlyerImage(file){
   return result.url;
 }
 
+// What the "Submitted for review" panel shows back to the submitter. This
+// is display only — it never changes what was sent to /api/submit or what
+// gets stored.
+//
+// 2026-10-03: this used to be the raw request payload, every key of it. So
+// after submitting ANY event a promoter was shown `"clothingOptional":
+// false` (plus `"recurring": false` and `"venueTba": false`), which read as
+// an odd, out-of-place question about their event appearing after the fact
+// — and it also printed the form's own anti-spam internals
+// (`companyWebsite`, the honeypot, and `elapsedMs`, the fill-time check).
+// Now: a yes/no event attribute is listed only when the submitter actually
+// checked it, and the anti-spam fields are never shown.
+const CONFIRMATION_ATTRIBUTE_FLAGS = ['recurring', 'clothingOptional', 'venueTba'];
+const CONFIRMATION_HIDDEN_FIELDS = ['companyWebsite', 'elapsedMs'];
+function buildConfirmationPreview(payload, catLabel){
+  const preview = {};
+  Object.keys(payload).forEach(key=>{
+    if(CONFIRMATION_HIDDEN_FIELDS.includes(key)) return;
+    if(CONFIRMATION_ATTRIBUTE_FLAGS.includes(key) && !payload[key]) return;
+    preview[key] = key === 'category' ? catLabel : payload[key];
+  });
+  preview.status = 'pending_review';
+  return preview;
+}
+
 form.addEventListener('submit', async (e)=>{
   e.preventDefault();
   const data = new FormData(form);
@@ -778,7 +819,7 @@ form.addEventListener('submit', async (e)=>{
       throw new Error(result.error || 'Submission failed — please try again.');
     }
 
-    const preview = { ...payload, category: catLabel, status: 'pending_review' };
+    const preview = buildConfirmationPreview(payload, catLabel);
     document.getElementById('jsonPreview').textContent = JSON.stringify(preview, null, 2);
     form.style.display = 'none';
     document.getElementById('confirmPanel').classList.add('show');

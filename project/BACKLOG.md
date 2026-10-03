@@ -323,6 +323,20 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### STORY-023 — Submit form: an "Event features" group for promoter-declared attributes, aligned with Discovery features
+
+- **Type:** STORY · **Status:** BACKLOG (recommendation recorded 2026-10-03; not approved, not started) · **Priority:** Unscored
+- **Epic:** EPIC-009 for the filter side; the form side has no epic of its own yet · **Recommended Model:** Sonnet 5 · **Complexity:** Small for the regrouping; Medium once new attributes are added
+- **Dependencies:** the shared discovery layer (`discovery.js`, approved 2026-10-03, not yet built) for the filter side.
+- **Discovered:** 2026-10-03, while correcting the clothing-optional question (a promoter said it felt out of place after submitting — the checkbox was already in the form; the confirmation panel was echoing the raw payload, `"clothingOptional": false`, to every submitter. Fixed separately: reworded field with helper text, and the confirmation now lists a yes/no attribute only when checked).
+- **Problem/User Need:** the single-event form has exactly three yes/no questions, each sitting in a different section: `clothingOptional` (Event details → `events.is_clothing_optional`), `recurring` (Date & time → `events.is_recurring`), `venueTba` (Location → not stored as a field at all; it appends "(address TBA)" to the venue name text). Two of those are properties of the schedule and the location and are reasonably placed. Only clothing-optional is an attendee-facing attribute, and there is no home for the next ones (age restriction, accessibility, family-friendly, outdoor) — today the description placeholder asks promoters to type those as prose ("dress code, age restriction, accessibility info"), which makes them unfilterable and forces any future filter to infer facts from descriptions. The feed-submission form has no way to declare any of them. The post-submission confirmation is still a raw JSON dump.
+- **Acceptance Criteria (proposed, for Product Owner review):** (1) an "Event features" (or "Attendee information") group in the form, placed after Ticketing and before Organizer contact, holding promoter-declared attributes as plain checkboxes/selects with helper text — clothing-optional moves there; `recurring` and `venueTba` stay with Date & time and Location. (2) Each declared attribute is one stored, structured field, exposed through `events_public`, with who declared it (promoter / editor / source) — never inferred from description text. (3) Each one that is filterable appears in the shared Discovery `features` list under one key, marked as *declared* (supplied by the organizer or an editor) as distinct from today's *derived* features (has tickets, has photo, community-submitted, press coverage), so a filter can say what it is based on. (4) The confirmation panel becomes a readable summary instead of JSON. (5) No new attribute is added without a decision on whether it is a positive filter, a caution, or both.
+- **Implementation Notes:** `is_clothing_optional` is already in `events_public` and already loaded by the homepage, so it can become the first declared Discovery feature with no schema change. `venueTba` should become a real field rather than text appended to the venue name (it currently pollutes venue names and venue matching). Do not add attributes speculatively — add one when a source or a promoter can actually supply it.
+- **Discovered Work:** —
+- **Product Decisions Required:** approve the grouping; which attributes to add first; for clothing-optional specifically, whether it is offered as a public filter, shown only as a label, or both.
+
+---
+
 ## Tasks
 
 ### TASK-001 — Update README.md to reflect the current system
