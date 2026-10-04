@@ -5,6 +5,7 @@ const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
+const { knownCity } = require("./_lib/orbit-cities");
 
 // Vercel Cron job — the generalized `localist` adapter (INGESTION_BACKLOG.md
 // WP 6.1/6.2, the first "platform multiplier" in
@@ -216,17 +217,21 @@ function formatTimeDisplay(startIso, endIso) {
 //   - street and city come from `address`, which is "<street>, <city>, <ST>
 //     <ZIP>": the last comma-separated part must be a state (and ZIP), the
 //     one before it is the city, everything before that is the street.
-//     The city must read as a plain place name and the street must begin
-//     with a house number, because tenants also put a building there
-//     (Bowling Green State University, same day: "Jerome Library, Bowling
-//     Green, OH 43403" and "Bowen-Thompson Student Union 1001 E Wooster St ,
-//     Bowling Green, OH 43402" -- the building name is dropped from the
-//     front of the street when it merely repeats the venue). Anything else
-//     is left alone -- never guessed;
+//     The city must be a name on the closed list for that state
+//     (api/_lib/orbit-cities.js) -- "K Building, South Campus, MI 48088"
+//     does not make South Campus a city. The street must begin with a house
+//     number AND contain a street type, because tenants also put a
+//     building, a floor or a room there (Bowling Green State University,
+//     same day: "Jerome Library, Bowling Green, OH 43403"; "Bowen-Thompson
+//     Student Union 1001 E Wooster St , Bowling Green, OH 43402" -- the
+//     building name is dropped from the front of the street when it merely
+//     repeats the venue; "2nd Floor" and "101 Olscamp Hall" are not
+//     streets). Anything else is left alone -- never guessed;
 //   - geo.city fills in only when `address` gave no city ("One University
 //     Drive Huron, Ohio 44839" has no comma before the city; geo.city says
-//     Huron). geo.street is NOT used: it is a geocoder fragment ("J" for
-//     "South Campus, J Building");
+//     Huron), and only when it too is on the list for geo.state. geo.street
+//     is NOT used: it is a geocoder fragment ("J" for "South Campus, J
+//     Building");
 //   - geo's coordinates decide one thing only: an event more than
 //     ORBIT_MILES from Detroit's border is not a Detroit Orbit event
 //     (SERVICE_AREA.md) and is not written. The handler counts those.
@@ -236,13 +241,18 @@ function formatTimeDisplay(startIso, endIso) {
 //     swapped) are treated as no coordinates at all.
 //   - a field the source did not give is LEFT OUT of the row, not sent as
 //     null: a null would overwrite an address or city already stored on the
-//     event (api/_lib/event-upsert.js; DEBT-011).
+//     event (api/_lib/event-upsert.js; DEBT-011). The other side of that
+//     choice, accepted: if a source later REMOVES an address from an event
+//     it already sent, the stored one stays. Which of the two a connector
+//     may do is a per-field decision recorded under DEBT-011.
 const ORBIT_MILES = 75; // SERVICE_AREA.md; same figure as cron-ticketmaster.js's RADIUS_MILES
 // A real state or province code, optionally with a ZIP -- not any two
 // letters ("University Center, UC" is not a city and a state).
 const STATE_ZIP_RE =
   /^(?:AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|ON|QC|BC|AB|MB|SK|NS|NB|NL|PE)(?:\s+\d{5}(?:-\d{4})?)?$/;
-const PLAIN_CITY_RE = /^[A-Za-z][A-Za-z .'-]{1,29}$/;
+// "<house number> ... <street type>": a street, not "2nd Floor" or "101 Olscamp Hall".
+const NUMBERED_STREET_RE =
+  /^\d+[A-Za-z]?\s.*\b(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Way|Highway|Hwy|Parkway|Pkwy|Place|Pl|Terrace|Ter)\b\.?/;
 
 function cleanString(v) {
   return typeof v === "string" && v.trim() ? v.trim() : null;
@@ -262,12 +272,14 @@ function parseLocalistLocation(e) {
   const address = cleanString(e.address);
   if (address) {
     const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
-    if (parts.length >= 2 && STATE_ZIP_RE.test(parts[parts.length - 1]) && PLAIN_CITY_RE.test(parts[parts.length - 2])) {
-      city = parts[parts.length - 2];
+    const stateZip = parts.length >= 2 ? STATE_ZIP_RE.exec(parts[parts.length - 1]) : null;
+    const listedCity = stateZip ? knownCity(parts[parts.length - 2], parts[parts.length - 1].slice(0, 2)) : null;
+    if (listedCity) {
+      city = listedCity;
       const before = parts.slice(0, -2);
-      // The street is the last part that begins with a house number
-      // ("123 Main St, Suite 4, Warren, MI" -> "123 Main St").
-      street = [...before].reverse().find((part) => /^\d/.test(part)) || null;
+      // The street is the first part that is a numbered street
+      // ("123 Main St, 2nd Floor, Warren, MI" -> "123 Main St").
+      street = before.find((part) => NUMBERED_STREET_RE.test(part)) || null;
       if (!street && name && before.length) {
         // A tenant may repeat the building in front of the street, with no
         // comma: "Bowen-Thompson Student Union 1001 E Wooster St". Only a
@@ -275,12 +287,12 @@ function parseLocalistLocation(e) {
         const joined = before.join(", ");
         if (joined.toLowerCase().startsWith(name.toLowerCase() + " ")) {
           const rest = joined.slice(name.length).trim();
-          if (/^\d/.test(rest)) street = rest;
+          if (NUMBERED_STREET_RE.test(rest)) street = rest;
         }
       }
     }
   }
-  if (!city) city = cleanString(geo.city);
+  if (!city) city = knownCity(cleanString(geo.city), cleanString(geo.state));
 
   const lat = Number.parseFloat(geo.latitude);
   const lng = Number.parseFloat(geo.longitude);

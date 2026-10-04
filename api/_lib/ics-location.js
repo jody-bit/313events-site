@@ -73,16 +73,18 @@ const { knownCity, MAX_CITY_WORDS } = require("./orbit-cities");
 //     feed organization's name (that would misattribute a specific,
 //     real-but-unparsed location to the feed's own umbrella org).
 //     2026-10-04 (BUG-012): an "unparseable" result may ALSO carry
-//     trailingCity (and trailingAddress / trailingRegion / trailingPostal)
-//     when the text ends in a recognizable "<City> <ST> <ZIP>" tail --
-//     see findTrailingCity below. The status stays "unparseable" on
-//     purpose: the text is still not decomposed into a venue NAME, and
-//     rawText is still what a caller stores as the honest raw location.
-//     The city is simply no longer thrown away with it.
+//     trailingCity (with trailingRegion / trailingPostal) when the text
+//     ends in "<known city> MI|OH <ZIP>" -- see findTrailingCity below. The
+//     status stays "unparseable" on purpose: the text is still not
+//     decomposed into a venue NAME or a street address, and rawText is
+//     still what a caller stores as the honest raw location. The city is
+//     simply no longer thrown away with it.
 //
-// 2026-10-04 (BUG-012): a LOCATION that is only an empty marker ("-",
-// "--", an en dash) or only a region ("MI", "ON", "Ontario") states no
-// location at all and is "blank", never a venue.
+// 2026-10-04 (BUG-012): a LOCATION with no letter or digit in it ("-",
+// "--", an en dash) states no location at all and is "blank", never a
+// venue. A bare region ("MI", "ON") is NOT treated this way: it is left as
+// the text it is, for a person, because turning it into the "Venue TBA"
+// placeholder would let the placeholder's own city be attached to it.
 
 function decodeHtmlEntities(str) {
   if (!str) return str;
@@ -365,9 +367,9 @@ function tryCivicplusEmptyNameWithStreet(cleaned) {
 // person was asked to fix each one. Two causes, both in how this module
 // read text that carried no ambiguity about the CITY:
 //
-//   1. 17 events had a LOCATION of "-" (City of Madison Heights), 1 of
-//      "MI" and 1 of "ON". Those say nothing; they were stored as venues.
-//   2. 9 events ended in the municipal calendar's own "<City> <ST> <ZIP>"
+//   1. 17 events had a LOCATION of "-" (City of Madison Heights). That says
+//      nothing; it was stored as the venue.
+//   2. 8 events ended in the municipal calendar's own "<City> MI <ZIP>"
 //      tail after text the grammars above rightly refuse to turn into a
 //      venue name -- a sentence, a route, a name glued to a street:
 //        "Join us as we celebrate Founder's Day! ... - Rochester MI 48307"
@@ -377,113 +379,76 @@ function tryCivicplusEmptyNameWithStreet(cleaned) {
 //      Refusing to guess the NAME is still right. Discarding the city with
 //      it was not: the city is stated, in a fixed position, by the source.
 //
-// findTrailingCity() reads only that tail. It never produces a venue name.
+// findTrailingCity() reads only that tail and reports ONLY A CITY. It never
+// produces a venue name and never a street address.
 //
-// THE CITY must be a name in api/_lib/orbit-cities.js -- a closed list --
-// standing immediately in front of "MI <ZIP>" or "OH <ZIP>". A first
-// version of this rule accepted any one to four capitalised words in that
-// position; an independent review the same day showed what that lets
-// through ("Lower Level Troy", "Suite A Royal Oak", "House Mount Clemens",
-// "Not Applicable"). With the list, the longest known name that ends the
-// text is the city -- "... Coolidge Hwy Lower Level Troy MI 48098" is Troy,
-// "... Bldg B Clinton Township MI 48038" is Clinton Township, "... Not
-// Applicable MI 48067" is nothing -- and a place that is not on the list is
-// simply not recognised.
-//
-// THE STREET ADDRESS is reported only when it is a plain "<house number>
-// <up to five capitalised or numeric words> <street type>" run, in the same
-// " - " segment as the city, with at most three words (a suite, a level, a
-// building) between it and the city. The run starts at the EARLIEST number
-// that fits, so "240 W 13 Mile Road" is one address and not "13 Mile Road";
-// a number followed by lower-case words ("12 and up", "3 pm on Main St") is
-// not a house number; and a bare "9 Mile Road" is a road, not an address.
-//
-// With no ZIP at all the state must still be MI or OH and a street address
-// must be present, so prose that merely ends in a city and two capital
-// letters is not read as a place.
+// This rule went through two independent reviews on the day it was written,
+// before it shipped, and is deliberately narrower than its first two forms.
+// A wrong value here is published and also takes the event out of Admin's
+// queue, so it is much worse than a missing one; every limit below trades
+// recall for that:
+//   - the city must be a name on the closed list for THAT STATE
+//     (api/_lib/orbit-cities.js). "Any capitalised words before the state"
+//     produced "Lower Level Troy" and "Suite A Royal Oak"; a list that
+//     ignored the state read "Troy OH 45373" as Troy, Michigan;
+//   - a ZIP is required, and it must belong to the state (Michigan 48/49,
+//     Ohio 43/44/45);
+//   - the longest listed name that ends the text wins ("Bldg B Clinton
+//     Township" is Clinton Township, "Lake Orion" is Lake Orion and not
+//     Orion), and a listed name is refused when the word in front of it is
+//     one that begins longer place names -- "Port Huron Township", "South
+//     Rockwood", "Fort Wayne", "Camp Dearborn" -- or is "and" / "&", which
+//     marks an intersection ("Greenfield and Warren");
+//   - no street address is recovered. Two attempts both produced wrong
+//     addresses from ordinary venue names ("Fire Station 2 1019 E Big Beaver
+//     Rd" -> "2 1019 E Big Beaver Rd"; "240 W 13 Mile Road" -> "13 Mile
+//     Road"), and the city alone is what places the event.
 const EMPTY_MARKER_RE = /^[^\p{L}\p{N}]*$/u; // no letter or digit in any script: "-", "--", an en dash
-const REGION_CODE_ONLY_RE = /^(?:MI|ON|OH)\.?$/; // upper case only: "On" and "Oh" are words
-const REGION_NAME_ONLY_RE = /^(?:michigan|ontario|ohio)$/i;
 const TAIL_STATE_ZIP_RE = /^(.*\S)\s+(MI|OH)\s+(\d{5}(?:-\d{4})?)$/;
-const TAIL_STATE_ONLY_RE = /^(.*\S)\s+(MI|OH)$/;
-// One whole word that is a street type (the same vocabulary as
-// STREET_SUFFIX_RE above), optionally followed by "." and/or ",".
-const STREET_TYPE_TOKEN_RE =
-  /^(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Way|Highway|Hwy|Parkway|Pkwy|Place|Pl|Terrace|Ter)\.?,?$/;
-const HOUSE_NUMBER_RE = /^\d+[A-Za-z]?$/;
-const PLAIN_ADDRESS_WORD_RE = /^[A-Z0-9][A-Za-z0-9.'-]*$/;
-const MAX_ADDRESS_WORDS = 5;
-const MAX_WORDS_BETWEEN_ADDRESS_AND_CITY = 3;
+const ZIP_PREFIXES = { MI: /^4[89]/, OH: /^4[345]/ };
+// Words that begin longer place names. A listed city directly after one of
+// these is the tail of some other place, unless that longer name is itself
+// on the list (in which case it has already matched).
+// ("St" is deliberately not here: in front of a city it is a street type --
+// "Main St Royal Oak" -- far more often than a Saint.)
+const PLACE_NAME_QUALIFIER_RE = /^(?:North|South|East|West|Upper|Lower|New|Old|Port|Fort|Ft\.?|Lake|Mount|Mt\.?|Camp|Little|Grand|Charter)$/i;
+const INTERSECTION_WORD_RE = /^(?:and|&)$/i;
 
 function isEmptyMarker(cleaned) {
-  return EMPTY_MARKER_RE.test(cleaned) || REGION_CODE_ONLY_RE.test(cleaned) || REGION_NAME_ONLY_RE.test(cleaned);
+  return EMPTY_MARKER_RE.test(cleaned);
 }
 
-// The longest known city that ends `head`, as { city, before } -- `before`
-// is the text in front of it -- or null.
-function splitKnownCityAtEnd(head) {
+// The longest city on the list for `state` that ends `head`, or null.
+function knownCityAtEnd(head, state) {
   const words = head.split(" ");
   for (let n = Math.min(MAX_CITY_WORDS, words.length); n >= 1; n--) {
     const candidate = words.slice(words.length - n).join(" ").replace(/^[-–—(,;:]+/, "");
-    const city = knownCity(candidate);
-    if (city) return { city, before: words.slice(0, words.length - n).join(" ") };
-  }
-  return null;
-}
-
-// The plain street address that ends `text` (allowing a few trailing words
-// such as "Suite A" or "Lower Level"), or null.
-function plainAddressBeforeCity(text) {
-  const words = text.split(" ").filter(Boolean);
-  for (let i = 0; i < words.length; i++) {
-    if (!HOUSE_NUMBER_RE.test(words[i])) continue;
-    if (/^Mile$/i.test(words[i + 1] || "")) continue; // "9 Mile Road" is the road's name, not a house number
-    let j = i + 1;
-    let plain = 0;
-    while (j < words.length && plain < MAX_ADDRESS_WORDS && !STREET_TYPE_TOKEN_RE.test(words[j]) && PLAIN_ADDRESS_WORD_RE.test(words[j])) {
-      j++;
-      plain++;
-    }
-    if (j >= words.length || !STREET_TYPE_TOKEN_RE.test(words[j])) continue;
-    let endExclusive = j + 1;
-    // "123 Court St": a street-type word can itself be the street's name.
-    if (plain === 0 && endExclusive < words.length && STREET_TYPE_TOKEN_RE.test(words[endExclusive])) endExclusive++;
-    if (plain === 0 && endExclusive === j + 1) continue; // "5 Road" is not an address
-    if (words.length - endExclusive > MAX_WORDS_BETWEEN_ADDRESS_AND_CITY) continue;
-    return words.slice(i, endExclusive).join(" ").replace(/,$/, "");
+    const city = knownCity(candidate, state);
+    if (!city) continue;
+    const wordBefore = (words[words.length - n - 1] || "").replace(/[,;:]+$/, "");
+    if (PLACE_NAME_QUALIFIER_RE.test(wordBefore) || INTERSECTION_WORD_RE.test(wordBefore)) return null;
+    return city;
   }
   return null;
 }
 
 function findTrailingCity(cleanedRaw) {
   const cleaned = collapseWhitespace(String(cleanedRaw || ""));
-  let head, region, postal;
-  const withZip = TAIL_STATE_ZIP_RE.exec(cleaned);
-  if (withZip) {
-    [, head, region, postal] = withZip;
-  } else {
-    const stateOnly = TAIL_STATE_ONLY_RE.exec(cleaned);
-    if (!stateOnly) return null;
-    [, head, region] = stateOnly;
-    postal = null;
-  }
-  head = head.replace(/[\s,.;:]+$/, ""); // "Troy Community Center, Troy, MI 48084" -- a comma before the state
-  const split = splitKnownCityAtEnd(head);
-  if (!split) return null;
-
-  const dashAt = split.before.lastIndexOf(" - ");
-  // A trailing "." is kept: it belongs to "Rd." or "Ave.", as the source wrote it.
-  const segment = (dashAt >= 0 ? split.before.slice(dashAt + 3) : split.before).replace(/^-\s*/, "").replace(/[\s,;:]+$/, "");
-  const address = plainAddressBeforeCity(segment);
-  if (postal === null && !address) return null;
-  return { trailingCity: split.city, trailingAddress: address, trailingRegion: region, trailingPostal: postal };
+  const tail = TAIL_STATE_ZIP_RE.exec(cleaned);
+  if (!tail) return null;
+  const [, rawHead, region, postal] = tail;
+  if (!ZIP_PREFIXES[region].test(postal)) return null;
+  const head = rawHead.replace(/[\s,.;:]+$/, ""); // "Troy Community Center, Troy, MI 48084" -- a comma before the state
+  const city = knownCityAtEnd(head, region);
+  if (!city) return null;
+  return { trailingCity: city, trailingRegion: region, trailingPostal: postal };
 }
 
 function parseIcsLocation(raw) {
   if (typeof raw !== "string") return { status: "blank" };
   const cleaned = lightlyClean(raw).trim();
   if (!cleaned) return { status: "blank" };
-  if (isEmptyMarker(cleaned)) return { status: "blank" }; // "-", "MI", "ON": no location stated (BUG-012)
+  if (isEmptyMarker(cleaned)) return { status: "blank" }; // "-": no location stated (BUG-012)
 
   const tribe = tryTribeGrammar(cleaned);
   if (tribe) return tribe;
@@ -535,7 +500,7 @@ function parseIcsLocation(raw) {
   }
 
   // BUG-012: still not decomposable into a venue name -- but when the text
-  // ends in the source's own "<City> <ST> <ZIP>", the city is kept.
+  // ends in the source's own "<known city> <ST> <ZIP>", the city is kept.
   const trailing = findTrailingCity(cleaned);
   return Object.assign({ status: "unparseable", rawText: collapseWhitespace(cleaned) }, trailing || {});
 }

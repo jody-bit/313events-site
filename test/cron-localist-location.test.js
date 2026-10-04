@@ -103,7 +103,7 @@ async function run() {
     const noState = parseLocalistLocation({ location_name: "Somewhere", address: "Building K, second floor", geo: {} });
     assert.deepStrictEqual([noState.street, noState.city], [null, null], "no state at the end: left alone");
 
-    const geoCityOnly = parseLocalistLocation({ location_name: "Sports and Expo Center", address: "", geo: { city: "Warren", street: "J" } });
+    const geoCityOnly = parseLocalistLocation({ location_name: "Sports and Expo Center", address: "", geo: { city: "Warren", state: "MI", street: "J" } });
     assert.deepStrictEqual([geoCityOnly.street, geoCityOnly.city], [null, "Warren"], "geo.city fills in when address gives none; geo.street never does");
 
     const legacy = parseLocalistLocation({ venue_name: "Stroh Center" });
@@ -131,7 +131,7 @@ async function run() {
     const flight = parseLocalistLocation({ location_name: "Bowling Green Flight Center", address: "905 E Poe Rd, Bowling Green, OH 43402", geo: { city: "Bowling Green" } });
     assert.deepStrictEqual([flight.street, flight.city], ["905 E Poe Rd", "Bowling Green"]);
 
-    const firelands = parseLocalistLocation({ location_name: "BGSU Firelands", address: "One University Drive Huron, Ohio 44839", geo: { city: "Huron", latitude: "41.397938", longitude: "-82.594216" } });
+    const firelands = parseLocalistLocation({ location_name: "BGSU Firelands", address: "One University Drive Huron, Ohio 44839", geo: { city: "Huron", state: "OH", latitude: "41.397938", longitude: "-82.594216" } });
     assert.deepStrictEqual([firelands.street, firelands.city], [null, "Huron"], "no comma before the city: nothing is split out of the address; the city is geo.city");
 
     const away = parseLocalistLocation({ location_name: "Kalamazoo, Mich.", location: "Kalamazoo, Mich.", address: "", geo: { latitude: null, longitude: null, city: null } });
@@ -142,9 +142,22 @@ async function run() {
 
   // --- 2c. Found by independent review of the first version, 2026-10-04. ---
   {
-    // The street is the part that begins with a house number, wherever the building sits.
+    // The street is the part that is a numbered street, wherever the building, floor or room sits.
     const suite = parseLocalistLocation({ location_name: "City Hall", address: "123 Main St, Suite 4, Warren, MI 48088", geo: {} });
     assert.deepStrictEqual([suite.street, suite.city], ["123 Main St", "Warren"]);
+    const floor = parseLocalistLocation({ location_name: "City Hall", address: "123 Main St, 2nd Floor, Warren, MI 48093", geo: {} });
+    assert.deepStrictEqual([floor.street, floor.city], ["123 Main St", "Warren"], "\"2nd Floor\" begins with a digit and is not a street");
+    const floorFirst = parseLocalistLocation({ location_name: "City Hall", address: "2nd Floor, 123 Main St, Warren, MI 48093", geo: {} });
+    assert.deepStrictEqual([floorFirst.street, floorFirst.city], ["123 Main St", "Warren"], "...wherever it stands");
+    const hall = parseLocalistLocation({ location_name: "Olscamp Hall", address: "1001 E Wooster St, 101 Olscamp Hall, Bowling Green, OH 43403", geo: {} });
+    assert.deepStrictEqual([hall.street, hall.city], ["1001 E Wooster St", "Bowling Green"], "\"101 Olscamp Hall\" is a room, not a street");
+    // The city is a name on the closed list for that state — nothing else.
+    const campus = parseLocalistLocation({ location_name: "K Building", address: "K Building, South Campus, MI 48088", geo: {} });
+    assert.deepStrictEqual([campus.street, campus.city], [null, null], "\"South Campus\" is not a city");
+    const wrongState = parseLocalistLocation({ location_name: "Arena", address: "255 Adams St, Troy, OH 45373", geo: {} });
+    assert.strictEqual(wrongState.city, null, "Troy, Ohio is not Troy, Michigan");
+    const foreignGeo = parseLocalistLocation({ location_name: "X", address: "", geo: { city: "Centre", state: "", latitude: "47.5", longitude: "1.7" } });
+    assert.deepStrictEqual([foreignGeo.city, foreignGeo.outsideOrbit], [null, false], "a geocoder's city is taken only when it is a known city of geo.state");
     const leading = parseLocalistLocation({ location_name: "South Campus", address: "South Campus, 14500 E 12 Mile Rd, Warren, MI 48088", geo: {} });
     assert.deepStrictEqual([leading.street, leading.city], ["14500 E 12 Mile Rd", "Warren"], "a building in front of the street, with a comma");
     // The venue name is dropped from the front only as a whole word.

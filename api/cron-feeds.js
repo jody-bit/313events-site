@@ -284,31 +284,12 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
 
   if (parsed.status === "unparseable") {
     // BUG-012 (2026-10-04): the text is still kept whole as the honest raw
-    // location and no venue name is derived from it -- but when it ends in
-    // the source's own "<City> <ST> <ZIP>", the city is kept, and a plain
-    // street address when one is stated (api/_lib/ics-location.js,
+    // location; no venue name, no street address and no venue link is
+    // derived from it. But when it ends in the source's own "<known city>
+    // <ST> <ZIP>" the city is kept (api/_lib/ics-location.js,
     // findTrailingCity). Before this, the city was discarded with the rest
     // and the event could not be placed.
-    if (parsed.trailingCity) {
-      const canonical = parsed.trailingAddress
-        ? resolveVenueFromCandidate({ name: null, address: parsed.trailingAddress, city: parsed.trailingCity }, venueDetailsMaps)
-        : null;
-      if (canonical) {
-        return {
-          venue_name_raw: canonical.name || parsed.rawText,
-          venue_id: canonical.id,
-          venue_address_raw: canonical.address || parsed.trailingAddress,
-          venue_city_raw: canonical.city || parsed.trailingCity,
-        };
-      }
-      return {
-        venue_name_raw: parsed.rawText,
-        venue_id: null,
-        venue_address_raw: parsed.trailingAddress || null,
-        venue_city_raw: parsed.trailingCity,
-      };
-    }
-    return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: null };
+    return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: parsed.trailingCity || null };
   }
 
   // status === "parsed"
@@ -379,11 +360,13 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
 // venue_name_raw stays "Venue TBA", the existing convention for a LOCATION
 // that states nothing.
 //
-// Known limit, accepted: the share is computed from each night's fetch, so
+// Known limits, accepted: the share is computed from each night's fetch, so
 // a feed sitting exactly on the 95% line can gain or lose its default from
-// one night to the next. Losing it puts those events back in the queue,
-// which is the safe direction.
-const FEED_DEFAULT_CITY_MIN_EVIDENCE = 3;
+// one night to the next (losing it puts those events back in the queue,
+// which is the safe direction); and a regional feed whose fetch happens to
+// hold only one city's events that night -- five or more of them -- would
+// pass. The evidence floor is five, not three, to make that unlikely.
+const FEED_DEFAULT_CITY_MIN_EVIDENCE = 5;
 const FEED_DEFAULT_CITY_MIN_SHARE = 0.95;
 
 function feedDefaultCity(rows) {
@@ -575,6 +558,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     // exact/no-fuzzy repair rules (canonical venue_id match, then exact
     // canonical name match, then exact learned historical match — never a
     // guess).
+    // (A row whose LOCATION said nothing carries the "Venue TBA"
+    // placeholder here. The lookup never matches a placeholder by name --
+    // api/_lib/venue-lookup.js, 2026-10-04 -- so such a row is not linked to
+    // the venues row of that name, and does not take that row's city.)
     Object.assign(row, resolveVenueAddressCityRepair(row, venueDetailsMaps, learnedVenueMap));
 
     if (feedSource.location_per_event && parseIcsLocation(ev.location).status === "blank") rowsWithNoStatedLocation.add(row);

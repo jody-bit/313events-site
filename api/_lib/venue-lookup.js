@@ -237,6 +237,48 @@ async function buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_RO
 // event shape: { venue_id, venue_name_raw, venue_address_raw, venue_city_raw }
 // canonicalMaps: the { byName, byId } object from buildVenueDetailsMap()
 // learnedMap: the Map from buildLearnedVenueAddressCityMap()
+// A name match is not enough when the event itself says it is somewhere
+// else (2026-10-04). Measured in production that day: eight upcoming public
+// events in Livonia, St. Clair Shores, Madison Heights and Sterling Heights
+// were linked to the venues row named "Venue TBA", whose city is Detroit --
+// their feed gave no venue name, so they carried the "Venue TBA"
+// placeholder, and the placeholder matched that row BY NAME. The public view
+// shows a linked venue's city ahead of the event's own, so all eight were
+// listed in Detroit. The same holds for any shared name: "Community Center"
+// in two cities is two venues.
+//
+// citiesConflict() is true only when BOTH sides state a city and neither
+// contains the other ("Detroit, MI 48207" and "Detroit" agree). When the
+// event states no city there is nothing to contradict the match and
+// behaviour is exactly as before.
+//
+// And a PLACEHOLDER is not a venue at all. "Venue TBA" means the venue is
+// not known; a venues row with that name is a label, and its city is the
+// column's default ("Detroit"), not a fact about any event. Matching an
+// event to it by name therefore told the public that an event with an
+// unknown venue is in Detroit. isPlaceholderVenueName() names the generic
+// placeholders exactly; a name-based match (tiers B and C below, and the
+// name tier of resolveVenueFromCandidate) is never made on one. An event
+// that is ALREADY linked to such a row (tier A, an existing venue_id) is
+// left as it is, and the specific, deliberately created rows -- "Venue TBA
+// (Paxahau)", "Venue TBA (secret loft, revealed to ticket holders)" -- are
+// different names and are unaffected.
+const PLACEHOLDER_VENUE_NAMES = new Set(["venue tba", "location tba", "tba", "venue tbd", "tbd", "to be announced"]);
+
+function isPlaceholderVenueName(name) {
+  return PLACEHOLDER_VENUE_NAMES.has(String(name || "").trim().toLowerCase().replace(/\s+/g, " "));
+}
+function normalizeCityForCompare(city) {
+  return String(city || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function citiesConflict(eventCity, venueCity) {
+  const a = normalizeCityForCompare(eventCity);
+  const b = normalizeCityForCompare(venueCity);
+  if (!a || !b) return false;
+  return !(` ${a} `.includes(` ${b} `) || ` ${b} `.includes(` ${a} `));
+}
+
 function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {
   const patch = {};
   if (!event) return patch;
@@ -259,7 +301,7 @@ function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {
       candidate = byId.get(event.venue_id);
     }
   } else {
-    const key = normalizeVenueName(event.venue_name_raw);
+    const key = isPlaceholderVenueName(event.venue_name_raw) ? null : normalizeVenueName(event.venue_name_raw);
     if (key) {
       const nameMatch = byName.get(key);
       if (nameMatch && nameMatch !== AMBIGUOUS_VENUE_NAME) {
@@ -278,6 +320,10 @@ function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {
   }
 
   if (!candidate) return patch;
+  // Tiers B and C matched on the NAME alone. If the event states a different
+  // city, it is a different place -- see citiesConflict above. (Tier A is an
+  // existing link, not a name match, and is left as it is.)
+  if (!event.venue_id && citiesConflict(event.venue_city_raw, candidate.city)) return patch;
 
   if (addressBlank && !isBlank(candidate.address)) patch.venue_address_raw = candidate.address;
   if (cityBlank && !isBlank(candidate.city)) patch.venue_city_raw = candidate.city;
@@ -352,10 +398,11 @@ function resolveVenueFromCandidate(candidate, canonicalMaps) {
   const byName = (canonicalMaps && canonicalMaps.byName) || new Map();
   const byAddress = (canonicalMaps && canonicalMaps.byAddress) || new Map();
 
-  if (!isBlank(candidate.name)) {
+  if (!isBlank(candidate.name) && !isPlaceholderVenueName(candidate.name)) {
     const nameKey = normalizeVenueName(candidate.name);
     const nameMatch = nameKey ? byName.get(nameKey) : null;
-    if (nameMatch && nameMatch !== AMBIGUOUS_VENUE_NAME) return nameMatch;
+    // Same name, different stated city: not the same venue (see citiesConflict).
+    if (nameMatch && nameMatch !== AMBIGUOUS_VENUE_NAME && !citiesConflict(candidate.city, nameMatch.city)) return nameMatch;
   }
   if (!isBlank(candidate.address)) {
     const addressKey = normalizeAddressCity(candidate.address, candidate.city);
@@ -544,6 +591,8 @@ module.exports = {
   resolveVenueAddressCityRepair,
   resolveVenueNameFromAddressRepair,
   resolveVenueFromCandidate,
+  isPlaceholderVenueName,
+  citiesConflict,
   resolveDigitalHomeLink,
   resolvePublicVenueDisplay,
   mergeVenueIntoMaps,

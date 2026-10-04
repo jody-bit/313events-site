@@ -14,9 +14,9 @@
 // and feed, same approach as test/cron-feeds-location-per-event.test.js) and
 // checks what is WRITTEN, because the write is what Admin and the public
 // pages read:
-//   1. a trailing "<City> <ST> <ZIP>" is kept as the city (and a plain
-//      numbered street as the address); the location text itself is kept as
-//      it was and no venue is invented;
+//   1. a trailing "<known city> MI <ZIP>" is kept as the city; the location
+//      text itself is kept as it was, and no venue, venue link or street
+//      address is derived from it;
 //   2. "-" is not a venue;
 //   3. an event whose LOCATION says nothing at all takes the feed's own
 //      city — only when the feed's other events agree on one, never for a
@@ -89,12 +89,17 @@ const MUNICIPAL_FEED = {
   location_per_event: true,
 };
 
-// Three events that state their place the way this feed really does.
+// Five events that state their place the way this feed really does.
 const STATED = [
   { uid: "lib-1", summary: "Story Time", location: "Madison Heights Public Library - 240 W 13 Mile Road  Madison Heights MI 48071" },
   { uid: "lib-2", summary: "Chess Club", location: "Madison Heights Public Library - 240 W 13 Mile Road  Madison Heights MI 48071" },
   { uid: "aac-1", summary: "Bingo", location: "Active Adult Center - 260 W 13 Mile Road  Madison Heights MI 48071" },
+  { uid: "aac-2", summary: "Euchre", location: "Active Adult Center - 260 W 13 Mile Road  Madison Heights MI 48071" },
+  { uid: "hall-1", summary: "Council Meeting Watch Party", location: "City Hall - 300 W 13 Mile Road  Madison Heights MI 48071" },
 ];
+
+// The venues row that exists in production: a placeholder with a city.
+const PLACEHOLDER_VENUE = { id: "venue-tba", name: "Venue TBA", address: null, city: "Detroit" };
 
 async function run() {
   process.env.SUPABASE_URL = SUPABASE_URL;
@@ -121,33 +126,41 @@ async function run() {
     assert.strictEqual(rows.founders.venue_id, null);
 
     assert.strictEqual(rows.hazwaste.venue_city_raw, "Taylor");
-    assert.strictEqual(rows.hazwaste.venue_address_raw, "21000 Northline Rd.");
-    assert.strictEqual(rows.hazwaste.venue_id, null, "no venue is invented");
+    assert.strictEqual(rows.hazwaste.venue_address_raw, null, "no street address is recovered from free text");
+    assert.strictEqual(rows.hazwaste.venue_name_raw, "- Wayne County Community College 21000 Northline Rd. Taylor MI 48180");
+    assert.strictEqual(rows.hazwaste.venue_id, null, "no venue is invented or linked");
 
     assert.strictEqual(rows.spook.venue_city_raw, "Royal Oak");
-    assert.strictEqual(rows.spook.venue_address_raw, null, "an intersection is not a street address");
+    assert.strictEqual(rows.spook.venue_address_raw, null);
 
     // Three stated cities, all different: no feed city. Text with no city in it stays without one.
     assert.strictEqual(rows.plaza.venue_city_raw, null);
     assert.strictEqual(rows.plaza.venue_name_raw, "Fifth Avenue Pedestrian Plaza (between 4th and 5th)");
   }
-  console.log("PASS: a trailing \"City ST ZIP\" is written as the city (and a numbered street as the address); the location text is unchanged and no venue is invented");
+  console.log("PASS: a trailing \"known city, MI, ZIP\" is written as the city; the location text is unchanged; no address, venue or link is derived");
 
   // ---------------------------------------------------------------------
-  // 1b. ...and when that street address IS a venue on file, the event is linked to it.
+  // 1b. Wrong values an earlier form of this rule would have written.
   // ---------------------------------------------------------------------
   {
-    const feedSource = { ...MUNICIPAL_FEED, id: "fs-link", feed_url: "https://feed.example/link.ics" };
     const rows = await runFeed({
-      feedSource,
-      venues: [{ id: "venue-wccc", name: "Wayne County Community College - Downriver", address: "21000 Northline Rd.", city: "Taylor" }],
-      events: [{ uid: "hazwaste", summary: "Household Hazardous Waste Collection", location: "- Wayne County Community College 21000 Northline Rd. Taylor MI 48180" }],
+      feedSource: { ...MUNICIPAL_FEED, id: "fs-traps", feed_url: "https://feed.example/traps.ics" },
+      venues: [{ id: "venue-prechter", name: "Heinz C. Prechter Performing Arts Center", address: "21000 Northline Rd", city: "Taylor" }],
+      events: [
+        { uid: "station", summary: "Open House", location: "- Fire Station 2 1019 E Big Beaver Rd Troy MI 48083" },
+        { uid: "ohio", summary: "Bus Trip", location: "Pro Football Hall of Fame 2121 George Halas Dr NW Canton OH 44708" },
+        { uid: "tail", summary: "Fall Color Tour", location: "Fall color tour to Camp Dearborn MI 48380" },
+        { uid: "lot", summary: "Hazardous Waste Day", location: "- Wayne County Community College parking lot 21000 Northline Rd Taylor MI 48180" },
+      ],
     });
-    assert.strictEqual(rows.hazwaste.venue_id, "venue-wccc");
-    assert.strictEqual(rows.hazwaste.venue_name_raw, "Wayne County Community College - Downriver");
-    assert.strictEqual(rows.hazwaste.venue_city_raw, "Taylor");
+    assert.deepStrictEqual([rows.station.venue_city_raw, rows.station.venue_address_raw], ["Troy", null], "the city, and no \"2 1019 E Big Beaver Rd\"");
+    assert.strictEqual(rows.ohio.venue_city_raw, null, "Canton, Ohio is not Canton, Michigan");
+    assert.strictEqual(rows.tail.venue_city_raw, null, "Camp Dearborn is not Dearborn");
+    assert.strictEqual(rows.lot.venue_id, null, "an address inside free text never links the event to whichever venue is on file there");
+    assert.strictEqual(rows.lot.venue_name_raw, "- Wayne County Community College parking lot 21000 Northline Rd Taylor MI 48180", "the source's own text is what is stored");
+    assert.strictEqual(rows.lot.venue_city_raw, "Taylor");
   }
-  console.log("PASS: a recovered street address that matches a venue on file links the event to that venue");
+  console.log("PASS: no address glued from a venue's own number, no Ohio city read as a Michigan one, no tail of a longer place name, no link by address");
 
   // ---------------------------------------------------------------------
   // 2 + 3. The Madison Heights case: "-" is not a venue, and an event that
@@ -156,10 +169,13 @@ async function run() {
   {
     const rows = await runFeed({
       feedSource: MUNICIPAL_FEED,
+      venues: [PLACEHOLDER_VENUE],
       events: [
         ...STATED,
         { uid: "dash", summary: "Book Sale (Friends of the Madison Heights Public Library)", location: "-" },
         { uid: "none", summary: "Harvest Festival (Recreation & DPS)" },
+        { uid: "noname", summary: "Senior Lunch", location: "- Madison Heights MI 48071" },
+        { uid: "region", summary: "Regional Summit", location: "OH" },
         { uid: "prose", summary: "Tree Lighting", location: "In front of City Hall, weather permitting" },
         { uid: "casino", summary: "AAC 50+ Casino Trip", location: "Caesars Windsor, Windsor ON" },
         { uid: "cedar", summary: "Teen Trip", location: "Cedar Point, Sandusky, Ohio" },
@@ -176,8 +192,19 @@ async function run() {
       assert.strictEqual(rows[uid].venue_name_raw, "Venue TBA", `${uid}: "-" / no LOCATION is not a venue`);
       assert.notStrictEqual(rows[uid].venue_name_raw, "-");
       assert.strictEqual(rows[uid].venue_address_raw, null, `${uid}: no address is invented`);
-      assert.strictEqual(rows[uid].venue_id, null, `${uid}: no venue is invented`);
+      assert.strictEqual(rows[uid].venue_id, null, `${uid}: not linked to the "Venue TBA" venues row, whose city is Detroit`);
     }
+    // THE LIVE DEFECT (production, 2026-10-04): a feed event with no venue
+    // name but a stated city -- "- Livonia MI 48154" -- carried the
+    // placeholder name, was linked BY NAME to the venues row "Venue TBA"
+    // (city: Detroit), and was shown to the public in Detroit. Eight events
+    // in four cities. A name match is refused when the event's own city
+    // says otherwise.
+    assert.strictEqual(rows.noname.venue_name_raw, "Venue TBA");
+    assert.strictEqual(rows.noname.venue_city_raw, "Madison Heights");
+    assert.strictEqual(rows.noname.venue_id, null, "a Madison Heights event is not linked to a Detroit placeholder");
+    // A bare region is left as the text it is: not the placeholder, and no feed city.
+    assert.deepStrictEqual([rows.region.venue_name_raw, rows.region.venue_city_raw, rows.region.venue_id], ["OH", null, null]);
     // A LOCATION with any real text is never given the feed's city — it
     // states a place, even when that place cannot be read. (Independent
     // review, 2026-10-04: a first version filled every one of these with
@@ -196,7 +223,7 @@ async function run() {
     assert.strictEqual(rows.parade.no_fixed_venue, true);
     assert.strictEqual(rows.parade.venue_city_raw, null, "an event with no fixed venue by design is left alone");
   }
-  console.log("PASS: \"-\" is never stored as a venue; an event whose LOCATION says nothing takes the feed's own city; a stated place (readable or not) and a parade are left alone");
+  console.log("PASS: \"-\" is never stored as a venue; an event whose LOCATION says nothing takes the feed's own city and is not linked to the Detroit placeholder; a stated place (readable or not), a bare region and a parade are left alone");
 
   // ---------------------------------------------------------------------
   // 3b. A stated place always wins, and one out-of-town event among many
@@ -246,17 +273,51 @@ async function run() {
         { uid: "region-only", summary: "First Wednesdays at Eastern Market", location: "MI" },
       ],
     });
-    assert.strictEqual(regional["region-only"].venue_city_raw, null, "4 of 5 (80%) is not agreement: a regional feed gets no default city");
-    assert.strictEqual(regional["region-only"].venue_name_raw, "Venue TBA", "and a bare \"MI\" is not stored as a venue");
+    assert.strictEqual(regional["region-only"].venue_city_raw, null);
+    assert.strictEqual(regional["region-only"].venue_name_raw, "MI", "a bare region is left as it is");
 
-    // Agreement, but only two events' worth of it.
+    const regionalBlank = await runFeed({
+      feedSource: { ...MUNICIPAL_FEED, id: "fs-regional2", venue_name: "Eastern Market Partnership", feed_url: "https://feed.example/emp2.ics" },
+      events: [
+        ...["a", "b", "c", "d", "e", "f", "g", "h"].map((uid) => ({ uid, summary: `Market ${uid}`, location: "Shed 5, 2810 Russell St, Detroit, MI, 48207" })),
+        { uid: "x", summary: "Pop-up", location: "Civic Center, 15801 Michigan Ave, Dearborn, MI, 48126" },
+        { uid: "y", summary: "Pop-up 2", location: "Civic Center, 15801 Michigan Ave, Dearborn, MI, 48126" },
+        { uid: "dash", summary: "Mystery Market", location: "-" },
+      ],
+    });
+    assert.strictEqual(regionalBlank.dash.venue_city_raw, null, "8 of 10 (80%) is not agreement: a regional feed gets no default city");
+
+    // Agreement, but only four events' worth of it.
     const thin = await runFeed({
       feedSource: { ...MUNICIPAL_FEED, id: "fs-thin", feed_url: "https://feed.example/thin.ics" },
-      events: [STATED[0], STATED[1], { uid: "dash", summary: "Book Sale", location: "-" }],
+      events: [...STATED.slice(0, 4), { uid: "dash", summary: "Book Sale", location: "-" }],
     });
-    assert.strictEqual(thin.dash.venue_city_raw, null, "two events are not enough evidence");
+    assert.strictEqual(thin.dash.venue_city_raw, null, "four events are not enough evidence");
+    const enough = await runFeed({
+      feedSource: { ...MUNICIPAL_FEED, id: "fs-enough", feed_url: "https://feed.example/enough.ics" },
+      events: [...STATED, { uid: "dash", summary: "Book Sale", location: "-" }],
+    });
+    assert.strictEqual(enough.dash.venue_city_raw, "Madison Heights", "five are");
   }
-  console.log("PASS: no feed city for a regional feed (80% agreement) or on thin evidence (2 events)");
+  console.log("PASS: no feed city for a regional feed (80% agreement) or on thin evidence (4 events); five agreeing events are enough");
+
+  // ---------------------------------------------------------------------
+  // 3d. A placeholder is not a venue. An event whose location is unknown,
+  //     in a feed with no agreed city, is NOT linked to the venues row named
+  //     "Venue TBA" and does NOT take that row's city (the column default,
+  //     "Detroit"). Before 2026-10-04 it did both.
+  // ---------------------------------------------------------------------
+  {
+    const rows = await runFeed({
+      feedSource: { ...MUNICIPAL_FEED, id: "fs-old", venue_name: "Tourism Windsor Essex Pelee Island", feed_url: "https://feed.example/old.ics" },
+      venues: [PLACEHOLDER_VENUE],
+      events: [{ uid: "none", summary: "Mystery Meetup" }, { uid: "dash", summary: "Pop-up", location: "-" }],
+    });
+    for (const uid of ["none", "dash"]) {
+      assert.deepStrictEqual([rows[uid].venue_name_raw, rows[uid].venue_id, rows[uid].venue_city_raw], ["Venue TBA", null, null], `${uid}: an unknown location is not "Detroit"`);
+    }
+  }
+  console.log("PASS: an event with an unknown location is not linked to the \"Venue TBA\" venues row and is not given its city");
 
   // ---------------------------------------------------------------------
   // 4. A single-venue feed (location_per_event false) is exactly as before.

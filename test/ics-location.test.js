@@ -401,17 +401,20 @@ function run() {
     assert.strictEqual(result.status, "unparseable");
   }
 
-  // --- 17. BUG-012 (2026-10-04): empty markers state no location. Real
-  //     production values: 17 upcoming City of Madison Heights events were
-  //     stored with a venue of "-", one Eastern Market Partnership event
-  //     with "MI", one Tourism Windsor Essex event with "ON". ---
+  // --- 17. BUG-012 (2026-10-04): a LOCATION with no letter or digit in it
+  //     states no location. Real production value: 17 upcoming City of
+  //     Madison Heights events were stored with a venue of "-". ---
   {
-    for (const marker of ["-", "--", " - ", "–", "—", ".", "MI", "ON", "OH", "Michigan", "Ontario", "Ohio", "michigan", "MI."]) {
+    for (const marker of ["-", "--", " - ", "–", "—", ".", "...", "- -"]) {
       assert.strictEqual(parseIcsLocation(marker).status, "blank", `${JSON.stringify(marker)} states no location`);
     }
-    // ...and real words that merely contain, begin with or look like a region are not markers.
-    for (const real of ["Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "Michigan Central", "M1 Concourse", "Oh!", "On", "Oh", "mi"]) {
-      assert.notStrictEqual(parseIcsLocation(real).status, "blank", `${JSON.stringify(real)} is a real location signal`);
+    // A bare region is NOT turned into the placeholder: it is left as the
+    // text it is (one "MI" and one "ON" were in production that day). Nor is
+    // any real word.
+    for (const real of ["MI", "ON", "OH", "Michigan", "Ontario", "Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "M1 Concourse", "Oh!", "On", "TBD", "N/A"]) {
+      const result = parseIcsLocation(real);
+      assert.strictEqual(result.status, "unparseable", `${JSON.stringify(real)} is kept as text`);
+      assert.strictEqual(result.rawText, real);
     }
     // A location written in another script is text, not an empty marker
     // (independent review, 2026-10-04: an ASCII-only test discarded these).
@@ -422,117 +425,105 @@ function run() {
     }
   }
 
-  // --- 18. BUG-012: text that still cannot be split into a venue NAME
-  //     keeps the CITY from its own trailing "<City> <ST> <ZIP>". The status
+  // --- 18. BUG-012: text that still cannot be split into a venue NAME keeps
+  //     the CITY from its own trailing "<known city> MI <ZIP>". The status
   //     stays "unparseable" and rawText is unchanged -- sections 4, 10, 11
   //     and 12 above still hold for these very strings -- and no venue name
-  //     is ever produced. Every string is a real production venue_name_raw,
-  //     captured 2026-10-01 or 2026-10-04. ---
+  //     and no street address is produced. Every string in the first group
+  //     is a real production venue_name_raw, captured 2026-10-01 or
+  //     2026-10-04. ---
   {
-    const cases = [
-      // (a) nothing but a city after the last " - "
-      ["Join us as we celebrate Founder's Day! More information to come! - Rochester MI 48307", "Rochester", null],
-      ["Less scary Trick-or-Treating at Downtown businesses and vendors. Rain or shine! - Northville MI 48167", "Northville", null],
-      ["Downtown Northville - Witch themed shopping night is free and open to all. Shops and restaurants are open late with special sales and unique event themed offerings and games. - Northville MI 48167", "Northville", null],
-      ["Public alley west of Main Street, off Crane Avenue, one block south of Catalpa Drive. - Royal Oak MI 48067", "Royal Oak", null],
-      ["<p>Meet at Pronto/Five 15: 600 S Washington Ave, Royal Oak, MI 48067</p> -   Royal Oak MI 48067", "Royal Oak", null],
-      ["Downtown St. Clair Shores on Greater Mack Ave., from 9 Mile to 9 Mack/Cavalier Drive. - St. Clair Shores MI 48081", "St. Clair Shores", null],
-      ["Parade steps off from the Northville School District office lot on Cady St at 6pm. The parade will proceed east on Cady to north on Wing, east on Dunlap to north on Center to west on 8 mile to enter the stadium. - Northville MI 48167", "Northville", null],
-      ["Macomb Township offices closed in observance of the Thanksgiving holiday. This includes the Department of Public Works and Parks & Recreation offices. The Recreation Center may observe adjusted hours. - Macomb MI 48042", "Macomb", null],
-      // (b) a street-type word, then nothing but a city
-      ["Fifth Street Plaza - Fifth and Washington Ave. Royal Oak MI 48067", "Royal Oak", null],
-      ["Canton Parks > Dog Park - Denton Rd and North of Cherry Hill Rd Canton MI 48187", "Canton", null],
-      ["- Wayne County Community College 21000 Northline Rd. Taylor MI 48180", "Taylor", "21000 Northline Rd."],
-      ["- Wyandotte Museums 2610 Biddle Ave Wyandotte MI 48192", "Wyandotte", "2610 Biddle Ave"],
-      // (b) with no ZIP at all: only with a numbered street in front of the city
-      ["Fall Bug Hunt Saturday, October 10, 2026 10 a.m. &ndash; 4 p.m. Meet at the Plymouth Arts and Recreation Center, 650 Church St. Plymouth, MI - Meet at the Plymouth Arts and Recreation 650 Church Street Plymouth MI", "Plymouth", "650 Church Street"],
+    const real = [
+      ["Join us as we celebrate Founder's Day! More information to come! - Rochester MI 48307", "Rochester"],
+      ["Less scary Trick-or-Treating at Downtown businesses and vendors. Rain or shine! - Northville MI 48167", "Northville"],
+      ["Downtown Northville - Witch themed shopping night is free and open to all. Shops and restaurants are open late with special sales and unique event themed offerings and games. - Northville MI 48167", "Northville"],
+      ["Public alley west of Main Street, off Crane Avenue, one block south of Catalpa Drive. - Royal Oak MI 48067", "Royal Oak"],
+      ["<p>Meet at Pronto/Five 15: 600 S Washington Ave, Royal Oak, MI 48067</p> -   Royal Oak MI 48067", "Royal Oak"],
+      ["Downtown St. Clair Shores on Greater Mack Ave., from 9 Mile to 9 Mack/Cavalier Drive. - St. Clair Shores MI 48081", "St. Clair Shores"],
+      ["Parade steps off from the Northville School District office lot on Cady St at 6pm. The parade will proceed east on Cady to north on Wing, east on Dunlap to north on Center to west on 8 mile to enter the stadium. - Northville MI 48167", "Northville"],
+      ["Macomb Township offices closed in observance of the Thanksgiving holiday. This includes the Department of Public Works and Parks & Recreation offices. The Recreation Center may observe adjusted hours. - Macomb MI 48042", "Macomb"],
+      ["Fifth Street Plaza - Fifth and Washington Ave. Royal Oak MI 48067", "Royal Oak"],
+      ["Canton Parks > Dog Park - Denton Rd and North of Cherry Hill Rd Canton MI 48187", "Canton"],
+      ["- Wayne County Community College 21000 Northline Rd. Taylor MI 48180", "Taylor"],
+      ["- Wyandotte Museums 2610 Biddle Ave Wyandotte MI 48192", "Wyandotte"],
     ];
-    for (const [raw, city, address] of cases) {
+    // The same rule on the shapes two independent reviews used against it:
+    // the city is the LISTED name, whatever stands in front of it.
+    const constructed = [
+      ["- Stage Nature Center 6685 Coolidge Hwy Lower Level Troy MI 48098", "Troy"], // not "Lower Level Troy"
+      ["- Macomb Center 44575 Garfield Rd Bldg B Clinton Township MI 48038", "Clinton Township"], // not "Bldg B Clinton Township"
+      ["- City Hall 211 Williams St Suite A Royal Oak MI 48067", "Royal Oak"], // not "Suite A Royal Oak"
+      ["Bus departs from the Macomb County Court House Mount Clemens MI 48043", "Mount Clemens"], // not "House Mount Clemens"
+      ["Flu shots with Dr. Patel Royal Oak MI 48067", "Royal Oak"], // not "Patel Royal Oak"
+      ["Shopping trip: Somerset Collection and Lane Bryant Troy MI 48084", "Troy"], // not "Bryant Troy"
+      ["Movie night at the Ford Drive In Dearborn MI 48126", "Dearborn"], // not "In Dearborn"
+      ["Downtown Royal Oak MI 48067", "Royal Oak"],
+      ["From 1 to 3 pm on Main St Royal Oak MI 48067", "Royal Oak"], // "St" in front of a city is a street type
+      ["Veterans Park 123 Jefferson Ave St. Clair Shores MI 48080", "St. Clair Shores"],
+      ["Troy Community Center, Troy, MI 48084", "Troy"], // a comma before the state
+      ["- Royal Oak, MI 48067", "Royal Oak"],
+      ["Depot Park — Clarkston MI 48346", "Clarkston"],
+      ["Village of Grosse Pointe Shores MI 48236", "Grosse Pointe Shores"],
+      ["Stony Creek Metropark, Lake Orion MI 48362", "Lake Orion"], // the longer listed name, not a refusal
+      ["Wharton Center 750 E Shaw Ln East Lansing MI 48824", "East Lansing"], // the longest listed name wins: not Lansing, and not refused for "East"
+      ["ROYAL OAK FARMERS MARKET 316 E 11 MILE ROAD ROYAL OAK MI 48067", "Royal Oak"], // the list's spelling is returned
+      ["Stroh Center 1535 E Wooster St Bowling Green OH 43403", "Bowling Green"],
+    ];
+    for (const [raw, city] of [...real, ...constructed]) {
       const result = parseIcsLocation(raw);
       assert.strictEqual(result.status, "unparseable", `no venue name is split out of: ${raw.slice(0, 60)}`);
       assert.ok(result.rawText && !("candidateName" in result), "the raw text is kept; no name is produced");
-      assert.strictEqual(result.trailingCity, city, `city of: ${raw.slice(0, 60)}`);
-      assert.strictEqual(result.trailingAddress, address, `address of: ${raw.slice(0, 60)}`);
-      assert.strictEqual(result.trailingRegion, "MI");
-    }
-    // "St." is Saint, not a street type, in front of Clair.
-    const scs = parseIcsLocation("Veterans Park 123 Jefferson Ave St. Clair Shores MI 48080");
-    assert.strictEqual(scs.trailingCity, "St. Clair Shores");
-    assert.strictEqual(scs.trailingAddress, "123 Jefferson Ave");
-  }
-
-  // --- 18b. The city is a name on a closed list (api/_lib/orbit-cities.js),
-  //     never "whatever capitalised words stand before the state". Found by
-  //     independent review of the first version of this rule, 2026-10-04:
-  //     each case marked "was" produced that wrong value. ---
-  {
-    const cases = [
-      ["- Stage Nature Center 6685 Coolidge Hwy Lower Level Troy MI 48098", "Troy", "6685 Coolidge Hwy"], // was city "Lower Level Troy"
-      ["- Macomb Center 44575 Garfield Rd Bldg B Clinton Township MI 48038", "Clinton Township", "44575 Garfield Rd"], // was "Bldg B Clinton Township"
-      ["- City Hall 211 Williams St Suite A Royal Oak MI 48067", "Royal Oak", "211 Williams St"], // was "Suite A Royal Oak"
-      ["Bus departs from the Macomb County Court House Mount Clemens MI 48043", "Mount Clemens", null], // was "House Mount Clemens"
-      ["- St. Mary's Church Royal Oak MI 48067", "Royal Oak", null], // was "Mary's Church Royal Oak"
-      ["Flu shots with Dr. Patel Royal Oak MI 48067", "Royal Oak", null], // was "Patel Royal Oak"
-      ["Shopping trip: Somerset Collection and Lane Bryant Troy MI 48084", "Troy", null], // was "Bryant Troy"
-      ["Movie night at the Ford Drive In Dearborn MI 48126", "Dearborn", null], // was "In Dearborn"
-      ["Downtown Royal Oak MI 48067", "Royal Oak", null], // was "Downtown Royal Oak"
-      // a comma before the state, and other punctuation in front of the city
-      ["Troy Community Center, Troy, MI 48084", "Troy", null],
-      ["- Royal Oak, MI 48067", "Royal Oak", null],
-      ["Depot Park — Clarkston MI 48346", "Clarkston", null],
-      ["Village of Grosse Pointe Shores MI 48236", "Grosse Pointe Shores", null],
-      ["ROYAL OAK FARMERS MARKET 316 E 11 MILE ROAD ROYAL OAK MI 48067", "Royal Oak", null], // the list's spelling is returned
-      // the street address: the earliest number that fits, never a road's own number, never prose
-      ["- Madison Heights Public Library 240 W 13 Mile Road Madison Heights MI 48071", "Madison Heights", "240 W 13 Mile Road"], // was "13 Mile Road"
-      ["- Costick Activities Center 28600 W 11 Mile Rd Farmington Hills MI 48336", "Farmington Hills", "28600 W 11 Mile Rd"], // was "11 Mile Rd"
-      ["- Detroit Institute of Arts 5200 Woodward Ave Kresge Court Detroit MI 48202", "Detroit", "5200 Woodward Ave"], // was "5200 Woodward Ave Kresge Court"
-      ["Open to ages 12 and up at the Park Place Plymouth MI 48170", "Plymouth", null], // was "12 and up at the Park Place"
-      ["From 1 to 3 pm on Main St Royal Oak MI 48067", "Royal Oak", null], // was "3 pm on Main St"
-      ["Corner of 9 Mile Road and Main Ferndale MI 48220", "Ferndale", null], // "9 Mile Road" is a road
-      ["123 Court St Mount Clemens MI 48043", "Mount Clemens", "123 Court St"],
-      ["Bus leaves at 9 from 211 Williams St Royal Oak MI", "Royal Oak", "211 Williams St"], // no ZIP: allowed only because a numbered street is there
-    ];
-    for (const [raw, city, address] of cases) {
-      const result = parseIcsLocation(raw);
-      assert.strictEqual(result.status, "unparseable", raw);
-      assert.strictEqual(result.trailingCity, city, `city of: ${raw}`);
-      assert.strictEqual(result.trailingAddress, address, `address of: ${raw}`);
-    }
-    // Words that are not a place yield nothing at all, wherever they stand.
-    for (const raw of [
-      "Some long prose that says nothing useful about where this is - Not Applicable MI 48067",
-      "A long name for a place that goes on for a while - Memorial Park MI 48067",
-      "- St. Mary's Church MI 48067",
-    ]) {
-      assert.ok(!("trailingCity" in parseIcsLocation(raw)), `no city may be read out of: ${raw}`);
+      assert.strictEqual(result.trailingCity, city, `city of: ${raw.slice(0, 70)}`);
+      assert.ok(!("trailingAddress" in result), "no street address is ever recovered from free text");
     }
   }
 
-  // --- 19. BUG-012 regression guards: prose that merely ends in a state, a
-  //     ZIP or two capital letters yields NO city. ---
+  // --- 19. BUG-012 regression guards: no city is read where one is not
+  //     certain. Each group is a class of wrong value an earlier form of the
+  //     rule produced. ---
   {
-    for (const raw of [
+    const noCity = [
+      // nothing place-like at the end
       "Fifth Avenue Pedestrian Plaza &nbsp;(between 4th and 5th)",
       "Join us downtown, near the river, after the parade, before sunset",
       "Some Place, Near the river, Detroit",
+      "We meet at the corner near the big tree MI 48067",
+      "Take I-75 north and exit at Big Beaver Rd then turn left MI 48084",
+      "Some long prose that says nothing useful about where this is - Not Applicable MI 48067",
+      "A long name for a place that really does go on for quite a while - Memorial Park MI 48067",
+      "Rummage sale in the basement of St. Mary's Church MI 48067",
+      // no ZIP: never enough, whatever else is there
       "Come and say HI",
-      "We meet at the corner near the big tree MI 48067", // no dash, no street type before a city
-      "Take I-75 north and exit at Big Beaver Rd then turn left MI 48084", // what follows the street type is not a city
-      "Free parking behind the building at 500 Main Street lot MI", // no ZIP, and "lot" is not a city
-      "Bring your ID to the 12 Mile Road entrance OH",
-      "Corner of Main St and the river MI",
-      "Fifth and Washington Ave. Royal Oak MI", // no ZIP and no numbered street: not enough to go on
-      "Pick-up is at 500 Main Street Downtown ON", // no ZIP: only MI or OH is accepted, never any two capital letters
-      "Aloha night at 12 Palm Avenue Lanai HI",
-      "Detroit MI", // a city and a state with no ZIP and no street: not enough
+      "Detroit MI",
       "Go Blue MI",
-      "Caesars Windsor, Windsor ON", // stated places this module cannot read: left exactly as they are
+      "Fifth and Washington Ave. Royal Oak MI",
+      "Bus leaves at 9 from 211 Williams St Royal Oak MI",
+      "Fall Bug Hunt Saturday, October 10, 2026 10 a.m. &ndash; 4 p.m. Meet at the Plymouth Arts and Recreation Center, 650 Church St. Plymouth, MI - Meet at the Plymouth Arts and Recreation 650 Church Street Plymouth MI",
+      // a state this rule does not accept, and stated places it cannot read
+      "Doors open at seven and tickets are ten dollars at the door for everyone - Royal Oak ON 48067",
+      "Caesars Windsor, Windsor ON",
       "Cedar Point, Sandusky, Ohio",
       "Mackinac Island",
       "Online",
       "Zoom (link sent after registration)",
-      "Doors open at seven and tickets are ten dollars at the door for everyone - Royal Oak ON 48067", // a ZIP after a state this rule does not accept
-    ]) {
+      // the list is per state: an Ohio city that shares a Michigan city's name is not that city
+      "Pro Football Hall of Fame 2121 George Halas Dr NW Canton OH 44708",
+      "Hobart Arena 255 Adams St Troy OH 45373",
+      "Downtown Warren OH 44483",
+      "Sandusky MI 48471",
+      // a ZIP that is not the state's
+      "Somewhere in Royal Oak MI 90210",
+      "Stroh Center Bowling Green OH 48067",
+      // a listed name that is only the tail of another place, or one side of an intersection
+      "Meeting in the board room of Port Huron Township MI 48060",
+      "Village Hall South Rockwood MI 48179",
+      "Fall color tour to Camp Dearborn MI 48380",
+      "Historic Fort Wayne MI 48209",
+      "Flea market in Old Redford MI 48219",
+      "Corner of Greenfield and Warren MI 48228",
+      "Upper Sandusky OH 43351",
+    ];
+    for (const raw of noCity) {
       const result = parseIcsLocation(raw);
       assert.strictEqual(result.status, "unparseable", raw);
       assert.ok(!("trailingCity" in result), `no city may be read out of: ${raw}`);
@@ -557,19 +548,26 @@ function run() {
   {
     const { knownCity } = require(`${REPO_DIR}/api/_lib/orbit-cities.js`);
     const discovery = require(`${REPO_DIR}/discovery.js`);
-    // Every Michigan and Ohio city the site already knows is on it, so the
-    // two can never disagree about a name.
-    const siteCities = discovery._defaultConfig.places.filter((p) => p[1] === "city" && (p[2] === "Michigan" || p[2] === "Ohio")).map((p) => p[0]);
+    // Every Michigan and Ohio city the site already knows is on it, under its
+    // own state, so the two can never disagree about a name.
+    const stateCode = { Michigan: "MI", Ohio: "OH" };
+    const siteCities = discovery._defaultConfig.places.filter((p) => p[1] === "city" && stateCode[p[2]]);
     assert.ok(siteCities.length >= 50, "discovery.js's place list was read");
-    for (const name of siteCities) assert.strictEqual(knownCity(name), name, `${name} (in discovery.js) must be a known city`);
+    for (const [name, , region] of siteCities) assert.strictEqual(knownCity(name, stateCode[region]), name, `${name} (in discovery.js) must be a known ${region} city`);
     // Case and periods do not matter; the listed spelling comes back.
-    assert.strictEqual(knownCity("ST CLAIR SHORES"), "St. Clair Shores");
-    assert.strictEqual(knownCity("st. clair shores"), "St. Clair Shores");
-    assert.strictEqual(knownCity("Mt. Clemens"), "Mount Clemens");
-    assert.strictEqual(knownCity("  Royal   Oak "), "Royal Oak");
+    assert.strictEqual(knownCity("ST CLAIR SHORES", "MI"), "St. Clair Shores");
+    assert.strictEqual(knownCity("st. clair shores", "mi"), "St. Clair Shores");
+    assert.strictEqual(knownCity("Mt. Clemens", "MI"), "Mount Clemens");
+    assert.strictEqual(knownCity("  Royal   Oak ", "MI"), "Royal Oak");
+    // A name is a city only in its own state, and a state is required.
+    assert.strictEqual(knownCity("Troy", "OH"), null);
+    assert.strictEqual(knownCity("Toledo", "MI"), null);
+    assert.strictEqual(knownCity("Toledo", "OH"), "Toledo");
+    assert.strictEqual(knownCity("Troy"), null);
+    assert.strictEqual(knownCity("Troy", "ON"), null);
     // Things that are not places are not on it.
     for (const notACity of ["Lower Level", "Suite A", "Downtown", "Memorial Park", "Not Applicable", "Township", "", null, undefined]) {
-      assert.strictEqual(knownCity(notACity), null, `${JSON.stringify(notACity)} is not a city`);
+      assert.strictEqual(knownCity(notACity, "MI"), null, `${JSON.stringify(notACity)} is not a city`);
     }
   }
 

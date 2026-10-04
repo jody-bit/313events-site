@@ -140,10 +140,10 @@ async function repairVenueRawReparse({
   for (const event of candidates) {
     const parsed = parseIcsLocation(event.venue_name_raw);
     // BUG-012 (2026-10-04): text that still cannot be split into a venue
-    // name may now carry the city (and a plain street address) from its own
-    // trailing "<City> <ST> <ZIP>" -- see api/_lib/ics-location.js. Applied
-    // here to rows already stored, exactly as cron-feeds.js applies it to
-    // new ones: the name is never rewritten, only blank fields are filled.
+    // name may now carry the CITY from its own trailing "<known city> <ST>
+    // <ZIP>" -- see api/_lib/ics-location.js. Applied here to rows already
+    // stored, exactly as cron-feeds.js applies it to new ones: only the
+    // blank city is filled; no name, address or venue link is written.
     const hasTrailingCity = parsed.status === "unparseable" && !!parsed.trailingCity;
     if (parsed.status !== "parsed" && !hasTrailingCity) {
       counts.stillUnparseable++;
@@ -153,7 +153,7 @@ async function repairVenueRawReparse({
     if (hasTrailingCity) counts.cityFromTrailingText++;
 
     const candidate = hasTrailingCity
-      ? { name: null, address: parsed.trailingAddress, city: parsed.trailingCity }
+      ? { name: null, address: null, city: parsed.trailingCity }
       : { name: parsed.candidateName, address: parsed.candidateAddress, city: parsed.candidateCity };
     const canonical = resolveVenueFromCandidate(candidate, canonicalMaps);
 

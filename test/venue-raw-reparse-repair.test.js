@@ -110,10 +110,10 @@ async function run() {
   }
 
   // --- 3b. BUG-012 (2026-10-04): text that cannot be split into a venue
-  //     name but ends in the source's own "<City> <ST> <ZIP>" gets its CITY
-  //     written -- and a plain street address when one is stated -- with
-  //     venue_name_raw left exactly as it is and no venue invented. All
-  //     four strings are real production venue_name_raw values. ---
+  //     name but ends in the source's own "<known city> MI <ZIP>" gets its
+  //     CITY written -- only the city: venue_name_raw is left exactly as it
+  //     is, and no street address, venue or venue link is written. All four
+  //     strings are real production venue_name_raw values. ---
   {
     const events = [
       { id: "evt-3b-1", venue_id: null, venue_address_raw: null, venue_city_raw: null,
@@ -142,13 +142,34 @@ async function run() {
     assert.strictEqual(counts.written, 3);
     const byId = Object.fromEntries(patches.map((p) => [p.id, p.patch]));
     assert.deepStrictEqual(byId["evt-3b-1"], { venue_city_raw: "Royal Oak" });
-    assert.deepStrictEqual(byId["evt-3b-2"], { venue_address_raw: "21000 Northline Rd.", venue_city_raw: "Taylor" });
+    assert.deepStrictEqual(byId["evt-3b-2"], { venue_city_raw: "Taylor" });
     assert.deepStrictEqual(byId["evt-3b-3"], { venue_city_raw: "Rochester" });
     assert.ok(!("evt-3b-4" in byId));
     for (const { patch } of patches) {
-      assert.ok(!("venue_name_raw" in patch), "the stored location text is never rewritten");
-      assert.ok(!("venue_id" in patch), "no venue is invented");
+      assert.deepStrictEqual(Object.keys(patch), ["venue_city_raw"], "only the city is written");
     }
+  }
+
+  // --- 3c. Rows from OTHER sources reach this repair too (it reads every
+  //     upcoming row with a venue name and no address, city or link). None
+  //     of these may be given a city, an address or a link. ---
+  {
+    const names = [
+      "TBA - Secret Location", "Venue TBA", "Location TBA", "Online", "Detroit, MI", "Little Caesars Arena", "MI", "ON",
+      "- Fire Station 2 MI 48083", "Pro Football Hall of Fame Canton OH 44708", "Historic Fort Wayne MI 48209",
+    ];
+    const events = names.map((venue_name_raw, i) => ({ id: `evt-3c-${i}`, venue_id: null, venue_address_raw: null, venue_city_raw: null, venue_name_raw }));
+    let patchCalled = false;
+    const counts = await repairVenueRawReparse({
+      SUPABASE_URL: "https://example.test",
+      SUPABASE_SERVICE_ROLE_KEY: "key",
+      fetchCandidates: async () => events,
+      buildCanonicalMaps: async () => ({ byName: new Map(), byId: new Map(), byAddress: new Map() }),
+      applyPatchFn: async () => { patchCalled = true; return true; },
+    });
+    assert.strictEqual(counts.stillUnparseable, names.length);
+    assert.strictEqual(counts.written, 0);
+    assert.strictEqual(patchCalled, false);
   }
 
   // --- 4. A concurrent write (field no longer null by the time the PATCH

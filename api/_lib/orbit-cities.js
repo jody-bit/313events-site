@@ -22,7 +22,10 @@
 //     is written — which is the safe direction. Add a name when a real feed
 //     shows one that is missing;
 //   - Michigan and Ohio only, because the rule that uses it accepts only
-//     "<City> MI <ZIP>" and "<City> OH <ZIP>".
+//     "<City> MI <ZIP>" and "<City> OH <ZIP>" -- and the two are kept
+//     APART: a name is a city only in its own state. "Troy OH", "Canton OH"
+//     and "Warren OH" are real Ohio cities that are not Troy, Canton and
+//     Warren, Michigan, and the site places an event by its city's name.
 //
 // Matching is case-insensitive and ignores periods ("St. Clair Shores" =
 // "St Clair Shores" = "ST. CLAIR SHORES"); the spelling returned is the one
@@ -70,17 +73,23 @@ function normalizeCityName(text) {
   return String(text || "").toLowerCase().replace(/\./g, "").replace(/\s+/g, " ").trim();
 }
 
-// normalised name -> the spelling written above
-const CITY_BY_NORMALIZED_NAME = new Map();
-for (const name of [...MICHIGAN, ...OHIO]) CITY_BY_NORMALIZED_NAME.set(normalizeCityName(name), name);
+// state code -> (normalised name -> the spelling written above)
+const CITIES_BY_STATE = { MI: new Map(), OH: new Map() };
+for (const name of MICHIGAN) CITIES_BY_STATE.MI.set(normalizeCityName(name), name);
+for (const name of OHIO) CITIES_BY_STATE.OH.set(normalizeCityName(name), name);
 // "Mt. Clemens" is how some calendars write Mount Clemens; one place, one spelling.
-CITY_BY_NORMALIZED_NAME.set(normalizeCityName("Mt. Clemens"), "Mount Clemens");
+CITIES_BY_STATE.MI.set(normalizeCityName("Mt. Clemens"), "Mount Clemens");
 
-const MAX_CITY_WORDS = Math.max(...[...CITY_BY_NORMALIZED_NAME.keys()].map((k) => k.split(" ").length));
+const MAX_CITY_WORDS = Math.max(
+  ...[...CITIES_BY_STATE.MI.keys(), ...CITIES_BY_STATE.OH.keys()].map((k) => k.split(" ").length)
+);
 
-// The listed spelling of `text` if it is exactly a known city, else null.
-function knownCity(text) {
-  return CITY_BY_NORMALIZED_NAME.get(normalizeCityName(text)) || null;
+// The listed spelling of `text` if it is exactly a known city OF `state`
+// ("MI" or "OH"), else null. A state is required: there is no "any state".
+function knownCity(text, state) {
+  const cities = CITIES_BY_STATE[String(state || "").toUpperCase()];
+  if (!cities) return null;
+  return cities.get(normalizeCityName(text)) || null;
 }
 
-module.exports = { knownCity, normalizeCityName, MAX_CITY_WORDS, CITY_BY_NORMALIZED_NAME };
+module.exports = { knownCity, normalizeCityName, MAX_CITY_WORDS, CITIES_BY_STATE };
