@@ -43,6 +43,56 @@ function run(cmd, args) {
   return execFileSync(cmd, args, { cwd: repoRoot(), encoding: "utf8" });
 }
 
+// clearStaleRefLock(name, maxAgeMs) -- guards against exactly one known
+// failure mode: a prior git process (this script, another automated
+// session, or a human) locked a ref (e.g. created .git/HEAD.lock or
+// .git/index.lock) and exited. Normally the OS would let git (or
+// anyone) unlink that leftover lock without a second thought. In this
+// sandboxed checkout, though, unlink() fails (EPERM) by default every
+// session (see device_request_delete_permission), so the file survives
+// and blocks every later commit with a fatal "Unable to create '.git/
+// HEAD.lock': File exists" even though nothing is actually running
+// anymore. Confirmed 2026-10-04: a plain `git commit` + `git push` in a
+// session that already has delete permission leaves no such file
+// behind -- the leftover only happens when that permission isn't there
+// yet, which is this sandbox's default state every session.
+//
+// This never races a lock that might still be live: if it's younger
+// than maxAgeMs it's left alone and this throws, on the assumption
+// that a concurrent git operation could still be using it. Only a lock
+// older than that -- long past how long this script's own git calls
+// ever take -- gets reclaimed.
+function clearStaleRefLock(name, maxAgeMs = 5 * 60 * 1000) {
+  const lockPath = path.join(repoRoot(), ".git", name);
+  let stat;
+  try {
+    stat = fs.statSync(lockPath);
+  } catch {
+    return; // no lock -- nothing to do, the common case
+  }
+  const ageMs = Date.now() - stat.mtimeMs;
+  if (ageMs < maxAgeMs) {
+    throw new Error(
+      `.git/${name} exists and is only ${Math.round(ageMs / 1000)}s old ` +
+        `(< ${Math.round(maxAgeMs / 1000)}s) -- leaving it alone in case a ` +
+        `concurrent git operation is still using it.`
+    );
+  }
+  try {
+    fs.unlinkSync(lockPath);
+    console.error(
+      `Reclaimed stale .git/${name} (age ${Math.round(ageMs / 1000)}s, left behind by an earlier process).`
+    );
+  } catch (err) {
+    throw new Error(
+      `.git/${name} is stale (age ${Math.round(ageMs / 1000)}s) but could not be removed ` +
+        `(${err.code || err.message}). This checkout's sandbox denies delete by default each ` +
+        `session -- grant delete permission for this folder (device_request_delete_permission) ` +
+        `and re-run.`
+    );
+  }
+}
+
 function makeRunToken(now = new Date()) {
   const pad = (n, w = 2) => String(n).padStart(w, "0");
   const stamp =
@@ -106,9 +156,25 @@ function cmdSubmit(action, jsonFilePath) {
   const payload = Object.assign({ runToken, action }, data);
   fs.writeFileSync(outAbs, JSON.stringify(payload, null, 2) + "\n");
 
-  run("git", ["add", outRel]);
-  run("git", ["commit", "-m", `ra-sync: submit ${action} payload ${runToken}`]);
-  pushBranch(currentBranch());
+  try {
+    clearStaleRefLock("index.lock");
+    clearStaleRefLock("HEAD.lock");
+    run("git", ["add", outRel]);
+    run("git", ["commit", "-m", `ra-sync: submit ${action} payload ${runToken}`]);
+    pushBranch(currentBranch());
+  } catch (err) {
+    // Never leave outRel sitting around as an untracked file for the
+    // next run (or a human's `git status`) to trip over just because
+    // the commit itself didn't happen. Best-effort only -- a failure
+    // here (e.g. the same delete restriction) never masks the real
+    // error below.
+    try {
+      fs.unlinkSync(outAbs);
+    } catch {
+      // Can't clean up -- the caller already gets the real error.
+    }
+    throw err;
+  }
 
   console.error(`Submitted ${outRel} and pushed (runToken ${runToken}).`);
   process.stdout.write(runToken + "\n");
@@ -181,7 +247,7 @@ async function main() {
   process.exitCode = 1;
 }
 
-module.exports = { makeRunToken, parseTagMessage };
+module.exports = { makeRunToken, parseTagMessage, clearStaleRefLock, cmdSubmit };
 
 if (require.main === module) {
   main();
