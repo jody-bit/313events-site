@@ -100,6 +100,17 @@ const VENUE_NAME = "MotorCity Wine"; // matches the existing venues row exactly 
 const VENUE_ADDRESS = "1949 Michigan Ave";
 const VENUE_CITY = "Detroit";
 const DEFAULT_STATUS = "approved";
+// ** TEMPORARY — CONTROLLED RECOVERY CANARY (Product Owner, 2026-10-04) **
+// For the one deliberate MotorCity Wine run of the BUG-007 recovery, an event
+// this connector has not written before lands as `pending_review`, not as
+// DEFAULT_STATUS, so that nothing from this experiment is published.
+// This is NOT a change to this connector's publication policy: DEFAULT_STATUS
+// above is untouched and is what applies again once this block is gone.
+// An event that already exists keeps its stored status, exactly as before.
+// Remove by reverting the commit that added this block; the same revert takes
+// the temporary schedule entry out of vercel.json.
+const CANARY_NEW_ROW_STATUS = "pending_review";
+const NEW_ROW_STATUS = CANARY_NEW_ROW_STATUS || DEFAULT_STATUS;
 const FETCH_HEADERS = { "User-Agent": "Mozilla/5.0 (313.events event calendar)" };
 const WINDOW_DAYS = 60; // how far forward to expand recurring series each run
 const MAX_EVENTS_PER_RUN = 150; // safety cap — this calendar typically has ~25-35 occurrences in a 60-day window
@@ -491,7 +502,7 @@ module.exports = async (req, res) => {
 
     const rowsWithStatus = rows.map((row) => ({
       ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+      status: existingStatusByExternalId.get(row.external_id) || NEW_ROW_STATUS, // TEMPORARY canary: see CANARY_NEW_ROW_STATUS
     }));
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
