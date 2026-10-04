@@ -3612,7 +3612,7 @@
   .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
   /* The proof panel (homepage UX evolution, 2026-10-04; DEC-026): the
      site's real current + upcoming total as the hero's primary figure, with
-     TODAY / THIS WEEK / ACTIVE NEIGHBORHOODS beneath it. Constant, site-wide
+     TODAY / NEXT 7 DAYS / ACTIVE NEIGHBORHOODS beneath it. Constant, site-wide
      numbers, distinct from the filtered stream below. Real counts, never
      fabricated — see heroFigures(). The total is sized off the column's
      own inline size (cqw), same reasoning as .hl-line above, so a
@@ -3781,16 +3781,17 @@
     font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
     user-select:none;
   }
-  .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  /* Selected/active state on every chip (Event Type dots included) is Signal
-     Chartreuse — the one color that always means "this is on," independent
-     of whichever per-category dot color the chip also carries. freeChip
-     below keeps its own distinct green for the same reason "Free only"
-     already had one before this pass. */
+  /* The WHAT panel, per the locked Detroit Signal rules (Product Owner,
+     2026-10-04). Signal Chartreuse means one thing here — "this is
+     selected" — on every chip that can be selected: a category, Free only,
+     a feature. Nothing else in the panel carries a colour: no per-category
+     dots (the "UV signal" dots of 2026-08-26 are gone), no separate green
+     for Free only, no red for Reset filters.
+     With no category selected the panel is neutral: the category chips are
+     unlit, and "All types" is marked as the current choice in warm white
+     rather than chartreuse — it is the resting state, not a selection. */
   .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
-  .chip.active .dot{outline:1.5px solid var(--on-accent);}
-  .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
-  .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
+  .chip#allTypesChip.active{background:var(--panel-alt);color:var(--ink);border-color:var(--ink);}
 
   /* Location + radius bar — Phase 1 Chunk 3. Same restrained styling as the
      discovery bar (ink-on-active, chartreuse reserved for state, not chrome). */
@@ -4749,8 +4750,11 @@
 // changes it only through Discovery.change(), and asks Discovery what
 // matches. Do not re-add a local copy of a rule — change discovery.js.
 //
-// Category colour is presentation, so it lives here. Keys, labels and order
-// come from Discovery.categories.
+// Category keys, labels and order come from Discovery.categories. The
+// per-category colours below are no longer shown anywhere on this page
+// (2026-10-04: the stream's category label and the WHAT chips carry no
+// category colour); the table is kept, unused, because
+// test/discovery-compat.test.js checks it against the category list.
 const CAT_COLORS = {
   music:    "var(--c-music)",
   theatre:  "var(--c-theatre)",
@@ -5265,9 +5269,9 @@ function currentListMeta(){
   }
   if(mode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
   if(mode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
-  // 'today' is the header's Today and the Free Today card (and Calendar's /
-  // Map's ?when=now). 'next7' has no button on this page; it arrives only
-  // in a link.
+  // 'today' is the header's Today, the hero's TODAY and the Free Today card
+  // (and Calendar's / Map's ?when=now). 'next7' is the hero's NEXT 7 DAYS;
+  // it has no button in the When sheet.
   if(mode === 'today') return {scopeLabel: 'today', countLabel: 'today'};
   if(mode === 'next7') return {scopeLabel: 'the next 7 days', countLabel: 'in the next 7 days'};
   if(mode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
@@ -5336,10 +5340,10 @@ function buildFilterBar(){
     chip.type = 'button';
     chip.className = 'chip';
     chip.dataset.cat = key;
-    // Per-category dot restored per Jody's 2026-08-26 note: keep the color
-    // variety for scanability, just made cohesive (see the --c-* "UV signal"
-    // palette above). Active/selected state is still Signal Chartreuse only.
-    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    // Label only (2026-10-04): the per-category colour dot is gone — the
+    // locked design rules allow no category rainbow. A chip's only colour
+    // is Signal Chartreuse, when it is selected.
+    chip.textContent = c.label;
     chip.onclick = ()=>{
       toggleCategory(key);
       render();
@@ -5350,16 +5354,14 @@ function buildFilterBar(){
   freeChip.type = 'button';
   freeChip.className = 'chip';
   freeChip.id = 'freeChip';
-  freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
+  freeChip.textContent = 'Free only';
   freeChip.onclick = ()=>{
     setState({free: !state.what.free});
     render();
   };
   bar.appendChild(freeChip);
 
-  // FEATURE_CHIPS row — plain text chips (no color dot), same treatment as
-  // allChip/clearChip below rather than the category dots, since these
-  // aren't part of the locked category palette.
+  // FEATURE_CHIPS row — plain text chips, like every other chip here.
   FEATURE_CHIPS.forEach(({key, label})=>{
     const chip = document.createElement('button');
     chip.type = 'button';
@@ -5384,24 +5386,24 @@ function buildFilterBar(){
   syncFilterBar();
 }
 
-// The chip row keeps its existing look and feel on top of the shared
-// category model: every category chip is lit when nothing is narrowed, and
-// clicking a lit chip turns that category off.
-//   - In the shared state, "no categories selected" MEANS all events. So
-//     turning the first chip off selects the other fourteen; turning chips
-//     back on until all fifteen are lit is "all events" again.
-//   - Turning the LAST lit chip off returns to all events too (there is no
-//     "show nothing" state in the shared model — approved 2026-10-03; this
-//     page used to show an empty list with zero chips lit).
+// A category chip is lit when that category is selected, and only then
+// (Product Owner, 2026-10-04). Clicking a chip selects it; clicking a
+// selected chip deselects it; any number can be selected at once. This is
+// the shared state's own meaning — state.what.paths is the list of selected
+// categories, and an event is shown if it is in any of them.
+//   - No category selected MEANS all events: no chip is lit, and "All
+//     types" is marked as the current choice.
+//   - Deselecting the last one returns to all events (there is no "show
+//     nothing" state in the shared model — approved 2026-10-03).
+//   - Selecting all fifteen is all events too; Discovery reads that as no
+//     selection, so the chips go back to unlit.
+// (Until 2026-10-04 every chip was lit when nothing was narrowed and a
+// click turned that category OFF, selecting the other fourteen. The state,
+// the URL and what a given selection matches are unchanged; only what a
+// click from the resting state does, and what the resting state looks
+// like.)
 function toggleCategory(key){
-  const selected = state.what.paths;
-  if(!selected.length){
-    Discovery.categories.forEach(c => { if(c.key !== key) setState({what: {add: c.key}}); });
-  } else if(selected.includes(key)){
-    setState({what: {remove: key}});
-  } else {
-    setState({what: {add: key}});
-  }
+  setState({what: state.what.paths.includes(key) ? {remove: key} : {add: key}});
 }
 
 // Lights each chip from the one state — called from buildFilterBar() and
@@ -5421,7 +5423,7 @@ function syncFilterBar(){
   };
   const allChip = document.getElementById('allTypesChip');
   if(allChip) light(allChip, all);
-  bar.querySelectorAll('.chip[data-cat]').forEach(chip => light(chip, all || selected.includes(chip.dataset.cat)));
+  bar.querySelectorAll('.chip[data-cat]').forEach(chip => light(chip, selected.includes(chip.dataset.cat)));
   const freeChip = document.getElementById('freeChip');
   if(freeChip) light(freeChip, state.what.free);
   bar.querySelectorAll('.chip[data-feature]').forEach(chip => light(chip, state.what.features.includes(chip.dataset.feature)));
@@ -6080,8 +6082,11 @@ function showMoreStream(){
 //     loadOrbitEventTotal()). Until that request answers, or if it fails,
 //     the same thing counted over the events this page has loaded.
 //   TODAY — what is still on or still to come today (Discovery's Today).
-//   THIS WEEK — what is left of this Monday–Sunday week (Discovery's This
-//     Week; on a Sunday that is today).
+//   NEXT 7 DAYS — today plus the following six calendar days, in Detroit
+//     (Discovery's Next 7 Days; like Today, it leaves out what is already
+//     over). It was THIS WEEK — what was left of the Monday–Sunday week —
+//     which on a Sunday was the same number as TODAY (Product Owner,
+//     2026-10-04).
 //   ACTIVE NEIGHBORHOODS — neighborhoods with at least one current or
 //     upcoming event.
 // Venue and city totals are deliberately not shown (DEC-026).
@@ -6146,12 +6151,13 @@ function animateHeroCount(el, from, to){
   heroCountFrame = requestAnimationFrame(step);
 }
 
+const NEXT7_STATE = Discovery.change(Discovery.defaults(), {when: 'next7'});
 function heroFigures(){
   const ctx = inventoryCtx();
   return {
     total: orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), ctx),
     today: Discovery.count(EVENTS, TODAY_STATE, ctx),
-    week: Discovery.count(EVENTS, WEEK_STATE, ctx),
+    next7: Discovery.count(EVENTS, NEXT7_STATE, ctx),
     neighborhoods: computeNeighborhoodCounts().length,
   };
 }
@@ -6174,7 +6180,7 @@ function renderHeroToday(){
       </button>
       <div class="hero-proof-stats">
         <button type="button" class="hero-proof-stat" onclick="viewEverything('today')"><span class="hps-num" id="heroStatToday">${n(f.today)}</span><span class="hps-label">Today</span></button>
-        <button type="button" class="hero-proof-stat" onclick="viewThisWeek()"><span class="hps-num" id="heroStatWeek">${n(f.week)}</span><span class="hps-label">This week</span></button>
+        <button type="button" class="hero-proof-stat" onclick="viewEverything('next7')"><span class="hps-num" id="heroStatNext7">${n(f.next7)}</span><span class="hps-label">Next 7 days</span></button>
         <button type="button" class="hero-proof-stat" onclick="viewNeighborhoodsRail()"><span class="hps-num" id="heroStatNeighborhoods">${n(f.neighborhoods)}</span><span class="hps-label">Active neighborhoods</span></button>
       </div>
       <div class="hero-proof-promise">Comprehensive by default. Curated by choice.</div>
@@ -6187,7 +6193,7 @@ function renderHeroToday(){
 
   document.getElementById('heroStatCaption').textContent = 'Current + upcoming events';
   document.getElementById('heroStatToday').textContent = n(f.today);
-  document.getElementById('heroStatWeek').textContent = n(f.week);
+  document.getElementById('heroStatNext7').textContent = n(f.next7);
   document.getElementById('heroStatNeighborhoods').textContent = n(f.neighborhoods);
   if(f.total !== heroDisplayedCount){
     // Animate from whatever's actually on screen right now, not just the
@@ -6211,7 +6217,7 @@ function renderHeroToday(){
 // number just clicked (Jody, 2026-08-27, for the old "View all events").
 //   viewEverything()         the whole stream (the primary total)
 //   viewEverything('today')  Today
-//   viewThisWeek()           This Week
+//   viewEverything('next7')  Next 7 Days — today plus six days
 function viewEverything(when){
   setState(when ? {reset: true, when: when} : {reset: true});
   document.getElementById('search').value = '';
@@ -6224,7 +6230,6 @@ function viewEverything(when){
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
-function viewThisWeek(){ viewEverything('week'); }
 
 // "Active neighborhoods" in the hero leads to the neighborhoods themselves:
 // the Explore Neighborhoods rail, on this page.
@@ -6233,7 +6238,7 @@ function viewNeighborhoodsRail(){
 }
 
 // Top-nav "Today" shortcut (restored 2026-08-27, top-nav-only per Jody — see
-// the site-nav comment above). Unlike viewThisWeek()/viewNeighborhood(), this
+// the site-nav comment above). Unlike viewEverything()/viewNeighborhood(), this
 // deliberately does NOT reset category/free/search/location — it's a peer to
 // the Tomorrow/This Weekend when-shortcuts (it sets Discovery's own Today
 // mode — "today in Detroit, whenever this is opened" — so a shared Today link
@@ -6925,7 +6930,7 @@ function activateWhen(key){
   // Jody (2026-08-27): picking a When shortcut — whether from the top-nav
   // (Tomorrow/This Weekend) or from inside the When sheet itself, since both
   // share this one handler — should bring the results in front of the
-  // visitor's eyes immediately, same as Today/viewThisWeek/viewNeighborhood
+  // visitor's eyes immediately, same as Today/viewEverything/viewNeighborhood
   // already do, rather than leaving them to notice the list changed further
   // down the page on their own.
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});

@@ -142,6 +142,23 @@ async function run() {
     // Locked palette: the stream's rows carry no per-category colour.
     const page = await open("/");
     assert.ok(!/style="color:/.test(stream(page).html), "no inline colour on any row of the stream");
+
+    // …and neither does the WHAT panel. At rest it is neutral: no category
+    // chip is lit, no chip has a colour dot, and the only chip marked is
+    // "All types" — which the stylesheet draws in warm white, not chartreuse.
+    const chips = page.el("filterBar").querySelectorAll(".chip");
+    assert.strictEqual(chips.length, 22, "All types, fifteen categories, Free only, four features, Reset filters");
+    assert.ok(chips.every((c) => !/<span|style=/.test(c.innerHTML)), "chips are plain labels: no dot, no inline colour");
+    assert.deepStrictEqual(chips.filter((c) => c.classList.contains("active")).map((c) => c.id), ["allTypesChip"]);
+    assert.ok(/\.chip#allTypesChip\.active\{background:var\(--panel-alt\);color:var\(--ink\);border-color:var\(--ink\);\}/.test(css), '"All types" at rest is warm white on the panel, not chartreuse');
+    assert.ok(/\.chip\.active\{background:var\(--accent\);/.test(css), "a selected chip is Signal Chartreuse");
+    const chipCss = css.split("\n").filter((l) => /\.chip[.#{ ]/.test(l)).join("\n");
+    assert.ok(!/#[0-9a-fA-F]{3,6}\b/.test(chipCss.replace(/#(allTypesChip|freeChip|clearChip)/g, "")), "no chip rule names a colour outside the locked tokens (the old green Free and red Reset are gone)");
+    // Selecting lights only what was selected, in the same chartreuse for
+    // a category, Free only and a feature alike.
+    page.el("filterBar").querySelector('.chip[data-cat="theatre"]').click();
+    page.el("filterBar").querySelector("#freeChip").click();
+    assert.deepStrictEqual(page.el("filterBar").querySelectorAll(".chip").filter((c) => c.classList.contains("active")).map((c) => c.dataset.cat || c.id), ["theatre", "freeChip"]);
   }
   console.log("PASS: 1. hero, then When / Where / What / Search, then the stream with Explore Neighborhoods after its first section; the controls are the shared ones; WHAT opens from its trigger at every width");
 
@@ -241,7 +258,7 @@ async function run() {
     assert.strictEqual(page.el("heroStatCaption").textContent, "Current + upcoming events");
     // Supporting figures ignore the visitor's own filters (film + "monday").
     assert.strictEqual(page.el("heroStatToday").textContent, "31", "still on or to come today");
-    assert.strictEqual(page.el("heroStatWeek").textContent, "56", "what is left of this Mon–Sun week: today's 31 and Sunday's 25");
+    assert.strictEqual(page.el("heroStatNext7").textContent, "79", "today plus six days: today's 31, Sunday's 25, Monday's 15, and two a day for the next four");
     assert.strictEqual(page.el("heroStatNeighborhoods").textContent, "2", "Midtown and Corktown");
 
     // Following a figure shows exactly that many: everything else is reset.
@@ -251,9 +268,16 @@ async function run() {
     assert.strictEqual(stream(page).head, "Showing 31 events today");
     assert.strictEqual(page.url(), "/?when=today");
     page.fire("search", "input", { value: "x" });
-    page.run("viewThisWeek()");
-    assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { when: "week" })));
-    assert.strictEqual(stream(page).head, "Showing 56 events this week");
+    page.run("viewEverything('next7')");
+    assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { when: "next7" })));
+    assert.deepStrictEqual(plain(D.window(page.get("state"), { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "today and the six days after it, in Detroit");
+    assert.strictEqual(stream(page).head, "Showing 79 events in the next 7 days");
+    assert.strictEqual(page.url(), "/?when=next7");
+    assert.deepStrictEqual([...SCRIPT.matchAll(/class="hps-label">([^<]*)</g)].map((m) => m[1]), ["Today", "Next 7 days", "Active neighborhoods"], "the hero's three supporting figures (This Week is gone)");
+    assert.ok(!/viewThisWeek/.test(SCRIPT));
+    // Each figure's own button opens the view it counts.
+    const heroButtons = [...SCRIPT.matchAll(/class="hero-proof-stat" onclick="([^"]*)"><span class="hps-num" id="([^"]*)"/g)].map((m) => [m[2], m[1]]);
+    assert.deepStrictEqual(heroButtons, [["heroStatToday", "viewEverything('today')"], ["heroStatNext7", "viewEverything('next7')"], ["heroStatNeighborhoods", "viewNeighborhoodsRail()"]]);
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything()");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.defaults()), "the total leads to the whole stream");
@@ -274,7 +298,7 @@ async function run() {
     assert.strictEqual(page.get("orbitEventTotal"), null);
     assert.strictEqual(page.el("heroStatNumber").textContent, "151");
   }
-  console.log("PASS: 3. hero — the database's current + upcoming total (falling back to the loaded count), Today / This Week / Active Neighborhoods independent of the visitor's filters, and each figure leads to exactly that view");
+  console.log("PASS: 3. hero — the database's current + upcoming total (falling back to the loaded count), Today / Next 7 Days / Active Neighborhoods independent of the visitor's filters, and each figure leads to exactly that view");
 
   // =====================================================================
   // 4. Don't Miss
