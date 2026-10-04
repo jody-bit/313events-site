@@ -20,8 +20,10 @@
 //   b. sent as ONE request — what the connector did until now — the
 //      database refuses them (the same 400 PGRST102, nothing written);
 //   c. the connector now writes every row;
-//   d. a field the source did not supply is still OMITTED, so an existing
-//      value survives, and a stored moderation status is still preserved.
+//   d. a field the source did not supply is still OMITTED from what is
+//      sent (checked on the request itself, not only on the stored row), so
+//      a value already on the row survives, and a stored moderation status
+//      is preserved.
 // The upstream fixtures are modelled on what each source returned that day
 // (real external-id formats, real titles where they were captured); they
 // are fixtures, not captures of the full production payloads.
@@ -30,108 +32,14 @@
 "use strict";
 const assert = require("assert");
 const crypto = require("crypto");
-const path = require("path");
 
-const REPO_DIR = path.resolve(process.env.REPO_DIR || process.cwd());
+const { EVENT_CATEGORIES_PRODUCTION_2026_10_03, EVENT_CATEGORIES_WITH_GAMING } = require("./fixtures/mock-postgrest.js");
 const {
-  makeMockPostgrest, eventsSchema, EVENT_CATEGORIES_PRODUCTION_2026_10_03, EVENT_CATEGORIES_WITH_GAMING,
-} = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
-
-const SUPABASE_URL = "https://example.supabase.co";
-const NOW = "2026-10-03T13:00:00Z"; // 9:00 AM in Detroit on the day the failures were found
-const UPSERT_PREFER = "resolution=merge-duplicates,return=minimal";
-
-// The connectors read the clock (`new Date()`); hold it still so the
-// fixtures can use real dates.
-async function withFixedNow(fn) {
-  const RealDate = Date;
-  const fixed = new RealDate(NOW).getTime();
-  class FixedDate extends RealDate {
-    constructor(...args) { if (args.length === 0) super(fixed); else super(...args); }
-    static now() { return fixed; }
-  }
-  global.Date = FixedDate;
-  try { return await fn(); } finally { global.Date = RealDate; }
-}
-
-// One fake database + one upstream source, behind a single global fetch.
-function world({ events, venues, categories, upstream }) {
-  const tables = { events: events || [], venues: venues || [], source_runs: [] };
-  const db = makeMockPostgrest(tables, {
-    schema: { events: eventsSchema({ categories: categories || EVENT_CATEGORIES_PRODUCTION_2026_10_03 }) },
-    now: () => "2026-10-03T13:00:00.000Z",
-  });
-  global.fetch = async (url, init) => {
-    const target = String(url);
-    if (target.startsWith(SUPABASE_URL)) return db.fetch(target, init);
-    const answer = upstream(target);
-    if (!answer) throw new Error("unmocked upstream URL in test: " + target);
-    return answer;
-  };
-  return { tables, db };
-}
-const page = (body, status) => ({ ok: !status || status < 300, status: status || 200, text: async () => body, json: async () => JSON.parse(body) });
-const json = (value) => page(JSON.stringify(value));
-const notFound = () => page("", 404);
-
-function makeRes() {
-  return { _status: null, _body: null, status(code) { this._status = code; return this; }, json(body) { this._body = body; return this; } };
-}
-
-async function runConnector(file) {
-  for (const key of Object.keys(require.cache)) if (key.startsWith(`${REPO_DIR}/api/`)) delete require.cache[key];
-  const handler = require(`${REPO_DIR}/api/${file}`);
-  const res = makeRes();
-  const log = console.log, error = console.error;
-  console.log = () => {}; console.error = () => {};
-  try { await withFixedNow(() => handler({ headers: {} }, res)); } finally { console.log = log; console.error = error; }
-  return res;
-}
-
-const eventWrites = (db) => db.log.filter((r) => r.table === "events" && r.method === "POST");
-const sentRows = (db) => eventWrites(db).flatMap((r) => JSON.parse(r.body));
-const shapeOf = (row) => Object.keys(row).sort().join(",");
-const shapeCount = (rows) => new Set(rows.map(shapeOf)).size;
-const byId = (tables, id) => tables.events.find((r) => r.external_id === id);
-
-// What the connector did until now: the same rows in a single request.
-async function sendAsOneRequest(rows) {
-  const tables = { events: [] };
-  const control = makeMockPostgrest(tables, { schema: { events: eventsSchema({ categories: EVENT_CATEGORIES_PRODUCTION_2026_10_03 }) } });
-  const resp = await control.fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-    method: "POST", headers: { Prefer: UPSERT_PREFER }, body: JSON.stringify(rows),
-  });
-  return { resp, stored: tables.events.length };
-}
-
-// The assertions every one of the five shares.
-async function assertHeterogeneousAndNowWritten(label, db, tables, res, expectedRows) {
-  const rows = sentRows(db);
-  assert.strictEqual(rows.length, expectedRows, `${label}: fixture should produce ${expectedRows} rows, produced ${rows.length}`);
-  const shapes = shapeCount(rows);
-  assert.ok(shapes >= 2, `${label}: the connector's rows must differ in shape for this test to mean anything (found ${shapes})`);
-
-  const control = await sendAsOneRequest(rows);
-  assert.strictEqual(control.resp.status, 400, `${label}: one request with these rows is refused`);
-  assert.strictEqual(await control.resp.text(), '{"code":"PGRST102","details":null,"hint":null,"message":"All object keys must match"}');
-  assert.strictEqual(control.stored, 0, `${label}: …and nothing is written`);
-
-  assert.strictEqual(res._status, 200, `${label}: the run succeeds — ${JSON.stringify(res._body)}`);
-  assert.strictEqual(res._body.upserted, expectedRows, `${label}: reports every row written`);
-  for (const request of eventWrites(db)) {
-    assert.strictEqual(shapeCount(JSON.parse(request.body)), 1, `${label}: every request sent is uniform`);
-    assert.strictEqual(request.url, `${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`);
-    assert.strictEqual(request.headers.Prefer, UPSERT_PREFER);
-  }
-  for (const row of rows) assert.ok(byId(tables, row.external_id), `${label}: ${row.external_id} is in the database`);
-  return { rows, shapes, requests: eventWrites(db).length };
-}
+  world, page, json, notFound, runConnector, eventWrites, sentRows, sentRow, shapeCount, byId,
+  assertHeterogeneousAndNowWritten,
+} = require("./fixtures/connector-harness.js");
 
 async function run() {
-  process.env.SUPABASE_URL = SUPABASE_URL;
-  process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
-  process.env.TICKETMASTER_API_KEY = "test-tm-key";
-  delete process.env.CRON_SECRET;
   const summary = [];
 
   // =========================================================================
@@ -194,6 +102,10 @@ async function run() {
       assert.strictEqual(byId(tables, id).source, "Ticketmaster");
     }
     assert.strictEqual(byId(tables, "1718v0G6u_K3oxv").description, null, "a new event with no `info` simply has no description");
+    // On the wire: the key is absent — not sent as null — for exactly the events without `info`.
+    for (const id of ["vvG1OZ_CD9U6Tp", "rZ7HnEZ1Af1p07", "1718v0G6u_K3oxv"]) assert.strictEqual("description" in sentRow(db, id), false, `${id}: no description key was sent`);
+    for (const id of ["vv1AFZkf6GkdIXBPo", "Z7r9jZ1AAvs84", "vv17OZ_8GkBtnaQa"]) assert.strictEqual(typeof sentRow(db, id).description, "string");
+    assert.strictEqual(sentRow(db, "rZ7HnEZ1Af1p07").price_from, null, "while a key the connector sets to null IS sent, as null");
     summary.push(["Ticketmaster", 6, outcome.shapes, outcome.requests]);
   }
   console.log("PASS: Ticketmaster — rows with and without `info` are refused as one request and written as two; existing descriptions and a moderator's rejection survive");
@@ -230,6 +142,8 @@ async function run() {
     assert.strictEqual(byId(tables, idFor("2026-10-10", "DJ Fixture")).status, "approved");
     assert.strictEqual(byId(tables, idFor("2026-10-10", "DJ Fixture")).is_free, false, "`is_free: undefined` is omitted, so a new row takes the column default");
     assert.ok(sentRows(db).every((r) => !("is_free" in r)), "and is never sent as a key");
+    assert.strictEqual("description" in sentRow(db, tonight), false, "no description key is sent for an entry that has none");
+    assert.strictEqual(sentRows(db).filter((r) => "description" in r).length, 10);
     summary.push(["MotorCity Wine", 12, outcome.shapes, outcome.requests]);
   }
   console.log("PASS: MotorCity Wine — calendar entries with and without a description are written; tonight's event keeps its reviewer-written description");
@@ -251,6 +165,10 @@ async function run() {
     };
     const sitemap = `<?xml version="1.0"?><urlset>${Object.keys(pages).map((slug) => `<url><loc>${base}${slug}</loc></url>`).join("")}</urlset>`;
     const { tables, db } = world({
+      // One of the four is already stored, with a description and an image
+      // a reviewer added; the festival's page for it has neither.
+      events: [{ id: "row-1", external_id: "dmod-sub-surface-2026-10-10-13-00", title: "Sub Surface", category: "visual", start_date: "2026-10-10", status: "approved",
+        description: "Added by a reviewer.", image_url: "https://example.org/reviewer.jpg", time_display: "noon" }],
       upstream: (url) => {
         if (url === "https://www.detroitmonthofdesign.org/event-pages-sitemap.xml") return page(sitemap);
         if (url.startsWith(base)) return pages[url.slice(base.length)] ? page(pages[url.slice(base.length)]) : notFound();
@@ -262,7 +180,12 @@ async function run() {
     assert.strictEqual(outcome.shapes, 4, "four events, four different sets of optional fields");
     const artCars = byId(tables, "dmod-art-cars-2026-10-03-11-00");
     assert.deepStrictEqual([artCars.status, artCars.start_date, artCars.time_display, artCars.end_date], ["approved", "2026-10-03", "11:00 AM–5:00 PM", null]);
-    assert.strictEqual(byId(tables, "dmod-sub-surface-2026-10-10-13-00").description, null);
+    const subSurface = byId(tables, "dmod-sub-surface-2026-10-10-13-00");
+    assert.deepStrictEqual([subSurface.description, subSurface.image_url], ["Added by a reviewer.", "https://example.org/reviewer.jpg"], "fields the page does not have are omitted, so the reviewer's survive");
+    assert.strictEqual(subSurface.time_display, "1:00 PM", "…and the field it does have is refreshed");
+    assert.deepStrictEqual(["description", "image_url", "end_date"].map((k) => k in sentRow(db, "dmod-sub-surface-2026-10-10-13-00")), [false, false, false]);
+    assert.strictEqual("end_date" in sentRow(db, "dmod-art-cars-2026-10-03-11-00"), false, "a same-day event sends no end_date key");
+    assert.strictEqual(tables.events.length, 4, "one updated, three inserted");
     assert.strictEqual(byId(tables, "dmod-score-sports-by-design-2026-09-22-11-00").end_date, "2026-10-18", "a run already in progress is included, with its end date");
     assert.strictEqual(byId(tables, "dmod-making-our-way-to-midnight-2026-09-10-10-00-1"), undefined, "a finished event is not written");
     assert.deepStrictEqual(res._body.upsertErrors, undefined);
@@ -310,6 +233,12 @@ async function run() {
 
     // Second run, after a reviewer approved SoundHenge and corrected its time.
     Object.assign(soundhenge, { status: "approved", time_display: "3:00 PM–8:00 PM", start_date: "2026-10-03" });
+    // …and filled in a description and an image on posts that have none.
+    byId(first.tables, "poppspacking-8673").description = "Written by a reviewer.";
+    byId(first.tables, "poppspacking-11023").image_url = "https://example.org/reviewer.jpg";
+    assert.strictEqual("description" in sentRow(first.db, "poppspacking-8673"), false, "a post with no excerpt sends no description key");
+    assert.strictEqual("image_url" in sentRow(first.db, "poppspacking-11023"), false);
+    assert.strictEqual("note" in sentRow(first.db, "poppspacking-7262"), false, "a post whose date parsed sends no note key");
     const second = world({ venues: [{ id: "venue-popps", name: "Popps Packing" }], events: first.tables.events, upstream });
     const res2 = await runConnector("cron-poppspacking.js");
     assert.strictEqual(res2._status, 200, JSON.stringify(res2._body));
@@ -319,6 +248,8 @@ async function run() {
     assert.strictEqual(second.tables.events.length, 6, "no duplicates");
     const again = byId(second.tables, "poppspacking-7262");
     assert.deepStrictEqual([again.status, again.time_display, again.start_date], ["approved", "3:00 PM–8:00 PM", "2026-10-03"], "the reviewer's approval and corrected time survive the next run");
+    assert.strictEqual(byId(second.tables, "poppspacking-8673").description, "Written by a reviewer.", "as does a description on a post that has no excerpt");
+    assert.strictEqual(byId(second.tables, "poppspacking-11023").image_url, "https://example.org/reviewer.jpg");
     summary.push(["Popps Packing", 6, outcome.shapes, outcome.requests]);
   }
   console.log("PASS: Popps Packing — six posts in several shapes are written to an empty table (SoundHenge dated 2026-10-03, pending review); a reviewer's approval and correction survive the next run");
@@ -334,8 +265,16 @@ async function run() {
       rrp: html("<h1>EPA Lead RRP</h1><p>Upcoming session: March 8, 2027</p><p>LOCATION: Online via Zoom</p><p>$275 for the course</p>"),
       osha: html("<h1>OSHA 10/30</h1><p>Schedule: October 5, November 9</p>"),
     };
+    const stored = (id, extra) => ({ id: `row-${id}`, external_id: id, title: "t", category: "training", start_date: "2026-10-01", ...extra });
     const { tables, db } = world({
       venues: [{ id: "venue-dtc", name: "Detroit Training Center" }],
+      // Two sessions are already stored: one a reviewer approved and gave a
+      // price (the page states none), one online session given a note-worthy
+      // address (the page gives none, so the connector omits the key).
+      events: [
+        stored("dtc-osha-2026-10-05", { status: "approved", price_from: 99 }),
+        stored("dtc-rrp-2027-03-08", { status: "pending_review", venue_address_raw: "Link sent on registration" }),
+      ],
       upstream: (url) => {
         if (!url.startsWith("https://detroittraining.com/")) return null;
         const slug = url.slice("https://detroittraining.com/".length);
@@ -345,12 +284,18 @@ async function run() {
     const res = await runConnector("cron-detroittraining.js");
     const outcome = await assertHeterogeneousAndNowWritten("Detroit Training Center", db, tables, res, 7);
     assert.strictEqual(outcome.shapes, 4);
-    assert.ok(tables.events.every((r) => r.status === "pending_review" && r.category === "training" && r.venue_id === "venue-dtc"), "review-first, as before");
+    assert.ok(tables.events.every((r) => r.category === "training" && r.venue_id === "venue-dtc"));
+    assert.strictEqual(tables.events.length, 7, "two updated, five inserted");
+    assert.deepStrictEqual(tables.events.filter((r) => r.status !== "pending_review").map((r) => r.external_id), ["dtc-osha-2026-10-05"], "new sessions are review-first, as before; the approved one stays approved");
+    assert.strictEqual(byId(tables, "dtc-osha-2026-10-05").price_from, 99, "a price the page does not state is omitted, so the stored one survives");
+    assert.strictEqual(byId(tables, "dtc-rrp-2027-03-08").venue_address_raw, "Link sent on registration", "an online session's address is omitted, not nulled");
+    assert.strictEqual(byId(tables, "dtc-rrp-2027-03-08").price_from, 275, "while a price the page does state is written");
+    assert.deepStrictEqual(["price_from", "end_date"].map((k) => k in sentRow(db, "dtc-osha-2026-10-05")), [false, false]);
+    assert.strictEqual("venue_address_raw" in sentRow(db, "dtc-rrp-2027-03-08"), false);
     // real id formats from the 2026-10-03 run
     assert.deepStrictEqual([byId(tables, "dtc-forklift-2026-10-03").price_from, byId(tables, "dtc-forklift-2026-10-03").venue_address_raw], [150, "23323 Schoolcraft"]);
     assert.strictEqual(byId(tables, "dtc-mibuilders-2026-10-19").end_date, "2026-10-23");
     assert.strictEqual(byId(tables, "dtc-mibuilders-2026-10-19").price_from, null);
-    assert.strictEqual(byId(tables, "dtc-rrp-2027-03-08").venue_address_raw, null, "an online session has no street address — omitted, not invented");
     assert.ok(byId(tables, "dtc-osha-2026-10-05") && byId(tables, "dtc-osha-2026-11-09"));
     summary.push(["Detroit Training Center", 7, outcome.shapes, outcome.requests]);
   }

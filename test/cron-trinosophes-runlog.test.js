@@ -193,7 +193,6 @@ async function run() {
     let capturedUpsertBody = null;
     const { fetchFn } = makeMockFetch({
       source: () => ({ ok: true, status: 200, text: async () => dateHeadingHtml("December 5, 2026", "A Future Band") }),
-      upsert: () => ({ ok: true, status: 201, text: async () => "" }),
     });
     global.fetch = async (url, opts = {}) => {
       if (opts.method === "POST" && url.includes("/rest/v1/events")) {

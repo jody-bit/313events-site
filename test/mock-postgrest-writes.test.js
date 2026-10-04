@@ -50,6 +50,8 @@ async function run() {
     assert.strictEqual(hasMixedKeys([{ a: 1 }, { a: 2, b: 3 }]), true, "one extra key");
     assert.strictEqual(hasMixedKeys([{ a: 1, b: 2 }, { a: 2 }]), true, "one missing key");
     assert.strictEqual(hasMixedKeys([{ a: 1 }]), false, "a single row cannot disagree with itself");
+    assert.strictEqual(hasMixedKeys([{ a: 1 }, null]), true, "an element that is not an object is refused as well");
+    assert.strictEqual(hasMixedKeys(["row"]), true);
     assert.strictEqual(hasMixedKeys([]), false);
     assert.strictEqual(hasMixedKeys({ a: 1 }), false, "a single object body is not a bulk request");
     // JSON.stringify is what creates the problem: undefined keys vanish.
@@ -97,7 +99,7 @@ async function run() {
     assert.strictEqual(resp.ok, true, "with columns= PostgREST skips the key check");
     assert.strictEqual(tables.events[0].description, null, "…and fills the absent key with NULL, erasing the stored description");
   }
-  console.log("PASS: a single columns= list is accepted but nulls out existing values — the reason the fix groups rows instead");
+  console.log("PASS: a single columns= list is accepted but nulls out existing values — the reason the fix groups rows instead (modelled on PostgREST's documented behavior; this one was not measured in production)");
 
   // --- 5. the same conflict key twice in one request ------------------------
   {
@@ -129,10 +131,22 @@ async function run() {
     resp = await post(db, "events?on_conflict=external_id", [event({ external_id: "c", not_a_column: 1 })]);
     assert.strictEqual((await resp.json()).code, "PGRST204");
 
+    // A NOT NULL column WITH a default: absent is fine (the default
+    // applies), an explicit null is not. This is what makes "fill the gaps
+    // with null" visibly wrong for is_free, status, source and the rest.
+    resp = await post(db, "events?on_conflict=external_id", [event({ external_id: "n1", is_free: null })]);
+    assert.strictEqual(resp.status, 400);
+    assert.strictEqual((await resp.json()).message, 'null value in column "is_free" of relation "events" violates not-null constraint');
+    resp = await post(db, "events?on_conflict=external_id", [event({ external_id: "n2", status: null })]);
+    assert.strictEqual((await resp.json()).code, "23502");
+    resp = await post(db, "events?on_conflict=external_id", [event({ external_id: "n3" })]);
+    assert.strictEqual(resp.status, 201, "the same row with those keys absent is accepted");
+    assert.strictEqual(tables.events.find((r) => r.external_id === "n3").is_free, false);
+
     // All-or-nothing: one bad row among good ones stores nothing.
     resp = await post(db, "events?on_conflict=external_id", [event({ external_id: "ok-1" }), event({ external_id: "bad", category: "gaming" })]);
     assert.strictEqual(resp.ok, false);
-    assert.deepStrictEqual(tables.events.map((r) => r.external_id), ["a"], "the good row in a rejected request is not stored either");
+    assert.deepStrictEqual(tables.events.map((r) => r.external_id), ["a", "n3"], "the good row in a rejected request is not stored either");
 
     // After migration 036 'gaming' is a valid category.
     const after = makeMockPostgrest({ events: [] }, { schema: { events: eventsSchema() } });

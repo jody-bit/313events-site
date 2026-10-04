@@ -177,7 +177,6 @@ async function run() {
     const upsertCapture = {};
     const { fetchFn } = makeMockFetch({
       source: () => ({ ok: true, status: 200, text: async () => dossinEventHtml() }),
-      upsert: () => ({ ok: true, status: 201, text: async () => "" }),
     });
     // Capture the upsert POST body directly (makeMockFetch's calls array
     // already records it, but reading it back out here keeps this test

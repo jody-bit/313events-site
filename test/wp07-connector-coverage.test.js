@@ -16,8 +16,9 @@
 //      sends, fails here until someone has looked at whether its rows can
 //      differ in shape.
 // Same approach as test/wp017-connector-coverage.test.js (reads source as
-// text); runtime proof for the connectors that were actually failing is in
-// test/wp07-affected-connectors.test.js.
+// text); runtime proof is in test/wp07-affected-connectors.test.js (the
+// connectors that were failing), test/wp07-latent-connectors.test.js (the
+// ones that could) and test/wp07-partial-writes.test.js.
 //
 // Plain Node assert, no dependencies. Run: node test/wp07-connector-coverage.test.js
 "use strict";
@@ -126,20 +127,38 @@ function run() {
   console.log("PASS: no cron file builds its own events upsert request");
 
   // --- 3. the connector failure branches report what was really written -------
+  // (Runtime proof for one connector of each pattern is in
+  // test/wp07-partial-writes.test.js; this pins the same code in all 25.)
+  const CHUNKED = ["cron-detroitmonthofdesign.js", "cron-playgrounddetroit.js"];
   for (const [file] of CONNECTORS) {
     const source = read(`api/${file}`);
-    // The failure branch directly follows the call.
-    const failure = source.slice(source.indexOf("await upsertEventRows(")).slice(0, 1600);
-    assert.ok(/\.ok\) \{[\s\S]*\.written/.test(failure), `${file}: when a batch is rejected the connector must report the rows that were still written (resp.written), not a hard-coded 0`);
+    const call = source.indexOf("await upsertEventRows(");
+    const failure = source.slice(call, call + 1800); // the failure branch directly follows the call
+    if (CHUNKED.includes(file)) {
+      assert.ok(failure.includes("chunkErrors.push({ externalIds: resp.failedRows.map((r) => r.external_id), error: errText });"), `${file}: a chunk's error must list the rejected rows, not the whole chunk`);
+      assert.ok(failure.includes("upserted += resp.written;\n        continue;"), `${file}: rows written before/after a rejected group must be counted`);
+    } else if (file === "cron-poppspacking.js") {
+      assert.ok(failure.includes("return { ok: false, count: resp.written, error: errText };"), `${file}: must report resp.written`);
+    } else if (file === "cron-feeds.js") {
+      assert.ok(failure.includes("upserted: upsertResp.written, failed: true };"), `${file}: must report upsertResp.written and mark the failure`);
+      assert.ok(source.includes("pollResult = outcome.upserted && !outcome.failed"), `${file}: a partial write must not be read as a clean one`);
+    } else {
+      assert.ok(/res\.status\(502\)\.json\(\{ upserted: resp\.written, (skipped, )?error: "Supabase upsert failed: " \+ errText \}\);/.test(failure), `${file}: the 502 must report resp.written, not a hard-coded 0`);
+      if (source.includes('require("./_lib/run-log")')) {
+        assert.ok(/outcome: "failed",\n\s+http_status: resp\.status,[\s\S]{0,160}records_written: resp\.written,\n\s+error_sample: "Supabase upsert failed: " \+ errText,/.test(failure),
+          `${file}: the run log must record outcome failed with records_written: resp.written`);
+      }
+    }
+    assert.ok(!/upserted: 0, (skipped, )?error: "Supabase upsert failed/.test(source) && !/records_written: 0,\n\s+error_sample: "Supabase upsert failed/.test(source), `${file}: no hard-coded 0 left on the upsert-failure path`);
   }
-  console.log("PASS: every connector reports the true written count when part of a batch is rejected");
+  console.log("PASS: every connector reports the true written count when part of a batch is rejected (and a run-logged one still logs the run as failed)");
 
   // --- 4. the helper itself never widens a row ---------------------------------
   {
     const helper = read("api/_lib/event-upsert.js").replace(/\/\/[^\n]*/g, "");
     assert.ok(!/columns=/.test(helper), "the helper must not use a columns= list (PostgREST would null-fill the absent keys)");
     assert.ok(!/missing=default/.test(helper), "nor Prefer: missing=default");
-    assert.ok(/JSON\.stringify\(group\.rows\)/.test(helper), "each request body is a group's own rows, as given");
+    assert.ok(helper.includes('body: `[${group.json.join(",")}]`'), "each request body is assembled from the group's own rows, serialized once");
   }
   console.log("PASS: the helper sends each group's rows as given — no columns= list, no missing=default (behavior proven in test/event-upsert.test.js)");
 
@@ -157,8 +176,18 @@ function run() {
   }
   console.log(`PASS: the ${AUDITED_DIRECT_POSTS.length} remaining direct database POSTs are exactly the audited ones (single objects, one-row arrays, or batches built with a fixed key set)`);
 
+  // --- 6. the audit labels above are checked against the code -----------------
+  // A connector builds a field as undefined exactly when its (comment-
+  // stripped) source uses `undefined` as a value.
+  const usesUndefinedValue = (file) => read(`api/${file}`).split("\n")
+    .map((line) => line.replace(/\/\/.*$/, ""))
+    .some((line) => /\bundefined\b/.test(line) && !/[!=]==\s*undefined|typeof|error_sample/.test(line));
+  for (const [file, audit] of CONNECTORS) {
+    assert.strictEqual(usesUndefinedValue(file), audit !== "no-undefined",
+      `${file} is labelled ${audit} but ${usesUndefinedValue(file) ? "builds" : "does not build"} a field as undefined — re-audit it and add it to the runtime tests if its rows can now differ in shape`);
+  }
   const count = (label) => CONNECTORS.filter(([, audit]) => audit === label).length;
-  assert.deepStrictEqual([count("REJECTED"), count("LATENT"), count("no-undefined")], [5, 5, 15]);
+  console.log(`PASS: the ${count("REJECTED") + count("LATENT")} connectors labelled as able to emit differing shapes are exactly the ones whose code builds a field as undefined`);
   console.log(`\n  ${count("REJECTED")} connectors were being rejected in production, ${count("LATENT")} more can emit rows of differing shape, ${count("no-undefined")} showed no such field on a scan — all ${CONNECTORS.length} now use the helper.`);
   console.log("\nAll wp07-connector-coverage.test.js checks passed.");
 }

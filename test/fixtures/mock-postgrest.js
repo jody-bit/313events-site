@@ -35,9 +35,11 @@
 //   - the same conflict key twice in one request -> 500, SQLSTATE 21000
 //     ("ON CONFLICT DO UPDATE command cannot affect row a second time";
 //     Ticketmaster, 2026-09-20).
-//   - with a table schema supplied (see EVENTS_SCHEMA below): a required
+//   - with a table schema supplied (see eventsSchema below): a required
 //     column absent or null -> 400, SQLSTATE 23502, even when the row
-//     already exists (Popps Packing / BUG-004); a value outside an enum ->
+//     already exists (Popps Packing / BUG-004); an explicit null in a NOT
+//     NULL column that has a default -> the same 23502 (the default only
+//     applies to an ABSENT key); a value outside an enum ->
 //     400, SQLSTATE 22P02 (GottaGacha's "gaming", every run since
 //     2026-09-24); an unknown column -> 400, PGRST204.
 //   - `columns=` on the URL switches the key check off and fills absent
@@ -70,6 +72,9 @@ function eventsSchema(options) {
       "ticket_status", "is_clothing_optional", "description_source", "no_fixed_venue", "link_check_status", "link_checked_at",
     ],
     required: ["title", "category", "start_date"],
+    // NOT NULL columns that DO have a default: an absent key takes the
+    // default, but an explicit null is still a violation.
+    notNull: ["is_recurring", "is_free", "source", "status", "neighborhood_confidence", "followup_dismissed", "is_all_day", "is_clothing_optional", "no_fixed_venue"],
     defaults: {
       is_recurring: false, is_free: false, source: "Manual", status: "approved", neighborhood_confidence: "unconfirmed",
       followup_dismissed: false, is_all_day: false, is_clothing_optional: false, no_fixed_venue: false,
@@ -87,8 +92,11 @@ function keySetOf(row) {
 
 // True when a parsed bulk body would be refused for non-uniform keys.
 function hasMixedKeys(body) {
-  if (!Array.isArray(body) || body.length < 2) return false;
-  if (body.some((row) => row === null || typeof row !== "object" || Array.isArray(row))) return false;
+  if (!Array.isArray(body)) return false;
+  // An element that is not an object at all cannot share the others' keys;
+  // PostgREST refuses that body too.
+  if (body.some((row) => row === null || typeof row !== "object" || Array.isArray(row))) return true;
+  if (body.length < 2) return false;
   const first = keySetOf(body[0]);
   return body.some((row) => keySetOf(row) !== first);
 }
@@ -230,6 +238,11 @@ function makeMockPostgrest(tables, options) {
     // that already exists too (BUG-004).
     for (const column of tableSchema.required || []) {
       if (row[column] === undefined || row[column] === null) {
+        return errorResponse(400, { code: "23502", details: null, hint: null, message: `null value in column "${column}" of relation "${table}" violates not-null constraint` });
+      }
+    }
+    for (const column of tableSchema.notNull || []) {
+      if (row[column] === null) {
         return errorResponse(400, { code: "23502", details: null, hint: null, message: `null value in column "${column}" of relation "${table}" violates not-null constraint` });
       }
     }

@@ -403,7 +403,7 @@ module.exports = async (req, res) => {
         const errText = await resp.text();
         // Truncated — a PostgREST/Postgres error message, not a secret,
         // but kept short regardless of what it happens to contain.
-        console.log(`[cron-detroitmonthofdesign] Supabase response at ${elapsed()}: chunk of ${rowsChunk.length} FAILED status=${resp.status} error=${errText.slice(0, 300)}`);
+        console.log(`[cron-detroitmonthofdesign] Supabase response at ${elapsed()}: chunk of ${rowsChunk.length}: ${resp.failedRows.length} row(s) FAILED status=${resp.status} error=${errText.slice(0, 300)}`);
         // Only the rows of the rejected key-shape group(s) failed; any other
         // group in this chunk was written (see api/_lib/event-upsert.js).
         chunkErrors.push({ externalIds: resp.failedRows.map((r) => r.external_id), error: errText });

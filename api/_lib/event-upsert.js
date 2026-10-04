@@ -51,36 +51,67 @@
 // independent upsert keyed on external_id, so landing the rows that can
 // land is strictly better than landing none. The result says exactly what
 // happened (`written`, `failedRows`, per-group status); `ok` is true only
-// if every group was accepted. A network failure (fetch throws) is not
-// caught here and propagates to the connector's own catch, as it always
-// did.
+// if every row was accepted.
+//
+// TWO THINGS THAT WOULD OTHERWISE GO QUIET ONCE A BATCH IS SPLIT
+//   - The same conflict key (external_id) in rows of DIFFERENT shape. In a
+//     single request Postgres refuses that outright (SQLSTATE 21000). Split
+//     across two requests both rows would be applied, the later group
+//     silently winning. Such rows are not sent at all; they are reported as
+//     failed, and every other row is still written. (The same key twice in
+//     rows of the SAME shape still travels in one request and is refused by
+//     the database, exactly as before.)
+//   - A network failure (fetch throws). With ONE request it propagates to
+//     the connector's own catch, as a bare fetch always did. With several,
+//     an earlier group may already be committed, so the failure is recorded
+//     against its group (status null), the remaining groups are still sent,
+//     and the caller gets a result that says what was written rather than
+//     an exception that says nothing.
 "use strict";
 
 const DEFAULT_TABLE = "events";
 const DEFAULT_ON_CONFLICT = "external_id";
 const DEFAULT_PREFER = "resolution=merge-duplicates,return=minimal";
 
-// The keys a row will actually put on the wire, sorted. JSON.stringify is
-// the authority on that (it drops undefined-, function- and symbol-valued
-// keys and keeps null), so the row is round-tripped through it rather than
-// re-implementing its rules.
-function keyShapeOf(row) {
+// A row as it will go on the wire. JSON.stringify is the authority on which
+// keys that is (it drops undefined-, function- and symbol-valued keys and
+// keeps null), so every row is serialized exactly once and the request body
+// is assembled from those same strings — the shape a row is grouped by can
+// never differ from the shape that is sent.
+function serializeRow(row) {
   if (row === null || typeof row !== "object" || Array.isArray(row)) {
     throw new TypeError("event-upsert: every row must be a plain object");
   }
-  return Object.keys(JSON.parse(JSON.stringify(row))).sort();
+  const json = JSON.stringify(row);
+  if (typeof json !== "string" || json[0] !== "{") {
+    throw new TypeError("event-upsert: every row must serialize to a JSON object");
+  }
+  return json;
+}
+
+// The keys a row will actually send, sorted.
+function keyShapeOf(row) {
+  return Object.keys(JSON.parse(serializeRow(row))).sort();
 }
 
 // -> [{ keys: [...sorted], rows: [...] }], groups in order of first
-// appearance, rows in their original order within a group.
+// appearance, rows in their original order within a group. (Each group also
+// carries `json` and `sent` — its rows' serialized and parsed wire forms —
+// and `positions`, each row's index in the input.)
 function groupRowsByKeyShape(rows) {
   const groups = new Map();
-  for (const row of rows) {
-    const keys = keyShapeOf(row);
+  rows.forEach((row, position) => {
+    const json = serializeRow(row);
+    const sent = JSON.parse(json);
+    const keys = Object.keys(sent).sort();
     const signature = JSON.stringify(keys);
-    if (!groups.has(signature)) groups.set(signature, { keys, rows: [] });
-    groups.get(signature).rows.push(row);
-  }
+    if (!groups.has(signature)) groups.set(signature, { keys, rows: [], json: [], sent: [], positions: [] });
+    const group = groups.get(signature);
+    group.rows.push(row);
+    group.json.push(json);
+    group.sent.push(sent);
+    group.positions.push(position);
+  });
   return Array.from(groups.values());
 }
 
@@ -92,13 +123,18 @@ function groupRowsByKeyShape(rows) {
 //   written     rows in the groups that were accepted
 //   attempted   rows.length
 //   groups      [{ keys, rowCount, ok, status, error }] in the order sent
-//   failedRows  the rows of every rejected group
-// `status` is the first group's HTTP status when everything was accepted
-// (so a uniform batch reports exactly what its one request returned), and
-// the first rejected group's status otherwise. `text()` is the first
-// rejected group's response body, unchanged when the batch was a single
-// group, and followed by a one-line account of the other groups when it
-// was not.
+//               (a set of rows withheld as cross-shape duplicates appears
+//               last, with keys: null)
+//   failedRows  every row that was not written
+// `status`, when everything was accepted, is what one request would have
+// reported: 201 if any group inserted a row, otherwise the first group's
+// status (200 for a pure update, and 200 when there were no rows and so no
+// request). Otherwise it is the first failed group's status — null if that
+// failure was not an HTTP response.
+// `text()` is the first failure's own message: unchanged when the batch was
+// a single request, and otherwise PRECEDED by a one-line account of what
+// was and was not written, so that a log line that truncates the message
+// still carries it.
 //
 // options: { table, onConflict, prefer } — defaults are the events upsert
 // every connector performs.
@@ -108,22 +144,67 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
   const onConflict = (options && options.onConflict) || DEFAULT_ON_CONFLICT;
   const prefer = (options && options.prefer) || DEFAULT_PREFER;
 
-  const shapeGroups = groupRowsByKeyShape(rows);
+  let shapeGroups = groupRowsByKeyShape(Array.from(rows));
+
+  // Conflict keys that occur in more than one shape group: withheld, loudly.
+  const conflictColumns = onConflict.split(",");
+  const conflictKeyOf = (sent) =>
+    conflictColumns.every((c) => sent[c] !== undefined && sent[c] !== null)
+      ? JSON.stringify(conflictColumns.map((c) => sent[c]))
+      : null; // no key, no conflict (NULLs never collide in a unique index)
+  const groupOfKey = new Map();
+  const crossShapeDuplicates = new Set();
+  shapeGroups.forEach((group, index) => {
+    for (const sent of group.sent) {
+      const key = conflictKeyOf(sent);
+      if (key === null) continue;
+      if (groupOfKey.has(key) && groupOfKey.get(key) !== index) crossShapeDuplicates.add(key);
+      else groupOfKey.set(key, index);
+    }
+  });
+  let withheld = [];
+  if (crossShapeDuplicates.size) {
+    const held = [];
+    shapeGroups = shapeGroups
+      .map((group) => {
+        const kept = { keys: group.keys, rows: [], json: [], sent: [], positions: [] };
+        group.sent.forEach((sent, i) => {
+          if (crossShapeDuplicates.has(conflictKeyOf(sent))) { held.push({ row: group.rows[i], position: group.positions[i] }); return; }
+          kept.rows.push(group.rows[i]);
+          kept.json.push(group.json[i]);
+          kept.sent.push(sent);
+          kept.positions.push(group.positions[i]);
+        });
+        return kept;
+      })
+      .filter((group) => group.rows.length);
+    withheld = held.sort((a, b) => a.position - b.position).map((h) => h.row); // input order
+  }
+
+  const totalGroups = shapeGroups.length + (withheld.length ? 1 : 0);
   const groups = [];
   const failedRows = [];
   let written = 0;
 
   for (const group of shapeGroups) {
-    const resp = await fetch(`${supabaseUrl}/rest/v1/${table}?on_conflict=${onConflict}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
-        Prefer: prefer,
-      },
-      body: JSON.stringify(group.rows),
-    });
+    let resp;
+    try {
+      resp = await fetch(`${supabaseUrl}/rest/v1/${table}?on_conflict=${onConflict}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          Prefer: prefer,
+        },
+        body: `[${group.json.join(",")}]`,
+      });
+    } catch (err) {
+      if (totalGroups === 1) throw err; // a single request: exactly what a bare fetch did
+      failedRows.push(...group.rows);
+      groups.push({ keys: group.keys, rowCount: group.rows.length, ok: false, status: null, error: `request failed: ${err && err.message ? err.message : err}` });
+      continue;
+    }
     if (resp.ok) {
       written += group.rows.length;
       groups.push({ keys: group.keys, rowCount: group.rows.length, ok: true, status: resp.status, error: null });
@@ -134,15 +215,30 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
     }
   }
 
+  if (withheld.length) {
+    failedRows.push(...withheld);
+    const ids = Array.from(crossShapeDuplicates).map((key) => JSON.parse(key).join(",")).join(", ");
+    groups.push({
+      keys: null,
+      rowCount: withheld.length,
+      ok: false,
+      status: null,
+      error: `not sent: ${onConflict} appears more than once in this batch, in rows of different shape (${ids})`,
+    });
+  }
+
   const failed = groups.filter((g) => !g.ok);
   const ok = failed.length === 0;
-  // No rows means no request: nothing was rejected, nothing was written.
-  const status = ok ? (groups.length ? groups[0].status : 200) : failed[0].status;
+  let status;
+  if (!ok) status = failed[0].status;
+  else if (!groups.length) status = 200; // no rows, no request: nothing rejected, nothing written
+  else status = groups.some((g) => g.status === 201) ? 201 : groups[0].status;
+
   let errorText = "";
   if (!ok) {
     errorText = failed[0].error;
     if (groups.length > 1) {
-      errorText += ` [${failed.length} of ${groups.length} key-shape groups rejected; ${written} of ${rows.length} rows written]`;
+      errorText = `[${failed.length} of ${groups.length} key-shape groups rejected; ${written} of ${rows.length} rows written] ${errorText}`;
     }
   }
 

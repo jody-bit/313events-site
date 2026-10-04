@@ -73,6 +73,12 @@ and posts one request per group. No key is added to any row and none is removed,
 so "omitted" (leave the stored value alone) and "null" (clear it) keep their
 separate meanings. All 25 event-ingestion connectors write through it.
 
+Because a batch can now be several requests, two cases that one request made
+loud are kept loud: the same `external_id` in rows of different shape is not
+sent at all and is reported as failed (Postgres would have refused it with
+`21000`), and a network failure after an earlier group has been committed is
+returned as a result that says what was written.
+
 `test/fixtures/mock-postgrest.js` now rejects a non-uniform bulk POST with the
 same status and body, so a test can no longer pass with a batch production would
 refuse.

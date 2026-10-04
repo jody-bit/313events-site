@@ -665,7 +665,10 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   const upsertResp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
   if (!upsertResp.ok) {
     const errText = await upsertResp.text();
-    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: upsertResp.written };
+    // `upserted` is what actually landed (rows in key-shape groups that
+    // were accepted -- see api/_lib/event-upsert.js); `failed` keeps a
+    // partial write from being read as a clean one by the caller.
+    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: upsertResp.written, failed: true };
   }
   return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found`, upserted: rows.length };
 }
@@ -755,7 +758,7 @@ module.exports = async (req, res) => {
             if (outcome === null) return; // upsertParsedRows already wrote the 502 response
             totalUpserted += outcome.upserted;
             const lowConfidenceCount = rows.filter((r) => r._dateConfidence !== "extracted").length;
-            pollResult = outcome.upserted
+            pollResult = outcome.upserted && !outcome.failed
               ? `${outcome.pollResult}${lowConfidenceCount ? ` (${lowConfidenceCount} with a pubDate-fallback date, needs human verification)` : ""}`
               : outcome.pollResult;
           }

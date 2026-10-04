@@ -159,8 +159,9 @@ async function run() {
     assert.strictEqual(posts(db).length, 3, "the group after the rejected one was still sent");
     assert.deepStrictEqual(tables.events.map((r) => r.external_id).sort(), ["ok-1", "ok-2", "ok-3"]);
     const text = await resp.text();
-    assert.ok(text.startsWith('{"code":"22P02"'), "the database's own error comes first");
-    assert.ok(text.endsWith(" [1 of 3 key-shape groups rejected; 3 of 5 rows written]"), `and then what happened to the rest: ${text}`);
+    assert.strictEqual(text,
+      '[1 of 3 key-shape groups rejected; 3 of 5 rows written] {"code":"22P02","details":null,"hint":null,"message":"invalid input value for enum event_category: \\"gaming\\""}',
+      "what was and was not written comes first (a truncated log line still carries it), then the database's own error");
     assert.deepStrictEqual(resp.groups.map((g) => g.ok), [true, false, true]);
     assert.ok(resp.groups[1].error.includes("gaming"));
   }
@@ -194,9 +195,109 @@ async function run() {
     global.fetch = other.fetch;
     const resp = await upsertEventRows(URL_BASE, KEY, [{ url: "u1", title: "t" }, { url: "u2" }], { table: "editorial_articles", onConflict: "url", prefer: "resolution=ignore-duplicates,return=minimal" });
     assert.strictEqual(resp.ok, true);
+    assert.strictEqual(other.log.length, 2, "two shapes, two requests");
     assert.ok(other.log.every((r) => r.url === `${URL_BASE}/rest/v1/editorial_articles?on_conflict=url` && r.headers.Prefer === "resolution=ignore-duplicates,return=minimal"));
+
+    // Rows are serialized exactly once, and the body is built from those
+    // same strings — so a value with its own toJSON cannot make the shape
+    // a row was grouped by differ from the shape that is sent.
+    const withDates = freshDb();
+    const when = new Date("2026-10-03T19:00:00Z");
+    const dated = [event("d1", { followup_dismissed_at: when }), event("d2", { followup_dismissed_at: when })];
+    await upsertEventRows(URL_BASE, KEY, dated);
+    assert.strictEqual(posts(withDates.db)[0].body, JSON.stringify(dated), "for plain rows the body is byte-for-byte JSON.stringify(rows)");
+    const odd = { external_id: "t1", title: "T", category: "music", start_date: "2026-10-03", toJSON(key) { return key === "" ? { external_id: "t1", title: "T", category: "music", start_date: "2026-10-03", status: "approved", note: "only when serialized alone" } : { external_id: "t1" }; } };
+    const consistent = freshDb();
+    const oddResp = await upsertEventRows(URL_BASE, KEY, [odd, event("t2", { note: "x" })]);
+    assert.strictEqual(oddResp.ok, true, "a row whose toJSON depends on where it is serialized is still sent in the shape it was grouped by");
+    assert.strictEqual(posts(consistent.db).length, 1);
+    assert.strictEqual(consistent.tables.events.find((r) => r.external_id === "t1").note, "only when serialized alone");
+    await assert.rejects(() => upsertEventRows(URL_BASE, KEY, [{ external_id: "u", toJSON() { return undefined; } }]), TypeError, "a row that serializes to nothing is refused, not sent as garbage");
+    await assert.rejects(() => upsertEventRows(URL_BASE, KEY, [{ external_id: "u", toJSON() { return "text"; } }]), TypeError);
+    // eslint-disable-next-line no-sparse-arrays
+    await assert.rejects(() => upsertEventRows(URL_BASE, KEY, [event("h1"), , event("h2")]), TypeError, "a hole in the list is refused");
   }
-  console.log("PASS: empty input, unusable input, a network failure and the table/conflict/prefer options all behave as documented");
+  console.log("PASS: empty input, unusable input, a single-request network failure, the table/conflict/prefer options and unusual serialization all behave as documented");
+
+  // --- 8b. the status a caller sees ------------------------------------------
+  {
+    // First group only updates (200), the second inserts (201).
+    const stored = { id: "id-1", external_id: "old", title: "t", category: "music", start_date: "2026-10-01", status: "approved" };
+    freshDb([stored]);
+    const mixed = await upsertEventRows(URL_BASE, KEY, [event("old"), event("new", { description: "x" })]);
+    assert.deepStrictEqual(mixed.groups.map((g) => g.status), [200, 201]);
+    assert.strictEqual(mixed.status, 201, "201 if any group inserted a row — what one request would have reported");
+    freshDb([{ ...stored }]);
+    const insertFirst = await upsertEventRows(URL_BASE, KEY, [event("new", { description: "x" }), event("old")]);
+    assert.deepStrictEqual(insertFirst.groups.map((g) => g.status), [201, 200]);
+    assert.strictEqual(insertFirst.status, 201, "…whichever group it was");
+    freshDb([{ ...stored }, { ...stored, id: "id-2", external_id: "old-2" }]);
+    const updatesOnly = await upsertEventRows(URL_BASE, KEY, [event("old"), event("old-2", { description: "x" })]);
+    assert.strictEqual(updatesOnly.status, 200, "200 when every group was a pure update");
+  }
+  console.log("PASS: the reported status is 201 if anything was inserted and 200 for pure updates, however many requests it took");
+
+  // --- 8c. a network failure part-way through a split batch -------------------
+  {
+    const { tables, db } = freshDb();
+    const real = db.fetch;
+    let writes = 0;
+    global.fetch = async (url, init) => {
+      if (init && init.method === "POST" && ++writes === 2) throw new Error("socket hang up");
+      return real(url, init);
+    };
+    const rows = [event("g1-a", { description: "x" }), event("g2-a"), event("g1-b", { description: "y" }), event("g3-a", { time_display: "7:00 PM" })];
+    const resp = await upsertEventRows(URL_BASE, KEY, rows); // must not throw: group 1 is already committed
+    assert.strictEqual(resp.ok, false);
+    assert.strictEqual(resp.written, 3, "the groups before and after the failed request were written");
+    assert.deepStrictEqual(tables.events.map((r) => r.external_id).sort(), ["g1-a", "g1-b", "g3-a"]);
+    assert.deepStrictEqual(resp.failedRows.map((r) => r.external_id), ["g2-a"]);
+    assert.strictEqual(resp.status, null, "there is no HTTP status for a request that never got a response");
+    assert.deepStrictEqual(resp.groups.map((g) => [g.ok, g.status]), [[true, 201], [false, null], [true, 201]]);
+    assert.strictEqual(await resp.text(), "[1 of 3 key-shape groups rejected; 3 of 4 rows written] request failed: socket hang up");
+
+    // With a single request there is nothing committed to report on: it throws, as a bare fetch did.
+    global.fetch = async () => { throw new Error("socket hang up"); };
+    await assert.rejects(() => upsertEventRows(URL_BASE, KEY, [event("a"), event("b")]), /socket hang up/);
+  }
+  console.log("PASS: a network failure mid-way through a split batch is reported with what WAS written, instead of an exception that says nothing was");
+
+  // --- 8d. the same external_id twice ------------------------------------------
+  {
+    // In rows of DIFFERENT shape: split across requests both would be
+    // applied and the later group would silently win. Neither is sent.
+    const { tables, db } = freshDb();
+    const resp = await upsertEventRows(URL_BASE, KEY, [
+      event("a"),
+      event("x", { title: "first in the list", description: "has one" }),
+      event("x", { title: "second in the list" }),
+      event("b", { description: "d" }),
+    ]);
+    assert.strictEqual(resp.ok, false, "a duplicated id is an error, as it is to Postgres");
+    assert.strictEqual(resp.written, 2);
+    assert.deepStrictEqual(tables.events.map((r) => r.external_id).sort(), ["a", "b"], "every other row is still written");
+    assert.deepStrictEqual(resp.failedRows.map((r) => r.title), ["first in the list", "second in the list"]);
+    assert.ok(posts(db).every((r) => !r.body.includes('"x"')), "neither copy of the duplicated row is sent");
+    assert.strictEqual(resp.groups[resp.groups.length - 1].keys, null);
+    assert.strictEqual(await resp.text(), "[1 of 3 key-shape groups rejected; 2 of 4 rows written] not sent: external_id appears more than once in this batch, in rows of different shape (x)");
+    assert.strictEqual(resp.status, null);
+
+    // In rows of the SAME shape: one request, refused by the database (21000), as before.
+    const same = freshDb();
+    const sameResp = await upsertEventRows(URL_BASE, KEY, [event("x", { title: "one" }), event("x", { title: "two" })]);
+    assert.deepStrictEqual([sameResp.ok, sameResp.status, sameResp.written], [false, 500, 0]);
+    assert.strictEqual(JSON.parse(await sameResp.text()).code, "21000");
+    assert.strictEqual(posts(same.db).length, 1);
+
+    // Rows with no external_id at all never count as duplicates of each other.
+    const anonymous = freshDb();
+    const anon = await upsertEventRows(URL_BASE, KEY, [
+      { title: "no id 1", category: "music", start_date: "2026-10-03" },
+      { title: "no id 2", category: "music", start_date: "2026-10-03", description: "d" },
+    ]);
+    assert.deepStrictEqual([anon.ok, anon.written, anonymous.tables.events.length], [true, 2, 2]);
+  }
+  console.log("PASS: a duplicated external_id is never applied twice — withheld and reported when the copies differ in shape, refused by the database when they do not");
 
   // --- 9. any mix of shapes: accepted, and equal to writing row by row -------
   {
