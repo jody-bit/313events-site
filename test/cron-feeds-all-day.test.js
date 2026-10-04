@@ -20,6 +20,7 @@
 // Run: node test/cron-feeds-all-day.test.js
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SUPABASE_URL = "https://example.supabase.co";
@@ -58,7 +59,7 @@ function baseMocks({ feedSources, icsText }) {
     if (url === "https://feed.example/cal.ics") return { ok: true, status: 200, text: async () => icsText };
     if (url.includes("/rest/v1/events") && opts.method === "POST") {
       baseMocks._capturedUpsertBody = JSON.parse(opts.body);
-      return { ok: true, status: 201, text: async () => "" };
+      return strictWriteResponse(url, opts);
     }
     throw new Error("unmocked URL: " + url);
   };

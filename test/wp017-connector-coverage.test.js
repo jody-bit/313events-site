@@ -20,8 +20,9 @@ const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const API_DIR = path.join(REPO_DIR, "api");
 
 // The full, current (2026-10-02) event-ingestion connector inventory --
-// every cron-*.js whose write path upserts into `events` via
-// `rest/v1/events?on_conflict=external_id`. Recounted for WP 0.17: 25, not
+// every cron-*.js whose write path upserts into `events` (on_conflict=
+// external_id; since WP 0.7 via api/_lib/event-upsert.js's
+// upsertEventRows()). Recounted for WP 0.17: 25, not
 // the historical WP's stale "20" -- cron-gottagacha.js was the 21st, and
 // cron-bigtimebingo.js was the 22nd, both added 2026-09-22; cron-
 // bagleycommunity.js is the 23rd, added 2026-10-01 for the Bagley
@@ -67,9 +68,15 @@ function run() {
   const allCronFiles = fs
     .readdirSync(API_DIR)
     .filter((f) => f.startsWith("cron-") && f.endsWith(".js"));
+  // 2026-10-03 (WP 0.7): the events upsert is no longer written out in
+  // each connector -- it goes through api/_lib/event-upsert.js -- so the
+  // marker of "this cron upserts into events" is the call to that helper.
+  // A connector that still posts to events by hand is caught too, so it
+  // cannot fall out of this inventory by bypassing the helper (and
+  // test/wp07-connector-coverage.test.js fails it for doing so).
   const actualIngestionConnectors = allCronFiles.filter((f) => {
     const content = fs.readFileSync(path.join(API_DIR, f), "utf8");
-    return content.includes('rest/v1/events?on_conflict=external_id');
+    return content.includes("upsertEventRows(") || content.includes('rest/v1/events?on_conflict=external_id');
   });
   assert.deepStrictEqual(
     actualIngestionConnectors.slice().sort(),

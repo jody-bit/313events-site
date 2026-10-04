@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 // Vercel Cron job — pulls the full Detroit Month of Design festival program
 // (September 2026) from detroitmonthofdesign.org. Added 2026-09-02 at
 // Jody's request ("let's add this calendar feed to the database").
@@ -397,22 +398,16 @@ module.exports = async (req, res) => {
     let upserted = 0;
     const chunkErrors = [];
     for (const rowsChunk of chunk(rowsWithStatus, SUPABASE_BATCH_SIZE)) {
-      const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          Prefer: "resolution=merge-duplicates,return=minimal",
-        },
-        body: JSON.stringify(rowsChunk),
-      });
+      const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsChunk);
       if (!resp.ok) {
         const errText = await resp.text();
         // Truncated — a PostgREST/Postgres error message, not a secret,
         // but kept short regardless of what it happens to contain.
         console.log(`[cron-detroitmonthofdesign] Supabase response at ${elapsed()}: chunk of ${rowsChunk.length} FAILED status=${resp.status} error=${errText.slice(0, 300)}`);
-        chunkErrors.push({ externalIds: rowsChunk.map((r) => r.external_id), error: errText });
+        // Only the rows of the rejected key-shape group(s) failed; any other
+        // group in this chunk was written (see api/_lib/event-upsert.js).
+        chunkErrors.push({ externalIds: resp.failedRows.map((r) => r.external_id), error: errText });
+        upserted += resp.written;
         continue; // one bad chunk doesn't abort the rest — see comment above
       }
       console.log(`[cron-detroitmonthofdesign] Supabase response at ${elapsed()}: chunk of ${rowsChunk.length} ok`);

@@ -24,6 +24,7 @@
 
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
@@ -236,7 +237,7 @@ function makeMockFetch(routes) {
     if (url.includes("/rest/v1/source_runs") && method === "POST") return routes.runInsert ? routes.runInsert() : { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
     if (url.includes("/rest/v1/source_runs") && method === "PATCH") return routes.runUpdate ? routes.runUpdate() : { ok: true, status: 204, json: async () => ({}) };
     if (url.includes("/rest/v1/events") && method === "GET") return routes.statusLookup ? routes.statusLookup() : { ok: true, status: 200, json: async () => [] };
-    if (url.includes("/rest/v1/events") && method === "POST") return routes.upsert ? routes.upsert() : { ok: true, status: 201, text: async () => "" };
+    if (url.includes("/rest/v1/events") && method === "POST") return routes.upsert ? routes.upsert() : strictWriteResponse(url, opts);
     throw new Error("unmocked URL in test: " + method + " " + url);
   };
   return { fetchFn, calls };

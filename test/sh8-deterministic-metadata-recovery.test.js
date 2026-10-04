@@ -25,6 +25,7 @@
 // Run: node test/sh5-deterministic-metadata-recovery.test.js
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SUPABASE_URL = "https://example.supabase.co";
@@ -72,7 +73,7 @@ function makeMockFetch(routes) {
     if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return routes.statusLookup ? routes.statusLookup() : { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && opts.method === "POST") {
       if (routes.upsertCapture) routes.upsertCapture.body = JSON.parse(opts.body);
-      return routes.upsert ? routes.upsert() : { ok: true, status: 201, text: async () => "" };
+      return routes.upsert ? routes.upsert() : strictWriteResponse(url, opts);
     }
     throw new Error("unmocked URL in test: " + url + " " + (opts.method || "GET"));
   };

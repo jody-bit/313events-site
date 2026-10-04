@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingRows } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 // Vercel Cron job — pulls Popps Packing's "Events" blog category (a home,
 // studio, and experimental arts space in Hamtramck). Added 2026-09-13 at
 // Jody's request, after a friend (Mark) mentioned performing at Popps
@@ -336,13 +337,23 @@ module.exports = async (req, res) => {
       return;
     }
 
-    // PostgREST's mixed-key bulk-upsert behavior for one batch containing
-    // objects with different key sets is still unverified project-wide
-    // (see WP 0.7/0.11), so rows are still grouped by identical key set —
-    // same interim approach WP 0.7 prescribes — and sent as two separate
-    // upsert calls: brand-new rows (full shape, this run's best-guess
-    // start_date/time_display) and existing rows (start_date/time_display
-    // set below, per-row, from the lookup's own returned value).
+    // Rows are written as two sets: brand-new rows (full shape, this run's
+    // best-guess start_date/time_display) and existing rows (start_date/
+    // time_display set below, per-row, from the lookup's own returned
+    // value).
+    //
+    // WP 0.7 (2026-10-03): that split was never enough to get a batch
+    // accepted. PostgREST rejects a bulk POST whose objects differ in key
+    // set (verified against production -- see
+    // test/notes/postgrest-mixed-keys.md), and WITHIN either set one post
+    // has a time, an image or a note and the next does not. Every write
+    // this connector attempted, from its first run on 2026-09-13, was
+    // refused in full: production held no Popps Packing row of any status
+    // on 2026-10-03. Each set now goes through upsertEventRows(), which
+    // sends one uniform request per key shape and never adds a key to make
+    // rows match. (The 2026-09-22 note below describes a real defect in
+    // the existing-rows path, but it was not why nothing was being
+    // written -- there were no existing rows.)
     //
     // 2026-09-22 correction (BUG-004 root cause): existing rows used to
     // have start_date/time_display deleted from the object entirely,
@@ -392,22 +403,13 @@ module.exports = async (req, res) => {
     async function upsertGroup(label, groupRows) {
       if (!groupRows.length) return { ok: true, count: 0 };
       console.log(`[cron-poppspacking] Supabase write attempted: group=${label} rows=${groupRows.length}`);
-      const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          Prefer: "resolution=merge-duplicates,return=minimal",
-        },
-        body: JSON.stringify(groupRows),
-      });
+      const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, groupRows);
       if (!resp.ok) {
         const errText = await resp.text();
         // Truncated — this is a PostgREST/Postgres error message, not a
         // secret, but kept short regardless of what it happens to contain.
         console.log(`[cron-poppspacking] Supabase response: group=${label} status=${resp.status} error=${errText.slice(0, 300)}`);
-        return { ok: false, count: 0, error: errText };
+        return { ok: false, count: resp.written, error: errText };
       }
       console.log(`[cron-poppspacking] Supabase response: group=${label} status=${resp.status} ok, wrote ${groupRows.length} row(s)`);
       return { ok: true, count: groupRows.length };

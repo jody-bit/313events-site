@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
@@ -386,20 +387,11 @@ module.exports = async (req, res) => {
     // Upsert on external_id — see the unique index in supabase/schema.sql.
     // merge-duplicates updates existing rows (e.g. a venue/time change)
     // instead of erroring or duplicating on re-runs.
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(rowsWithStatus),
-    });
+    const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
 
     if (!resp.ok) {
       const errText = await resp.text();
-      res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
+      res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
 

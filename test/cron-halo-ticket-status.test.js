@@ -17,6 +17,7 @@
 // Run: node test/cron-halo-ticket-status.test.js
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 
@@ -142,7 +143,7 @@ async function run() {
       if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
       if (url.includes("/rest/v1/events") && opts.method === "POST") {
         upsertedRows = JSON.parse(opts.body);
-        return { ok: true, status: 201, text: async () => "" };
+        return strictWriteResponse(url, opts);
       }
       throw new Error("unmocked URL in test: " + url);
     };
@@ -189,7 +190,7 @@ async function run() {
       if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
       if (url.includes("/rest/v1/events") && opts.method === "POST") {
         upsertedRows = JSON.parse(opts.body);
-        return { ok: true, status: 201, text: async () => "" };
+        return strictWriteResponse(url, opts);
       }
       throw new Error("unmocked URL in test: " + url);
     };

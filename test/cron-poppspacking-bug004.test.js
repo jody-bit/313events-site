@@ -34,6 +34,7 @@
 // Run: node test/cron-poppspacking-bug004.test.js
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SUPABASE_URL = "https://example.supabase.co";
@@ -80,7 +81,7 @@ function makeMockFetch(routes) {
     }
     if (url.includes("/rest/v1/events") && opts.method === "POST") {
       upsertBodies.push(parsedBody);
-      return routes.upsert ? routes.upsert(parsedBody) : { ok: true, status: 201, text: async () => "" };
+      return routes.upsert ? routes.upsert(parsedBody) : strictWriteResponse(url, opts);
     }
     throw new Error("unmocked URL in test: " + url);
   };

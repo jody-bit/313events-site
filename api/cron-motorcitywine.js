@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 // Vercel Cron job — pulls MotorCity Wine (Corktown, Detroit) events from
 // their own public Google Calendar. Added 2026-09-18 after Jody asked "do
 // we have a motor city wine cron?" (answer at the time: no, just one
@@ -493,19 +494,10 @@ module.exports = async (req, res) => {
       status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
     }));
 
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(rowsWithStatus),
-    });
+    const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
       const errText = await resp.text();
-      res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
+      res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });

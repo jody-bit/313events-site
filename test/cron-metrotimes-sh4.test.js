@@ -20,6 +20,7 @@
 // Run: node test/cron-metrotimes-sh4.test.js
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SUPABASE_URL = "https://example.supabase.co";
@@ -153,7 +154,7 @@ async function run() {
       }
       if (url.includes("/rest/v1/events") && opts.method === "POST") {
         if (upsertCapture) upsertCapture.body = JSON.parse(opts.body);
-        return { ok: true, status: 201, text: async () => "" };
+        return strictWriteResponse(url, opts);
       }
       throw new Error("unmocked URL: " + url + " " + (opts.method || "GET"));
     };

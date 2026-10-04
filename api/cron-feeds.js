@@ -3,6 +3,7 @@ const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair, resolveVenueFromCandidate } = require("./_lib/venue-lookup");
 const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
@@ -661,14 +662,10 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     };
   });
 
-  const upsertResp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-    method: "POST",
-    headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-    body: JSON.stringify(rowsWithStatus),
-  });
+  const upsertResp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
   if (!upsertResp.ok) {
     const errText = await upsertResp.text();
-    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: 0 };
+    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: upsertResp.written };
   }
   return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found`, upserted: rows.length };
 }

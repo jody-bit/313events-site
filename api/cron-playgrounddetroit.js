@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 // Vercel Cron job — pulls PLAYGROUND DETROIT's own event calendar. Added
 // 2026-09-05 after Jody asked "did we crawl this events page yet?" pointing
 // at playgrounddetroit.com/category/events/.
@@ -424,19 +425,13 @@ module.exports = async (req, res) => {
     let upserted = 0;
     const chunkErrors = [];
     for (const rowsChunk of chunk(rowsWithStatus, SUPABASE_BATCH_SIZE)) {
-      const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          Prefer: "resolution=merge-duplicates,return=minimal",
-        },
-        body: JSON.stringify(rowsChunk),
-      });
+      const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsChunk);
       if (!resp.ok) {
         const errText = await resp.text();
-        chunkErrors.push({ externalIds: rowsChunk.map((r) => r.external_id), error: errText });
+        // Only the rows of the rejected key-shape group(s) failed; any other
+        // group in this chunk was written (see api/_lib/event-upsert.js).
+        chunkErrors.push({ externalIds: resp.failedRows.map((r) => r.external_id), error: errText });
+        upserted += resp.written;
         continue;
       }
       upserted += rowsChunk.length;

@@ -3,6 +3,7 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
+const { upsertEventRows } = require("./_lib/event-upsert");
 const {
   VENUE_NAME,
   HORIZON_DAYS,
@@ -137,16 +138,7 @@ module.exports = async (req, res) => {
       };
     });
 
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(rowsWithStatus),
-    });
+    const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
       const errText = await resp.text();
       await finishRun(runHandle, {
@@ -154,10 +146,10 @@ module.exports = async (req, res) => {
         http_status: resp.status,
         records_fetched: dates.length,
         records_parsed: dates.length,
-        records_written: 0,
+        records_written: resp.written,
         error_sample: "Supabase upsert failed: " + errText,
       });
-      res.status(502).json({ upserted: 0, error: "Supabase upsert failed: " + errText });
+      res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
     await finishRun(runHandle, {

@@ -13,6 +13,7 @@
 // Run: node test/cron-redford-theatre-runlog.test.js
 "use strict";
 const assert = require("assert");
+const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SUPABASE_URL = "https://example.supabase.co";
@@ -60,7 +61,7 @@ function makeMockFetch(routes) {
     if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return routes.runInsert ? routes.runInsert() : { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
     if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return routes.runUpdate ? routes.runUpdate() : { ok: true, status: 204, json: async () => ({}) };
     if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return routes.statusLookup ? routes.statusLookup() : { ok: true, status: 200, json: async () => [] };
-    if (url.includes("/rest/v1/events") && opts.method === "POST") return routes.upsert ? routes.upsert() : { ok: true, status: 201, text: async () => "" };
+    if (url.includes("/rest/v1/events") && opts.method === "POST") return routes.upsert ? routes.upsert() : strictWriteResponse(url, opts);
     // fetchEventDetail()'s per-event detail-page fetch (2026-09-22). Any
     // redfordtheatre.com/events/<slug>/ URL that isn't the archive page
     // itself. Defaults to a benign empty 200 (no eventDesc/buy-link found,
