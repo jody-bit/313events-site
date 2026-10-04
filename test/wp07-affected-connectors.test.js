@@ -55,8 +55,7 @@ async function run() {
       _embedded: { venues: [{ name: "Fixture Hall", city: { name: "Detroit" }, address: { line1: "2115 Woodward Ave" }, location: { latitude: "42.3387", longitude: "-83.0524" } }] },
       ...extra,
     });
-    // Real Ticketmaster ids from the 2026-10-03 run; `info` present on half,
-    // as in production ("absent on most events", per the connector).
+    // Real Ticketmaster ids from the 2026-10-03 run; `info` present on half.
     const events = [
       tmEvent("vv1AFZkf6GkdIXBPo", "Fixture Band A", { info: "Doors at 6:30. All ages." }),
       tmEvent("vvG1OZ_CD9U6Tp", "Fixture Band B"),
@@ -91,8 +90,15 @@ async function run() {
     assert.strictEqual(b.description_source, "generated");
     assert.strictEqual(b.title, "Fixture Band B", "… while what the source did supply is refreshed");
     assert.strictEqual(b.time_display, "7:30 PM");
-    // … and where Ticketmaster does have `info`, it is written, as the connector intends.
-    assert.strictEqual(byId(tables, "vv1AFZkf6GkdIXBPo").description, "Doors at 6:30. All ages.");
+    // … and so is a stored description Ticketmaster DOES have `info` for:
+    // the connector never replaces a description on an event that already
+    // exists (the safeguard added before the first production run — see
+    // test/cron-ticketmaster-description-safeguard.test.js).
+    assert.strictEqual(byId(tables, "vv1AFZkf6GkdIXBPo").description, "older text");
+    assert.strictEqual(byId(tables, "vv1AFZkf6GkdIXBPo").title, "Fixture Band A", "its other fields are still refreshed");
+    // A NEW event gets Ticketmaster's `info` as its description.
+    assert.strictEqual(byId(tables, "Z7r9jZ1AAvs84").description, "With special guests.");
+    assert.strictEqual(byId(tables, "vv17OZ_8GkBtnaQa").description, "Seated show.");
     // A moderator's decision survives.
     assert.strictEqual(byId(tables, "rZ7HnEZ1Af1p07").status, "rejected", "an event hidden by a moderator stays hidden");
     assert.strictEqual(byId(tables, "rZ7HnEZ1Af1p07").price_from, null, "an explicit null (no price range) is still written as null");
@@ -102,9 +108,11 @@ async function run() {
       assert.strictEqual(byId(tables, id).source, "Ticketmaster");
     }
     assert.strictEqual(byId(tables, "1718v0G6u_K3oxv").description, null, "a new event with no `info` simply has no description");
-    // On the wire: the key is absent — not sent as null — for exactly the events without `info`.
-    for (const id of ["vvG1OZ_CD9U6Tp", "rZ7HnEZ1Af1p07", "1718v0G6u_K3oxv"]) assert.strictEqual("description" in sentRow(db, id), false, `${id}: no description key was sent`);
-    for (const id of ["vv1AFZkf6GkdIXBPo", "Z7r9jZ1AAvs84", "vv17OZ_8GkBtnaQa"]) assert.strictEqual(typeof sentRow(db, id).description, "string");
+    // On the wire: the key is absent — not sent as null — for every event
+    // that already exists and for a new event without `info`; it is present
+    // only for a new event that has `info`.
+    for (const id of ["vvG1OZ_CD9U6Tp", "rZ7HnEZ1Af1p07", "vv1AFZkf6GkdIXBPo", "1718v0G6u_K3oxv"]) assert.strictEqual("description" in sentRow(db, id), false, `${id}: no description key was sent`);
+    for (const id of ["Z7r9jZ1AAvs84", "vv17OZ_8GkBtnaQa"]) assert.strictEqual(typeof sentRow(db, id).description, "string");
     assert.strictEqual(sentRow(db, "rZ7HnEZ1Af1p07").price_from, null, "while a key the connector sets to null IS sent, as null");
     summary.push(["Ticketmaster", 6, outcome.shapes, outcome.requests]);
   }

@@ -379,10 +379,40 @@ module.exports = async (req, res) => {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    // DESCRIPTION SAFEGUARD (2026-10-04, Product Owner decision before the
+    // first successful run since 2026-09-04): a description already stored
+    // on an event is never replaced by this connector.
+    //   - NEW event (no row with this external_id): Ticketmaster's `info`
+    //     is sent as the description when it supplies one, as before.
+    //   - EXISTING event: the `description` key is left out of the row
+    //     entirely — not sent as null — so the upsert's merge leaves the
+    //     stored value exactly as it is, whatever Ticketmaster says today.
+    // Why: `description: e.info || undefined` (shapeForDb above) was added
+    // on 2026-09-05 and has never completed a write in production (BUG-007).
+    // In the meantime 529 of the 604 upcoming Ticketmaster events were given
+    // researched descriptions by hand, and 73 more a generated one; the
+    // first run that worked would have overwritten every one of those that
+    // Ticketmaster has `info` for, and again every day after.
+    // "Existing" is read from the status lookup just above, which has an
+    // entry for exactly the rows that are already stored — no extra query.
+    // That lookup is fail-closed (a failure aborts the run before any
+    // write), so a stored event can never be mistaken for a new one.
+    // Deliberate consequence: a stored event whose description is still
+    // blank does not pick up Ticketmaster's text here; the enrichment job
+    // fills blanks. Every other field is unchanged by this safeguard — see
+    // DEBT-011 in project/BACKLOG.md for title, time, price, image, address
+    // and venue.
+    const rowsWithStatus = rows.map((row) => {
+      if (!existingStatusByExternalId.has(row.external_id)) {
+        return { ...row, status: DEFAULT_STATUS };
+      }
+      const stored = {
+        ...row,
+        status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
+      };
+      delete stored.description;
+      return stored;
+    });
 
     // Upsert on external_id — see the unique index in supabase/schema.sql.
     // merge-duplicates updates existing rows (e.g. a venue/time change)
