@@ -3483,30 +3483,45 @@
   .hero-headline{
     padding:28px 24px 22px;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;
     container-type:inline-size;border-right:1px solid var(--line);
+    position:relative;z-index:3; /* the signal overhangs the photograph */
   }
   .hl-line{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(56px,42cqw,150px);line-height:.86;letter-spacing:-.01em;
     text-transform:uppercase;color:var(--ink);
   }
-  .hl-line-signal{display:flex;align-items:flex-end;gap:clamp(6px,2.4cqw,12px);}
-  /* The Detroit Signal breathing dot IS the period on "IS ON" (Jody,
-     2026-08-27: one dot, no double period). It is the hero's one live
-     element; it is not the wordmark and does not touch it. */
+  .hl-line-signal{display:flex;align-items:center;gap:clamp(8px,3cqw,14px);}
+  /* THE CITY IS ON. The Signal: the one giant glowing Chartreuse dot on the
+     site, the period on "IS ON" and the master LIVE signal for the whole
+     board (Product Owner, 2026-10-04: a deliberate exception to the
+     restrained chartreuse system — exactly one, hero only, never a button,
+     never repeated elsewhere). It is sized to the headline and overhangs
+     the rule into the photograph; everything else on the page keeps
+     chartreuse as flat state. Not the wordmark; does not touch it. */
   .hero-signal{
-    --signal-size: clamp(14px, 7.6cqw, 30px);
-    width:var(--signal-size);aspect-ratio:1;flex:0 0 auto;display:inline-block;
-    background:var(--accent);border-radius:50%;transform-origin:center;
-    margin-bottom:calc(var(--signal-size) * .22);
-    box-shadow:0 0 14px rgba(215,255,0,.22), 0 0 32px rgba(215,255,0,.10);
+    --signal-size: clamp(64px, 34cqw, 124px);
+    width:var(--signal-size);aspect-ratio:1;flex:0 0 auto;display:inline-block;position:relative;
+    margin-right:calc(var(--signal-size) * -1); /* overhang: takes no room in the column */
+    background:radial-gradient(circle at 38% 36%, #EBFF66 0, var(--accent) 42%, #C2E800 100%);
+    border-radius:50%;transform-origin:center;pointer-events:none;
+    box-shadow:
+      0 0 calc(var(--signal-size) * .22) calc(var(--signal-size) * .04) rgba(215,255,0,.55),
+      0 0 calc(var(--signal-size) * .70) calc(var(--signal-size) * .16) rgba(215,255,0,.30),
+      0 0 calc(var(--signal-size) * 1.60) calc(var(--signal-size) * .36) rgba(215,255,0,.13);
     animation: detroit-signal-breathe 5.2s cubic-bezier(.45,0,.55,1) infinite;
-    will-change: transform, box-shadow;
+    will-change: transform, opacity;
+  }
+  /* the atmosphere: a soft halo well beyond the body of the dot */
+  .hero-signal::before{
+    content:'';position:absolute;inset:calc(var(--signal-size) * -1);border-radius:50%;
+    background:radial-gradient(circle, rgba(215,255,0,.20) 0, rgba(215,255,0,.07) 38%, rgba(215,255,0,0) 70%);
+    z-index:-1;
   }
   @keyframes detroit-signal-breathe{
-    0%{transform:scale(1);box-shadow:0 0 14px rgba(215,255,0,.20), 0 0 32px rgba(215,255,0,.10);}
-    56%{transform:scale(1.14);box-shadow:0 0 22px rgba(215,255,0,.32), 0 0 54px rgba(215,255,0,.16);}
-    72%{transform:scale(1.10);}
-    100%{transform:scale(1);box-shadow:0 0 14px rgba(215,255,0,.20), 0 0 32px rgba(215,255,0,.10);}
+    0%{transform:scale(1);}
+    56%{transform:scale(1.06);}
+    72%{transform:scale(1.045);}
+    100%{transform:scale(1);}
   }
   @media (prefers-reduced-motion: reduce){
     .hero-signal{animation:none;transform:none;}
@@ -3516,7 +3531,7 @@
     font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
   }
   .hero-tag .dim{color:var(--ink-dim);}
-  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);border-right:1px solid var(--line);min-height:260px;}
+  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);border-right:1px solid var(--line);min-height:260px;z-index:1;}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
   .hero-photo-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;}
   .hero-photo-slide.is-active{opacity:1;z-index:1;}
@@ -3567,14 +3582,7 @@
   }
   .live-dot{
     display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;
-    animation: live-dot-pulse 2.4s ease-out infinite;
   }
-  @keyframes live-dot-pulse{
-    0%{box-shadow:0 0 0 0 rgba(215,255,0,.5);}
-    70%{box-shadow:0 0 0 7px rgba(215,255,0,0);}
-    100%{box-shadow:0 0 0 0 rgba(215,255,0,0);}
-  }
-  @media (prefers-reduced-motion: reduce){ .live-dot{animation:none;} }
   .hero-stat-orbit{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);line-height:1.5;}
   @media (max-width:980px){
     .hero{grid-template-columns:1fr 1fr;min-height:0;}
@@ -3586,6 +3594,7 @@
     .hero{grid-template-columns:1fr;}
     .hero-headline{padding:20px 16px 14px;}
     .hl-line{font-size:clamp(56px,27cqw,104px);}
+    .hero-signal{--signal-size:clamp(56px,21cqw,84px);margin-right:0;}
     .hero-tag{margin-top:12px;}
     .hero-photo{aspect-ratio:4/3;min-height:0;border-right:none;border-bottom:1px solid var(--line);}
     .hero-today{padding:16px 14px 14px;}
@@ -3851,7 +3860,7 @@
   .orbit-readout .side-card-caption{margin:0;}
   .orbit-readout .side-card-cta{margin:0 0 6px;}
   .orbit-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid var(--line);border-radius:50%;}
-  .orbit-center{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(215,255,0,.12);}
+  .orbit-center{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);}
   .orbit-lbl{
     position:absolute;transform:translate(-2px,-50%);white-space:nowrap;display:flex;gap:6px;align-items:center;
     font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
@@ -3868,10 +3877,10 @@
   .ny-ring-1{width:38%;height:38%;}
   .ny-ring-2{width:68%;height:68%;}
   .ny-ring-3{width:100%;height:100%;}
-  .ny-ping{position:absolute;width:38%;height:38%;border-radius:50%;background:var(--accent);z-index:1;animation: ny-orbit-ping 2.8s cubic-bezier(0,0,.2,1) infinite;}
+  .ny-ping{display:none;}
   @keyframes ny-orbit-ping{0%{transform:scale(.4);opacity:.45;}70%{transform:scale(2.6);opacity:0;}100%{transform:scale(2.6);opacity:0;}}
   @media (prefers-reduced-motion: reduce){.ny-ping{animation:none;opacity:0;}}
-  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
+  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);}
   @media (max-width:980px){
     #nearYouCard{min-height:380px;margin-top:0;}
     #onRadarCard{margin-top:0;margin-left:0;border-left:1px solid var(--line);border-top:none;margin-bottom:18px;align-self:auto;}
