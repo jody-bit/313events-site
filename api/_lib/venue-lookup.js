@@ -247,10 +247,17 @@ async function buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_RO
 // listed in Detroit. The same holds for any shared name: "Community Center"
 // in two cities is two venues.
 //
-// citiesConflict() is true only when BOTH sides state a city and neither
-// contains the other ("Detroit, MI 48207" and "Detroit" agree). When the
-// event states no city there is nothing to contradict the match and
-// behaviour is exactly as before.
+// citiesConflict() is true only when BOTH sides state a city and the two
+// are different places. What follows a city -- a state, a ZIP, a country --
+// is not part of its name ("Detroit, MI 48207" and "Detroit" agree), and
+// neither is the way it is styled ("Mt. Clemens" / "Mount Clemens", "Canton
+// Twp" / "Canton Township" / "Canton", "City of Troy" / "Troy"). Anything
+// else that differs is a different place: an earlier form of this function
+// let one name CONTAIN the other, which made Dearborn Heights agree with
+// Dearborn, Farmington Hills with Farmington and Rochester Hills with
+// Rochester -- three pairs of separate cities. When the event states no
+// city there is nothing to contradict the match and behaviour is exactly as
+// before.
 //
 // And a PLACEHOLDER is not a venue at all. "Venue TBA" means the venue is
 // not known; a venues row with that name is a label, and its city is the
@@ -268,15 +275,38 @@ const PLACEHOLDER_VENUE_NAMES = new Set(["venue tba", "location tba", "tba", "ve
 function isPlaceholderVenueName(name) {
   return PLACEHOLDER_VENUE_NAMES.has(String(name || "").trim().toLowerCase().replace(/\s+/g, " "));
 }
+// Tokens that may follow a city without being part of its name.
+const AFTER_CITY_TOKENS = new Set(["mi", "michigan", "oh", "ohio", "on", "ontario", "usa", "us", "canada"]);
+const CITY_WORD_ABBREVIATIONS = { mt: "mount", twp: "township", hts: "heights" };
+
 function normalizeCityForCompare(city) {
-  return String(city || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  let tokens = String(city || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((token) => CITY_WORD_ABBREVIATIONS[token] || token);
+  // "Detroit, MI 48207-1234", "Windsor ON Canada": drop what trails the name.
+  while (tokens.length > 1) {
+    const last = tokens[tokens.length - 1];
+    if (AFTER_CITY_TOKENS.has(last) || /^\d{4,5}$/.test(last)) tokens = tokens.slice(0, -1);
+    else break;
+  }
+  // "City of Troy", "Charter Township of Canton" -> the name alone.
+  const ofAt = tokens.indexOf("of");
+  if (ofAt > 0 && ofAt < tokens.length - 1 && tokens.slice(0, ofAt).every((t) => ["city", "village", "charter", "township"].includes(t))) {
+    tokens = tokens.slice(ofAt + 1);
+  }
+  // "Canton Township" and "Canton Charter Township" are Canton.
+  while (tokens.length > 1 && ["township", "charter"].includes(tokens[tokens.length - 1])) tokens = tokens.slice(0, -1);
+  return tokens.join(" ");
 }
 
 function citiesConflict(eventCity, venueCity) {
   const a = normalizeCityForCompare(eventCity);
   const b = normalizeCityForCompare(venueCity);
   if (!a || !b) return false;
-  return !(` ${a} `.includes(` ${b} `) || ` ${b} `.includes(` ${a} `));
+  return a !== b;
 }
 
 function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {

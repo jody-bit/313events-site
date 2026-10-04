@@ -571,6 +571,82 @@ function run() {
     }
   }
 
+  // 22. Third review (2026-10-04): three ways the trailing-city guard could
+  //     be walked around, each of which would have PUBLISHED a wrong city.
+  {
+    const { findTrailingCity } = require(`${REPO_DIR}/api/_lib/ics-location.js`);
+    const cityOf = (text) => {
+      const parsed = parseIcsLocation(text);
+      assert.strictEqual(parsed.status, "unparseable", `${text} stays the text it was`);
+      assert.strictEqual(parsed.rawText, text, "and the text is kept whole");
+      return parsed.trailingCity || null;
+    };
+
+    // (a) A compass letter in front of a city, with or without its period,
+    //     is the start of a longer name or of a street -- never the city.
+    assert.strictEqual(cityOf("Community Center W. Bloomfield Township MI 48323"), null, "West Bloomfield Township is not Bloomfield Township");
+    assert.strictEqual(cityOf("MSU Breslin Center E. Lansing MI 48824"), null, "East Lansing is not Lansing");
+    assert.strictEqual(cityOf("Village Hall S. Rockwood MI 48179"), null, "South Rockwood is not Rockwood");
+    assert.strictEqual(cityOf("Farmers Market N Royal Oak MI 48067"), null);
+    assert.strictEqual(cityOf("Township Hall NE Lapeer MI 48446"), null);
+    assert.strictEqual(cityOf("Township Hall So. Lyon MI 48178"), null, "'So. Lyon' is not a listed spelling, and 'Lyon' is not a city");
+
+    // (b) "at", "@", "near", "/" join two streets or two places.
+    assert.strictEqual(cityOf("Woodward at Warren MI 48201"), null);
+    assert.strictEqual(cityOf("Mack @ Warren MI 48207"), null);
+    assert.strictEqual(cityOf("Corner of Livernois / Warren MI 48210"), null);
+    assert.strictEqual(cityOf("Riverside Park near Wyandotte MI 48192"), null);
+    // (the same words with a ZIP the city could have, so that it is the word
+    // and not the ZIP check below that refuses them)
+    assert.strictEqual(cityOf("Second at Rochester MI 48307"), null, "Second Street at Rochester Road");
+    assert.strictEqual(cityOf("Tienken / Rochester MI 48306"), null);
+    assert.strictEqual(cityOf("University @ Rochester MI 48307"), null);
+    assert.strictEqual(cityOf("Auburn x Rochester MI 48307"), null);
+    assert.strictEqual(cityOf("Hamlin + Rochester MI 48307"), null);
+    assert.strictEqual(cityOf("between Avon and Rochester MI 48307"), null);
+
+    // (c) The ZIP must be able to belong to the city. Detroit streets named
+    //     for a suburb are the systematic case: the street type and "Detroit"
+    //     were left out, and the ZIP is the only thing that says so.
+    assert.strictEqual(cityOf("Community Garden - 14600 E Warren MI 48215"), null, "East Warren Avenue, Detroit");
+    assert.strictEqual(cityOf("Block Club Meeting 12345 Plymouth MI 48227"), null, "Plymouth Road, Detroit");
+    assert.strictEqual(cityOf("Rec Center 8900 Livonia MI 48204"), null, "Livonia Avenue, Detroit");
+    assert.strictEqual(cityOf("Kerrytown 400 Detroit MI 48104"), null, "Detroit Street, Ann Arbor: Detroit has no ZIP outside 482xx");
+    assert.strictEqual(findTrailingCity("Somewhere Warren MI 48215"), null);
+    assert.strictEqual(findTrailingCity("Somewhere Detroit MI 48104"), null);
+
+    // ...and none of that costs a real one. Every municipality that does
+    // have a 482xx ZIP keeps it; a suburb keeps its own ZIP.
+    assert.strictEqual(cityOf("130 E Atwater Detroit, MI 48226"), "Detroit");
+    assert.strictEqual(cityOf("Hamtramck Stadium Hamtramck MI 48212"), "Hamtramck");
+    assert.strictEqual(cityOf("The Rust Belt Market Ferndale MI 48220"), "Ferndale");
+    assert.strictEqual(cityOf("War Memorial Grosse Pointe Farms MI 48236"), "Grosse Pointe Farms");
+    assert.strictEqual(cityOf("Civic Center Warren MI 48093"), "Warren");
+    assert.strictEqual(cityOf("PARC Plymouth MI 48170"), "Plymouth");
+    // An Ohio ZIP is not subject to the Detroit check.
+    assert.strictEqual(cityOf("Promenade Park Toledo OH 43604"), "Toledo");
+
+    // The strings Admin's queue actually held on 2026-10-04 still resolve
+    // (read from production; the long ones are shortened in the middle).
+    for (const [text, city] of [
+      ["Downtown St. Clair Shores on Greater Mack Ave., from 9 Mile to 9 Mack/Cavalier Drive. - St. Clair Shores MI 48081", "St. Clair Shores"],
+      ["Canton Parks > Dog Park - Denton Rd and North of Cherry Hill Rd Canton MI 48187", "Canton"],
+      ["Fifth Street Plaza - Fifth and Washington Ave. Royal Oak MI 48067", "Royal Oak"],
+      ["Join us as we celebrate Founder's Day! More information to come! - Rochester MI 48307", "Rochester"],
+      ["Less scary Trick-or-Treating at Downtown businesses and vendors. Rain or shine! - Northville MI 48167", "Northville"],
+      ["- Wayne County Community College 21000 Northline Rd. Taylor MI 48180", "Taylor"],
+      ["Public alley west of Main Street, off Crane Avenue, one block south of Catalpa Drive. - Royal Oak MI 48067", "Royal Oak"],
+    ]) assert.strictEqual(cityOf(text), city, text);
+
+    // "Twp" and "Hts" are read as the words they stand for.
+    const { knownCity } = require(`${REPO_DIR}/api/_lib/orbit-cities.js`);
+    assert.strictEqual(knownCity("Shelby Twp", "MI"), "Shelby Township");
+    assert.strictEqual(knownCity("Clinton Twp.", "MI"), "Clinton Township");
+    assert.strictEqual(knownCity("Sterling Hts", "MI"), "Sterling Heights");
+    assert.strictEqual(knownCity("Twp", "MI"), null);
+    assert.strictEqual(cityOf("Senior Center Shelby Twp MI 48316"), "Shelby Township");
+  }
+
   console.log("ics-location.test.js: all assertions passed");
 }
 

@@ -28,8 +28,9 @@
 //     Warren, Michigan, and the site places an event by its city's name.
 //
 // Matching is case-insensitive and ignores periods ("St. Clair Shores" =
-// "St Clair Shores" = "ST. CLAIR SHORES"); the spelling returned is the one
-// written here.
+// "St Clair Shores" = "ST. CLAIR SHORES"), and reads the two everyday
+// abbreviations "Twp" and "Hts" as the words they stand for ("Shelby Twp." =
+// "Shelby Township"); the spelling returned is the one written here.
 
 const MICHIGAN = [
   // Wayne County
@@ -70,7 +71,13 @@ const OHIO = [
 ];
 
 function normalizeCityName(text) {
-  return String(text || "").toLowerCase().replace(/\./g, "").replace(/\s+/g, " ").trim();
+  return String(text || "")
+    .toLowerCase()
+    .replace(/\./g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\btwp$/, "township")
+    .replace(/\bhts$/, "heights");
 }
 
 // state code -> (normalised name -> the spelling written above)

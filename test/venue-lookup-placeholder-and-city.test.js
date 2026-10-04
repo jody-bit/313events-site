@@ -87,7 +87,36 @@ console.log("PASS: an existing link, a specific placeholder row and a real venue
   assert.strictEqual(citiesConflict("Detroit", "Detroit"), false);
   assert.strictEqual(citiesConflict("detroit", "Detroit"), false);
   assert.strictEqual(citiesConflict("Detroit, MI 48207", "Detroit"), false, "a city with a state and ZIP after it is the same city");
-  assert.strictEqual(citiesConflict("Grosse Pointe Park", "Grosse Pointe"), false, "one contains the other: not treated as a contradiction");
+  // What trails a city, and how it is styled, is not part of its name...
+  assert.strictEqual(citiesConflict("Detroit MI", "Detroit"), false);
+  assert.strictEqual(citiesConflict("Detroit, MI 48207-1234", "Detroit"), false);
+  assert.strictEqual(citiesConflict("Windsor, ON, Canada", "Windsor"), false);
+  assert.strictEqual(citiesConflict("Mt. Clemens", "Mount Clemens"), false);
+  assert.strictEqual(citiesConflict("St. Clair Shores", "St Clair Shores"), false);
+  assert.strictEqual(citiesConflict("Sterling Hts", "Sterling Heights"), false);
+  assert.strictEqual(citiesConflict("Canton Twp", "Canton"), false);
+  assert.strictEqual(citiesConflict("Canton Charter Township", "Canton Township"), false);
+  assert.strictEqual(citiesConflict("Charter Township of Canton", "Canton"), false);
+  assert.strictEqual(citiesConflict("City of Troy", "Troy"), false);
+  // ...but one name CONTAINING another is two places (third review: the
+  // first form of this function let these four pairs agree).
+  assert.strictEqual(citiesConflict("Dearborn Heights", "Dearborn"), true);
+  assert.strictEqual(citiesConflict("Farmington Hills", "Farmington"), true);
+  assert.strictEqual(citiesConflict("Rochester Hills", "Rochester"), true);
+  assert.strictEqual(citiesConflict("East Lansing", "Lansing"), true);
+  assert.strictEqual(citiesConflict("Grosse Pointe Park", "Grosse Pointe"), true, "separate municipalities");
+  assert.strictEqual(citiesConflict("Garden City", "Garden"), true, "'City' at the END of a name is part of it");
+  // A venue called "Community Center" in Dearborn is not the one an event
+  // in Dearborn Heights means.
+  {
+    const dearbornCc = { id: "venue-cc-dbn", name: "Civic Center", address: "15801 Michigan Ave", city: "Dearborn" };
+    const M2 = maps([dearbornCc]);
+    const heights = { venue_id: null, venue_name_raw: "Civic Center", venue_address_raw: null, venue_city_raw: "Dearborn Heights" };
+    assert.deepStrictEqual(resolveVenueAddressCityRepair(heights, M2, NO_LEARNED), {});
+    assert.strictEqual(resolveVenueFromCandidate({ name: "Civic Center", address: null, city: "Dearborn Heights" }, M2), null);
+    const same = { venue_id: null, venue_name_raw: "Civic Center", venue_address_raw: null, venue_city_raw: "Dearborn, MI 48126" };
+    assert.deepStrictEqual(resolveVenueAddressCityRepair(same, M2, NO_LEARNED), { venue_address_raw: "15801 Michigan Ave", venue_id: "venue-cc-dbn" });
+  }
   assert.strictEqual(citiesConflict(null, "Detroit"), false, "no stated city contradicts nothing");
   assert.strictEqual(citiesConflict("Livonia", null), false);
   assert.strictEqual(citiesConflict("", ""), false);
@@ -117,4 +146,51 @@ console.log("PASS: an existing link, a specific placeholder row and a real venue
 }
 console.log("PASS: a name match in a different stated city is refused; the same city, no city, an existing link and the address tier are unchanged");
 
-console.log("\nAll venue-lookup-placeholder-and-city.test.js checks passed.");
+// --- 3. The gated web search is never spent on a name that is not a
+//        venue, and never writes onto another city's venue. (Third review:
+//        with the gate open, both would have saved a search result onto an
+//        existing venues row. The gate is shut in production; this must hold
+//        whichever way it is set.) ---
+(async () => {
+  const SCRIPT = `${REPO_DIR}/scripts/generic-metadata-enrichment.js`;
+  const { repairGenericMetadata } = require(SCRIPT);
+  const silent = { log() {}, warn() {}, error() {} };
+  const venues = [TBA, DETROIT_CC];
+  const event = (id, name, city) => ({
+    id, title: "Open House", description: "A description that is already long enough to need nothing.", category: "community",
+    start_date: "2026-11-06", time_display: "6:00 PM", is_all_day: false, venue_id: null, venue_name_raw: name,
+    venue_address_raw: null, venue_city_raw: city, ticket_url: null, event_url: "https://example.com/e/" + id, source: "City of Livonia - Events",
+  });
+  const candidates = [
+    event("evt-tba", "Venue TBA", "Livonia"),
+    event("evt-tba-nocity", "Venue TBA", null),
+    event("evt-other-city", "Community Center", "Livonia"),
+    event("evt-unknown", "Shed 5", "Detroit"),
+  ];
+  const realFetch = global.fetch;
+  global.fetch = async (url, opts = {}) => {
+    if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => venues };
+    if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => candidates };
+    if (url.includes("/rest/v1/events") && opts.method === "PATCH") return { ok: true, status: 200, json: async () => [{}] };
+    throw new Error("unmocked URL in test: " + url);
+  };
+  const searched = [];
+  let upserts = 0;
+  try {
+    const counts = await repairGenericMetadata({
+      SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "test-key", logger: silent,
+      isExternalDiscoveryConfiguredFn: () => true, // the gate OPEN
+      discoverVenueKnowledgeFn: async ({ venueName }) => { searched.push(venueName); return null; },
+      discoverAuthoritativeDescriptionFn: async () => null,
+      upsertVenueKnowledgeFn: async () => { upserts++; return null; },
+    });
+    assert.deepStrictEqual(searched, ["Shed 5"], "only the real, unknown venue name is looked up");
+    assert.strictEqual(upserts, 0);
+    assert.strictEqual(counts.externalVenueDiscoveryAttempted, 1);
+    assert.strictEqual(counts.externalVenueDiscoverySkippedNotAVenue, 3, "two placeholders and one same-name venue in another city");
+  } finally {
+    global.fetch = realFetch;
+  }
+  console.log("PASS: with the web-search gate open, a placeholder and another city's venue name are never searched");
+  console.log("\nAll venue-lookup-placeholder-and-city.test.js checks passed.");
+})().catch((err) => { console.error(err); process.exit(1); });

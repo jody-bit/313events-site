@@ -87,6 +87,8 @@ const {
   upsertVenueKnowledge,
   normalizeVenueName,
   isBlank,
+  isPlaceholderVenueName,
+  citiesConflict,
 } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 const {
   isDescriptionBlank,
@@ -212,6 +214,7 @@ async function repairGenericMetadata({
     externalVenueDiscoveryResolved: 0,
     externalVenueDiscoveryNoResult: 0,
     externalVenueDiscoveryUnavailable: 0,
+    externalVenueDiscoverySkippedNotAVenue: 0,
     externalDescriptionsRecovered: 0,
     externalDescriptionNoResult: 0,
     externalDescriptionUnavailable: 0,
@@ -297,7 +300,19 @@ async function repairGenericMetadata({
         }
       } else {
         const nameKey = normalizeVenueName(event.venue_name_raw);
-        const alreadyAttempted = !nameKey || attemptedVenueDiscoveryNames.has(nameKey);
+        // 2026-10-04: two names must never be looked up, gate open or shut.
+        // A placeholder ("Venue TBA") names no venue, so there is nothing to
+        // discover, and whatever a search returned would be saved onto the
+        // placeholder's own venues row. And a name that already has a venues
+        // row in a DIFFERENT city than this event states was just refused
+        // above for exactly that reason; a search on the bare name would
+        // write its answer onto that other city's row.
+        const sameNameRow = nameKey && canonicalMaps && canonicalMaps.byName ? canonicalMaps.byName.get(nameKey) : null;
+        const notDiscoverable =
+          isPlaceholderVenueName(event.venue_name_raw) ||
+          (sameNameRow && typeof sameNameRow === "object" && citiesConflict(event.venue_city_raw, sameNameRow.city));
+        if (notDiscoverable) counts.externalVenueDiscoverySkippedNotAVenue++;
+        const alreadyAttempted = notDiscoverable || !nameKey || attemptedVenueDiscoveryNames.has(nameKey);
         if (!alreadyAttempted && externalVenueLookupsUsed < MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN) {
           attemptedVenueDiscoveryNames.add(nameKey);
           const isRa = isRaSourced(event);

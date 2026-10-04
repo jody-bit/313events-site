@@ -403,6 +403,22 @@ function tryCivicplusEmptyNameWithStreet(cleaned) {
 //     addresses from ordinary venue names ("Fire Station 2 1019 E Big Beaver
 //     Rd" -> "2 1019 E Big Beaver Rd"; "240 W 13 Mile Road" -> "13 Mile
 //     Road"), and the city alone is what places the event.
+//
+// A third review (same day, still before shipping) found the guard above
+// could be walked around, and three more limits came from it:
+//   - a compass letter counts as a qualifier, with or without its period:
+//     "W. Bloomfield Township" is West Bloomfield Township and not
+//     Bloomfield Township, "E. Lansing" is not Lansing, and "14600 E Warren"
+//     is a street address on East Warren Avenue, not the city of Warren;
+//   - "at", "@", "near", "x", "+" and "/" mark an intersection or a
+//     relation the same way "and" does ("Woodward at Warren");
+//   - the ZIP must be able to belong to the city where that is cheap to
+//     know: a 482xx ZIP is Detroit or one of the few municipalities that
+//     share that prefix, and Detroit is only ever 482xx. Many Detroit
+//     streets carry a suburb's name (Warren, Plymouth, Livonia, Dexter,
+//     Wyoming), so "... Warren MI 48215" is a Detroit address whose street
+//     type and city were left out; reading it as Warren would move the
+//     event to another county.
 const EMPTY_MARKER_RE = /^[^\p{L}\p{N}]*$/u; // no letter or digit in any script: "-", "--", an en dash
 const TAIL_STATE_ZIP_RE = /^(.*\S)\s+(MI|OH)\s+(\d{5}(?:-\d{4})?)$/;
 const ZIP_PREFIXES = { MI: /^4[89]/, OH: /^4[345]/ };
@@ -411,8 +427,21 @@ const ZIP_PREFIXES = { MI: /^4[89]/, OH: /^4[345]/ };
 // on the list (in which case it has already matched).
 // ("St" is deliberately not here: in front of a city it is a street type --
 // "Main St Royal Oak" -- far more often than a Saint.)
-const PLACE_NAME_QUALIFIER_RE = /^(?:North|South|East|West|Upper|Lower|New|Old|Port|Fort|Ft\.?|Lake|Mount|Mt\.?|Camp|Little|Grand|Charter)$/i;
-const INTERSECTION_WORD_RE = /^(?:and|&)$/i;
+const PLACE_NAME_QUALIFIER_RE = /^(?:North|South|East|West|[NSEW]\.?|N\.?[EW]\.?|S\.?[EW]\.?|No\.?|So\.?|Upper|Lower|New|Old|Port|Fort|Ft\.?|Lake|Mount|Mt\.?|Camp|Little|Grand|Charter)$/i;
+const INTERSECTION_WORD_RE = /^(?:and|&|at|@|near|x|\+|\/|btwn\.?|between)$/i;
+// Every municipality with a 482xx ZIP. Detroit itself has no other prefix.
+const DETROIT_PREFIX_CITIES = new Set([
+  "Detroit", "Hamtramck", "Highland Park", "Harper Woods", "Ferndale", "Oak Park", "Redford", "Redford Township",
+  "River Rouge", "Ecorse", "Grosse Pointe", "Grosse Pointe Farms", "Grosse Pointe Park", "Grosse Pointe Shores",
+  "Grosse Pointe Woods",
+]);
+
+function zipCanBelongToCity(city, state, postal) {
+  if (state !== "MI") return true;
+  const detroitPrefix = postal.startsWith("482");
+  if (detroitPrefix) return DETROIT_PREFIX_CITIES.has(city);
+  return city !== "Detroit";
+}
 
 function isEmptyMarker(cleaned) {
   return EMPTY_MARKER_RE.test(cleaned);
@@ -425,7 +454,7 @@ function knownCityAtEnd(head, state) {
     const candidate = words.slice(words.length - n).join(" ").replace(/^[-–—(,;:]+/, "");
     const city = knownCity(candidate, state);
     if (!city) continue;
-    const wordBefore = (words[words.length - n - 1] || "").replace(/[,;:]+$/, "");
+    const wordBefore = (words[words.length - n - 1] || "").replace(/^[(\[]+/, "").replace(/[,;:)\]]+$/, "");
     if (PLACE_NAME_QUALIFIER_RE.test(wordBefore) || INTERSECTION_WORD_RE.test(wordBefore)) return null;
     return city;
   }
@@ -441,6 +470,7 @@ function findTrailingCity(cleanedRaw) {
   const head = rawHead.replace(/[\s,.;:]+$/, ""); // "Troy Community Center, Troy, MI 48084" -- a comma before the state
   const city = knownCityAtEnd(head, region);
   if (!city) return null;
+  if (!zipCanBelongToCity(city, region, postal)) return null;
   return { trailingCity: city, trailingRegion: region, trailingPostal: postal };
 }
 
