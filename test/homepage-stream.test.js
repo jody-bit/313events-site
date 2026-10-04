@@ -171,16 +171,17 @@ async function run() {
     let s = stream(page);
     assert.strictEqual(s.head, "All events", "the plain default view is headed as what it is");
 
-    // First section: 20 rows. The exhibition is in progress, so it is listed
-    // under today — once — and says how long it runs.
-    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 19)]);
+    // First section: 5 rows — the stream opens, then the Explore
+    // Neighborhoods interlude, then the rest. The exhibition is in progress,
+    // so it is listed under today — once — and says how long it runs.
+    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 4)]);
     assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "31 events"]], "today's heading is marked Today and counts the whole day, not just the rows above the fold");
     assert.ok(/Long Run[\s\S]*?<span class="evt-run">Through Nov 2<\/span>/.test(s.html));
     assert.strictEqual(s.titles.filter((t) => t === "Long Run").length, 1);
 
-    // Continuation: 20 more, picking today up where the first section stopped.
+    // Continuation: 35 more, picking today up where the first section stopped.
     assert.strictEqual(s.moreShown, true);
-    assert.deepStrictEqual(s.moreTitles, [...seq("Tonight", 20, 30), ...seq("Sunday", 1, 9)]);
+    assert.deepStrictEqual(s.moreTitles, [...seq("Tonight", 5, 30), ...seq("Sunday", 1, 9)]);
     assert.deepStrictEqual(s.more.map((g) => [g.day, g.today, g.tomorrow, g.continued, g.count]), [[day(0), true, false, true, "31 events"], [day(1), false, true, false, "25 events"]]);
     assert.strictEqual(s.titles.length, 40, "40 rows to start with");
     assert.ok(!s.titles.includes("Morning Thing") && !s.titles.includes("Augustus Williams Live") && !s.titles.includes("Not Approved"), "over, blocked and unapproved events are not in the stream");
@@ -194,7 +195,7 @@ async function run() {
     page.run("showMoreStream()");
     s = stream(page);
     assert.strictEqual(s.titles.length, 100);
-    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 19)], "the first section does not move");
+    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 4)], "the first section does not move");
     assert.strictEqual(s.note, "100 of 151 shown");
     assert.strictEqual(s.button, "Show 51 more", "the last step is whatever is left");
     assert.deepStrictEqual([plain(page.get("state")), page.url()], before, "asking for more changes neither the filters nor the address");
@@ -224,8 +225,10 @@ async function run() {
     s = stream(page);
     assert.strictEqual(s.head, "Showing 15 events");
     assert.deepStrictEqual(s.titles, seq("Monday", 1, 15));
-    assert.strictEqual(s.moreShown, false, "a short view is one section; the continuation is hidden");
-    assert.strictEqual(page.el("listMore").innerHTML, "");
+    assert.deepStrictEqual(s.firstTitles, seq("Monday", 1, 5), "the interlude still comes after the first five");
+    assert.strictEqual(s.moreShown, true, "…and the rest of a short view follows it, with no Show more");
+    assert.deepStrictEqual(s.moreTitles, seq("Monday", 6, 15));
+    assert.strictEqual(s.button, null, "nothing more to show");
 
     // Tomorrow: the exhibition is listed under tomorrow there, still once.
     page.run("clearAllFilters()");
@@ -242,7 +245,7 @@ async function run() {
     assert.ok(/class="empty-state"/.test(page.el("listView").innerHTML));
     assert.strictEqual(page.el("listMore").style.display, "none");
   }
-  console.log("PASS: 2. the stream — each event once, 20 rows then 20 more after the rail, Show more in steps of 60, whole-view counts, restart on a new view, hidden continuation for a short one");
+  console.log("PASS: 2. the stream — each event once, 5 rows then 35 more after the rail, Show more in steps of 60, whole-view counts, restart on a new view, hidden continuation for a short one");
 
   // =====================================================================
   // 3. The hero's figures

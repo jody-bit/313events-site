@@ -124,10 +124,15 @@ async function open(url, opts) {
 function view(page) {
   // The stream: its head and first section, then the rest.
   const html = page.el("listView").innerHTML + page.el("listMore").innerHTML;
-  const days = html.split(/<div class="list-day-group" data-day="(?=\d{4}-\d{2}-\d{2}")/).slice(1).map((g) => ({
-    day: heading(g.slice(0, 10)),
-    titles: [...g.matchAll(/class="evt-title-link"[^>]*>([^<]*)<\/a>/g)].map((m) => m[1]),
-  }));
+  // A day split across #listView and #listMore (the Explore Neighborhoods
+  // interlude comes after the first few rows) is one day of the view.
+  const days = [];
+  html.split(/<div class="list-day-group" data-day="(?=\d{4}-\d{2}-\d{2}")/).slice(1).forEach((g) => {
+    const day = heading(g.slice(0, 10));
+    const titles = [...g.matchAll(/class="evt-title-link"[^>]*>([^<]*)<\/a>/g)].map((m) => m[1]);
+    const last = days[days.length - 1];
+    if (last && last.day === day) last.titles.push(...titles); else days.push({ day, titles });
+  });
   const tray = page.el("activeFilters");
   return {
     days,

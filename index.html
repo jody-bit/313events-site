@@ -25,7 +25,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="313.events — THE CITY IS ON.">
@@ -3360,142 +3360,103 @@
 </script>
 
 <style>
+  /* =====================================================================
+     313.events homepage — the Detroit Signal board (visual system, 2026-10-04)
+
+     One information surface: 1px rules, square frames, a strict column
+     grid, mono readouts and a condensed display voice. Nothing is a card.
+     Colour: Signal Chartreuse is STATE — live, selected, today, active
+     control, actionable arrow, Submit, free/press flags. Everything else
+     is warm white on asphalt with concrete for metadata. The event count is
+     warm white (Product Owner, 2026-10-04): abundance without turning the
+     signal colour into decoration. The locked wordmark asset is untouched.
+
+     Three type voices (Detroit Signal v2.1): DISPLAY = Archivo at 62% width,
+     weight 900 (same family and licence as the earlier Archivo Narrow, with
+     the condensed weight the identity kit intended); UI = Inter; DATA =
+     Space Mono for every time, count, distance and label.
+     ===================================================================== */
   :root{
-    /* Detroit Signal V2 — locked color architecture */
     --bg:#0A0A0A;          /* asphalt — primary dark environment */
-    --panel:#202020;       /* charcoal — raised surface: cards, panels */
-    --panel-alt:#161616;   /* slightly recessed surface: strip headers, muted rows */
-    --panel-hover:#272727;
+    --panel:#202020;       /* charcoal — raised surface */
+    --panel-alt:#161616;   /* slightly recessed surface */
+    --panel-hover:#1a1a1a;
     --ink:#F2F0E8;         /* warm white — primary text */
     --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
-    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
-    --line:#2c2c2c;
-    --line-soft:#212121;
-    --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
-    --on-accent:#0A0A0A;   /* required dark text/icon color on chartreuse fills */
+    --ink-dim:#5c5d58;     /* dim concrete — captions that carry no fact */
+    --line:#2a2a2a;
+    --line-soft:#1f1f1f;
+    --accent:#D7FF00;      /* signal chartreuse — state only */
+    --on-accent:#0A0A0A;   /* dark text/icon colour on chartreuse fills */
     --today:rgba(215,255,0,.09);
     --today-ring:#D7FF00;
-    /* Structural containers use a hard edge (0) rather than a soft rounded
-       corner — a direct, deliberately conservative move toward the Detroit
-       Signal concept board's rectilinear, editorial-broadcast language.
-       Scoped to this single token: every var(--radius) consumer is a
-       structural chrome container (.notice, #search, #listView), not an
-       interactive pill/chip/badge, so this doesn't touch
-       any control's tap-target shape or affordance. */
     --radius:0px;
-
-    /* Event Type palette — "UV signal" set (2026-08-26): Jody asked to keep
-       per-category color for scanability, restyled as a cohesive family of
-       saturated blacklight-poster neons rather than the old grab-bag of
-       hues, so it reads as on-brand next to the chartreuse accent instead of
-       competing with it. Kept clear of chartreuse's own yellow-green band. */
-    --c-music:#5B3EFF;    /* electric indigo */
+    /* DISPLAY voice. Archivo's width axis at 62% is served as its own face
+       (see the fonts <link> in <head>); font-stretch selects it. */
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
+    --font-ui:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-data:'Space Mono',monospace;
+    /* Event Type palette — the established "UV signal" set. Category colour
+       appears only on a stream row's TYPE label, where it helps scanning;
+       never inside the WHAT control. Six values were lightened the smallest
+       step that clears WCAG AA (4.5:1) for 11px bold caps on Charcoal
+       (Product Owner, 2026-10-04): music 2.78 -> 4.85, food 3.01 -> 5.19,
+       gaming 3.54 -> 4.55, film 4.09 -> 4.70, nightlife 4.38 -> 4.57,
+       fest 4.47 -> 4.83. Hues unchanged; the other nine untouched. */
+    --c-music:#8C78FF;    /* electric indigo, lightened */
     --c-theatre:#FF6A00;  /* neon orange */
     --c-dance:#FF2ECC;    /* neon magenta */
     --c-visual:#00E5FF;   /* electric cyan */
     --c-museum:#00FFA6;   /* UV spring-teal */
     --c-family:#FFC400;   /* neon amber */
-    --c-fest:#FF2D55;     /* neon crimson */
-    --c-food:#9D00FF;     /* UV violet */
-    --c-film:#2979FF;     /* electric blue */
-    --c-night:#E100FF;    /* UV fuchsia */
+    --c-fest:#FF4266;     /* neon crimson, lightened */
+    --c-food:#C466FF;     /* UV violet, lightened */
+    --c-film:#3E86FF;     /* electric blue, lightened */
+    --c-night:#E41AFF;    /* UV fuchsia, lightened */
     --c-sports:#FF3B3B;   /* neon scarlet */
     --c-community:#3DFF6E; /* neon green */
-    --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
+    --c-vendor:#39FF14;   /* radioactive lime */
+    --c-training:#FFEA00; /* hazard yellow */
+    --c-gaming:#C051FF;   /* neon violet, lightened */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   button{font-family:inherit;}
-  /* Visible keyboard-only focus ring (not shown on mouse click) across every
-     interactive control added/converted for the Chunk 4 accessibility pass —
-     chartreuse matches the brand's existing "state" usage (today ring,
-     live badge), not decoration. */
-  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+  button:focus-visible, input:focus-visible, a:focus-visible, [tabindex]:focus-visible{
     outline:2px solid var(--accent);outline-offset:2px;
   }
   body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:var(--font-ui);
     background:var(--bg);
     color:var(--ink);
     line-height:1.4;
+    -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1180px;margin:0 auto;padding:14px 20px 48px;}
 
+  /* ---- shared voices ---- */
+  .disp{font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;letter-spacing:-.005em;line-height:.88;}
+  .mono{font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+
+  /* ---- header: wordmark (locked asset, untouched), nav as a mono strip ---- */
   header.site{
     display:flex;justify-content:space-between;align-items:center;
     gap:16px;flex-wrap:wrap;
-    padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
+    padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line);
   }
-  /* 2026-10-03: the header is ONE row on desktop — logo, nav, search +
-     Submit Event — and it must never break by dropping search + Submit
-     Event onto a row of their own. With flex-wrap:wrap (above), a flex row
-     breaks BEFORE any item is allowed to shrink, and the line-breaking
-     arithmetic uses the nav's full one-line width — so the min-width:0 /
-     flex-shrink:0 pair added for this earlier the same day could never take
-     effect. Above the 900px breakpoint the row therefore does not wrap: if
-     it is ever too narrow, the nav gives way and wraps its own links
-     (.site-nav has flex-wrap:wrap and min-width:0 for exactly that), and
-     search + Submit Event stay where they are. At 900px and below nothing
-     changes: the row still wraps and the nav takes a full row of its own
-     (see the max-width:900px rule below). */
   @media (min-width:901px){
     header.site{flex-wrap:nowrap;}
   }
-  /* Primary nav (Tomorrow/This Weekend/Calendar/Browse) — plain uppercase
-     text links, not the bordered-chip look .when-btn has elsewhere on the
-     page. The class is still .when-btn for the 2 time-range items (so they
-     ride the existing activateWhen()/updateWhenButtons() wiring); this
-     scoped override just restyles them to match the nav bar visually. */
-  /* min-width:0 (2026-10-03 fix, Jody: "the submit button is wrapping" on
-     Safari): .site-nav is itself a flex ITEM of header.site, and its
-     automatic min-width otherwise resolves to its min-content size. Chrome
-     and Safari don't agree on how small a nested flex container with its
-     own flex-wrap can shrink in that calculation — Safari measures it wider
-     — so at some window widths Chrome fit the whole header on one line
-     while Safari decided the row didn't fit and wrapped the trailing
-     search+submit group onto its own line instead. Forcing min-width:0
-     here removes the ambiguity: .site-nav is always free to shrink and
-     wrap its OWN links internally (it already has flex-wrap:wrap for
-     exactly that), so the header row itself only needs to wrap in a
-     genuine last-resort case. Paired with the flex-shrink:0 added to the
-     search+submit wrapper div below, in the markup.
-     (That alone did not work — see the nowrap rule above, which is what
-     lets this shrinking actually happen.)
-     gap 22px -> 16px (2026-10-03): the ninth link, Neighborhoods, was added
-     2026-10-01 and made the one-line header 1,164px wide in a 1,140px
-     container — 24px too wide at every desktop width, which is what pushed
-     search + Submit Event onto a second row. At 16px between links the row
-     needs 1,116px and fits again, with the logo and Submit Event back where
-     they were before that link was added. */
   .site-nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;row-gap:8px;min-width:0;}
   .site-nav .when-btn, .site-nav-link{
     border:none;background:none;padding:0 0 4px;border-radius:0;
-    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
+    font-family:var(--font-data);font-size:11px;font-weight:400;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-soft);text-decoration:none;cursor:pointer;
     border-bottom:2px solid transparent;white-space:nowrap;
   }
   .site-nav .when-btn:hover, .site-nav-link:hover{color:var(--ink);}
-  /* 2026-08-28 fix: same nav-highlight bug found and fixed on calendar.html
-     — .when-btn.active (below, ~line 3616) sets background/border-color for
-     the boxy discovery-bar chip treatment elsewhere on the page. This
-     nav-scoped rule only overrode color/border-bottom-color, so a nav item
-     (Today/Tomorrow/This Weekend) picked up that chip's cream background
-     and full border-color with nothing here to stop it — no specificity
-     fight even needed, since whichever rule sets a given property wins by
-     default when only one of them sets it. Result: a solid pale box behind
-     chartreuse text in the nav, instead of the plain text-link look
-     .site-nav-link.current already has correctly. Explicitly resetting
-     background/border-color here makes this rule fully self-contained. */
   .site-nav .when-btn.active{background:none;color:var(--accent);border-color:transparent;border-bottom-color:var(--accent);}
-  /* Marks whichever nav link is the current page (e.g. Calendar, on
-     calendar.html) — same visual treatment as an active time-range chip. */
   .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
-  /* Search icon (mockup parity) — opens/focuses the real search input that
-     lives at the end of the When/Where/Category trigger row (moved there
-     2026-08-27), rather than duplicating a second search field up here. No
-     new search logic, just a shortcut to the existing one. */
   .nav-search-btn{
     border:none;background:none;padding:0;color:var(--ink-soft);cursor:pointer;
     display:flex;align-items:center;
@@ -3505,940 +3466,762 @@
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
-  header.site h1{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
+  header.site h1{margin:0;font-size:0;line-height:0;}
+  .submit-btn{
+    display:inline-block;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;
+    font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:9px 14px;border-radius:0;
   }
-  /* The locked tagline ("THE CITY IS ON.") gets its own oversized display
-     treatment — same approved condensed grotesk already used for the
-     wordmark/headings, no new font. This is a typographic-hierarchy change
-     only: the words are unchanged (previously run into the description
-     sentence in lowercase), just presented at the scale/weight the tagline
-     is meant to carry as a locked brand asset, per the Detroit Signal
-     concept board's typographic energy. */
-  /* (No separate brand-dot here — the wordmark SVG itself already has a
-     built-in chartreuse dot; adding another produced a visible double-dot.) */
+  .submit-btn:hover{background:var(--ink);border-color:var(--ink);}
 
-  /* ---- Hero: photography + real TODAY data (replaces the removed
-     prototype "What this is" notice — brand + live current-day activity,
-     not explanatory copy). ---- */
+  /* ---- hero board: headline | photograph | the count ---- */
   .hero{
-    display:grid;grid-template-columns:.85fr 1.2fr 1.1fr;gap:0;
-    background:var(--panel);border:1px solid var(--line);margin-bottom:10px;
-    min-height:320px;
+    display:grid;grid-template-columns:minmax(300px,.9fr) minmax(0,1.3fr) minmax(300px,.95fr);gap:0;
+    background:var(--bg);border:1px solid var(--line);margin-bottom:12px;
+    min-height:440px;
   }
-  /* container-type here (not vw units) is deliberate: .hero-headline is a
-     narrow slice (~27% at desktop) of a capped 1180px-max page, not the
-     full viewport — sizing off raw viewport width (as the brief's
-     "conceptual" clamp(72px,9vw,150px) literally suggests) overflows the
-     actual column the moment the viewport is wider than ~1300px, since 9vw
-     keeps growing while the column itself is capped. Sizing off the
-     column's OWN inline size (cqw) scales the headline as large as the
-     brief intends while automatically staying inside whatever width the
-     3-col/stacked layout actually gives it at any breakpoint. */
-  .hero-headline{padding:22px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
+  .hero-headline{
+    padding:28px 24px 22px;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;
+    container-type:inline-size;border-right:1px solid var(--line);
+  }
   .hl-line{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(40px,26cqw,120px);line-height:.82;letter-spacing:-0.03em;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
+    font-size:clamp(56px,42cqw,150px);line-height:.86;letter-spacing:-.01em;
     text-transform:uppercase;color:var(--ink);
   }
-  /* Detroit Signal breathing dot (Jody, 2026-08-27) — this IS the period on
-     "IS ON" — there is deliberately no separate small static dot alongside
-     it (that was tried and explicitly rejected: "no double periods"). This
-     large pulse is the only dot in the headline, and it stays distinct from
-     any small brand/status dot elsewhere in the header — those stay static.
-     This is a deliberate, one-off brand exception representing "the city
-     is on/alive/transmitting"
-     — DO NOT copy this breathing animation onto category colors, filters,
-     CTAs, neighborhood cards, or other small status dots; the site should
-     not become full of pulsing chartreuse elements. Sized off the hero
-     headline's own container width (cqw), same reasoning as .hl-line's
-     font-size above, so it scales with the column rather than the viewport. */
-  .hl-line-signal{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(10px,4cqw,22px);}
+  .hl-line-signal{display:flex;align-items:flex-end;gap:clamp(6px,2.4cqw,12px);}
+  /* The Detroit Signal breathing dot IS the period on "IS ON" (Jody,
+     2026-08-27: one dot, no double period). It is the hero's one live
+     element; it is not the wordmark and does not touch it. */
   .hero-signal{
-    --signal-size: clamp(60px, 22cqw, 108px);
-    width:var(--signal-size);
-    aspect-ratio:1;
-    flex:0 0 auto;
-    display:inline-block;
-    background:var(--accent);
-    border-radius:50%;
-    transform-origin:center;
-    box-shadow:
-      0 0 18px rgba(215,255,0,.22),
-      0 0 42px rgba(215,255,0,.12);
+    --signal-size: clamp(14px, 7.6cqw, 30px);
+    width:var(--signal-size);aspect-ratio:1;flex:0 0 auto;display:inline-block;
+    background:var(--accent);border-radius:50%;transform-origin:center;
+    margin-bottom:calc(var(--signal-size) * .22);
+    box-shadow:0 0 14px rgba(215,255,0,.22), 0 0 32px rgba(215,255,0,.10);
     animation: detroit-signal-breathe 5.2s cubic-bezier(.45,0,.55,1) infinite;
     will-change: transform, box-shadow;
   }
-  /* Slow human breathing, not a notification pulse: ~5.2s cycle, peak just
-     past halfway (56%), a slightly slower/asymmetric settle back to rest
-     (72% -> 100%) so it doesn't read as a perfectly mechanical loop. Scale
-     never exceeds ~1.14 — calm and organic, not a heartbeat or strobe. */
   @keyframes detroit-signal-breathe{
-    0%{
-      transform:scale(1);
-      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
-    }
-    56%{
-      transform:scale(1.14);
-      box-shadow:0 0 30px rgba(215,255,0,.32), 0 0 72px rgba(215,255,0,.16);
-    }
-    72%{
-      transform:scale(1.10);
-    }
-    100%{
-      transform:scale(1);
-      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
-    }
+    0%{transform:scale(1);box-shadow:0 0 14px rgba(215,255,0,.20), 0 0 32px rgba(215,255,0,.10);}
+    56%{transform:scale(1.14);box-shadow:0 0 22px rgba(215,255,0,.32), 0 0 54px rgba(215,255,0,.16);}
+    72%{transform:scale(1.10);}
+    100%{transform:scale(1);box-shadow:0 0 14px rgba(215,255,0,.20), 0 0 32px rgba(215,255,0,.10);}
   }
   @media (prefers-reduced-motion: reduce){
-    .hero-signal{
-      animation:none;
-      transform:none;
-      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
-    }
+    .hero-signal{animation:none;transform:none;}
   }
-  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
+  .hero-tag{
+    display:flex;flex-direction:column;gap:5px;margin-top:auto;padding-top:22px;
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .hero-tag .dim{color:var(--ink-dim);}
+  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);border-right:1px solid var(--line);min-height:260px;}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
-  /* Auto-rotating crossfade carousel (2026-08-28, Jody: "anyway to create a
-     carousel that auto rotates?") — replaces the old one-random-photo-per-
-     load version, which never changed again once a visit had loaded. All 4
-     slides are stacked directly on top of each other via position:absolute
-     so the fade is a pure opacity cross-dissolve with zero layout shift;
-     see the script below the markup for the rotation logic and the
-     preload-all-4 / prefers-reduced-motion reasoning. */
   .hero-photo-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;}
   .hero-photo-slide.is-active{opacity:1;z-index:1;}
-  .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
-  /* The proof panel (homepage UX evolution, 2026-10-04; DEC-026): the
-     site's real current + upcoming total as the hero's primary figure, with
-     TODAY / NEXT 7 DAYS / ACTIVE NEIGHBORHOODS beneath it. Constant, site-wide
-     numbers, distinct from the filtered stream below. Real counts, never
-     fabricated — see heroFigures(). The total is sized off the column's
-     own inline size (cqw), same reasoning as .hl-line above, so a
-     four-digit, comma-grouped figure fits the column at every breakpoint.
-     Chartreuse is on the total only (live data); the supporting figures
-     are warm white and take the accent on hover/focus, as actions. */
+  .hero-today{padding:22px 22px 18px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;container-type:inline-size;background:var(--panel-alt);}
+  /* The proof panel (DEC-026): the site's real current + upcoming total as
+     the hero's primary figure, in warm white, with TODAY / NEXT 7 DAYS /
+     ACTIVE NEIGHBORHOODS as a readout grid beneath it. Real counts, never
+     fabricated — see heroFigures(). */
   .hero-proof-total{
-    display:block;width:100%;background:none;border:none;padding:0;margin:0 0 12px;
+    display:block;width:100%;background:none;border:none;padding:0;margin:0 0 14px;
     text-align:left;cursor:pointer;color:inherit;font-family:inherit;
   }
   .hero-stat-number{
     display:block;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(56px,34cqw,124px);line-height:.9;color:var(--accent);margin-bottom:8px;
-    letter-spacing:-0.02em;
-    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
+    font-size:clamp(72px,44cqw,150px);line-height:.86;color:var(--ink);margin-bottom:10px;
+    letter-spacing:-.02em;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
-  /* Count-up tally (2026-09-13, Jody: "kinda like a gameshow") — see
-     animateHeroCount() below. A live glow while digits are still climbing
-     from the initial small/fallback number up to the real one, so the
-     motion itself reads as "still tallying" rather than a value that just
-     happened to change. Purely additive to the base style above; the
-     number's color/size never change, so this can't shift layout. */
-  .hero-stat-number.is-counting{text-shadow:0 0 18px var(--accent), 0 0 4px var(--accent);}
-  @media (prefers-reduced-motion: reduce){
-    .hero-stat-number.is-counting{text-shadow:none;}
-  }
+  .hero-stat-number.is-counting{color:var(--ink);}
   .hero-stat-caption{
     display:block;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:clamp(17px,6.4cqw,23px);
-    text-transform:uppercase;line-height:1.05;letter-spacing:.005em;color:var(--ink);
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:clamp(20px,7cqw,28px);
+    text-transform:uppercase;line-height:.95;letter-spacing:0;color:var(--ink);
   }
-  .hero-proof-total:hover .hero-stat-caption, .hero-proof-total:focus-visible .hero-stat-caption{text-decoration:underline;text-underline-offset:3px;}
+  .hero-proof-total:hover .hero-stat-caption, .hero-proof-total:focus-visible .hero-stat-caption{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--accent);}
   .hero-proof-stats{
-    display:grid;grid-template-columns:1fr 1fr 1.25fr;
-    border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:12px;
+    display:grid;grid-template-columns:1fr 1fr 1fr;
+    border:1px solid var(--line);border-right:none;margin-bottom:14px;
   }
   .hero-proof-stat{
-    display:flex;flex-direction:column;gap:3px;min-width:0;
-    background:none;border:none;border-left:1px solid var(--line);padding:9px 10px 9px;
+    display:flex;flex-direction:column;gap:4px;min-width:0;
+    background:none;border:none;border-right:1px solid var(--line);padding:10px 10px 9px;
     text-align:left;cursor:pointer;color:inherit;font-family:inherit;
   }
-  .hero-proof-stat:first-child{border-left:none;padding-left:0;}
   .hps-num{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:27px;line-height:1;
+    font-family:var(--font-data);font-weight:700;font-size:20px;line-height:1;
     color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
   .hps-label{
-    font-family:'Space Mono',monospace;font-size:9.5px;line-height:1.3;letter-spacing:.06em;
+    font-family:var(--font-data);font-size:9px;line-height:1.3;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-soft);
   }
   .hero-proof-stat:hover .hps-num, .hero-proof-stat:focus-visible .hps-num{color:var(--accent);}
   .hero-proof-promise{
-    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;line-height:1.5;letter-spacing:.05em;
-    text-transform:uppercase;color:var(--ink);margin-bottom:5px;
+    display:flex;align-items:center;gap:8px;
+    font-family:var(--font-data);font-size:10.5px;line-height:1.5;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;
   }
-  .hero-stat-orbit{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+  .live-dot{
+    display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;
+    animation: live-dot-pulse 2.4s ease-out infinite;
+  }
+  @keyframes live-dot-pulse{
+    0%{box-shadow:0 0 0 0 rgba(215,255,0,.5);}
+    70%{box-shadow:0 0 0 7px rgba(215,255,0,0);}
+    100%{box-shadow:0 0 0 0 rgba(215,255,0,0);}
+  }
+  @media (prefers-reduced-motion: reduce){ .live-dot{animation:none;} }
+  .hero-stat-orbit{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);line-height:1.5;}
   @media (max-width:980px){
-    .hero{grid-template-columns:1fr 1.2fr;}
-    .hero-headline{grid-column:1 / -1;order:1;padding-bottom:6px;}
-    .hero-photo{order:2;}
+    .hero{grid-template-columns:1fr 1fr;min-height:0;}
+    .hero-headline{grid-column:1 / -1;order:1;border-right:none;border-bottom:1px solid var(--line);padding-bottom:18px;}
+    .hero-photo{order:2;min-height:300px;}
     .hero-today{order:3;}
   }
   @media (max-width:720px){
-    .hero{grid-template-columns:1fr;min-height:0;}
-    .hero-photo{aspect-ratio:16/9;}
-    .hero-headline{padding:18px 18px 4px;}
-    .hero-today{padding:14px 18px 20px;}
+    .hero{grid-template-columns:1fr;}
+    .hero-headline{padding:20px 16px 14px;}
+    .hl-line{font-size:clamp(56px,27cqw,104px);}
+    .hero-tag{margin-top:12px;}
+    .hero-photo{aspect-ratio:4/3;min-height:0;border-right:none;border-bottom:1px solid var(--line);}
+    .hero-today{padding:16px 14px 14px;}
+    .hero-stat-number{font-size:clamp(72px,30cqw,112px);}
+    .hero-proof-stats{grid-template-columns:1fr 1fr 1fr;}
   }
 
-  /* Search is the fourth control of the row — WHEN / WHERE / WHAT / SEARCH
-     (it joined the trigger row 2026-08-27; given its own label 2026-10-04
-     so the four read as one grammar). It is boxed like the three triggers,
-     with the input itself borderless inside the box, and takes the extra
-     width in the row since it is the one that is typed into. Below 720px
-     it drops to its own full-width line. */
-  .search-field{
-    flex:2 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;cursor:text;
-    border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-alt);padding:9px 12px;
+  /* ---- the control panel: WHEN / WHERE / WHAT / SEARCH ---- */
+  .discovery-shell{
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
+    padding:0;margin-bottom:12px;
   }
-  .search-field:focus-within{border-color:var(--ink);}
+  .mobile-triggers{display:grid;grid-template-columns:1.05fr 1.05fr 1.05fr 1.6fr;gap:0;}
+  .mobile-trigger{
+    min-width:0;border:none;border-right:1px solid var(--line);background:none;color:var(--ink);
+    border-radius:0;padding:12px 16px 11px;font-size:16px;font-weight:600;cursor:pointer;
+    display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;
+  }
+  .mobile-trigger:hover{background:var(--panel-hover);}
+  .mobile-trigger .mt-label, .search-field .mt-label{
+    font-family:var(--font-data);font-size:10px;font-weight:400;line-height:1.3;letter-spacing:.12em;
+    color:var(--ink-soft);text-transform:uppercase;
+  }
+  .mobile-trigger .mt-sub{
+    font-size:16px;font-weight:600;line-height:1.3;color:var(--ink);max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .mobile-trigger .mt-sub::after{content:' \25be';font-family:var(--font-data);font-size:11px;color:var(--ink-soft);}
+  .mobile-trigger.has-value{box-shadow:inset 0 -2px 0 var(--accent);}
+  .mobile-trigger.has-value .mt-label{color:var(--accent);}
+  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);box-shadow:inset 0 -2px 0 var(--ink);}
+  .search-field{
+    min-width:0;display:flex;flex-direction:column;gap:5px;cursor:text;
+    border:none;border-radius:0;background:none;padding:12px 16px 11px;
+  }
+  .search-field:focus-within{box-shadow:inset 0 -2px 0 var(--ink);}
   #search{
     border:none;background:none;padding:0;margin:0;width:100%;min-width:0;outline:none;
-    font-family:inherit;font-size:13px;font-weight:700;line-height:1.35;color:var(--ink);
+    font-family:inherit;font-size:16px;font-weight:500;line-height:1.3;color:var(--ink);
   }
-  #search::placeholder{color:var(--ink-soft);font-weight:600;}
+  #search::placeholder{color:var(--ink-dim);font-weight:500;}
 
-  /* Discovery bar — time-range shortcuts. Deliberately styled like the
-     existing chip controls (ink-on-active, not chartreuse) —
-     the brief is explicit that Signal stays scarce and controls need
-     conventional usability, not brand theatrics. */
-  .discovery-bar{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
-  }
+  /* The sheets (When / Where / What) open as a panel under the row at
+     721px+ and as a bottom sheet below. Controls inside keep ink-on-active;
+     chartreuse marks the selected category only. */
+  .discovery-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .when-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
-    border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);
+    border-radius:0;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;
   }
-  .when-btn:hover{background:var(--panel-hover);}
+  .when-btn:hover{background:var(--panel-hover);color:var(--ink);}
   .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
   .when-date-picker{
-    display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);
-    color:var(--ink-soft);border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);
+    color:var(--ink-soft);border-radius:0;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
   }
   .when-date-picker.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
-  .when-date-picker input[type="date"]{
-    border:none;background:none;color:inherit;font:inherit;cursor:pointer;padding:0;max-width:130px;
-  }
-  .when-date-picker input[type="date"]::-webkit-calendar-picker-indicator{
-    /* The site is dark-themed throughout with no light mode — the browser's
-       default calendar-icon glyph is black and invisible against the dark
-       panel background otherwise. */
-    filter:invert(1);cursor:pointer;
-  }
-  /* From/To pair (2026-08-26 [sic 2026-08-27]): two plain .when-date-picker
-     boxes side by side on desktop. Both are native <input type="date">
-     controls specifically because a touchscreen's own native date wheel/
-     calendar is what someone with "stumpy fingers on a handset" already
-     knows how to drive — a custom range-calendar widget would need much
-     larger deliberately-spaced tap targets to be as usable, for no real
-     gain here. */
+  .when-date-picker input[type="date"]{border:none;background:none;color:inherit;font:inherit;cursor:pointer;padding:0;max-width:130px;}
+  .when-date-picker input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer;}
   .when-date-range{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .when-date-optional{color:var(--ink-dim);font-weight:500;text-transform:none;letter-spacing:0;}
   @media (max-width:480px){
-    /* Stacked full-width rather than shrinking two side-by-side boxes down
-       to where the date text itself gets cramped on a small phone screen. */
     .when-date-range{flex-direction:column;align-items:stretch;}
     .when-date-picker{justify-content:space-between;}
   }
-
-  /* "Showing N events ___" — the stream's head whenever the view has a
-     scope of its own or any filter is on (see renderList()). The plain
-     default view is headed "All events" instead (.stream-title). */
   .list-count-heading{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-size:22px;font-weight:800;line-height:1.1;
-    color:var(--ink);text-transform:uppercase;letter-spacing:.01em;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;
   }
-
-  /* Active-filter tray — one visible summary of whatever is currently
-     narrowing the event universe (time-range shortcut, free-only, search
-     text, a narrowed category set), each independently removable, per the
-     brief's "filter state must never be invisible" requirement. */
-  .active-filters{
-    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;
-  }
-  .af-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .active-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+  .af-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
   .af-chip{
     display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
-    border-radius:var(--radius);padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
+    border-radius:0;padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
   }
   .af-chip button{
-    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    border:none;background:var(--panel);color:var(--ink-soft);border-radius:50%;
     width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
   }
   .af-chip button:hover{background:var(--ink);color:var(--bg);}
   .af-clear{
-    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
-    font-size:12.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:none;color:var(--ink-soft);border-radius:0;padding:5px 12px;
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
   }
-
-  .filters{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
-  }
+  .af-clear:hover{color:var(--ink);border-color:var(--ink);}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .chip{
-    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
-    font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
+    border:1px solid var(--line);background:var(--bg);border-radius:0;padding:8px 13px;
+    font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink);
     user-select:none;
   }
-  /* The WHAT panel, per the locked Detroit Signal rules (Product Owner,
-     2026-10-04). Signal Chartreuse means one thing here — "this is
-     selected" — on every chip that can be selected: a category, Free only,
-     a feature. Nothing else in the panel carries a colour: no per-category
-     dots (the "UV signal" dots of 2026-08-26 are gone), no separate green
-     for Free only, no red for Reset filters.
-     With no category selected the panel is neutral: the category chips are
-     unlit, and "All types" is marked as the current choice in warm white
-     rather than chartreuse — it is the resting state, not a selection. */
+  .chip:hover{border-color:var(--ink-soft);}
   .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
   .chip#allTypesChip.active{background:var(--panel-alt);color:var(--ink);border-color:var(--ink);}
-
-  /* Location + radius bar — Phase 1 Chunk 3. Same restrained styling as the
-     discovery bar (ink-on-active, chartreuse reserved for state, not chrome). */
-  .location-bar{
-    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;
-  }
+  .location-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;}
   .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-  .loc-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-  .loc-combo{position:relative;min-width:200px;}
+  .loc-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
+  .loc-combo{position:relative;min-width:220px;}
   #locInput{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
-    background:var(--panel-alt);color:var(--ink);
+    border:1px solid var(--line);border-radius:0;padding:8px 30px 8px 12px;font-size:14px;width:100%;min-width:220px;
+    background:var(--bg);color:var(--ink);font-family:inherit;
   }
   #locInput::placeholder{color:var(--ink-dim);}
   .loc-clear-btn{
     position:absolute;right:6px;top:50%;transform:translateY(-50%);
-    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    border:none;background:var(--panel);color:var(--ink-soft);border-radius:50%;
     width:20px;height:20px;font-size:11px;line-height:1;cursor:pointer;align-items:center;justify-content:center;display:flex;
   }
   .loc-clear-btn:hover{background:var(--ink);color:var(--bg);}
   .loc-suggestions{
     position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:280px;overflow-y:auto;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:0;box-shadow:0 8px 24px rgba(0,0,0,.5);
   }
   .loc-item{
-    padding:8px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:9px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
     border-bottom:1px solid var(--line-soft);
   }
   .loc-item:last-child{border-bottom:none;}
   .loc-item:hover, .loc-item.hl{background:var(--panel-hover);}
   .loc-item-name{color:var(--ink);font-weight:600;}
-  .loc-item-type{color:var(--ink-dim);font-size:10.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+  .loc-item-type{font-family:var(--font-data);color:var(--ink-dim);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
   .loc-empty{padding:10px 12px;font-size:12.5px;color:var(--ink-dim);}
   .loc-geo-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:var(--radius);
+    border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);border-radius:0;
     padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
   }
-  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);}
+  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);color:var(--ink);}
   .loc-geo-btn:disabled{opacity:.6;cursor:default;}
   .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .radius-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-right:2px;}
+  .radius-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;margin-right:2px;}
   .radius-chip{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:var(--radius);
-    padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);border-radius:0;
+    padding:6px 12px;font-family:var(--font-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
   }
-  .radius-chip:hover{background:var(--panel-hover);}
+  .radius-chip:hover{color:var(--ink);}
   .radius-chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
 
-  /* Calendar grid */
+  /* ---- the body grid: stream and rail ----
+     .home-main and .home-sidebar are display:contents so every section is
+     placed on one grid: the stream, neighborhoods, Orbit + Radar and the
+     continuing inventory in the main column; the four navigation surfaces
+     (calendar, map, free today, venues) stacked in a sticky rail. Below
+     980px it is one column and the rail becomes a 2x2 NAVIGATE panel
+     placed before the continuing inventory. */
+  .home-body{
+    display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 280px;gap:0 32px;align-items:start;margin-bottom:10px;
+    grid-template-areas:
+      "dm dm rail"
+      "list list rail"
+      "nb nb rail"
+      "orbit radar rail"
+      "more more rail";
+  }
+  .home-main{display:contents;}
+  .home-sidebar{display:contents;}
+  .dont-miss{grid-area:dm;}
+  #listView{grid-area:list;}
+  .neighborhoods-section{grid-area:nb;}
+  #nearYouCard{grid-area:orbit;}
+  #onRadarCard{grid-area:radar;}
+  #listMore{grid-area:more;}
+  .rail-stack{grid-area:rail;position:sticky;top:14px;display:flex;flex-direction:column;gap:12px;align-self:start;}
+  @media (max-width:980px){
+    .home-body{
+      grid-template-columns:minmax(0,1fr);gap:0;
+      grid-template-areas:"dm" "list" "nb" "rail" "orbit" "radar" "more";
+    }
+    .rail-stack{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);margin:0 0 18px;}
+    .rail-stack .side-card{border:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+    .rail-stack .side-card:nth-child(2n){border-right:none;}
+    .rail-stack .side-card:nth-last-child(-n+2){border-bottom:none;}
+    .rail-stack .side-card-head{flex-wrap:wrap;gap:4px 10px;}
+    .rail-stack .side-card-head h2{min-width:0;}
+    #nearYouCard{margin-bottom:0;}
+  }
+
+  /* ---- rail cards: readout panels ---- */
+  .side-card{background:var(--panel-alt);border:1px solid var(--line);border-radius:0;padding:14px 16px;min-width:0;}
+  .side-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .side-card-head h2{
+    font-family:var(--font-data);font-size:10.5px;font-weight:400;
+    text-transform:uppercase;letter-spacing:.12em;color:var(--ink);margin:0;
+  }
+  .side-card-link{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;}
+  .side-card-link:hover{color:var(--ink);}
+  .side-card-sub{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;line-height:1.5;}
+  .side-card-number{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
+    font-size:44px;line-height:.9;color:var(--ink);margin-bottom:4px;letter-spacing:-.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  #freeTodayCard .side-card-number{color:var(--accent);} /* free is a flag the system makes */
+  .side-card-caption{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;line-height:1.5;}
+  .side-card-cta{
+    display:inline-block;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+    background:none;border:none;padding:0;cursor:pointer;
+  }
+  .side-card-cta:hover{color:var(--ink);}
+
+  /* On the Radar: press already covering what is listed */
+  #onRadarCard{background:var(--bg);border:1px solid var(--line);border-left:none;padding:16px 18px 10px;margin-top:24px;}
+  #onRadarCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
+  .radar-list{display:flex;flex-direction:column;margin:0;}
+  .radar-item{
+    display:flex;gap:12px;align-items:flex-start;padding:11px 0;
+    text-decoration:none;color:inherit;border-top:1px solid var(--line);
+  }
+  .radar-item:first-child{border-top:none;}
+  .radar-item:hover .radar-item-title{text-decoration:underline;text-underline-offset:3px;}
+  .radar-thumb{width:56px;height:56px;flex:0 0 auto;object-fit:cover;background:var(--panel-alt);border:1px solid var(--line);}
+  .radar-thumb-fallback{
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-data);font-size:11px;letter-spacing:.1em;color:var(--ink-dim);
+    background-image:radial-gradient(circle at 100% 100%, transparent 14px, var(--line) 14px, var(--line) 15px, transparent 15px),
+                     radial-gradient(circle at 100% 100%, transparent 30px, var(--line-soft) 30px, var(--line-soft) 31px, transparent 31px);
+  }
+  .radar-item-body{min-width:0;}
+  .radar-item-title{
+    font-size:14px;font-weight:600;line-height:1.3;margin-bottom:4px;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  }
+  .radar-item-meta{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:3px;}
+  .radar-item-src{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);}
+
+  /* calendar week strip */
+  .vc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border:1px solid var(--line);}
+  .vc-day{
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;
+    border-radius:0;background:none;text-decoration:none;
+    color:var(--ink);border-right:1px solid var(--line);min-width:0;
+  }
+  .vc-day:last-child{border-right:none;}
+  .vc-day:hover{background:var(--panel-hover);}
+  .vc-day.today{background:var(--bg);box-shadow:inset 0 -2px 0 var(--accent);}
+  .vc-day.today .vc-num{color:var(--accent);}
+  .vc-dow{font-family:var(--font-data);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);}
+  .vc-num{font-family:var(--font-data);font-size:14px;font-weight:700;}
+  .vc-count{font-family:var(--font-data);font-size:9.5px;color:var(--ink-soft);}
+
+  /* Detroit Orbit: the radial range field. Detroit at the centre, rings at
+     10 / 25 / 50 miles, real cities placed by bearing with their live
+     counts. The old decorative radar (.ny-*) is kept for the located
+     state's compact graphic. */
+  #nearYouCard{background:var(--bg);border:1px solid var(--line);padding:16px 18px 36px;margin-top:24px;position:relative;overflow:hidden;}
+  #nearYouCard .side-card-head{position:relative;z-index:2;}
+  #nearYouCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
+  #nearYouCard .side-card-sub, #nearYouCard .side-card-number, #nearYouCard .side-card-caption, #nearYouCard .side-card-cta{position:relative;z-index:2;}
+  .orbit-field{position:relative;height:330px;margin:6px -18px 0;z-index:1;}
+  .orbit-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid var(--line);border-radius:50%;}
+  .orbit-center{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(215,255,0,.12);}
+  .orbit-lbl{
+    position:absolute;transform:translate(-2px,-50%);white-space:nowrap;display:flex;gap:6px;align-items:center;
+    font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
+  }
+  .orbit-lbl i{width:5px;height:5px;background:var(--ink-soft);border-radius:50%;display:inline-block;flex:none;}
+  .orbit-lbl b{color:var(--ink-soft);font-weight:400;}
+  .orbit-lbl.is-left{transform:translate(calc(-100% + 2px),-50%);flex-direction:row-reverse;}
+  .orbit-lbl.is-center{color:var(--accent);transform:translate(10px,-50%);}
+  .orbit-lbl.is-center b{color:var(--ink-soft);}
+  .orbit-mile{position:absolute;font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+  .orbit-foot{position:absolute;left:18px;bottom:12px;z-index:2;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+  .ny-radar{position:relative;width:120px;max-width:100%;aspect-ratio:1;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
+  .ny-ring{position:absolute;border:1px solid var(--line);border-radius:50%;}
+  .ny-ring-1{width:38%;height:38%;}
+  .ny-ring-2{width:68%;height:68%;}
+  .ny-ring-3{width:100%;height:100%;}
+  .ny-ping{position:absolute;width:38%;height:38%;border-radius:50%;background:var(--accent);z-index:1;animation: ny-orbit-ping 2.8s cubic-bezier(0,0,.2,1) infinite;}
+  @keyframes ny-orbit-ping{0%{transform:scale(.4);opacity:.45;}70%{transform:scale(2.6);opacity:0;}100%{transform:scale(2.6);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){.ny-ping{animation:none;opacity:0;}}
+  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
+  @media (max-width:980px){
+    #nearYouCard{min-height:380px;margin-top:0;}
+    #onRadarCard{margin-top:0;border-left:1px solid var(--line);border-top:none;margin-bottom:18px;}
+  }
+
+  /* map readout */
+  .map-scatter{width:100%;aspect-ratio:2.75;margin:0 0 10px;border:1px solid var(--line);}
+  .map-scatter svg{width:100%;height:100%;display:block;overflow:visible;}
+  .map-you-ping{transform-origin:center;transform-box:fill-box;animation: map-you-ping 2.8s cubic-bezier(0,0,.2,1) infinite;}
+  @keyframes map-you-ping{0%{transform:scale(.5);opacity:.5;}70%{transform:scale(3);opacity:0;}100%{transform:scale(3);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){.map-you-ping{animation:none;opacity:0;}}
+  .map-card-cta{
+    display:block;text-align:center;margin-top:2px;padding:9px 12px;
+    border-radius:0;background:none;border:1px solid var(--accent);color:var(--accent);
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+  }
+  .map-card-cta:hover{background:var(--accent);color:var(--on-accent);text-decoration:none;}
+
+  /* ---- Explore neighborhoods: plates ---- */
+  .neighborhoods-section{margin:26px 0 8px;min-width:0;}
+  .neighborhoods-head-row{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px 12px;flex-wrap:wrap;margin:0 0 12px;
+    padding-bottom:10px;border-bottom:1px solid var(--ink);
+  }
+  .neighborhoods-heading{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.9;
+    text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;
+  }
+  .neigh-style{display:flex;gap:0;align-items:center;margin-left:auto;}
+  .neigh-style button{
+    border:1px solid var(--line);background:none;color:var(--ink-soft);padding:5px 9px;cursor:pointer;
+    font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .neigh-style button + button{border-left:none;}
+  .neigh-style button.on{color:var(--on-accent);background:var(--accent);border-color:var(--accent);}
+  .neighborhoods-rail{
+    display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  }
+  .neigh-card{
+    flex:0 0 auto;scroll-snap-align:start;width:180px;height:224px;position:relative;overflow:hidden;
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:0;
+    padding:0;text-align:left;cursor:pointer;font-family:inherit;color:var(--ink);
+    display:flex;flex-direction:column;justify-content:flex-end;
+  }
+  .neigh-card:hover{border-color:var(--ink-soft);}
+  .neigh-card.active{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);}
+  .neigh-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;margin:0;}
+  .neigh-plate{position:relative;background:var(--bg);border-top:1px solid var(--line);padding:10px 12px 11px;display:flex;flex-direction:column;gap:5px;min-height:76px;}
+  .neigh-name{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:21px;line-height:.92;
+    text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;overflow-wrap:break-word;
+  }
+  .neigh-count{font-family:var(--font-data);font-size:11px;font-weight:700;color:var(--ink);}
+  .neigh-count-label{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .neigh-count-row{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;}
+  .neigh-bearing{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  /* Fallback A — Orbit plate: the neighborhood's real bearing and distance
+     from downtown drawn as rings and a dot. Fallback B — nameplate: type
+     alone, the count large. Switched by data-fallback on the rail; both
+     exist so the two can be compared in the real strip. */
+  .neigh-orbit{position:absolute;inset:0;overflow:hidden;}
+  .neigh-orbit-in{position:absolute;width:0;height:0;}
+  .neigh-orbit .ring{position:absolute;border:1px solid var(--line);border-radius:50%;transform:translate(-50%,-50%);}
+  .neigh-orbit .dt{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:var(--ink-soft);}
+  .neigh-orbit .me{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(215,255,0,.14);}
+  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-orbit, .neigh-card.is-plate .neigh-orbit{display:none;}
+  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-plate, .neigh-card.is-plate .neigh-plate{border-top:none;min-height:0;height:100%;justify-content:space-between;padding-top:12px;}
+  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-name, .neigh-card.is-plate .neigh-name{font-size:30px;}
+  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-count, .neigh-card.is-plate .neigh-count{font-size:26px;display:block;}
+  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-count-row, .neigh-card.is-plate .neigh-count-row{flex-direction:column;gap:2px;align-items:flex-start;}
+  /* Desktop: the six busiest neighborhoods as one strip of plates, no
+     scroller; the rest are a click away ("See all neighborhoods"). The
+     full rail scrolls on narrower screens. */
+  @media (min-width:981px){
+    .neighborhoods-rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:visible;padding-bottom:0;}
+    .neighborhoods-rail .neigh-card{width:auto;height:204px;}
+    .neighborhoods-rail .neigh-card:nth-child(n+7){display:none;}
+    .neigh-name{font-size:17px;}
+    .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-name, .neigh-card.is-plate .neigh-name{font-size:19px;}
+  }
+  .neigh-foot{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin:6px 0 0;}
+  @media (max-width:640px){
+    .neigh-card{width:160px;height:200px;}
+    .neigh-name{font-size:19px;}
+    .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-name, .neigh-card.is-plate .neigh-name{font-size:23px;}
+  }
+
+  /* calendar page leftovers (month grid classes shared with calendar.html) */
   .cal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;}
   .cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;background:var(--panel-alt);border-bottom:1px solid var(--line);}
   .cal-head div{padding:9px 0;text-align:center;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;}
-  .day-cell{
-    min-height:122px;min-width:0;overflow:hidden;
-    border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
-    padding:6px 6px 8px;position:relative;cursor:pointer;background:var(--panel);
-  }
+  .day-cell{min-height:122px;min-width:0;overflow:hidden;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:6px 6px 8px;position:relative;cursor:pointer;background:var(--panel);}
   .day-cell:nth-child(7n){border-right:none;}
   .day-cell.otherMonth{background:var(--panel-alt);color:var(--ink-dim);}
   .day-cell.today{background:var(--today);box-shadow:inset 0 0 0 2px var(--today-ring);}
-  .day-cell:hover{background:var(--panel-hover);}
-  .day-cell.today:hover{background:var(--today);}
-  .daynum{
-    font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);
-    display:flex;align-items:baseline;gap:6px;
-  }
+  .daynum{font-family:var(--font-data);font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);display:flex;align-items:baseline;gap:6px;}
   .day-cell.today .daynum{color:var(--accent);}
-  /* Past dates stay fully clickable/legible — only the day number itself
-     dims slightly as a temporal cue. Events, pills, and counts stay at full
-     opacity so nothing reads as "disabled". Doesn't apply to .today, which
-     has its own treatment, or otherMonth cells (already dimmed via panel-alt). */
-  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.55;}
-  .today-label{
-    font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.05em;
-    color:var(--accent);text-transform:uppercase;
-  }
-  .day-count{
-    font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);
-    margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;
-  }
+  .today-label{font-family:var(--font-data);font-size:9px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;}
+  .day-count{font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;}
   .day-count .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
-
-  /* ---- Homepage body layout: calendar/list + right-rail highlights ----
-     The sidebar reverses an earlier-session "no right rail" call, but only
-     for the three modules explicitly approved per-module (View Calendar,
-     Near You, Free Today) — bookmark/save stays out per that same
-     decision. Every number in these cards is real, computed the same way
-     the month grid / hero stat already compute theirs — never fabricated
-     counts like the mockup's placeholder figures. */
-  .home-body{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;margin-bottom:10px;}
-  .home-main{min-width:0;}
-  .home-sidebar{display:flex;flex-direction:column;gap:16px;position:sticky;top:14px;}
-  .side-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
-  .side-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px;}
-  .side-card-head h2{
-    font-family:'Inter',-apple-system,sans-serif;font-size:12px;font-weight:800;
-    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0;
-  }
-  .side-card-link{font-size:11.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap;}
-  .side-card-link:hover{text-decoration:underline;}
-  .side-card-sub{font-size:12px;color:var(--ink-soft);margin:0 0 10px;}
-  .side-card-number{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:34px;line-height:1;color:var(--accent);margin-bottom:2px;
-  }
-  .side-card-caption{font-size:12px;color:var(--ink-soft);margin:0 0 10px;}
-  .side-card-cta{
-    display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent);
-    background:none;border:none;padding:0;cursor:pointer;font-family:inherit;
-  }
-  .side-card-cta:hover{text-decoration:underline;}
-
-  /* "On the Radar" sidebar widget (2026-08-28, Jody: "percolate to the user
-     events that the press has covered") — reuses the same editorialByEvent
-     data the inline "As seen in" links already load (see
-     loadEditorialArticles()), no extra request. A plain list rather than
-     another number/stat tile like the other three sidebar cards — the
-     value here IS the specific events, not a count. Rows bleed to the
-     card's own edges (negative margin canceling .side-card's padding) so
-     each row's divider/hover state spans the full card width. */
-  .radar-list{display:flex;flex-direction:column;margin:0 -16px -16px;}
-  .radar-item{
-    display:flex;gap:10px;align-items:flex-start;padding:10px 16px;
-    text-decoration:none;color:inherit;border-top:1px solid var(--line-soft);
-  }
-  .radar-item:first-child{border-top:none;}
-  .radar-item:hover{background:var(--panel-hover);}
-  .radar-thumb{width:52px;height:52px;flex:0 0 auto;object-fit:cover;background:var(--panel-alt);}
-  .radar-thumb-fallback{
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:20px;
-    color:var(--accent);
-  }
-  .radar-item-body{min-width:0;}
-  .radar-item-title{
-    font-size:13px;font-weight:700;line-height:1.3;margin-bottom:2px;color:var(--ink);
-    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  }
-  .radar-item-meta{font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
-  .radar-item-src{font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--accent);}
-
-  /* View Calendar card: one real week row, not a full month — see the
-     "same amount of calendar as in the mock" spec. Links out to the
-     dedicated calendar page rather than duplicating month navigation. */
-  .vc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-  .vc-day{
-    display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;
-    border-radius:var(--radius);background:var(--panel-alt);text-decoration:none;
-    color:var(--ink);border:1px solid transparent;
-  }
-  .vc-day:hover{background:var(--panel-hover);}
-  .vc-day.today{border-color:var(--accent);background:var(--today);}
-  .vc-dow{font-size:9.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);}
-  .vc-num{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
-  .vc-count{font-size:10px;font-weight:700;color:var(--accent);}
-
-  /* "What's in your Detroit Orbit?" card (redesigned from "Near You", Jody
-     2026-08-27) — decorative-only radar/orbit graphic: this project has zero
-     real per-event coordinates (0% of venues/events have lat/lng), so this
-     never plots real event positions. The count above/below it is real,
-     city-level radius math (haversineMiles against CITY_LOOKUP), same method
-     the Where/radius filter already uses. Rings fade with distance to read
-     as orbital paths rather than a plain bullseye — tinted with the signal
-     accent at low opacity (rather than the barely-there --line gray tried
-     first, which read as too faint against the panel background) since
-     these rings represent the live signal's own reach outward, not plain
-     structural chrome. The .ny-ping element is a single "you are here"
-     location pulse (radiates outward from the dot and fades, like a map pin
-     ping) — deliberately a DIFFERENT motion (expand-and-fade-out, not
-     scale-in-place) from the hero signal's breathing animation, per that
-     animation's own one-off/no-reuse rule. Fixed at aspect-ratio:1 (rather
-     than the card's own full width vs a flat fixed height, which is what
-     the old "Near You" version did) so the rings render as true circles
-     instead of the squashed ellipses that mismatch produced — width % and
-     height % need the same base to actually look like circular orbit rings. */
-  .ny-radar{position:relative;width:120px;max-width:100%;aspect-ratio:1;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
-  .ny-ring{position:absolute;border:1.5px solid var(--line);border-radius:50%;}
-  .ny-ring-1{width:38%;height:38%;border-color:rgba(215,255,0,.55);}
-  .ny-ring-2{width:68%;height:68%;border-color:rgba(215,255,0,.35);}
-  .ny-ring-3{width:100%;height:100%;border-color:rgba(215,255,0,.2);}
-  .ny-ping{
-    position:absolute;width:38%;height:38%;border-radius:50%;
-    background:var(--accent);z-index:1;
-    animation: ny-orbit-ping 2.8s cubic-bezier(0,0,.2,1) infinite;
-  }
-  @keyframes ny-orbit-ping{
-    0%{transform:scale(.4);opacity:.45;}
-    70%{transform:scale(2.6);opacity:0;}
-    100%{transform:scale(2.6);opacity:0;}
-  }
-  @media (prefers-reduced-motion: reduce){
-    .ny-ping{animation:none;opacity:0;}
-  }
-  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
-
-  /* "Detroit Orbit Map" card redesign (2026-09-05, Jody: "it needs to be
-     more visually interesting, i need more context as a user for what 30
-     means... show the number of events in their immediate orbit as it
-     relates to the detroit orbit — if we can't do that then just promote
-     the map itself"). Decorative scattered-pin SVG — same "teaser only,
-     never a live embedded map, never real per-event coordinates" rule as
-     the ny-radar graphic above (see its own comment: 0% of venues have
-     lat/lng) — gives the card map-flavored texture it never had. This
-     card never asks for location itself (that's the neighboring "What's
-     in your Detroit Orbit?" card's job, and one "Use my location" prompt
-     on the page is enough); it just checks whether originLocation is
-     already set and, if so, adds a highlighted "you" dot and switches the
-     copy to a real near-you vs. whole-Orbit comparison — see
-     renderMapCard(). The pulse on that dot deliberately reuses ny-ping's
-     own keyframe shape (same scale/opacity curve) rather than inventing a
-     third animation style, for visual consistency between the two cards
-     that both mark "you are here" — just retimed for SVG's transform-box
-     model instead of a plain HTML div. */
-  .map-scatter{width:100%;aspect-ratio:2.75;margin:0 0 10px;}
-  .map-scatter svg{width:100%;height:100%;display:block;overflow:visible;}
-  .map-you-ping{
-    transform-origin:center;transform-box:fill-box;
-    animation: map-you-ping 2.8s cubic-bezier(0,0,.2,1) infinite;
-  }
-  @keyframes map-you-ping{
-    0%{transform:scale(.5);opacity:.5;}
-    70%{transform:scale(3);opacity:0;}
-    100%{transform:scale(3);opacity:0;}
-  }
-  @media (prefers-reduced-motion: reduce){
-    .map-you-ping{animation:none;opacity:0;}
-  }
-  .map-card-cta{
-    display:block;text-align:center;margin-top:2px;padding:10px 14px;
-    border-radius:var(--radius);background:var(--accent);color:var(--on-accent);
-    font-size:13px;font-weight:800;text-decoration:none;
-  }
-  .map-card-cta:hover{filter:brightness(1.08);text-decoration:none;}
-
-  @media (max-width:980px){
-    .home-body{grid-template-columns:1fr;}
-    .home-sidebar{position:static;}
-  }
-
-  /* Explore Neighborhoods — a horizontal, scroll-snapping rail rather than a
-     JS carousel: card width is set per breakpoint below and the browser's
-     native scroll/snap handles "multiple visible on desktop, 2-3 on tablet,
-     partial-next-card peek on mobile" (brief §23/§38) without any extra
-     script. Originally NO per-neighborhood photography existed (checked
-     /assets/photography — only 4 hero candidates + 7 general Detroit
-     "free-selects", two of which happen to be Eastern Market but nothing
-     for the other 40+ neighborhoods) — rather than mismatching a generic
-     Detroit photo to the wrong neighborhood, or reusing one photo
-     everywhere, these were deliberately photo-less typographic cards.
-     2026-09-14: real, correctly-geotagged photography started landing (see
-     NEIGHBORHOOD_PHOTOS in the JS below) — a card only gets a photo once
-     one actually exists for that specific neighborhood; every other card
-     still renders exactly as before. */
-  .neighborhoods-section{margin:18px 0 20px;min-width:0;}
-  .neighborhoods-head-row{
-    display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px;
-  }
-  .neighborhoods-heading{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
-    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0;
-  }
-  .neighborhoods-rail{
-    display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;
-    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
-  }
-  .neigh-card{
-    flex:0 0 auto;scroll-snap-align:start;width:168px;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;text-align:left;cursor:pointer;font-family:inherit;
-    display:flex;flex-direction:column;gap:2px;
-  }
-  .neigh-card:hover{background:var(--panel-hover);}
-  .neigh-card.active{border-color:var(--accent);}
-  .neigh-photo{
-    width:calc(100% + 28px);margin:-14px -14px 10px;height:88px;
-    object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;display:block;
-  }
-  .neigh-name{
-    font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;
-    color:var(--ink);line-height:1.25;margin-bottom:8px;
-  }
-  .neigh-count{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:28px;line-height:1;color:var(--accent);
-  }
-  .neigh-count-label{font-size:11px;color:var(--ink-soft);}
-  @media (max-width:640px){
-    .neigh-card{width:78vw;max-width:280px;}
-    .neighborhoods-rail{scroll-snap-type:x mandatory;}
-  }
-
-  .pill{
-    font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:5px;padding:2px 5px;margin-bottom:3px;
-    display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;
-  }
+  .pill{font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:0;padding:2px 5px;margin-bottom:3px;display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;}
   .pill .sw{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
-  /* ---- The event stream (homepage UX evolution, first slice, 2026-10-04) ----
-     One chronological stream in two panels: #listView (head + first
-     section) and #listMore (the rest, after the Explore Neighborhoods
-     rail). Hairline-ruled rows, not boxed cards. No bookmark/save icon
-     (stays rejected — see FINAL IMPLEMENTATION DIRECTIVE), and no street
-     address under the venue (the data model has none to show).
-
-     Colour, per the locked Detroit Signal rules: chartreuse is state and
-     action only — the links, and the TODAY marker on today's heading.
-     Time, category and price are type, not colour (the per-category hue
-     the row's category label used to carry is gone from the stream, and
-     the time is warm white rather than chartreuse). The event's own
-     artwork, where it has any, is the row's colour. */
-  .stream{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 18px;}
-  .stream-more{padding-top:2px;margin-top:10px;} /* collapses into the rail's own margin when the rail is shown */
+  /* ---- the stream: a departure board ---- */
+  .stream{display:block;background:var(--bg);border:none;border-radius:0;padding:0;}
+  .stream-more{padding-top:0;margin-top:4px;}
   .stream-head{
     display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;
-    padding-bottom:11px;border-bottom:2px solid var(--ink);
+    padding:14px 0 10px;border-bottom:1px solid var(--ink);
   }
   .stream-title{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-size:22px;font-weight:800;line-height:1.1;
-    color:var(--ink);text-transform:uppercase;letter-spacing:.01em;margin:0;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;
   }
-  .stream-sub{
-    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
-  }
-
-  /* Day headings stay on screen while their day scrolls past (2026-09-04,
-     Jody: a multi-day list made it too easy to lose track of which day you
-     were looking at). Each carries the day's whole count, not just the rows
-     written so far. */
-  .list-day-group{padding-bottom:4px;}
+  .stream-sub{font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+  .list-day-group{padding-bottom:6px;}
+  /* The day board. Sticky so the date stays over its rows; the date in the
+     display voice, TODAY in chartreuse (the day that is on), the count as
+     a mono readout at the right. */
   .list-day-heading{
     position:sticky;top:0;z-index:3;
-    display:flex;align-items:baseline;gap:10px;
-    background:var(--panel);padding:15px 0 9px;border-bottom:1px solid var(--line);
-    font-family:'Space Mono',monospace;font-size:17px;font-weight:700;line-height:1.2;
-    color:var(--ink);text-transform:uppercase;letter-spacing:.02em;
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    background:var(--bg);padding:22px 0 8px;border-bottom:1px solid var(--ink);
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:44px;line-height:.9;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;
   }
-  .ldh-rel{color:var(--ink-soft);}
-  .ldh-rel.is-today{color:var(--accent);} /* live: this is the day that is on */
-  .ldh-cont{font-size:10.5px;font-weight:400;letter-spacing:.06em;color:var(--ink-soft);}
-  .ldh-count{margin-left:auto;font-size:10.5px;font-weight:400;letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap;}
+  .ldh-rel{font-family:var(--font-data);font-size:11px;font-weight:400;letter-spacing:.12em;color:var(--ink-soft);flex:0 0 100%;}
+  .ldh-rel.is-today{color:var(--accent);}
+  .ldh-rel.is-today::before{content:'\25cf  ';}
+  .ldh-date{order:1;}
+  .ldh-cont{order:2;font-family:var(--font-data);font-size:10.5px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);}
+  .ldh-count{order:3;margin-left:auto;font-family:var(--font-data);font-size:10.5px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);white-space:nowrap;}
+  .ldh-cols{
+    display:grid;grid-template-columns:84px 104px minmax(0,1fr) 168px 28px;gap:0 14px;
+    padding:6px 0;border-bottom:1px solid var(--line);
+    font-family:var(--font-data);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .ldh-cols span:last-child{text-align:right;}
   @media (max-width:640px){
-    .list-day-heading{font-size:15px;}
+    .list-day-heading{font-size:36px;padding-top:18px;}
+    .ldh-cols{grid-template-columns:56px 72px minmax(0,1fr) 22px;}
+    .ldh-cols .lc-type{display:none;}
   }
-
   .evt-row{
-    display:grid;grid-template-columns:86px minmax(0,1fr) auto;gap:16px;align-items:start;
-    padding:13px 0 14px;border-top:1px solid var(--line-soft);
+    display:grid;grid-template-columns:84px 104px minmax(0,1fr) 168px 28px;gap:0 14px;align-items:start;
+    padding:12px 0 13px;border-top:1px solid var(--line);
   }
-  .list-day-heading + .evt-row{border-top:none;}
-  /* Plain text rather than a split number/AM-PM: real event times here are
-     often ranges ("11:00 AM–3:00 PM") or non-numeric ("Evening",
-     "Varies"), which a stylized split can't safely parse. An event with no
-     known time keeps its (empty) column, so every title in the stream
-     starts on the same line. */
+  .list-day-heading + .ldh-cols + .evt-row, .list-day-heading + .evt-row{border-top:none;}
+  .evt-row:hover{background:#101010;}
   .evt-time{
     grid-column:1;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:16px;line-height:1.25;color:var(--ink);padding-top:1px;
+    font-family:var(--font-data);font-weight:400;
+    font-size:12.5px;line-height:1.35;color:var(--ink);padding-top:2px;
   }
-  .evt-main{grid-column:2;min-width:0;}
-  /* Artwork sits at the row's right edge (2026-10-04) rather than between
-     the time and the title, so text lines up down the stream whether or not
-     a row has a picture; rows without one simply get the width. Most
-     sources supply no image. */
-  .evt-thumb{
-    grid-column:3;width:116px;height:78px;object-fit:cover;display:block;
-    border-radius:var(--radius);background:var(--panel-alt);
-  }
-  .evt-title{font-size:17px;font-weight:800;margin-bottom:3px;line-height:1.22;}
-  /* Only wraps the title when the event has a real DB id — see
-     editorialLinkHtml()'s comment for why FALLBACK_EVENTS (no id) can't
-     link anywhere. Deliberately inherits the surrounding text color rather
-     than looking like a conventional blue link — this is a title that
-     happens to be clickable, not a navigation link in running text. */
+  .evt-time small{display:block;font-size:10px;letter-spacing:.04em;color:var(--ink-soft);}
+  /* The artwork frame: one frame for every row, the Orbit field beneath,
+     the event's own artwork laid over it when the source has any. The
+     frame never changes size, so a column of rows keeps its rhythm. */
+  .evt-art{grid-column:2;position:relative;width:104px;height:70px;background:var(--panel-alt);border:1px solid var(--line);overflow:hidden;}
+  .evt-art svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .evt-art .evt-art-code{position:absolute;left:7px;top:5px;font-family:var(--font-data);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);}
+  .evt-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border-radius:0;background:var(--panel-alt);}
+  .evt-main{grid-column:3;min-width:0;}
+  .evt-title{font-size:17px;font-weight:600;margin-bottom:3px;line-height:1.25;}
   a.evt-title-link{color:inherit;text-decoration:none;}
-  a.evt-title-link:hover{text-decoration:underline;}
+  a.evt-title-link:hover{text-decoration:underline;text-underline-offset:3px;}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
-  /* Category · price · run, as one line of small caps under the venue. */
+  .evt-venue b, .evt-venue a.evt-venue-link{font-weight:500;color:var(--ink);}
+  .evt-place{
+    display:flex;flex-wrap:wrap;gap:2px 0;margin-top:4px;
+    font-family:var(--font-data);font-size:10px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .evt-place:empty{display:none;}
+  .evt-place > * + *::before{content:'\00b7';margin:0 7px;color:var(--ink-dim);}
+  .evt-place .src{font-style:normal;color:var(--ink-dim);font-size:10px;}
+  .evt-side{grid-column:4;min-width:0;display:flex;flex-direction:column;gap:4px;padding-top:2px;}
   .evt-meta{
-    display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 0;margin-top:5px;
-    font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.5;letter-spacing:.06em;text-transform:uppercase;
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 0;
+    font-family:var(--font-data);font-size:10.5px;line-height:1.5;letter-spacing:.06em;text-transform:uppercase;
     color:var(--ink-soft);
   }
   .evt-meta:empty{display:none;}
-  .evt-meta > * + *::before{content:'\00b7';margin:0 8px;color:var(--ink-dim);font-weight:400;}
-  .evt-cat{font-weight:400;}
+  .evt-meta > * + *::before{content:'\00b7';margin:0 7px;color:var(--ink-dim);font-weight:400;}
+  .evt-cat{font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;}
+  .evt-cat.cat-music{color:var(--c-music);}
+  .evt-cat.cat-theatre{color:var(--c-theatre);}
+  .evt-cat.cat-dance{color:var(--c-dance);}
+  .evt-cat.cat-visual{color:var(--c-visual);}
+  .evt-cat.cat-museum{color:var(--c-museum);}
+  .evt-cat.cat-family{color:var(--c-family);}
+  .evt-cat.cat-fest{color:var(--c-fest);}
+  .evt-cat.cat-food{color:var(--c-food);}
+  .evt-cat.cat-film{color:var(--c-film);}
+  .evt-cat.cat-nightlife{color:var(--c-night);}
+  .evt-cat.cat-sports{color:var(--c-sports);}
+  .evt-cat.cat-community{color:var(--c-community);}
+  .evt-cat.cat-vendor{color:var(--c-vendor);}
+  .evt-cat.cat-training{color:var(--c-training);}
+  .evt-cat.cat-gaming{color:var(--c-gaming);}
   .evt-price{font-weight:700;color:var(--ink);white-space:nowrap;}
+  .evt-price.free{color:var(--accent);}
   .evt-run{white-space:nowrap;}
-  /* Short description excerpt (2026-08-28) — plain secondary text, not a
-     link (the title above it is already the click target into event.html).
-     One line in the stream; truncateText() in JS already caps the string
-     before it reaches here, so this never depends on line-clamp alone. */
+  .evt-go{grid-column:5;text-align:right;padding-top:1px;}
+  .evt-go a{font-family:var(--font-data);font-size:16px;color:var(--accent);text-decoration:none;}
+  .evt-go a:hover{color:var(--ink);}
   .evt-desc{
     font-size:13px;color:var(--ink-soft);line-height:1.4;margin-top:5px;
     display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
   }
   .note{font-size:12px;color:var(--ink-soft);margin-top:5px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  .evt-link{
-    display:inline-flex;align-items:center;gap:5px;
-    font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;
-  }
-  .evt-link:hover{text-decoration:underline;}
+  .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;}
+  .evt-link:hover{color:var(--ink);}
   .evt-link::after{content:'→';}
-  /* "As seen in" press-mention callout (2026-08-27, redesigned 2026-08-28
-     per Jody: "you barely notice it is there"). Its own full-width line
-     with a tinted background and accent left-border so it reads as a
-     distinct piece of content (press coverage) rather than a buried
-     secondary action, while still sitting above the actions row so it
-     doesn't compete with the primary "Tickets & info" link. */
   .evt-editorial-mention{
-    display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:7px 10px;
-    background:rgba(215,255,0,.07);border-left:3px solid var(--accent);
-    text-decoration:none;max-width:100%;
+    display:inline-flex;align-items:baseline;gap:7px;margin:6px 0 0;padding:0;
+    background:none;border:none;text-decoration:none;max-width:100%;
+    font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
   }
-  .evt-editorial-mention:hover{background:rgba(215,255,0,.14);}
-  .evt-editorial-mention .ei-tag{
-    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--accent);flex-shrink:0;
-  }
-  .evt-editorial-mention .ei-title{
-    color:var(--ink);font-weight:600;font-size:13px;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
-  }
-  .evt-editorial-mention .ei-src{
-    color:var(--ink-soft);font-weight:600;font-size:12px;flex-shrink:0;
-  }
-  /* "+N more articles" line (2026-09-04, Jody: "let the user see which [events]
-     are getting more coverage") — a quiet, non-interactive line under the
-     primary As-seen-in callout: a coverage-volume signal, not a second set
-     of actions. The other titles/sources are in the native title= tooltip. */
-  .evt-editorial-also{
-    font-size:11.5px;color:var(--ink-soft);margin:2px 0 2px 13px;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
-  }
-  /* Row of actions under the row's text — ticket link (if any), event page,
-     Add to Calendar, Share. Wraps on narrow widths rather than truncating. */
+  .evt-editorial-mention:hover .ei-title{text-decoration:underline;}
+  .evt-editorial-mention .ei-tag{color:var(--accent);flex-shrink:0;}
+  .evt-editorial-mention .ei-title{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;text-transform:none;letter-spacing:0;font-family:var(--font-ui);font-size:12.5px;font-weight:500;}
+  .evt-editorial-mention .ei-src{color:var(--ink-soft);flex-shrink:0;}
+  .evt-editorial-also{font-family:var(--font-data);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
   .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:6px;column-gap:14px;margin-top:8px;}
   .evt-actions:empty{display:none;}
-  .evt-cal{font-size:12px;font-weight:600;}
+  .evt-cal{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;}
   .evt-cal a{color:var(--ink-soft);text-decoration:none;}
-  .evt-cal a:hover{color:var(--ink);text-decoration:underline;}
+  .evt-cal a:hover{color:var(--ink);}
   .evt-cal a + a::before{content:'· ';color:var(--ink-dim);}
-  .evt-share{
-    border:none;background:none;padding:0;font:inherit;font-size:12px;font-weight:600;
-    color:var(--ink-soft);cursor:pointer;
-  }
-  .evt-share:hover{color:var(--ink);text-decoration:underline;}
-  .evt-share:disabled{color:#3fbf6a;cursor:default;}
-  /* Content-nature descriptor, distinct from category/price and from the
-     italic editorial .note line — a plain fact about the event ("what
-     you'll see there"), not a caveat or a warning, so it gets a neutral
-     outlined badge rather than a loud color. See
-     migration_034_clothing_optional.sql. */
-  .evt-tag-clothing-optional{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:2px 7px;margin-top:6px;}
-
+  .evt-share{border:none;background:none;padding:0;font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;}
+  .evt-share:hover{color:var(--ink);}
+  .evt-share:disabled{color:var(--accent);cursor:default;}
+  .evt-tag-clothing-optional{display:inline-block;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);border-radius:0;padding:2px 7px;margin-top:6px;}
+  .evt-disclosure, .evt-ticket-status{font-family:var(--font-data);font-size:9.5px;letter-spacing:.04em;color:var(--ink-dim);margin-top:5px;}
   @media (max-width:640px){
-    /* Phone: the time moves above the title; artwork stays at the right
-       edge, smaller, beside the time and title. */
-    .stream{padding:14px 14px 16px;}
-    .evt-row{grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;padding:12px 0 13px;}
-    .evt-time{grid-column:1;grid-row:1;font-size:14.5px;}
-    .evt-time:empty{display:none;}
-    .evt-main{grid-column:1;grid-row:2;}
-    .evt-thumb{grid-column:2;grid-row:1 / span 2;width:72px;height:72px;}
+    .evt-row{grid-template-columns:58px 64px minmax(0,1fr) 20px;gap:0 8px;padding:11px 0 12px;}
+    .evt-time{grid-column:1;font-size:10.5px;}
+    .evt-time small{font-size:9px;white-space:nowrap;letter-spacing:0;}
+    .evt-art{grid-column:2;width:64px;height:44px;}
+    .evt-art .evt-art-code{font-size:7px;left:5px;top:4px;}
+    .evt-main{grid-column:3;}
+    .evt-side{grid-column:1 / 3;padding-top:6px;}
+    .evt-meta{flex-direction:column;align-items:flex-start;gap:3px;}
+    .evt-meta > * + *::before{content:none;margin:0;}
+    .evt-go{grid-column:4;grid-row:1;}
+    .evt-time, .evt-art{grid-row:1;}
+    .evt-main{grid-row:1 / 3;}
+    .evt-side{grid-row:2;}
+    .evt-editorial-mention{display:flex;flex-wrap:wrap;gap:3px 7px;}
+    .evt-editorial-mention .ei-title{white-space:normal;flex-basis:100%;}
+    .mobile-trigger .mt-sub{font-size:15px;}
+    .evt-title{font-size:15px;}
+    .evt-venue{font-size:12px;}
   }
-
-  /* The end of what is on the page so far: more of the same view, on
-     request (see showMoreStream()). */
   .stream-foot{
     display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
-    padding-top:16px;margin-top:8px;border-top:2px solid var(--line);
+    padding:18px 0 8px;margin-top:8px;border-top:1px solid var(--ink);
   }
   .stream-more-btn{
-    background:none;border:1.5px solid var(--accent);color:var(--accent);border-radius:var(--radius);
-    font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;
-    padding:9px 16px;cursor:pointer;white-space:nowrap;
+    background:none;border:1px solid var(--accent);color:var(--accent);border-radius:0;
+    font-family:var(--font-data);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    padding:11px 20px;cursor:pointer;white-space:nowrap;
   }
   .stream-more-btn:hover, .stream-more-btn:focus-visible{background:var(--accent);color:var(--on-accent);}
-  .stream-foot-note{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
-  .stream-foot-link{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap;}
-  .stream-foot-link:hover{text-decoration:underline;}
-
-  .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
+  .stream-foot-note{font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .stream-foot-link{margin-left:auto;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;}
+  .stream-foot-link:hover{color:var(--ink);}
+  .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;border:1px solid var(--line);margin-top:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:var(--radius);
-    padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:none;color:var(--ink);border-radius:0;
+    padding:8px 14px;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
   }
-  .es-action:hover{background:var(--panel-hover);}
+  .es-action:hover{border-color:var(--ink);}
 
-  /* ---- Don't Miss (DEC-025) ----
-     A scarce, human-curated placement (typically one to three events,
-     sometimes none). Hidden entirely when there is no active placement —
-     see renderDontMiss(). Hard-edged, hairline-ruled, like every other
-     panel; the events' own artwork carries the colour. */
-  .dont-miss{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;margin-bottom:10px;}
-  .dm-head{padding-bottom:11px;border-bottom:2px solid var(--ink);margin-bottom:14px;}
+  /* ---- Don't Miss: only when an editor placed something ---- */
+  .dont-miss{background:var(--bg);border:1px solid var(--line);border-radius:0;padding:14px 18px 18px;margin-bottom:12px;}
+  .dm-head{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--ink);margin-bottom:14px;}
   .dm-title{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-size:22px;font-weight:800;line-height:1.1;
-    color:var(--ink);text-transform:uppercase;letter-spacing:.01em;margin:0;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;
   }
-  .dm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
-  .dm-card{display:block;min-width:0;background:var(--panel-alt);border:1px solid var(--line);color:inherit;text-decoration:none;}
-  a.dm-card:hover{border-color:var(--ink);}
-  .dm-art{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;}
-  .dm-body{padding:12px 13px 14px;}
-  .dm-when{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px;}
-  .dm-name{font-size:17px;font-weight:800;line-height:1.2;color:var(--ink);margin-bottom:3px;}
+  .dm-title::before{content:'\25cf  ';color:var(--accent);font-size:16px;vertical-align:middle;}
+  .dm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border:1px solid var(--line);}
+  .dm-card{display:block;min-width:0;background:var(--panel-alt);border-right:1px solid var(--line);color:inherit;text-decoration:none;}
+  .dm-card:last-child{border-right:none;}
+  a.dm-card:hover .dm-name{text-decoration:underline;}
+  .dm-art{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid var(--line);}
+  .dm-body{padding:12px 14px 14px;}
+  .dm-when{font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:6px;}
+  .dm-name{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:24px;line-height:.95;text-transform:uppercase;color:var(--ink);margin-bottom:5px;}
   .dm-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
-  .dm-reason{font-size:13px;color:var(--ink);line-height:1.45;margin-top:8px;}
-  @media (max-width:640px){
-    .dont-miss{padding:14px 14px 16px;}
-  }
+  .dm-reason{font-size:13px;color:var(--ink);line-height:1.45;margin-top:8px;border-left:2px solid var(--accent);padding-left:10px;}
+  @media (max-width:640px){.dont-miss{padding:12px 14px 14px;}}
 
-  footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
+  /* ---- footer ---- */
+  footer.site{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
   footer.site p{margin:0 0 6px;}
   footer.site p:last-child{margin-bottom:0;}
-  /* Footer + data-transparency amendment: a quiet, editorial link out to the
-     full methodology/status page, styled as a small uppercase label rather
-     than an inline sentence — the homepage stays slick, sources.html stays
-     the transparent one. */
-  footer.site .footer-sources a, footer.site .footer-social a{
-    text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:700;
+  footer.site .footer-sources a, footer.site .footer-social a, footer.site .footer-links a{
+    font-family:var(--font-data);text-transform:uppercase;letter-spacing:.08em;font-size:10px;font-weight:400;
     color:var(--ink-dim);text-decoration:none;
   }
-  footer.site .footer-sources a:hover, footer.site .footer-social a:hover{color:var(--ink-soft);text-decoration:underline;}
+  footer.site .footer-sources a:hover, footer.site .footer-social a:hover, footer.site .footer-links a:hover{color:var(--ink);}
   footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
   footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
-  /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
-     same quiet uppercase-label treatment as footer-sources/footer-social,
-     just a longer link list. */
   footer.site .footer-links{font-size:11px;}
-  footer.site .footer-links a{
-    text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;font-weight:700;
-    color:var(--ink-dim);text-decoration:none;
-  }
-  footer.site .footer-links a:hover{color:var(--ink-soft);text-decoration:underline;}
-
   @media (max-width:720px){
     .day-cell{min-height:78px;}
     .pill{display:none;}
-    .more-link{display:none;} /* redundant once .day-count shows the total */
+    .more-link{display:none;}
     #monthLabel{min-width:0;}
   }
 
-  /* ---- Unified discovery row: WHEN / WHERE / WHAT / SEARCH ----
-     Four boxed controls in one compact row at every breakpoint, directly
-     under the hero. Each of the three triggers shows its current value and,
-     when clicked, expands the same underlying bar (same DOM/IDs/JS state as
-     ever — these are the shared discovery controls, not new ones). Below
-     720px that expansion is a fixed bottom sheet; at 721px+ it expands
-     inline, directly under the row, styled like a dropdown panel. */
-  .discovery-shell{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:12px 14px;margin-bottom:10px;
-  }
-  .mobile-triggers{display:flex;gap:8px;flex-wrap:wrap;}
-  .mobile-trigger{
-    flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);
-    border-radius:var(--radius);padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
-    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
-  }
-  .mobile-trigger:hover{background:var(--panel-hover);}
-  .mobile-trigger .mt-label, .search-field .mt-label{
-    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:400;line-height:1.3;letter-spacing:.08em;
-    color:var(--ink-soft);text-transform:uppercase;
-  }
-  .mobile-trigger .mt-sub{
-    font-size:13px;font-weight:700;line-height:1.35;color:var(--ink);max-width:100%;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  }
-  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-soft);} /* ▾ */
-  .mobile-trigger.has-value{border-color:var(--accent);}
-  .mobile-trigger.has-value .mt-sub{color:var(--ink);}
-  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);border-color:var(--ink);}
-
+  /* ---- sheets (the When / Where / What panels) ---- */
   .sheet-backdrop{display:none;}
-
-  /* Panels are hidden until their trigger opens them, at every breakpoint —
-     the always-open three-row layout they used to be is gone for good. */
   .discovery-bar, .location-bar, .filters{display:none;}
   .sheet-header{display:none;}
   .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
     display:flex;flex-direction:column;flex-wrap:nowrap;
-    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-top:10px;
+    background:var(--panel-alt);border-top:1px solid var(--line);border-radius:0;
+    padding:14px 16px;margin-top:0;
   }
   .discovery-bar.sheet-active .sheet-header,
   .location-bar.sheet-active .sheet-header,
   .filters.sheet-active .sheet-header{
     display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
-    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
   }
-  /* Once inside an open panel, the discovery/location/filter bars go back to
-     being a normal wrapping row of chips — same look they always had. */
   .discovery-bar.sheet-active, .filters.sheet-active{flex-direction:row;flex-wrap:wrap;gap:8px;}
   .location-bar.sheet-active{flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center;}
   .sheet-close{
-    border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
-    width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
+    border:1px solid var(--line);background:none;color:var(--ink);border-radius:0;
+    width:28px;height:28px;font-size:12px;cursor:pointer;line-height:1;
   }
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
-
-  /* In an inline (desktop) panel the header takes its own line above the
-     controls, rather than sitting among them as one more item in the row. */
   @media (min-width:721px){
     .discovery-bar.sheet-active .sheet-header,
     .location-bar.sheet-active .sheet-header,
     .filters.sheet-active .sheet-header{flex:0 0 100%;margin-bottom:2px;}
   }
-
-  /* WHAT opens from its own trigger at every width (2026-10-04, homepage
-     UX evolution: "compact discovery controls ... WHEN / WHERE / WHAT /
-     SEARCH"), the same way WHEN and WHERE do. From 2026-08-28 until then
-     the category chips were instead always open on desktop, as a second
-     row under the triggers, with the trigger itself hidden; that put two
-     rows of chips between the hero and the events. The chips, their
-     behaviour and the state they change are unchanged — only whether the
-     panel starts open. */
-
   @media (max-width:720px){
-    .discovery-shell{padding:0;background:none;border:none;}
-    .mobile-trigger{padding:8px 10px;}
-    .search-field{flex-basis:100%;padding:8px 10px;}
-
-    .sheet-backdrop{
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
-    }
+    .mobile-triggers{grid-template-columns:1fr 1fr 1fr;}
+    .mobile-trigger{padding:10px 12px 9px;font-size:14px;}
+    .mobile-trigger .mt-sub{font-size:14px;}
+    .mobile-trigger:nth-child(3){border-right:none;}
+    .search-field{grid-column:1 / -1;border-top:1px solid var(--line);padding:10px 12px 9px;}
+    #search{font-size:15px;}
+    .sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:39;}
     .sheet-backdrop.show{display:block;}
-
     .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
       flex-direction:column;flex-wrap:nowrap;
       position:fixed;left:0;right:0;bottom:0;z-index:40;
-      border-bottom:none;
-      border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
+      border:1px solid var(--line);border-bottom:none;
+      border-radius:0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
       padding:16px 16px calc(16px + env(safe-area-inset-bottom));
-      max-height:75vh;overflow-y:auto;margin:10px 0 0;
+      max-height:75vh;overflow-y:auto;margin:10px 0 0;background:var(--panel-alt);
     }
-    /* Radius/location controls stack full-width inside the sheet rather
-       than trying to fit the desktop's side-by-side row. */
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
@@ -4489,7 +4272,7 @@
       <button type="button" class="nav-search-btn" id="navSearchBtn" aria-label="Search events and venues">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
       </button>
-      <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
+      <a href="submit.html" style="display:inline-block;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:0;white-space:nowrap;">Submit Event</a>
     </div>
   </header>
 
@@ -4498,6 +4281,7 @@
       <div class="hl-line">THE</div>
       <div class="hl-line">CITY</div>
       <div class="hl-line hl-line-signal"><span class="hl-text">IS ON</span><span class="hero-signal" aria-hidden="true"></span></div>
+      <div class="hero-tag"><span>Detroit &middot; present tense</span><span class="dim">Every listing below is evidence</span></div>
     </div>
     <div class="hero-photo" id="heroPhoto"><!-- populated by the carousel script below --></div>
     <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
@@ -4704,9 +4488,14 @@
       <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
         <div class="neighborhoods-head-row">
           <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+          <!-- Two fallback plates for neighborhoods without approved
+               photography, both live so they can be compared in the real
+               strip (Product Owner, 2026-10-04): A, the Orbit plate; B, the
+               typographic nameplate. Approved photography always wins. -->
+          <div class="neigh-style" role="group" aria-label="Neighborhood plate style"><button type="button" class="on" data-fallback="orbit" onclick="setNeighborhoodFallback('orbit')">A &middot; Orbit</button><button type="button" data-fallback="plate" onclick="setNeighborhoodFallback('plate')">B &middot; Nameplate</button></div>
           <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
         </div>
-        <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+        <div class="neighborhoods-rail" id="neighborhoodsRail" data-fallback="orbit"></div>
       </section>
 
       <div class="stream stream-more" id="listMore" style="display:none;"></div>
@@ -4715,10 +4504,16 @@
     <aside class="home-sidebar" id="homeSidebar" aria-label="Calendar shortcuts and highlights">
       <div class="side-card" id="onRadarCard" style="display:none;"></div>
       <div class="side-card" id="nearYouCard"></div>
+      <!-- The four navigation surfaces: a sticky rail beside the stream on
+           desktop, a 2x2 NAVIGATE panel before the continuing inventory on
+           phone (see .rail-stack). On the Radar and the Detroit Orbit sit
+           in the main column, placed by the .home-body grid. -->
+      <div class="rail-stack">
       <div class="side-card" id="viewCalendarCard"></div>
       <div class="side-card" id="mapCard"></div>
       <div class="side-card" id="freeTodayCard"></div>
       <div class="side-card" id="venuesCard"></div>
+      </div>
     </aside>
   </div>
 
@@ -5907,7 +5702,7 @@ function editorialLinkHtml(e){
 //     the rows written so far.
 //   - The first STREAM_FIRST rows go in #listView; the rest go in
 //     #listMore, after the Explore Neighborhoods rail.
-const STREAM_FIRST = 20;
+const STREAM_FIRST = 5;
 const STREAM_INITIAL = 40;
 const STREAM_STEP = 60;
 let streamShown = STREAM_INITIAL; // rows on the page for the current view
@@ -5958,13 +5753,17 @@ function streamRowHtml(e, dayIso, ctx){
   const thumb = e.imageUrl && safeUrl(e.imageUrl)
     ? `<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`
     : '';
+  const go = eventUrl(e)
+    ? `<a href="${escapeHtml(eventUrl(e))}" aria-label="Open ${escapeHtml(e.title)}">&rarr;</a>`
+    : '';
   return `
         <div class="evt-row">
-          <div class="evt-time">${escapeHtml(e.time)||''}</div>
+          <div class="evt-time">${timeCellHtml(e.time)}</div>
+          <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
           <div class="evt-main">
             <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
-            <div class="evt-meta">${cat?`<span class="evt-cat">${escapeHtml(cat)}</span>`:''}${priceTag(e)}${runNoteHtml(e, dayIso)}</div>
+            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
+            <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
             ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
@@ -5978,8 +5777,41 @@ function streamRowHtml(e, dayIso, ctx){
             ${affiliateDisclosureHtml(e)}
             ${ticketStatusNoteHtml(e)}
           </div>
-          ${thumb}
+          <div class="evt-side"><div class="evt-meta">${cat?`<span class="evt-cat cat-${escapeHtml(e.cat)}">${escapeHtml(cat)}</span>`:''}${priceTag(e)}</div></div>
+          <div class="evt-go">${go}</div>
         </div>`;
+}
+
+// The time column: "9:00 AM – 7:00 PM" becomes the start on one line and
+// "to 7:00 PM" beneath it, so the column reads as a board. Anything that
+// is not a start–end pair is left exactly as the source gave it.
+function timeCellHtml(time){
+  const t = (time || '').trim();
+  if(!t) return '';
+  const m = t.match(/^(.+?)\s*[–—-]\s*(.+)$/);
+  if(m && /\d/.test(m[1]) && /\d/.test(m[2])) return `${escapeHtml(m[1])}<small>to ${escapeHtml(m[2])}</small>`;
+  return escapeHtml(t);
+}
+
+// The artwork fallback: the Orbit field. Thin concentric arcs off one
+// corner, one concrete dot. Eight positions rotate by the event's id so a
+// column of rows reads as a field, not a stamp. No chartreuse: this is
+// not a state. Real artwork (.evt-thumb) lays over it in the same frame.
+const ART_CODES = {
+  music:'Music', theatre:'Theatre', dance:'Dance', visual:'Visual', museum:'Museum', family:'Family',
+  fest:'Fest', food:'Food', film:'Film', nightlife:'Night', sports:'Sports', community:'Community',
+  vendor:'Vendor', training:'Training', gaming:'Gaming'
+};
+const ART_ORBITS = [
+  [96,72,56,44],[8,74,64,28],[52,-8,28,50],[96,72,40,36],
+  [8,74,80,22],[52,-8,76,48],[96,72,22,28],[8,74,60,16]
+];
+function artFallbackSvg(e){
+  let h = 0;
+  const key = String(e.id || e.title || '');
+  for(let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  const [cx, cy, dx, dy] = ART_ORBITS[h % ART_ORBITS.length];
+  return `<svg viewBox="0 0 104 70" preserveAspectRatio="xMidYMid slice"><g fill="none"><circle cx="${cx}" cy="${cy}" r="20" stroke="#2a2a2a"/><circle cx="${cx}" cy="${cy}" r="40" stroke="#232323"/><circle cx="${cx}" cy="${cy}" r="60" stroke="#1c1c1c"/><circle cx="${cx}" cy="${cy}" r="80" stroke="#171717"/></g><circle cx="${dx}" cy="${dy}" r="2" fill="#5c5d58"/></svg>`;
 }
 
 // The day groups for a run of consecutive stream rows. dayTotals is the
@@ -5997,6 +5829,7 @@ function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continued
     const total = dayTotals[dayIso] || 0;
     html += `<div class="list-day-group" data-day="${dayIso}">` +
       `<div class="list-day-heading">${rel}<span class="ldh-date">${label}</span>${dayIso === continuedDay ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${total.toLocaleString('en-US')} event${total===1?'':'s'}</span></div>` +
+      `<div class="ldh-cols" aria-hidden="true"><span>Time</span><span>Art</span><span>Event &middot; place</span><span class="lc-type">Type &middot; price</span><span>Go</span></div>` +
       rows.slice(i, j).map(r => streamRowHtml(r.event, dayIso, ctx)).join('') +
       `</div>`;
     i = j;
@@ -6183,7 +6016,7 @@ function renderHeroToday(){
         <button type="button" class="hero-proof-stat" onclick="viewEverything('next7')"><span class="hps-num" id="heroStatNext7">${n(f.next7)}</span><span class="hps-label">Next 7 days</span></button>
         <button type="button" class="hero-proof-stat" onclick="viewNeighborhoodsRail()"><span class="hps-num" id="heroStatNeighborhoods">${n(f.neighborhoods)}</span><span class="hps-label">Active neighborhoods</span></button>
       </div>
-      <div class="hero-proof-promise">Comprehensive by default. Curated by choice.</div>
+      <div class="hero-proof-promise"><span class="live-dot" aria-hidden="true"></span>Live index &middot; comprehensive by default, curated by choice</div>
       <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries</div>
     `;
     animateHeroCount(document.getElementById('heroStatNumber'), 0, f.total);
@@ -6404,7 +6237,7 @@ function mapScatterSvg(showYou){
     [70,14,2.4,.35],[76,44,3,.5],[90,26,2,.4],[98,42,2.4,.3],
     [108,16,2,.3],[18,48,2,.35]
   ];
-  const dotSvg = dots.map(([x,y,r,o]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--accent)" opacity="${o}"/>`).join('');
+  const dotSvg = dots.map(([x,y,r,o]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--ink-soft)" opacity="${o}"/>`).join('');
   const youSvg = showYou ? `
     <circle cx="48" cy="30" r="7" fill="var(--accent)" opacity=".3" class="map-you-ping"/>
     <circle cx="48" cy="30" r="4.5" fill="var(--accent)"/>
@@ -6413,7 +6246,7 @@ function mapScatterSvg(showYou){
   return `
     <div class="map-scatter" aria-hidden="true">
       <svg viewBox="0 0 120 64" preserveAspectRatio="xMidYMid meet">
-        <rect x="1" y="1" width="118" height="62" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+        <circle cx="48" cy="30" r="14" fill="none" stroke="var(--line)"/><circle cx="48" cy="30" r="28" fill="none" stroke="var(--line-soft)"/>
         ${dotSvg}${youSvg}
       </svg>
     </div>
@@ -6501,6 +6334,51 @@ function countEventsWithinMilesOf(origin, miles){
   return Discovery.count(current, Discovery.defaults(), ctx);
 }
 
+// The radial range field: Detroit at the centre, rings at 10 / 25 / 50
+// miles, and the cities with the most current + upcoming events placed by
+// their real bearing and distance from downtown (city centres from
+// Discovery.places), each with its live count. Nothing here is a map tile
+// or a pin carpet; a city is drawn only where the inventory has it.
+function orbitFieldHtml(){
+  const ctx = inventoryCtx();
+  const facets = Discovery.facets(EVENTS, Discovery.defaults(), ctx, 'city');
+  const cities = new Map(Discovery.places.filter(p => p.type === 'city').map(p => [p.name.toLowerCase(), p]));
+  const scale = 2.05; // px per mile: the 75-mile Orbit is a 154px radius
+  const detroitCount = facets.get('Detroit') || 0;
+  const items = [];
+  facets.forEach((n, name) => {
+    const p = cities.get(String(name).toLowerCase());
+    if(!p || !n || p.name === 'Detroit') return;
+    const v = vectorFromDetroit(p);
+    if(v.miles > 76) return;
+    const rad = v.bearing * Math.PI / 180;
+    items.push({name: p.name, n, x: Math.sin(rad) * v.miles * scale, y: -Math.cos(rad) * v.miles * scale});
+  });
+  items.sort((a, b) => b.n - a.n);
+  // Labels: busiest cities first, none closer than the Detroit label
+  // itself, none on top of another. Cities inside ~12 miles would print
+  // over "Detroit", so they are counted but not labelled.
+  const box = (it, left) => { const w = (it.name.length + String(it.n).length + 2) * 6.6 + 12; return left ? [it.x - w, it.x] : [it.x, it.x + w]; };
+  const taken = [{y: 0, b: box({x: 8, name: 'Detroit', n: detroitCount}, false)}];
+  const placed = [];
+  for(const it of items){
+    if(placed.length >= 13) break;
+    if(Math.hypot(it.x, it.y) < 26) continue;
+    const left = it.x > 0;
+    const b = box(it, left);
+    if(taken.some(t => Math.abs(t.y - it.y) < 14 && b[0] < t.b[1] && t.b[0] < b[1])) continue;
+    taken.push({y: it.y, b});
+    placed.push(Object.assign(it, {left}));
+  }
+  const rings = [10, 25, 50, 75].map(mi => `<span class="orbit-ring" style="width:${mi*scale*2}px;height:${mi*scale*2}px"></span>`).join('');
+  const miles = [10, 25, 50].map(mi => `<span class="orbit-mile" style="left:calc(50% + ${(mi*scale*0.92).toFixed(0)}px);top:calc(50% + ${(mi*scale*0.38).toFixed(0)}px)">${mi} mi</span>`).join('');
+  const labels = placed.map(it => {
+    const left = it.left;
+    return `<span class="orbit-lbl${left ? ' is-left' : ''}" style="left:calc(50% + ${it.x.toFixed(0)}px);top:calc(50% + ${it.y.toFixed(0)}px)"><i></i>${escapeHtml(it.name)}<b>${it.n.toLocaleString('en-US')}</b></span>`;
+  }).join('');
+  return `<div class="orbit-field" aria-hidden="true">${rings}${miles}<span class="orbit-center"></span><span class="orbit-lbl is-center" style="left:50%;top:50%">Detroit<b>${detroitCount.toLocaleString('en-US')}</b></span>${labels}</div>`;
+}
+
 function renderNearYouCard(){
   const el = document.getElementById('nearYouCard');
   if(!el) return;
@@ -6518,18 +6396,13 @@ function renderNearYouCard(){
     // resolves (or if it fails).
     const totalLoaded = orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), inventoryCtx());
     el.innerHTML = `
-      <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
-      <div class="ny-radar" aria-hidden="true">
-        <span class="ny-ring ny-ring-1"></span>
-        <span class="ny-ring ny-ring-2"></span>
-        <span class="ny-ring ny-ring-3"></span>
-        <span class="ny-ping"></span>
-        <span class="ny-dot"></span>
-      </div>
+      <div class="side-card-head"><h2>Detroit Orbit</h2><a class="side-card-link" href="map.html">Open the map &rarr;</a></div>
+      <p class="side-card-sub">Detroit is the gravity. Radius is yours: 5 &middot; 10 &middot; 25 &middot; 50 &middot; 75 mi</p>
       <div class="side-card-number">${totalLoaded.toLocaleString()}</div>
       <p class="side-card-caption">events loaded across the Detroit Orbit</p>
-      <p class="side-card-sub">See what's on up to 75 miles out — Detroit, Ann Arbor, Windsor &amp; beyond.</p>
       <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
+      ${orbitFieldHtml()}
+      <div class="orbit-foot">MI &middot; OH &middot; ON &mdash; the border is not a boundary</div>
     `;
     return;
   }
@@ -6822,17 +6695,69 @@ function renderNeighborhoodsRail(){
     const photoHtml = photoSrc
       ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt || name)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
       : '';
+    // No approved photograph: the plate carries the neighborhood's real
+    // bearing and distance from downtown instead (fallback A, the Orbit
+    // plate; fallback B, the nameplate, is the same markup with the field
+    // hidden -- see .neighborhoods-rail[data-fallback]).
+    const vec = neighborhoodVector(name);
+    const bearingHtml = vec ? `<span class="neigh-bearing">${vec.miles < 0.3 ? 'Center' : `${vec.miles < 10 ? vec.miles.toFixed(1) : Math.round(vec.miles)} mi ${compassPoint(vec.bearing)}`}</span>` : '';
     return `
-    <button type="button" class="neigh-card${photo?' has-photo':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
-      ${photoHtml}
+    <button type="button" class="neigh-card${photo?' has-photo':''}${!photo && !vec?' is-plate':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+      ${photoHtml}${photoSrc ? '' : neighborhoodOrbitHtml(vec)}
+      <span class="neigh-plate">
       <span class="neigh-name">${escapeHtml(name)}</span>
-      <span class="neigh-count">${count}</span>
-      <span class="neigh-count-label">event${count===1?'':'s'}</span>
+      <span class="neigh-count-row"><span class="neigh-count">${count}</span><span class="neigh-count-label">event${count===1?'':'s'}</span>${bearingHtml}</span>
+      </span>
     </button>
   `;
   }).join('');
   rail.querySelectorAll('.neigh-card').forEach(btn=>{
     btn.addEventListener('click', ()=> viewNeighborhood(btn.dataset.neighborhood));
+  });
+}
+
+// Downtown Detroit, the Orbit's centre of gravity (Discovery.places'
+// "Detroit" city centre). Neighborhood centres come from the same list.
+const DETROIT_CENTER = {lat:42.3314, lng:-83.0458};
+function neighborhoodVector(name){
+  const p = Discovery.places.find(x => x.type === 'neighborhood' && x.name === name);
+  if(!p || typeof p.lat !== 'number' || typeof p.lng !== 'number') return null;
+  return vectorFromDetroit(p);
+}
+function vectorFromDetroit(p){
+  const dLat = p.lat - DETROIT_CENTER.lat;
+  const dLng = (p.lng - DETROIT_CENTER.lng) * Math.cos(DETROIT_CENTER.lat * Math.PI / 180);
+  const miles = Math.sqrt(dLat * dLat + dLng * dLng) * 69.05;
+  const bearing = (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
+  return {miles, bearing};
+}
+function compassPoint(bearing){
+  return ['N','NE','E','SE','S','SW','W','NW'][Math.round(bearing / 45) % 8];
+}
+// Fallback A, the Orbit plate: rings a mile apart around downtown, the
+// neighborhood's own dot placed by its real bearing and distance (drawn at
+// the outer ring when it is further than the plate can show; the printed
+// distance stays true).
+function neighborhoodOrbitHtml(vec){
+  // Rings every mile around downtown; the neighborhood is the signal dot at
+  // its real bearing, clamped so it stays inside the plate's upper half.
+  const cx = 50, cy = 64, scale = 20, maxMiles = 2.6;
+  let dot = '';
+  if(vec){
+    const r = Math.min(vec.miles, maxMiles) * scale;
+    const rad = vec.bearing * Math.PI / 180;
+    dot = `<span class="me" style="left:${(Math.sin(rad) * r).toFixed(1)}px;top:${(-Math.cos(rad) * r).toFixed(1)}px"></span>`;
+  }
+  const rings = [1,2,3,4].map(m => `<span class="ring" style="width:${m*scale*2}px;height:${m*scale*2}px;left:0;top:0"></span>`).join('');
+  return `<span class="neigh-orbit" aria-hidden="true"><span class="neigh-orbit-in" style="left:${cx}%;top:${cy}px">${rings}<span class="dt" style="left:0;top:0"></span>${dot}</span></span>`;
+}
+// The two fallbacks are compared in place: this only switches which one
+// the rail draws, nothing about the neighborhoods or their counts.
+function setNeighborhoodFallback(kind){
+  const rail = document.getElementById('neighborhoodsRail');
+  if(rail) rail.setAttribute('data-fallback', kind);
+  document.querySelectorAll('.neigh-style button').forEach(b => {
+    if(b.dataset.fallback === kind) b.classList.add('on'); else b.classList.remove('on');
   });
 }
 
