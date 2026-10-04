@@ -147,10 +147,7 @@ async function run() {
     assert.strictEqual(byId(tables, tonight).time_display, "8:00 PM");
     assert.strictEqual(byId(tables, idFor("2026-10-04", "Rhone Wine Tasting")).description, "Six pours with the importer.");
     assert.strictEqual(byId(tables, idFor("2026-10-05", "Monday Night Jazz")).venue_id, "venue-mcw");
-    // TEMPORARY (MotorCity Wine recovery canary, 2026-10-04): a new row lands as
-    // pending_review while the canary override is in the connector. The permanent
-    // expectation is "approved"; reverting the canary commit restores that line.
-    assert.strictEqual(byId(tables, idFor("2026-10-10", "DJ Fixture")).status, "pending_review");
+    assert.strictEqual(byId(tables, idFor("2026-10-10", "DJ Fixture")).status, "approved");
     assert.strictEqual(byId(tables, idFor("2026-10-10", "DJ Fixture")).is_free, false, "`is_free: undefined` is omitted, so a new row takes the column default");
     assert.ok(sentRows(db).every((r) => !("is_free" in r)), "and is never sent as a key");
     assert.strictEqual("description" in sentRow(db, tonight), false, "no description key is sent for an entry that has none");
