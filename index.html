@@ -3786,7 +3786,19 @@
   .side-card-cta:hover{color:var(--ink);}
 
   /* On the Radar: press already covering what is listed */
-  #onRadarCard{background:var(--bg);border:1px solid var(--line);border-left:none;padding:16px 18px 10px;margin-top:24px;}
+  #onRadarCard{background:var(--bg);border:1px solid var(--line);border-left:none;padding:16px 18px 14px;margin-top:24px;margin-left:-32px;align-self:stretch;display:flex;flex-direction:column;}
+  #onRadarCard[style*="none"] ~ #nearYouCard{grid-area:auto;grid-column:1 / 3;grid-row:4;}
+  /* Coverage readout: fills the column beside the Orbit field and gives the
+     press surface its own numbers — outlets and how many upcoming events
+     each one is covering. */
+  .radar-outlets{margin-top:auto;padding-top:14px;}
+  .radar-outlets-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid var(--ink);padding-top:10px;margin-bottom:2px;}
+  .radar-outlets-head span{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .radar-outlets-total{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:44px;line-height:.9;color:var(--ink);margin:6px 0 2px;}
+  .radar-outlets-caption{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;}
+  .radar-outlet{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-family:var(--font-data);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);}
+  .radar-outlet b{font-weight:400;color:var(--ink-soft);}
+  .radar-outlet:last-child{border-bottom:1px solid var(--line);}
   #onRadarCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
   .radar-list{display:flex;flex-direction:column;margin:0;}
   .radar-item{
@@ -3833,7 +3845,11 @@
   #nearYouCard .side-card-head{position:relative;z-index:2;}
   #nearYouCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
   #nearYouCard .side-card-sub, #nearYouCard .side-card-number, #nearYouCard .side-card-caption, #nearYouCard .side-card-cta{position:relative;z-index:2;}
-  .orbit-field{position:relative;height:330px;margin:6px -18px 0;z-index:1;}
+  .orbit-field{position:relative;height:300px;margin:4px -18px 0;z-index:1;}
+  .orbit-readout{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative;z-index:2;}
+  .orbit-readout .side-card-number{margin-bottom:4px;}
+  .orbit-readout .side-card-caption{margin:0;}
+  .orbit-readout .side-card-cta{margin:0 0 6px;}
   .orbit-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid var(--line);border-radius:50%;}
   .orbit-center{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px rgba(215,255,0,.12);}
   .orbit-lbl{
@@ -3858,7 +3874,7 @@
   .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
   @media (max-width:980px){
     #nearYouCard{min-height:380px;margin-top:0;}
-    #onRadarCard{margin-top:0;border-left:1px solid var(--line);border-top:none;margin-bottom:18px;}
+    #onRadarCard{margin-top:0;margin-left:0;border-left:1px solid var(--line);border-top:none;margin-bottom:18px;align-self:auto;}
   }
 
   /* map readout */
@@ -3884,13 +3900,6 @@
     font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.9;
     text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;
   }
-  .neigh-style{display:flex;gap:0;align-items:center;margin-left:auto;}
-  .neigh-style button{
-    border:1px solid var(--line);background:none;color:var(--ink-soft);padding:5px 9px;cursor:pointer;
-    font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
-  }
-  .neigh-style button + button{border-left:none;}
-  .neigh-style button.on{color:var(--on-accent);background:var(--accent);border-color:var(--accent);}
   .neighborhoods-rail{
     display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
     scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
@@ -3913,20 +3922,12 @@
   .neigh-count-label{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
   .neigh-count-row{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;}
   .neigh-bearing{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
-  /* Fallback A — Orbit plate: the neighborhood's real bearing and distance
-     from downtown drawn as rings and a dot. Fallback B — nameplate: type
-     alone, the count large. Switched by data-fallback on the rail; both
-     exist so the two can be compared in the real strip. */
-  .neigh-orbit{position:absolute;inset:0;overflow:hidden;}
-  .neigh-orbit-in{position:absolute;width:0;height:0;}
-  .neigh-orbit .ring{position:absolute;border:1px solid var(--line);border-radius:50%;transform:translate(-50%,-50%);}
-  .neigh-orbit .dt{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:var(--ink-soft);}
-  .neigh-orbit .me{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(215,255,0,.14);}
-  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-orbit, .neigh-card.is-plate .neigh-orbit{display:none;}
-  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-plate, .neigh-card.is-plate .neigh-plate{border-top:none;min-height:0;height:100%;justify-content:space-between;padding-top:12px;}
-  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-name, .neigh-card.is-plate .neigh-name{font-size:30px;}
-  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-count, .neigh-card.is-plate .neigh-count{font-size:26px;display:block;}
-  .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-count-row, .neigh-card.is-plate .neigh-count-row{flex-direction:column;gap:2px;align-items:flex-start;}
+  /* No approved photograph: the nameplate (Product Owner, 2026-10-04 —
+     fallback B). Type alone, the count large. Photography always wins. */
+  .neigh-card:not(.has-photo) .neigh-plate{border-top:none;min-height:0;height:100%;justify-content:space-between;padding-top:12px;}
+  .neigh-card:not(.has-photo) .neigh-name{font-size:30px;}
+  .neigh-card:not(.has-photo) .neigh-count{font-size:26px;display:block;}
+  .neigh-card:not(.has-photo) .neigh-count-row{flex-direction:column;gap:2px;align-items:flex-start;}
   /* Desktop: the six busiest neighborhoods as one strip of plates, no
      scroller; the rest are a click away ("See all neighborhoods"). The
      full rail scrolls on narrower screens. */
@@ -3935,13 +3936,13 @@
     .neighborhoods-rail .neigh-card{width:auto;height:204px;}
     .neighborhoods-rail .neigh-card:nth-child(n+7){display:none;}
     .neigh-name{font-size:17px;}
-    .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-name, .neigh-card.is-plate .neigh-name{font-size:19px;}
+    .neigh-card:not(.has-photo) .neigh-name{font-size:19px;}
   }
   .neigh-foot{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin:6px 0 0;}
   @media (max-width:640px){
     .neigh-card{width:160px;height:200px;}
     .neigh-name{font-size:19px;}
-    .neighborhoods-rail[data-fallback="plate"] .neigh-card:not(.has-photo) .neigh-name, .neigh-card.is-plate .neigh-name{font-size:23px;}
+    .neigh-card:not(.has-photo) .neigh-name{font-size:23px;}
   }
 
   /* calendar page leftovers (month grid classes shared with calendar.html) */
@@ -4488,14 +4489,9 @@
       <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
         <div class="neighborhoods-head-row">
           <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
-          <!-- Two fallback plates for neighborhoods without approved
-               photography, both live so they can be compared in the real
-               strip (Product Owner, 2026-10-04): A, the Orbit plate; B, the
-               typographic nameplate. Approved photography always wins. -->
-          <div class="neigh-style" role="group" aria-label="Neighborhood plate style"><button type="button" class="on" data-fallback="orbit" onclick="setNeighborhoodFallback('orbit')">A &middot; Orbit</button><button type="button" data-fallback="plate" onclick="setNeighborhoodFallback('plate')">B &middot; Nameplate</button></div>
           <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
         </div>
-        <div class="neighborhoods-rail" id="neighborhoodsRail" data-fallback="orbit"></div>
+        <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
       </section>
 
       <div class="stream stream-more" id="listMore" style="display:none;"></div>
@@ -6398,9 +6394,11 @@ function renderNearYouCard(){
     el.innerHTML = `
       <div class="side-card-head"><h2>Detroit Orbit</h2><a class="side-card-link" href="map.html">Open the map &rarr;</a></div>
       <p class="side-card-sub">Detroit is the gravity. Radius is yours: 5 &middot; 10 &middot; 25 &middot; 50 &middot; 75 mi</p>
-      <div class="side-card-number">${totalLoaded.toLocaleString()}</div>
-      <p class="side-card-caption">events loaded across the Detroit Orbit</p>
-      <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
+      <div class="orbit-readout">
+        <div><div class="side-card-number">${totalLoaded.toLocaleString()}</div>
+        <p class="side-card-caption">events loaded across the Detroit Orbit</p></div>
+        <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
+      </div>
       ${orbitFieldHtml()}
       <div class="orbit-foot">MI &middot; OH &middot; ON &mdash; the border is not a boundary</div>
     `;
@@ -6695,15 +6693,14 @@ function renderNeighborhoodsRail(){
     const photoHtml = photoSrc
       ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt || name)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
       : '';
-    // No approved photograph: the plate carries the neighborhood's real
-    // bearing and distance from downtown instead (fallback A, the Orbit
-    // plate; fallback B, the nameplate, is the same markup with the field
-    // hidden -- see .neighborhoods-rail[data-fallback]).
+    // No approved photograph: the nameplate (fallback B, Product Owner
+    // 2026-10-04), with the neighborhood's real distance and bearing from
+    // downtown printed where Discovery knows its coordinates.
     const vec = neighborhoodVector(name);
     const bearingHtml = vec ? `<span class="neigh-bearing">${vec.miles < 0.3 ? 'Center' : `${vec.miles < 10 ? vec.miles.toFixed(1) : Math.round(vec.miles)} mi ${compassPoint(vec.bearing)}`}</span>` : '';
     return `
-    <button type="button" class="neigh-card${photo?' has-photo':''}${!photo && !vec?' is-plate':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
-      ${photoHtml}${photoSrc ? '' : neighborhoodOrbitHtml(vec)}
+    <button type="button" class="neigh-card${photo?' has-photo':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+      ${photoHtml}
       <span class="neigh-plate">
       <span class="neigh-name">${escapeHtml(name)}</span>
       <span class="neigh-count-row"><span class="neigh-count">${count}</span><span class="neigh-count-label">event${count===1?'':'s'}</span>${bearingHtml}</span>
@@ -6734,33 +6731,6 @@ function vectorFromDetroit(p){
 function compassPoint(bearing){
   return ['N','NE','E','SE','S','SW','W','NW'][Math.round(bearing / 45) % 8];
 }
-// Fallback A, the Orbit plate: rings a mile apart around downtown, the
-// neighborhood's own dot placed by its real bearing and distance (drawn at
-// the outer ring when it is further than the plate can show; the printed
-// distance stays true).
-function neighborhoodOrbitHtml(vec){
-  // Rings every mile around downtown; the neighborhood is the signal dot at
-  // its real bearing, clamped so it stays inside the plate's upper half.
-  const cx = 50, cy = 64, scale = 20, maxMiles = 2.6;
-  let dot = '';
-  if(vec){
-    const r = Math.min(vec.miles, maxMiles) * scale;
-    const rad = vec.bearing * Math.PI / 180;
-    dot = `<span class="me" style="left:${(Math.sin(rad) * r).toFixed(1)}px;top:${(-Math.cos(rad) * r).toFixed(1)}px"></span>`;
-  }
-  const rings = [1,2,3,4].map(m => `<span class="ring" style="width:${m*scale*2}px;height:${m*scale*2}px;left:0;top:0"></span>`).join('');
-  return `<span class="neigh-orbit" aria-hidden="true"><span class="neigh-orbit-in" style="left:${cx}%;top:${cy}px">${rings}<span class="dt" style="left:0;top:0"></span>${dot}</span></span>`;
-}
-// The two fallbacks are compared in place: this only switches which one
-// the rail draws, nothing about the neighborhoods or their counts.
-function setNeighborhoodFallback(kind){
-  const rail = document.getElementById('neighborhoodsRail');
-  if(rail) rail.setAttribute('data-fallback', kind);
-  document.querySelectorAll('.neigh-style button').forEach(b => {
-    if(b.dataset.fallback === kind) b.classList.add('on'); else b.classList.remove('on');
-  });
-}
-
 // Toggle: clicking the already-active neighborhood clears it, same pattern
 // as re-clicking an active When/category chip elsewhere on the site.
 function viewNeighborhood(name){
@@ -7748,6 +7718,23 @@ function renderOnRadarCard(){
   }
   el.style.display = '';
 
+  // Coverage readout: every upcoming event with at least one linked
+  // article, and the outlets doing the covering. Same rows as the cards
+  // above, before the one-card-per-article collapse and the cap.
+  const outletCounts = new Map();
+  rawCandidates.forEach(({event}) => {
+    new Set((editorialByEvent[event.id] || []).map(a => a.source).filter(Boolean))
+      .forEach(src => outletCounts.set(src, (outletCounts.get(src) || 0) + 1));
+  });
+  const outlets = [...outletCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 6);
+  const readoutHtml = `
+    <div class="radar-outlets">
+      <div class="radar-outlets-head"><span>Coverage on the board</span><span>${outlets.length} outlet${outlets.length === 1 ? '' : 's'}</span></div>
+      <div class="radar-outlets-total">${rawCandidates.length.toLocaleString('en-US')}</div>
+      <p class="radar-outlets-caption">upcoming event${rawCandidates.length === 1 ? '' : 's'} with press coverage</p>
+      ${outlets.map(([src, n]) => `<div class="radar-outlet"><span>${escapeHtml(src)}</span><b>${n} event${n === 1 ? '' : 's'}</b></div>`).join('')}
+    </div>`;
+
   el.innerHTML = `
     <div class="side-card-head"><h2>On the Radar</h2><a class="side-card-link" href="radar.html">See all &rarr;</a></div>
     <p class="side-card-sub">Upcoming events the local press is already covering.</p>
@@ -7772,6 +7759,7 @@ function renderOnRadarCard(){
           : `<div class="radar-item">${body}</div>`;
       }).join('')}
     </div>
+    ${readoutHtml}
   `;
 }
 </script>
