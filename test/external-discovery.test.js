@@ -15,6 +15,15 @@ const assert = require("assert");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 
+// 2026-10-04: web-search discovery is behind a temporary gate that is
+// CLOSED unless WEB_SEARCH_ENRICHMENT_ENABLED is exactly "true" (see the top
+// of api/_lib/external-discovery.js). This file tests the discovery
+// mechanics themselves — verification, extraction, fail-closed behaviour —
+// with a mocked provider, so it opens the gate for itself. What happens
+// while the gate is closed, which is production's state, is proven in
+// test/external-discovery-gate.test.js.
+process.env.WEB_SEARCH_ENRICHMENT_ENABLED = "true";
+
 function freshLib() {
   delete require.cache[require.resolve(`${REPO_DIR}/api/_lib/external-discovery.js`)];
   return require(`${REPO_DIR}/api/_lib/external-discovery.js`);

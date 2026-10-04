@@ -426,6 +426,20 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### TASK-006 — Reconcile the System Effectiveness Report (2026-10-03) with production: four corrections
+
+- **Type:** TASK · **Status:** BACKLOG (recorded 2026-10-04 by Product Owner instruction; nothing here is addressed by the change that recorded it) · **Priority:** Low
+- **Epic:** —
+- **Dependencies:** None.
+- **Problem/User Need:** the report was written between 01:30 and 02:30 UTC on 2026-10-04. Four of its statements need correcting when its findings are reconciled into this backlog.
+  1. **The four recovery connectors are held.** The report lists MotorCity Wine (09:00 UTC), Detroit Training Center (10:00), Ticketmaster (13:00) and Detroit Month of Design (01:00 on 5 October) as the next proof points of the batch fix. Their schedules were removed at 01:49 UTC on 2026-10-04 (`c9d8319`; see the hold note under `BUG-007`). Only Popps Packing's 05:00 UTC run remains scheduled, as the recovery canary.
+  2. **`BUG-007`'s deployment status is stale.** Its status line still reads "not merged, not deployed". The fix was deployed as `7bdce19` at 01:24 UTC on 2026-10-04. To be corrected when the recovery is evaluated and the hold is released.
+  3. **The 49 "Evening" rows are not all Ticketmaster.** Of the 49 upcoming approved events showing the placeholder time, 26 are Ticketmaster; the rest are Resident Advisor (17 across its three source labels), Dice (4) and manual entries (3) — 50 counting one row that is not approved.
+  4. **Rejected: "an existing row should never receive null."** The report recommends that the shared upsert helper never send a null for a field on an existing row. That would also stop a source from clearing a value it has genuinely removed (a price, a ticket link, a sold-out status). Whether a field may be cleared, and by whom, stays a per-field decision under `DEBT-011`.
+- **Acceptance Criteria:** each correction is reflected wherever the report's findings are turned into backlog items; `BUG-007`'s status line is brought up to date.
+
+---
+
 ## Bugs
 
 ### BUG-001 — Verify: does a failed status-lookup risk re-approving a previously-rejected event?
@@ -549,6 +563,32 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Problem/User Need:** On 2026-10-03 neither connector made a single database request at its scheduled hour — not even the venue lookup — so each stops before the write (upstream fetch or parse). Planet Ant's last new row is from 2026-09-05 (32 upcoming rows are stale); Metro Times has no rows at all. Both return HTTP 200 with `upserted: 0` on an upstream failure, so nothing alerts. Planet Ant also builds optional fields as `undefined`, so `BUG-007`'s fix protects it once it does reach the write, but does not make it reach it.
 - **Acceptance Criteria:** the actual stopping point of each is known from its function log; then fix, or (Metro Times, per WP 0.13, Product Owner decision) stop scheduling it.
 - **Product Decisions Required:** none until diagnosed.
+
+---
+
+### BUG-010 — Web-search enrichment publishes wrong facts (tier gated closed 2026-10-04)
+
+- **Type:** BUG · **Status:** BLOCKED (the tier is closed behind a temporary gate, built 2026-10-04 by Product Owner instruction; the defect itself is not fixed and no stored data has been corrected) · **Priority:** Critical
+- **Epic:** EPIC-006 (SH.5 scheduled repair, SH.6 provenance)
+- **Dependencies:** None for the gate. The repair needs Product Owner decisions (below).
+- **Discovered:** 2026-10-03, by the System Effectiveness audit; confirmed against production 2026-10-04.
+- **Problem/User Need:** since a search key was configured (first writes 2026-10-01), the web-search tier in `api/_lib/external-discovery.js` has written wrong facts to public events. Confirmed in production: descriptions stored with `description_source = 'authoritative'` that are site navigation text ("Skip to Content Northern Lights Lounge…"), another date's page ("Thursday, 6 August" on a 1 October event; "Fri, 7/04" on a 3 October event), another event's page, a list of other events, or a venue's generic blurb; and venue rows created from third-party pages with the aggregator's homepage as the venue's website (`seatgeek.com`, `dice.fm`, `detroit.gaycities.com`, `xsmusic.es`, `community.metrotimes.com`), a defaulted city ("Pronto Royal Oak" stored in Detroit) and a placeholder stored as a venue ("Location TBA"). The module's own date and title checks were written to reject such pages; these rows show they do not. A result classified `discovery_only` is still stored as `authoritative` (four stored rows carry both), because the authority tier is recorded in `note` and not used as a condition.
+- **Where the writes come from:** one module, three functions — `discoverAuthoritativeDescription`, `discoverVenueKnowledge` (both called by `scripts/generic-metadata-enrichment.js`) and `discoverEventVenue` (called by `scripts/press-coverage-linking.js`). Four routes reach them: the 12:30 UTC `cron-enrichment` run, the 23:00 UTC `cron-editorial` run, and Admin's Auto-Repair and editorial auto-link actions. The stored timestamps show writes at 12:30 UTC (the cron) and at hours with no recorded enrichment run (20:00 UTC on 1 October, 17:16 UTC on 2 October — one of the other routes), so stopping one schedule would not have been enough.
+- **TEMPORARY GATE (must be released deliberately):** the module now sends no search request and reports itself "not configured" unless the environment variable `WEB_SEARCH_ENRICHMENT_ENABLED` is exactly `true`. It is not set in production, so the gate is closed on every route above. Callers take the "not configured" path they already had before a key existed; nothing else in them changed. Test: `test/external-discovery-gate.test.js` (closed: no request, no venue, no `authoritative` description, no search-derived address, city or note, through the real enrichment and article-linking passes with a key configured; the same inputs with the gate open do produce those writes; no other file can send a search).
+- **Still active, deliberately:** venue address/city from a canonical venue (SH.1), venue name from an address, the Outer Limits / Dossin / Redford source-page repairs, generated (template) descriptions, venue digital-home links, the location re-parse, RA candidate promotion, article matching and article-derived event creation.
+- **Not done here, and not prevented by the gate:**
+  1. No stored row was changed. Still in production: the tier's 12 descriptions on Resident Advisor events (six wrong by the audit's reading; 10 of the 12 events have passed), the five venue rows above, and four event links set to one of those venues' aggregator homepages (all four events have passed).
+  2. Deterministic steps still read those five venue rows — that is how the four links in (1) were written. A future event whose venue name matches one exactly will be linked to it and can take its address, city or website. On 2026-10-04 two upcoming events are linked to them and neither has a blank the steps would fill.
+  3. Article-created events take their description from the article page and label it `authoritative`; several stored ones begin with page chrome ("Search for: Search Submit…"). That is a different path, not a web search, and is not gated.
+- **Release conditions (proposed; the Product Owner decides):** the gate stays closed until all of these are true —
+  1. the event-specific check rejects every recorded production failure, each kept as a regression fixture built from the stored row and the page it came from;
+  2. no venue is created or changed from a third-party page: no aggregator or bare-domain website, no defaulted city, no placeholder name — either that path is removed or it only proposes a venue for approval (`DEC-012`);
+  3. the authority tier is a condition, not a label: a `discovery_only` result is never stored as `authoritative`;
+  4. each search attempt and what it wrote is recorded, so a wrong result can be found and attributed afterwards;
+  5. a dry run against current production candidates has been reviewed by the Product Owner, line by line, before the flag is set;
+  6. the existing wrong rows have been dealt with or explicitly accepted, so a reopened tier does not build on them.
+- **How to release:** set `WEB_SEARCH_ENRICHMENT_ENABLED=true` for the Production environment in Vercel and redeploy. Removing the variable closes it again.
+- **Product Decisions Required:** the release conditions above; whether search may ever create venues; what happens to the stored wrong descriptions and venues; whether article-derived descriptions should keep the `authoritative` label.
 
 ---
 

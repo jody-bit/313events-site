@@ -78,7 +78,55 @@ const NON_OFFICIAL_DOMAINS = new Set([
   "ma.to", "discotech.me", "technobeatscloud.com",
 ]);
 
+// ---------------------------------------------------------------------------
+// TEMPORARY GATE — web-search discovery is CLOSED (Product Owner, 2026-10-04)
+//
+// WHY: production evidence (2026-10-01 to 10-03) that this tier publishes
+// wrong facts. Descriptions it stored as `authoritative` on public events
+// were site navigation text, another date's page ("Thursday, 6 August" on a
+// 1 October event), another event's page, or a venue's generic blurb. Venue
+// rows it created carry an aggregator's homepage as their website
+// (seatgeek.com, dice.fm, detroit.gaycities.com, xsmusic.es,
+// community.metrotimes.com), a defaulted city ("Pronto Royal Oak" stored in
+// Detroit) and, in one case, a placeholder as the venue ("Location TBA").
+// The date and title checks further down this file were meant to reject
+// such pages and, in production, did not.
+//
+// WHAT IT DOES: while the gate is closed this module behaves exactly as it
+// did before a search key was ever configured — isExternalDiscoveryConfigured()
+// is false, and no search request is sent, whoever calls and however the key
+// reaches them. Every caller already has a tested "not configured" path, so
+// nothing else changes: no description is written from a search result, no
+// venue is created or updated from one, no address, city or note comes from
+// one. All three discovery functions sit behind the one request function
+// below (tavilySearch), and that is where the gate is.
+//
+// This covers every route into the tier, not only the 12:30 UTC
+// cron-enrichment run: the 23:00 UTC cron-editorial run, and Admin's
+// Auto-Repair and editorial auto-link actions, call the same functions.
+//
+// WHAT IT DOES NOT TOUCH: deterministic enrichment — venue address/city
+// copied from a canonical venue, venue name from an address, the Outer
+// Limits / Dossin / Redford source-page repairs, the generated (template)
+// description, venue digital-home links, the location re-parse, RA candidate
+// promotion. No stored event, description or venue is changed or removed.
+//
+// HOW TO RELEASE IT, deliberately: set WEB_SEARCH_ENRICHMENT_ENABLED to the
+// exact string "true" in the Production environment and redeploy. Anything
+// else — unset, "1", "TRUE", "yes" — leaves it closed. Do that only when
+// the conditions recorded under BUG-010 in project/BACKLOG.md are met.
+// ---------------------------------------------------------------------------
+const EXTERNAL_DISCOVERY_GATE_ENV = "WEB_SEARCH_ENRICHMENT_ENABLED";
+
+function isExternalDiscoveryGateOpen(env = process.env) {
+  return !!(env && env[EXTERNAL_DISCOVERY_GATE_ENV] === "true");
+}
+
+// `env` is where the search key is looked for (a caller may pass its own
+// object). The gate is always read from the real process environment, so a
+// caller-built object can neither open it nor fail to carry it.
 function isExternalDiscoveryConfigured(env = process.env) {
+  if (!isExternalDiscoveryGateOpen()) return false;
   return !!(env && typeof env.TAVILY_API_KEY === "string" && env.TAVILY_API_KEY.trim());
 }
 
@@ -229,6 +277,10 @@ function extractVenuePhraseFromText(text) {
 }
 
 async function tavilySearch({ query, apiKey, fetchFn, maxResults = 5 }) {
+  // TEMPORARY GATE (see the top of this file): the only place a search
+  // request is sent. Closed means no request and no results, so every
+  // discovery function below returns null.
+  if (!isExternalDiscoveryGateOpen()) return [];
   const doFetch = fetchFn || fetch;
   const resp = await doFetch("https://api.tavily.com/search", {
     method: "POST",
@@ -541,6 +593,9 @@ async function discoverAuthoritativeDescription({ event, apiKey = process.env.TA
 }
 
 module.exports = {
+  // Temporary gate (2026-10-04) — see the top of this file.
+  EXTERNAL_DISCOVERY_GATE_ENV,
+  isExternalDiscoveryGateOpen,
   isExternalDiscoveryConfigured,
   hostnameOf,
   verifyOfficialResult,
