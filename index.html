@@ -3523,7 +3523,7 @@
      prototype "What this is" notice — brand + live current-day activity,
      not explanatory copy). ---- */
   .hero{
-    display:grid;grid-template-columns:.85fr 1.3fr 1fr;gap:0;
+    display:grid;grid-template-columns:.85fr 1.2fr 1.1fr;gap:0;
     background:var(--panel);border:1px solid var(--line);margin-bottom:10px;
     min-height:320px;
   }
@@ -3610,16 +3610,24 @@
   .hero-photo-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;}
   .hero-photo-slide.is-active{opacity:1;z-index:1;}
   .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
-  /* "N things happening today in the Detroit Orbit" stat panel — a constant,
-     site-wide pulse number (see isInDetroitOrbit()), distinct from the
-     filtered calendar/list below it. Real count, never fabricated. Sized
-     off the column's own inline size (cqw), same reasoning as .hl-line
-     above — digits are narrower than "CITY" so this column has more
-     headroom, but a fixed 4-digit count still needs to fit without
-     overflowing the stat column at any breakpoint. */
+  /* The proof panel (homepage UX evolution, 2026-10-04; DEC-026): the
+     site's real current + upcoming total as the hero's primary figure, with
+     TODAY / THIS WEEK / ACTIVE NEIGHBORHOODS beneath it. Constant, site-wide
+     numbers, distinct from the filtered stream below. Real counts, never
+     fabricated — see heroFigures(). The total is sized off the column's
+     own inline size (cqw), same reasoning as .hl-line above, so a
+     four-digit, comma-grouped figure fits the column at every breakpoint.
+     Chartreuse is on the total only (live data); the supporting figures
+     are warm white and take the accent on hover/focus, as actions. */
+  .hero-proof-total{
+    display:block;width:100%;background:none;border:none;padding:0;margin:0 0 12px;
+    text-align:left;cursor:pointer;color:inherit;font-family:inherit;
+  }
   .hero-stat-number{
+    display:block;
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(48px,30cqw,116px);line-height:.85;color:var(--accent);margin-bottom:2px;
+    font-size:clamp(56px,34cqw,124px);line-height:.9;color:var(--accent);margin-bottom:8px;
+    letter-spacing:-0.02em;
     font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
   /* Count-up tally (2026-09-13, Jody: "kinda like a gameshow") — see
@@ -3633,14 +3641,34 @@
     .hero-stat-number.is-counting{text-shadow:none;}
   }
   .hero-stat-caption{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:16.5px;
-    text-transform:uppercase;line-height:1.18;letter-spacing:-.005em;color:var(--ink);margin-bottom:14px;
+    display:block;
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:clamp(17px,6.4cqw,23px);
+    text-transform:uppercase;line-height:1.05;letter-spacing:.005em;color:var(--ink);
   }
-  .hero-stat-cta{
-    display:inline-block;font-size:13px;font-weight:700;color:var(--accent);background:none;
-    border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit;margin-bottom:14px;
+  .hero-proof-total:hover .hero-stat-caption, .hero-proof-total:focus-visible .hero-stat-caption{text-decoration:underline;text-underline-offset:3px;}
+  .hero-proof-stats{
+    display:grid;grid-template-columns:1fr 1fr 1.25fr;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:12px;
   }
-  .hero-stat-cta:hover{text-decoration:underline;}
+  .hero-proof-stat{
+    display:flex;flex-direction:column;gap:3px;min-width:0;
+    background:none;border:none;border-left:1px solid var(--line);padding:9px 10px 9px;
+    text-align:left;cursor:pointer;color:inherit;font-family:inherit;
+  }
+  .hero-proof-stat:first-child{border-left:none;padding-left:0;}
+  .hps-num{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:27px;line-height:1;
+    color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+  }
+  .hps-label{
+    font-family:'Space Mono',monospace;font-size:9.5px;line-height:1.3;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .hero-proof-stat:hover .hps-num, .hero-proof-stat:focus-visible .hps-num{color:var(--accent);}
+  .hero-proof-promise{
+    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;line-height:1.5;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--ink);margin-bottom:5px;
+  }
   .hero-stat-orbit{font-size:12px;color:var(--ink-soft);line-height:1.45;}
   @media (max-width:980px){
     .hero{grid-template-columns:1fr 1.2fr;}
@@ -3655,21 +3683,22 @@
     .hero-today{padding:14px 18px 20px;}
   }
 
-  /* Search moved into the When/Where/Category trigger row (Jody,
-     2026-08-27) — it's the same "narrow the list" family as those three, and
-     the separate bordered .controls panel that used to hold it alone was
-     just dead vertical space. On desktop/tablet it sits as a 4th item in the
-     same flex row with extra grow (it needs more room to type in than a
-     fixed-value trigger label does); below 720px, where the three triggers
-     are already squeezed to compact pills, it drops to its own full-width
-     line via flex-basis:100% instead of getting squeezed into a quarter-width
-     sliver too small to comfortably type in on a phone. */
-  #search{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;
-    min-width:200px;flex:2 1 220px;
-    background:var(--panel-alt);color:var(--ink);
+  /* Search is the fourth control of the row — WHEN / WHERE / WHAT / SEARCH
+     (it joined the trigger row 2026-08-27; given its own label 2026-10-04
+     so the four read as one grammar). It is boxed like the three triggers,
+     with the input itself borderless inside the box, and takes the extra
+     width in the row since it is the one that is typed into. Below 720px
+     it drops to its own full-width line. */
+  .search-field{
+    flex:2 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;cursor:text;
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-alt);padding:9px 12px;
   }
-  #search::placeholder{color:var(--ink-dim);}
+  .search-field:focus-within{border-color:var(--ink);}
+  #search{
+    border:none;background:none;padding:0;margin:0;width:100%;min-width:0;outline:none;
+    font-family:inherit;font-size:13px;font-weight:700;line-height:1.35;color:var(--ink);
+  }
+  #search::placeholder{color:var(--ink-soft);font-weight:600;}
 
   /* Discovery bar — time-range shortcuts. Deliberately styled like the
      existing chip controls (ink-on-active, not chartreuse) —
@@ -3714,27 +3743,13 @@
     .when-date-picker{justify-content:space-between;}
   }
 
-  /* "Showing N events ___" heading above the list — only appears when a
-     specific scope (this week, this weekend, a picked date/range, a
-     neighborhood, or All Upcoming) is active, per currentListMeta(); the
-     plain default view has no heading here — see .list-scope-note below for
-     what it gets instead. */
+  /* "Showing N events ___" — the stream's head whenever the view has a
+     scope of its own or any filter is on (see renderList()). The plain
+     default view is headed "All events" instead (.stream-title). */
   .list-count-heading{
-    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;
-    color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-size:22px;font-weight:800;line-height:1.1;
+    color:var(--ink);text-transform:uppercase;letter-spacing:.01em;
   }
-  /* The plain default view's own boundary disclosure (P0, 2026-08-28
-     product audit Gap 2/8: the 30-day rolling window used to be silent —
-     nothing told a visitor there even WAS a cutoff, let alone how to see
-     past it). Deliberately a plain inline note, not another .es-action
-     chip — this isn't an empty-state recovery action, it's a standing,
-     always-there disclosure on an otherwise-populated list. */
-  .list-scope-note{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
-  .list-scope-note button{
-    font:inherit;background:none;border:none;color:var(--accent);font-weight:700;
-    cursor:pointer;padding:0;
-  }
-  .list-scope-note button:hover{text-decoration:underline;}
 
   /* Active-filter tray — one visible summary of whatever is currently
      narrowing the event universe (time-range shortcut, free-only, search
@@ -4030,7 +4045,7 @@
      NEIGHBORHOOD_PHOTOS in the JS below) — a card only gets a photo once
      one actually exists for that specific neighborhood; every other card
      still renders exactly as before. */
-  .neighborhoods-section{margin:18px 0 22px;}
+  .neighborhoods-section{margin:18px 0 20px;min-width:0;}
   .neighborhoods-head-row{
     display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px;
   }
@@ -4076,62 +4091,78 @@
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
-  /* Event rows — matches the approved mockup's list treatment directly:
-     oversized chartreuse time, plain right-aligned category/price column
-     (no pill chips here — those stay in the filter bar/calendar dots),
-     hairline dividers rather than boxed cards. No bookmark/save icon
-     (stays rejected — see FINAL IMPLEMENTATION DIRECTIVE). One real
-     deviation from the mock: no street address line under the venue name
-     — venue_name_raw/venue_city_raw is all the data model actually has,
-     no per-venue street address, so nothing is fabricated to fill that
-     line. */
-  .evt-row{
-    display:grid;grid-template-columns:98px 1fr auto;gap:18px;align-items:start;
-    padding:16px 0;border-top:1px solid var(--line-soft);
+  /* ---- The event stream (homepage UX evolution, first slice, 2026-10-04) ----
+     One chronological stream in two panels: #listView (head + first
+     section) and #listMore (the rest, after the Explore Neighborhoods
+     rail). Hairline-ruled rows, not boxed cards. No bookmark/save icon
+     (stays rejected — see FINAL IMPLEMENTATION DIRECTIVE), and no street
+     address under the venue (the data model has none to show).
+
+     Colour, per the locked Detroit Signal rules: chartreuse is state and
+     action only — the links, and the TODAY marker on today's heading.
+     Time, category and price are type, not colour (the per-category hue
+     the row's category label used to carry is gone from the stream, and
+     the time is warm white rather than chartreuse). The event's own
+     artwork, where it has any, is the row's colour. */
+  .stream{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 18px;}
+  .stream-more{padding-top:2px;margin-top:10px;} /* collapses into the rail's own margin when the rail is shown */
+  .stream-head{
+    display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;
+    padding-bottom:11px;border-bottom:2px solid var(--ink);
   }
-  .evt-row:first-of-type{border-top:none;}
-  /* Chartreuse + oversized, per the mock — a deliberate reversal of this
-     project's earlier "accent is state-only" rule, made because Jody asked
-     directly to match the mock's row treatment. Plain text rather than a
-     split number/AM-PM (the mock's single "5:00 PM"): real event times
-     here are often ranges ("11:00 AM–3:00 PM") or non-numeric ("Evening",
-     "Varies"), which a stylized split can't safely parse. */
+  .stream-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-size:22px;font-weight:800;line-height:1.1;
+    color:var(--ink);text-transform:uppercase;letter-spacing:.01em;margin:0;
+  }
+  .stream-sub{
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+  }
+
+  /* Day headings stay on screen while their day scrolls past (2026-09-04,
+     Jody: a multi-day list made it too easy to lose track of which day you
+     were looking at). Each carries the day's whole count, not just the rows
+     written so far. */
+  .list-day-group{padding-bottom:4px;}
+  .list-day-heading{
+    position:sticky;top:0;z-index:3;
+    display:flex;align-items:baseline;gap:10px;
+    background:var(--panel);padding:15px 0 9px;border-bottom:1px solid var(--line);
+    font-family:'Space Mono',monospace;font-size:17px;font-weight:700;line-height:1.2;
+    color:var(--ink);text-transform:uppercase;letter-spacing:.02em;
+  }
+  .ldh-rel{color:var(--ink-soft);}
+  .ldh-rel.is-today{color:var(--accent);} /* live: this is the day that is on */
+  .ldh-cont{font-size:10.5px;font-weight:400;letter-spacing:.06em;color:var(--ink-soft);}
+  .ldh-count{margin-left:auto;font-size:10.5px;font-weight:400;letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap;}
+  @media (max-width:640px){
+    .list-day-heading{font-size:15px;}
+  }
+
+  .evt-row{
+    display:grid;grid-template-columns:86px minmax(0,1fr) auto;gap:16px;align-items:start;
+    padding:13px 0 14px;border-top:1px solid var(--line-soft);
+  }
+  .list-day-heading + .evt-row{border-top:none;}
+  /* Plain text rather than a split number/AM-PM: real event times here are
+     often ranges ("11:00 AM–3:00 PM") or non-numeric ("Evening",
+     "Varies"), which a stylized split can't safely parse. An event with no
+     known time keeps its (empty) column, so every title in the stream
+     starts on the same line. */
   .evt-time{
     grid-column:1;
     font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:16.5px;line-height:1.3;color:var(--accent);padding-top:1px;
+    font-size:16px;line-height:1.25;color:var(--ink);padding-top:1px;
   }
-  .evt-time:empty{display:none;}
-  /* Explicit grid-column pins on all three children — required because
-     .evt-time can be display:none (see :empty rule above) when an event has
-     no time_display. CSS Grid auto-placement skips display:none items and
-     re-flows the REMAINING items into the earliest open columns, so without
-     these pins .evt-main would slide into the 98px time column and .evt-side
-     into the 1fr column whenever a time is missing — squeezing the title
-     into a ~98px-wide strip (causing severe multi-line wrapping) and
-     cramming the actions row too. Pinning columns keeps layout stable
-     regardless of which items are present. */
   .evt-main{grid-column:2;min-width:0;}
-  /* Thumbnail (2026-09-04, Jody: "add a thumbnail view of any images
-     associated to the events") — image_url has been loaded and available
-     on every event since day one (used for the "photo" filter chip and
-     event.html's own hero image + social-share tags) but was never actually
-     shown anywhere in the list view itself. Lives INSIDE .evt-main as a
-     small flex row (thumb + text), rather than as a 4th outer grid column —
-     that keeps the existing 3-column [time/main/side] grid, and its mobile
-     single-column fallback, completely untouched; only rows that actually
-     have an image gain the extra flex wrapper, so image-less rows (still
-     the majority of sources) don't carry a blank reserved gutter. */
-  .evt-main-body{display:flex;gap:12px;align-items:flex-start;min-width:0;}
+  /* Artwork sits at the row's right edge (2026-10-04) rather than between
+     the time and the title, so text lines up down the stream whether or not
+     a row has a picture; rows without one simply get the width. Most
+     sources supply no image. */
   .evt-thumb{
-    flex:0 0 auto;width:64px;height:64px;object-fit:cover;
+    grid-column:3;width:116px;height:78px;object-fit:cover;display:block;
     border-radius:var(--radius);background:var(--panel-alt);
   }
-  .evt-text{min-width:0;flex:1 1 auto;}
-  @media (max-width:640px){
-    .evt-thumb{width:52px;height:52px;}
-  }
-  .evt-title{font-size:18px;font-weight:800;margin-bottom:4px;line-height:1.25;}
+  .evt-title{font-size:17px;font-weight:800;margin-bottom:3px;line-height:1.22;}
   /* Only wraps the title when the event has a real DB id — see
      editorialLinkHtml()'s comment for why FALLBACK_EVENTS (no id) can't
      link anywhere. Deliberately inherits the surrounding text color rather
@@ -4142,16 +4173,26 @@
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+  /* Category · price · run, as one line of small caps under the venue. */
+  .evt-meta{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 0;margin-top:5px;
+    font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.5;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .evt-meta:empty{display:none;}
+  .evt-meta > * + *::before{content:'\00b7';margin:0 8px;color:var(--ink-dim);font-weight:400;}
+  .evt-cat{font-weight:400;}
+  .evt-price{font-weight:700;color:var(--ink);white-space:nowrap;}
+  .evt-run{white-space:nowrap;}
   /* Short description excerpt (2026-08-28) — plain secondary text, not a
      link (the title above it is already the click target into event.html).
-     line-clamp is a belt-and-suspenders visual safety net; truncateText()
-     in JS already caps the string length before it ever reaches here, so
-     this never depends on line-clamp support alone. */
+     One line in the stream; truncateText() in JS already caps the string
+     before it reaches here, so this never depends on line-clamp alone. */
   .evt-desc{
     font-size:13px;color:var(--ink-soft);line-height:1.4;margin-top:5px;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
   }
-  .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
+  .note{font-size:12px;color:var(--ink-soft);margin-top:5px;font-style:italic;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
   .evt-link{
     display:inline-flex;align-items:center;gap:5px;
@@ -4160,13 +4201,11 @@
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
   /* "As seen in" press-mention callout (2026-08-27, redesigned 2026-08-28
-     per Jody: "you barely notice it is there"). Originally a tiny italic
-     link crammed into .evt-actions next to Tickets/Cal/Share — too subtle to
-     notice. Now its own full-width line with a tinted background and accent
-     left-border so it reads as a distinct piece of content (press coverage)
-     rather than a buried secondary action, while still sitting below the
-     description/note and above the actions row so it doesn't compete with
-     the primary "Tickets & info" CTA for attention. */
+     per Jody: "you barely notice it is there"). Its own full-width line
+     with a tinted background and accent left-border so it reads as a
+     distinct piece of content (press coverage) rather than a buried
+     secondary action, while still sitting above the actions row so it
+     doesn't compete with the primary "Tickets & info" link. */
   .evt-editorial-mention{
     display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:7px 10px;
     background:rgba(215,255,0,.07);border-left:3px solid var(--accent);
@@ -4186,18 +4225,16 @@
   }
   /* "+N more articles" line (2026-09-04, Jody: "let the user see which [events]
      are getting more coverage") — a quiet, non-interactive line under the
-     primary As-seen-in callout, not a second row of clickable links: this is
-     a coverage-volume signal, not a second set of actions to compete with
-     Tickets/Cal/Share. Full list of the other titles/sources is in the
-     native title= tooltip rather than crammed into the visible line. */
+     primary As-seen-in callout: a coverage-volume signal, not a second set
+     of actions. The other titles/sources are in the native title= tooltip. */
   .evt-editorial-also{
     font-size:11.5px;color:var(--ink-soft);margin:2px 0 2px 13px;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
   }
-  /* Row of secondary actions under the title/venue block — ticket link (if
-     any), Add to Calendar, Share. Wraps on narrow widths rather than
-     truncating or overlapping. */
-  .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:6px;column-gap:14px;margin-top:9px;}
+  /* Row of actions under the row's text — ticket link (if any), event page,
+     Add to Calendar, Share. Wraps on narrow widths rather than truncating. */
+  .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:6px;column-gap:14px;margin-top:8px;}
+  .evt-actions:empty{display:none;}
   .evt-cal{font-size:12px;font-weight:600;}
   .evt-cal a{color:var(--ink-soft);text-decoration:none;}
   .evt-cal a:hover{color:var(--ink);text-decoration:underline;}
@@ -4208,48 +4245,40 @@
   }
   .evt-share:hover{color:var(--ink);text-decoration:underline;}
   .evt-share:disabled{color:#3fbf6a;cursor:default;}
-  /* Right column: category (its own site-wide color, kept from the
-     chip/dot system — the mock's plain gray text was tied to its own
-     placeholder taxonomy, not this project's locked, color-coded one) and
-     price/free stacked underneath, right-aligned. */
-  .evt-side{grid-column:3;display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;text-align:right;}
-  .evt-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
-  .evt-price{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
-  .evt-price.free{color:#3fbf6a;}
   /* Content-nature descriptor, distinct from category/price and from the
-     italic editorial .note line below — a plain fact about the event
-     ("what you'll see there"), not a caveat or a warning, so it gets a
-     neutral outlined badge rather than a loud color. See
+     italic editorial .note line — a plain fact about the event ("what
+     you'll see there"), not a caveat or a warning, so it gets a neutral
+     outlined badge rather than a loud color. See
      migration_034_clothing_optional.sql. */
   .evt-tag-clothing-optional{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:2px 7px;margin-top:6px;}
 
   @media (max-width:640px){
-    /* Time + category/price move above the title instead of framing it on
-       either side — a three-column grid gets cramped fast on a narrow
-       phone width. */
-    .evt-row{grid-template-columns:1fr;gap:4px;padding:14px 0;}
-    /* Reset the desktop grid-column pins back to the single mobile column —
-       otherwise grid-column:2/3 would force extra implicit column tracks
-       instead of stacking, and the order:* below would have no effect. */
-    .evt-time{grid-column:1;order:1;}
-    .evt-side{grid-column:1;order:2;flex-direction:row;align-items:baseline;gap:8px;text-align:left;}
-    .evt-main{grid-column:1;order:3;}
+    /* Phone: the time moves above the title; artwork stays at the right
+       edge, smaller, beside the time and title. */
+    .stream{padding:14px 14px 16px;}
+    .evt-row{grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;padding:12px 0 13px;}
+    .evt-time{grid-column:1;grid-row:1;font-size:14.5px;}
+    .evt-time:empty{display:none;}
+    .evt-main{grid-column:1;grid-row:2;}
+    .evt-thumb{grid-column:2;grid-row:1 / span 2;width:72px;height:72px;}
   }
 
-  /* List view */
-  #listView{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;}
-  .list-day-group{padding:22px 0 14px;border-top:2px solid var(--line);}
-  .list-day-group:first-child{padding-top:0;border-top:none;}
-  /* Sized up + brightened 2026-09-04 (Jody: scrolling a multi-day list —
-     "All Upcoming", a weekend, a range — made it too easy to lose track of
-     which day you were looking at; the old 13px var(--ink-soft) heading
-     read as just another piece of metadata, not a boundary). Bumped well
-     past every card's own text (title is 16px) so it reads as a section
-     break at a glance, not something you have to stop and parse. */
-  .list-day-heading{font-family:'Space Mono',monospace;font-size:21px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.02em;margin-bottom:14px;}
-  @media (max-width:640px){
-    .list-day-heading{font-size:18px;}
+  /* The end of what is on the page so far: more of the same view, on
+     request (see showMoreStream()). */
+  .stream-foot{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
+    padding-top:16px;margin-top:8px;border-top:2px solid var(--line);
   }
+  .stream-more-btn{
+    background:none;border:1.5px solid var(--accent);color:var(--accent);border-radius:var(--radius);
+    font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;
+    padding:9px 16px;cursor:pointer;white-space:nowrap;
+  }
+  .stream-more-btn:hover, .stream-more-btn:focus-visible{background:var(--accent);color:var(--on-accent);}
+  .stream-foot-note{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .stream-foot-link{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap;}
+  .stream-foot-link:hover{text-decoration:underline;}
+
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
@@ -4257,6 +4286,30 @@
     padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
   }
   .es-action:hover{background:var(--panel-hover);}
+
+  /* ---- Don't Miss (DEC-025) ----
+     A scarce, human-curated placement (typically one to three events,
+     sometimes none). Hidden entirely when there is no active placement —
+     see renderDontMiss(). Hard-edged, hairline-ruled, like every other
+     panel; the events' own artwork carries the colour. */
+  .dont-miss{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;margin-bottom:10px;}
+  .dm-head{padding-bottom:11px;border-bottom:2px solid var(--ink);margin-bottom:14px;}
+  .dm-title{
+    font-family:'Archivo Narrow',-apple-system,sans-serif;font-size:22px;font-weight:800;line-height:1.1;
+    color:var(--ink);text-transform:uppercase;letter-spacing:.01em;margin:0;
+  }
+  .dm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
+  .dm-card{display:block;min-width:0;background:var(--panel-alt);border:1px solid var(--line);color:inherit;text-decoration:none;}
+  a.dm-card:hover{border-color:var(--ink);}
+  .dm-art{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;}
+  .dm-body{padding:12px 13px 14px;}
+  .dm-when{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px;}
+  .dm-name{font-size:17px;font-weight:800;line-height:1.2;color:var(--ink);margin-bottom:3px;}
+  .dm-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+  .dm-reason{font-size:13px;color:var(--ink);line-height:1.45;margin-top:8px;}
+  @media (max-width:640px){
+    .dont-miss{padding:14px 14px 16px;}
+  }
 
   footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
@@ -4290,15 +4343,13 @@
     #monthLabel{min-width:0;}
   }
 
-  /* ---- Unified discovery row (Homepage Redesign pass) ----
-     WHEN / WHERE / CATEGORY now render as one compact row of boxed
-     triggers at every breakpoint — each shows its current value and, when
-     clicked, expands the same underlying bar (same DOM/IDs/JS state that
-     powered the old always-open three-row layout) rather than replacing it
-     with new controls. Below 720px that expansion is the original fixed
-     bottom sheet (unchanged, proven mobile pattern). At 721px+ it expands
-     inline, directly under the trigger row, styled like a dropdown panel —
-     no new filtering logic anywhere, purely a presentation change. */
+  /* ---- Unified discovery row: WHEN / WHERE / WHAT / SEARCH ----
+     Four boxed controls in one compact row at every breakpoint, directly
+     under the hero. Each of the three triggers shows its current value and,
+     when clicked, expands the same underlying bar (same DOM/IDs/JS state as
+     ever — these are the shared discovery controls, not new ones). Below
+     720px that expansion is a fixed bottom sheet; at 721px+ it expands
+     inline, directly under the row, styled like a dropdown panel. */
   .discovery-shell{
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:12px 14px;margin-bottom:10px;
@@ -4310,14 +4361,15 @@
     display:flex;flex-direction:column;align-items:flex-start;gap:2px;
   }
   .mobile-trigger:hover{background:var(--panel-hover);}
-  .mobile-trigger .mt-label{
-    font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-dim);text-transform:uppercase;
+  .mobile-trigger .mt-label, .search-field .mt-label{
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:400;line-height:1.3;letter-spacing:.08em;
+    color:var(--ink-soft);text-transform:uppercase;
   }
   .mobile-trigger .mt-sub{
-    font-size:13px;font-weight:700;color:var(--ink-soft);max-width:100%;
+    font-size:13px;font-weight:700;line-height:1.35;color:var(--ink);max-width:100%;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   }
-  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-dim);} /* ▾ */
+  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-soft);} /* ▾ */
   .mobile-trigger.has-value{border-color:var(--accent);}
   .mobile-trigger.has-value .mt-sub{color:var(--ink);}
   .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);border-color:var(--ink);}
@@ -4349,37 +4401,27 @@
   }
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
 
-  /* Category (What) promoted back to default-visible on desktop — 2026-08-28
-     P0 product-audit fix (Gap 1 / Finding 4: a visible filter widget got
-     roughly 77% of filtering interactions vs. ~2% for a functionally
-     identical hidden one in the cited research; the trigger-button pattern
-     below is real, always-visible-labeled progress over a generic buried
-     "Advanced Search" link, but it still hides the twelve category chips
-     behind a click at every width). When/Where stay trigger-gated — a
-     date-range picker and a location autocomplete genuinely need room, and
-     reopening the old always-open three-row layout for all three would be a
-     real redesign, not this targeted fix. Category is the one compact
-     enough (chips only, no text input) to promote outright: it's shown as a
-     plain wrapping row, not the boxed/bordered sheet-active panel treatment
-     When/Where use, so it reads as "chips that were always there" rather
-     than a dropdown left open. The matching Category trigger button is
-     hidden in the same breakpoint below, since there's nothing left for it
-     to open. Mobile (<=720px) is untouched — the sheet pattern is still
-     right where a persistent chip row would cost too much space above the
-     fold. */
+  /* In an inline (desktop) panel the header takes its own line above the
+     controls, rather than sitting among them as one more item in the row. */
   @media (min-width:721px){
-    .filters{
-      display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;
-      margin-top:10px;
-    }
-    #filterTriggerBtn{display:none;}
+    .discovery-bar.sheet-active .sheet-header,
+    .location-bar.sheet-active .sheet-header,
+    .filters.sheet-active .sheet-header{flex:0 0 100%;margin-bottom:2px;}
   }
 
+  /* WHAT opens from its own trigger at every width (2026-10-04, homepage
+     UX evolution: "compact discovery controls ... WHEN / WHERE / WHAT /
+     SEARCH"), the same way WHEN and WHERE do. From 2026-08-28 until then
+     the category chips were instead always open on desktop, as a second
+     row under the triggers, with the trigger itself hidden; that put two
+     rows of chips between the hero and the events. The chips, their
+     behaviour and the state they change are unchanged — only whether the
+     panel starts open. */
+
   @media (max-width:720px){
-    .discovery-shell{padding:10px 10px 0;background:none;border:none;}
-    .mobile-trigger{align-items:center;text-align:center;}
-    .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
-    #search{flex-basis:100%;min-width:0;}
+    .discovery-shell{padding:0;background:none;border:none;}
+    .mobile-trigger{padding:8px 10px;}
+    .search-field{flex-basis:100%;padding:8px 10px;}
 
     .sheet-backdrop{
       display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
@@ -4554,19 +4596,14 @@
   })();
   </script>
 
-  <!-- Positioned directly under the hero, above the When/Where/Category filter bar. This is a
-       discovery/browse aid (a second way in, alongside the hero) rather than a refinement of the
-       filters below it — Jody's call, and it matches IA practice for "browse by X" entry points
-       (see 2026-08-27 conversation): they read as a peer to the hero's primary path, not as part
-       of the filter mechanism that acts on the list. -->
-  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
-    <div class="neighborhoods-head-row">
-      <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
-      <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
-    </div>
-    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
-  </section>
-
+  <!-- Homepage hierarchy (homepage UX evolution, first slice, 2026-10-04):
+         hero + live inventory count
+         -> WHEN / WHERE / WHAT / SEARCH (the shared discovery controls)
+         -> the chronological event stream
+       Explore Neighborhoods used to sit here, between the hero and the
+       controls. It now follows the first section of the stream (see
+       .home-main below), so the first thing under the hero is the way to
+       narrow the inventory and then the inventory itself. -->
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
       <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
@@ -4576,9 +4613,12 @@
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+        <span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All types</span>
       </button>
-      <input type="text" id="search" aria-label="Search events, venues, or neighborhoods" placeholder="Search events, venues, neighborhoods&hellip;">
+      <label class="search-field" for="search">
+        <span class="mt-label">Search</span>
+        <input type="text" id="search" aria-label="Search events, venues, or neighborhoods" placeholder="Events, venues, neighborhoods&hellip;">
+      </label>
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
 
@@ -4587,11 +4627,12 @@
       <button class="when-btn" data-when="tonight">Tonight</button>
       <button class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button class="when-btn" data-when="weekend">This Weekend</button>
-      <!-- All Upcoming (P0, 2026-08-28 product audit Gap 2) — the one
-           explicit, one-click way to see the complete unfiltered catalog
-           beyond the page's today-only default view (narrowed from a 30-day
-           rolling window 2026-09-04); see currentDateList()/matchesFilters()
-           for what it actually changes. -->
+      <!-- All Upcoming (P0, 2026-08-28 product audit Gap 2) — added as the
+           one-click way to see the complete catalog when the page's default
+           view was today only. Since 2026-10-04 the default view is itself
+           everything current + upcoming, so this now states that choice
+           explicitly (it is what a ?when=all link means) rather than
+           widening anything. -->
       <button class="when-btn" data-when="all">All Upcoming</button>
       <!-- Expanded from a single "Pick a date" input into a From/To pair
            (Jody, 2026-08-27) so the same control handles both a single date
@@ -4640,33 +4681,41 @@
     <div class="filters" id="filterBar"></div>
   </div>
 
-  <!-- Month prev/next paging removed (Jody, 2026-08-27): the list is no
-       longer boxed to one calendar month (see currentDateList()) — its
-       default view is today only (narrowed from a rolling 30-day window
-       2026-09-04, so the page's own scroll doesn't bury the right-hand
-       column), and the When sheet's date-range picker or "All Upcoming" is
-       the way to jump further out. A calendar
-       month to page through no longer matches how the list actually scopes
-       itself, so the control (and the "August 2026" label with it) is gone
-       rather than left showing a scope that isn't real anymore.
-       The separate .controls search box that used to live here is gone too
-       (Jody, 2026-08-27) — search moved into the When/Where/Category trigger
-       row above as its own last item, since it's the same kind of "narrow
-       the list" control as those three, and having it in its own bordered
-       panel was just dead vertical space for one input. -->
+  <!-- No month paging and no separate search panel (both removed
+       2026-08-27): the stream below is scoped by When / Where / What /
+       Search above it, and continues on request. -->
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
   <div class="home-body">
     <div class="home-main">
-      <div id="listView"></div>
+      <!-- Don't Miss: a temporary, human-curated editorial placement
+           (DEC-025). Nothing is selected in this file and there is no
+           placement data source yet, so this stays hidden — see
+           renderDontMiss(). -->
+      <section class="dont-miss" id="dontMissSection" style="display:none;" aria-label="Don't Miss"></section>
+
+      <!-- The event stream. #listView holds its head and first section;
+           #listMore continues it after the Explore Neighborhoods interlude.
+           Both are written by renderList(). -->
+      <div class="stream" id="listView"></div>
+
+      <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
+        <div class="neighborhoods-head-row">
+          <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+          <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
+        </div>
+        <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+      </section>
+
+      <div class="stream stream-more" id="listMore" style="display:none;"></div>
     </div>
 
     <aside class="home-sidebar" id="homeSidebar" aria-label="Calendar shortcuts and highlights">
-      <div class="side-card" id="viewCalendarCard"></div>
-      <div class="side-card" id="mapCard"></div>
       <div class="side-card" id="onRadarCard" style="display:none;"></div>
       <div class="side-card" id="nearYouCard"></div>
+      <div class="side-card" id="viewCalendarCard"></div>
+      <div class="side-card" id="mapCard"></div>
       <div class="side-card" id="freeTodayCard"></div>
       <div class="side-card" id="venuesCard"></div>
     </aside>
@@ -5028,7 +5077,7 @@ const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth
 // Bounds how far out the When sheet's date-range picker will let someone
 // pick (12 months) — see initWhenDatePicker(). The old month-paging system
 // (prevBtn/nextBtn/monthLabel, plus a MIN_MONTH lower bound and a `current`
-// page cursor) was removed 2026-08-27 — see currentDateList() for what
+// page cursor) was removed 2026-08-27 — see streamRows() for what
 // replaced it.
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
 
@@ -5072,16 +5121,20 @@ function setState(patch){
 
 // What Discovery needs to know about this surface and this moment.
 //   defaultWhen — the homepage's own resting view when no When is picked:
-//     today only (Jody, 2026-09-04: a longer default list pushed the rest of
-//     the page out of reach) — unless a search or a neighborhood is active,
-//     which look across everything upcoming (2026-09-16: "search never works
-//     for me" — a match on another date was silently hidden).
+//     everything current + upcoming, from today on, in date order (homepage
+//     UX evolution, 2026-10-04). It was "today only" from 2026-09-04, when
+//     the list rendered every row of whatever it was showing and a longer
+//     default pushed the rest of the page out of reach; the stream now
+//     renders a first section and continues on request (see renderList()),
+//     so the default can be the whole inventory. That also retires the old
+//     special case that widened the view to every date only while a search
+//     or a neighborhood was active: the default is already every date.
 //   coverage — which events have press coverage, for the "On the Radar"
 //     feature filter.
 function discoveryCtx(){
   return {
     now: new Date(),
-    defaultWhen: (state.q || state.where.neighborhood) ? 'all' : 'today',
+    defaultWhen: 'all',
     coverage: editorialByEvent,
   };
 }
@@ -5173,18 +5226,6 @@ function formatDateLabel(iso){
 function formatRangeLabel(startIso, endIso){
   return startIso === endIso ? formatDateLabel(startIso) : `${formatDateLabel(startIso)}–${formatDateLabel(endIso)}`;
 }
-// Multi-day indicator for an event card (2026-09-02 audit fix) — cards are
-// already grouped under a single day heading (see renderList()), so without
-// this, a festival or exhibit's card looks identical to a one-day event no
-// matter which day of its run you're looking at. Only renders when endDate
-// is a real, later date than the card's own day — day 1 of a 3-day event
-// shows "Through Aug 24", day 2 shows the same, so it's never ambiguous
-// whether an event card belongs to a range still in progress.
-function multiDayNoteHtml(e){
-  if(!e.endDate || e.endDate <= e.date) return '';
-  return `<div class="note">Through ${escapeHtml(formatDateLabel(e.endDate))}</div>`;
-}
-
 // Ticket-status fallback note (2026-10-01, Needs Follow-up remaining-gap
 // product pass, extended here from event-template.html's detail-page-only
 // version -- see that file's own TICKET_STATUS_NOTES/ticketStatusNoteHtml()
@@ -5205,26 +5246,11 @@ function ticketStatusNoteHtml(e){
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
 }
 
-// The single source of truth for "which dates does the list currently
-// show" — every render() call funnels through here. The window itself
-// (today only / tonight / tomorrow / the weekend / the week / a picked date
-// or range / everything upcoming) is Discovery's; this just lists the days
-// inside it that have anything on them, in order, for the list's day
-// headings. A forward-looking window starts at today; a picked date or
-// range is taken exactly as chosen, past or future.
-function currentDateList(){
-  const w = Discovery.window(state, discoveryCtx());
-  return Object.keys(byDate)
-    .filter(iso => (w.from === null || iso >= w.from) && (w.to === null || iso <= w.to))
-    .sort();
-}
-
-// Paired with currentDateList() — the human-readable scope behind whatever
-// it just returned, fed to renderList() for the "Showing N events ___"
-// heading and the empty-state copy. null means "the plain default view",
-// which gets neither a count heading nor an "in ___" empty-state suffix.
-// (This is the homepage's own wording; which events are in scope is
-// Discovery's.)
+// The human-readable scope of the current view, used by renderList() for
+// the "Showing N events ___" heading and the empty-state copy. null means
+// "no scope of its own" — the plain default view, or one narrowed only by
+// category / free / features / place. (This is the homepage's own wording;
+// which events are in scope is Discovery's.)
 function currentListMeta(){
   const mode = state.when.mode;
   if(mode === 'week') return {scopeLabel: 'this week', countLabel: 'this week'};
@@ -5246,11 +5272,10 @@ function currentListMeta(){
   if(mode === 'next7') return {scopeLabel: 'the next 7 days', countLabel: 'in the next 7 days'};
   if(mode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
   if(state.where.neighborhood) return {scopeLabel: state.where.neighborhood, countLabel: `in ${state.where.neighborhood}`};
-  // Paired with the search-widening rule in discoveryCtx() (2026-09-16) —
-  // once a query expands the list to every upcoming date, it should say so,
-  // the same way every other non-default scope does: a "Showing N events
-  // matching ___" heading, and "matching ___" appended to the empty-state
-  // copy when a search genuinely comes up empty.
+  // A search looks across every upcoming date (2026-09-16) and says so, the
+  // same way every other scope does: a "Showing N events matching ___"
+  // heading, and "matching ___" appended to the empty-state copy when a
+  // search genuinely comes up empty.
   if(state.q) return {scopeLabel: `matching "${state.q}"`, countLabel: `matching "${state.q}"`};
   return {scopeLabel: null, countLabel: null};
 }
@@ -5274,7 +5299,7 @@ function buildFilterBar(){
   const header = document.createElement('div');
   header.className = 'sheet-header';
   const headerLabel = document.createElement('span');
-  headerLabel.textContent = 'Filter';
+  headerLabel.textContent = 'What';
   const headerClose = document.createElement('button');
   headerClose.type = 'button';
   headerClose.className = 'sheet-close';
@@ -5860,101 +5885,207 @@ function editorialLinkHtml(e){
   return primaryHtml + alsoHtml;
 }
 
-// dateList is always an explicit array of ISO date strings to render — see
-// currentDateList() for how it's built for each mode (rolling 30-day
-// default, a single day, a weekend, a this-week window, a user-picked
-// range, or every upcoming date when a neighborhood is selected). Month
-// paging was removed (2026-08-27), so there's no "every day in current's
-// month" fallback left to fall back to.
-// meta (optional) — {scopeLabel, countLabel} from currentListMeta(): when
-// set, a "Showing N events ___" heading is rendered above the list (Jody:
-// clicking "View all events" or a neighborhood card should show a count
-// that visibly matches what the user was just told), and scopeLabel feeds
-// the empty-state copy ("Nothing on the signal here in ___").
-function renderList(dateList, meta){
-  meta = meta || {};
-  const el = document.getElementById('listView');
-  const isos = dateList;
-  let html = '';
-  let any = false;
-  const ctx = discoveryCtx();
-  const shown = [];
-  for(const iso of isos){
-    // byDate[iso] is every event that occupies this day (a multi-day event is
-    // listed under each day of its run); Discovery decides which belong in
-    // the current view.
-    const events = (byDate[iso]||[]).filter(e=>Discovery.matches(e, state, ctx));
-    if(!events.length) continue;
-    any = true;
-    events.forEach(e=>shown.push(e));
-    const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
-      events.map(e=>`
+// ---- The event stream (homepage UX evolution, first slice, 2026-10-04) ----
+// The list under the discovery controls is one chronological stream of
+// whatever the current view matches — by default, everything current and
+// upcoming, starting today. Which events belong in it is Discovery's
+// (Discovery.matches / Discovery.window); how they are laid out is this
+// page's:
+//   - Each event is listed ONCE, on the first day of the view it occupies:
+//     its own start date, or the view's first day if it began before that
+//     (an exhibition mid-run is listed under today; under tomorrow when the
+//     view is Tomorrow). It says how long it runs ("Through Oct 24").
+//     Before this an event was repeated under every day of its run, so one
+//     exhibition could account for dozens of rows (DEBT-009, item 4).
+//   - Only part of the stream is put on the page at a time: STREAM_INITIAL
+//     rows to start with, STREAM_STEP more each time someone asks. Before
+//     this "All Upcoming" wrote every row at once — about 2,500 — and a
+//     search rewrote them on every keystroke (DEBT-009, item 5). Counts
+//     ("Showing N events", each day's total) are of the whole view, not of
+//     the rows written so far.
+//   - The first STREAM_FIRST rows go in #listView; the rest go in
+//     #listMore, after the Explore Neighborhoods rail.
+const STREAM_FIRST = 20;
+const STREAM_INITIAL = 40;
+const STREAM_STEP = 60;
+let streamShown = STREAM_INITIAL; // rows on the page for the current view
+let streamViewKey = null;         // the view streamShown belongs to
+
+// Every event the current view matches, once each, with the day it is
+// listed under; in date order, then start-time order (unknown times last,
+// as before).
+//
+// One limit is kept from the list this replaces (Product Owner,
+// 2026-10-03; DEBT-008): the homepage holds no history beyond its load
+// window, so it does not list a long-running event on a day before that
+// window began — a picked date older than that shows the empty state, as
+// before, rather than the one exhibition that happens to be loaded standing
+// in for a day whose other events are not. Deep history is Calendar's.
+function streamRows(ctx){
+  const w = Discovery.window(state, ctx);
+  const floor = loadFloorISO();
+  const seen = new Set();
+  const rows = [];
+  EVENTS.forEach(e=>{
+    if(e.id != null){
+      if(seen.has(e.id)) return;
+      seen.add(e.id);
+    }
+    if(!Discovery.matches(e, state, ctx)) return;
+    const listableFrom = e.date < floor ? floor : e.date;
+    const day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
+    if(w.to !== null && day > w.to) return; // only on days before the load window
+    rows.push({event: e, day});
+  });
+  rows.sort((a, b)=> a.day < b.day ? -1 : a.day > b.day ? 1 : timeSortMinutes(a.event.time) - timeSortMinutes(b.event.time));
+  return rows;
+}
+
+// "Through Oct 24" for an event that runs past the day it is listed under.
+function runNoteHtml(e, dayIso){
+  if(!e.endDate || e.endDate <= dayIso) return '';
+  return `<span class="evt-run">Through ${escapeHtml(formatDateLabel(e.endDate))}</span>`;
+}
+
+// One row of the stream. Colour: chartreuse is kept for what can be acted
+// on (the links); time, category and price are type, not colour, and the
+// event's own artwork — when it has any — is the only other colour in the
+// row.
+function streamRowHtml(e, dayIso, ctx){
+  const cat = CATS[e.cat] ? CATS[e.cat].label : '';
+  const thumb = e.imageUrl && safeUrl(e.imageUrl)
+    ? `<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`
+    : '';
+  return `
         <div class="evt-row">
           <div class="evt-time">${escapeHtml(e.time)||''}</div>
           <div class="evt-main">
-            <div class="evt-main-body">
-              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
-              <div class="evt-text">
-                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-                <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
-                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-                ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
-                ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-                ${multiDayNoteHtml(e)}
-                ${editorialLinkHtml(e)}
-                <div class="evt-actions">
-                  ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                  ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
-                  ${addToCalendarHtml(e)}
-                  ${shareButtonHtml(e)}
-                </div>
-                ${affiliateDisclosureHtml(e)}
-                ${ticketStatusNoteHtml(e)}
-              </div>
+            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+            <div class="evt-meta">${cat?`<span class="evt-cat">${escapeHtml(cat)}</span>`:''}${priceTag(e)}${runNoteHtml(e, dayIso)}</div>
+            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+            ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
+            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${editorialLinkHtml(e)}
+            <div class="evt-actions">
+              ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+              ${addToCalendarHtml(e)}
+              ${shareButtonHtml(e)}
             </div>
+            ${affiliateDisclosureHtml(e)}
+            ${ticketStatusNoteHtml(e)}
           </div>
-          <div class="evt-side">
-            <div class="evt-cat" style="color:${CATS[e.cat]?CATS[e.cat].color:'inherit'}">${CATS[e.cat]?CATS[e.cat].label:''}</div>
-            ${priceTag(e)}
-          </div>
-        </div>
-      `).join('') + `</div>`;
-  }
-  // The true default view (no When shortcut, no neighborhood) gets its own
-  // boundary disclosure instead of a count heading — see .list-scope-note
-  // above and Gap 2/8 in the 2026-08-28 product audit. Every other scope
-  // (including "All Upcoming" itself, and the neighborhood rail) already
-  // states its own scope via meta.countLabel, so this only applies to the
-  // one silent case. Narrowed from "the next 30 days" to just "today"
-  // 2026-09-04 (Jody: the old 30-day list scrolled so long that visitors
-  // never reached the page's right-hand column) — the "see everything" tap
-  // target stays the same one-click escape hatch to the full unbounded list.
-  const scopeNote = (any && !state.when.mode && !state.where.neighborhood)
-    ? `<div class="list-scope-note">Showing today — <button type="button" onclick="activateWhen('all')">see everything &rarr;</button></div>`
-    : '';
-  // "N events" means N distinct events (Discovery.count), not N rows: an
-  // event that runs for several days appears under each of its days above
-  // but is one event. (Before 2026-10-03 this was the row count.)
-  const matchCount = Discovery.count(shown, state, ctx);
-  const countHeading = (any && meta.countLabel)
-    ? `<div class="list-count-heading">Showing ${matchCount} event${matchCount===1?'':'s'} ${meta.countLabel}</div>`
-    : '';
-  el.innerHTML = any ? (scopeNote + countHeading + html) : `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+          ${thumb}
+        </div>`;
 }
 
-// The homepage's real, always-on stat (approved: homepage defaults to
-// TODAY). Per the mockup, this is a fixed "N things happening this week in
-// the Detroit Orbit" count rather than an inline preview of individual
-// events — deliberately independent of the visitor's own When, category,
-// free and search choices, so it reads as a constant pulse of the whole
-// city rather than a number that shrinks as someone narrows their own
-// filters below. Scoped to the current Monday-Sunday week rather than just
-// today (2026-08-26: too few events land on any single day yet for a
-// same-day count to read as a real number — revisit narrowing this back to
-// today once daily volume no longer needs the wider window). Real count,
-// from real data — Discovery.count() over the loaded events, with
-// Discovery's own 'week' window and Detroit Orbit rule — never fabricated.
+// The day groups for a run of consecutive stream rows. dayTotals is the
+// whole view's count for each day (not just the rows written so far);
+// continuedDay marks a day whose first rows are in the section above.
+function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continuedDay){
+  let html = '';
+  let i = 0;
+  while(i < rows.length){
+    const dayIso = rows[i].day;
+    let j = i;
+    while(j < rows.length && rows[j].day === dayIso) j++;
+    const label = new Date(dayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const rel = dayIso === todayIso ? '<span class="ldh-rel is-today">Today</span>' : (dayIso === tomorrowIso ? '<span class="ldh-rel">Tomorrow</span>' : '');
+    const total = dayTotals[dayIso] || 0;
+    html += `<div class="list-day-group" data-day="${dayIso}">` +
+      `<div class="list-day-heading">${rel}<span class="ldh-date">${label}</span>${dayIso === continuedDay ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${total.toLocaleString('en-US')} event${total===1?'':'s'}</span></div>` +
+      rows.slice(i, j).map(r => streamRowHtml(r.event, dayIso, ctx)).join('') +
+      `</div>`;
+    i = j;
+  }
+  return html;
+}
+
+// Writes the stream for the current view. The scope words (meta) come from
+// currentListMeta(): a view with a scope of its own, or with any filter on,
+// is headed "Showing N events ___" — N distinct events (Discovery.count),
+// the whole view, however many rows are on the page. The plain default view
+// is headed as what it is: all events, in date order.
+function renderList(){
+  const first = document.getElementById('listView');
+  const more = document.getElementById('listMore');
+  const meta = currentListMeta();
+  const ctx = discoveryCtx();
+  const rows = streamRows(ctx);
+
+  // A different view starts again from the top; the same view re-rendered
+  // (a count arriving, the data loading) keeps what has been opened.
+  const viewKey = Discovery.toQuery(state) + (state.where.here ? '|here' : '');
+  if(viewKey !== streamViewKey){ streamViewKey = viewKey; streamShown = STREAM_INITIAL; }
+
+  if(!rows.length){
+    first.innerHTML = `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+    more.innerHTML = '';
+    more.style.display = 'none';
+    return;
+  }
+
+  const total = rows.length;
+  const shown = Math.min(streamShown, total);
+  const dayTotals = {};
+  rows.forEach(r => { dayTotals[r.day] = (dayTotals[r.day] || 0) + 1; });
+  const todayIso = getTodayISO();
+  const next = new Date(todayIso+"T12:00:00"); next.setDate(next.getDate()+1);
+  const tomorrowIso = toISO(next.getFullYear(), next.getMonth(), next.getDate());
+
+  const filtered = Discovery.describe(state).length > 0;
+  const head = (meta.countLabel || filtered)
+    ? `<div class="stream-head"><div class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}</div></div>`
+    : `<div class="stream-head"><h2 class="stream-title">All events</h2><div class="stream-sub">Everything current and upcoming, in date order</div></div>`;
+
+  const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
+  const restRows = rows.slice(firstRows.length, shown);
+  first.innerHTML = head + streamGroupsHtml(firstRows, dayTotals, ctx, todayIso, tomorrowIso, null);
+
+  const remaining = total - shown;
+  if(!restRows.length && !remaining){
+    more.innerHTML = '';
+    more.style.display = 'none';
+    return;
+  }
+  const lastFirstDay = firstRows.length ? firstRows[firstRows.length - 1].day : null;
+  const step = Math.min(STREAM_STEP, remaining);
+  const foot = remaining
+    ? `<div class="stream-foot">
+        <button type="button" class="stream-more-btn" onclick="showMoreStream()">Show ${step.toLocaleString('en-US')} more</button>
+        <span class="stream-foot-note">${shown.toLocaleString('en-US')} of ${total.toLocaleString('en-US')} shown</span>
+        <a class="stream-foot-link" href="${escapeHtml(Discovery.href('calendar', state, ctx))}">Open the calendar &rarr;</a>
+      </div>`
+    : '';
+  more.innerHTML = streamGroupsHtml(restRows, dayTotals, ctx, todayIso, tomorrowIso, lastFirstDay) + foot;
+  more.style.display = '';
+}
+
+// "Show more": the next STREAM_STEP rows of the same view. Nothing about
+// the view itself changes (no state, no URL), so only the stream is
+// rewritten.
+function showMoreStream(){
+  streamShown += STREAM_STEP;
+  renderList();
+}
+
+// The hero's figures (DEC-026): one primary total and three supporting
+// ones, each real and each independent of the visitor's own When, category,
+// free and search choices, so they read as a constant pulse of the whole
+// city rather than numbers that shrink as someone narrows the stream below.
+//   CURRENT + UPCOMING EVENTS — the site's inventory (DEC-023): the
+//     database's own exact count of approved events that start today or
+//     later or are still running (orbitEventTotal, see
+//     loadOrbitEventTotal()). Until that request answers, or if it fails,
+//     the same thing counted over the events this page has loaded.
+//   TODAY — what is still on or still to come today (Discovery's Today).
+//   THIS WEEK — what is left of this Monday–Sunday week (Discovery's This
+//     Week; on a Sunday that is today).
+//   ACTIVE NEIGHBORHOODS — neighborhoods with at least one current or
+//     upcoming event.
+// Venue and city totals are deliberately not shown (DEC-026).
+//
 // Hero stat count-up (2026-09-13, Jody: the hero number starts small on
 // FALLBACK_EVENTS, then a few seconds later loadSupabaseEvents() replaces it
 // with the real (larger) count — previously an abrupt jump, which read as
@@ -5967,7 +6098,7 @@ function renderList(dateList, meta){
 // started toward (not just "last count computed") so that render() being
 // re-invoked for an unrelated reason (search input, a filter chip, paging
 // the calendar — none of which change this count, since it deliberately
-// ignores every filter, see HERO_STATE below) doesn't
+// ignores every filter, see heroFigures() below) doesn't
 // re-trigger the animation against an unchanged number. heroCountFrame
 // holds the in-flight requestAnimationFrame id so a second call arriving
 // mid-animation (e.g. two quick successive loads) cancels the first cleanly
@@ -5977,13 +6108,14 @@ let heroCountFrame = null;
 
 function animateHeroCount(el, from, to){
   cancelAnimationFrame(heroCountFrame);
-  if(from === to){ el.textContent = to; return; }
+  const fmt = n => Number(n).toLocaleString('en-US');
+  if(from === to){ el.textContent = fmt(to); return; }
   // Respect the OS-level motion preference — jump straight to the final
   // number rather than forcing the climb on someone who's asked for
   // reduced motion (same guard this file's hero-photo rotation already
   // uses elsewhere).
   if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    el.textContent = to;
+    el.textContent = fmt(to);
     return;
   }
   // 2026-09-13 smoke test: a tab opened in the background (middle-click/
@@ -5993,7 +6125,7 @@ function animateHeroCount(el, from, to){
   // for however long the tab sits unseen. Skip straight to the final value
   // here — there's no one watching the climb anyway — rather than starting
   // an animation that can't run.
-  if(document.hidden){ el.textContent = to; return; }
+  if(document.hidden){ el.textContent = fmt(to); return; }
   const duration = 900; // ms — quick enough not to feel like a wait of its own
   const start = performance.now();
   const range = to - from;
@@ -6003,89 +6135,101 @@ function animateHeroCount(el, from, to){
     // ease-out cubic — fast climb that settles rather than a mechanical
     // linear tick, closer to the "gameshow" feel Jody described.
     const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(from + range * eased);
+    el.textContent = fmt(Math.round(from + range * eased));
     if(progress < 1){
       heroCountFrame = requestAnimationFrame(step);
     } else {
-      el.textContent = to; // guarantees the exact final value, not a rounding artifact
+      el.textContent = fmt(to); // guarantees the exact final value, not a rounding artifact
       el.classList.remove('is-counting');
     }
   }
   heroCountFrame = requestAnimationFrame(step);
 }
 
-// What the hero counts: what is LEFT of this Monday-Sunday week, inside the
-// Detroit Orbit, whatever the visitor has filtered below. 'week' is a
-// forward-looking window in Discovery: it starts at today (Monday's and
-// Tuesday's events are not "left" on a Thursday) and leaves out anything
-// already over.
-const HERO_STATE = Discovery.change(Discovery.defaults(), {when: 'week', where: {radius: 'orbit'}});
+function heroFigures(){
+  const ctx = inventoryCtx();
+  return {
+    total: orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), ctx),
+    today: Discovery.count(EVENTS, TODAY_STATE, ctx),
+    week: Discovery.count(EVENTS, WEEK_STATE, ctx),
+    neighborhoods: computeNeighborhoodCounts().length,
+  };
+}
 
 function renderHeroToday(){
   const el = document.getElementById('heroToday');
   if(!el) return;
-  // Distinct events (Discovery.count). Before 2026-10-03 this added up each
-  // remaining day's list, so a three-day festival counted three times.
-  const count = Discovery.count(EVENTS, HERO_STATE, inventoryCtx());
-  // 2026-09-13 (Jody): make clear this is a countdown, not just a tally —
-  // "left" instead of "happening" signals the number only shrinks as the
-  // week goes on, which is what the "new week starts Monday" note on the
-  // line below is explaining the reset of.
-  const caption = `${count === 1 ? 'Thing' : 'Things'} left this week in the Detroit Orbit.`;
+  const f = heroFigures();
+  const n = v => v.toLocaleString('en-US');
 
-  const numberEl = document.getElementById('heroStatNumber');
-  if(!numberEl){
-    // First paint only — build the block once, starting the visible number
-    // at 0 so the very first thing a visitor sees is the tally climbing up
-    // to the fallback count, not a static number. Every later call (once
-    // this element already exists) only ever touches the number/caption
-    // text below, so the button/orbit line and their listeners are never
-    // torn down and rebuilt on every render().
+  if(!document.getElementById('heroStatNumber')){
+    // First paint only — build the block once, starting the visible total
+    // at 0 so the first thing a visitor sees is the tally climbing, not a
+    // static number. Every later call only touches the figures' text, so
+    // the buttons are never torn down and rebuilt on every render().
     el.innerHTML = `
-      <div class="hero-stat-number" id="heroStatNumber">0</div>
-      <div class="hero-stat-caption" id="heroStatCaption">${caption}</div>
-      <button type="button" class="hero-stat-cta" onclick="viewThisWeek()">View all events &rarr;</button>
-      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries &middot; new week starts Monday</div>
+      <button type="button" class="hero-proof-total" onclick="viewEverything()" title="See every current and upcoming event">
+        <span class="hero-stat-number" id="heroStatNumber">0</span>
+        <span class="hero-stat-caption" id="heroStatCaption">Current + upcoming events</span>
+      </button>
+      <div class="hero-proof-stats">
+        <button type="button" class="hero-proof-stat" onclick="viewEverything('today')"><span class="hps-num" id="heroStatToday">${n(f.today)}</span><span class="hps-label">Today</span></button>
+        <button type="button" class="hero-proof-stat" onclick="viewThisWeek()"><span class="hps-num" id="heroStatWeek">${n(f.week)}</span><span class="hps-label">This week</span></button>
+        <button type="button" class="hero-proof-stat" onclick="viewNeighborhoodsRail()"><span class="hps-num" id="heroStatNeighborhoods">${n(f.neighborhoods)}</span><span class="hps-label">Active neighborhoods</span></button>
+      </div>
+      <div class="hero-proof-promise">Comprehensive by default. Curated by choice.</div>
+      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries</div>
     `;
-    animateHeroCount(document.getElementById('heroStatNumber'), 0, count);
-    heroDisplayedCount = count;
+    animateHeroCount(document.getElementById('heroStatNumber'), 0, f.total);
+    heroDisplayedCount = f.total;
     return;
   }
 
-  document.getElementById('heroStatCaption').textContent = caption;
-  if(count !== heroDisplayedCount){
+  document.getElementById('heroStatCaption').textContent = 'Current + upcoming events';
+  document.getElementById('heroStatToday').textContent = n(f.today);
+  document.getElementById('heroStatWeek').textContent = n(f.week);
+  document.getElementById('heroStatNeighborhoods').textContent = n(f.neighborhoods);
+  if(f.total !== heroDisplayedCount){
     // Animate from whatever's actually on screen right now, not just the
     // last target — if a prior animation gets interrupted mid-climb (e.g.
     // Supabase responds fast, before the fallback count-up even finishes),
     // heroDisplayedCount alone would jump the visible number straight to
     // the old target before climbing again. Reading the live text avoids
     // that hiccup.
-    const shown = parseInt(numberEl.textContent, 10);
-    animateHeroCount(numberEl, Number.isFinite(shown) ? shown : 0, count);
-    heroDisplayedCount = count;
+    const numberEl = document.getElementById('heroStatNumber');
+    const shown = parseInt(String(numberEl.textContent).replace(/,/g, ''), 10);
+    animateHeroCount(numberEl, Number.isFinite(shown) ? shown : 0, f.total);
+    heroDisplayedCount = f.total;
   }
 }
 
-// "View all events" from the hero stat: rather than jumping to a single
-// day's panel (the stat itself now spans 7 days), this clears any date/when
-// narrowing and drops into List view — the one view that reads several days
-// chronologically — so what the user sees lines up with what the number
-// just told them, without touching their category/free/search filters.
-function viewThisWeek(){
-  // Jody (2026-08-27): clicking this should show "all events we have" for
-  // the week the hero just counted — so every other narrowing dimension
-  // (category, free-only, search, location, neighborhood) is reset here too,
-  // same as clearAllFilters(), rather than just swapping the date scope and
-  // leaving some other filter active to quietly shrink the count below what
-  // the hero stat just told the visitor.
-  setState({reset: true, when: 'week'});
+// The hero's figures are counts of the whole inventory, so following one
+// shows exactly that many events: every other narrowing dimension
+// (category, free-only, search, location, neighborhood) is reset, the same
+// as clearAllFilters() — rather than swapping only the date scope and
+// leaving some other filter active to quietly shrink the list below the
+// number just clicked (Jody, 2026-08-27, for the old "View all events").
+//   viewEverything()         the whole stream (the primary total)
+//   viewEverything('today')  Today
+//   viewThisWeek()           This Week
+function viewEverything(when){
+  setState(when ? {reset: true, when: when} : {reset: true});
   document.getElementById('search').value = '';
   clearLocation({skipRender: true});
-  setWhenInputs('', '');
+  // A When shortcut blanks the date inputs; the default view shows today as
+  // the "From" baseline, as a reset always has.
+  setWhenInputs(when ? '' : getTodayISO(), '');
   renderNeighborhoodsRail();
   updateWhenButtons();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function viewThisWeek(){ viewEverything('week'); }
+
+// "Active neighborhoods" in the hero leads to the neighborhoods themselves:
+// the Explore Neighborhoods rail, on this page.
+function viewNeighborhoodsRail(){
+  document.getElementById('neighborhoodsSection').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // Top-nav "Today" shortcut (restored 2026-08-27, top-nav-only per Jody — see
@@ -6104,6 +6248,59 @@ function viewToday(){
   updateWhenButtons();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ---- Don't Miss (DEC-025) ----
+// A temporary editorial placement: a person points at an event, for a
+// period, with a reason. It is not a property of the event, and nothing in
+// this file chooses one. There is no placement data source yet — no table,
+// no request — so the list below is empty and the section stays hidden.
+// When a source exists it fills this list; the rest of the page is
+// unaffected either way. Do not put selections in this file.
+//   placement: {eventId, reason, from, to}  (from/to: ISO dates, inclusive,
+//   either may be left out)
+// A placement shows only while it is in its period AND its event is in the
+// current + upcoming inventory (loaded, not over, not blocked).
+let dontMissPlacements = [];
+const DONT_MISS_LIMIT = 3;
+
+function activeDontMiss(){
+  const today = getTodayISO(), ctx = inventoryCtx();
+  const out = [];
+  dontMissPlacements.forEach(p=>{
+    if(!p || p.eventId == null) return;
+    if((p.from && today < p.from) || (p.to && today > p.to)) return;
+    const event = EVENTS.find(e => String(e.id) === String(p.eventId));
+    if(!event || !Discovery.matches(event, Discovery.defaults(), ctx)) return;
+    if(out.some(o => o.event === event)) return;
+    out.push({event, reason: p.reason || ''});
+  });
+  return out.slice(0, DONT_MISS_LIMIT);
+}
+
+function renderDontMiss(){
+  const section = document.getElementById('dontMissSection');
+  if(!section) return;
+  const picks = activeDontMiss();
+  if(!picks.length){ section.style.display = 'none'; section.innerHTML = ''; return; }
+  section.style.display = '';
+  section.innerHTML = `
+    <div class="dm-head"><h2 class="dm-title">Don't Miss</h2></div>
+    <div class="dm-grid">
+      ${picks.map(({event: e, reason})=>{
+        const when = [formatDateLabel(e.date) + (e.endDate && e.endDate > e.date ? '–' + formatDateLabel(e.endDate) : ''), e.time].filter(Boolean).join(' · ');
+        const body = `
+          ${e.imageUrl && safeUrl(e.imageUrl) ? `<img class="dm-art" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+          <div class="dm-body">
+            <div class="dm-when">${escapeHtml(when)}</div>
+            <div class="dm-name">${escapeHtml(e.title)}</div>
+            <div class="dm-venue">${escapeHtml(e.venue)}${e.city ? ` — ${escapeHtml(e.city)}` : ''}</div>
+            ${reason ? `<div class="dm-reason">${escapeHtml(reason)}</div>` : ''}
+          </div>`;
+        return eventUrl(e) ? `<a class="dm-card" href="${escapeHtml(eventUrl(e))}">${body}</a>` : `<div class="dm-card">${body}</div>`;
+      }).join('')}
+    </div>
+  `;
 }
 
 // ---- Homepage sidebar: View Calendar / Near You / Free Today ----
@@ -6667,12 +6864,10 @@ function emptyStateMessage(scopeLabel){
   const actions = [];
   const mode = state.when.mode, hood = state.where.neighborhood;
   if(mode || hood) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
-  // Nothing today doesn't mean nothing at all — offer the same All Upcoming
-  // escape hatch here as the populated default view gets (see
-  // .list-scope-note / renderList()) rather than leaving a quiet today
-  // looking like a dead end (P0, 2026-08-28 product audit Gap 2/8; default
-  // view narrowed from a 30-day window to today-only 2026-09-04).
-  if(!mode && !hood) actions.push(`<button type="button" class="es-action" onclick="activateWhen('all')">See all upcoming events</button>`);
+  // (There used to be a "See all upcoming events" action here for the
+  // default view, when the default was today only. The default is now every
+  // upcoming date, so an empty default view has nothing wider to offer; the
+  // actions below undo whatever is narrowing it.)
   if(originLocation() && typeof state.where.radius === 'number') actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
   if(state.what.paths.length) actions.push(`<button type="button" class="es-action" onclick="showAllCategories()">Show all categories</button>`);
   if(state.q) actions.push(`<button type="button" class="es-action" onclick="clearSearch()">Clear search</button>`);
@@ -6698,8 +6893,9 @@ function render(){
   syncFilterBar();
   renderActiveFilters();
   renderHeroToday();
+  renderDontMiss();
   renderSidebar();
-  renderList(currentDateList(), currentListMeta());
+  renderList();
   syncURL();
 }
 
@@ -7436,11 +7632,12 @@ async function loadOrbitEventTotal(){
     const total = parseInt(contentRange.split('/')[1], 10);
     if (isNaN(total)) return;
     orbitEventTotal = total;
+    renderHeroToday(); // the hero's primary figure is this same total (DEC-026)
     renderNearYouCard();
     renderMapCard(); // shares this same total now — see its 2026-09-05 redesign comment
   } catch (err) {
-    // Silent by design — renderNearYouCard()'s own EVENTS-based fallback
-    // count stays on screen if this dedicated request fails.
+    // Silent by design — the hero's and renderNearYouCard()'s own
+    // EVENTS-based fallback count stays on screen if this request fails.
   }
 }
 loadOrbitEventTotal();
