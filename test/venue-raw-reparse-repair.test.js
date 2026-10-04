@@ -79,15 +79,19 @@ async function run() {
     assert.strictEqual(patches[0].patch.venue_city_raw, "Detroit");
   }
 
-  // --- 3. Genuinely unparseable free text (the documented Royal Oak
-  //     "Downtown Events" shape) is left completely untouched — no PATCH
-  //     attempted at all, honest gap preserved. ---
+  // --- 3. Genuinely unparseable free text with no place in it is left
+  //     completely untouched — no PATCH attempted at all, honest gap
+  //     preserved. (Until 2026-10-04 this section used the documented
+  //     Royal Oak "Downtown Events" string, which ends in the calendar's
+  //     own "Royal Oak MI 48067"; that string now has its city kept --
+  //     section 3b -- so the "nothing recoverable" case is shown with text
+  //     that really has nothing recoverable.) ---
   {
     const events = [
       {
         id: "evt-3",
         venue_id: null,
-        venue_name_raw: "Meet at Pronto/Five 15: 600 S Washington Ave, Royal Oak, MI 48067 - Royal Oak MI 48067",
+        venue_name_raw: "Fifth Avenue Pedestrian Plaza (between 4th and 5th)",
         venue_address_raw: null,
         venue_city_raw: null,
       },
@@ -103,6 +107,48 @@ async function run() {
     assert.strictEqual(counts.stillUnparseable, 1);
     assert.strictEqual(counts.written, 0);
     assert.strictEqual(patchCalled, false);
+  }
+
+  // --- 3b. BUG-012 (2026-10-04): text that cannot be split into a venue
+  //     name but ends in the source's own "<City> <ST> <ZIP>" gets its CITY
+  //     written -- and a plain street address when one is stated -- with
+  //     venue_name_raw left exactly as it is and no venue invented. All
+  //     four strings are real production venue_name_raw values. ---
+  {
+    const events = [
+      { id: "evt-3b-1", venue_id: null, venue_address_raw: null, venue_city_raw: null,
+        venue_name_raw: "Meet at Pronto/Five 15: 600 S Washington Ave, Royal Oak, MI 48067 - Royal Oak MI 48067" },
+      { id: "evt-3b-2", venue_id: null, venue_address_raw: null, venue_city_raw: null,
+        venue_name_raw: "- Wayne County Community College 21000 Northline Rd. Taylor MI 48180" },
+      { id: "evt-3b-3", venue_id: null, venue_address_raw: null, venue_city_raw: null,
+        venue_name_raw: "Join us as we celebrate Founder's Day! More information to come! - Rochester MI 48307" },
+      { id: "evt-3b-4", venue_id: null, venue_address_raw: null, venue_city_raw: null,
+        venue_name_raw: "-" },
+    ];
+    const patches = [];
+    const counts = await repairVenueRawReparse({
+      SUPABASE_URL: "https://example.test",
+      SUPABASE_SERVICE_ROLE_KEY: "key",
+      fetchCandidates: async () => events,
+      buildCanonicalMaps: async () => ({ byName: new Map(), byId: new Map(), byAddress: new Map() }),
+      applyPatchFn: async (_url, _headers, id, patch) => { patches.push({ id, patch }); return true; },
+    });
+    assert.strictEqual(counts.totalConsidered, 4);
+    assert.strictEqual(counts.reparsed, 3);
+    assert.strictEqual(counts.cityFromTrailingText, 3);
+    assert.strictEqual(counts.writtenAsRawAddressCity, 3);
+    assert.strictEqual(counts.resolvedToCanonicalVenue, 0);
+    assert.strictEqual(counts.stillUnparseable, 1, 'a bare "-" states nothing: nothing to write here (the feed job rewrites it on its next run)');
+    assert.strictEqual(counts.written, 3);
+    const byId = Object.fromEntries(patches.map((p) => [p.id, p.patch]));
+    assert.deepStrictEqual(byId["evt-3b-1"], { venue_city_raw: "Royal Oak" });
+    assert.deepStrictEqual(byId["evt-3b-2"], { venue_address_raw: "21000 Northline Rd.", venue_city_raw: "Taylor" });
+    assert.deepStrictEqual(byId["evt-3b-3"], { venue_city_raw: "Rochester" });
+    assert.ok(!("evt-3b-4" in byId));
+    for (const { patch } of patches) {
+      assert.ok(!("venue_name_raw" in patch), "the stored location text is never rewritten");
+      assert.ok(!("venue_id" in patch), "no venue is invented");
+    }
   }
 
   // --- 4. A concurrent write (field no longer null by the time the PATCH

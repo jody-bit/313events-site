@@ -401,6 +401,97 @@ function run() {
     assert.strictEqual(result.status, "unparseable");
   }
 
+  // --- 17. BUG-012 (2026-10-04): empty markers state no location. Real
+  //     production values: 17 upcoming City of Madison Heights events were
+  //     stored with a venue of "-", one Eastern Market Partnership event
+  //     with "MI", one Tourism Windsor Essex event with "ON". ---
+  {
+    for (const marker of ["-", "--", " - ", "–", "—", ".", "MI", "ON", "OH", "mi", "Michigan", "Ontario", "Ohio", "MI."]) {
+      assert.strictEqual(parseIcsLocation(marker).status, "blank", `${JSON.stringify(marker)} states no location`);
+    }
+    // ...and real words that merely contain or begin with a region are not markers.
+    for (const real of ["Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "Michigan Central", "M1 Concourse", "Oh!"]) {
+      assert.notStrictEqual(parseIcsLocation(real).status, "blank", `${JSON.stringify(real)} is a real location signal`);
+    }
+  }
+
+  // --- 18. BUG-012: text that still cannot be split into a venue NAME
+  //     keeps the CITY from its own trailing "<City> <ST> <ZIP>". The status
+  //     stays "unparseable" and rawText is unchanged -- sections 4, 10, 11
+  //     and 12 above still hold for these very strings -- and no venue name
+  //     is ever produced. Every string is a real production venue_name_raw,
+  //     captured 2026-10-01 or 2026-10-04. ---
+  {
+    const cases = [
+      // (a) nothing but a city after the last " - "
+      ["Join us as we celebrate Founder's Day! More information to come! - Rochester MI 48307", "Rochester", null],
+      ["Less scary Trick-or-Treating at Downtown businesses and vendors. Rain or shine! - Northville MI 48167", "Northville", null],
+      ["Downtown Northville - Witch themed shopping night is free and open to all. Shops and restaurants are open late with special sales and unique event themed offerings and games. - Northville MI 48167", "Northville", null],
+      ["Public alley west of Main Street, off Crane Avenue, one block south of Catalpa Drive. - Royal Oak MI 48067", "Royal Oak", null],
+      ["<p>Meet at Pronto/Five 15: 600 S Washington Ave, Royal Oak, MI 48067</p> -   Royal Oak MI 48067", "Royal Oak", null],
+      ["Downtown St. Clair Shores on Greater Mack Ave., from 9 Mile to 9 Mack/Cavalier Drive. - St. Clair Shores MI 48081", "St. Clair Shores", null],
+      ["Parade steps off from the Northville School District office lot on Cady St at 6pm. The parade will proceed east on Cady to north on Wing, east on Dunlap to north on Center to west on 8 mile to enter the stadium. - Northville MI 48167", "Northville", null],
+      ["Macomb Township offices closed in observance of the Thanksgiving holiday. This includes the Department of Public Works and Parks & Recreation offices. The Recreation Center may observe adjusted hours. - Macomb MI 48042", "Macomb", null],
+      // (b) a street-type word, then nothing but a city
+      ["Fifth Street Plaza - Fifth and Washington Ave. Royal Oak MI 48067", "Royal Oak", null],
+      ["Canton Parks > Dog Park - Denton Rd and North of Cherry Hill Rd Canton MI 48187", "Canton", null],
+      ["- Wayne County Community College 21000 Northline Rd. Taylor MI 48180", "Taylor", "21000 Northline Rd."],
+      ["- Wyandotte Museums 2610 Biddle Ave Wyandotte MI 48192", "Wyandotte", "2610 Biddle Ave"],
+      // (b) with no ZIP at all: only with a numbered street in front of the city
+      ["Fall Bug Hunt Saturday, October 10, 2026 10 a.m. &ndash; 4 p.m. Meet at the Plymouth Arts and Recreation Center, 650 Church St. Plymouth, MI - Meet at the Plymouth Arts and Recreation 650 Church Street Plymouth MI", "Plymouth", "650 Church Street"],
+    ];
+    for (const [raw, city, address] of cases) {
+      const result = parseIcsLocation(raw);
+      assert.strictEqual(result.status, "unparseable", `no venue name is split out of: ${raw.slice(0, 60)}`);
+      assert.ok(result.rawText && !("candidateName" in result), "the raw text is kept; no name is produced");
+      assert.strictEqual(result.trailingCity, city, `city of: ${raw.slice(0, 60)}`);
+      assert.strictEqual(result.trailingAddress, address, `address of: ${raw.slice(0, 60)}`);
+      assert.strictEqual(result.trailingRegion, "MI");
+    }
+    // "St." is Saint, not a street type, in front of Clair.
+    const scs = parseIcsLocation("Veterans Park 123 Jefferson Ave St. Clair Shores MI 48080");
+    assert.strictEqual(scs.trailingCity, "St. Clair Shores");
+    assert.strictEqual(scs.trailingAddress, "123 Jefferson Ave");
+  }
+
+  // --- 19. BUG-012 regression guards: prose that merely ends in a state, a
+  //     ZIP or two capital letters yields NO city. ---
+  {
+    for (const raw of [
+      "Fifth Avenue Pedestrian Plaza &nbsp;(between 4th and 5th)",
+      "Join us downtown, near the river, after the parade, before sunset",
+      "Some Place, Near the river, Detroit",
+      "Come and say HI",
+      "We meet at the corner near the big tree MI 48067", // no dash, no street type before a city
+      "Take I-75 north and exit at Big Beaver Rd then turn left MI 48084", // what follows the street type is not a city
+      "Free parking behind the building at 500 Main Street lot MI", // no ZIP, and "lot" is not a city
+      "Bring your ID to the 12 Mile Road entrance OH",
+      "Corner of Main St and the river MI",
+      "Fifth and Washington Ave. Royal Oak MI", // no ZIP and no numbered street: not enough to go on
+      "Pick-up is at 500 Main Street Downtown ON", // no ZIP: only MI or OH is accepted, never any two capital letters
+      "Aloha night at 12 Palm Avenue Lanai HI",
+      "Doors open at seven and tickets are ten dollars at the door for everyone - Royal Oak ON 48067", // a ZIP after a state this rule does not accept
+    ]) {
+      const result = parseIcsLocation(raw);
+      assert.strictEqual(result.status, "unparseable", raw);
+      assert.ok(!("trailingCity" in result), `no city may be read out of: ${raw}`);
+    }
+  }
+
+  // --- 20. BUG-012 does not change anything the existing grammars already
+  //     parse: a structured location is still "parsed", name and all. ---
+  {
+    const a = parseIcsLocation("Royal Oak Farmers Market - 316 E 11 Mile Road  Royal Oak MI 48067");
+    assert.deepStrictEqual([a.status, a.candidateName, a.candidateAddress, a.candidateCity], ["parsed", "Royal Oak Farmers Market", "316 E 11 Mile Road", "Royal Oak"]);
+    const b = parseIcsLocation("Main Meeting Room - Mount Clemens MI 48043");
+    assert.deepStrictEqual([b.status, b.candidateName, b.candidateCity], ["parsed", "Main Meeting Room", "Mount Clemens"]);
+    const c = parseIcsLocation("- 12066 Merriman Road Livonia MI 48150");
+    assert.deepStrictEqual([c.status, c.candidateName, c.candidateAddress, c.candidateCity], ["parsed", null, "12066 Merriman Road", "Livonia"]);
+    const d = parseIcsLocation("- Livonia MI 48154");
+    assert.deepStrictEqual([d.status, d.candidateName, d.candidateCity], ["parsed", null, "Livonia"]);
+    assert.ok(!("trailingCity" in a) && !("trailingCity" in b) && !("trailingCity" in c) && !("trailingCity" in d));
+  }
+
   console.log("ics-location.test.js: all assertions passed");
 }
 

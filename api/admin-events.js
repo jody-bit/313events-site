@@ -165,6 +165,35 @@ async function notifyEventLive(row) {
   }
 }
 
+// DEBT-003 (2026-10-04): read EVERY row a query matches, a page at a time.
+//
+// The database API returns at most 1,000 rows per request, silently, with a
+// success status. The Needs follow-up queue asked for every upcoming event
+// in one request, so once there were more than 1,000 of them Admin was
+// judging only the first 1,000 by date and showing a queue that looked
+// complete. Measured in production on 2026-10-04: 1,891 upcoming events;
+// Admin saw the ones through 5 November; 36 of the 102 events that needed
+// attention were later than that and were never shown to anyone.
+//
+// `url` must already carry a total ordering (a unique column last), or the
+// pages can overlap and skip. A run that reaches the page ceiling fails
+// loudly instead of returning a short list that looks whole.
+const PAGE_SIZE = 1000;
+const MAX_PAGES = 25;
+
+async function fetchAllPages(url, headers) {
+  const rows = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const resp = await fetch(`${url}&limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`, { headers });
+    const body = await resp.json();
+    if (!resp.ok) return { ok: false, error: body };
+    if (!Array.isArray(body)) return { ok: false, error: "Unexpected response shape reading events" };
+    rows.push(...body);
+    if (body.length < PAGE_SIZE) return { ok: true, rows };
+  }
+  return { ok: false, error: `More than ${PAGE_SIZE * MAX_PAGES} rows matched; refusing to return a partial list.` };
+}
+
 function checkAuth(req, res) {
   if (!ADMIN_SECRET) {
     res.status(500).json({ error: "ADMIN_SECRET not configured on the server." });
@@ -207,7 +236,13 @@ module.exports = async (req, res) => {
         // comment (2026-09-16) for why venue_address_raw/venue_city_raw
         // alone was flagging well-matched events (e.g. Paris Bar) as
         // missing an address they don't actually lack.
-        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,is_all_day,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note,no_fixed_venue,ticket_status,link_check_status&order=start_date.asc`;
+        url = `${SUPABASE_URL}/rest/v1/events?status=in.(pending_review,approved)&start_date=gte.${todayISO}&select=id,title,category,status,start_date,time_display,is_all_day,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(address,city),description,ticket_url,event_url,submitter_org_name,submitter_email,source,followup_dismissed,followup_dismissed_note,no_fixed_venue,ticket_status,link_check_status&order=start_date.asc,id.asc`;
+        // DEBT-003: every page, not the first 1,000 rows -- see fetchAllPages.
+        // The judgment of what is "incomplete" still happens in admin.html,
+        // on the whole candidate set, exactly as before.
+        const all = await fetchAllPages(url, sbHeaders);
+        res.status(all.ok ? 200 : 502).json(all.ok ? { events: all.rows } : { error: all.error });
+        return;
       } else if (search) {
         // Live-event takedown search: only ever searches already-approved
         // (publicly visible) events — never pending_review or already-hidden

@@ -121,6 +121,7 @@ async function repairVenueRawReparse({
     resolvedToCanonicalVenue: 0, // of those, matched an existing venues row
     writtenAsRawAddressCity: 0, // of those, no canonical match — wrote honest parsed address/city only
     stillUnparseable: 0, // parseIcsLocation() still returns "unparseable"/"blank" — genuinely no structure, left untouched
+    cityFromTrailingText: 0, // of `reparsed`: no venue name could be split out, but the text's own trailing city was kept (BUG-012)
     written: 0,
     skippedConcurrentChange: 0,
     writtenIds: [],
@@ -138,13 +139,22 @@ async function repairVenueRawReparse({
 
   for (const event of candidates) {
     const parsed = parseIcsLocation(event.venue_name_raw);
-    if (parsed.status !== "parsed") {
+    // BUG-012 (2026-10-04): text that still cannot be split into a venue
+    // name may now carry the city (and a plain street address) from its own
+    // trailing "<City> <ST> <ZIP>" -- see api/_lib/ics-location.js. Applied
+    // here to rows already stored, exactly as cron-feeds.js applies it to
+    // new ones: the name is never rewritten, only blank fields are filled.
+    const hasTrailingCity = parsed.status === "unparseable" && !!parsed.trailingCity;
+    if (parsed.status !== "parsed" && !hasTrailingCity) {
       counts.stillUnparseable++;
       continue;
     }
     counts.reparsed++;
+    if (hasTrailingCity) counts.cityFromTrailingText++;
 
-    const candidate = { name: parsed.candidateName, address: parsed.candidateAddress, city: parsed.candidateCity };
+    const candidate = hasTrailingCity
+      ? { name: null, address: parsed.trailingAddress, city: parsed.trailingCity }
+      : { name: parsed.candidateName, address: parsed.candidateAddress, city: parsed.candidateCity };
     const canonical = resolveVenueFromCandidate(candidate, canonicalMaps);
 
     const patch = {};

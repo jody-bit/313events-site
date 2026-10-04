@@ -283,6 +283,31 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
   }
 
   if (parsed.status === "unparseable") {
+    // BUG-012 (2026-10-04): the text is still kept whole as the honest raw
+    // location and no venue name is derived from it -- but when it ends in
+    // the source's own "<City> <ST> <ZIP>", the city is kept, and a plain
+    // street address when one is stated (api/_lib/ics-location.js,
+    // findTrailingCity). Before this, the city was discarded with the rest
+    // and the event could not be placed.
+    if (parsed.trailingCity) {
+      const canonical = parsed.trailingAddress
+        ? resolveVenueFromCandidate({ name: null, address: parsed.trailingAddress, city: parsed.trailingCity }, venueDetailsMaps)
+        : null;
+      if (canonical) {
+        return {
+          venue_name_raw: canonical.name || parsed.rawText,
+          venue_id: canonical.id,
+          venue_address_raw: canonical.address || parsed.trailingAddress,
+          venue_city_raw: canonical.city || parsed.trailingCity,
+        };
+      }
+      return {
+        venue_name_raw: parsed.rawText,
+        venue_id: null,
+        venue_address_raw: parsed.trailingAddress || null,
+        venue_city_raw: parsed.trailingCity,
+      };
+    }
     return { venue_name_raw: parsed.rawText, venue_id: null, venue_address_raw: null, venue_city_raw: null };
   }
 
@@ -312,6 +337,73 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
     venue_address_raw: candidate.address || null,
     venue_city_raw: candidate.city || null,
   };
+}
+
+// ---- BUG-012 (2026-10-04): a feed's own city, for an event that states no
+// place ---------------------------------------------------------------------
+//
+// Measured on 2026-10-04: 17 upcoming events from the City of Madison
+// Heights calendar carried a LOCATION of "-" and reached the site with no
+// city at all, so they could not be placed and each was queued for a person.
+// Every other event in that same feed that states a city states Madison
+// Heights. A municipal calendar's events are in that municipality unless
+// they say otherwise.
+//
+// The rule is taken from the feed's own evidence, not from its name and not
+// from a list kept by hand:
+//   - only for a feed flagged location_per_event (an organization's
+//     calendar; a single-venue feed already has its venue);
+//   - only when the events in this fetch that DO state a city agree: one
+//     city accounts for at least FEED_DEFAULT_CITY_MIN_SHARE of them, and
+//     at least FEED_DEFAULT_CITY_MIN_EVIDENCE of them state it. Measured
+//     across every approved feed on 2026-10-04, the share of the most
+//     common city falls into two groups with nothing between them: one
+//     municipality's or one institution's calendar, 96.4% to 100% (20
+//     feeds); a regional organization's, 31% to 90.6% (Eastern Market
+//     Partnership 31%, Garden City 67%, Tourism Windsor Essex 68%, Windsor
+//     Symphony 91%). The 95% line sits in that gap. A regional feed
+//     therefore never gets a default, and neither does a new feed until it
+//     has shown where its events are;
+//   - only for an event with no city, no street address and no linked
+//     venue of its own. A stated place always wins. An event that by design
+//     has no fixed venue (a tour, a parade) is left alone.
+// Only venue_city_raw is filled. No venue and no address are invented:
+// venue_name_raw stays whatever the event's own text produced.
+const FEED_DEFAULT_CITY_MIN_EVIDENCE = 3;
+const FEED_DEFAULT_CITY_MIN_SHARE = 0.95;
+
+function feedDefaultCity(rows) {
+  const seen = new Map(); // normalised city -> { city, count }
+  for (const row of rows) {
+    const city = typeof row.venue_city_raw === "string" ? row.venue_city_raw.trim() : "";
+    if (!city) continue;
+    const key = city.toLowerCase();
+    if (!seen.has(key)) seen.set(key, { city, count: 0 });
+    seen.get(key).count++;
+  }
+  let top = null;
+  let total = 0;
+  for (const entry of seen.values()) {
+    total += entry.count;
+    if (!top || entry.count > top.count) top = entry;
+  }
+  if (!top || top.count < FEED_DEFAULT_CITY_MIN_EVIDENCE) return null;
+  return top.count / total >= FEED_DEFAULT_CITY_MIN_SHARE ? top.city : null;
+}
+
+// Fills venue_city_raw in place; returns how many rows were filled.
+function applyFeedDefaultCity(rows) {
+  const city = feedDefaultCity(rows);
+  if (!city) return 0;
+  const isBlank = (v) => v === null || v === undefined || String(v).trim() === "";
+  let filled = 0;
+  for (const row of rows) {
+    if (row.no_fixed_venue) continue;
+    if (row.venue_id || !isBlank(row.venue_city_raw) || !isBlank(row.venue_address_raw)) continue;
+    row.venue_city_raw = city;
+    filled++;
+  }
+  return filled;
 }
 
 // Converts parsed ICS VEVENTs into rows shaped for the `events` table,
@@ -459,6 +551,9 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
 
     rows.push(row);
   }
+  // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,
+  // because the evidence is what the feed's other events say.
+  if (feedSource.location_per_event) applyFeedDefaultCity(rows);
   return rows;
 }
 

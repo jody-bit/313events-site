@@ -4,6 +4,7 @@ const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
 
 // Vercel Cron job — the generalized `localist` adapter (INGESTION_BACKLOG.md
 // WP 6.1/6.2, the first "platform multiplier" in
@@ -195,6 +196,87 @@ function formatTimeDisplay(startIso, endIso) {
   return startFmt;
 }
 
+// ---- BUG-013 (2026-10-04): where the event is ---------------------------
+//
+// Until this change the connector read `e.venue_name` / `e.venue.name`.
+// Neither exists in what the API returns. Measured on the live Macomb
+// Community College API on 2026-10-04 (100 events, 30-day window): the
+// place is in three other fields --
+//   location_name  "Center Campus, C Building"                      (85 of 100)
+//   address        "44575 Garfield Road, Clinton Township, MI 48038" (85 of 100)
+//   geo            { latitude, longitude, street, city, state, zip }
+// -- so every row was written with no venue, no address and no city, and
+// every one of them (11 on 2026-10-04) was queued in Admin for a missing
+// location. An away game was indistinguishable from a campus event.
+//
+// What is read, and how far it is trusted:
+//   - the venue name is location_name (then the older `location`, then the
+//     venue_name fields the original code expected, in case a tenant has
+//     them);
+//   - street and city come from `address`, which is "<street>, <city>, <ST>
+//     <ZIP>": the last comma-separated part must be a state (and ZIP), the
+//     one before it is the city, everything before that is the street.
+//     The city must read as a plain place name and the street must begin
+//     with a house number, because tenants also put a building there
+//     (Bowling Green State University, same day: "Jerome Library, Bowling
+//     Green, OH 43403" and "Bowen-Thompson Student Union 1001 E Wooster St ,
+//     Bowling Green, OH 43402" -- the building name is dropped from the
+//     front of the street when it merely repeats the venue). Anything else
+//     is left alone -- never guessed;
+//   - geo.city fills in only when `address` gave no city ("One University
+//     Drive Huron, Ohio 44839" has no comma before the city; geo.city says
+//     Huron). geo.street is NOT used: it is a geocoder fragment ("J" for
+//     "South Campus, J Building");
+//   - geo's coordinates decide one thing only: an event more than
+//     ORBIT_MILES from Detroit's border is not a Detroit Orbit event
+//     (SERVICE_AREA.md) and is not written. The handler counts those.
+//     An event with no coordinates is kept: absence of a location is not
+//     evidence of distance.
+const ORBIT_MILES = 75; // SERVICE_AREA.md; same figure as cron-ticketmaster.js's RADIUS_MILES
+const STATE_ZIP_RE = /^[A-Za-z]{2}(?:\s+\d{5}(?:-\d{4})?)?$/;
+const PLAIN_CITY_RE = /^[A-Za-z][A-Za-z .'-]{1,29}$/;
+
+function cleanString(v) {
+  return typeof v === "string" && v.trim() ? v.trim() : null;
+}
+
+function parseLocalistLocation(e) {
+  const geo = e && e.geo && typeof e.geo === "object" ? e.geo : {};
+  const name =
+    cleanString(e.location_name) ||
+    cleanString(e.location) ||
+    cleanString(e.venue_name) ||
+    (e.venue && typeof e.venue === "object" ? cleanString(e.venue.name) : null);
+
+  let street = null;
+  let city = null;
+  const address = cleanString(e.address);
+  if (address) {
+    const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
+    if (parts.length >= 2 && STATE_ZIP_RE.test(parts[parts.length - 1]) && PLAIN_CITY_RE.test(parts[parts.length - 2])) {
+      city = parts[parts.length - 2];
+      let streetText = parts.slice(0, -2).join(", ");
+      // A tenant may repeat the building in front of the street.
+      if (name && streetText.toLowerCase().startsWith(name.toLowerCase())) streetText = streetText.slice(name.length).trim();
+      street = /^\d/.test(streetText) ? streetText : null;
+    }
+  }
+  if (!city) city = cleanString(geo.city);
+
+  const lat = Number.parseFloat(geo.latitude);
+  const lng = Number.parseFloat(geo.longitude);
+  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
+  const milesFromDetroit = hasCoordinates ? milesFromDetroitBorder(lat, lng) : null;
+
+  return {
+    name,
+    street,
+    city,
+    milesFromDetroit,
+    outsideOrbit: milesFromDetroit !== null && milesFromDetroit > ORBIT_MILES,
+  };
+}
+
 // Pure parse of one Localist "event" object (as returned by
 // GET /api/2/events, each array entry shaped { event: {...} }) into ZERO
 // OR MORE row objects -- one per event_instance (see header RECURRENCE
@@ -219,10 +301,9 @@ function parseEvent(e, tenant) {
   const category = mapCategory(eventTypes);
   const isAmbiguous = category === null;
 
-  const venueName =
-    (typeof e.venue_name === "string" && e.venue_name.trim()) ||
-    (e.venue && typeof e.venue === "object" && typeof e.venue.name === "string" && e.venue.name.trim()) ||
-    null;
+  // BUG-013: the place, from the fields the API really sends.
+  const place = parseLocalistLocation(e);
+  const venueName = place.name;
 
   const isRecurring = instances.length > 1;
   const localistUrl = typeof e.localist_url === "string" ? e.localist_url : null;
@@ -256,6 +337,11 @@ function parseEvent(e, tenant) {
       source: tenant.source,
       internal_note: notes.length ? notes.join(" ") : null,
       _rawVenueName: venueName,
+      venue_address_raw: place.street,
+      venue_city_raw: place.city,
+      // Read by the handler and never written: an event held outside the
+      // Orbit (an away game, a trip) is not a Detroit Orbit event.
+      _outsideOrbit: place.outsideOrbit,
       // Every confirmed tenant is brand new with zero production track
       // record, so EVERY row -- classified or not -- is pending_review
       // for now (always AMBIGUOUS_STATUS, regardless of isAmbiguous),
@@ -347,7 +433,10 @@ module.exports = async (req, res) => {
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  const parsed = allParsed.filter((e) => e.start_date >= today);
+  const current = allParsed.filter((e) => e.start_date >= today);
+  // BUG-013: not written, and counted -- reported in this run's response.
+  const skippedOutsideOrbit = current.filter((e) => e._outsideOrbit).length;
+  const parsed = current.filter((e) => !e._outsideOrbit);
 
   if (!parsed.length) {
     await finishRun(runHandle, {
@@ -357,14 +446,14 @@ module.exports = async (req, res) => {
       records_written: 0,
       error_sample: failed.length ? failed.map((f) => `${f.tenant}: ${f.error}`).join("; ") : undefined,
     });
-    res.status(200).json({ upserted: 0, checked: totalFetched, failed, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: 0, checked: totalFetched, skippedOutsideOrbit, failed, fetchedAt: new Date().toISOString() });
     return;
   }
 
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   const rawRows = parsed.map((e) => {
-    const { _rawVenueName, _defaultStatusForRow, ...row } = e;
+    const { _rawVenueName, _defaultStatusForRow, _outsideOrbit, ...row } = e;
     return {
       ...row,
       venue_name_raw: _rawVenueName,
@@ -426,7 +515,7 @@ module.exports = async (req, res) => {
       records_written: rowsWithStatus.length,
       error_sample: failed.length ? failed.map((f) => `${f.tenant}: ${f.error}`).join("; ") : undefined,
     });
-    res.status(200).json({ upserted: rowsWithStatus.length, checked: totalFetched, failed, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, checked: totalFetched, skippedOutsideOrbit, failed, fetchedAt: new Date().toISOString() });
   } catch (err) {
     await finishRun(runHandle, {
       outcome: "failed",
@@ -439,6 +528,8 @@ module.exports = async (req, res) => {
 };
 
 module.exports.parseEvent = parseEvent; // exposed for test/cron-localist-runlog.test.js only
+module.exports.parseLocalistLocation = parseLocalistLocation; // exposed for test/cron-localist-location.test.js only
+module.exports.ORBIT_MILES = ORBIT_MILES;
 module.exports.mapCategory = mapCategory; // exposed for test/cron-localist-runlog.test.js only
 module.exports.formatTimeDisplay = formatTimeDisplay; // exposed for test/cron-localist-runlog.test.js only
 module.exports.fetchTenantEvents = fetchTenantEvents; // exposed for test/cron-localist-runlog.test.js only
