@@ -231,9 +231,17 @@ function formatTimeDisplay(startIso, endIso) {
 //     ORBIT_MILES from Detroit's border is not a Detroit Orbit event
 //     (SERVICE_AREA.md) and is not written. The handler counts those.
 //     An event with no coordinates is kept: absence of a location is not
-//     evidence of distance.
+//     evidence of distance. Neither is a bad geocode -- coordinates outside
+//     North America (0,0; a dropped minus sign; latitude and longitude
+//     swapped) are treated as no coordinates at all.
+//   - a field the source did not give is LEFT OUT of the row, not sent as
+//     null: a null would overwrite an address or city already stored on the
+//     event (api/_lib/event-upsert.js; DEBT-011).
 const ORBIT_MILES = 75; // SERVICE_AREA.md; same figure as cron-ticketmaster.js's RADIUS_MILES
-const STATE_ZIP_RE = /^[A-Za-z]{2}(?:\s+\d{5}(?:-\d{4})?)?$/;
+// A real state or province code, optionally with a ZIP -- not any two
+// letters ("University Center, UC" is not a city and a state).
+const STATE_ZIP_RE =
+  /^(?:AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|ON|QC|BC|AB|MB|SK|NS|NB|NL|PE)(?:\s+\d{5}(?:-\d{4})?)?$/;
 const PLAIN_CITY_RE = /^[A-Za-z][A-Za-z .'-]{1,29}$/;
 
 function cleanString(v) {
@@ -241,7 +249,8 @@ function cleanString(v) {
 }
 
 function parseLocalistLocation(e) {
-  const geo = e && e.geo && typeof e.geo === "object" ? e.geo : {};
+  if (!e || typeof e !== "object") return { name: null, street: null, city: null, milesFromDetroit: null, outsideOrbit: false };
+  const geo = e.geo && typeof e.geo === "object" ? e.geo : {};
   const name =
     cleanString(e.location_name) ||
     cleanString(e.location) ||
@@ -255,17 +264,28 @@ function parseLocalistLocation(e) {
     const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
     if (parts.length >= 2 && STATE_ZIP_RE.test(parts[parts.length - 1]) && PLAIN_CITY_RE.test(parts[parts.length - 2])) {
       city = parts[parts.length - 2];
-      let streetText = parts.slice(0, -2).join(", ");
-      // A tenant may repeat the building in front of the street.
-      if (name && streetText.toLowerCase().startsWith(name.toLowerCase())) streetText = streetText.slice(name.length).trim();
-      street = /^\d/.test(streetText) ? streetText : null;
+      const before = parts.slice(0, -2);
+      // The street is the last part that begins with a house number
+      // ("123 Main St, Suite 4, Warren, MI" -> "123 Main St").
+      street = [...before].reverse().find((part) => /^\d/.test(part)) || null;
+      if (!street && name && before.length) {
+        // A tenant may repeat the building in front of the street, with no
+        // comma: "Bowen-Thompson Student Union 1001 E Wooster St". Only a
+        // whole-name prefix followed by a space is dropped.
+        const joined = before.join(", ");
+        if (joined.toLowerCase().startsWith(name.toLowerCase() + " ")) {
+          const rest = joined.slice(name.length).trim();
+          if (/^\d/.test(rest)) street = rest;
+        }
+      }
     }
   }
   if (!city) city = cleanString(geo.city);
 
   const lat = Number.parseFloat(geo.latitude);
   const lng = Number.parseFloat(geo.longitude);
-  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
+  // Plausible for North America only; anything else is a bad geocode.
+  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng) && lat >= 24 && lat <= 60 && lng >= -141 && lng <= -52;
   const milesFromDetroit = hasCoordinates ? milesFromDetroitBorder(lat, lng) : null;
 
   return {
@@ -436,6 +456,7 @@ module.exports = async (req, res) => {
   const current = allParsed.filter((e) => e.start_date >= today);
   // BUG-013: not written, and counted -- reported in this run's response.
   const skippedOutsideOrbit = current.filter((e) => e._outsideOrbit).length;
+  if (skippedOutsideOrbit) console.log(`[cron-localist] ${skippedOutsideOrbit} event(s) outside the ${ORBIT_MILES}-mile Orbit were not written`);
   const parsed = current.filter((e) => !e._outsideOrbit);
 
   if (!parsed.length) {
@@ -454,6 +475,9 @@ module.exports = async (req, res) => {
 
   const rawRows = parsed.map((e) => {
     const { _rawVenueName, _defaultStatusForRow, _outsideOrbit, ...row } = e;
+    // Not given by the source: left out, never sent as null (see header).
+    if (row.venue_address_raw === null) delete row.venue_address_raw;
+    if (row.venue_city_raw === null) delete row.venue_city_raw;
     return {
       ...row,
       venue_name_raw: _rawVenueName,

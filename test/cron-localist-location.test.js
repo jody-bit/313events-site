@@ -140,6 +140,44 @@ async function run() {
   }
   console.log("PASS: Bowling Green State University's real address shapes — a building is never taken for a street, and nothing is split where the source did not separate it");
 
+  // --- 2c. Found by independent review of the first version, 2026-10-04. ---
+  {
+    // The street is the part that begins with a house number, wherever the building sits.
+    const suite = parseLocalistLocation({ location_name: "City Hall", address: "123 Main St, Suite 4, Warren, MI 48088", geo: {} });
+    assert.deepStrictEqual([suite.street, suite.city], ["123 Main St", "Warren"]);
+    const leading = parseLocalistLocation({ location_name: "South Campus", address: "South Campus, 14500 E 12 Mile Rd, Warren, MI 48088", geo: {} });
+    assert.deepStrictEqual([leading.street, leading.city], ["14500 E 12 Mile Rd", "Warren"], "a building in front of the street, with a comma");
+    // The venue name is dropped from the front only as a whole word.
+    const prefix = parseLocalistLocation({ location_name: "Building 1", address: "Building 14575 Garfield Road, Clinton Township, MI 48038", geo: {} });
+    assert.deepStrictEqual([prefix.street, prefix.city], [null, "Clinton Township"], "\"Building 1\" is not a prefix of \"Building 14575\" — the street is not invented as \"4575 Garfield Road\"");
+    // Any two letters are not a state.
+    for (const address of ["University Center, UC", "Online, NA", "Room 204, TB"]) {
+      const r = parseLocalistLocation({ location_name: "X", address, geo: {} });
+      assert.deepStrictEqual([r.street, r.city], [null, null], `${address}: not a city and a state`);
+    }
+    // A bad geocode is not evidence of distance.
+    for (const geo of [
+      { latitude: 0, longitude: 0 },
+      { latitude: "0", longitude: "0" },
+      { latitude: "42.62191", longitude: "82.956398" }, // minus sign dropped
+      { latitude: "-82.956398", longitude: "42.62191" }, // swapped
+      { latitude: "999", longitude: "-83" },
+    ]) {
+      const r = parseLocalistLocation({ location_name: "Center Campus, C Building", address: "44575 Garfield Road, Clinton Township, MI 48038", geo });
+      assert.strictEqual(r.outsideOrbit, false, `coordinates ${JSON.stringify(geo)} must not drop a campus event`);
+      assert.strictEqual(r.milesFromDetroit, null);
+      assert.strictEqual(r.city, "Clinton Township");
+    }
+    // Numbers and strings behave the same; a real far-away point is still far away.
+    assert.strictEqual(parseLocalistLocation({ geo: { latitude: 42.2831, longitude: -85.6139 } }).outsideOrbit, true);
+    // Nothing throws on a missing or malformed event.
+    for (const bad of [null, undefined, "x", 7, {}, { geo: null }, { address: 12 }]) {
+      const r = parseLocalistLocation(bad);
+      assert.deepStrictEqual([r.name, r.street, r.city, r.outsideOrbit], [null, null, null, false]);
+    }
+  }
+  console.log("PASS: review cases — house-number streets only, whole-word name prefix, real state codes only, bad coordinates ignored, malformed input safe");
+
   // --- 3. Distance: only coordinates decide, against Detroit's border. ---
   {
     const away = parseLocalistLocation(apiEvent("Women's Soccer at Western Michigan", AWAY_KALAMAZOO));
@@ -196,10 +234,14 @@ async function run() {
       [byTitle["Fraggle Rock: Back to the Rock LIVE"].venue_name_raw, byTitle["Fraggle Rock: Back to the Rock LIVE"].venue_city_raw],
       ["South Campus, J Building", "Warren"]
     );
-    assert.deepStrictEqual(
-      [byTitle["Online Info Session"].venue_name_raw, byTitle["Online Info Session"].venue_address_raw, byTitle["Online Info Session"].venue_city_raw],
-      [null, null, null]
-    );
+    // A field the source did not give is LEFT OUT of the row, never sent as
+    // null: a null would overwrite an address or city already stored on the
+    // event (independent review, 2026-10-04: a first version always sent
+    // both keys and erased a stored address on a re-run).
+    const online = byTitle["Online Info Session"];
+    assert.strictEqual(online.venue_name_raw, null);
+    assert.ok(!("venue_address_raw" in online) && !("venue_city_raw" in online), "no address or city key is sent for an event that states none");
+    assert.ok("venue_address_raw" in byTitle["Baby Item Donation"] && "venue_city_raw" in byTitle["Baby Item Donation"]);
     for (const row of written) {
       assert.ok(!Object.keys(row).some((k) => k.startsWith("_")), `no working field is written: ${Object.keys(row).filter((k) => k.startsWith("_"))}`);
       assert.strictEqual(row.status, "pending_review", "this source's review status is unchanged");

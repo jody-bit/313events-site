@@ -101,7 +101,8 @@ async function run() {
     for (let i = 1; i < got.length; i++) {
       assert.ok(got[i - 1].start_date <= got[i].start_date, "still in date order");
     }
-    assert.strictEqual(requests.length, 3, "three pages: 1,000 + 1,000 + 350");
+    assert.strictEqual(requests.length, 4, "four requests: 1,000 + 1,000 + 350, then the empty page that ends the read");
+    assert.deepStrictEqual(requests.map((u) => /offset=(\d+)/.exec(u)[1]), ["0", "1000", "2000", "2350"], "each request starts where the rows so far end");
     for (const url of requests) assert.ok(/order=start_date\.asc,id\.asc/.test(url), "each page is read in a total order (date, then id)");
   }
   console.log("PASS: with 2,350 upcoming events the queue endpoint returns all 2,350 — the five that need attention past row 1,000 included");
@@ -124,9 +125,30 @@ async function run() {
     const { res, requests } = await callIncomplete({ events: upcoming(n, today), venues: [] });
     assert.strictEqual(res._status, 200);
     assert.strictEqual(res._body.events.length, n, `${n} rows in, ${n} rows out`);
-    assert.strictEqual(requests.length, Math.floor(n / 1000) + 1, `${n} rows: stops at the first short page`);
+    assert.strictEqual(requests.length, Math.ceil(n / 1000) + 1, `${n} rows: the read ends at the first empty page`);
   }
-  console.log("PASS: page edges — 1, 999, 1,000 and 2,000 rows are each returned exactly");
+  {
+    const { res, requests } = await callIncomplete({ events: [], venues: [] });
+    assert.strictEqual(res._status, 200);
+    assert.deepStrictEqual(res._body, { events: [] }, "nothing upcoming is an empty list, in the same shape as always");
+    assert.strictEqual(requests.length, 1);
+  }
+  console.log("PASS: page edges — 0, 1, 999, 1,000 and 2,000 rows are each returned exactly");
+
+  // --- 3b. The read does not depend on what the server's cap happens to
+  //     be. With a cap of 500, a first page of 500 rows is the cap, not the
+  //     end (independent review, 2026-10-04: stopping at a "short" page
+  //     returned 500 of 1,891 with a success status — the original defect). ---
+  {
+    const db = makeMockPostgrest({ events: upcoming(1891, today), venues: [] }, { cap: 500 });
+    global.fetch = async (url, init) => db.fetch(String(url), init);
+    const res = makeRes();
+    await freshHandler()({ method: "GET", query: { incomplete: "1" }, headers: { "x-admin-secret": process.env.ADMIN_SECRET } }, res);
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.events.length, 1891);
+    assert.strictEqual(new Set(res._body.events.map((e) => e.id)).size, 1891);
+  }
+  console.log("PASS: a server that returns at most 500 rows per request still yields all 1,891");
 
   // --- 4. A failed page is an error, never a short list that looks whole. ---
   {

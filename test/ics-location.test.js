@@ -406,12 +406,19 @@ function run() {
   //     stored with a venue of "-", one Eastern Market Partnership event
   //     with "MI", one Tourism Windsor Essex event with "ON". ---
   {
-    for (const marker of ["-", "--", " - ", "–", "—", ".", "MI", "ON", "OH", "mi", "Michigan", "Ontario", "Ohio", "MI."]) {
+    for (const marker of ["-", "--", " - ", "–", "—", ".", "MI", "ON", "OH", "Michigan", "Ontario", "Ohio", "michigan", "MI."]) {
       assert.strictEqual(parseIcsLocation(marker).status, "blank", `${JSON.stringify(marker)} states no location`);
     }
-    // ...and real words that merely contain or begin with a region are not markers.
-    for (const real of ["Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "Michigan Central", "M1 Concourse", "Oh!"]) {
+    // ...and real words that merely contain, begin with or look like a region are not markers.
+    for (const real of ["Mi Casa", "On Stage", "ON TAP", "Ohio Theatre", "Michigan Central", "M1 Concourse", "Oh!", "On", "Oh", "mi"]) {
       assert.notStrictEqual(parseIcsLocation(real).status, "blank", `${JSON.stringify(real)} is a real location signal`);
+    }
+    // A location written in another script is text, not an empty marker
+    // (independent review, 2026-10-04: an ASCII-only test discarded these).
+    for (const real of ["المركز الإسلامي", "Дом культуры", "底特律美術館"]) {
+      const result = parseIcsLocation(real);
+      assert.strictEqual(result.status, "unparseable", "non-Latin text is kept as the raw location");
+      assert.strictEqual(result.rawText, real);
     }
   }
 
@@ -454,6 +461,53 @@ function run() {
     assert.strictEqual(scs.trailingAddress, "123 Jefferson Ave");
   }
 
+  // --- 18b. The city is a name on a closed list (api/_lib/orbit-cities.js),
+  //     never "whatever capitalised words stand before the state". Found by
+  //     independent review of the first version of this rule, 2026-10-04:
+  //     each case marked "was" produced that wrong value. ---
+  {
+    const cases = [
+      ["- Stage Nature Center 6685 Coolidge Hwy Lower Level Troy MI 48098", "Troy", "6685 Coolidge Hwy"], // was city "Lower Level Troy"
+      ["- Macomb Center 44575 Garfield Rd Bldg B Clinton Township MI 48038", "Clinton Township", "44575 Garfield Rd"], // was "Bldg B Clinton Township"
+      ["- City Hall 211 Williams St Suite A Royal Oak MI 48067", "Royal Oak", "211 Williams St"], // was "Suite A Royal Oak"
+      ["Bus departs from the Macomb County Court House Mount Clemens MI 48043", "Mount Clemens", null], // was "House Mount Clemens"
+      ["- St. Mary's Church Royal Oak MI 48067", "Royal Oak", null], // was "Mary's Church Royal Oak"
+      ["Flu shots with Dr. Patel Royal Oak MI 48067", "Royal Oak", null], // was "Patel Royal Oak"
+      ["Shopping trip: Somerset Collection and Lane Bryant Troy MI 48084", "Troy", null], // was "Bryant Troy"
+      ["Movie night at the Ford Drive In Dearborn MI 48126", "Dearborn", null], // was "In Dearborn"
+      ["Downtown Royal Oak MI 48067", "Royal Oak", null], // was "Downtown Royal Oak"
+      // a comma before the state, and other punctuation in front of the city
+      ["Troy Community Center, Troy, MI 48084", "Troy", null],
+      ["- Royal Oak, MI 48067", "Royal Oak", null],
+      ["Depot Park — Clarkston MI 48346", "Clarkston", null],
+      ["Village of Grosse Pointe Shores MI 48236", "Grosse Pointe Shores", null],
+      ["ROYAL OAK FARMERS MARKET 316 E 11 MILE ROAD ROYAL OAK MI 48067", "Royal Oak", null], // the list's spelling is returned
+      // the street address: the earliest number that fits, never a road's own number, never prose
+      ["- Madison Heights Public Library 240 W 13 Mile Road Madison Heights MI 48071", "Madison Heights", "240 W 13 Mile Road"], // was "13 Mile Road"
+      ["- Costick Activities Center 28600 W 11 Mile Rd Farmington Hills MI 48336", "Farmington Hills", "28600 W 11 Mile Rd"], // was "11 Mile Rd"
+      ["- Detroit Institute of Arts 5200 Woodward Ave Kresge Court Detroit MI 48202", "Detroit", "5200 Woodward Ave"], // was "5200 Woodward Ave Kresge Court"
+      ["Open to ages 12 and up at the Park Place Plymouth MI 48170", "Plymouth", null], // was "12 and up at the Park Place"
+      ["From 1 to 3 pm on Main St Royal Oak MI 48067", "Royal Oak", null], // was "3 pm on Main St"
+      ["Corner of 9 Mile Road and Main Ferndale MI 48220", "Ferndale", null], // "9 Mile Road" is a road
+      ["123 Court St Mount Clemens MI 48043", "Mount Clemens", "123 Court St"],
+      ["Bus leaves at 9 from 211 Williams St Royal Oak MI", "Royal Oak", "211 Williams St"], // no ZIP: allowed only because a numbered street is there
+    ];
+    for (const [raw, city, address] of cases) {
+      const result = parseIcsLocation(raw);
+      assert.strictEqual(result.status, "unparseable", raw);
+      assert.strictEqual(result.trailingCity, city, `city of: ${raw}`);
+      assert.strictEqual(result.trailingAddress, address, `address of: ${raw}`);
+    }
+    // Words that are not a place yield nothing at all, wherever they stand.
+    for (const raw of [
+      "Some long prose that says nothing useful about where this is - Not Applicable MI 48067",
+      "A long name for a place that goes on for a while - Memorial Park MI 48067",
+      "- St. Mary's Church MI 48067",
+    ]) {
+      assert.ok(!("trailingCity" in parseIcsLocation(raw)), `no city may be read out of: ${raw}`);
+    }
+  }
+
   // --- 19. BUG-012 regression guards: prose that merely ends in a state, a
   //     ZIP or two capital letters yields NO city. ---
   {
@@ -470,6 +524,13 @@ function run() {
       "Fifth and Washington Ave. Royal Oak MI", // no ZIP and no numbered street: not enough to go on
       "Pick-up is at 500 Main Street Downtown ON", // no ZIP: only MI or OH is accepted, never any two capital letters
       "Aloha night at 12 Palm Avenue Lanai HI",
+      "Detroit MI", // a city and a state with no ZIP and no street: not enough
+      "Go Blue MI",
+      "Caesars Windsor, Windsor ON", // stated places this module cannot read: left exactly as they are
+      "Cedar Point, Sandusky, Ohio",
+      "Mackinac Island",
+      "Online",
+      "Zoom (link sent after registration)",
       "Doors open at seven and tickets are ten dollars at the door for everyone - Royal Oak ON 48067", // a ZIP after a state this rule does not accept
     ]) {
       const result = parseIcsLocation(raw);
@@ -490,6 +551,26 @@ function run() {
     const d = parseIcsLocation("- Livonia MI 48154");
     assert.deepStrictEqual([d.status, d.candidateName, d.candidateCity], ["parsed", null, "Livonia"]);
     assert.ok(!("trailingCity" in a) && !("trailingCity" in b) && !("trailingCity" in c) && !("trailingCity" in d));
+  }
+
+  // --- 21. The closed list of city names (api/_lib/orbit-cities.js). ---
+  {
+    const { knownCity } = require(`${REPO_DIR}/api/_lib/orbit-cities.js`);
+    const discovery = require(`${REPO_DIR}/discovery.js`);
+    // Every Michigan and Ohio city the site already knows is on it, so the
+    // two can never disagree about a name.
+    const siteCities = discovery._defaultConfig.places.filter((p) => p[1] === "city" && (p[2] === "Michigan" || p[2] === "Ohio")).map((p) => p[0]);
+    assert.ok(siteCities.length >= 50, "discovery.js's place list was read");
+    for (const name of siteCities) assert.strictEqual(knownCity(name), name, `${name} (in discovery.js) must be a known city`);
+    // Case and periods do not matter; the listed spelling comes back.
+    assert.strictEqual(knownCity("ST CLAIR SHORES"), "St. Clair Shores");
+    assert.strictEqual(knownCity("st. clair shores"), "St. Clair Shores");
+    assert.strictEqual(knownCity("Mt. Clemens"), "Mount Clemens");
+    assert.strictEqual(knownCity("  Royal   Oak "), "Royal Oak");
+    // Things that are not places are not on it.
+    for (const notACity of ["Lower Level", "Suite A", "Downtown", "Memorial Park", "Not Applicable", "Township", "", null, undefined]) {
+      assert.strictEqual(knownCity(notACity), null, `${JSON.stringify(notACity)} is not a city`);
+    }
   }
 
   console.log("ics-location.test.js: all assertions passed");

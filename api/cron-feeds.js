@@ -364,11 +364,25 @@ function resolveIcsEventVenue(locationRaw, venueDetailsMaps) {
 //     Symphony 91%). The 95% line sits in that gap. A regional feed
 //     therefore never gets a default, and neither does a new feed until it
 //     has shown where its events are;
-//   - only for an event with no city, no street address and no linked
-//     venue of its own. A stated place always wins. An event that by design
-//     has no fixed venue (a tour, a parade) is left alone.
+//   - only for an event whose LOCATION says nothing at all: missing, empty,
+//     or an empty marker such as "-". An event whose LOCATION has any real
+//     text is never given the feed's city, whether or not that text could be
+//     read -- "Caesars Windsor, Windsor ON", "Online" and "Cedar Point,
+//     Sandusky, Ohio" are stated places this module cannot parse, and a
+//     first version of this rule, which looked only at "no city was parsed",
+//     would have published each of them under the feed's own city (found by
+//     independent review, 2026-10-04, before it shipped). A stated place
+//     always wins, including one that cannot be read;
+//   - never for an event that by design has no fixed venue (a tour, a
+//     parade).
 // Only venue_city_raw is filled. No venue and no address are invented:
-// venue_name_raw stays whatever the event's own text produced.
+// venue_name_raw stays "Venue TBA", the existing convention for a LOCATION
+// that states nothing.
+//
+// Known limit, accepted: the share is computed from each night's fetch, so
+// a feed sitting exactly on the 95% line can gain or lose its default from
+// one night to the next. Losing it puts those events back in the queue,
+// which is the safe direction.
 const FEED_DEFAULT_CITY_MIN_EVIDENCE = 3;
 const FEED_DEFAULT_CITY_MIN_SHARE = 0.95;
 
@@ -388,16 +402,29 @@ function feedDefaultCity(rows) {
     if (!top || entry.count > top.count) top = entry;
   }
   if (!top || top.count < FEED_DEFAULT_CITY_MIN_EVIDENCE) return null;
-  return top.count / total >= FEED_DEFAULT_CITY_MIN_SHARE ? top.city : null;
+  if (top.count / total < FEED_DEFAULT_CITY_MIN_SHARE) return null;
+  // The spelling the feed itself uses most, not whichever came first.
+  const spellings = new Map();
+  for (const row of rows) {
+    const city = typeof row.venue_city_raw === "string" ? row.venue_city_raw.trim() : "";
+    if (city && city.toLowerCase() === top.city.toLowerCase()) spellings.set(city, (spellings.get(city) || 0) + 1);
+  }
+  let best = top.city;
+  let bestCount = 0;
+  for (const [spelling, count] of spellings) if (count > bestCount) { best = spelling; bestCount = count; }
+  return best;
 }
 
 // Fills venue_city_raw in place; returns how many rows were filled.
-function applyFeedDefaultCity(rows) {
+// `rowsWithNoStatedLocation` is the set of rows whose own LOCATION said
+// nothing at all -- the only rows this may touch.
+function applyFeedDefaultCity(rows, rowsWithNoStatedLocation) {
   const city = feedDefaultCity(rows);
   if (!city) return 0;
   const isBlank = (v) => v === null || v === undefined || String(v).trim() === "";
   let filled = 0;
   for (const row of rows) {
+    if (!rowsWithNoStatedLocation.has(row)) continue;
     if (row.no_fixed_venue) continue;
     if (row.venue_id || !isBlank(row.venue_city_raw) || !isBlank(row.venue_address_raw)) continue;
     row.venue_city_raw = city;
@@ -422,6 +449,7 @@ function applyFeedDefaultCity(rows) {
 // name.
 function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap) {
   const rows = [];
+  const rowsWithNoStatedLocation = new Set(); // BUG-012: see applyFeedDefaultCity
   for (const ev of icsEvents) {
     if (!ev.dtstart) continue; // no start date at all — can't place this on the calendar
     // 2026-10-01 (Needs Follow-up remaining-gap product pass, Jody: a
@@ -549,11 +577,12 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     // guess).
     Object.assign(row, resolveVenueAddressCityRepair(row, venueDetailsMaps, learnedVenueMap));
 
+    if (feedSource.location_per_event && parseIcsLocation(ev.location).status === "blank") rowsWithNoStatedLocation.add(row);
     rows.push(row);
   }
   // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,
   // because the evidence is what the feed's other events say.
-  if (feedSource.location_per_event) applyFeedDefaultCity(rows);
+  if (feedSource.location_per_event) applyFeedDefaultCity(rows, rowsWithNoStatedLocation);
   return rows;
 }
 

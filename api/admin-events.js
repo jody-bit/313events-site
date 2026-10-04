@@ -176,22 +176,29 @@ async function notifyEventLive(row) {
 // attention were later than that and were never shown to anyone.
 //
 // `url` must already carry a total ordering (a unique column last), or the
-// pages can overlap and skip. A run that reaches the page ceiling fails
-// loudly instead of returning a short list that looks whole.
+// pages can overlap and skip.
+//
+// It stops only at an EMPTY page, and advances by the number of rows it was
+// actually given. It does not stop at a "short" page, because that would
+// assume the server's cap is the page size asked for: with a cap of 500, a
+// first page of 500 rows is the cap, not the end. One extra request per
+// read is the price of not depending on a setting this code cannot see.
+// A read that reaches the request ceiling fails loudly instead of returning
+// a short list that looks whole.
 const PAGE_SIZE = 1000;
-const MAX_PAGES = 25;
+const MAX_PAGE_REQUESTS = 40;
 
 async function fetchAllPages(url, headers) {
   const rows = [];
-  for (let page = 0; page < MAX_PAGES; page++) {
-    const resp = await fetch(`${url}&limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`, { headers });
+  for (let request = 0; request < MAX_PAGE_REQUESTS; request++) {
+    const resp = await fetch(`${url}&limit=${PAGE_SIZE}&offset=${rows.length}`, { headers });
     const body = await resp.json();
     if (!resp.ok) return { ok: false, error: body };
     if (!Array.isArray(body)) return { ok: false, error: "Unexpected response shape reading events" };
+    if (body.length === 0) return { ok: true, rows };
     rows.push(...body);
-    if (body.length < PAGE_SIZE) return { ok: true, rows };
   }
-  return { ok: false, error: `More than ${PAGE_SIZE * MAX_PAGES} rows matched; refusing to return a partial list.` };
+  return { ok: false, error: `Still reading after ${MAX_PAGE_REQUESTS} requests (${rows.length} rows); refusing to return a partial list.` };
 }
 
 function checkAuth(req, res) {

@@ -1,5 +1,7 @@
 "use strict";
 
+const { knownCity, MAX_CITY_WORDS } = require("./orbit-cities");
+
 // api/_lib/ics-location.js
 //
 // Per-VEVENT LOCATION parsing for multi-venue ICS feeds (Phase 6 shared
@@ -376,49 +378,81 @@ function tryCivicplusEmptyNameWithStreet(cleaned) {
 //      it was not: the city is stated, in a fixed position, by the source.
 //
 // findTrailingCity() reads only that tail. It never produces a venue name.
-// It reports a city when, and only when, one of two closed anchors holds:
-//   (a) the text after the last " - " (or the whole text) is nothing but a
-//       city -- one to four capitalised words, at most 25 characters -- in
-//       front of the state and ZIP; or
-//   (b) a standard street-type word (Rd, St, Ave, ...) ends the street and
-//       what follows it is nothing but such a city.
-// A street address is reported only when it is a plain "<number> <words>
-// <street type>" run immediately before the city. With no ZIP at all, the
-// state must be MI or OH and a numbered street must be present, so prose
-// that merely ends in two capital letters is never read as a place.
-const EMPTY_MARKER_RE = /^[^A-Za-z0-9]*$/;
-const REGION_ONLY_NAMES = new Set(["mi", "on", "oh", "michigan", "ontario", "ohio"]);
-const REGION_ONLY_SHAPE_RE = /^[A-Za-z]+\.?$/; // one bare word: "MI", "ON", "Ontario" -- never "Mi Casa"
+//
+// THE CITY must be a name in api/_lib/orbit-cities.js -- a closed list --
+// standing immediately in front of "MI <ZIP>" or "OH <ZIP>". A first
+// version of this rule accepted any one to four capitalised words in that
+// position; an independent review the same day showed what that lets
+// through ("Lower Level Troy", "Suite A Royal Oak", "House Mount Clemens",
+// "Not Applicable"). With the list, the longest known name that ends the
+// text is the city -- "... Coolidge Hwy Lower Level Troy MI 48098" is Troy,
+// "... Bldg B Clinton Township MI 48038" is Clinton Township, "... Not
+// Applicable MI 48067" is nothing -- and a place that is not on the list is
+// simply not recognised.
+//
+// THE STREET ADDRESS is reported only when it is a plain "<house number>
+// <up to five capitalised or numeric words> <street type>" run, in the same
+// " - " segment as the city, with at most three words (a suite, a level, a
+// building) between it and the city. The run starts at the EARLIEST number
+// that fits, so "240 W 13 Mile Road" is one address and not "13 Mile Road";
+// a number followed by lower-case words ("12 and up", "3 pm on Main St") is
+// not a house number; and a bare "9 Mile Road" is a road, not an address.
+//
+// With no ZIP at all the state must still be MI or OH and a street address
+// must be present, so prose that merely ends in a city and two capital
+// letters is not read as a place.
+const EMPTY_MARKER_RE = /^[^\p{L}\p{N}]*$/u; // no letter or digit in any script: "-", "--", an en dash
+const REGION_CODE_ONLY_RE = /^(?:MI|ON|OH)\.?$/; // upper case only: "On" and "Oh" are words
+const REGION_NAME_ONLY_RE = /^(?:michigan|ontario|ohio)$/i;
 const TAIL_STATE_ZIP_RE = /^(.*\S)\s+(MI|OH)\s+(\d{5}(?:-\d{4})?)$/;
 const TAIL_STATE_ONLY_RE = /^(.*\S)\s+(MI|OH)$/;
-const CITY_SHAPE_RE = /^[A-Z][A-Za-z.'-]*(?: [A-Z][A-Za-z.'-]*){0,3}$/;
-const TRAILING_CITY_MAX = 25;
-const STREET_SUFFIX_GLOBAL_RE = new RegExp(STREET_SUFFIX_RE.source, "g");
-// "St." is a street type and also "Saint". The service area's only such
-// cities are St. Clair and St. Clair Shores (SERVICE_AREA.md).
-const SAINT_CITY_RE = /(?:^|\s)(St\.? Clair(?: Shores)?)$/;
-const PLAIN_ADDRESS_RE = /^\d+[A-Za-z]?(?: [A-Za-z0-9.'-]+){1,6}$/;
+// One whole word that is a street type (the same vocabulary as
+// STREET_SUFFIX_RE above), optionally followed by "." and/or ",".
+const STREET_TYPE_TOKEN_RE =
+  /^(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Way|Highway|Hwy|Parkway|Pkwy|Place|Pl|Terrace|Ter)\.?,?$/;
+const HOUSE_NUMBER_RE = /^\d+[A-Za-z]?$/;
+const PLAIN_ADDRESS_WORD_RE = /^[A-Z0-9][A-Za-z0-9.'-]*$/;
+const MAX_ADDRESS_WORDS = 5;
+const MAX_WORDS_BETWEEN_ADDRESS_AND_CITY = 3;
 
 function isEmptyMarker(cleaned) {
-  if (EMPTY_MARKER_RE.test(cleaned)) return true;
-  return REGION_ONLY_SHAPE_RE.test(cleaned) && REGION_ONLY_NAMES.has(cleaned.replace(/\.$/, "").toLowerCase());
+  return EMPTY_MARKER_RE.test(cleaned) || REGION_CODE_ONLY_RE.test(cleaned) || REGION_NAME_ONLY_RE.test(cleaned);
 }
 
-function looksLikeCity(text) {
-  return !!text && text.length <= TRAILING_CITY_MAX && CITY_SHAPE_RE.test(text);
+// The longest known city that ends `head`, as { city, before } -- `before`
+// is the text in front of it -- or null.
+function splitKnownCityAtEnd(head) {
+  const words = head.split(" ");
+  for (let n = Math.min(MAX_CITY_WORDS, words.length); n >= 1; n--) {
+    const candidate = words.slice(words.length - n).join(" ").replace(/^[-–—(,;:]+/, "");
+    const city = knownCity(candidate);
+    if (city) return { city, before: words.slice(0, words.length - n).join(" ") };
+  }
+  return null;
 }
 
-// The plain "<number> <words> <street type>" run that ends `streetPart`, or
-// null. Takes the LAST number in the text, so a date or a time earlier in a
-// sentence is never mistaken for a house number.
-function plainAddressAtEnd(streetPart) {
-  let lastStart = -1;
-  const re = /(?:^|\s)(\d+[A-Za-z]?)(?=\s)/g;
-  let m;
-  while ((m = re.exec(streetPart)) !== null) lastStart = m.index + m[0].length - m[1].length;
-  if (lastStart < 0) return null;
-  const candidate = streetPart.slice(lastStart).trim();
-  return PLAIN_ADDRESS_RE.test(candidate) ? candidate : null;
+// The plain street address that ends `text` (allowing a few trailing words
+// such as "Suite A" or "Lower Level"), or null.
+function plainAddressBeforeCity(text) {
+  const words = text.split(" ").filter(Boolean);
+  for (let i = 0; i < words.length; i++) {
+    if (!HOUSE_NUMBER_RE.test(words[i])) continue;
+    if (/^Mile$/i.test(words[i + 1] || "")) continue; // "9 Mile Road" is the road's name, not a house number
+    let j = i + 1;
+    let plain = 0;
+    while (j < words.length && plain < MAX_ADDRESS_WORDS && !STREET_TYPE_TOKEN_RE.test(words[j]) && PLAIN_ADDRESS_WORD_RE.test(words[j])) {
+      j++;
+      plain++;
+    }
+    if (j >= words.length || !STREET_TYPE_TOKEN_RE.test(words[j])) continue;
+    let endExclusive = j + 1;
+    // "123 Court St": a street-type word can itself be the street's name.
+    if (plain === 0 && endExclusive < words.length && STREET_TYPE_TOKEN_RE.test(words[endExclusive])) endExclusive++;
+    if (plain === 0 && endExclusive === j + 1) continue; // "5 Road" is not an address
+    if (words.length - endExclusive > MAX_WORDS_BETWEEN_ADDRESS_AND_CITY) continue;
+    return words.slice(i, endExclusive).join(" ").replace(/,$/, "");
+  }
+  return null;
 }
 
 function findTrailingCity(cleanedRaw) {
@@ -433,45 +467,16 @@ function findTrailingCity(cleanedRaw) {
     [, head, region] = stateOnly;
     postal = null;
   }
-  const streetRequired = postal === null;
+  head = head.replace(/[\s,.;:]+$/, ""); // "Troy Community Center, Troy, MI 48084" -- a comma before the state
+  const split = splitKnownCityAtEnd(head);
+  if (!split) return null;
 
-  const dashAt = head.lastIndexOf(" - ");
-  let segment = dashAt >= 0 ? head.slice(dashAt + 3) : head;
-  segment = segment.replace(/^-\s*/, "").trim();
-  if (!segment) return null;
-
-  // (a) nothing but a city in front of the state and ZIP.
-  if (!streetRequired && looksLikeCity(segment)) {
-    return { trailingCity: segment, trailingAddress: null, trailingRegion: region, trailingPostal: postal };
-  }
-
-  // (b) a street-type word, then nothing but a city.
-  let city = null;
-  let streetPart = null;
-  const saint = SAINT_CITY_RE.exec(segment);
-  if (saint) {
-    const before = segment.slice(0, saint.index).trim();
-    if (!before || !new RegExp(STREET_SUFFIX_RE.source + "[\\s,.]*$").test(before)) return null;
-    city = saint[1];
-    streetPart = before;
-  } else {
-    const ends = [];
-    STREET_SUFFIX_GLOBAL_RE.lastIndex = 0;
-    let m;
-    while ((m = STREET_SUFFIX_GLOBAL_RE.exec(segment)) !== null) ends.push(m.index + m[0].length);
-    for (let i = ends.length - 1; i >= 0 && !city; i--) {
-      const rest = segment.slice(ends[i]).replace(/^[\s,.]+/, "").trim();
-      if (looksLikeCity(rest)) {
-        city = rest;
-        streetPart = segment.slice(0, ends[i]).trim();
-      }
-    }
-  }
-  if (!city) return null;
-
-  const address = plainAddressAtEnd(streetPart);
-  if (streetRequired && !address) return null;
-  return { trailingCity: city, trailingAddress: address, trailingRegion: region, trailingPostal: postal };
+  const dashAt = split.before.lastIndexOf(" - ");
+  // A trailing "." is kept: it belongs to "Rd." or "Ave.", as the source wrote it.
+  const segment = (dashAt >= 0 ? split.before.slice(dashAt + 3) : split.before).replace(/^-\s*/, "").replace(/[\s,;:]+$/, "");
+  const address = plainAddressBeforeCity(segment);
+  if (postal === null && !address) return null;
+  return { trailingCity: split.city, trailingAddress: address, trailingRegion: region, trailingPostal: postal };
 }
 
 function parseIcsLocation(raw) {

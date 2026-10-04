@@ -18,9 +18,10 @@
 //      numbered street as the address); the location text itself is kept as
 //      it was and no venue is invented;
 //   2. "-" is not a venue;
-//   3. an event that states no place takes the feed's own city — only when
-//      the feed's other events agree on one, never for a regional feed,
-//      never over a place the event states, never for a tour or parade;
+//   3. an event whose LOCATION says nothing at all takes the feed's own
+//      city — only when the feed's other events agree on one, never for a
+//      regional feed, never for a tour or parade, and never for an event
+//      whose LOCATION has any text, readable or not;
 //   4. a single-venue feed is untouched.
 //
 // Run: node test/cron-feeds-city-recovery.test.js
@@ -160,6 +161,10 @@ async function run() {
         { uid: "dash", summary: "Book Sale (Friends of the Madison Heights Public Library)", location: "-" },
         { uid: "none", summary: "Harvest Festival (Recreation & DPS)" },
         { uid: "prose", summary: "Tree Lighting", location: "In front of City Hall, weather permitting" },
+        { uid: "casino", summary: "AAC 50+ Casino Trip", location: "Caesars Windsor, Windsor ON" },
+        { uid: "cedar", summary: "Teen Trip", location: "Cedar Point, Sandusky, Ohio" },
+        { uid: "online", summary: "Library Board Livestream", location: "Online" },
+        { uid: "zoom", summary: "Resume Workshop", location: "Zoom (link sent after registration)" },
         { uid: "parade", summary: "Memorial Day Parade", location: "-" },
       ],
     });
@@ -173,13 +178,25 @@ async function run() {
       assert.strictEqual(rows[uid].venue_address_raw, null, `${uid}: no address is invented`);
       assert.strictEqual(rows[uid].venue_id, null, `${uid}: no venue is invented`);
     }
-    assert.strictEqual(rows.prose.venue_city_raw, "Madison Heights", "real location text with no city in it still takes the feed's city");
-    assert.strictEqual(rows.prose.venue_name_raw, "In front of City Hall, weather permitting", "and keeps its own text");
+    // A LOCATION with any real text is never given the feed's city — it
+    // states a place, even when that place cannot be read. (Independent
+    // review, 2026-10-04: a first version filled every one of these with
+    // "Madison Heights" and would have published them that way.)
+    for (const [uid, text] of [
+      ["prose", "In front of City Hall, weather permitting"],
+      ["casino", "Caesars Windsor, Windsor ON"],
+      ["cedar", "Cedar Point, Sandusky, Ohio"],
+      ["online", "Online"],
+      ["zoom", "Zoom (link sent after registration)"],
+    ]) {
+      assert.strictEqual(rows[uid].venue_city_raw, null, `${uid}: a stated place is never overridden by the feed's city`);
+      assert.strictEqual(rows[uid].venue_name_raw, text, `${uid}: its own text is kept`);
+    }
 
     assert.strictEqual(rows.parade.no_fixed_venue, true);
     assert.strictEqual(rows.parade.venue_city_raw, null, "an event with no fixed venue by design is left alone");
   }
-  console.log("PASS: \"-\" is never stored as a venue; an event that states no place takes the feed's own city; a parade is left alone");
+  console.log("PASS: \"-\" is never stored as a venue; an event whose LOCATION says nothing takes the feed's own city; a stated place (readable or not) and a parade are left alone");
 
   // ---------------------------------------------------------------------
   // 3b. A stated place always wins, and one out-of-town event among many
@@ -197,6 +214,18 @@ async function run() {
     });
     assert.strictEqual(rows.away.venue_city_raw, "Taylor", "the event's own stated city is kept");
     assert.strictEqual(rows.dash.venue_city_raw, "Redford");
+  }
+  {
+    // The spelling used is the feed's most common one, not the first seen.
+    const rows = await runFeed({
+      feedSource: { ...MUNICIPAL_FEED, id: "fs-spelling", feed_url: "https://feed.example/spelling.ics" },
+      events: [
+        { uid: "caps", summary: "First", location: "Library - 240 W 13 Mile Road  MADISON HEIGHTS MI 48071" },
+        ...STATED,
+        { uid: "dash", summary: "Book Sale", location: "-" },
+      ],
+    });
+    assert.strictEqual(rows.dash.venue_city_raw, "Madison Heights");
   }
   console.log("PASS: an event's own stated city always wins; one out-of-town event among 28 does not switch the feed's city off");
 
