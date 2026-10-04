@@ -468,7 +468,7 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### BUG-004 — Popps Packing: diagnose 7-day freshness silence (separate from WP 0.8)
 
-- **Type:** BUG · **Status:** REVIEW (diagnostics added, awaiting next scheduled run's evidence) · **Priority:** Medium
+- **Type:** BUG · **Status:** REVIEW (diagnostics added, awaiting next scheduled run's evidence). **Superseded 2026-10-03 by `BUG-007`**, which found the actual cause from the production API log: the connector's batch has been rejected on every run since it was added, and no Popps row has ever been written. The 2026-09-22 fix recorded below repaired a real defect in the existing-rows path but could not have been what stopped the writes — there were no existing rows. · **Priority:** Medium
 - **Epic:** EPIC-001 · **Recommended Model:** Sonnet 5
 - **Dependencies:** None. Explicitly NOT the same defect as WP 0.8 (confirmed 2026-09-21 — see WP 0.8's own notes).
 - **Discovered:** 2026-09-21, during the production ingestion-health incident triage.
@@ -504,6 +504,48 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** `index.html` only, two CSS rules: `@media (min-width:901px){header.site{flex-wrap:nowrap;}}` and the nav's link gap 22px → 16px. With that, the logo, search and Submit Event are at exactly the coordinates they had when the header last fitted on one row (before the ninth link); between 901px and about 1,170px wide the nav wraps its links onto two lines and Submit Event stays top right; at 900px and below nothing changes (pixel-identical). `calendar.html` and `map.html` have seven links and were never affected. Test: `test/homepage-header-layout.test.js`. Verified in Chromium at 23 widths with the site's real fonts and in Chrome on macOS against production; Safari could not be driven from the build environment — a check page for it was left in the repo's git-ignored `_to_delete/` folder.
 - **Discovered Work:** the nine-link nav has about 24px of slack on one row; a tenth link will not fit without another change.
 - **Product Decisions Required:** none remaining — the 16px link spacing, `flex-wrap:nowrap` above 900px and deployment were approved by the Product Owner on 2026-10-03.
+
+---
+
+### BUG-007 — Five connectors' database writes rejected in full on every run (rows of differing shape)
+
+- **Type:** BUG · **Status:** REVIEW (fix built and tested 2026-10-03 on branch `wp07-uniform-batches`; not merged, not deployed; no production ingestion run; awaiting Product Owner review) · **Priority:** Critical
+- **Epic:** EPIC-001 (WP 0.7, safe-batching half; WP 0.11) · **Recommended Model:** Opus 5
+- **Dependencies:** None to merge. `BUG-008` and `BUG-009` are separate failures this does not fix.
+- **Discovered:** 2026-10-03, tracing why SoundHenge 2026 (Popps Packing, that afternoon) was not on the site.
+- **Problem/User Need:** PostgREST rejects a bulk POST whose row objects do not all have the same keys — HTTP 400, `PGRST102`, "All object keys must match" — and writes nothing. Connectors build rows with `field: value || undefined`; `JSON.stringify` drops such a key, so two events from one source routinely differ in shape. Measured in the production API log on 2026-10-03: **Ticketmaster** (909 rows sent; no new event since 2026-09-04, the day before `description: e.info || undefined` was added; roughly 275–280 events then on sale were missing and 634 stored ones were not being refreshed), **MotorCity Wine** (68), **Detroit Month of Design** (65), **Popps Packing** (20) and **Detroit Training Center** (15) — the last four had never written a row. Evidence and method: `test/notes/postgrest-mixed-keys.md`.
+- **Why nothing caught it:** every connector test stubbed its own "the write succeeded" response; the health check reported these sources as advisory or not at all (`DEBT-010`); and the architecture document had judged outright rejection "unlikely" (D4).
+- **Acceptance Criteria (Product Owner, 2026-10-03):** group writes into batches of identical key shape through one shared helper; never turn an omitted field into a null to make a batch uniform; the shared fake database rejects heterogeneous batches as production does; every affected connector uses the helper, not only Ticketmaster and Popps; regression tests show the six affected connectors' heterogeneous output is written; no production ingestion run, no deploy, until approved.
+- **Implementation Notes:** `api/_lib/event-upsert.js` (`upsertEventRows`), used by all 25 event-ingestion connectors — a uniform batch is still one request, identical to before. Five were failing; five more build optional fields the same way and were one differently-shaped event away from the same failure (Lager House, Old Miami, Planet Ant, Playground Detroit, WDET). A rejected group no longer stops the others, and each connector now reports the rows actually written. Tests: `test/event-upsert.test.js`, `test/mock-postgrest-writes.test.js`, `test/wp07-affected-connectors.test.js`, `test/wp07-connector-coverage.test.js`. WP 0.7's other half (dropping null keys) is deliberately not implemented — see the WP 0.7 status note in `epics/EPIC-001-ingestion-platform-scaling/phase-0-stabilize-instrument.md`.
+- **Expected effect on first run after deploy:** Ticketmaster inserts the missing events as `approved` and refreshes the stored ones (their status is preserved; a description is replaced only where Ticketmaster supplies one); MotorCity Wine and Detroit Month of Design events go live as `approved`; Popps Packing and Detroit Training Center rows arrive as `pending_review`, as those two sources always intended.
+- **Discovered Work:** `BUG-008`, `BUG-009`, `DEBT-010`. The two RA scripts (`scripts/ra-sync.js`, `scripts/ra-candidate-promotion.js`) still post to events directly; they were audited (every row carries the same keys, blanks as null) and left untouched by standing instruction.
+- **Product Decisions Required:** approve the branch; then decide when the first production runs happen (the Ticketmaster catch-up is roughly 280 new events at once).
+
+---
+
+### BUG-008 — `gaming` category missing from the production database (migrations 036/037 never applied)
+
+- **Type:** BUG · **Status:** READY (migrations written 2026-09-22, re-checked read-only against production 2026-10-03; not applied) · **Priority:** High
+- **Epic:** EPIC-001 / `TASK-004` · **Recommended Model:** Sonnet 5
+- **Dependencies:** None. Independent of `BUG-007`.
+- **Discovered:** 2026-10-03 (`source_runs` shows all 10 GottaGacha runs since 2026-09-24 failed with `22P02 invalid input value for enum event_category: "gaming"`).
+- **Problem/User Need:** The site, the submit form, the admin form and three API allow-lists all offer "Gaming & Esports", but production's `event_category` enum has 14 values and no `gaming`. GottaGacha has never written an event (74 rejected on 2026-10-03, non-gaming ones included, since its rows go out as one request). A public submission, a registered feed's default category, or an editor-created event that uses Gaming is rejected by the database the same way.
+- **Acceptance Criteria:** `migration_036_gaming_category.sql` run by itself, then `migration_037_gaming_category_metadata.sql`; `select enum_range(null::event_category)` ends in `gaming`; `categories` has 15 rows; the next GottaGacha run records `success`.
+- **Implementation Notes:** 036 is one statement, `alter type event_category add value if not exists 'gaming'` — it cannot be undone (Postgres has no "drop enum value"). 037 upserts one `categories` row (`gaming`, "Gaming & Esports", `var(--c-gaming)`, sort order 15) and records both filenames in `schema_migrations`. Neither does anything else. Checked read-only 2026-10-03: `categories.slug` is unique and `schema_migrations.filename` is the primary key, so both `on conflict` clauses are valid; neither file is logged as applied; every page already defines `--c-gaming`. `test/wp07-affected-connectors.test.js` shows the GottaGacha run failing under today's enum and succeeding under the post-036 one.
+- **Discovered Work:** —
+- **Product Decisions Required:** approve applying the two migrations to production.
+
+---
+
+### BUG-009 — Planet Ant Theatre and Metro Times never reach the database
+
+- **Type:** BUG · **Status:** BACKLOG (observed, not diagnosed) · **Priority:** Medium
+- **Epic:** EPIC-001 (WP 0.13 already covers "Planet Ant / Metro Times block status") · **Recommended Model:** Sonnet 5
+- **Dependencies:** Vercel function logs for `/api/cron-planetanttheatre` and `/api/cron-metrotimes` (not readable from Claude's sessions on 2026-10-03 — 403).
+- **Discovered:** 2026-10-03, same investigation as `BUG-007`.
+- **Problem/User Need:** On 2026-10-03 neither connector made a single database request at its scheduled hour — not even the venue lookup — so each stops before the write (upstream fetch or parse). Planet Ant's last new row is from 2026-09-05 (32 upcoming rows are stale); Metro Times has no rows at all. Both return HTTP 200 with `upserted: 0` on an upstream failure, so nothing alerts. Planet Ant also builds optional fields as `undefined`, so `BUG-007`'s fix protects it once it does reach the write, but does not make it reach it.
+- **Acceptance Criteria:** the actual stopping point of each is known from its function log; then fix, or (Metro Times, per WP 0.13, Product Owner decision) stop scheduling it.
+- **Product Decisions Required:** none until diagnosed.
 
 ---
 
@@ -641,6 +683,25 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** items 2–5 are natural inputs to the homepage UX evolution.
 - **Discovered Work:** —
 - **Product Decisions Required:** item 1.
+
+---
+
+### DEBT-010 — A connector whose database write is rejected still reads as healthy
+
+- **Type:** DEBT (monitoring) · **Status:** BACKLOG (documented 2026-10-03 by Product Owner request; deliberately not implemented with `BUG-007` — WP 0.7 does not include it) · **Priority:** High
+- **Epic:** EPIC-001 (WP 0.5 fan-out; Phase 7 monitoring)
+- **Dependencies:** WP 0.5's `source_runs` wrapper being added to the connectors that still lack it.
+- **Discovered:** 2026-10-03. Ticketmaster wrote nothing for a month and the daily health check listed it as `ok: true`.
+- **The rule this incident establishes:** a connector whose database write is rejected must not report healthy, or merely "advisory", because discovery and parsing succeeded. Fetching and parsing 909 events is not ingestion; ingestion is the rows landing.
+- **What is wrong today (health check of 2026-10-03 12:00 UTC):**
+  1. **Advisory by construction.** Since 2026-09-23 the authoritative signal is `source_runs`; a source with no run log falls back to "has a row been touched lately", which was made non-failing so that a quiet venue would not page anyone. Ten event connectors still write no run log (Ticketmaster, Popps Packing, Detroit Month of Design, MotorCity Wine, Detroit Training Center, Planet Ant, Playground Detroit, Old Miami, Metro Times, VisitDetroit; the feeds poller has its own per-feed check). For the eight of them that the health check lists, the only possible verdict is "ADVISORY ONLY (not a failure)" — which is what Ticketmaster, Popps Packing, Detroit Month of Design, Planet Ant and Metro Times all showed while writing nothing.
+  2. **Recorded failures nobody reads.** GottaGacha does write a run log — ten runs, ten `failed`, each with the database's error text — but has no entry in the health check's source list, so the check never looks. The same is true of four other run-logged connectors (Big Time Bingo, Outer Limits Lounge, Eventbrite, Localist): they happen to be succeeding, and nothing would say so if they stopped.
+  3. **No check at all.** MotorCity Wine and Detroit Training Center have neither a run log nor a health entry. Seven of the 25 event connectors are absent from the health check entirely.
+  4. **The connector's own answer goes nowhere.** A rejected write makes the connector return HTTP 502 with the error; Vercel's cron runner neither retries nor alerts on a response status, and nothing else reads it.
+  5. **"Touched recently" can be satisfied by other things.** Ticketmaster rows were last touched on 2026-09-22 and 09-23, at hours the connector does not run and while its own writes were being rejected — by a one-off update, not by ingestion.
+- **Acceptance Criteria (proposed):** every event-ingestion connector records each run in `source_runs`, including rows fetched, parsed and written, and the write's error text; the health check fails (not advises) a source whose latest run was `failed` or `partial`, or which fetched rows and wrote none, or which has no run inside its expected interval; every connector in `vercel.json` has a health entry, enforced by a test; a source that has fetched events on N consecutive runs and written none is reported even if each run "succeeded".
+- **Implementation Notes:** none yet. `api/_lib/event-upsert.js` already returns what a run log needs (`written`, `attempted`, per-group status and error), and each connector's failure branch now passes the true written count on.
+- **Product Decisions Required:** whether a failing source should email/alert on the first failed run or after a threshold; whether to keep the advisory fallback at all once every connector logs runs.
 
 ---
 
