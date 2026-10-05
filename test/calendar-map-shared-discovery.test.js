@@ -324,6 +324,63 @@ async function main() {
   }
 
   // =====================================================================
+  // 4b. THE WHEN / WHERE CONTROLS WRITE THE SHARED STATE
+  // =====================================================================
+  {
+    for (const surface of ["calendar", "map"]) {
+      const page = await open(surface);
+      const btn = (cls, attr, v) => page.document.querySelectorAll("." + cls).find((b) => b.dataset[attr] === v);
+      // WHEN buttons. "Now" and "Today" are the same When in Discovery.
+      click(page, btn("when-btn", "when", "now"));
+      assert.strictEqual(stateOf(page).when.mode, "today", `${surface}: the Now button chooses Today`);
+      assert.ok(btn("when-btn", "when", "today").classList.contains("active"), `${surface}: and lights Today`);
+      click(page, btn("when-btn", "when", "tonight"));
+      assert.strictEqual(stateOf(page).when.mode, "tonight");
+      click(page, btn("when-btn", "when", "date"));
+      assert.strictEqual(stateOf(page).when.mode, null, `${surface}: Date clears the When`);
+      // WHERE: choosing a place defaults to the Orbit; the chips set Discovery's radius names.
+      page.run("selectLocation(Discovery.places.find(function(p){ return p.name === 'Ann Arbor'; }))");
+      assert.deepStrictEqual(stateOf(page).where, { place: "Ann Arbor", radius: "orbit", neighborhood: null, here: null }, `${surface}: a place alone is the Orbit`);
+      assert.ok(btn("radius-chip", "radius", "all").classList.contains("active"), `${surface}: the Detroit Orbit chip is lit`);
+      click(page, btn("radius-chip", "radius", "25"));
+      assert.strictEqual(stateOf(page).where.radius, 25, `${surface}: the 25 mi chip`);
+      assert.ok(/radius=25/.test(page.url()) && /loc=Ann\+Arbor/.test(page.url()), `${surface}: and it is in the URL`);
+      click(page, btn("radius-chip", "radius", "all"));
+      assert.strictEqual(stateOf(page).where.radius, "orbit", `${surface}: the Orbit chip is Discovery's 'orbit'`);
+      assert.ok(/radius=all/.test(page.url()), `${surface}: written as radius=all, as it always was`);
+      click(page, btn("radius-chip", "radius", "5"));
+      page.run("expandRadius()");
+      assert.strictEqual(stateOf(page).where.radius, 10, `${surface}: Expand radius steps 5 -> 10`);
+      // Typing in the location box offers Discovery's places.
+      page.fire("locInput", "input", { value: "lans" });
+      assert.ok(/Lansing/.test(page.el("locSuggestions").innerHTML === "" ? page.el("locSuggestions").children.map((c) => c.textContent).join("|") : page.el("locSuggestions").innerHTML), `${surface}: suggestions come from Discovery.places (Lansing)`);
+      // Clearing the origin clears its radius; a neighborhood from a link would stay.
+      page.run("clearLocation()");
+      assert.deepStrictEqual(stateOf(page).where, plain(D.defaults().where), `${surface}: clearing the place clears the radius`);
+      // A device location filters but is never written to the URL.
+      page.run("selectLocation({type: 'here', name: 'Your location', lat: 42.33, lng: -83.04})");
+      assert.deepStrictEqual(stateOf(page).where.here, { lat: 42.33, lng: -83.04 });
+      assert.ok(!/loc=|42\.33|83\.04/.test(page.url()), `${surface}: device location stays out of the URL`);
+      assert.ok(!/42\.33/.test(linkTo(page, surface === "map" ? "calendar" : "map")), `${surface}: and out of cross-surface links`);
+      // A neighborhood carried by a link survives clearing the place.
+      const nb = await open(surface, FILE[surface] + "?loc=Ann+Arbor&neighborhood=Corktown");
+      nb.run("clearLocation()");
+      assert.strictEqual(stateOf(nb).where.neighborhood, "Corktown", `${surface}: clearing the place leaves the neighborhood filter`);
+      // Search box and tray removal.
+      page.fire("search", "input", { value: "  jazz " });
+      assert.strictEqual(stateOf(page).q, "jazz", `${surface}: search writes q`);
+      assert.ok(/q=jazz/.test(page.url()));
+    }
+    // Calendar-only: the weekend button opens the list; a single-day When opens that day.
+    const cal = await open("calendar");
+    click(cal, cal.document.querySelectorAll(".when-btn").find((b) => b.dataset.when === "weekend"));
+    assert.strictEqual(cal.get("mode"), "list", "Calendar: the weekend button opens the list");
+    click(cal, cal.document.querySelectorAll(".when-btn").find((b) => b.dataset.when === "tonight"));
+    assert.strictEqual(cal.get("selectedDate"), day(0), "Calendar: Tonight opens today's panel");
+    console.log("PASS: the When buttons, place picker, radius chips (incl. the Orbit chip as radius=all), Expand radius, device location (never in a URL), clearing and search all write the shared state on both pages");
+  }
+
+  // =====================================================================
   // 5. WHAT EACH PAGE SHOWS IS WHAT DISCOVERY SAYS (and no old page-local rule survived)
   // =====================================================================
   {
