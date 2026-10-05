@@ -25,7 +25,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="313.events — THE CITY IS ON.">
@@ -3360,142 +3360,103 @@
 </script>
 
 <style>
+  /* =====================================================================
+     313.events homepage — the Detroit Signal board (visual system, 2026-10-04)
+
+     One information surface: 1px rules, square frames, a strict column
+     grid, mono readouts and a condensed display voice. Nothing is a card.
+     Colour: Signal Chartreuse is STATE — live, selected, today, active
+     control, actionable arrow, Submit, free/press flags. Everything else
+     is warm white on asphalt with concrete for metadata. The event count is
+     warm white (Product Owner, 2026-10-04): abundance without turning the
+     signal colour into decoration. The locked wordmark asset is untouched.
+
+     Three type voices (Detroit Signal v2.1): DISPLAY = Archivo at 62% width,
+     weight 900 (same family and licence as the earlier Archivo Narrow, with
+     the condensed weight the identity kit intended); UI = Inter; DATA =
+     Space Mono for every time, count, distance and label.
+     ===================================================================== */
   :root{
-    /* Detroit Signal V2 — locked color architecture */
     --bg:#0A0A0A;          /* asphalt — primary dark environment */
-    --panel:#202020;       /* charcoal — raised surface: cards, panels */
-    --panel-alt:#161616;   /* slightly recessed surface: strip headers, muted rows */
-    --panel-hover:#272727;
+    --panel:#202020;       /* charcoal — raised surface */
+    --panel-alt:#161616;   /* slightly recessed surface */
+    --panel-hover:#1a1a1a;
     --ink:#F2F0E8;         /* warm white — primary text */
     --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
-    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
-    --line:#2c2c2c;
-    --line-soft:#212121;
-    --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
-    --on-accent:#0A0A0A;   /* required dark text/icon color on chartreuse fills */
+    --ink-dim:#5c5d58;     /* dim concrete — captions that carry no fact */
+    --line:#2a2a2a;
+    --line-soft:#1f1f1f;
+    --accent:#D7FF00;      /* signal chartreuse — state only */
+    --on-accent:#0A0A0A;   /* dark text/icon colour on chartreuse fills */
     --today:rgba(215,255,0,.09);
     --today-ring:#D7FF00;
-    /* Structural containers use a hard edge (0) rather than a soft rounded
-       corner — a direct, deliberately conservative move toward the Detroit
-       Signal concept board's rectilinear, editorial-broadcast language.
-       Scoped to this single token: every var(--radius) consumer is a
-       structural chrome container (.notice, #search, #listView), not an
-       interactive pill/chip/badge, so this doesn't touch
-       any control's tap-target shape or affordance. */
     --radius:0px;
-
-    /* Event Type palette — "UV signal" set (2026-08-26): Jody asked to keep
-       per-category color for scanability, restyled as a cohesive family of
-       saturated blacklight-poster neons rather than the old grab-bag of
-       hues, so it reads as on-brand next to the chartreuse accent instead of
-       competing with it. Kept clear of chartreuse's own yellow-green band. */
-    --c-music:#5B3EFF;    /* electric indigo */
+    /* DISPLAY voice. Archivo's width axis at 62% is served as its own face
+       (see the fonts <link> in <head>); font-stretch selects it. */
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
+    --font-ui:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-data:'Space Mono',monospace;
+    /* Event Type palette — the established "UV signal" set. Category colour
+       appears only on a stream row's TYPE label, where it helps scanning;
+       never inside the WHAT control. Six values were lightened the smallest
+       step that clears WCAG AA (4.5:1) for 11px bold caps on Charcoal
+       (Product Owner, 2026-10-04): music 2.78 -> 4.85, food 3.01 -> 5.19,
+       gaming 3.54 -> 4.55, film 4.09 -> 4.70, nightlife 4.38 -> 4.57,
+       fest 4.47 -> 4.83. Hues unchanged; the other nine untouched. */
+    --c-music:#8C78FF;    /* electric indigo, lightened */
     --c-theatre:#FF6A00;  /* neon orange */
     --c-dance:#FF2ECC;    /* neon magenta */
     --c-visual:#00E5FF;   /* electric cyan */
     --c-museum:#00FFA6;   /* UV spring-teal */
     --c-family:#FFC400;   /* neon amber */
-    --c-fest:#FF2D55;     /* neon crimson */
-    --c-food:#9D00FF;     /* UV violet */
-    --c-film:#2979FF;     /* electric blue */
-    --c-night:#E100FF;    /* UV fuchsia */
+    --c-fest:#FF4266;     /* neon crimson, lightened */
+    --c-food:#C466FF;     /* UV violet, lightened */
+    --c-film:#3E86FF;     /* electric blue, lightened */
+    --c-night:#E41AFF;    /* UV fuchsia, lightened */
     --c-sports:#FF3B3B;   /* neon scarlet */
     --c-community:#3DFF6E; /* neon green */
-    --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
+    --c-vendor:#39FF14;   /* radioactive lime */
+    --c-training:#FFEA00; /* hazard yellow */
+    --c-gaming:#C051FF;   /* neon violet, lightened */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   button{font-family:inherit;}
-  /* Visible keyboard-only focus ring (not shown on mouse click) across every
-     interactive control added/converted for the Chunk 4 accessibility pass —
-     chartreuse matches the brand's existing "state" usage (today ring,
-     live badge), not decoration. */
-  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+  button:focus-visible, input:focus-visible, a:focus-visible, [tabindex]:focus-visible{
     outline:2px solid var(--accent);outline-offset:2px;
   }
   body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:var(--font-ui);
     background:var(--bg);
     color:var(--ink);
     line-height:1.4;
+    -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1180px;margin:0 auto;padding:14px 20px 48px;}
 
+  /* ---- shared voices ---- */
+  .disp{font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;letter-spacing:-.005em;line-height:.88;}
+  .mono{font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+
+  /* ---- header: wordmark (locked asset, untouched), nav as a mono strip ---- */
   header.site{
     display:flex;justify-content:space-between;align-items:center;
     gap:16px;flex-wrap:wrap;
-    padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
+    padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line);
   }
-  /* 2026-10-03: the header is ONE row on desktop — logo, nav, search +
-     Submit Event — and it must never break by dropping search + Submit
-     Event onto a row of their own. With flex-wrap:wrap (above), a flex row
-     breaks BEFORE any item is allowed to shrink, and the line-breaking
-     arithmetic uses the nav's full one-line width — so the min-width:0 /
-     flex-shrink:0 pair added for this earlier the same day could never take
-     effect. Above the 900px breakpoint the row therefore does not wrap: if
-     it is ever too narrow, the nav gives way and wraps its own links
-     (.site-nav has flex-wrap:wrap and min-width:0 for exactly that), and
-     search + Submit Event stay where they are. At 900px and below nothing
-     changes: the row still wraps and the nav takes a full row of its own
-     (see the max-width:900px rule below). */
   @media (min-width:901px){
     header.site{flex-wrap:nowrap;}
   }
-  /* Primary nav (Tomorrow/This Weekend/Calendar/Browse) — plain uppercase
-     text links, not the bordered-chip look .when-btn has elsewhere on the
-     page. The class is still .when-btn for the 2 time-range items (so they
-     ride the existing activateWhen()/updateWhenButtons() wiring); this
-     scoped override just restyles them to match the nav bar visually. */
-  /* min-width:0 (2026-10-03 fix, Jody: "the submit button is wrapping" on
-     Safari): .site-nav is itself a flex ITEM of header.site, and its
-     automatic min-width otherwise resolves to its min-content size. Chrome
-     and Safari don't agree on how small a nested flex container with its
-     own flex-wrap can shrink in that calculation — Safari measures it wider
-     — so at some window widths Chrome fit the whole header on one line
-     while Safari decided the row didn't fit and wrapped the trailing
-     search+submit group onto its own line instead. Forcing min-width:0
-     here removes the ambiguity: .site-nav is always free to shrink and
-     wrap its OWN links internally (it already has flex-wrap:wrap for
-     exactly that), so the header row itself only needs to wrap in a
-     genuine last-resort case. Paired with the flex-shrink:0 added to the
-     search+submit wrapper div below, in the markup.
-     (That alone did not work — see the nowrap rule above, which is what
-     lets this shrinking actually happen.)
-     gap 22px -> 16px (2026-10-03): the ninth link, Neighborhoods, was added
-     2026-10-01 and made the one-line header 1,164px wide in a 1,140px
-     container — 24px too wide at every desktop width, which is what pushed
-     search + Submit Event onto a second row. At 16px between links the row
-     needs 1,116px and fits again, with the logo and Submit Event back where
-     they were before that link was added. */
   .site-nav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;row-gap:8px;min-width:0;}
   .site-nav .when-btn, .site-nav-link{
     border:none;background:none;padding:0 0 4px;border-radius:0;
-    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
+    font-family:var(--font-data);font-size:11px;font-weight:400;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-soft);text-decoration:none;cursor:pointer;
     border-bottom:2px solid transparent;white-space:nowrap;
   }
   .site-nav .when-btn:hover, .site-nav-link:hover{color:var(--ink);}
-  /* 2026-08-28 fix: same nav-highlight bug found and fixed on calendar.html
-     — .when-btn.active (below, ~line 3616) sets background/border-color for
-     the boxy discovery-bar chip treatment elsewhere on the page. This
-     nav-scoped rule only overrode color/border-bottom-color, so a nav item
-     (Today/Tomorrow/This Weekend) picked up that chip's cream background
-     and full border-color with nothing here to stop it — no specificity
-     fight even needed, since whichever rule sets a given property wins by
-     default when only one of them sets it. Result: a solid pale box behind
-     chartreuse text in the nav, instead of the plain text-link look
-     .site-nav-link.current already has correctly. Explicitly resetting
-     background/border-color here makes this rule fully self-contained. */
   .site-nav .when-btn.active{background:none;color:var(--accent);border-color:transparent;border-bottom-color:var(--accent);}
-  /* Marks whichever nav link is the current page (e.g. Calendar, on
-     calendar.html) — same visual treatment as an active time-range chip. */
   .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
-  /* Search icon (mockup parity) — opens/focuses the real search input that
-     lives at the end of the When/Where/Category trigger row (moved there
-     2026-08-27), rather than duplicating a second search field up here. No
-     new search logic, just a shortcut to the existing one. */
   .nav-search-btn{
     border:none;background:none;padding:0;color:var(--ink-soft);cursor:pointer;
     display:flex;align-items:center;
@@ -3505,897 +3466,773 @@
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
-  header.site h1{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
+  header.site h1{margin:0;font-size:0;line-height:0;}
+  .submit-btn{
+    display:inline-block;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;
+    font-family:var(--font-data);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:9px 14px;border-radius:0;
   }
-  /* The locked tagline ("THE CITY IS ON.") gets its own oversized display
-     treatment — same approved condensed grotesk already used for the
-     wordmark/headings, no new font. This is a typographic-hierarchy change
-     only: the words are unchanged (previously run into the description
-     sentence in lowercase), just presented at the scale/weight the tagline
-     is meant to carry as a locked brand asset, per the Detroit Signal
-     concept board's typographic energy. */
-  /* (No separate brand-dot here — the wordmark SVG itself already has a
-     built-in chartreuse dot; adding another produced a visible double-dot.) */
+  .submit-btn:hover{background:var(--ink);border-color:var(--ink);}
 
-  /* ---- Hero: photography + real TODAY data (replaces the removed
-     prototype "What this is" notice — brand + live current-day activity,
-     not explanatory copy). ---- */
+  /* ---- hero board: headline | photograph | the count ---- */
   .hero{
-    display:grid;grid-template-columns:.85fr 1.3fr 1fr;gap:0;
-    background:var(--panel);border:1px solid var(--line);margin-bottom:10px;
-    min-height:320px;
+    display:grid;grid-template-columns:minmax(300px,.9fr) minmax(0,1.3fr) minmax(300px,.95fr);gap:0;
+    background:var(--bg);border:1px solid var(--line);margin-bottom:12px;
+    min-height:440px;
   }
-  /* container-type here (not vw units) is deliberate: .hero-headline is a
-     narrow slice (~27% at desktop) of a capped 1180px-max page, not the
-     full viewport — sizing off raw viewport width (as the brief's
-     "conceptual" clamp(72px,9vw,150px) literally suggests) overflows the
-     actual column the moment the viewport is wider than ~1300px, since 9vw
-     keeps growing while the column itself is capped. Sizing off the
-     column's OWN inline size (cqw) scales the headline as large as the
-     brief intends while automatically staying inside whatever width the
-     3-col/stacked layout actually gives it at any breakpoint. */
-  .hero-headline{padding:22px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
+  .hero-headline{
+    padding:28px 24px 22px;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;
+    container-type:inline-size;border-right:1px solid var(--line);
+    position:relative;z-index:3; /* the signal overhangs the photograph */
+  }
   .hl-line{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(40px,26cqw,120px);line-height:.82;letter-spacing:-0.03em;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
+    font-size:clamp(56px,42cqw,150px);line-height:.86;letter-spacing:-.01em;
     text-transform:uppercase;color:var(--ink);
   }
-  /* Detroit Signal breathing dot (Jody, 2026-08-27) — this IS the period on
-     "IS ON" — there is deliberately no separate small static dot alongside
-     it (that was tried and explicitly rejected: "no double periods"). This
-     large pulse is the only dot in the headline, and it stays distinct from
-     any small brand/status dot elsewhere in the header — those stay static.
-     This is a deliberate, one-off brand exception representing "the city
-     is on/alive/transmitting"
-     — DO NOT copy this breathing animation onto category colors, filters,
-     CTAs, neighborhood cards, or other small status dots; the site should
-     not become full of pulsing chartreuse elements. Sized off the hero
-     headline's own container width (cqw), same reasoning as .hl-line's
-     font-size above, so it scales with the column rather than the viewport. */
-  .hl-line-signal{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(10px,4cqw,22px);}
+  .hl-line-signal{display:flex;align-items:center;gap:clamp(8px,3cqw,14px);}
+  /* THE CITY IS ON. The Signal: the one giant glowing Chartreuse dot on the
+     site, the period on "IS ON" and the master LIVE signal for the whole
+     board (Product Owner, 2026-10-04: a deliberate exception to the
+     restrained chartreuse system — exactly one, hero only, never a button,
+     never repeated elsewhere). It is sized to the headline and overhangs
+     the rule into the photograph; everything else on the page keeps
+     chartreuse as flat state. Not the wordmark; does not touch it. */
   .hero-signal{
-    --signal-size: clamp(60px, 22cqw, 108px);
-    width:var(--signal-size);
-    aspect-ratio:1;
-    flex:0 0 auto;
-    display:inline-block;
-    background:var(--accent);
-    border-radius:50%;
-    transform-origin:center;
+    --signal-size: clamp(64px, 34cqw, 124px);
+    width:var(--signal-size);aspect-ratio:1;flex:0 0 auto;display:inline-block;position:relative;
+    margin-right:calc(var(--signal-size) * -1); /* overhang: takes no room in the column */
+    background:radial-gradient(circle at 38% 36%, #EBFF66 0, var(--accent) 42%, #C2E800 100%);
+    border-radius:50%;transform-origin:center;pointer-events:none;
     box-shadow:
-      0 0 18px rgba(215,255,0,.22),
-      0 0 42px rgba(215,255,0,.12);
+      0 0 calc(var(--signal-size) * .22) calc(var(--signal-size) * .04) rgba(215,255,0,.55),
+      0 0 calc(var(--signal-size) * .70) calc(var(--signal-size) * .16) rgba(215,255,0,.30),
+      0 0 calc(var(--signal-size) * 1.60) calc(var(--signal-size) * .36) rgba(215,255,0,.13);
     animation: detroit-signal-breathe 5.2s cubic-bezier(.45,0,.55,1) infinite;
-    will-change: transform, box-shadow;
+    will-change: transform, opacity;
   }
-  /* Slow human breathing, not a notification pulse: ~5.2s cycle, peak just
-     past halfway (56%), a slightly slower/asymmetric settle back to rest
-     (72% -> 100%) so it doesn't read as a perfectly mechanical loop. Scale
-     never exceeds ~1.14 — calm and organic, not a heartbeat or strobe. */
+  /* the atmosphere: a soft halo well beyond the body of the dot */
+  .hero-signal::before{
+    content:'';position:absolute;inset:calc(var(--signal-size) * -1);border-radius:50%;
+    background:radial-gradient(circle, rgba(215,255,0,.20) 0, rgba(215,255,0,.07) 38%, rgba(215,255,0,0) 70%);
+    z-index:-1;
+  }
   @keyframes detroit-signal-breathe{
-    0%{
-      transform:scale(1);
-      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
-    }
-    56%{
-      transform:scale(1.14);
-      box-shadow:0 0 30px rgba(215,255,0,.32), 0 0 72px rgba(215,255,0,.16);
-    }
-    72%{
-      transform:scale(1.10);
-    }
-    100%{
-      transform:scale(1);
-      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
-    }
+    0%{transform:scale(1);}
+    56%{transform:scale(1.06);}
+    72%{transform:scale(1.045);}
+    100%{transform:scale(1);}
   }
   @media (prefers-reduced-motion: reduce){
-    .hero-signal{
-      animation:none;
-      transform:none;
-      box-shadow:0 0 18px rgba(215,255,0,.20), 0 0 42px rgba(215,255,0,.10);
-    }
+    .hero-signal{animation:none;transform:none;}
   }
-  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);}
+  .hero-tag{
+    display:flex;flex-direction:column;gap:5px;margin-top:auto;padding-top:22px;
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .hero-tag .dim{color:var(--ink-dim);}
+  .hero-photo{position:relative;overflow:hidden;background:var(--panel-alt);border-right:1px solid var(--line);min-height:260px;z-index:1;}
   .hero-photo picture, .hero-photo img{display:block;width:100%;height:100%;object-fit:cover;}
-  /* Auto-rotating crossfade carousel (2026-08-28, Jody: "anyway to create a
-     carousel that auto rotates?") — replaces the old one-random-photo-per-
-     load version, which never changed again once a visit had loaded. All 4
-     slides are stacked directly on top of each other via position:absolute
-     so the fade is a pure opacity cross-dissolve with zero layout shift;
-     see the script below the markup for the rotation logic and the
-     preload-all-4 / prefers-reduced-motion reasoning. */
   .hero-photo-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;}
   .hero-photo-slide.is-active{opacity:1;z-index:1;}
-  .hero-today{padding:20px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0;container-type:inline-size;}
-  /* "N things happening today in the Detroit Orbit" stat panel — a constant,
-     site-wide pulse number (see isInDetroitOrbit()), distinct from the
-     filtered calendar/list below it. Real count, never fabricated. Sized
-     off the column's own inline size (cqw), same reasoning as .hl-line
-     above — digits are narrower than "CITY" so this column has more
-     headroom, but a fixed 4-digit count still needs to fit without
-     overflowing the stat column at any breakpoint. */
+  .hero-today{padding:22px 22px 18px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;container-type:inline-size;background:var(--panel-alt);}
+  /* The proof panel (DEC-026): the site's real current + upcoming total as
+     the hero's primary figure, in warm white, with TODAY / NEXT 7 DAYS /
+     ACTIVE NEIGHBORHOODS as a readout grid beneath it. Real counts, never
+     fabricated — see heroFigures(). */
+  .hero-proof-total{
+    display:block;width:100%;background:none;border:none;padding:0;margin:0 0 14px;
+    text-align:left;cursor:pointer;color:inherit;font-family:inherit;
+  }
   .hero-stat-number{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:clamp(48px,30cqw,116px);line-height:.85;color:var(--accent);margin-bottom:2px;
-    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+    display:block;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
+    font-size:clamp(72px,44cqw,150px);line-height:.86;color:var(--ink);margin-bottom:10px;
+    letter-spacing:-.02em;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
   }
-  /* Count-up tally (2026-09-13, Jody: "kinda like a gameshow") — see
-     animateHeroCount() below. A live glow while digits are still climbing
-     from the initial small/fallback number up to the real one, so the
-     motion itself reads as "still tallying" rather than a value that just
-     happened to change. Purely additive to the base style above; the
-     number's color/size never change, so this can't shift layout. */
-  .hero-stat-number.is-counting{text-shadow:0 0 18px var(--accent), 0 0 4px var(--accent);}
-  @media (prefers-reduced-motion: reduce){
-    .hero-stat-number.is-counting{text-shadow:none;}
-  }
+  .hero-stat-number.is-counting{color:var(--ink);}
   .hero-stat-caption{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:16.5px;
-    text-transform:uppercase;line-height:1.18;letter-spacing:-.005em;color:var(--ink);margin-bottom:14px;
+    display:block;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:clamp(20px,7cqw,28px);
+    text-transform:uppercase;line-height:.95;letter-spacing:0;color:var(--ink);
   }
-  .hero-stat-cta{
-    display:inline-block;font-size:13px;font-weight:700;color:var(--accent);background:none;
-    border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit;margin-bottom:14px;
+  .hero-proof-total:hover .hero-stat-caption, .hero-proof-total:focus-visible .hero-stat-caption{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--accent);}
+  .hero-proof-stats{
+    display:grid;grid-template-columns:1fr 1fr 1fr;
+    border:1px solid var(--line);border-right:none;margin-bottom:14px;
   }
-  .hero-stat-cta:hover{text-decoration:underline;}
-  .hero-stat-orbit{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+  .hero-proof-stat{
+    display:flex;flex-direction:column;gap:4px;min-width:0;
+    background:none;border:none;border-right:1px solid var(--line);padding:10px 10px 9px;
+    text-align:left;cursor:pointer;color:inherit;font-family:inherit;
+  }
+  .hps-num{
+    font-family:var(--font-data);font-weight:700;font-size:20px;line-height:1;
+    color:var(--ink);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+  }
+  .hps-label{
+    font-family:var(--font-data);font-size:9px;line-height:1.3;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .hero-proof-stat:hover .hps-num, .hero-proof-stat:focus-visible .hps-num{color:var(--accent);}
+  .hero-proof-promise{
+    display:flex;align-items:center;gap:8px;
+    font-family:var(--font-data);font-size:10.5px;line-height:1.5;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;
+  }
+  .live-dot{
+    display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;
+  }
+  .hero-stat-orbit{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);line-height:1.5;}
   @media (max-width:980px){
-    .hero{grid-template-columns:1fr 1.2fr;}
-    .hero-headline{grid-column:1 / -1;order:1;padding-bottom:6px;}
-    .hero-photo{order:2;}
+    .hero{grid-template-columns:1fr 1fr;min-height:0;}
+    .hero-headline{grid-column:1 / -1;order:1;border-right:none;border-bottom:1px solid var(--line);padding-bottom:18px;}
+    .hero-photo{order:2;min-height:300px;}
     .hero-today{order:3;}
   }
   @media (max-width:720px){
-    .hero{grid-template-columns:1fr;min-height:0;}
-    .hero-photo{aspect-ratio:16/9;}
-    .hero-headline{padding:18px 18px 4px;}
-    .hero-today{padding:14px 18px 20px;}
+    .hero{grid-template-columns:1fr;}
+    .hero-headline{padding:20px 16px 14px;}
+    .hl-line{font-size:clamp(56px,27cqw,104px);}
+    .hero-signal{--signal-size:clamp(56px,21cqw,84px);margin-right:0;}
+    .hero-tag{margin-top:12px;}
+    .hero-photo{aspect-ratio:4/3;min-height:0;border-right:none;border-bottom:1px solid var(--line);}
+    .hero-today{padding:16px 14px 14px;}
+    .hero-stat-number{font-size:clamp(72px,30cqw,112px);}
+    .hero-proof-stats{grid-template-columns:1fr 1fr 1fr;}
   }
 
-  /* Search moved into the When/Where/Category trigger row (Jody,
-     2026-08-27) — it's the same "narrow the list" family as those three, and
-     the separate bordered .controls panel that used to hold it alone was
-     just dead vertical space. On desktop/tablet it sits as a 4th item in the
-     same flex row with extra grow (it needs more room to type in than a
-     fixed-value trigger label does); below 720px, where the three triggers
-     are already squeezed to compact pills, it drops to its own full-width
-     line via flex-basis:100% instead of getting squeezed into a quarter-width
-     sliver too small to comfortably type in on a phone. */
+  /* ---- the control panel: WHEN / WHERE / WHAT / SEARCH ---- */
+  .discovery-shell{
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
+    padding:0;margin-bottom:12px;
+  }
+  .mobile-triggers{display:grid;grid-template-columns:1.05fr 1.05fr 1.05fr 1.6fr;gap:0;}
+  .mobile-trigger{
+    min-width:0;border:none;border-right:1px solid var(--line);background:none;color:var(--ink);
+    border-radius:0;padding:12px 16px 11px;font-size:16px;font-weight:600;cursor:pointer;
+    display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;
+  }
+  .mobile-trigger:hover{background:var(--panel-hover);}
+  .mobile-trigger .mt-label, .search-field .mt-label{
+    font-family:var(--font-data);font-size:10px;font-weight:400;line-height:1.3;letter-spacing:.12em;
+    color:var(--ink-soft);text-transform:uppercase;
+  }
+  .mobile-trigger .mt-sub{
+    font-size:16px;font-weight:600;line-height:1.3;color:var(--ink);max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .mobile-trigger .mt-sub::after{content:' \25be';font-family:var(--font-data);font-size:11px;color:var(--ink-soft);}
+  .mobile-trigger.has-value{box-shadow:inset 0 -2px 0 var(--accent);}
+  .mobile-trigger.has-value .mt-label{color:var(--accent);}
+  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);box-shadow:inset 0 -2px 0 var(--ink);}
+  .search-field{
+    min-width:0;display:flex;flex-direction:column;gap:5px;cursor:text;
+    border:none;border-radius:0;background:none;padding:12px 16px 11px;
+  }
+  .search-field:focus-within{box-shadow:inset 0 -2px 0 var(--ink);}
   #search{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;
-    min-width:200px;flex:2 1 220px;
-    background:var(--panel-alt);color:var(--ink);
+    border:none;background:none;padding:0;margin:0;width:100%;min-width:0;outline:none;
+    font-family:inherit;font-size:16px;font-weight:500;line-height:1.3;color:var(--ink);
   }
-  #search::placeholder{color:var(--ink-dim);}
+  #search::placeholder{color:var(--ink-dim);font-weight:500;}
 
-  /* Discovery bar — time-range shortcuts. Deliberately styled like the
-     existing chip controls (ink-on-active, not chartreuse) —
-     the brief is explicit that Signal stays scarce and controls need
-     conventional usability, not brand theatrics. */
-  .discovery-bar{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
-  }
+  /* The sheets (When / Where / What) open as a panel under the row at
+     721px+ and as a bottom sheet below. Controls inside keep ink-on-active;
+     chartreuse marks the selected category only. */
+  .discovery-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .when-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
-    border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);
+    border-radius:0;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;
   }
-  .when-btn:hover{background:var(--panel-hover);}
+  .when-btn:hover{background:var(--panel-hover);color:var(--ink);}
   .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
   .when-date-picker{
-    display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);
-    color:var(--ink-soft);border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);
+    color:var(--ink-soft);border-radius:0;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
   }
   .when-date-picker.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
-  .when-date-picker input[type="date"]{
-    border:none;background:none;color:inherit;font:inherit;cursor:pointer;padding:0;max-width:130px;
-  }
-  .when-date-picker input[type="date"]::-webkit-calendar-picker-indicator{
-    /* The site is dark-themed throughout with no light mode — the browser's
-       default calendar-icon glyph is black and invisible against the dark
-       panel background otherwise. */
-    filter:invert(1);cursor:pointer;
-  }
-  /* From/To pair (2026-08-26 [sic 2026-08-27]): two plain .when-date-picker
-     boxes side by side on desktop. Both are native <input type="date">
-     controls specifically because a touchscreen's own native date wheel/
-     calendar is what someone with "stumpy fingers on a handset" already
-     knows how to drive — a custom range-calendar widget would need much
-     larger deliberately-spaced tap targets to be as usable, for no real
-     gain here. */
+  .when-date-picker input[type="date"]{border:none;background:none;color:inherit;font:inherit;cursor:pointer;padding:0;max-width:130px;}
+  .when-date-picker input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer;}
   .when-date-range{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .when-date-optional{color:var(--ink-dim);font-weight:500;text-transform:none;letter-spacing:0;}
   @media (max-width:480px){
-    /* Stacked full-width rather than shrinking two side-by-side boxes down
-       to where the date text itself gets cramped on a small phone screen. */
     .when-date-range{flex-direction:column;align-items:stretch;}
     .when-date-picker{justify-content:space-between;}
   }
-
-  /* "Showing N events ___" heading above the list — only appears when a
-     specific scope (this week, this weekend, a picked date/range, a
-     neighborhood, or All Upcoming) is active, per currentListMeta(); the
-     plain default view has no heading here — see .list-scope-note below for
-     what it gets instead. */
   .list-count-heading{
-    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;
-    color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;
   }
-  /* The plain default view's own boundary disclosure (P0, 2026-08-28
-     product audit Gap 2/8: the 30-day rolling window used to be silent —
-     nothing told a visitor there even WAS a cutoff, let alone how to see
-     past it). Deliberately a plain inline note, not another .es-action
-     chip — this isn't an empty-state recovery action, it's a standing,
-     always-there disclosure on an otherwise-populated list. */
-  .list-scope-note{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
-  .list-scope-note button{
-    font:inherit;background:none;border:none;color:var(--accent);font-weight:700;
-    cursor:pointer;padding:0;
-  }
-  .list-scope-note button:hover{text-decoration:underline;}
-
-  /* Active-filter tray — one visible summary of whatever is currently
-     narrowing the event universe (time-range shortcut, free-only, search
-     text, a narrowed category set), each independently removable, per the
-     brief's "filter state must never be invisible" requirement. */
-  .active-filters{
-    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;
-  }
-  .af-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .active-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+  .af-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
   .af-chip{
     display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
-    border-radius:var(--radius);padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
+    border-radius:0;padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
   }
   .af-chip button{
-    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    border:none;background:var(--panel);color:var(--ink-soft);border-radius:50%;
     width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
   }
   .af-chip button:hover{background:var(--ink);color:var(--bg);}
   .af-clear{
-    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
-    font-size:12.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:none;color:var(--ink-soft);border-radius:0;padding:5px 12px;
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
   }
-
-  .filters{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
-  }
+  .af-clear:hover{color:var(--ink);border-color:var(--ink);}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
   .chip{
-    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
-    font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
+    border:1px solid var(--line);background:var(--bg);border-radius:0;padding:8px 13px;
+    font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink);
     user-select:none;
   }
-  .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  /* Selected/active state on every chip (Event Type dots included) is Signal
-     Chartreuse — the one color that always means "this is on," independent
-     of whichever per-category dot color the chip also carries. freeChip
-     below keeps its own distinct green for the same reason "Free only"
-     already had one before this pass. */
+  .chip:hover{border-color:var(--ink-soft);}
   .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
-  .chip.active .dot{outline:1.5px solid var(--on-accent);}
-  .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
-  .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
-
-  /* Location + radius bar — Phase 1 Chunk 3. Same restrained styling as the
-     discovery bar (ink-on-active, chartreuse reserved for state, not chrome). */
-  .location-bar{
-    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;
-  }
+  .chip#allTypesChip.active{background:var(--panel-alt);color:var(--ink);border-color:var(--ink);}
+  .location-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;}
   .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-  .loc-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-  .loc-combo{position:relative;min-width:200px;}
+  .loc-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;}
+  .loc-combo{position:relative;min-width:220px;}
   #locInput{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
-    background:var(--panel-alt);color:var(--ink);
+    border:1px solid var(--line);border-radius:0;padding:8px 30px 8px 12px;font-size:14px;width:100%;min-width:220px;
+    background:var(--bg);color:var(--ink);font-family:inherit;
   }
   #locInput::placeholder{color:var(--ink-dim);}
   .loc-clear-btn{
     position:absolute;right:6px;top:50%;transform:translateY(-50%);
-    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
+    border:none;background:var(--panel);color:var(--ink-soft);border-radius:50%;
     width:20px;height:20px;font-size:11px;line-height:1;cursor:pointer;align-items:center;justify-content:center;display:flex;
   }
   .loc-clear-btn:hover{background:var(--ink);color:var(--bg);}
   .loc-suggestions{
     position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:280px;overflow-y:auto;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:0;box-shadow:0 8px 24px rgba(0,0,0,.5);
   }
   .loc-item{
-    padding:8px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:9px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
     border-bottom:1px solid var(--line-soft);
   }
   .loc-item:last-child{border-bottom:none;}
   .loc-item:hover, .loc-item.hl{background:var(--panel-hover);}
   .loc-item-name{color:var(--ink);font-weight:600;}
-  .loc-item-type{color:var(--ink-dim);font-size:10.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+  .loc-item-type{font-family:var(--font-data);color:var(--ink-dim);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
   .loc-empty{padding:10px 12px;font-size:12.5px;color:var(--ink-dim);}
   .loc-geo-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:var(--radius);
+    border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);border-radius:0;
     padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
   }
-  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);}
+  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);color:var(--ink);}
   .loc-geo-btn:disabled{opacity:.6;cursor:default;}
   .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .radius-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-right:2px;}
+  .radius-label{font-family:var(--font-data);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.1em;margin-right:2px;}
   .radius-chip{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:var(--radius);
-    padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);border-radius:0;
+    padding:6px 12px;font-family:var(--font-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
   }
-  .radius-chip:hover{background:var(--panel-hover);}
+  .radius-chip:hover{color:var(--ink);}
   .radius-chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
 
-  /* Calendar grid */
+  /* ---- the body grid: stream and rail ----
+     .home-main and .home-sidebar are display:contents so every section is
+     placed on one grid: the stream, neighborhoods, Orbit + Radar and the
+     continuing inventory in the main column; the four navigation surfaces
+     (calendar, map, free today, venues) stacked in a sticky rail. Below
+     980px it is one column and the rail becomes a 2x2 NAVIGATE panel
+     placed before the continuing inventory. */
+  .home-body{
+    display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 280px;gap:0 32px;align-items:start;margin-bottom:10px;
+    grid-template-areas:
+      "dm dm rail"
+      "list list rail"
+      "nb nb rail"
+      "orbit radar rail"
+      "more more rail";
+  }
+  .home-main{display:contents;}
+  .home-sidebar{display:contents;}
+  .dont-miss{grid-area:dm;}
+  #listView{grid-area:list;}
+  .neighborhoods-section{grid-area:nb;}
+  #nearYouCard{grid-area:orbit;}
+  #onRadarCard{grid-area:radar;}
+  #listMore{grid-area:more;}
+  .rail-stack{grid-area:rail;position:sticky;top:14px;display:flex;flex-direction:column;gap:12px;align-self:start;}
+  @media (max-width:980px){
+    .home-body{
+      grid-template-columns:minmax(0,1fr);gap:0;
+      grid-template-areas:"dm" "list" "nb" "rail" "orbit" "radar" "more";
+    }
+    .rail-stack{position:static;display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);margin:0 0 18px;}
+    .rail-stack .side-card{border:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+    .rail-stack .side-card:nth-child(2n){border-right:none;}
+    .rail-stack .side-card:nth-last-child(-n+2){border-bottom:none;}
+    .rail-stack .side-card-head{flex-wrap:wrap;gap:4px 10px;}
+    .rail-stack .side-card-head h2{min-width:0;}
+    #nearYouCard{margin-bottom:0;}
+  }
+
+  /* ---- rail cards: readout panels ---- */
+  .side-card{background:var(--panel-alt);border:1px solid var(--line);border-radius:0;padding:14px 16px;min-width:0;}
+  .side-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .side-card-head h2{
+    font-family:var(--font-data);font-size:10.5px;font-weight:400;
+    text-transform:uppercase;letter-spacing:.12em;color:var(--ink);margin:0;
+  }
+  .side-card-link{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;}
+  .side-card-link:hover{color:var(--ink);}
+  .side-card-sub{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;line-height:1.5;}
+  .side-card-number{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
+    font-size:44px;line-height:.9;color:var(--ink);margin-bottom:4px;letter-spacing:-.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  #freeTodayCard .side-card-number{color:var(--accent);} /* free is a flag the system makes */
+  .side-card-caption{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;line-height:1.5;}
+  .side-card-cta{
+    display:inline-block;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+    background:none;border:none;padding:0;cursor:pointer;
+  }
+  .side-card-cta:hover{color:var(--ink);}
+
+  /* On the Radar: press already covering what is listed */
+  #onRadarCard{background:var(--bg);border:1px solid var(--line);border-left:none;padding:16px 18px 14px;margin-top:24px;margin-left:-32px;align-self:stretch;display:flex;flex-direction:column;}
+  #onRadarCard[style*="none"] ~ #nearYouCard{grid-area:auto;grid-column:1 / 3;grid-row:4;}
+  /* Coverage readout: fills the column beside the Orbit field and gives the
+     press surface its own numbers — outlets and how many upcoming events
+     each one is covering. */
+  .radar-outlets{margin-top:auto;padding-top:14px;}
+  .radar-outlets-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid var(--ink);padding-top:10px;margin-bottom:2px;}
+  .radar-outlets-head span{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .radar-outlets-total{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:44px;line-height:.9;color:var(--ink);margin:6px 0 2px;}
+  .radar-outlets-caption{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;}
+  .radar-outlet{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-family:var(--font-data);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);}
+  .radar-outlet b{font-weight:400;color:var(--ink-soft);}
+  .radar-outlet:last-child{border-bottom:1px solid var(--line);}
+  #onRadarCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
+  .radar-list{display:flex;flex-direction:column;margin:0;}
+  .radar-item{
+    display:flex;gap:12px;align-items:flex-start;padding:11px 0;
+    text-decoration:none;color:inherit;border-top:1px solid var(--line);
+  }
+  .radar-item:first-child{border-top:none;}
+  .radar-item:hover .radar-item-title{text-decoration:underline;text-underline-offset:3px;}
+  .radar-thumb{width:56px;height:56px;flex:0 0 auto;object-fit:cover;background:var(--panel-alt);border:1px solid var(--line);}
+  .radar-thumb-fallback{
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-data);font-size:11px;letter-spacing:.1em;color:var(--ink-dim);
+    background-image:radial-gradient(circle at 100% 100%, transparent 14px, var(--line) 14px, var(--line) 15px, transparent 15px),
+                     radial-gradient(circle at 100% 100%, transparent 30px, var(--line-soft) 30px, var(--line-soft) 31px, transparent 31px);
+  }
+  .radar-item-body{min-width:0;}
+  .radar-item-title{
+    font-size:14px;font-weight:600;line-height:1.3;margin-bottom:4px;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  }
+  .radar-item-meta{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:3px;}
+  .radar-item-src{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);}
+
+  /* calendar week strip */
+  .vc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border:1px solid var(--line);}
+  .vc-day{
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;
+    border-radius:0;background:none;text-decoration:none;
+    color:var(--ink);border-right:1px solid var(--line);min-width:0;
+  }
+  .vc-day:last-child{border-right:none;}
+  .vc-day:hover{background:var(--panel-hover);}
+  .vc-day.today{background:var(--bg);box-shadow:inset 0 -2px 0 var(--accent);}
+  .vc-day.today .vc-num{color:var(--accent);}
+  .vc-dow{font-family:var(--font-data);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);}
+  .vc-num{font-family:var(--font-data);font-size:14px;font-weight:700;}
+  .vc-count{font-family:var(--font-data);font-size:9.5px;color:var(--ink-soft);}
+
+  /* Detroit Orbit: the radial range field. Detroit at the centre, rings at
+     10 / 25 / 50 miles, real cities placed by bearing with their live
+     counts. The old decorative radar (.ny-*) is kept for the located
+     state's compact graphic. */
+  #nearYouCard{background:var(--bg);border:1px solid var(--line);padding:16px 18px 36px;margin-top:24px;position:relative;overflow:hidden;}
+  #nearYouCard .side-card-head{position:relative;z-index:2;}
+  #nearYouCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
+  #nearYouCard .side-card-sub, #nearYouCard .side-card-number, #nearYouCard .side-card-caption, #nearYouCard .side-card-cta{position:relative;z-index:2;}
+  .orbit-field{position:relative;height:300px;margin:4px -18px 0;z-index:1;}
+  .orbit-readout{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative;z-index:2;}
+  .orbit-readout .side-card-number{margin-bottom:4px;}
+  .orbit-readout .side-card-caption{margin:0;}
+  .orbit-readout .side-card-cta{margin:0 0 6px;}
+  .orbit-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid var(--line);border-radius:50%;}
+  .orbit-center{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);}
+  .orbit-lbl{
+    position:absolute;transform:translate(-2px,-50%);white-space:nowrap;display:flex;gap:6px;align-items:center;
+    font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
+  }
+  .orbit-lbl i{width:5px;height:5px;background:var(--ink-soft);border-radius:50%;display:inline-block;flex:none;}
+  .orbit-lbl b{color:var(--ink-soft);font-weight:400;}
+  .orbit-lbl.is-left{transform:translate(calc(-100% + 2px),-50%);flex-direction:row-reverse;}
+  .orbit-lbl.is-center{color:var(--accent);transform:translate(10px,-50%);}
+  .orbit-lbl.is-center b{color:var(--ink-soft);}
+  .orbit-mile{position:absolute;font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+  .orbit-foot{position:absolute;left:18px;bottom:12px;z-index:2;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+  .ny-radar{position:relative;width:120px;max-width:100%;aspect-ratio:1;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
+  .ny-ring{position:absolute;border:1px solid var(--line);border-radius:50%;}
+  .ny-ring-1{width:38%;height:38%;}
+  .ny-ring-2{width:68%;height:68%;}
+  .ny-ring-3{width:100%;height:100%;}
+  .ny-ping{display:none;}
+  @keyframes ny-orbit-ping{0%{transform:scale(.4);opacity:.45;}70%{transform:scale(2.6);opacity:0;}100%{transform:scale(2.6);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){.ny-ping{animation:none;opacity:0;}}
+  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);}
+  @media (max-width:980px){
+    #nearYouCard{min-height:380px;margin-top:0;}
+    #onRadarCard{margin-top:0;margin-left:0;border-left:1px solid var(--line);border-top:none;margin-bottom:18px;align-self:auto;}
+  }
+
+  /* map readout */
+  .map-scatter{width:100%;aspect-ratio:2.75;margin:0 0 10px;border:1px solid var(--line);}
+  .map-scatter svg{width:100%;height:100%;display:block;overflow:visible;}
+  .map-you-ping{transform-origin:center;transform-box:fill-box;animation: map-you-ping 2.8s cubic-bezier(0,0,.2,1) infinite;}
+  @keyframes map-you-ping{0%{transform:scale(.5);opacity:.5;}70%{transform:scale(3);opacity:0;}100%{transform:scale(3);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){.map-you-ping{animation:none;opacity:0;}}
+  .map-card-cta{
+    display:block;text-align:center;margin-top:2px;padding:9px 12px;
+    border-radius:0;background:none;border:1px solid var(--accent);color:var(--accent);
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+  }
+  .map-card-cta:hover{background:var(--accent);color:var(--on-accent);text-decoration:none;}
+
+  /* ---- Explore neighborhoods: plates ---- */
+  .neighborhoods-section{margin:26px 0 8px;min-width:0;}
+  .neighborhoods-head-row{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px 12px;flex-wrap:wrap;margin:0 0 12px;
+    padding-bottom:10px;border-bottom:1px solid var(--ink);
+  }
+  .neighborhoods-heading{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.9;
+    text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;
+  }
+  .neighborhoods-rail{
+    display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  }
+  .neigh-card{
+    flex:0 0 auto;scroll-snap-align:start;width:180px;height:224px;position:relative;overflow:hidden;
+    background:var(--panel-alt);border:1px solid var(--line);border-radius:0;
+    padding:0;text-align:left;cursor:pointer;font-family:inherit;color:var(--ink);
+    display:flex;flex-direction:column;justify-content:flex-end;
+  }
+  .neigh-card:hover{border-color:var(--ink-soft);}
+  .neigh-card.active{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);}
+  .neigh-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;margin:0;}
+  .neigh-plate{position:relative;background:var(--bg);border-top:1px solid var(--line);padding:10px 12px 11px;display:flex;flex-direction:column;gap:5px;min-height:76px;}
+  .neigh-name{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:21px;line-height:.92;
+    text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;overflow-wrap:break-word;
+  }
+  .neigh-count{font-family:var(--font-data);font-size:11px;font-weight:700;color:var(--ink);}
+  .neigh-count-label{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .neigh-count-row{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;}
+  .neigh-bearing{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  /* No approved photograph: the nameplate (Product Owner, 2026-10-04 —
+     fallback B). Type alone, the count large. Photography always wins. */
+  .neigh-card:not(.has-photo) .neigh-plate{border-top:none;min-height:0;height:100%;justify-content:space-between;padding-top:12px;}
+  .neigh-card:not(.has-photo) .neigh-name{font-size:30px;}
+  .neigh-card:not(.has-photo) .neigh-count{font-size:26px;display:block;}
+  .neigh-card:not(.has-photo) .neigh-count-row{flex-direction:column;gap:2px;align-items:flex-start;}
+  /* Desktop: the six busiest neighborhoods as one strip of plates, no
+     scroller; the rest are a click away ("See all neighborhoods"). The
+     full rail scrolls on narrower screens. */
+  @media (min-width:981px){
+    .neighborhoods-rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:visible;padding-bottom:0;}
+    .neighborhoods-rail .neigh-card{width:auto;height:204px;}
+    .neighborhoods-rail .neigh-card:nth-child(n+7){display:none;}
+    .neigh-name{font-size:17px;}
+    .neigh-card:not(.has-photo) .neigh-name{font-size:19px;}
+  }
+  .neigh-foot{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin:6px 0 0;}
+  @media (max-width:640px){
+    .neigh-card{width:160px;height:200px;}
+    .neigh-name{font-size:19px;}
+    .neigh-card:not(.has-photo) .neigh-name{font-size:23px;}
+  }
+
+  /* calendar page leftovers (month grid classes shared with calendar.html) */
   .cal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;}
   .cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;background:var(--panel-alt);border-bottom:1px solid var(--line);}
   .cal-head div{padding:9px 0;text-align:center;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;}
-  .day-cell{
-    min-height:122px;min-width:0;overflow:hidden;
-    border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
-    padding:6px 6px 8px;position:relative;cursor:pointer;background:var(--panel);
-  }
+  .day-cell{min-height:122px;min-width:0;overflow:hidden;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:6px 6px 8px;position:relative;cursor:pointer;background:var(--panel);}
   .day-cell:nth-child(7n){border-right:none;}
   .day-cell.otherMonth{background:var(--panel-alt);color:var(--ink-dim);}
   .day-cell.today{background:var(--today);box-shadow:inset 0 0 0 2px var(--today-ring);}
-  .day-cell:hover{background:var(--panel-hover);}
-  .day-cell.today:hover{background:var(--today);}
-  .daynum{
-    font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);
-    display:flex;align-items:baseline;gap:6px;
-  }
+  .daynum{font-family:var(--font-data);font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);display:flex;align-items:baseline;gap:6px;}
   .day-cell.today .daynum{color:var(--accent);}
-  /* Past dates stay fully clickable/legible — only the day number itself
-     dims slightly as a temporal cue. Events, pills, and counts stay at full
-     opacity so nothing reads as "disabled". Doesn't apply to .today, which
-     has its own treatment, or otherMonth cells (already dimmed via panel-alt). */
-  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.55;}
-  .today-label{
-    font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.05em;
-    color:var(--accent);text-transform:uppercase;
-  }
-  .day-count{
-    font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);
-    margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;
-  }
+  .today-label{font-family:var(--font-data);font-size:9px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;}
+  .day-count{font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;}
   .day-count .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
-
-  /* ---- Homepage body layout: calendar/list + right-rail highlights ----
-     The sidebar reverses an earlier-session "no right rail" call, but only
-     for the three modules explicitly approved per-module (View Calendar,
-     Near You, Free Today) — bookmark/save stays out per that same
-     decision. Every number in these cards is real, computed the same way
-     the month grid / hero stat already compute theirs — never fabricated
-     counts like the mockup's placeholder figures. */
-  .home-body{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;margin-bottom:10px;}
-  .home-main{min-width:0;}
-  .home-sidebar{display:flex;flex-direction:column;gap:16px;position:sticky;top:14px;}
-  .side-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;}
-  .side-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px;}
-  .side-card-head h2{
-    font-family:'Inter',-apple-system,sans-serif;font-size:12px;font-weight:800;
-    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0;
-  }
-  .side-card-link{font-size:11.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap;}
-  .side-card-link:hover{text-decoration:underline;}
-  .side-card-sub{font-size:12px;color:var(--ink-soft);margin:0 0 10px;}
-  .side-card-number{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:34px;line-height:1;color:var(--accent);margin-bottom:2px;
-  }
-  .side-card-caption{font-size:12px;color:var(--ink-soft);margin:0 0 10px;}
-  .side-card-cta{
-    display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent);
-    background:none;border:none;padding:0;cursor:pointer;font-family:inherit;
-  }
-  .side-card-cta:hover{text-decoration:underline;}
-
-  /* "On the Radar" sidebar widget (2026-08-28, Jody: "percolate to the user
-     events that the press has covered") — reuses the same editorialByEvent
-     data the inline "As seen in" links already load (see
-     loadEditorialArticles()), no extra request. A plain list rather than
-     another number/stat tile like the other three sidebar cards — the
-     value here IS the specific events, not a count. Rows bleed to the
-     card's own edges (negative margin canceling .side-card's padding) so
-     each row's divider/hover state spans the full card width. */
-  .radar-list{display:flex;flex-direction:column;margin:0 -16px -16px;}
-  .radar-item{
-    display:flex;gap:10px;align-items:flex-start;padding:10px 16px;
-    text-decoration:none;color:inherit;border-top:1px solid var(--line-soft);
-  }
-  .radar-item:first-child{border-top:none;}
-  .radar-item:hover{background:var(--panel-hover);}
-  .radar-thumb{width:52px;height:52px;flex:0 0 auto;object-fit:cover;background:var(--panel-alt);}
-  .radar-thumb-fallback{
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:20px;
-    color:var(--accent);
-  }
-  .radar-item-body{min-width:0;}
-  .radar-item-title{
-    font-size:13px;font-weight:700;line-height:1.3;margin-bottom:2px;color:var(--ink);
-    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  }
-  .radar-item-meta{font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
-  .radar-item-src{font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--accent);}
-
-  /* View Calendar card: one real week row, not a full month — see the
-     "same amount of calendar as in the mock" spec. Links out to the
-     dedicated calendar page rather than duplicating month navigation. */
-  .vc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-  .vc-day{
-    display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;
-    border-radius:var(--radius);background:var(--panel-alt);text-decoration:none;
-    color:var(--ink);border:1px solid transparent;
-  }
-  .vc-day:hover{background:var(--panel-hover);}
-  .vc-day.today{border-color:var(--accent);background:var(--today);}
-  .vc-dow{font-size:9.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-soft);}
-  .vc-num{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
-  .vc-count{font-size:10px;font-weight:700;color:var(--accent);}
-
-  /* "What's in your Detroit Orbit?" card (redesigned from "Near You", Jody
-     2026-08-27) — decorative-only radar/orbit graphic: this project has zero
-     real per-event coordinates (0% of venues/events have lat/lng), so this
-     never plots real event positions. The count above/below it is real,
-     city-level radius math (haversineMiles against CITY_LOOKUP), same method
-     the Where/radius filter already uses. Rings fade with distance to read
-     as orbital paths rather than a plain bullseye — tinted with the signal
-     accent at low opacity (rather than the barely-there --line gray tried
-     first, which read as too faint against the panel background) since
-     these rings represent the live signal's own reach outward, not plain
-     structural chrome. The .ny-ping element is a single "you are here"
-     location pulse (radiates outward from the dot and fades, like a map pin
-     ping) — deliberately a DIFFERENT motion (expand-and-fade-out, not
-     scale-in-place) from the hero signal's breathing animation, per that
-     animation's own one-off/no-reuse rule. Fixed at aspect-ratio:1 (rather
-     than the card's own full width vs a flat fixed height, which is what
-     the old "Near You" version did) so the rings render as true circles
-     instead of the squashed ellipses that mismatch produced — width % and
-     height % need the same base to actually look like circular orbit rings. */
-  .ny-radar{position:relative;width:120px;max-width:100%;aspect-ratio:1;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
-  .ny-ring{position:absolute;border:1.5px solid var(--line);border-radius:50%;}
-  .ny-ring-1{width:38%;height:38%;border-color:rgba(215,255,0,.55);}
-  .ny-ring-2{width:68%;height:68%;border-color:rgba(215,255,0,.35);}
-  .ny-ring-3{width:100%;height:100%;border-color:rgba(215,255,0,.2);}
-  .ny-ping{
-    position:absolute;width:38%;height:38%;border-radius:50%;
-    background:var(--accent);z-index:1;
-    animation: ny-orbit-ping 2.8s cubic-bezier(0,0,.2,1) infinite;
-  }
-  @keyframes ny-orbit-ping{
-    0%{transform:scale(.4);opacity:.45;}
-    70%{transform:scale(2.6);opacity:0;}
-    100%{transform:scale(2.6);opacity:0;}
-  }
-  @media (prefers-reduced-motion: reduce){
-    .ny-ping{animation:none;opacity:0;}
-  }
-  .ny-dot{position:relative;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 7px rgba(215,255,0,.15);}
-
-  /* "Detroit Orbit Map" card redesign (2026-09-05, Jody: "it needs to be
-     more visually interesting, i need more context as a user for what 30
-     means... show the number of events in their immediate orbit as it
-     relates to the detroit orbit — if we can't do that then just promote
-     the map itself"). Decorative scattered-pin SVG — same "teaser only,
-     never a live embedded map, never real per-event coordinates" rule as
-     the ny-radar graphic above (see its own comment: 0% of venues have
-     lat/lng) — gives the card map-flavored texture it never had. This
-     card never asks for location itself (that's the neighboring "What's
-     in your Detroit Orbit?" card's job, and one "Use my location" prompt
-     on the page is enough); it just checks whether originLocation is
-     already set and, if so, adds a highlighted "you" dot and switches the
-     copy to a real near-you vs. whole-Orbit comparison — see
-     renderMapCard(). The pulse on that dot deliberately reuses ny-ping's
-     own keyframe shape (same scale/opacity curve) rather than inventing a
-     third animation style, for visual consistency between the two cards
-     that both mark "you are here" — just retimed for SVG's transform-box
-     model instead of a plain HTML div. */
-  .map-scatter{width:100%;aspect-ratio:2.75;margin:0 0 10px;}
-  .map-scatter svg{width:100%;height:100%;display:block;overflow:visible;}
-  .map-you-ping{
-    transform-origin:center;transform-box:fill-box;
-    animation: map-you-ping 2.8s cubic-bezier(0,0,.2,1) infinite;
-  }
-  @keyframes map-you-ping{
-    0%{transform:scale(.5);opacity:.5;}
-    70%{transform:scale(3);opacity:0;}
-    100%{transform:scale(3);opacity:0;}
-  }
-  @media (prefers-reduced-motion: reduce){
-    .map-you-ping{animation:none;opacity:0;}
-  }
-  .map-card-cta{
-    display:block;text-align:center;margin-top:2px;padding:10px 14px;
-    border-radius:var(--radius);background:var(--accent);color:var(--on-accent);
-    font-size:13px;font-weight:800;text-decoration:none;
-  }
-  .map-card-cta:hover{filter:brightness(1.08);text-decoration:none;}
-
-  @media (max-width:980px){
-    .home-body{grid-template-columns:1fr;}
-    .home-sidebar{position:static;}
-  }
-
-  /* Explore Neighborhoods — a horizontal, scroll-snapping rail rather than a
-     JS carousel: card width is set per breakpoint below and the browser's
-     native scroll/snap handles "multiple visible on desktop, 2-3 on tablet,
-     partial-next-card peek on mobile" (brief §23/§38) without any extra
-     script. Originally NO per-neighborhood photography existed (checked
-     /assets/photography — only 4 hero candidates + 7 general Detroit
-     "free-selects", two of which happen to be Eastern Market but nothing
-     for the other 40+ neighborhoods) — rather than mismatching a generic
-     Detroit photo to the wrong neighborhood, or reusing one photo
-     everywhere, these were deliberately photo-less typographic cards.
-     2026-09-14: real, correctly-geotagged photography started landing (see
-     NEIGHBORHOOD_PHOTOS in the JS below) — a card only gets a photo once
-     one actually exists for that specific neighborhood; every other card
-     still renders exactly as before. */
-  .neighborhoods-section{margin:18px 0 22px;}
-  .neighborhoods-head-row{
-    display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px;
-  }
-  .neighborhoods-heading{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:15px;
-    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin:0;
-  }
-  .neighborhoods-rail{
-    display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;
-    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
-  }
-  .neigh-card{
-    flex:0 0 auto;scroll-snap-align:start;width:168px;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;text-align:left;cursor:pointer;font-family:inherit;
-    display:flex;flex-direction:column;gap:2px;
-  }
-  .neigh-card:hover{background:var(--panel-hover);}
-  .neigh-card.active{border-color:var(--accent);}
-  .neigh-photo{
-    width:calc(100% + 28px);margin:-14px -14px 10px;height:88px;
-    object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;display:block;
-  }
-  .neigh-name{
-    font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;
-    color:var(--ink);line-height:1.25;margin-bottom:8px;
-  }
-  .neigh-count{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:28px;line-height:1;color:var(--accent);
-  }
-  .neigh-count-label{font-size:11px;color:var(--ink-soft);}
-  @media (max-width:640px){
-    .neigh-card{width:78vw;max-width:280px;}
-    .neighborhoods-rail{scroll-snap-type:x mandatory;}
-  }
-
-  .pill{
-    font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:5px;padding:2px 5px;margin-bottom:3px;
-    display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;
-  }
+  .pill{font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:0;padding:2px 5px;margin-bottom:3px;display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;}
   .pill .sw{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
-  /* Event rows — matches the approved mockup's list treatment directly:
-     oversized chartreuse time, plain right-aligned category/price column
-     (no pill chips here — those stay in the filter bar/calendar dots),
-     hairline dividers rather than boxed cards. No bookmark/save icon
-     (stays rejected — see FINAL IMPLEMENTATION DIRECTIVE). One real
-     deviation from the mock: no street address line under the venue name
-     — venue_name_raw/venue_city_raw is all the data model actually has,
-     no per-venue street address, so nothing is fabricated to fill that
-     line. */
-  .evt-row{
-    display:grid;grid-template-columns:98px 1fr auto;gap:18px;align-items:start;
-    padding:16px 0;border-top:1px solid var(--line-soft);
+  /* ---- the stream: a departure board ---- */
+  .stream{display:block;background:var(--bg);border:none;border-radius:0;padding:0;}
+  .stream-more{padding-top:0;margin-top:4px;}
+  .stream-head{
+    display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;
+    padding:14px 0 10px;border-bottom:1px solid var(--ink);
   }
-  .evt-row:first-of-type{border-top:none;}
-  /* Chartreuse + oversized, per the mock — a deliberate reversal of this
-     project's earlier "accent is state-only" rule, made because Jody asked
-     directly to match the mock's row treatment. Plain text rather than a
-     split number/AM-PM (the mock's single "5:00 PM"): real event times
-     here are often ranges ("11:00 AM–3:00 PM") or non-numeric ("Evening",
-     "Varies"), which a stylized split can't safely parse. */
+  .stream-title{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;
+  }
+  .stream-sub{font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+  .list-day-group{padding-bottom:6px;}
+  /* The day board. Sticky so the date stays over its rows; the date in the
+     display voice, TODAY in chartreuse (the day that is on), the count as
+     a mono readout at the right. */
+  .list-day-heading{
+    position:sticky;top:0;z-index:3;
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    background:var(--bg);padding:22px 0 8px;border-bottom:1px solid var(--ink);
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:44px;line-height:.9;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;
+  }
+  .ldh-rel{font-family:var(--font-data);font-size:11px;font-weight:400;letter-spacing:.12em;color:var(--ink-soft);flex:0 0 100%;}
+  .ldh-rel.is-today{color:var(--accent);}
+  .ldh-rel.is-today::before{content:'\25cf  ';}
+  .ldh-date{order:1;}
+  .ldh-cont{order:2;font-family:var(--font-data);font-size:10.5px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);}
+  .ldh-count{order:3;margin-left:auto;font-family:var(--font-data);font-size:10.5px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);white-space:nowrap;}
+  .ldh-cols{
+    display:grid;grid-template-columns:84px 104px minmax(0,1fr) 168px 28px;gap:0 14px;
+    padding:6px 0;border-bottom:1px solid var(--line);
+    font-family:var(--font-data);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .ldh-cols span:last-child{text-align:right;}
+  @media (max-width:640px){
+    .list-day-heading{font-size:36px;padding-top:18px;}
+    .ldh-cols{grid-template-columns:56px 72px minmax(0,1fr) 22px;}
+    .ldh-cols .lc-type{display:none;}
+  }
+  .evt-row{
+    display:grid;grid-template-columns:84px 104px minmax(0,1fr) 168px 28px;gap:0 14px;align-items:start;
+    padding:12px 0 13px;border-top:1px solid var(--line);
+  }
+  .list-day-heading + .ldh-cols + .evt-row, .list-day-heading + .evt-row{border-top:none;}
+  .evt-row:hover{background:#101010;}
   .evt-time{
     grid-column:1;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:16.5px;line-height:1.3;color:var(--accent);padding-top:1px;
+    font-family:var(--font-data);font-weight:400;
+    font-size:12.5px;line-height:1.35;color:var(--ink);padding-top:2px;
   }
-  .evt-time:empty{display:none;}
-  /* Explicit grid-column pins on all three children — required because
-     .evt-time can be display:none (see :empty rule above) when an event has
-     no time_display. CSS Grid auto-placement skips display:none items and
-     re-flows the REMAINING items into the earliest open columns, so without
-     these pins .evt-main would slide into the 98px time column and .evt-side
-     into the 1fr column whenever a time is missing — squeezing the title
-     into a ~98px-wide strip (causing severe multi-line wrapping) and
-     cramming the actions row too. Pinning columns keeps layout stable
-     regardless of which items are present. */
-  .evt-main{grid-column:2;min-width:0;}
-  /* Thumbnail (2026-09-04, Jody: "add a thumbnail view of any images
-     associated to the events") — image_url has been loaded and available
-     on every event since day one (used for the "photo" filter chip and
-     event.html's own hero image + social-share tags) but was never actually
-     shown anywhere in the list view itself. Lives INSIDE .evt-main as a
-     small flex row (thumb + text), rather than as a 4th outer grid column —
-     that keeps the existing 3-column [time/main/side] grid, and its mobile
-     single-column fallback, completely untouched; only rows that actually
-     have an image gain the extra flex wrapper, so image-less rows (still
-     the majority of sources) don't carry a blank reserved gutter. */
-  .evt-main-body{display:flex;gap:12px;align-items:flex-start;min-width:0;}
-  .evt-thumb{
-    flex:0 0 auto;width:64px;height:64px;object-fit:cover;
-    border-radius:var(--radius);background:var(--panel-alt);
-  }
-  .evt-text{min-width:0;flex:1 1 auto;}
-  @media (max-width:640px){
-    .evt-thumb{width:52px;height:52px;}
-  }
-  .evt-title{font-size:18px;font-weight:800;margin-bottom:4px;line-height:1.25;}
-  /* Only wraps the title when the event has a real DB id — see
-     editorialLinkHtml()'s comment for why FALLBACK_EVENTS (no id) can't
-     link anywhere. Deliberately inherits the surrounding text color rather
-     than looking like a conventional blue link — this is a title that
-     happens to be clickable, not a navigation link in running text. */
+  .evt-time small{display:block;font-size:10px;letter-spacing:.04em;color:var(--ink-soft);}
+  /* The artwork frame: one frame for every row, the Orbit field beneath,
+     the event's own artwork laid over it when the source has any. The
+     frame never changes size, so a column of rows keeps its rhythm. */
+  .evt-art{grid-column:2;position:relative;width:104px;height:70px;background:var(--panel-alt);border:1px solid var(--line);overflow:hidden;}
+  .evt-art svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .evt-art .evt-art-code{position:absolute;left:7px;top:5px;font-family:var(--font-data);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);}
+  .evt-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;border-radius:0;background:var(--panel-alt);}
+  .evt-main{grid-column:3;min-width:0;}
+  .evt-title{font-size:17px;font-weight:600;margin-bottom:3px;line-height:1.25;}
   a.evt-title-link{color:inherit;text-decoration:none;}
-  a.evt-title-link:hover{text-decoration:underline;}
+  a.evt-title-link:hover{text-decoration:underline;text-underline-offset:3px;}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
-  /* Short description excerpt (2026-08-28) — plain secondary text, not a
-     link (the title above it is already the click target into event.html).
-     line-clamp is a belt-and-suspenders visual safety net; truncateText()
-     in JS already caps the string length before it ever reaches here, so
-     this never depends on line-clamp support alone. */
+  .evt-venue b, .evt-venue a.evt-venue-link{font-weight:500;color:var(--ink);}
+  .evt-place{
+    display:flex;flex-wrap:wrap;gap:2px 0;margin-top:4px;
+    font-family:var(--font-data);font-size:10px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .evt-place:empty{display:none;}
+  .evt-place > * + *::before{content:'\00b7';margin:0 7px;color:var(--ink-dim);}
+  .evt-place .src{font-style:normal;color:var(--ink-dim);font-size:10px;}
+  .evt-side{grid-column:4;min-width:0;display:flex;flex-direction:column;gap:4px;padding-top:2px;}
+  .evt-meta{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 0;
+    font-family:var(--font-data);font-size:10.5px;line-height:1.5;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .evt-meta:empty{display:none;}
+  .evt-meta > * + *::before{content:'\00b7';margin:0 7px;color:var(--ink-dim);font-weight:400;}
+  .evt-cat{font-family:var(--font-ui);font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.4;}
+  .evt-cat.cat-music{color:var(--c-music);}
+  .evt-cat.cat-theatre{color:var(--c-theatre);}
+  .evt-cat.cat-dance{color:var(--c-dance);}
+  .evt-cat.cat-visual{color:var(--c-visual);}
+  .evt-cat.cat-museum{color:var(--c-museum);}
+  .evt-cat.cat-family{color:var(--c-family);}
+  .evt-cat.cat-fest{color:var(--c-fest);}
+  .evt-cat.cat-food{color:var(--c-food);}
+  .evt-cat.cat-film{color:var(--c-film);}
+  .evt-cat.cat-nightlife{color:var(--c-night);}
+  .evt-cat.cat-sports{color:var(--c-sports);}
+  .evt-cat.cat-community{color:var(--c-community);}
+  .evt-cat.cat-vendor{color:var(--c-vendor);}
+  .evt-cat.cat-training{color:var(--c-training);}
+  .evt-cat.cat-gaming{color:var(--c-gaming);}
+  .evt-price{font-weight:700;color:var(--ink);white-space:nowrap;}
+  .evt-price.free{color:var(--accent);}
+  .evt-run{white-space:nowrap;}
+  .evt-go{grid-column:5;text-align:right;padding-top:1px;}
+  .evt-go a{font-family:var(--font-data);font-size:16px;color:var(--accent);text-decoration:none;}
+  .evt-go a:hover{color:var(--ink);}
   .evt-desc{
     font-size:13px;color:var(--ink-soft);line-height:1.4;margin-top:5px;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
   }
-  .note{font-size:12px;color:#d1b34a;margin-top:6px;font-style:italic;}
+  .note{font-size:12px;color:var(--ink-soft);margin-top:5px;font-style:italic;overflow-wrap:anywhere;}
+  .evt-desc, .evt-title, .evt-venue{overflow-wrap:anywhere;}
   .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  .evt-link{
-    display:inline-flex;align-items:center;gap:5px;
-    font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;
-  }
-  .evt-link:hover{text-decoration:underline;}
+  .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;}
+  .evt-link:hover{color:var(--ink);}
   .evt-link::after{content:'→';}
-  /* "As seen in" press-mention callout (2026-08-27, redesigned 2026-08-28
-     per Jody: "you barely notice it is there"). Originally a tiny italic
-     link crammed into .evt-actions next to Tickets/Cal/Share — too subtle to
-     notice. Now its own full-width line with a tinted background and accent
-     left-border so it reads as a distinct piece of content (press coverage)
-     rather than a buried secondary action, while still sitting below the
-     description/note and above the actions row so it doesn't compete with
-     the primary "Tickets & info" CTA for attention. */
   .evt-editorial-mention{
-    display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:7px 10px;
-    background:rgba(215,255,0,.07);border-left:3px solid var(--accent);
-    text-decoration:none;max-width:100%;
+    display:inline-flex;align-items:baseline;gap:7px;margin:6px 0 0;padding:0;
+    background:none;border:none;text-decoration:none;max-width:100%;
+    font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
   }
-  .evt-editorial-mention:hover{background:rgba(215,255,0,.14);}
-  .evt-editorial-mention .ei-tag{
-    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--accent);flex-shrink:0;
-  }
-  .evt-editorial-mention .ei-title{
-    color:var(--ink);font-weight:600;font-size:13px;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
-  }
-  .evt-editorial-mention .ei-src{
-    color:var(--ink-soft);font-weight:600;font-size:12px;flex-shrink:0;
-  }
-  /* "+N more articles" line (2026-09-04, Jody: "let the user see which [events]
-     are getting more coverage") — a quiet, non-interactive line under the
-     primary As-seen-in callout, not a second row of clickable links: this is
-     a coverage-volume signal, not a second set of actions to compete with
-     Tickets/Cal/Share. Full list of the other titles/sources is in the
-     native title= tooltip rather than crammed into the visible line. */
-  .evt-editorial-also{
-    font-size:11.5px;color:var(--ink-soft);margin:2px 0 2px 13px;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
-  }
-  /* Row of secondary actions under the title/venue block — ticket link (if
-     any), Add to Calendar, Share. Wraps on narrow widths rather than
-     truncating or overlapping. */
-  .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:6px;column-gap:14px;margin-top:9px;}
-  .evt-cal{font-size:12px;font-weight:600;}
+  .evt-editorial-mention:hover .ei-title{text-decoration:underline;}
+  .evt-editorial-mention .ei-tag{color:var(--accent);flex-shrink:0;}
+  .evt-editorial-mention .ei-title{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;text-transform:none;letter-spacing:0;font-family:var(--font-ui);font-size:12.5px;font-weight:500;}
+  .evt-editorial-mention .ei-src{color:var(--ink-soft);flex-shrink:0;}
+  .evt-editorial-also{font-family:var(--font-data);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+  .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:6px;column-gap:14px;margin-top:8px;}
+  .evt-actions:empty{display:none;}
+  .evt-cal{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;}
   .evt-cal a{color:var(--ink-soft);text-decoration:none;}
-  .evt-cal a:hover{color:var(--ink);text-decoration:underline;}
+  .evt-cal a:hover{color:var(--ink);}
   .evt-cal a + a::before{content:'· ';color:var(--ink-dim);}
-  .evt-share{
-    border:none;background:none;padding:0;font:inherit;font-size:12px;font-weight:600;
-    color:var(--ink-soft);cursor:pointer;
-  }
-  .evt-share:hover{color:var(--ink);text-decoration:underline;}
-  .evt-share:disabled{color:#3fbf6a;cursor:default;}
-  /* Right column: category (its own site-wide color, kept from the
-     chip/dot system — the mock's plain gray text was tied to its own
-     placeholder taxonomy, not this project's locked, color-coded one) and
-     price/free stacked underneath, right-aligned. */
-  .evt-side{grid-column:3;display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;text-align:right;}
-  .evt-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
-  .evt-price{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
-  .evt-price.free{color:#3fbf6a;}
-  /* Content-nature descriptor, distinct from category/price and from the
-     italic editorial .note line below — a plain fact about the event
-     ("what you'll see there"), not a caveat or a warning, so it gets a
-     neutral outlined badge rather than a loud color. See
-     migration_034_clothing_optional.sql. */
-  .evt-tag-clothing-optional{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:2px 7px;margin-top:6px;}
-
+  .evt-share{border:none;background:none;padding:0;font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;}
+  .evt-share:hover{color:var(--ink);}
+  .evt-share:disabled{color:var(--accent);cursor:default;}
+  .evt-tag-clothing-optional{display:inline-block;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);border-radius:0;padding:2px 7px;margin-top:6px;}
+  .evt-disclosure, .evt-ticket-status{font-family:var(--font-data);font-size:9.5px;letter-spacing:.04em;color:var(--ink-dim);margin-top:5px;}
   @media (max-width:640px){
-    /* Time + category/price move above the title instead of framing it on
-       either side — a three-column grid gets cramped fast on a narrow
-       phone width. */
-    .evt-row{grid-template-columns:1fr;gap:4px;padding:14px 0;}
-    /* Reset the desktop grid-column pins back to the single mobile column —
-       otherwise grid-column:2/3 would force extra implicit column tracks
-       instead of stacking, and the order:* below would have no effect. */
-    .evt-time{grid-column:1;order:1;}
-    .evt-side{grid-column:1;order:2;flex-direction:row;align-items:baseline;gap:8px;text-align:left;}
-    .evt-main{grid-column:1;order:3;}
+    .evt-row{grid-template-columns:58px 64px minmax(0,1fr) 20px;gap:0 8px;padding:11px 0 12px;}
+    .evt-time{grid-column:1;font-size:10.5px;}
+    .evt-time small{font-size:9px;white-space:nowrap;letter-spacing:0;}
+    .evt-art{grid-column:2;width:64px;height:44px;}
+    .evt-art .evt-art-code{font-size:7px;left:5px;top:4px;}
+    .evt-main{grid-column:3;}
+    .evt-side{grid-column:1 / 3;padding-top:6px;}
+    .evt-meta{flex-direction:column;align-items:flex-start;gap:3px;}
+    .evt-meta > * + *::before{content:none;margin:0;}
+    .evt-go{grid-column:4;grid-row:1;}
+    .evt-time, .evt-art{grid-row:1;}
+    .evt-main{grid-row:1 / 3;}
+    .evt-side{grid-row:2;}
+    .evt-editorial-mention{display:flex;flex-wrap:wrap;gap:3px 7px;}
+    .evt-editorial-mention .ei-title{white-space:normal;flex-basis:100%;}
+    .mobile-trigger .mt-sub{font-size:15px;}
+    .evt-title{font-size:15px;}
+    .evt-venue{font-size:12px;}
   }
-
-  /* List view */
-  #listView{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 20px;}
-  .list-day-group{padding:22px 0 14px;border-top:2px solid var(--line);}
-  .list-day-group:first-child{padding-top:0;border-top:none;}
-  /* Sized up + brightened 2026-09-04 (Jody: scrolling a multi-day list —
-     "All Upcoming", a weekend, a range — made it too easy to lose track of
-     which day you were looking at; the old 13px var(--ink-soft) heading
-     read as just another piece of metadata, not a boundary). Bumped well
-     past every card's own text (title is 16px) so it reads as a section
-     break at a glance, not something you have to stop and parse. */
-  .list-day-heading{font-family:'Space Mono',monospace;font-size:21px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.02em;margin-bottom:14px;}
-  @media (max-width:640px){
-    .list-day-heading{font-size:18px;}
+  .stream-foot{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
+    padding:18px 0 8px;margin-top:8px;border-top:1px solid var(--ink);
   }
-  .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
+  .stream-more-btn{
+    background:none;border:1px solid var(--accent);color:var(--accent);border-radius:0;
+    font-family:var(--font-data);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    padding:11px 20px;cursor:pointer;white-space:nowrap;
+  }
+  .stream-more-btn:hover, .stream-more-btn:focus-visible{background:var(--accent);color:var(--on-accent);}
+  .stream-foot-note{font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .stream-foot-link{margin-left:auto;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;}
+  .stream-foot-link:hover{color:var(--ink);}
+  .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;border:1px solid var(--line);margin-top:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:var(--radius);
-    padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:none;color:var(--ink);border-radius:0;
+    padding:8px 14px;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
   }
-  .es-action:hover{background:var(--panel-hover);}
+  .es-action:hover{border-color:var(--ink);}
 
-  footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
+  /* ---- Don't Miss: only when an editor placed something ---- */
+  .dont-miss{background:var(--bg);border:1px solid var(--line);border-radius:0;padding:14px 18px 18px;margin-bottom:12px;}
+  .dm-head{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--ink);margin-bottom:14px;}
+  .dm-title{
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;
+  }
+  .dm-title::before{content:'\25cf  ';color:var(--accent);font-size:16px;vertical-align:middle;}
+  .dm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border:1px solid var(--line);}
+  .dm-card{display:block;min-width:0;background:var(--panel-alt);border-right:1px solid var(--line);color:inherit;text-decoration:none;}
+  .dm-card:last-child{border-right:none;}
+  a.dm-card:hover .dm-name{text-decoration:underline;}
+  .dm-art{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid var(--line);}
+  .dm-body{padding:12px 14px 14px;}
+  .dm-when{font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:6px;}
+  .dm-name{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:24px;line-height:.95;text-transform:uppercase;color:var(--ink);margin-bottom:5px;}
+  .dm-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
+  .dm-reason{font-size:13px;color:var(--ink);line-height:1.45;margin-top:8px;border-left:2px solid var(--accent);padding-left:10px;}
+  @media (max-width:640px){.dont-miss{padding:12px 14px 14px;}}
+
+  /* ---- footer ---- */
+  footer.site{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
   footer.site p{margin:0 0 6px;}
   footer.site p:last-child{margin-bottom:0;}
-  /* Footer + data-transparency amendment: a quiet, editorial link out to the
-     full methodology/status page, styled as a small uppercase label rather
-     than an inline sentence — the homepage stays slick, sources.html stays
-     the transparent one. */
-  footer.site .footer-sources a, footer.site .footer-social a{
-    text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:700;
+  footer.site .footer-sources a, footer.site .footer-social a, footer.site .footer-links a{
+    font-family:var(--font-data);text-transform:uppercase;letter-spacing:.08em;font-size:10px;font-weight:400;
     color:var(--ink-dim);text-decoration:none;
   }
-  footer.site .footer-sources a:hover, footer.site .footer-social a:hover{color:var(--ink-soft);text-decoration:underline;}
+  footer.site .footer-sources a:hover, footer.site .footer-social a:hover, footer.site .footer-links a:hover{color:var(--ink);}
   footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
   footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
-  /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
-     same quiet uppercase-label treatment as footer-sources/footer-social,
-     just a longer link list. */
   footer.site .footer-links{font-size:11px;}
-  footer.site .footer-links a{
-    text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;font-weight:700;
-    color:var(--ink-dim);text-decoration:none;
-  }
-  footer.site .footer-links a:hover{color:var(--ink-soft);text-decoration:underline;}
-
   @media (max-width:720px){
     .day-cell{min-height:78px;}
     .pill{display:none;}
-    .more-link{display:none;} /* redundant once .day-count shows the total */
+    .more-link{display:none;}
     #monthLabel{min-width:0;}
   }
 
-  /* ---- Unified discovery row (Homepage Redesign pass) ----
-     WHEN / WHERE / CATEGORY now render as one compact row of boxed
-     triggers at every breakpoint — each shows its current value and, when
-     clicked, expands the same underlying bar (same DOM/IDs/JS state that
-     powered the old always-open three-row layout) rather than replacing it
-     with new controls. Below 720px that expansion is the original fixed
-     bottom sheet (unchanged, proven mobile pattern). At 721px+ it expands
-     inline, directly under the trigger row, styled like a dropdown panel —
-     no new filtering logic anywhere, purely a presentation change. */
-  .discovery-shell{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:12px 14px;margin-bottom:10px;
-  }
-  .mobile-triggers{display:flex;gap:8px;flex-wrap:wrap;}
-  .mobile-trigger{
-    flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);
-    border-radius:var(--radius);padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
-    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
-  }
-  .mobile-trigger:hover{background:var(--panel-hover);}
-  .mobile-trigger .mt-label{
-    font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-dim);text-transform:uppercase;
-  }
-  .mobile-trigger .mt-sub{
-    font-size:13px;font-weight:700;color:var(--ink-soft);max-width:100%;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  }
-  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-dim);} /* ▾ */
-  .mobile-trigger.has-value{border-color:var(--accent);}
-  .mobile-trigger.has-value .mt-sub{color:var(--ink);}
-  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);border-color:var(--ink);}
-
+  /* ---- sheets (the When / Where / What panels) ---- */
   .sheet-backdrop{display:none;}
-
-  /* Panels are hidden until their trigger opens them, at every breakpoint —
-     the always-open three-row layout they used to be is gone for good. */
   .discovery-bar, .location-bar, .filters{display:none;}
   .sheet-header{display:none;}
   .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
     display:flex;flex-direction:column;flex-wrap:nowrap;
-    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-top:10px;
+    background:var(--panel-alt);border-top:1px solid var(--line);border-radius:0;
+    padding:14px 16px;margin-top:0;
   }
   .discovery-bar.sheet-active .sheet-header,
   .location-bar.sheet-active .sheet-header,
   .filters.sheet-active .sheet-header{
     display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
-    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
   }
-  /* Once inside an open panel, the discovery/location/filter bars go back to
-     being a normal wrapping row of chips — same look they always had. */
   .discovery-bar.sheet-active, .filters.sheet-active{flex-direction:row;flex-wrap:wrap;gap:8px;}
   .location-bar.sheet-active{flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center;}
   .sheet-close{
-    border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
-    width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
+    border:1px solid var(--line);background:none;color:var(--ink);border-radius:0;
+    width:28px;height:28px;font-size:12px;cursor:pointer;line-height:1;
   }
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
-
-  /* Category (What) promoted back to default-visible on desktop — 2026-08-28
-     P0 product-audit fix (Gap 1 / Finding 4: a visible filter widget got
-     roughly 77% of filtering interactions vs. ~2% for a functionally
-     identical hidden one in the cited research; the trigger-button pattern
-     below is real, always-visible-labeled progress over a generic buried
-     "Advanced Search" link, but it still hides the twelve category chips
-     behind a click at every width). When/Where stay trigger-gated — a
-     date-range picker and a location autocomplete genuinely need room, and
-     reopening the old always-open three-row layout for all three would be a
-     real redesign, not this targeted fix. Category is the one compact
-     enough (chips only, no text input) to promote outright: it's shown as a
-     plain wrapping row, not the boxed/bordered sheet-active panel treatment
-     When/Where use, so it reads as "chips that were always there" rather
-     than a dropdown left open. The matching Category trigger button is
-     hidden in the same breakpoint below, since there's nothing left for it
-     to open. Mobile (<=720px) is untouched — the sheet pattern is still
-     right where a persistent chip row would cost too much space above the
-     fold. */
   @media (min-width:721px){
-    .filters{
-      display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;
-      margin-top:10px;
-    }
-    #filterTriggerBtn{display:none;}
+    .discovery-bar.sheet-active .sheet-header,
+    .location-bar.sheet-active .sheet-header,
+    .filters.sheet-active .sheet-header{flex:0 0 100%;margin-bottom:2px;}
   }
-
   @media (max-width:720px){
-    .discovery-shell{padding:10px 10px 0;background:none;border:none;}
-    .mobile-trigger{align-items:center;text-align:center;}
-    .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
-    #search{flex-basis:100%;min-width:0;}
-
-    .sheet-backdrop{
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39;
-    }
+    .mobile-triggers{grid-template-columns:1fr 1fr 1fr;}
+    .mobile-trigger{padding:10px 12px 9px;font-size:14px;}
+    .mobile-trigger .mt-sub{font-size:14px;}
+    .mobile-trigger:nth-child(3){border-right:none;}
+    .search-field{grid-column:1 / -1;border-top:1px solid var(--line);padding:10px 12px 9px;}
+    #search{font-size:15px;}
+    .sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:39;}
     .sheet-backdrop.show{display:block;}
-
     .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
       flex-direction:column;flex-wrap:nowrap;
       position:fixed;left:0;right:0;bottom:0;z-index:40;
-      border-bottom:none;
-      border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
+      border:1px solid var(--line);border-bottom:none;
+      border-radius:0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
       padding:16px 16px calc(16px + env(safe-area-inset-bottom));
-      max-height:75vh;overflow-y:auto;margin:10px 0 0;
+      max-height:75vh;overflow-y:auto;margin:10px 0 0;background:var(--panel-alt);
     }
-    /* Radius/location controls stack full-width inside the sheet rather
-       than trying to fit the desktop's side-by-side row. */
     .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
     .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
@@ -4446,7 +4283,7 @@
       <button type="button" class="nav-search-btn" id="navSearchBtn" aria-label="Search events and venues">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
       </button>
-      <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
+      <a href="submit.html" style="display:inline-block;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:0;white-space:nowrap;">Submit Event</a>
     </div>
   </header>
 
@@ -4455,6 +4292,7 @@
       <div class="hl-line">THE</div>
       <div class="hl-line">CITY</div>
       <div class="hl-line hl-line-signal"><span class="hl-text">IS ON</span><span class="hero-signal" aria-hidden="true"></span></div>
+      <div class="hero-tag"><span>Detroit &middot; present tense</span><span class="dim">Every listing below is evidence</span></div>
     </div>
     <div class="hero-photo" id="heroPhoto"><!-- populated by the carousel script below --></div>
     <div class="hero-today" id="heroToday"><!-- populated by renderHeroToday() --></div>
@@ -4554,19 +4392,14 @@
   })();
   </script>
 
-  <!-- Positioned directly under the hero, above the When/Where/Category filter bar. This is a
-       discovery/browse aid (a second way in, alongside the hero) rather than a refinement of the
-       filters below it — Jody's call, and it matches IA practice for "browse by X" entry points
-       (see 2026-08-27 conversation): they read as a peer to the hero's primary path, not as part
-       of the filter mechanism that acts on the list. -->
-  <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
-    <div class="neighborhoods-head-row">
-      <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
-      <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
-    </div>
-    <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
-  </section>
-
+  <!-- Homepage hierarchy (homepage UX evolution, first slice, 2026-10-04):
+         hero + live inventory count
+         -> WHEN / WHERE / WHAT / SEARCH (the shared discovery controls)
+         -> the chronological event stream
+       Explore Neighborhoods used to sit here, between the hero and the
+       controls. It now follows the first section of the stream (see
+       .home-main below), so the first thing under the hero is the way to
+       narrow the inventory and then the inventory itself. -->
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
       <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
@@ -4576,9 +4409,12 @@
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+        <span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All types</span>
       </button>
-      <input type="text" id="search" aria-label="Search events, venues, or neighborhoods" placeholder="Search events, venues, neighborhoods&hellip;">
+      <label class="search-field" for="search">
+        <span class="mt-label">Search</span>
+        <input type="text" id="search" aria-label="Search events, venues, or neighborhoods" placeholder="Events, venues, neighborhoods&hellip;">
+      </label>
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
 
@@ -4587,11 +4423,12 @@
       <button class="when-btn" data-when="tonight">Tonight</button>
       <button class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button class="when-btn" data-when="weekend">This Weekend</button>
-      <!-- All Upcoming (P0, 2026-08-28 product audit Gap 2) — the one
-           explicit, one-click way to see the complete unfiltered catalog
-           beyond the page's today-only default view (narrowed from a 30-day
-           rolling window 2026-09-04); see currentDateList()/matchesFilters()
-           for what it actually changes. -->
+      <!-- All Upcoming (P0, 2026-08-28 product audit Gap 2) — added as the
+           one-click way to see the complete catalog when the page's default
+           view was today only. Since 2026-10-04 the default view is itself
+           everything current + upcoming, so this now states that choice
+           explicitly (it is what a ?when=all link means) rather than
+           widening anything. -->
       <button class="when-btn" data-when="all">All Upcoming</button>
       <!-- Expanded from a single "Pick a date" input into a From/To pair
            (Jody, 2026-08-27) so the same control handles both a single date
@@ -4640,35 +4477,49 @@
     <div class="filters" id="filterBar"></div>
   </div>
 
-  <!-- Month prev/next paging removed (Jody, 2026-08-27): the list is no
-       longer boxed to one calendar month (see currentDateList()) — its
-       default view is today only (narrowed from a rolling 30-day window
-       2026-09-04, so the page's own scroll doesn't bury the right-hand
-       column), and the When sheet's date-range picker or "All Upcoming" is
-       the way to jump further out. A calendar
-       month to page through no longer matches how the list actually scopes
-       itself, so the control (and the "August 2026" label with it) is gone
-       rather than left showing a scope that isn't real anymore.
-       The separate .controls search box that used to live here is gone too
-       (Jody, 2026-08-27) — search moved into the When/Where/Category trigger
-       row above as its own last item, since it's the same kind of "narrow
-       the list" control as those three, and having it in its own bordered
-       panel was just dead vertical space for one input. -->
+  <!-- No month paging and no separate search panel (both removed
+       2026-08-27): the stream below is scoped by When / Where / What /
+       Search above it, and continues on request. -->
 
   <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
   <div class="home-body">
     <div class="home-main">
-      <div id="listView"></div>
+      <!-- Don't Miss: a temporary, human-curated editorial placement
+           (DEC-025). Nothing is selected in this file and there is no
+           placement data source yet, so this stays hidden — see
+           renderDontMiss(). -->
+      <section class="dont-miss" id="dontMissSection" style="display:none;" aria-label="Don't Miss"></section>
+
+      <!-- The event stream. #listView holds its head and first section;
+           #listMore continues it after the Explore Neighborhoods interlude.
+           Both are written by renderList(). -->
+      <div class="stream" id="listView"></div>
+
+      <section class="neighborhoods-section" id="neighborhoodsSection" style="display:none;" aria-label="Explore by neighborhood">
+        <div class="neighborhoods-head-row">
+          <h2 class="neighborhoods-heading">Explore Neighborhoods</h2>
+          <a class="side-card-link" href="neighborhoods.html">See all neighborhoods &rarr;</a>
+        </div>
+        <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+      </section>
+
+      <div class="stream stream-more" id="listMore" style="display:none;"></div>
     </div>
 
     <aside class="home-sidebar" id="homeSidebar" aria-label="Calendar shortcuts and highlights">
-      <div class="side-card" id="viewCalendarCard"></div>
-      <div class="side-card" id="mapCard"></div>
       <div class="side-card" id="onRadarCard" style="display:none;"></div>
       <div class="side-card" id="nearYouCard"></div>
+      <!-- The four navigation surfaces: a sticky rail beside the stream on
+           desktop, a 2x2 NAVIGATE panel before the continuing inventory on
+           phone (see .rail-stack). On the Radar and the Detroit Orbit sit
+           in the main column, placed by the .home-body grid. -->
+      <div class="rail-stack">
+      <div class="side-card" id="viewCalendarCard"></div>
+      <div class="side-card" id="mapCard"></div>
       <div class="side-card" id="freeTodayCard"></div>
       <div class="side-card" id="venuesCard"></div>
+      </div>
     </aside>
   </div>
 
@@ -4700,8 +4551,11 @@
 // changes it only through Discovery.change(), and asks Discovery what
 // matches. Do not re-add a local copy of a rule — change discovery.js.
 //
-// Category colour is presentation, so it lives here. Keys, labels and order
-// come from Discovery.categories.
+// Category keys, labels and order come from Discovery.categories. The
+// per-category colours below are no longer shown anywhere on this page
+// (2026-10-04: the stream's category label and the WHAT chips carry no
+// category colour); the table is kept, unused, because
+// test/discovery-compat.test.js checks it against the category list.
 const CAT_COLORS = {
   music:    "var(--c-music)",
   theatre:  "var(--c-theatre)",
@@ -5028,7 +4882,7 @@ const _navTodayMonthStart = new Date(_navToday.getFullYear(), _navToday.getMonth
 // Bounds how far out the When sheet's date-range picker will let someone
 // pick (12 months) — see initWhenDatePicker(). The old month-paging system
 // (prevBtn/nextBtn/monthLabel, plus a MIN_MONTH lower bound and a `current`
-// page cursor) was removed 2026-08-27 — see currentDateList() for what
+// page cursor) was removed 2026-08-27 — see streamRows() for what
 // replaced it.
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
 
@@ -5072,16 +4926,20 @@ function setState(patch){
 
 // What Discovery needs to know about this surface and this moment.
 //   defaultWhen — the homepage's own resting view when no When is picked:
-//     today only (Jody, 2026-09-04: a longer default list pushed the rest of
-//     the page out of reach) — unless a search or a neighborhood is active,
-//     which look across everything upcoming (2026-09-16: "search never works
-//     for me" — a match on another date was silently hidden).
+//     everything current + upcoming, from today on, in date order (homepage
+//     UX evolution, 2026-10-04). It was "today only" from 2026-09-04, when
+//     the list rendered every row of whatever it was showing and a longer
+//     default pushed the rest of the page out of reach; the stream now
+//     renders a first section and continues on request (see renderList()),
+//     so the default can be the whole inventory. That also retires the old
+//     special case that widened the view to every date only while a search
+//     or a neighborhood was active: the default is already every date.
 //   coverage — which events have press coverage, for the "On the Radar"
 //     feature filter.
 function discoveryCtx(){
   return {
     now: new Date(),
-    defaultWhen: (state.q || state.where.neighborhood) ? 'all' : 'today',
+    defaultWhen: 'all',
     coverage: editorialByEvent,
   };
 }
@@ -5173,18 +5031,6 @@ function formatDateLabel(iso){
 function formatRangeLabel(startIso, endIso){
   return startIso === endIso ? formatDateLabel(startIso) : `${formatDateLabel(startIso)}–${formatDateLabel(endIso)}`;
 }
-// Multi-day indicator for an event card (2026-09-02 audit fix) — cards are
-// already grouped under a single day heading (see renderList()), so without
-// this, a festival or exhibit's card looks identical to a one-day event no
-// matter which day of its run you're looking at. Only renders when endDate
-// is a real, later date than the card's own day — day 1 of a 3-day event
-// shows "Through Aug 24", day 2 shows the same, so it's never ambiguous
-// whether an event card belongs to a range still in progress.
-function multiDayNoteHtml(e){
-  if(!e.endDate || e.endDate <= e.date) return '';
-  return `<div class="note">Through ${escapeHtml(formatDateLabel(e.endDate))}</div>`;
-}
-
 // Ticket-status fallback note (2026-10-01, Needs Follow-up remaining-gap
 // product pass, extended here from event-template.html's detail-page-only
 // version -- see that file's own TICKET_STATUS_NOTES/ticketStatusNoteHtml()
@@ -5205,26 +5051,11 @@ function ticketStatusNoteHtml(e){
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
 }
 
-// The single source of truth for "which dates does the list currently
-// show" — every render() call funnels through here. The window itself
-// (today only / tonight / tomorrow / the weekend / the week / a picked date
-// or range / everything upcoming) is Discovery's; this just lists the days
-// inside it that have anything on them, in order, for the list's day
-// headings. A forward-looking window starts at today; a picked date or
-// range is taken exactly as chosen, past or future.
-function currentDateList(){
-  const w = Discovery.window(state, discoveryCtx());
-  return Object.keys(byDate)
-    .filter(iso => (w.from === null || iso >= w.from) && (w.to === null || iso <= w.to))
-    .sort();
-}
-
-// Paired with currentDateList() — the human-readable scope behind whatever
-// it just returned, fed to renderList() for the "Showing N events ___"
-// heading and the empty-state copy. null means "the plain default view",
-// which gets neither a count heading nor an "in ___" empty-state suffix.
-// (This is the homepage's own wording; which events are in scope is
-// Discovery's.)
+// The human-readable scope of the current view, used by renderList() for
+// the "Showing N events ___" heading and the empty-state copy. null means
+// "no scope of its own" — the plain default view, or one narrowed only by
+// category / free / features / place. (This is the homepage's own wording;
+// which events are in scope is Discovery's.)
 function currentListMeta(){
   const mode = state.when.mode;
   if(mode === 'week') return {scopeLabel: 'this week', countLabel: 'this week'};
@@ -5239,18 +5070,17 @@ function currentListMeta(){
   }
   if(mode === 'tomorrow') return {scopeLabel: 'tomorrow', countLabel: 'tomorrow'};
   if(mode === 'tonight') return {scopeLabel: 'tonight', countLabel: 'tonight'};
-  // 'today' is the header's Today and the Free Today card (and Calendar's /
-  // Map's ?when=now). 'next7' has no button on this page; it arrives only
-  // in a link.
+  // 'today' is the header's Today, the hero's TODAY and the Free Today card
+  // (and Calendar's / Map's ?when=now). 'next7' is the hero's NEXT 7 DAYS;
+  // it has no button in the When sheet.
   if(mode === 'today') return {scopeLabel: 'today', countLabel: 'today'};
   if(mode === 'next7') return {scopeLabel: 'the next 7 days', countLabel: 'in the next 7 days'};
   if(mode === 'all') return {scopeLabel: 'upcoming events', countLabel: 'upcoming — every date'};
   if(state.where.neighborhood) return {scopeLabel: state.where.neighborhood, countLabel: `in ${state.where.neighborhood}`};
-  // Paired with the search-widening rule in discoveryCtx() (2026-09-16) —
-  // once a query expands the list to every upcoming date, it should say so,
-  // the same way every other non-default scope does: a "Showing N events
-  // matching ___" heading, and "matching ___" appended to the empty-state
-  // copy when a search genuinely comes up empty.
+  // A search looks across every upcoming date (2026-09-16) and says so, the
+  // same way every other scope does: a "Showing N events matching ___"
+  // heading, and "matching ___" appended to the empty-state copy when a
+  // search genuinely comes up empty.
   if(state.q) return {scopeLabel: `matching "${state.q}"`, countLabel: `matching "${state.q}"`};
   return {scopeLabel: null, countLabel: null};
 }
@@ -5274,7 +5104,7 @@ function buildFilterBar(){
   const header = document.createElement('div');
   header.className = 'sheet-header';
   const headerLabel = document.createElement('span');
-  headerLabel.textContent = 'Filter';
+  headerLabel.textContent = 'What';
   const headerClose = document.createElement('button');
   headerClose.type = 'button';
   headerClose.className = 'sheet-close';
@@ -5311,10 +5141,10 @@ function buildFilterBar(){
     chip.type = 'button';
     chip.className = 'chip';
     chip.dataset.cat = key;
-    // Per-category dot restored per Jody's 2026-08-26 note: keep the color
-    // variety for scanability, just made cohesive (see the --c-* "UV signal"
-    // palette above). Active/selected state is still Signal Chartreuse only.
-    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    // Label only (2026-10-04): the per-category colour dot is gone — the
+    // locked design rules allow no category rainbow. A chip's only colour
+    // is Signal Chartreuse, when it is selected.
+    chip.textContent = c.label;
     chip.onclick = ()=>{
       toggleCategory(key);
       render();
@@ -5325,16 +5155,14 @@ function buildFilterBar(){
   freeChip.type = 'button';
   freeChip.className = 'chip';
   freeChip.id = 'freeChip';
-  freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
+  freeChip.textContent = 'Free only';
   freeChip.onclick = ()=>{
     setState({free: !state.what.free});
     render();
   };
   bar.appendChild(freeChip);
 
-  // FEATURE_CHIPS row — plain text chips (no color dot), same treatment as
-  // allChip/clearChip below rather than the category dots, since these
-  // aren't part of the locked category palette.
+  // FEATURE_CHIPS row — plain text chips, like every other chip here.
   FEATURE_CHIPS.forEach(({key, label})=>{
     const chip = document.createElement('button');
     chip.type = 'button';
@@ -5359,24 +5187,24 @@ function buildFilterBar(){
   syncFilterBar();
 }
 
-// The chip row keeps its existing look and feel on top of the shared
-// category model: every category chip is lit when nothing is narrowed, and
-// clicking a lit chip turns that category off.
-//   - In the shared state, "no categories selected" MEANS all events. So
-//     turning the first chip off selects the other fourteen; turning chips
-//     back on until all fifteen are lit is "all events" again.
-//   - Turning the LAST lit chip off returns to all events too (there is no
-//     "show nothing" state in the shared model — approved 2026-10-03; this
-//     page used to show an empty list with zero chips lit).
+// A category chip is lit when that category is selected, and only then
+// (Product Owner, 2026-10-04). Clicking a chip selects it; clicking a
+// selected chip deselects it; any number can be selected at once. This is
+// the shared state's own meaning — state.what.paths is the list of selected
+// categories, and an event is shown if it is in any of them.
+//   - No category selected MEANS all events: no chip is lit, and "All
+//     types" is marked as the current choice.
+//   - Deselecting the last one returns to all events (there is no "show
+//     nothing" state in the shared model — approved 2026-10-03).
+//   - Selecting all fifteen is all events too; Discovery reads that as no
+//     selection, so the chips go back to unlit.
+// (Until 2026-10-04 every chip was lit when nothing was narrowed and a
+// click turned that category OFF, selecting the other fourteen. The state,
+// the URL and what a given selection matches are unchanged; only what a
+// click from the resting state does, and what the resting state looks
+// like.)
 function toggleCategory(key){
-  const selected = state.what.paths;
-  if(!selected.length){
-    Discovery.categories.forEach(c => { if(c.key !== key) setState({what: {add: c.key}}); });
-  } else if(selected.includes(key)){
-    setState({what: {remove: key}});
-  } else {
-    setState({what: {add: key}});
-  }
+  setState({what: state.what.paths.includes(key) ? {remove: key} : {add: key}});
 }
 
 // Lights each chip from the one state — called from buildFilterBar() and
@@ -5396,7 +5224,7 @@ function syncFilterBar(){
   };
   const allChip = document.getElementById('allTypesChip');
   if(allChip) light(allChip, all);
-  bar.querySelectorAll('.chip[data-cat]').forEach(chip => light(chip, all || selected.includes(chip.dataset.cat)));
+  bar.querySelectorAll('.chip[data-cat]').forEach(chip => light(chip, selected.includes(chip.dataset.cat)));
   const freeChip = document.getElementById('freeChip');
   if(freeChip) light(freeChip, state.what.free);
   bar.querySelectorAll('.chip[data-feature]').forEach(chip => light(chip, state.what.features.includes(chip.dataset.feature)));
@@ -5860,101 +5688,248 @@ function editorialLinkHtml(e){
   return primaryHtml + alsoHtml;
 }
 
-// dateList is always an explicit array of ISO date strings to render — see
-// currentDateList() for how it's built for each mode (rolling 30-day
-// default, a single day, a weekend, a this-week window, a user-picked
-// range, or every upcoming date when a neighborhood is selected). Month
-// paging was removed (2026-08-27), so there's no "every day in current's
-// month" fallback left to fall back to.
-// meta (optional) — {scopeLabel, countLabel} from currentListMeta(): when
-// set, a "Showing N events ___" heading is rendered above the list (Jody:
-// clicking "View all events" or a neighborhood card should show a count
-// that visibly matches what the user was just told), and scopeLabel feeds
-// the empty-state copy ("Nothing on the signal here in ___").
-function renderList(dateList, meta){
-  meta = meta || {};
-  const el = document.getElementById('listView');
-  const isos = dateList;
-  let html = '';
-  let any = false;
-  const ctx = discoveryCtx();
-  const shown = [];
-  for(const iso of isos){
-    // byDate[iso] is every event that occupies this day (a multi-day event is
-    // listed under each day of its run); Discovery decides which belong in
-    // the current view.
-    const events = (byDate[iso]||[]).filter(e=>Discovery.matches(e, state, ctx));
-    if(!events.length) continue;
-    any = true;
-    events.forEach(e=>shown.push(e));
-    const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
-      events.map(e=>`
-        <div class="evt-row">
-          <div class="evt-time">${escapeHtml(e.time)||''}</div>
-          <div class="evt-main">
-            <div class="evt-main-body">
-              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
-              <div class="evt-text">
-                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-                <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${shouldShowSource(e)?` <span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
-                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-                ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
-                ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
-                ${multiDayNoteHtml(e)}
-                ${editorialLinkHtml(e)}
-                <div class="evt-actions">
-                  ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                  ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
-                  ${addToCalendarHtml(e)}
-                  ${shareButtonHtml(e)}
-                </div>
-                ${affiliateDisclosureHtml(e)}
-                ${ticketStatusNoteHtml(e)}
-              </div>
-            </div>
-          </div>
-          <div class="evt-side">
-            <div class="evt-cat" style="color:${CATS[e.cat]?CATS[e.cat].color:'inherit'}">${CATS[e.cat]?CATS[e.cat].label:''}</div>
-            ${priceTag(e)}
-          </div>
-        </div>
-      `).join('') + `</div>`;
-  }
-  // The true default view (no When shortcut, no neighborhood) gets its own
-  // boundary disclosure instead of a count heading — see .list-scope-note
-  // above and Gap 2/8 in the 2026-08-28 product audit. Every other scope
-  // (including "All Upcoming" itself, and the neighborhood rail) already
-  // states its own scope via meta.countLabel, so this only applies to the
-  // one silent case. Narrowed from "the next 30 days" to just "today"
-  // 2026-09-04 (Jody: the old 30-day list scrolled so long that visitors
-  // never reached the page's right-hand column) — the "see everything" tap
-  // target stays the same one-click escape hatch to the full unbounded list.
-  const scopeNote = (any && !state.when.mode && !state.where.neighborhood)
-    ? `<div class="list-scope-note">Showing today — <button type="button" onclick="activateWhen('all')">see everything &rarr;</button></div>`
-    : '';
-  // "N events" means N distinct events (Discovery.count), not N rows: an
-  // event that runs for several days appears under each of its days above
-  // but is one event. (Before 2026-10-03 this was the row count.)
-  const matchCount = Discovery.count(shown, state, ctx);
-  const countHeading = (any && meta.countLabel)
-    ? `<div class="list-count-heading">Showing ${matchCount} event${matchCount===1?'':'s'} ${meta.countLabel}</div>`
-    : '';
-  el.innerHTML = any ? (scopeNote + countHeading + html) : `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+// ---- The event stream (homepage UX evolution, first slice, 2026-10-04) ----
+// The list under the discovery controls is one chronological stream of
+// whatever the current view matches — by default, everything current and
+// upcoming, starting today. Which events belong in it is Discovery's
+// (Discovery.matches / Discovery.window); how they are laid out is this
+// page's:
+//   - Each event is listed ONCE, on the first day of the view it occupies:
+//     its own start date, or the view's first day if it began before that
+//     (an exhibition mid-run is listed under today; under tomorrow when the
+//     view is Tomorrow). It says how long it runs ("Through Oct 24").
+//     Before this an event was repeated under every day of its run, so one
+//     exhibition could account for dozens of rows (DEBT-009, item 4).
+//   - Only part of the stream is put on the page at a time: STREAM_INITIAL
+//     rows to start with, STREAM_STEP more each time someone asks. Before
+//     this "All Upcoming" wrote every row at once — about 2,500 — and a
+//     search rewrote them on every keystroke (DEBT-009, item 5). Counts
+//     ("Showing N events", each day's total) are of the whole view, not of
+//     the rows written so far.
+//   - The first STREAM_FIRST rows go in #listView; the rest go in
+//     #listMore, after the Explore Neighborhoods rail.
+const STREAM_FIRST = 5;
+const STREAM_INITIAL = 40;
+const STREAM_STEP = 60;
+let streamShown = STREAM_INITIAL; // rows on the page for the current view
+let streamViewKey = null;         // the view streamShown belongs to
+
+// Every event the current view matches, once each, with the day it is
+// listed under; in date order, then start-time order (unknown times last,
+// as before).
+//
+// One limit is kept from the list this replaces (Product Owner,
+// 2026-10-03; DEBT-008): the homepage holds no history beyond its load
+// window, so it does not list a long-running event on a day before that
+// window began — a picked date older than that shows the empty state, as
+// before, rather than the one exhibition that happens to be loaded standing
+// in for a day whose other events are not. Deep history is Calendar's.
+function streamRows(ctx){
+  const w = Discovery.window(state, ctx);
+  const floor = loadFloorISO();
+  const seen = new Set();
+  const rows = [];
+  EVENTS.forEach(e=>{
+    if(e.id != null){
+      if(seen.has(e.id)) return;
+      seen.add(e.id);
+    }
+    if(!Discovery.matches(e, state, ctx)) return;
+    const listableFrom = e.date < floor ? floor : e.date;
+    const day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
+    if(w.to !== null && day > w.to) return; // only on days before the load window
+    rows.push({event: e, day});
+  });
+  rows.sort((a, b)=> a.day < b.day ? -1 : a.day > b.day ? 1 : timeSortMinutes(a.event.time) - timeSortMinutes(b.event.time));
+  return rows;
 }
 
-// The homepage's real, always-on stat (approved: homepage defaults to
-// TODAY). Per the mockup, this is a fixed "N things happening this week in
-// the Detroit Orbit" count rather than an inline preview of individual
-// events — deliberately independent of the visitor's own When, category,
-// free and search choices, so it reads as a constant pulse of the whole
-// city rather than a number that shrinks as someone narrows their own
-// filters below. Scoped to the current Monday-Sunday week rather than just
-// today (2026-08-26: too few events land on any single day yet for a
-// same-day count to read as a real number — revisit narrowing this back to
-// today once daily volume no longer needs the wider window). Real count,
-// from real data — Discovery.count() over the loaded events, with
-// Discovery's own 'week' window and Detroit Orbit rule — never fabricated.
+// "Through Oct 24" for an event that runs past the day it is listed under.
+function runNoteHtml(e, dayIso){
+  if(!e.endDate || e.endDate <= dayIso) return '';
+  return `<span class="evt-run">Through ${escapeHtml(formatDateLabel(e.endDate))}</span>`;
+}
+
+// One row of the stream. Colour: chartreuse is kept for what can be acted
+// on (the links); time, category and price are type, not colour, and the
+// event's own artwork — when it has any — is the only other colour in the
+// row.
+function streamRowHtml(e, dayIso, ctx){
+  const cat = CATS[e.cat] ? CATS[e.cat].label : '';
+  const thumb = e.imageUrl && safeUrl(e.imageUrl)
+    ? `<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`
+    : '';
+  const go = eventUrl(e)
+    ? `<a href="${escapeHtml(eventUrl(e))}" aria-label="Open ${escapeHtml(e.title)}">&rarr;</a>`
+    : '';
+  return `
+        <div class="evt-row">
+          <div class="evt-time">${timeCellHtml(e.time)}</div>
+          <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
+          <div class="evt-main">
+            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
+            <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+            ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
+            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
+            ${editorialLinkHtml(e)}
+            <div class="evt-actions">
+              ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+              ${addToCalendarHtml(e)}
+              ${shareButtonHtml(e)}
+            </div>
+            ${affiliateDisclosureHtml(e)}
+            ${ticketStatusNoteHtml(e)}
+          </div>
+          <div class="evt-side"><div class="evt-meta">${cat?`<span class="evt-cat cat-${escapeHtml(e.cat)}">${escapeHtml(cat)}</span>`:''}${priceTag(e)}</div></div>
+          <div class="evt-go">${go}</div>
+        </div>`;
+}
+
+// The time column: "9:00 AM – 7:00 PM" becomes the start on one line and
+// "to 7:00 PM" beneath it, so the column reads as a board. Anything that
+// is not a start–end pair is left exactly as the source gave it.
+function timeCellHtml(time){
+  const t = (time || '').trim();
+  if(!t) return '';
+  const m = t.match(/^(.+?)\s*[–—-]\s*(.+)$/);
+  if(m && /\d/.test(m[1]) && /\d/.test(m[2])) return `${escapeHtml(m[1])}<small>to ${escapeHtml(m[2])}</small>`;
+  return escapeHtml(t);
+}
+
+// The artwork fallback: the Orbit field. Thin concentric arcs off one
+// corner, one concrete dot. Eight positions rotate by the event's id so a
+// column of rows reads as a field, not a stamp. No chartreuse: this is
+// not a state. Real artwork (.evt-thumb) lays over it in the same frame.
+const ART_CODES = {
+  music:'Music', theatre:'Theatre', dance:'Dance', visual:'Visual', museum:'Museum', family:'Family',
+  fest:'Fest', food:'Food', film:'Film', nightlife:'Night', sports:'Sports', community:'Community',
+  vendor:'Vendor', training:'Training', gaming:'Gaming'
+};
+const ART_ORBITS = [
+  [96,72,56,44],[8,74,64,28],[52,-8,28,50],[96,72,40,36],
+  [8,74,80,22],[52,-8,76,48],[96,72,22,28],[8,74,60,16]
+];
+function artFallbackSvg(e){
+  let h = 0;
+  const key = String(e.id || e.title || '');
+  for(let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  const [cx, cy, dx, dy] = ART_ORBITS[h % ART_ORBITS.length];
+  return `<svg viewBox="0 0 104 70" preserveAspectRatio="xMidYMid slice"><g fill="none"><circle cx="${cx}" cy="${cy}" r="20" stroke="#2a2a2a"/><circle cx="${cx}" cy="${cy}" r="40" stroke="#232323"/><circle cx="${cx}" cy="${cy}" r="60" stroke="#1c1c1c"/><circle cx="${cx}" cy="${cy}" r="80" stroke="#171717"/></g><circle cx="${dx}" cy="${dy}" r="2" fill="#5c5d58"/></svg>`;
+}
+
+// The day groups for a run of consecutive stream rows. dayTotals is the
+// whole view's count for each day (not just the rows written so far);
+// continuedDay marks a day whose first rows are in the section above.
+function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continuedDay){
+  let html = '';
+  let i = 0;
+  while(i < rows.length){
+    const dayIso = rows[i].day;
+    let j = i;
+    while(j < rows.length && rows[j].day === dayIso) j++;
+    const label = new Date(dayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const rel = dayIso === todayIso ? '<span class="ldh-rel is-today">Today</span>' : (dayIso === tomorrowIso ? '<span class="ldh-rel">Tomorrow</span>' : '');
+    const total = dayTotals[dayIso] || 0;
+    html += `<div class="list-day-group" data-day="${dayIso}">` +
+      `<div class="list-day-heading">${rel}<span class="ldh-date">${label}</span>${dayIso === continuedDay ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${total.toLocaleString('en-US')} event${total===1?'':'s'}</span></div>` +
+      `<div class="ldh-cols" aria-hidden="true"><span>Time</span><span>Art</span><span>Event &middot; place</span><span class="lc-type">Type &middot; price</span><span>Go</span></div>` +
+      rows.slice(i, j).map(r => streamRowHtml(r.event, dayIso, ctx)).join('') +
+      `</div>`;
+    i = j;
+  }
+  return html;
+}
+
+// Writes the stream for the current view. The scope words (meta) come from
+// currentListMeta(): a view with a scope of its own, or with any filter on,
+// is headed "Showing N events ___" — N distinct events (Discovery.count),
+// the whole view, however many rows are on the page. The plain default view
+// is headed as what it is: all events, in date order.
+function renderList(){
+  const first = document.getElementById('listView');
+  const more = document.getElementById('listMore');
+  const meta = currentListMeta();
+  const ctx = discoveryCtx();
+  const rows = streamRows(ctx);
+
+  // A different view starts again from the top; the same view re-rendered
+  // (a count arriving, the data loading) keeps what has been opened.
+  const viewKey = Discovery.toQuery(state) + (state.where.here ? '|here' : '');
+  if(viewKey !== streamViewKey){ streamViewKey = viewKey; streamShown = STREAM_INITIAL; }
+
+  if(!rows.length){
+    first.innerHTML = `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+    more.innerHTML = '';
+    more.style.display = 'none';
+    return;
+  }
+
+  const total = rows.length;
+  const shown = Math.min(streamShown, total);
+  const dayTotals = {};
+  rows.forEach(r => { dayTotals[r.day] = (dayTotals[r.day] || 0) + 1; });
+  const todayIso = getTodayISO();
+  const next = new Date(todayIso+"T12:00:00"); next.setDate(next.getDate()+1);
+  const tomorrowIso = toISO(next.getFullYear(), next.getMonth(), next.getDate());
+
+  const filtered = Discovery.describe(state).length > 0;
+  const head = (meta.countLabel || filtered)
+    ? `<div class="stream-head"><div class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}</div></div>`
+    : `<div class="stream-head"><h2 class="stream-title">All events</h2><div class="stream-sub">Everything current and upcoming, in date order</div></div>`;
+
+  const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
+  const restRows = rows.slice(firstRows.length, shown);
+  first.innerHTML = head + streamGroupsHtml(firstRows, dayTotals, ctx, todayIso, tomorrowIso, null);
+
+  const remaining = total - shown;
+  if(!restRows.length && !remaining){
+    more.innerHTML = '';
+    more.style.display = 'none';
+    return;
+  }
+  const lastFirstDay = firstRows.length ? firstRows[firstRows.length - 1].day : null;
+  const step = Math.min(STREAM_STEP, remaining);
+  const foot = remaining
+    ? `<div class="stream-foot">
+        <button type="button" class="stream-more-btn" onclick="showMoreStream()">Show ${step.toLocaleString('en-US')} more</button>
+        <span class="stream-foot-note">${shown.toLocaleString('en-US')} of ${total.toLocaleString('en-US')} shown</span>
+        <a class="stream-foot-link" href="${escapeHtml(Discovery.href('calendar', state, ctx))}">Open the calendar &rarr;</a>
+      </div>`
+    : '';
+  more.innerHTML = streamGroupsHtml(restRows, dayTotals, ctx, todayIso, tomorrowIso, lastFirstDay) + foot;
+  more.style.display = '';
+}
+
+// "Show more": the next STREAM_STEP rows of the same view. Nothing about
+// the view itself changes (no state, no URL), so only the stream is
+// rewritten.
+function showMoreStream(){
+  streamShown += STREAM_STEP;
+  renderList();
+}
+
+// The hero's figures (DEC-026): one primary total and three supporting
+// ones, each real and each independent of the visitor's own When, category,
+// free and search choices, so they read as a constant pulse of the whole
+// city rather than numbers that shrink as someone narrows the stream below.
+//   CURRENT + UPCOMING EVENTS — the site's inventory (DEC-023): the
+//     database's own exact count of approved events that start today or
+//     later or are still running (orbitEventTotal, see
+//     loadOrbitEventTotal()). Until that request answers, or if it fails,
+//     the same thing counted over the events this page has loaded.
+//   TODAY — what is still on or still to come today (Discovery's Today).
+//   NEXT 7 DAYS — today plus the following six calendar days, in Detroit
+//     (Discovery's Next 7 Days; like Today, it leaves out what is already
+//     over). It was THIS WEEK — what was left of the Monday–Sunday week —
+//     which on a Sunday was the same number as TODAY (Product Owner,
+//     2026-10-04).
+//   ACTIVE NEIGHBORHOODS — neighborhoods with at least one current or
+//     upcoming event.
+// Venue and city totals are deliberately not shown (DEC-026).
+//
 // Hero stat count-up (2026-09-13, Jody: the hero number starts small on
 // FALLBACK_EVENTS, then a few seconds later loadSupabaseEvents() replaces it
 // with the real (larger) count — previously an abrupt jump, which read as
@@ -5967,7 +5942,7 @@ function renderList(dateList, meta){
 // started toward (not just "last count computed") so that render() being
 // re-invoked for an unrelated reason (search input, a filter chip, paging
 // the calendar — none of which change this count, since it deliberately
-// ignores every filter, see HERO_STATE below) doesn't
+// ignores every filter, see heroFigures() below) doesn't
 // re-trigger the animation against an unchanged number. heroCountFrame
 // holds the in-flight requestAnimationFrame id so a second call arriving
 // mid-animation (e.g. two quick successive loads) cancels the first cleanly
@@ -5977,13 +5952,14 @@ let heroCountFrame = null;
 
 function animateHeroCount(el, from, to){
   cancelAnimationFrame(heroCountFrame);
-  if(from === to){ el.textContent = to; return; }
+  const fmt = n => Number(n).toLocaleString('en-US');
+  if(from === to){ el.textContent = fmt(to); return; }
   // Respect the OS-level motion preference — jump straight to the final
   // number rather than forcing the climb on someone who's asked for
   // reduced motion (same guard this file's hero-photo rotation already
   // uses elsewhere).
   if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    el.textContent = to;
+    el.textContent = fmt(to);
     return;
   }
   // 2026-09-13 smoke test: a tab opened in the background (middle-click/
@@ -5993,7 +5969,7 @@ function animateHeroCount(el, from, to){
   // for however long the tab sits unseen. Skip straight to the final value
   // here — there's no one watching the climb anyway — rather than starting
   // an animation that can't run.
-  if(document.hidden){ el.textContent = to; return; }
+  if(document.hidden){ el.textContent = fmt(to); return; }
   const duration = 900; // ms — quick enough not to feel like a wait of its own
   const start = performance.now();
   const range = to - from;
@@ -6003,93 +5979,105 @@ function animateHeroCount(el, from, to){
     // ease-out cubic — fast climb that settles rather than a mechanical
     // linear tick, closer to the "gameshow" feel Jody described.
     const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(from + range * eased);
+    el.textContent = fmt(Math.round(from + range * eased));
     if(progress < 1){
       heroCountFrame = requestAnimationFrame(step);
     } else {
-      el.textContent = to; // guarantees the exact final value, not a rounding artifact
+      el.textContent = fmt(to); // guarantees the exact final value, not a rounding artifact
       el.classList.remove('is-counting');
     }
   }
   heroCountFrame = requestAnimationFrame(step);
 }
 
-// What the hero counts: what is LEFT of this Monday-Sunday week, inside the
-// Detroit Orbit, whatever the visitor has filtered below. 'week' is a
-// forward-looking window in Discovery: it starts at today (Monday's and
-// Tuesday's events are not "left" on a Thursday) and leaves out anything
-// already over.
-const HERO_STATE = Discovery.change(Discovery.defaults(), {when: 'week', where: {radius: 'orbit'}});
+const NEXT7_STATE = Discovery.change(Discovery.defaults(), {when: 'next7'});
+function heroFigures(){
+  const ctx = inventoryCtx();
+  return {
+    total: orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), ctx),
+    today: Discovery.count(EVENTS, TODAY_STATE, ctx),
+    next7: Discovery.count(EVENTS, NEXT7_STATE, ctx),
+    neighborhoods: computeNeighborhoodCounts().length,
+  };
+}
 
 function renderHeroToday(){
   const el = document.getElementById('heroToday');
   if(!el) return;
-  // Distinct events (Discovery.count). Before 2026-10-03 this added up each
-  // remaining day's list, so a three-day festival counted three times.
-  const count = Discovery.count(EVENTS, HERO_STATE, inventoryCtx());
-  // 2026-09-13 (Jody): make clear this is a countdown, not just a tally —
-  // "left" instead of "happening" signals the number only shrinks as the
-  // week goes on, which is what the "new week starts Monday" note on the
-  // line below is explaining the reset of.
-  const caption = `${count === 1 ? 'Thing' : 'Things'} left this week in the Detroit Orbit.`;
+  const f = heroFigures();
+  const n = v => v.toLocaleString('en-US');
 
-  const numberEl = document.getElementById('heroStatNumber');
-  if(!numberEl){
-    // First paint only — build the block once, starting the visible number
-    // at 0 so the very first thing a visitor sees is the tally climbing up
-    // to the fallback count, not a static number. Every later call (once
-    // this element already exists) only ever touches the number/caption
-    // text below, so the button/orbit line and their listeners are never
-    // torn down and rebuilt on every render().
+  if(!document.getElementById('heroStatNumber')){
+    // First paint only — build the block once, starting the visible total
+    // at 0 so the first thing a visitor sees is the tally climbing, not a
+    // static number. Every later call only touches the figures' text, so
+    // the buttons are never torn down and rebuilt on every render().
     el.innerHTML = `
-      <div class="hero-stat-number" id="heroStatNumber">0</div>
-      <div class="hero-stat-caption" id="heroStatCaption">${caption}</div>
-      <button type="button" class="hero-stat-cta" onclick="viewThisWeek()">View all events &rarr;</button>
-      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries &middot; new week starts Monday</div>
+      <button type="button" class="hero-proof-total" onclick="viewEverything()" title="See every current and upcoming event">
+        <span class="hero-stat-number" id="heroStatNumber">0</span>
+        <span class="hero-stat-caption" id="heroStatCaption">Current + upcoming events</span>
+      </button>
+      <div class="hero-proof-stats">
+        <button type="button" class="hero-proof-stat" onclick="viewEverything('today')"><span class="hps-num" id="heroStatToday">${n(f.today)}</span><span class="hps-label">Today</span></button>
+        <button type="button" class="hero-proof-stat" onclick="viewEverything('next7')"><span class="hps-num" id="heroStatNext7">${n(f.next7)}</span><span class="hps-label">Next 7 days</span></button>
+        <button type="button" class="hero-proof-stat" onclick="viewNeighborhoodsRail()"><span class="hps-num" id="heroStatNeighborhoods">${n(f.neighborhoods)}</span><span class="hps-label">Active neighborhoods</span></button>
+      </div>
+      <div class="hero-proof-promise"><span class="live-dot" aria-hidden="true"></span>Live index &middot; comprehensive by default, curated by choice</div>
+      <div class="hero-stat-orbit">Detroit Orbit &middot; up to 75 miles across 2 states &amp; 2 countries</div>
     `;
-    animateHeroCount(document.getElementById('heroStatNumber'), 0, count);
-    heroDisplayedCount = count;
+    animateHeroCount(document.getElementById('heroStatNumber'), 0, f.total);
+    heroDisplayedCount = f.total;
     return;
   }
 
-  document.getElementById('heroStatCaption').textContent = caption;
-  if(count !== heroDisplayedCount){
+  document.getElementById('heroStatCaption').textContent = 'Current + upcoming events';
+  document.getElementById('heroStatToday').textContent = n(f.today);
+  document.getElementById('heroStatNext7').textContent = n(f.next7);
+  document.getElementById('heroStatNeighborhoods').textContent = n(f.neighborhoods);
+  if(f.total !== heroDisplayedCount){
     // Animate from whatever's actually on screen right now, not just the
     // last target — if a prior animation gets interrupted mid-climb (e.g.
     // Supabase responds fast, before the fallback count-up even finishes),
     // heroDisplayedCount alone would jump the visible number straight to
     // the old target before climbing again. Reading the live text avoids
     // that hiccup.
-    const shown = parseInt(numberEl.textContent, 10);
-    animateHeroCount(numberEl, Number.isFinite(shown) ? shown : 0, count);
-    heroDisplayedCount = count;
+    const numberEl = document.getElementById('heroStatNumber');
+    const shown = parseInt(String(numberEl.textContent).replace(/,/g, ''), 10);
+    animateHeroCount(numberEl, Number.isFinite(shown) ? shown : 0, f.total);
+    heroDisplayedCount = f.total;
   }
 }
 
-// "View all events" from the hero stat: rather than jumping to a single
-// day's panel (the stat itself now spans 7 days), this clears any date/when
-// narrowing and drops into List view — the one view that reads several days
-// chronologically — so what the user sees lines up with what the number
-// just told them, without touching their category/free/search filters.
-function viewThisWeek(){
-  // Jody (2026-08-27): clicking this should show "all events we have" for
-  // the week the hero just counted — so every other narrowing dimension
-  // (category, free-only, search, location, neighborhood) is reset here too,
-  // same as clearAllFilters(), rather than just swapping the date scope and
-  // leaving some other filter active to quietly shrink the count below what
-  // the hero stat just told the visitor.
-  setState({reset: true, when: 'week'});
+// The hero's figures are counts of the whole inventory, so following one
+// shows exactly that many events: every other narrowing dimension
+// (category, free-only, search, location, neighborhood) is reset, the same
+// as clearAllFilters() — rather than swapping only the date scope and
+// leaving some other filter active to quietly shrink the list below the
+// number just clicked (Jody, 2026-08-27, for the old "View all events").
+//   viewEverything()         the whole stream (the primary total)
+//   viewEverything('today')  Today
+//   viewEverything('next7')  Next 7 Days — today plus six days
+function viewEverything(when){
+  setState(when ? {reset: true, when: when} : {reset: true});
   document.getElementById('search').value = '';
   clearLocation({skipRender: true});
-  setWhenInputs('', '');
+  // A When shortcut blanks the date inputs; the default view shows today as
+  // the "From" baseline, as a reset always has.
+  setWhenInputs(when ? '' : getTodayISO(), '');
   renderNeighborhoodsRail();
   updateWhenButtons();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
+// "Active neighborhoods" in the hero leads to the neighborhoods themselves:
+// the Explore Neighborhoods rail, on this page.
+function viewNeighborhoodsRail(){
+  document.getElementById('neighborhoodsSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 // Top-nav "Today" shortcut (restored 2026-08-27, top-nav-only per Jody — see
-// the site-nav comment above). Unlike viewThisWeek()/viewNeighborhood(), this
+// the site-nav comment above). Unlike viewEverything()/viewNeighborhood(), this
 // deliberately does NOT reset category/free/search/location — it's a peer to
 // the Tomorrow/This Weekend when-shortcuts (it sets Discovery's own Today
 // mode — "today in Detroit, whenever this is opened" — so a shared Today link
@@ -6104,6 +6092,59 @@ function viewToday(){
   updateWhenButtons();
   render();
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ---- Don't Miss (DEC-025) ----
+// A temporary editorial placement: a person points at an event, for a
+// period, with a reason. It is not a property of the event, and nothing in
+// this file chooses one. There is no placement data source yet — no table,
+// no request — so the list below is empty and the section stays hidden.
+// When a source exists it fills this list; the rest of the page is
+// unaffected either way. Do not put selections in this file.
+//   placement: {eventId, reason, from, to}  (from/to: ISO dates, inclusive,
+//   either may be left out)
+// A placement shows only while it is in its period AND its event is in the
+// current + upcoming inventory (loaded, not over, not blocked).
+let dontMissPlacements = [];
+const DONT_MISS_LIMIT = 3;
+
+function activeDontMiss(){
+  const today = getTodayISO(), ctx = inventoryCtx();
+  const out = [];
+  dontMissPlacements.forEach(p=>{
+    if(!p || p.eventId == null) return;
+    if((p.from && today < p.from) || (p.to && today > p.to)) return;
+    const event = EVENTS.find(e => String(e.id) === String(p.eventId));
+    if(!event || !Discovery.matches(event, Discovery.defaults(), ctx)) return;
+    if(out.some(o => o.event === event)) return;
+    out.push({event, reason: p.reason || ''});
+  });
+  return out.slice(0, DONT_MISS_LIMIT);
+}
+
+function renderDontMiss(){
+  const section = document.getElementById('dontMissSection');
+  if(!section) return;
+  const picks = activeDontMiss();
+  if(!picks.length){ section.style.display = 'none'; section.innerHTML = ''; return; }
+  section.style.display = '';
+  section.innerHTML = `
+    <div class="dm-head"><h2 class="dm-title">Don't Miss</h2></div>
+    <div class="dm-grid">
+      ${picks.map(({event: e, reason})=>{
+        const when = [formatDateLabel(e.date) + (e.endDate && e.endDate > e.date ? '–' + formatDateLabel(e.endDate) : ''), e.time].filter(Boolean).join(' · ');
+        const body = `
+          ${e.imageUrl && safeUrl(e.imageUrl) ? `<img class="dm-art" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+          <div class="dm-body">
+            <div class="dm-when">${escapeHtml(when)}</div>
+            <div class="dm-name">${escapeHtml(e.title)}</div>
+            <div class="dm-venue">${escapeHtml(e.venue)}${e.city ? ` — ${escapeHtml(e.city)}` : ''}</div>
+            ${reason ? `<div class="dm-reason">${escapeHtml(reason)}</div>` : ''}
+          </div>`;
+        return eventUrl(e) ? `<a class="dm-card" href="${escapeHtml(eventUrl(e))}">${body}</a>` : `<div class="dm-card">${body}</div>`;
+      }).join('')}
+    </div>
+  `;
 }
 
 // ---- Homepage sidebar: View Calendar / Near You / Free Today ----
@@ -6202,7 +6243,7 @@ function mapScatterSvg(showYou){
     [70,14,2.4,.35],[76,44,3,.5],[90,26,2,.4],[98,42,2.4,.3],
     [108,16,2,.3],[18,48,2,.35]
   ];
-  const dotSvg = dots.map(([x,y,r,o]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--accent)" opacity="${o}"/>`).join('');
+  const dotSvg = dots.map(([x,y,r,o]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--ink-soft)" opacity="${o}"/>`).join('');
   const youSvg = showYou ? `
     <circle cx="48" cy="30" r="7" fill="var(--accent)" opacity=".3" class="map-you-ping"/>
     <circle cx="48" cy="30" r="4.5" fill="var(--accent)"/>
@@ -6211,7 +6252,7 @@ function mapScatterSvg(showYou){
   return `
     <div class="map-scatter" aria-hidden="true">
       <svg viewBox="0 0 120 64" preserveAspectRatio="xMidYMid meet">
-        <rect x="1" y="1" width="118" height="62" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+        <circle cx="48" cy="30" r="14" fill="none" stroke="var(--line)"/><circle cx="48" cy="30" r="28" fill="none" stroke="var(--line-soft)"/>
         ${dotSvg}${youSvg}
       </svg>
     </div>
@@ -6299,6 +6340,51 @@ function countEventsWithinMilesOf(origin, miles){
   return Discovery.count(current, Discovery.defaults(), ctx);
 }
 
+// The radial range field: Detroit at the centre, rings at 10 / 25 / 50
+// miles, and the cities with the most current + upcoming events placed by
+// their real bearing and distance from downtown (city centres from
+// Discovery.places), each with its live count. Nothing here is a map tile
+// or a pin carpet; a city is drawn only where the inventory has it.
+function orbitFieldHtml(){
+  const ctx = inventoryCtx();
+  const facets = Discovery.facets(EVENTS, Discovery.defaults(), ctx, 'city');
+  const cities = new Map(Discovery.places.filter(p => p.type === 'city').map(p => [p.name.toLowerCase(), p]));
+  const scale = 2.05; // px per mile: the 75-mile Orbit is a 154px radius
+  const detroitCount = facets.get('Detroit') || 0;
+  const items = [];
+  facets.forEach((n, name) => {
+    const p = cities.get(String(name).toLowerCase());
+    if(!p || !n || p.name === 'Detroit') return;
+    const v = vectorFromDetroit(p);
+    if(v.miles > 76) return;
+    const rad = v.bearing * Math.PI / 180;
+    items.push({name: p.name, n, x: Math.sin(rad) * v.miles * scale, y: -Math.cos(rad) * v.miles * scale});
+  });
+  items.sort((a, b) => b.n - a.n);
+  // Labels: busiest cities first, none closer than the Detroit label
+  // itself, none on top of another. Cities inside ~12 miles would print
+  // over "Detroit", so they are counted but not labelled.
+  const box = (it, left) => { const w = (it.name.length + String(it.n).length + 2) * 6.6 + 12; return left ? [it.x - w, it.x] : [it.x, it.x + w]; };
+  const taken = [{y: 0, b: box({x: 8, name: 'Detroit', n: detroitCount}, false)}];
+  const placed = [];
+  for(const it of items){
+    if(placed.length >= 13) break;
+    if(Math.hypot(it.x, it.y) < 26) continue;
+    const left = it.x > 0;
+    const b = box(it, left);
+    if(taken.some(t => Math.abs(t.y - it.y) < 14 && b[0] < t.b[1] && t.b[0] < b[1])) continue;
+    taken.push({y: it.y, b});
+    placed.push(Object.assign(it, {left}));
+  }
+  const rings = [10, 25, 50, 75].map(mi => `<span class="orbit-ring" style="width:${mi*scale*2}px;height:${mi*scale*2}px"></span>`).join('');
+  const miles = [10, 25, 50].map(mi => `<span class="orbit-mile" style="left:calc(50% + ${(mi*scale*0.92).toFixed(0)}px);top:calc(50% + ${(mi*scale*0.38).toFixed(0)}px)">${mi} mi</span>`).join('');
+  const labels = placed.map(it => {
+    const left = it.left;
+    return `<span class="orbit-lbl${left ? ' is-left' : ''}" style="left:calc(50% + ${it.x.toFixed(0)}px);top:calc(50% + ${it.y.toFixed(0)}px)"><i></i>${escapeHtml(it.name)}<b>${it.n.toLocaleString('en-US')}</b></span>`;
+  }).join('');
+  return `<div class="orbit-field" aria-hidden="true">${rings}${miles}<span class="orbit-center"></span><span class="orbit-lbl is-center" style="left:50%;top:50%">Detroit<b>${detroitCount.toLocaleString('en-US')}</b></span>${labels}</div>`;
+}
+
 function renderNearYouCard(){
   const el = document.getElementById('nearYouCard');
   if(!el) return;
@@ -6316,18 +6402,15 @@ function renderNearYouCard(){
     // resolves (or if it fails).
     const totalLoaded = orbitEventTotal !== null ? orbitEventTotal : Discovery.count(EVENTS, Discovery.defaults(), inventoryCtx());
     el.innerHTML = `
-      <div class="side-card-head"><h2>What's in your Detroit Orbit?</h2></div>
-      <div class="ny-radar" aria-hidden="true">
-        <span class="ny-ring ny-ring-1"></span>
-        <span class="ny-ring ny-ring-2"></span>
-        <span class="ny-ring ny-ring-3"></span>
-        <span class="ny-ping"></span>
-        <span class="ny-dot"></span>
+      <div class="side-card-head"><h2>Detroit Orbit</h2><a class="side-card-link" href="map.html">Open the map &rarr;</a></div>
+      <p class="side-card-sub">Detroit is the gravity. Radius is yours: 5 &middot; 10 &middot; 25 &middot; 50 &middot; 75 mi</p>
+      <div class="orbit-readout">
+        <div><div class="side-card-number">${totalLoaded.toLocaleString()}</div>
+        <p class="side-card-caption">events loaded across the Detroit Orbit</p></div>
+        <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
       </div>
-      <div class="side-card-number">${totalLoaded.toLocaleString()}</div>
-      <p class="side-card-caption">events loaded across the Detroit Orbit</p>
-      <p class="side-card-sub">See what's on up to 75 miles out — Detroit, Ann Arbor, Windsor &amp; beyond.</p>
-      <button type="button" class="side-card-cta" onclick="viewMyOrbit()">Use my location &rarr;</button>
+      ${orbitFieldHtml()}
+      <div class="orbit-foot">MI &middot; OH &middot; ON &mdash; the border is not a boundary</div>
     `;
     return;
   }
@@ -6620,12 +6703,18 @@ function renderNeighborhoodsRail(){
     const photoHtml = photoSrc
       ? `<img class="neigh-photo" src="${photoSrc}" alt="${escapeHtml(photo.alt || name)}"${photo.credit ? ` title="${escapeHtml(photo.credit)}"` : ''} loading="lazy" width="720" height="405">`
       : '';
+    // No approved photograph: the nameplate (fallback B, Product Owner
+    // 2026-10-04), with the neighborhood's real distance and bearing from
+    // downtown printed where Discovery knows its coordinates.
+    const vec = neighborhoodVector(name);
+    const bearingHtml = vec ? `<span class="neigh-bearing">${vec.miles < 0.3 ? 'Center' : `${vec.miles < 10 ? vec.miles.toFixed(1) : Math.round(vec.miles)} mi ${compassPoint(vec.bearing)}`}</span>` : '';
     return `
     <button type="button" class="neigh-card${photo?' has-photo':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
       ${photoHtml}
+      <span class="neigh-plate">
       <span class="neigh-name">${escapeHtml(name)}</span>
-      <span class="neigh-count">${count}</span>
-      <span class="neigh-count-label">event${count===1?'':'s'}</span>
+      <span class="neigh-count-row"><span class="neigh-count">${count}</span><span class="neigh-count-label">event${count===1?'':'s'}</span>${bearingHtml}</span>
+      </span>
     </button>
   `;
   }).join('');
@@ -6634,6 +6723,24 @@ function renderNeighborhoodsRail(){
   });
 }
 
+// Downtown Detroit, the Orbit's centre of gravity (Discovery.places'
+// "Detroit" city centre). Neighborhood centres come from the same list.
+const DETROIT_CENTER = {lat:42.3314, lng:-83.0458};
+function neighborhoodVector(name){
+  const p = Discovery.places.find(x => x.type === 'neighborhood' && x.name === name);
+  if(!p || typeof p.lat !== 'number' || typeof p.lng !== 'number') return null;
+  return vectorFromDetroit(p);
+}
+function vectorFromDetroit(p){
+  const dLat = p.lat - DETROIT_CENTER.lat;
+  const dLng = (p.lng - DETROIT_CENTER.lng) * Math.cos(DETROIT_CENTER.lat * Math.PI / 180);
+  const miles = Math.sqrt(dLat * dLat + dLng * dLng) * 69.05;
+  const bearing = (Math.atan2(dLng, dLat) * 180 / Math.PI + 360) % 360;
+  return {miles, bearing};
+}
+function compassPoint(bearing){
+  return ['N','NE','E','SE','S','SW','W','NW'][Math.round(bearing / 45) % 8];
+}
 // Toggle: clicking the already-active neighborhood clears it, same pattern
 // as re-clicking an active When/category chip elsewhere on the site.
 function viewNeighborhood(name){
@@ -6667,12 +6774,10 @@ function emptyStateMessage(scopeLabel){
   const actions = [];
   const mode = state.when.mode, hood = state.where.neighborhood;
   if(mode || hood) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
-  // Nothing today doesn't mean nothing at all — offer the same All Upcoming
-  // escape hatch here as the populated default view gets (see
-  // .list-scope-note / renderList()) rather than leaving a quiet today
-  // looking like a dead end (P0, 2026-08-28 product audit Gap 2/8; default
-  // view narrowed from a 30-day window to today-only 2026-09-04).
-  if(!mode && !hood) actions.push(`<button type="button" class="es-action" onclick="activateWhen('all')">See all upcoming events</button>`);
+  // (There used to be a "See all upcoming events" action here for the
+  // default view, when the default was today only. The default is now every
+  // upcoming date, so an empty default view has nothing wider to offer; the
+  // actions below undo whatever is narrowing it.)
   if(originLocation() && typeof state.where.radius === 'number') actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
   if(state.what.paths.length) actions.push(`<button type="button" class="es-action" onclick="showAllCategories()">Show all categories</button>`);
   if(state.q) actions.push(`<button type="button" class="es-action" onclick="clearSearch()">Clear search</button>`);
@@ -6698,8 +6803,9 @@ function render(){
   syncFilterBar();
   renderActiveFilters();
   renderHeroToday();
+  renderDontMiss();
   renderSidebar();
-  renderList(currentDateList(), currentListMeta());
+  renderList();
   syncURL();
 }
 
@@ -6729,7 +6835,7 @@ function activateWhen(key){
   // Jody (2026-08-27): picking a When shortcut — whether from the top-nav
   // (Tomorrow/This Weekend) or from inside the When sheet itself, since both
   // share this one handler — should bring the results in front of the
-  // visitor's eyes immediately, same as Today/viewThisWeek/viewNeighborhood
+  // visitor's eyes immediately, same as Today/viewEverything/viewNeighborhood
   // already do, rather than leaving them to notice the list changed further
   // down the page on their own.
   document.getElementById('listView').scrollIntoView({behavior:'smooth', block:'start'});
@@ -7436,11 +7542,12 @@ async function loadOrbitEventTotal(){
     const total = parseInt(contentRange.split('/')[1], 10);
     if (isNaN(total)) return;
     orbitEventTotal = total;
+    renderHeroToday(); // the hero's primary figure is this same total (DEC-026)
     renderNearYouCard();
     renderMapCard(); // shares this same total now — see its 2026-09-05 redesign comment
   } catch (err) {
-    // Silent by design — renderNearYouCard()'s own EVENTS-based fallback
-    // count stays on screen if this dedicated request fails.
+    // Silent by design — the hero's and renderNearYouCard()'s own
+    // EVENTS-based fallback count stays on screen if this request fails.
   }
 }
 loadOrbitEventTotal();
@@ -7621,6 +7728,23 @@ function renderOnRadarCard(){
   }
   el.style.display = '';
 
+  // Coverage readout: every upcoming event with at least one linked
+  // article, and the outlets doing the covering. Same rows as the cards
+  // above, before the one-card-per-article collapse and the cap.
+  const outletCounts = new Map();
+  rawCandidates.forEach(({event}) => {
+    new Set((editorialByEvent[event.id] || []).map(a => a.source).filter(Boolean))
+      .forEach(src => outletCounts.set(src, (outletCounts.get(src) || 0) + 1));
+  });
+  const outlets = [...outletCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 6);
+  const readoutHtml = `
+    <div class="radar-outlets">
+      <div class="radar-outlets-head"><span>Coverage on the board</span><span>${outlets.length} outlet${outlets.length === 1 ? '' : 's'}</span></div>
+      <div class="radar-outlets-total">${rawCandidates.length.toLocaleString('en-US')}</div>
+      <p class="radar-outlets-caption">upcoming event${rawCandidates.length === 1 ? '' : 's'} with press coverage</p>
+      ${outlets.map(([src, n]) => `<div class="radar-outlet"><span>${escapeHtml(src)}</span><b>${n} event${n === 1 ? '' : 's'}</b></div>`).join('')}
+    </div>`;
+
   el.innerHTML = `
     <div class="side-card-head"><h2>On the Radar</h2><a class="side-card-link" href="radar.html">See all &rarr;</a></div>
     <p class="side-card-sub">Upcoming events the local press is already covering.</p>
@@ -7645,6 +7769,7 @@ function renderOnRadarCard(){
           : `<div class="radar-item">${body}</div>`;
       }).join('')}
     </div>
+    ${readoutHtml}
   `;
 }
 </script>

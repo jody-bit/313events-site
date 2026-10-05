@@ -19,6 +19,23 @@
 //
 // "Today" throughout is Saturday 2026-10-03, 3:00 PM in Detroit.
 //
+// 2026-10-04 (homepage UX evolution, first slice): the page's presentation
+// changed and this file changed with it, only where it had to —
+//   - the resting view is every current + upcoming event (it was today
+//     only), headed "All events";
+//   - an event is listed once, on the first day of the view it occupies
+//     (it was repeated under every day of its run);
+//   - the list is written in two containers, #listView and #listMore;
+//   - the hero shows the site total with Today / Next 7 Days / Active
+//     Neighborhoods (it was "things left this week in the Orbit");
+//   - a category chip is lit only when that category is selected, and a
+//     click selects it (every chip used to be lit when nothing was
+//     narrowed, and a click turned that category off).
+// The rules themselves — what matches, the state, the URLs, the tray —
+// are untouched, and so are the assertions about them. The stream's
+// own behaviour (sections, "show more", Don't Miss) is covered in
+// test/homepage-stream.test.js.
+//
 // Run: node test/homepage-discovery-adoption.test.js
 "use strict";
 process.env.TZ = "America/Detroit";
@@ -105,17 +122,23 @@ async function open(url, opts) {
 
 // What the page is showing.
 function view(page) {
-  const html = page.el("listView").innerHTML;
-  const days = html.split('<div class="list-day-group">').slice(1).map((g) => ({
-    day: (/<div class="list-day-heading">([^<]*)<\/div>/.exec(g) || [])[1],
-    titles: [...g.matchAll(/class="evt-title-link"[^>]*>([^<]*)<\/a>/g)].map((m) => m[1]),
-  }));
+  // The stream: its head and first section, then the rest.
+  const html = page.el("listView").innerHTML + page.el("listMore").innerHTML;
+  // A day split across #listView and #listMore (the Explore Neighborhoods
+  // interlude comes after the first few rows) is one day of the view.
+  const days = [];
+  html.split(/<div class="list-day-group" data-day="(?=\d{4}-\d{2}-\d{2}")/).slice(1).forEach((g) => {
+    const day = heading(g.slice(0, 10));
+    const titles = [...g.matchAll(/class="evt-title-link"[^>]*>([^<]*)<\/a>/g)].map((m) => m[1]);
+    const last = days[days.length - 1];
+    if (last && last.day === day) last.titles.push(...titles); else days.push({ day, titles });
+  });
   const tray = page.el("activeFilters");
   return {
     days,
     titles: days.flatMap((d) => d.titles),
     rows: days.flatMap((d) => d.titles.map((t) => d.day + " | " + t)),
-    scopeNote: /list-scope-note/.test(html),
+    allEvents: /<h2 class="stream-title">All events<\/h2>/.test(html),
     heading: (/<div class="list-count-heading">([^<]*)<\/div>/.exec(html) || [])[1] || null,
     empty: /class="empty-state"/.test(html) ? { text: (/<div class="empty-state">([^<]*)/.exec(html) || [])[1], actions: [...html.matchAll(/class="es-action"[^>]*>([^<]*)</g)].map((m) => m[1]) } : null,
     tray: tray.style.display === "none" ? [] : tray.children.filter((c) => c.classList.contains("af-chip")).map((c) => c.children[0].textContent),
@@ -149,7 +172,7 @@ async function run() {
       /URLSearchParams\(location\.search\)/, /params\.set\('(when|cats|free|features|q|loc|radius|neighborhood|picked|rangeStart)'/,
     ];
     gone.forEach((re) => assert.ok(!re.test(SCRIPT), `index.html must not define its own ${re}`));
-    // Category labels come from Discovery; only colours live on the page.
+    // Category labels come from Discovery; the page repeats none of them.
     D.categories.filter((c) => /[ &]/.test(c.label)).forEach((c) => assert.ok(!SCRIPT.includes(`"${c.label}"`), `the label "${c.label}" is not repeated in index.html's script`));
     // One state, and it only ever comes from Discovery.
     const assignments = [...SCRIPT.matchAll(/^\s*(?:let )?state = ([^;]+);/gm)].map((m) => m[1].trim());
@@ -167,33 +190,42 @@ async function run() {
     const v = view(page);
     assert.strictEqual(page.get("EVENTS.length"), 16, "loaded: everything approved that starts within the 8-day back-buffer or later, plus everything still running");
     assert.deepStrictEqual(v.state, plain(D.defaults()), "no filters");
-    assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(0))], "the resting view is today only");
+    assert.deepStrictEqual(v.days.map((d) => d.day), [0, 1, 2, 4, 6, 20].map((n) => heading(day(n))), "the resting view is everything current + upcoming, in date order, starting today");
     // Listed in start-time order; unknown times last. Morning Market
     // (ended 2 PM) and Finished Fair (last day, ended 1 PM) are over; the
     // blocked name never shows; Running Exhibit is in progress and DOES —
     // and so does Season Exhibition, which opened 200 days ago.
     assert.deepStrictEqual(v.days[0].titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
-    assert.strictEqual(v.scopeNote, true, '"Showing today — see everything" is shown');
+    assert.deepStrictEqual(v.days.slice(1).map((d) => d.titles), [["Out There", "Sunday Show"], ["No Category"], ["Wednesday Social"], ["Fall Festival"], ["Big Game"]]);
+    assert.strictEqual(v.titles.length, 12, "twelve events, twelve rows: the two exhibitions and the three-day festival are listed once each");
+    assert.strictEqual(v.allEvents, true, 'headed "All events"');
+    assert.ok(!/Showing today/.test(v.html), 'the old "Showing today — see everything" note is gone');
     assert.strictEqual(v.heading, null, "no count heading on the plain default view");
     assert.deepStrictEqual(v.tray, [], "the Showing: tray is hidden");
     assert.strictEqual(v.url, "/", "a view with no filters has a clean URL");
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Anytime");
     assert.strictEqual(page.el("whereTriggerSub").textContent, "Everywhere");
     assert.strictEqual(page.el("filterTriggerSub").textContent, "All types");
-    assert.deepStrictEqual(litCats(page), ALL_CATS, "every category chip is lit");
-    assert.ok(chip(page, "#allTypesChip").classList.contains("active"), '"All types" is lit');
+    assert.deepStrictEqual(litCats(page), [], "no category is selected, so no category chip is lit");
+    assert.ok(chip(page, "#allTypesChip").classList.contains("active"), '"All types" is the current choice');
+    assert.ok(page.el("filterBar").querySelectorAll(".chip").every((c) => !/class="dot"|style=/.test(c.innerHTML)), "no chip carries a colour dot");
     assert.deepStrictEqual(page.el("filterBar").querySelectorAll(".chip").map((c) => c.textContent),
       ["All types", ...D.categories.map((c) => c.label), "Free only", "Tickets available", "Has photo", "Community submitted", "On the Radar", "Reset filters"],
       "the chip row: same chips, same order, same wording (no Clothing optional chip — STORY-023)");
     assert.strictEqual(page.el("whenDateInput").value, day(0), 'the "From" input shows today');
     assert.strictEqual(page.el("whenDateInput").min, day(0));
 
-    // Cards. Hero: what is left of this Mon–Sun week IN THE ORBIT, as
-    // distinct events: 6 today + Sunday Show (Ferndale). Out There is this
-    // Sunday too, but its city cannot be placed, so it is not counted as
-    // inside the Orbit.
-    assert.strictEqual(page.el("heroStatNumber").textContent, "7");
-    assert.strictEqual(page.el("heroStatCaption").textContent, "Things left this week in the Detroit Orbit.");
+    // Hero (DEC-026). Primary: the database's own current + upcoming total
+    // (the same request the map and Orbit cards use — 15, see below).
+    // Supporting: TODAY (6 still on or to come), NEXT 7 DAYS (today plus
+    // six days: those 6 + Sunday Show, Out There, No Category, Wednesday
+    // Social and Fall Festival, which starts on the seventh day), ACTIVE
+    // NEIGHBORHOODS (Corktown, Midtown, Downtown).
+    assert.strictEqual(page.el("heroStatNumber").textContent, "15");
+    assert.strictEqual(page.el("heroStatCaption").textContent, "Current + upcoming events");
+    assert.strictEqual(page.el("heroStatToday").textContent, "6");
+    assert.strictEqual(page.el("heroStatNext7").textContent, "11");
+    assert.strictEqual(page.el("heroStatNeighborhoods").textContent, "3");
     // Week strip: every day of the week counted as that day, past days included.
     const strip = [...page.el("viewCalendarCard").innerHTML.matchAll(/calendar\.html\?date=(\d{4}-\d{2}-\d{2})"[^>]*aria-label="[^"]*, (\d+) events?"/g)].map((m) => [m[1], +m[2]]);
     assert.deepStrictEqual(strip, [[day(-5), 1], [day(-4), 1], [day(-3), 2], [day(-2), 3], [day(-1), 4], [day(0), 8], [day(1), 4]],
@@ -237,7 +269,7 @@ async function run() {
     assert.deepStrictEqual([seasonDays[0], seasonDays.length], [day(-8), 60]);
     assert.strictEqual(D.count(loaded, D.defaults(), { now: new Date(NOW), defaultWhen: "all" }), 12, "12 of the 15 are still current at 3 PM (two ended earlier today; one is blocked)");
   }
-  console.log("PASS: B. default view — today only, in-progress shown (however long ago it began), over and blocked hidden, clean URL, every card's number from Discovery; the bounded load window");
+  console.log("PASS: B. default view — everything current + upcoming in date order, each event once, in-progress shown (however long ago it began), over and blocked hidden, clean URL, every card's number from Discovery; the bounded load window");
 
   // =====================================================================
   // C. WHEN
@@ -263,8 +295,8 @@ async function run() {
     whenBtn(page, "weekend").click();
     v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(0)), heading(day(1))], "what is left of this weekend: today and Sunday (Friday has passed)");
-    assert.deepStrictEqual(sorted(v.titles), sorted(["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere", "Running Exhibit", "Out There", "Sunday Show", "Season Exhibition"]));
-    assert.strictEqual(v.heading, "Showing 8 events this weekend", "8 distinct events — each exhibit is listed under both days but is one event");
+    assert.deepStrictEqual(v.days.map((d) => d.titles), [["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"], ["Out There", "Sunday Show"]], "each exhibit runs both days and is listed once, under the first");
+    assert.strictEqual(v.heading, "Showing 8 events this weekend", "8 events, 8 rows");
     assert.ok(!v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "already-over events are not listed in a forward-looking view");
 
     whenBtn(page, "all").click();
@@ -272,8 +304,10 @@ async function run() {
     assert.strictEqual(v.heading, "Showing 12 events upcoming — every date");
     assert.deepStrictEqual(sorted(Array.from(new Set(v.titles))), sorted(["Running Exhibit", "Season Exhibition", "Afternoon Play", "Jazz at Seven", "Late Set", "Matinee Somewhere", "Sunday Show", "No Category", "Out There", "Wednesday Social", "Fall Festival", "Big Game"]));
     assert.strictEqual(D.count(plain(page.get("EVENTS")), D.defaults(), { now: new Date(NOW), defaultWhen: "all" }), 12, "the list shows every loaded current + upcoming event: none is loaded but unlisted");
-    assert.strictEqual(v.rows.filter((r) => r.endsWith("| Fall Festival")).length, 3, "a three-day festival is listed under each of its three days");
-    assert.strictEqual(v.scopeNote, false);
+    assert.deepStrictEqual(v.rows.filter((r) => r.endsWith("| Fall Festival")), [`${heading(day(6))} | Fall Festival`], "a three-day festival is listed once, under its first day");
+    assert.ok(/Fall Festival[\s\S]*?<span class="evt-run">Through Oct 11<\/span>/.test(v.html), "…and says how long it runs");
+    assert.strictEqual(v.titles.length, 12, "12 events, 12 rows");
+    assert.strictEqual(v.allEvents, false, "an explicit All Upcoming is headed by its count, like every chosen scope");
     assert.strictEqual(v.url, "/?when=all");
 
     // The tray's ✕ returns to the default view and restores the From input.
@@ -283,15 +317,18 @@ async function run() {
     assert.strictEqual(page.el("whenDateInput").value, day(0));
     assert.strictEqual(v.url, "/");
 
-    // Hero "View all events": this week, everything else reset.
+    // Hero "Next 7 days": today plus six days, everything else reset.
     page.fire("search", "input", { value: "jazz" });
-    page.run("viewThisWeek()");
+    page.run("viewEverything('next7')");
     v = view(page);
-    assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "week" })), "resets search and sets This Week");
+    assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "next7" })), "resets search and sets Next 7 Days");
+    assert.deepStrictEqual(plain(D.window(v.state, { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "exactly today through the sixth day after it");
     assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(v.heading, "Showing 8 events this week", "the list is everything this week; the hero's 7 is the part of it inside the Orbit");
-    assert.deepStrictEqual(v.tray, ["This Week"]);
-    assert.strictEqual(v.url, "/?when=week");
+    assert.strictEqual(v.heading, "Showing 11 events in the next 7 days", "the list is the hero's NEXT 7 DAYS figure (11)");
+    assert.deepStrictEqual(v.days.map((d) => d.day), [0, 1, 2, 4, 6].map((n) => heading(day(n))), "nothing past the seventh day (Big Game, on day 20, is not listed)");
+    assert.deepStrictEqual(v.tray, ["Next 7 Days"]);
+    assert.strictEqual(page.el("whenTriggerSub").textContent, "Next 7 Days");
+    assert.strictEqual(v.url, "/?when=next7");
 
     // Header "Today" is the canonical Today (2026-10-03 correction): "today
     // in Detroit, whenever this is opened" — not a picked date. It leaves
@@ -344,7 +381,7 @@ async function run() {
     page.fire("whenDateEndInput", "change", { value: day(7) });
     v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(4), to: day(7) });
-    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`, `${heading(day(5))} | Season Exhibition`, `${heading(day(6))} | Fall Festival`, `${heading(day(6))} | Season Exhibition`, `${heading(day(7))} | Fall Festival`, `${heading(day(7))} | Season Exhibition`]);
+    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`, `${heading(day(6))} | Fall Festival`], "each event once: the exhibition under the range's first day, the festival under its own first day");
     assert.strictEqual(v.heading, "Showing 3 events Oct 7–Oct 10");
     assert.deepStrictEqual(v.tray, ["Oct 7–Oct 10"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7–Oct 10");
@@ -353,7 +390,7 @@ async function run() {
     assert.deepStrictEqual(view(page).state.when, { mode: "dates", from: day(4), to: day(4) });
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7");
   }
-  console.log("PASS: C. When — Tonight, Tomorrow, This Weekend, All Upcoming, This Week (hero), Today (header: the canonical Today, evergreen link), a picked date (stable, dated link) and a date range, each with its list, heading, tray, buttons and URL");
+  console.log("PASS: C. When — Tonight, Tomorrow, This Weekend, All Upcoming, Next 7 Days (hero), Today (header: the canonical Today, evergreen link), a picked date (stable, dated link) and a date range, each with its list, heading, tray, buttons and URL");
 
   // =====================================================================
   // D. An explicit date in the past is a real selection (2026-10-03 correction)
@@ -393,43 +430,57 @@ async function run() {
   console.log("PASS: D. an explicit past date or range shows the completed events of that period (within what the page loads); forward-looking views still exclude them");
 
   // =====================================================================
-  // E. WHAT — the chip row keeps its look and feel on the shared model
+  // E. WHAT — a chip is lit when its category is selected; a click selects
   // =====================================================================
   {
     const page = await open("/?when=all");
     chip(page, '.chip[data-cat="music"]').click();
     let v = view(page);
-    assert.deepStrictEqual(v.state.what.paths, ALL_CATS.filter((c) => c !== "music"), "turning one chip off selects the other fourteen");
-    assert.deepStrictEqual(litCats(page), ALL_CATS.filter((c) => c !== "music"));
-    assert.ok(!chip(page, "#allTypesChip").classList.contains("active"), '"All types" is no longer lit');
-    assert.strictEqual(chip(page, '.chip[data-cat="music"]').getAttribute("aria-pressed"), "false");
-    assert.ok(!v.titles.includes("Jazz at Seven") && !v.titles.includes("Sunday Show") && v.titles.includes("Late Set"));
+    assert.deepStrictEqual(v.state.what.paths, ["music"], "clicking a chip selects that category");
+    assert.deepStrictEqual(litCats(page), ["music"], "and it alone is lit");
+    assert.ok(!chip(page, "#allTypesChip").classList.contains("active"), '"All types" is no longer the current choice');
+    assert.strictEqual(chip(page, '.chip[data-cat="music"]').getAttribute("aria-pressed"), "true");
+    assert.strictEqual(chip(page, '.chip[data-cat="film"]').getAttribute("aria-pressed"), "false");
+    assert.deepStrictEqual(sorted(v.titles), ["Jazz at Seven", "Out There", "Sunday Show"], "only music events");
     assert.ok(!v.titles.includes("No Category"), "an uncategorised event is not in any selected category");
-    assert.deepStrictEqual(v.tray, ["All Upcoming", "14 of 15 categories"], "the tray collapses the selection into one chip, as before");
-    assert.strictEqual(page.el("filterTriggerSub").textContent, "14/15 cats");
-    assert.strictEqual(v.url, "/?when=all&cats=" + encodeURIComponent(ALL_CATS.filter((c) => c !== "music").join(",")));
+    assert.deepStrictEqual(v.tray, ["All Upcoming", "1 of 15 categories"], "the tray collapses the selection into one chip, as before");
+    assert.strictEqual(page.el("filterTriggerSub").textContent, "1/15 cats");
+    assert.strictEqual(v.url, "/?when=all&cats=music");
 
+    // Multi-select adds.
+    chip(page, '.chip[data-cat="film"]').click();
+    v = view(page);
+    assert.deepStrictEqual(v.state.what.paths, ["music", "film"]);
+    assert.deepStrictEqual(litCats(page), ["music", "film"]);
+    assert.deepStrictEqual(sorted(v.titles), ["Jazz at Seven", "Matinee Somewhere", "Out There", "Sunday Show"], "music or film");
+    assert.deepStrictEqual(v.tray, ["All Upcoming", "2 of 15 categories"]);
+    assert.strictEqual(v.url, "/?when=all&cats=" + encodeURIComponent("music,film"));
+    assert.deepStrictEqual(plain(D.fromQuery(v.url.slice(1))), v.state, "the link means exactly this selection");
+
+    // Clicking a selected chip deselects it; deselecting the last one is all events.
     chip(page, '.chip[data-cat="music"]').click();
     v = view(page);
-    assert.deepStrictEqual(v.state.what.paths, [], "all fifteen back on is no filter at all");
-    assert.ok(chip(page, "#allTypesChip").classList.contains("active"));
-    assert.ok(v.titles.includes("No Category"), "with no category filter, an uncategorised event is shown");
-
-    // Down to one, then the last one off.
-    ALL_CATS.filter((c) => c !== "film").forEach((c) => chip(page, `.chip[data-cat="${c}"]`).click());
-    v = view(page);
     assert.deepStrictEqual(v.state.what.paths, ["film"]);
-    assert.deepStrictEqual(Array.from(new Set(v.titles)), ["Matinee Somewhere"]);
+    assert.deepStrictEqual(v.titles, ["Matinee Somewhere"]);
     assert.deepStrictEqual(v.tray, ["All Upcoming", "1 of 15 categories"]);
     chip(page, '.chip[data-cat="film"]').click();
     v = view(page);
-    assert.deepStrictEqual(v.state.what.paths, [], "turning the last chip off returns to ALL events (approved: there is no show-nothing state)");
-    assert.deepStrictEqual(litCats(page), ALL_CATS);
+    assert.deepStrictEqual(v.state.what.paths, [], "deselecting the last chip returns to ALL events (approved: there is no show-nothing state)");
+    assert.deepStrictEqual(litCats(page), [], "and the panel is neutral again");
+    assert.ok(chip(page, "#allTypesChip").classList.contains("active"));
+    assert.ok(v.titles.includes("No Category"), "with no category filter, an uncategorised event is shown");
     assert.strictEqual(v.heading, "Showing 12 events upcoming — every date");
+
+    // Selecting all fifteen is all events too — the same thing as none.
+    ALL_CATS.forEach((c) => chip(page, `.chip[data-cat="${c}"]`).click());
+    v = view(page);
+    assert.deepStrictEqual(v.state.what.paths, [], "all fifteen selected is no filter at all");
+    assert.deepStrictEqual(litCats(page), []);
+    assert.strictEqual(v.url, "/?when=all");
 
     // Tray ✕ on the category chip, and "All types".
     chip(page, '.chip[data-cat="sports"]').click();
-    trayRemove(page, "14 of 15 categories");
+    trayRemove(page, "1 of 15 categories");
     assert.deepStrictEqual(view(page).state.what.paths, []);
     chip(page, '.chip[data-cat="sports"]').click();
     chip(page, "#allTypesChip").click();
@@ -465,7 +516,7 @@ async function run() {
     assert.deepStrictEqual(v.state, plain(D.defaults()));
     assert.strictEqual(v.url, "/");
   }
-  console.log("PASS: E. What — category chips (one off, all back on, last one off = all), All types, the tray's category chip, Free only, each feature, Reset filters");
+  console.log("PASS: E. What — category chips (click selects, multi-select, click again deselects, none = all, all fifteen = all), All types, the tray's category chip, Free only, each feature, Reset filters");
 
   // =====================================================================
   // F. SEARCH
@@ -490,13 +541,14 @@ async function run() {
     assert.deepStrictEqual(finds("augustus"), [], "a blocked event is not findable");
     const empty = view(page).empty;
     assert.strictEqual(empty.text, 'Nothing on the signal here in matching "augustus".');
-    assert.deepStrictEqual(empty.actions, ["See all upcoming events", "Clear search"]);
+    assert.deepStrictEqual(empty.actions, ["Clear search"], "the one thing narrowing the view (the default is already every upcoming date)");
     page.run("clearSearch()");
     v = view(page);
     assert.strictEqual(v.state.q, ""); assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(v.scopeNote, true, "back to today");
+    assert.strictEqual(v.allEvents, true, "back to all events");
+    assert.strictEqual(v.titles.length, 12);
   }
-  console.log("PASS: F. Search — widens to every upcoming date; matches title, venue, city, category, neighborhood, source and note; never a blocked event");
+  console.log("PASS: F. Search — looks across every upcoming date; matches title, venue, city, category, neighborhood, source and note; never a blocked event");
 
   // =====================================================================
   // G. WHERE
@@ -578,7 +630,7 @@ async function run() {
     assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { where: { neighborhood: "Corktown" } })), "picking a neighborhood resets every other filter, as before");
     assert.deepStrictEqual(sorted(v.titles), ["Jazz at Seven", "Wednesday Social"]);
     assert.strictEqual(v.heading, "Showing 2 events in Corktown", "the list count equals the card's count (2)");
-    assert.strictEqual(v.scopeNote, false);
+    assert.strictEqual(v.allEvents, false);
     assert.deepStrictEqual(v.tray, ["Corktown"]);
     assert.strictEqual(v.url, "/?neighborhood=Corktown");
     assert.ok(/neigh-card[^"]* active" data-neighborhood="Corktown"/.test(page.el("neighborhoodsRail").innerHTML), "the card shows as active");
@@ -643,9 +695,9 @@ async function run() {
       assert.strictEqual(v.url, after, `${link}: rewritten as ${after}`);
       assert.deepStrictEqual(plain(D.fromQuery(after)), v.state, `${after} means the same thing`);
       // And the list is exactly what Discovery says for that state.
-      const ctx = { now: new Date(NOW), defaultWhen: v.state.q || v.state.where.neighborhood ? "all" : "today", coverage: { c01: true } };
+      const ctx = { now: new Date(NOW), defaultWhen: "all", coverage: { c01: true } }; // the homepage's resting view is everything upcoming
       const expected = plain(page.get("EVENTS")).filter((e) => D.matches(e, v.state, ctx)).map((e) => e.title);
-      assert.deepStrictEqual(sorted(Array.from(new Set(v.titles))), sorted(expected), `${link}: lists exactly the events Discovery matches`);
+      assert.deepStrictEqual(sorted(v.titles), sorted(expected), `${link}: lists exactly the events Discovery matches, once each`);
     }
     // Controls restored from a link.
     let page = await open(`/?when=range&rangeStart=${day(4)}&rangeEnd=${day(7)}&q=fest&loc=ann%20arbor&radius=25&cats=fest,music&free=1`);
@@ -659,8 +711,8 @@ async function run() {
     // The approved differences in how a link is read.
     page = await open("/?cats=");
     assert.deepStrictEqual(view(page).state.what.paths, [], "cats= with nothing in it is ALL events (was: none)");
-    assert.deepStrictEqual(litCats(page), ALL_CATS);
-    assert.strictEqual(view(page).days.length, 1);
+    assert.deepStrictEqual(litCats(page), [], "…which is the neutral panel");
+    assert.strictEqual(view(page).titles.length, 12);
     page = await open(`/?when=date&picked=${day(-1)}`);
     assert.deepStrictEqual(sorted(view(page).titles), ["Finished Fair", "Running Exhibit", "Season Exhibition", "Yesterday Opening"], "an old link to a date now in the past opens that date (was: ignored, showed today)");
     page = await open("/?when=now");
@@ -708,7 +760,9 @@ async function run() {
       assert.strictEqual(page.run("getTodayISO()"), day(0), "the page's today is still Saturday in Detroit");
       assert.strictEqual(page.el("whenDateInput").value, day(0));
       const v = view(page);
-      assert.deepStrictEqual(v.days.map((d) => d.titles.includes("Late Set")), [true], "and it lists Saturday's events");
+      assert.strictEqual(v.days[0].day, heading(day(0)), "the stream starts on Saturday");
+      assert.ok(v.days[0].titles.includes("Late Set"), "and it lists Saturday's events under it");
+      assert.ok(/<span class="ldh-rel is-today">Today<\/span><span class="ldh-date">Sat, Oct 3<\/span>/.test(v.html), "Saturday is the day marked Today");
       assert.ok(v.titles.includes("Jazz at Seven"), "an event with no known end time stays listed until midnight Detroit time");
     } finally { process.env.TZ = "America/Detroit"; }
   }
