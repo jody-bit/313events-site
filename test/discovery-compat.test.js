@@ -14,11 +14,11 @@
 //      homepage's own READER is run against Discovery's on the same links,
 //      with every approved difference named; plus the Calendar/Map-only
 //      legacy forms.
-//   3. NEW LINKS OUT — URLs written by Discovery.href() fed to Calendar's
-//      and Map's real, unmodified readStateFromURL(): what carries over
-//      today is asserted exactly, and so is what does not (until those
-//      pages adopt the shared file). The homepage reads the shared codec
-//      itself now — see test/homepage-discovery-adoption.test.js.
+//   3. (retired 2026-10-05) NEW LINKS OUT into Calendar's and Map's own
+//      readers. Calendar and Map adopted the shared file, so there is no
+//      private reader left to run; their reading and the Home -> Calendar ->
+//      Map round trip are proved by the pages themselves in
+//      test/calendar-map-shared-discovery.test.js.
 //   4. DRIFT GUARDS — every remaining copy of the category list, the
 //      places table, the boundary, the feature list and the blocked names
 //      is compared with the canonical one, so the copies cannot diverge
@@ -436,113 +436,23 @@ function run() {
   console.log("PASS: legacy link forms — when=now / thisweek / date+picked / range+rangeStart+rangeEnd, old all-chips-on cats lists, radius=all, renamed places");
 
   // =====================================================================
-  // 3. NEW LINKS OUT — into Calendar's and Map's real, unmodified
-  //    readStateFromURL(). (The homepage reads the shared codec itself now;
-  //    its reading is tested in homepage-discovery-adoption.test.js.)
-  // =====================================================================
-  {
-    const NOW = Date.parse("2026-10-03T19:00:00Z");
-    const CTX = { now: new Date(NOW) };
-    const PAGES = {
-      calendar: { html: CALENDAR, understands: new Set(["today", "tonight", "weekend"]), extra: `var mode = "month", selectedDate = null, current = new Date(2026, 9, 1), MIN_MONTH = new Date(2025, 9, 1), MAX_MONTH = new Date(2027, 9, 1); function initLeaflet(){}` },
-      map: { html: MAP, understands: new Set(["today", "tonight", "weekend"]), extra: `` },
-    };
-    function readOnPage(surface, url) {
-      const page = PAGES[surface];
-      const sb = { URLSearchParams, document: dummyDocument(), console };
-      vm.createContext(sb);
-      vm.runInContext(FAKE_DATE(NOW), sb);
-      vm.runInContext([
-        block(page.html, "CATS", "\\};"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
-        oneLineFn(page.html, "toISO"), fn(page.html, "getTodayISO"), fn(page.html, "getWeekendDates"),
-        `var activeCats = new Set(Object.keys(CATS)), freeOnly = false, activeFeatures = new Set(), query = "", whenMode = null,
-             originLocation = null, radiusMiles = null, cachedWeekendDates = [];
-         function updateLocationControlUI(){}
-         var location = { search: ${JSON.stringify(url.slice(url.indexOf("?") === -1 ? url.length : url.indexOf("?")))}, pathname: "/" };`,
-        page.extra,
-        fn(page.html, "readStateFromURL"),
-        "readStateFromURL();",
-      ].join("\n"), sb);
-      // plain(): values created inside the sandbox belong to another realm.
-      return plain(vm.runInContext(`({ cats: Array.from(activeCats), free: freeOnly, features: Array.from(activeFeatures), q: query, when: whenMode,
-        loc: originLocation ? originLocation.name : null, radius: radiusMiles,
-        knownPlaces: LOCATIONS.map(function(l){ return l.name; }), knownFeatures: FEATURE_CHIPS.map(function(f){ return f.key; }),
-        selectedDate: typeof selectedDate === "undefined" ? undefined : selectedDate,
-        neighborhood: typeof neighborhoodFilter === "undefined" ? undefined : neighborhoodFilter,
-        picked: typeof pickedDate === "undefined" ? undefined : pickedDate })`, sb));
-    }
-
-    const allCats = D.categories.map((c) => c.key);
-    const mk = (...patches) => patches.reduce((s, p) => D.change(s, p), D.defaults());
-    const states = [
-      mk(), mk({ what: { only: "music" } }), mk({ what: { only: "music" } }, { what: { add: "film" } }), mk({ free: true }),
-      mk({ feature: { add: "tickets" } }, { feature: { add: "radar" } }, { feature: { add: "clothing_optional" } }),
-      mk({ q: "jazz trio" }), mk({ q: 'a & b "c" 100%' }),
-      mk({ where: { place: "Ann Arbor", radius: 25 } }), mk({ where: { place: "Ann Arbor" } }), mk({ where: { place: "Lansing", radius: 50 } }),
-      mk({ where: { place: "Corktown", radius: 5 } }), mk({ where: { radius: "orbit" } }), mk({ where: { neighborhood: "Corktown" } }),
-      mk({ when: "today" }), mk({ when: "tonight" }), mk({ when: "tomorrow" }), mk({ when: "weekend" }), mk({ when: "next7" }), mk({ when: "week" }), mk({ when: "all" }),
-      mk({ when: { from: "2026-11-14" } }), mk({ when: { from: "2026-11-14", to: "2026-11-20" } }),
-      mk({ when: "weekend" }, { what: { only: "music" } }, { where: { place: "Flint", radius: 10 } }, { free: true }, { q: "show" }),
-    ];
-    const carried = { calendar: new Set(), map: new Set() }, dropped = { calendar: new Set(), map: new Set() };
-    Object.keys(PAGES).forEach((surface) => {
-      states.forEach((s) => {
-        const url = D.href(surface, s, CTX);
-        let got;
-        assert.doesNotThrow(() => { got = readOnPage(surface, url); }, `${surface} must read ${url} without error`);
-        // WHAT, free, search: always carried, on every page.
-        assert.deepStrictEqual(got.cats.slice().sort(), (s.what.paths.length ? s.what.paths : allCats).slice().sort(), `${surface}: categories ${url}`);
-        assert.strictEqual(got.free, s.what.free, `${surface}: free ${url}`);
-        assert.strictEqual(got.q, s.q, `${surface}: search text ${url}`);
-        // Features: the ones that page knows.
-        assert.deepStrictEqual(got.features, s.what.features.filter((f) => got.knownFeatures.includes(f)), `${surface}: features ${url}`);
-        s.what.features.forEach((f) => (got.knownFeatures.includes(f) ? carried : dropped)[surface].add("feature:" + f));
-        // Place + radius: when that page's own table has the place.
-        if (s.where.place && got.knownPlaces.includes(s.where.place)) {
-          assert.strictEqual(got.loc, s.where.place, `${surface}: place ${url}`);
-          assert.strictEqual(got.radius, s.where.radius === "orbit" ? "all" : s.where.radius, `${surface}: radius ${url}`);
-          carried[surface].add("place+radius");
-        } else {
-          assert.strictEqual(got.loc, null);
-          if (s.where.place) dropped[surface].add("place:" + s.where.place);
-          if (!s.where.place && s.where.radius) dropped[surface].add("orbit with no place");
-        }
-        // WHEN: only the modes that page already knows.
-        const mode = s.when.mode;
-        if (mode && PAGES[surface].understands.has(mode)) { assert.strictEqual(got.when, mode, `${surface}: when ${url}`); carried[surface].add("when:" + mode); }
-        else { assert.strictEqual(got.when, null, `${surface}: an unknown when is ignored, not misread ${url}`); if (mode) dropped[surface].add("when:" + mode); }
-        // Calendar opens the day for any single-day state.
-        if (surface === "calendar") {
-          const w = D.window(s, CTX);
-          const single = ["today", "tonight", "tomorrow"].includes(mode) || (mode === "dates" && s.when.from === s.when.to);
-          if (single) { assert.strictEqual(got.selectedDate, w.from, `calendar opens ${w.from} for ${url}`); carried.calendar.add("opens the day:" + mode); }
-          else if (mode !== "weekend") assert.strictEqual(got.selectedDate, null, `calendar opens no particular day for ${url}`);
-        }
-        // Neighborhood: neither page has it yet.
-        if (s.where.neighborhood) dropped[surface].add("neighborhood");
-      });
-    });
-    // What the approved plan said would and would not travel before Calendar and Map adopt the shared file.
-    for (const surface of ["calendar", "map"]) {
-      for (const must of ["place+radius", "when:tonight", "when:weekend", "when:today", "feature:tickets"]) assert.ok(carried[surface].has(must), `${surface} should carry ${must}`);
-      for (const gap of ["when:tomorrow", "when:next7", "when:week", "when:all", "when:dates", "neighborhood", "feature:radar", "feature:clothing_optional", "place:Lansing", "orbit with no place"]) assert.ok(dropped[surface].has(gap), `${surface} is expected not to carry ${gap} yet`);
-    }
-    for (const must of ["opens the day:today", "opens the day:tonight", "opens the day:tomorrow", "opens the day:dates"]) assert.ok(carried.calendar.has(must), `calendar ${must}`);
-    console.log(`PASS: ${states.length} states sent through Discovery.href() into Calendar's and Map's real readStateFromURL() — categories, free, search, known features, place + radius, tonight / weekend / today carry to Calendar and Map now; Calendar opens the right day for single-day states`);
-    console.log(`      not carried until Calendar and Map adopt the shared file: ${Array.from(dropped.calendar).sort().join(", ")}`);
-  }
-
-  // =====================================================================
   // 4. DRIFT GUARDS
   // =====================================================================
   {
     const canonical = D.categories.map((c) => [c.key, c.label]);
     const evalIn = (src, expr) => { const sb = {}; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
-    // Five pages still keep their own CATS object, submit.html a list. (The
-    // homepage no longer has a copy: it builds CATS from Discovery.categories.)
-    ["calendar.html", "map.html", "event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
+    // Three pages still keep their own CATS object, submit.html a list. (The
+    // homepage, Calendar and Map no longer have a copy: each builds CATS from
+    // Discovery.categories and keeps only a COLOUR per category.)
+    ["event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
       const cats = evalIn(block(read(f), "CATS", "\\};"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
       assert.deepStrictEqual(plain(cats), canonical, `${f}: CATS keys, labels and order match discovery.js`);
+    });
+    ["calendar.html", "map.html"].forEach((f) => {
+      const src = read(f);
+      assert.ok(/Discovery\.categories\.forEach\(c => \{\s*CATS\[c\.key\] = /.test(src), `${f}: CATS is built from Discovery.categories`);
+      const colours = evalIn(block(src, "CAT_COLORS", "\\};"), "Object.keys(CAT_COLORS)");
+      assert.deepStrictEqual(plain(colours), canonical.map(([k]) => k), `${f}: a colour for every category, in the canonical order, and for nothing else`);
     });
     assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\];"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
     // The homepage keeps only a COLOUR per category (presentation): exactly one for each canonical key, no extras.
@@ -596,12 +506,14 @@ function run() {
     assert.deepStrictEqual(D.features.filter((f) => f.kind === "derived").map((f) => ({ key: f.key, label: f.label })), chips, "derived features match what the homepage's FEATURE_CHIPS had");
     const blocked = plain(vm.runInContext("BLOCKED_NAMES", sb));
     blocked.forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${name} is blocked`));
-    // Calendar and Map still carry their own copies of these.
+    // Calendar and Map no longer carry their own copies of any of these.
     ["calendar.html", "map.html"].forEach((f) => {
-      assert.deepStrictEqual(plain(evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES")), blocked, `${f} blocked names match`);
-      evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES").forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", note: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${f}: ${name} is blocked by discovery.js too`));
+      const src = read(f);
+      ["BLOCKED_NAMES", "isBlockedEvent", "LOCATIONS", "haversineMiles", "parseHour", "getWeekendDates", "matchesFilters"].forEach((name) => {
+        assert.ok(!new RegExp("(const|let|var|function)\\s+" + name + "\\b").test(src), `${f}: no local ${name} (it is Discovery's)`);
+      });
     });
-    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and Calendar's and Map's remaining copies");
+    console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server and what the homepage had; Calendar and Map keep no copy");
   }
 
   console.log("\nAll discovery compatibility tests passed.");

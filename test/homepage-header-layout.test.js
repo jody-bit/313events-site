@@ -36,7 +36,10 @@ const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const html = fs.readFileSync(`${REPO_DIR}/index.html`, "utf8");
-const css = html.match(/<style>([\s\S]*?)<\/style>/)[1].replace(/\/\*[\s\S]*?\*\//g, ""); // comments stripped
+// The shared foundation (tokens, header, nav, Submit) lives in /site.css and is linked
+// just before the page's own <style>; together they are the cascade the page renders with.
+assert.ok(/<link rel="stylesheet" href="\/site\.css">\s*<style>/.test(html), "index.html links /site.css immediately before its own <style>");
+const css = (fs.readFileSync(`${REPO_DIR}/site.css`, "utf8") + "\n" + html.match(/<style>([\s\S]*?)<\/style>/)[1]).replace(/\/\*[\s\S]*?\*\//g, ""); // comments stripped
 const squash = (s) => s.replace(/\s+/g, "");
 
 // A top-level rule's declarations, e.g. rule("header.site").
