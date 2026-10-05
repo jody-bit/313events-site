@@ -556,6 +556,89 @@ async function runOrchestratorTests({ linkPressCoverageQueue }) {
   }
   console.log("PASS: no invented time -- an automated event row never carries a time_display or is_all_day, whatever the article text says");
 
+  // --- 10b. [SUNDAY HARDENING 2026-10-05] what createEvent writes is a
+  //     sourced, idempotent CANDIDATE: pending_review, external_id from the
+  //     article, provenance in internal_note only, on_conflict=external_id
+  //     with ignore-duplicates; a conflict resolves to the existing row. ---
+  {
+    const { createEvent } = require(`${REPO_DIR}/scripts/press-coverage-linking.js`);
+    const articles = [
+      { id: "art-1", url: "https://hourdetroit.example/heroes", source: "Hour Detroit", published_at: "2026-09-18T21:56:49+00:00" },
+      { id: "art-2", url: "https://metrotimes.example/heroes", source: "Metro Times", published_at: "2026-09-19T10:00:00+00:00" },
+    ];
+    const identity = { title: "Heroes of the Revolution", venueName: "Color Ink Studio", city: "Hazel Park", category: "visual", startDate: "2026-10-01", endDate: null, description: null };
+    const calls = [];
+    global.fetch = async (url, opts = {}) => {
+      calls.push({ url, method: opts.method || "GET", headers: opts.headers || {}, body: opts.body ? JSON.parse(opts.body) : null });
+      if (opts.method === "POST") return { ok: true, status: 201, json: async () => [{ id: "evt-new", ...JSON.parse(opts.body) }] };
+      return { ok: true, status: 200, json: async () => [] };
+    };
+    const created = await createEvent("https://example.supabase.co", "test-key", {}, identity, new Map(), articles);
+    assert.strictEqual(created.id, "evt-new");
+    const post = calls[0];
+    assert.ok(post.url.endsWith("/rest/v1/events?on_conflict=external_id"), "keyed by external_id so a rerun can never create a second row");
+    assert.strictEqual(post.headers.Prefer, "resolution=ignore-duplicates,return=representation", "a conflict never overwrites a row an admin may already have decided on");
+    assert.strictEqual(post.body.status, "pending_review", "an article is evidence an event exists, not a listing: it enters the review queue, never goes live by itself");
+    assert.strictEqual(post.body.external_id, "editorial-art-1", "the group's earliest article is the identity");
+    assert.strictEqual(post.body.source, "Editorial Review (Automated)");
+    assert.ok(!("note" in post.body), "the visitor-facing note is never written");
+    assert.ok(post.body.internal_note.includes("EDITORIAL_CANDIDATE | v1 | article_url=https://hourdetroit.example/heroes | outlet=Hour Detroit | published_at=2026-09-18"));
+    assert.ok(post.body.internal_note.includes("article_url=https://metrotimes.example/heroes | outlet=Metro Times"), "every article in the group is on the provenance trail");
+
+    // Conflict: PostgREST returns an empty representation; the existing row is looked up and returned.
+    calls.length = 0;
+    global.fetch = async (url, opts = {}) => {
+      calls.push({ url, method: opts.method || "GET" });
+      if (opts.method === "POST") return { ok: true, status: 201, json: async () => [] };
+      return { ok: true, status: 200, json: async () => [{ id: "evt-existing", status: "approved" }] };
+    };
+    const again = await createEvent("https://example.supabase.co", "test-key", {}, identity, new Map(), articles);
+    assert.strictEqual(again.id, "evt-existing", "the articles link to the row that already exists instead of leaving a second one behind");
+    assert.ok(calls[1].url.includes("/rest/v1/events?external_id=eq.editorial-art-1"));
+
+    // No articles at all (older callers): still a sourced candidate, no external_id, no provenance lines.
+    global.fetch = async (url, opts = {}) => ({ ok: true, status: 201, json: async () => [{ id: "evt-bare", ...JSON.parse(opts.body) }] });
+    const bare = await createEvent("https://example.supabase.co", "test-key", {}, identity, new Map());
+    assert.strictEqual(bare.status, "pending_review");
+    assert.strictEqual(bare.external_id, null);
+    assert.strictEqual(bare.internal_note, null);
+  }
+  console.log("PASS: [SUNDAY HARDENING] an auto-created editorial event is a sourced, idempotent pending_review candidate -- never a live listing, never a duplicate, provenance in internal_note only");
+
+  // --- 10c. [SUNDAY HARDENING 2026-10-05] the conservative duplicate check
+  //     runs before any create: a group whose event already exists links to
+  //     it and creates nothing. ---
+  {
+    const links = [];
+    let createCalls = 0;
+    const counts = await linkPressCoverageQueue({
+      SUPABASE_URL: "https://example.supabase.co",
+      SUPABASE_SERVICE_ROLE_KEY: "test-key",
+      logger: silentLogger,
+      nowIso: "2026-09-18",
+      fetchQueue: async () => [{ id: "article-heroes", title: HEROES_HEADLINE, excerpt: "", url: "https://hourdetroit.example/heroes", published_at: "2026-09-18T21:56:49+00:00" }],
+      fetchCandidateEvents: async () => [], // the substring matcher sees nothing...
+      fetchArticleTextFn: async () => HEROES_BODY,
+      buildVenueIdMap: async () => new Map(),
+      // ...but the conservative identity check (title identity, +/-2 days) finds the event
+      findDuplicateFn: async (_u, _k, row) => {
+        assert.strictEqual(row.title, "Heroes of the Revolution");
+        assert.strictEqual(row.start_date, "2026-09-19");
+        return { id: "evt-already-there", title: "Heroes of the Revolution: Elbinger", start_date: "2026-09-19", status: "approved" };
+      },
+      applyLinkFn: async (_u, _h, articleId, eventId, matchType) => { links.push({ articleId, eventId, matchType }); return true; },
+      createEventFn: async () => { createCalls++; return { id: "should-not-happen" }; },
+      repairGenericMetadataFn: async () => ({ written: 0 }),
+    });
+    assert.strictEqual(createCalls, 0, "nothing is created when the event already exists");
+    assert.strictEqual(counts.autoCreated, 0);
+    assert.strictEqual(counts.linkedToExisting, 1);
+    assert.deepStrictEqual(counts.linkedToExistingDetail, [{ eventId: "evt-already-there", eventTitle: "Heroes of the Revolution: Elbinger", articleIds: ["article-heroes"] }]);
+    assert.deepStrictEqual(links, [{ articleId: "article-heroes", eventId: "evt-already-there", matchType: "manual" }]);
+    assert.strictEqual(counts.stillHuman, 0);
+  }
+  console.log("PASS: [SUNDAY HARDENING] an article about an event that already exists links to it -- the duplicate check runs before any create");
+
   // --- 11. Two articles resolve to ONE canonical event via POOLING
   //     (rewritten 2026-09-23, "SMALL CORRECTION BEFORE DEPLOYMENT" item 3)
   //     -- the real Metro Times Recovery & Resilience Festival scenario:

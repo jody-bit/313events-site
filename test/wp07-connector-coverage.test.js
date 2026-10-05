@@ -87,7 +87,7 @@ const AUDITED_DIRECT_POSTS = [
   ["api/submit-feed.js", "feed_sources", "row", "single object"],
   ["api/submit.js", "events", "row", "single object (one public submission)"],
   ["scripts/press-coverage-linking.js", "editorial_article_events", "{ article_id: articleId, event_id: eventId }", "single object"],
-  ["scripts/press-coverage-linking.js", "events", "row", "single object"],
+  ["scripts/press-coverage-linking.js", "events", "row", "single object (one sourced editorial candidate, on_conflict=external_id, ignore-duplicates)"],
   ["scripts/ra-candidate-promotion.js", "events", "[row]", "one row"],
   ["scripts/ra-sync.js", "events", "payload", "batch; deriveEventRow() sets all 18 keys on every row, blanks as null (description, end_date, time_display, price_from, image_url, address, city, note)"],
 ];
@@ -170,9 +170,11 @@ function run() {
     assert.deepStrictEqual(found, expected,
       "the set of direct database POSTs changed. A bulk POST whose rows differ in key set is rejected in full by PostgREST — " +
       "check whether the new/changed site can send such a batch (if it writes event rows, use upsertEventRows()), then update AUDITED_DIRECT_POSTS.");
-    // The two RA scripts are the only direct events upserts left, and are listed above with why they are safe.
+    // The two RA scripts and the editorial candidate writer (2026-10-05: one
+    // row keyed by external_id so a rerun never duplicates) are the only
+    // direct events upserts left, and are listed above with why they are safe.
     const directEventUpserts = files.filter((f) => /rest\/v1\/events\?on_conflict/.test(read(f)));
-    assert.deepStrictEqual(directEventUpserts, ["scripts/ra-candidate-promotion.js", "scripts/ra-sync.js"]);
+    assert.deepStrictEqual(directEventUpserts, ["scripts/press-coverage-linking.js", "scripts/ra-candidate-promotion.js", "scripts/ra-sync.js"]);
   }
   console.log(`PASS: the ${AUDITED_DIRECT_POSTS.length} remaining direct database POSTs are exactly the audited ones (single objects, one-row arrays, or batches built with a fixed key set)`);
 

@@ -99,6 +99,7 @@ const {
   discoverEventVenue,
   isExternalDiscoveryConfigured,
 } = require(path.join(__dirname, "..", "api", "_lib", "external-discovery"));
+const { findConservativeDuplicate } = require(path.join(__dirname, "ra-sync"));
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
 
@@ -845,7 +846,36 @@ async function dismissArticle(SUPABASE_URL, sbHeaders, articleId) {
 // accepted this identity WITHOUT a venue name — the city+distributed path,
 // or the city+streetAddress path added 2026-09-25 — rather than writing a
 // blank/null display name.
-async function createEvent(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, identity, venueIdMap) {
+//
+// 2026-10-05 (Sunday operations hardening, priority 1): what this creates is
+// a CANDIDATE, sourced and idempotent, not a live listing:
+//   - status "pending_review" -- the same disposition as an RA candidate or
+//     a venue submission. An article is evidence that an event exists, not
+//     a listing of it; a human approves it from Admin's queue with one
+//     click instead of typing it in from scratch.
+//   - external_id "editorial-<article id>" (the group's earliest article),
+//     so a rerun of the queue, or the same article re-ingested, can never
+//     create a second row. The POST is on_conflict=external_id with
+//     ignore-duplicates; on a conflict the existing row is looked up and
+//     returned so the articles still get linked to it.
+//   - internal_note carries the provenance (EDITORIAL_CANDIDATE lines: the
+//     article URL, outlet and date, one line per article in the group).
+//     internal_note is admin-only; the visitor-facing `note` is never
+//     written here.
+// `articles` is the group's article rows (id, url, source, published_at);
+// older callers that pass nothing still get a sourced row, minus the lines.
+function editorialCandidateExternalId(articles) {
+  const first = (articles || []).find((a) => a && a.id);
+  return first ? `editorial-${first.id}` : null;
+}
+function buildEditorialCandidateNote(articles) {
+  return (articles || [])
+    .filter((a) => a && a.url)
+    .map((a) => `EDITORIAL_CANDIDATE | v1 | article_url=${String(a.url).replace(/[|\n]/g, " ")} | outlet=${String(a.source || "").replace(/[|\n]/g, " ")} | published_at=${String(a.published_at || "").slice(0, 10)}`)
+    .join("\n") || null;
+}
+async function createEvent(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, identity, venueIdMap, articles = []) {
+  const externalId = editorialCandidateExternalId(articles);
   const row = {
     title: identity.title,
     description: identity.description || null,
@@ -858,16 +888,28 @@ async function createEvent(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, i
     start_date: identity.startDate,
     end_date: identity.endDate || null,
     source: "Editorial Review (Automated)",
-    status: "approved",
+    status: "pending_review",
+    external_id: externalId,
+    internal_note: buildEditorialCandidateNote(articles),
   };
-  const resp = await fetch(`${SUPABASE_URL}/rest/v1/events`, {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`, {
     method: "POST",
-    headers: { ...sbHeaders, Prefer: "return=representation" },
+    headers: { ...sbHeaders, Prefer: "resolution=ignore-duplicates,return=representation" },
     body: JSON.stringify(row),
   });
   if (!resp.ok) return null;
-  const [inserted] = await resp.json();
-  return inserted || null;
+  const inserted = await resp.json();
+  if (Array.isArray(inserted) && inserted[0]) return inserted[0];
+  // Conflict: the candidate already exists (an earlier run, or an admin
+  // decided it since). Link to that row rather than creating another.
+  if (!externalId) return null;
+  const lookup = await fetch(
+    `${SUPABASE_URL}/rest/v1/events?external_id=eq.${encodeURIComponent(externalId)}&select=id,status`,
+    { headers: sbHeaders }
+  );
+  if (!lookup.ok) return null;
+  const [existing] = await lookup.json();
+  return existing || null;
 }
 
 // ---------------------------------------------------------------------------
@@ -886,6 +928,11 @@ async function linkPressCoverageQueue({
   fetchArticleTextFn = fetchArticleText,
   applyLinkFn = applyLink,
   createEventFn = createEvent,
+  // 2026-10-05: before a candidate is created, the same conservative
+  // duplicate check RA candidates get (title identity, +/-2 days, venue as
+  // supporting evidence). A hit links the articles to the existing event
+  // instead of creating a second one.
+  findDuplicateFn = findConservativeDuplicate,
   dismissArticleFn = dismissArticle, // 2026-09-25, past-event auto-dismissal
   buildVenueIdMap = buildVenueNameToIdMap,
   discoverEventVenueFn = discoverEventVenue, // item 1 of the 2026-09-23 correction
@@ -903,6 +950,8 @@ async function linkPressCoverageQueue({
     totalConsidered: 0,
     autoMatched: 0,
     autoCreated: 0,
+    linkedToExisting: 0, // 2026-10-05: a group whose event already existed (conservative duplicate check)
+    linkedToExistingDetail: [], // [{ eventId, eventTitle, articleIds }]
     crossArticleDuplicatesPrevented: 0,
     stillHuman: 0,
     stillHumanDetail: [], // [{ articleId, title, url, reasons }]
@@ -1080,7 +1129,25 @@ async function linkPressCoverageQueue({
       continue;
     }
 
-    const created = await createEventFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, merged, venueIdMap);
+    const groupArticles = members.map((m) => m.article);
+    let created = null;
+    let duplicate = null;
+    try {
+      duplicate = await findDuplicateFn(
+        SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+        { title: merged.title, venue_name_raw: merged.venueName || null, start_date: merged.startDate },
+        fetch
+      );
+    } catch {
+      duplicate = null; // fail open to the create path; the external_id still makes it idempotent
+    }
+    if (duplicate && duplicate.id) {
+      created = duplicate;
+      counts.linkedToExisting++;
+      counts.linkedToExistingDetail.push({ eventId: duplicate.id, eventTitle: duplicate.title, articleIds: groupArticles.map((a) => a.id) });
+    } else {
+      created = await createEventFn(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, merged, venueIdMap, groupArticles);
+    }
     if (!created) {
       for (const { article } of members) {
         counts.stillHuman++;
@@ -1102,7 +1169,7 @@ async function linkPressCoverageQueue({
       }
       continue;
     }
-    counts.autoCreated++;
+    if (!duplicate) counts.autoCreated++;
     if (members.length > 1) counts.crossArticleDuplicatesPrevented += members.length - 1;
   }
 
