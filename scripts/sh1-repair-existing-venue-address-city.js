@@ -70,18 +70,31 @@ function classifyTier(event, canonicalMaps, learnedMap) {
   return "unresolved";
 }
 
+// 2026-10-05: paged, soonest first. The single unordered 1,000-row read
+// was 693 rows that day with 1,858 upcoming events; the inventory is
+// growing and a row past the cap would simply never be repaired. Pages of
+// 1,000 until a short page, 40 pages at most (the same ceiling as Admin's
+// Needs Follow-up read, DEBT-003).
+const REPAIR_PAGE_SIZE = 1000;
+const REPAIR_MAX_PAGES = 40;
 async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders) {
-  const url =
-    `${SUPABASE_URL}/rest/v1/events` +
-    `?start_date=gte.${todayIso()}` +
-    `&status=neq.rejected` +
-    `&or=(venue_address_raw.is.null,venue_city_raw.is.null)` +
-    `&select=id,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,start_date,status` +
-    `&limit=1000`;
-  const resp = await fetch(url, { headers: sbHeaders });
-  if (!resp.ok) throw new Error(`Failed to fetch repair candidates: HTTP ${resp.status}`);
-  const rows = await resp.json();
-  if (!Array.isArray(rows)) throw new Error("Unexpected response shape fetching repair candidates");
+  const rows = [];
+  for (let page = 0; page < REPAIR_MAX_PAGES; page++) {
+    const url =
+      `${SUPABASE_URL}/rest/v1/events` +
+      `?start_date=gte.${todayIso()}` +
+      `&status=neq.rejected` +
+      `&or=(venue_address_raw.is.null,venue_city_raw.is.null)` +
+      `&select=id,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,start_date,status` +
+      `&order=start_date.asc,id.asc` +
+      `&limit=${REPAIR_PAGE_SIZE}&offset=${page * REPAIR_PAGE_SIZE}`;
+    const resp = await fetch(url, { headers: sbHeaders });
+    if (!resp.ok) throw new Error(`Failed to fetch repair candidates: HTTP ${resp.status}`);
+    const batch = await resp.json();
+    if (!Array.isArray(batch)) throw new Error("Unexpected response shape fetching repair candidates");
+    rows.push(...batch);
+    if (batch.length < REPAIR_PAGE_SIZE) break;
+  }
   return rows;
 }
 
