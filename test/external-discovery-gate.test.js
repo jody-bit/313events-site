@@ -250,7 +250,7 @@ async function run() {
       );
       assert.strictEqual(storedVenues.length, 3);
       const web = patchesFor(log, "ev-websearch");
-      assert.ok(web.some((b) => b.venue_address_raw === "608 S Washington Ave" && b.venue_city_raw === "Detroit" && typeof b.note === "string"), "the event's address and city written from that venue row, with a provenance note");
+      assert.ok(web.some((b) => b.venue_address_raw === "608 S Washington Ave" && b.venue_city_raw === "Detroit" && typeof b.internal_note === "string" && b.note === undefined), "the event's address and city written from that venue row, with provenance in internal_note and nothing in the public note");
       assert.ok(web.some((b) => b.description_source === "authoritative" && /^THROB Saturdays is a weekly dance party/.test(b.description)), "a description from a search result stored as authoritative");
       assert.ok(counts.externalSearchesAttempted >= 2);
       assert.strictEqual(counts.externalVenueDiscoveryResolved, 1);

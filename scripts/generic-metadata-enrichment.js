@@ -156,7 +156,7 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     `&followup_dismissed=is.false` +
     `&or=(description.is.null,and(venue_name_raw.is.null,venue_id.is.null),and(ticket_url.is.null,event_url.is.null),and(venue_address_raw.is.null,venue_city_raw.is.null,venue_id.is.null))` +
     `&select=id,title,description,category,is_free,price_from,start_date,time_display,is_all_day,` +
-    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,note,` +
+    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
     `venues(name,address,city,website,facebook_url)` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
@@ -369,7 +369,8 @@ async function repairGenericMetadata({
                   const tier = classifySourceTier({ url: discovery.sourceUrl, matchedOn: "venue" });
                   const venuePatch = {
                     ...revalidated,
-                    note: appendEnrichmentProvenance(event.note, {
+                    // provenance is admin-only bookkeeping: internal_note, never the public note
+                    internal_note: appendEnrichmentProvenance(event.internal_note, {
                       field: Object.keys(revalidated).join("+"),
                       tier,
                       sourceUrl: discovery.sourceUrl,
@@ -459,7 +460,7 @@ async function repairGenericMetadata({
               {
                 description: authoritative.text,
                 description_source: "authoritative",
-                note: appendEnrichmentProvenance(event.note, {
+                internal_note: appendEnrichmentProvenance(event.internal_note, {
                   field: "description",
                   tier: descTier,
                   sourceUrl: authoritative.sourceUrl,

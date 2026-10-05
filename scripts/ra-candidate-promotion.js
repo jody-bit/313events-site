@@ -322,12 +322,16 @@ async function promoteRaCandidates({
     }
     counts.promoted++;
 
-    const note = buildRaDiscoveryNote({ raId: id, raUrl: meta.url || null, presentFields });
+    // Provenance is bookkeeping, so it lives in internal_note (admin-only,
+    // never selected by events_public). It used to go into `note`, which
+    // is visitor-facing and survived approval unchanged (2026-10-04: RA
+    // provenance lines were printing on the homepage).
+    const internal_note = buildRaDiscoveryNote({ raId: id, raUrl: meta.url || null, presentFields });
     const row = {
       ...draftRow,
       status: "pending_review", // decision 2: never 'approved' here, ever.
       source: "Resident Advisor",
-      note,
+      internal_note,
     };
 
     if (!effectiveDryRun) {

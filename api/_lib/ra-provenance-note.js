@@ -2,7 +2,7 @@
 
 // api/_lib/ra-provenance-note.js
 //
-// Shared "machine-readable-ish" provenance format written into events.note
+// Shared "machine-readable-ish" provenance format written into events.internal_note (admin-only; it must never reach the public `note` column)
 // -- 2026-10-01, RA candidate-recovery MVP (Product Owner decision 3:
 // "Use the existing internal note field for the MVP. Do not add a
 // migration or new provenance schema now... consistent machine-readable-

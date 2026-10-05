@@ -261,9 +261,10 @@ async function run() {
     assert.ok(venuePatch, "Acceptance Test B: the event is repaired with the newly persisted venue");
     assert.strictEqual(venuePatch.body.venue_address_raw, "4140 Woodward Ave");
     assert.strictEqual(venuePatch.body.venue_city_raw, "Detroit");
-    assert.ok(venuePatch.body.note.includes("RA_ENRICHMENT"), "decision 3: an independent-source confirmation must be recorded in note");
-    assert.ok(venuePatch.body.note.includes("tier=primary_authoritative"));
-    assert.ok(venuePatch.body.note.includes("source_url=https://majesticdetroit.com/garden-bowl"));
+    assert.strictEqual(venuePatch.body.note, undefined, "the visitor-facing note is never written by enrichment");
+    assert.ok(venuePatch.body.internal_note.includes("RA_ENRICHMENT"), "decision 3: an independent-source confirmation must be recorded in internal_note (never the public note)");
+    assert.ok(venuePatch.body.internal_note.includes("tier=primary_authoritative"));
+    assert.ok(venuePatch.body.internal_note.includes("source_url=https://majesticdetroit.com/garden-bowl"));
   }
   console.log("PASS: Acceptance Test B — an unknown-but-unambiguous venue progresses through verified external discovery -> persisted canonical knowledge -> repaired event, with provenance recorded in note");
 
@@ -300,9 +301,9 @@ async function run() {
     assert.ok(descPatch);
     assert.strictEqual(descPatch.body.description_source, "authoritative");
     assert.ok(descPatch.body.description.includes("monthly tarot-reading"));
-    assert.ok(descPatch.body.note.includes("RA_ENRICHMENT"), "decision 3: an independent-source confirmation must be recorded in note");
-    assert.ok(descPatch.body.note.includes("field=description"));
-    assert.ok(descPatch.body.note.includes("source_url=https://madarts.example.com/events/house-of-tarot"));
+    assert.ok(descPatch.body.internal_note.includes("RA_ENRICHMENT"), "decision 3: an independent-source confirmation must be recorded in internal_note (never the public note)");
+    assert.ok(descPatch.body.internal_note.includes("field=description"));
+    assert.ok(descPatch.body.internal_note.includes("source_url=https://madarts.example.com/events/house-of-tarot"));
   }
   console.log("PASS: Acceptance Test C — a useful authoritative event description found externally outranks a generated template, with provenance recorded in note");
 
@@ -343,8 +344,8 @@ async function run() {
     const descPatch = patches.find((p) => p.body.description);
     assert.ok(descPatch);
     assert.ok(descPatch.body.description.includes("Jive Turkeys"));
-    assert.ok(descPatch.body.note.includes("tier=discovery_only"), "real production mistier: discotech.me carries no fragment of TV Lounge's own name and must not be asserted primary_authoritative");
-    assert.ok(!descPatch.body.note.includes("tier=primary_authoritative"));
+    assert.ok(descPatch.body.internal_note.includes("tier=discovery_only"), "real production mistier: discotech.me carries no fragment of TV Lounge's own name and must not be asserted primary_authoritative");
+    assert.ok(!descPatch.body.internal_note.includes("tier=primary_authoritative"));
   }
   console.log("PASS: 2026-10-01 regression — a genuinely-correct description from an aggregator-shaped domain is recovered and written, but now tiers as discovery_only instead of the real production mistier (primary_authoritative)");
 
@@ -388,7 +389,7 @@ async function run() {
     assert.strictEqual(counts.externalVenueDiscoveryResolved, 1);
     const venuePatch = patches.find((p) => p.body.venue_id === "venue-the-high-dive");
     assert.ok(venuePatch, "venue knowledge is still resolved and persisted exactly as in the real run");
-    assert.ok(venuePatch.body.note.includes("tier=primary_authoritative"), "the venue-discovery call site's unconditional matchedOn:'venue' is untouched by this fix");
+    assert.ok(venuePatch.body.internal_note.includes("tier=primary_authoritative"), "the venue-discovery call site's unconditional matchedOn:'venue' is untouched by this fix");
 
     assert.strictEqual(counts.descriptionsGenerated, 1, "with nothing verifiable found, Level 2's safe factual template still fires -- exactly the real production outcome");
     const descPatch = patches.find((p) => p.body.description);

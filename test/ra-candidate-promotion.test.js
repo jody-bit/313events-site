@@ -117,10 +117,11 @@ async function run() {
   assert.strictEqual(row1000.start_date, "2026-11-06");
   assert.strictEqual(row1000.venue_name_raw, "Russell Industrial Center");
   assert.strictEqual(row1000.category, "nightlife");
-  assert.ok(row1000.note.includes("RA_PROVENANCE"));
-  assert.ok(row1000.note.includes("ra_id=ra-1000"));
-  assert.ok(row1000.note.includes("ra_url=https://ra.co/events/1000"));
-  assert.ok(row1000.note.includes("venueName"), "note must record which listing fields RA actually supplied");
+  assert.strictEqual(row1000.note, undefined, "provenance never touches the visitor-facing note (2026-10-04 homepage leak)");
+  assert.ok(row1000.internal_note.includes("RA_PROVENANCE"));
+  assert.ok(row1000.internal_note.includes("ra_id=ra-1000"));
+  assert.ok(row1000.internal_note.includes("ra_url=https://ra.co/events/1000"));
+  assert.ok(row1000.internal_note.includes("venueName"), "internal_note must record which listing fields RA actually supplied");
   assert.ok(!row1000.hasOwnProperty("displayedTime") && !Object.values(row1000).includes("2026-11-06T21:00:00.000"),
     "RA's displayedTime must never be written to any authoritative field here -- only an independent source or a human may confirm a start time");
   console.log("PASS: a promoted row is pending_review, carries RA provenance in note, and never writes RA's displayedTime anywhere");
