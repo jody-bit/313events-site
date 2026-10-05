@@ -3850,11 +3850,14 @@
      10 / 25 / 50 miles, real cities placed by bearing with their live
      counts. The old decorative radar (.ny-*) is kept for the located
      state's compact graphic. */
-  #nearYouCard{background:var(--bg);border:1px solid var(--line);padding:16px 18px 36px;margin-top:24px;position:relative;overflow:hidden;}
+  #nearYouCard{background:var(--bg);border:1px solid var(--line);padding:16px 18px 36px;margin-top:24px;position:relative;overflow:hidden;align-self:stretch;display:flex;flex-direction:column;}
   #nearYouCard .side-card-head{position:relative;z-index:2;}
   #nearYouCard .side-card-head h2{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;letter-spacing:0;}
   #nearYouCard .side-card-sub, #nearYouCard .side-card-number, #nearYouCard .side-card-caption, #nearYouCard .side-card-cta{position:relative;z-index:2;}
-  .orbit-field{position:relative;height:300px;margin:4px -18px 0;z-index:1;}
+  /* The field fills whatever height the board has: beside a full On the
+     Radar column it grows past its 300px minimum, so the two never leave a
+     hole under the shorter one. */
+  .orbit-field{position:relative;flex:1 1 300px;min-height:300px;margin:4px -18px 0;z-index:1;}
   .orbit-readout{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative;z-index:2;}
   .orbit-readout .side-card-number{margin-bottom:4px;}
   .orbit-readout .side-card-caption{margin:0;}
