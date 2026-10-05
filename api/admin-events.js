@@ -299,7 +299,10 @@ module.exports = async (req, res) => {
         url = `${SUPABASE_URL}/rest/v1/events?${statusFilter}&${matchFilter}&select=*&order=start_date.asc&limit=50`;
       } else if (hidden) {
         // Recently hidden/rejected, most recent first — the undo list.
-        url = `${SUPABASE_URL}/rest/v1/events?status=eq.rejected&select=*&order=updated_at.desc&limit=20`;
+        // 200, not 20: one nightly run can retire sixty rows (duplicates
+        // folded into another row, closure notices), and every one of them
+        // has to be reachable here to be put back.
+        url = `${SUPABASE_URL}/rest/v1/events?status=eq.rejected&select=*&order=updated_at.desc&limit=200`;
       } else {
         url = `${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc`;
       }
@@ -654,6 +657,19 @@ let genericCounts = null;
           venueRawReparseError = reparseErr.message;
         }
 
+        // Step 7b (2026-10-05): entries that are not events (closure notices,
+        // suite-rental upsells) leave the public inventory, exactly as in the
+        // nightly run and before the duplicate pass -- see
+        // scripts/retire-non-events.js.
+        let nonEventCounts = null;
+        let nonEventRetirementError = null;
+        try {
+          const { retireNonEvents } = require("../scripts/retire-non-events");
+          nonEventCounts = await retireNonEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (nonEventErr) {
+          nonEventRetirementError = nonEventErr.message;
+        }
+
         // Step 8 (2026-10-05): deterministic duplicate consolidation, the
         // same pass the nightly run makes -- see scripts/duplicate-consolidation.js.
         let duplicateCounts = null;
@@ -701,6 +717,8 @@ let genericCounts = null;
           visitDetroitLinkError,
           venueRawReparse: venueRawReparseCounts,
           venueRawReparseError,
+          nonEventRetirement: nonEventCounts,
+          nonEventRetirementError,
           duplicateConsolidation: duplicateCounts,
           duplicateConsolidationError,
         });

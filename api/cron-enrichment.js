@@ -197,6 +197,21 @@ module.exports = async (req, res) => {
       venueRawReparseError = reparseErr.message;
     }
 
+    // 2026-10-05: entries that are not events at all (a closure notice, a
+    // suite-rental upsell) leave the public inventory -- the shared title
+    // filter applied to what is already stored. Before the duplicate pass,
+    // so that two feeds' copies of "City Buildings Closed" are retired for
+    // what they are rather than merged into one. See
+    // scripts/retire-non-events.js. Same failure isolation as above.
+    let nonEventCounts = null;
+    let nonEventRetirementError = null;
+    try {
+      const { retireNonEvents } = require("../scripts/retire-non-events");
+      nonEventCounts = await retireNonEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (nonEventErr) {
+      nonEventRetirementError = nonEventErr.message;
+    }
+
     // 2026-10-05 (Sunday operations hardening): one real-world event, one
     // canonical row. Deterministic duplicates (same feed twice, CivicPlus
     // sibling feeds, two sources at one venue) are consolidated; anything
@@ -213,20 +228,21 @@ module.exports = async (req, res) => {
 
     const raCandidateWrittenIds = (raCandidateCounts && raCandidateCounts.writtenIds) || [];
     const duplicateWrittenIds = (duplicateCounts && duplicateCounts.writtenIds) || [];
+    const nonEventWrittenIds = (nonEventCounts && nonEventCounts.writtenIds) || [];
     const venueWrittenIds = venueCounts.writtenIds || [];
     const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
     const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
     const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
     const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
     const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds]);
+    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds, ...nonEventWrittenIds]);
 
     // Step-level failures stay isolated (unchanged) -- but a run where any
     // step errored is not a clean 'success' for telemetry purposes either.
     // 'partial' mirrors the outcome vocabulary every ingestion connector
     // already uses for "ran, wrote some things, but not everything went
     // cleanly" (migration_035's own outcome check constraint).
-    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError, duplicateConsolidationError].filter(Boolean);
+    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError, nonEventRetirementError, duplicateConsolidationError].filter(Boolean);
     await finishRun(runHandle, {
       outcome: stepErrors.length ? "partial" : "success",
       records_written: combinedWrittenIds.size,
@@ -249,6 +265,8 @@ module.exports = async (req, res) => {
       genericEnrichmentError,
       venueRawReparse: venueRawReparseCounts,
       venueRawReparseError,
+      nonEventRetirement: nonEventCounts,
+      nonEventRetirementError,
       duplicateConsolidation: duplicateCounts,
       duplicateConsolidationError,
     });
