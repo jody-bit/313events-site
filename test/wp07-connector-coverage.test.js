@@ -86,6 +86,7 @@ const AUDITED_DIRECT_POSTS = [
   ["api/cron-healthcheck.js", "healthchecks", "[{ overall, duration_ms: durationMs, checks }]", "one row"],
   ["api/submit-feed.js", "feed_sources", "row", "single object"],
   ["api/submit.js", "events", "row", "single object (one public submission)"],
+  ["scripts/duplicate-consolidation.js", "editorial_article_events", "{ article_id: link.article_id, event_id: survivor.id }", "single object (a press link re-pointed at the canonical event)"],
   ["scripts/press-coverage-linking.js", "editorial_article_events", "{ article_id: articleId, event_id: eventId }", "single object"],
   ["scripts/press-coverage-linking.js", "events", "row", "single object (one sourced editorial candidate, on_conflict=external_id, ignore-duplicates)"],
   ["scripts/ra-candidate-promotion.js", "events", "[row]", "one row"],

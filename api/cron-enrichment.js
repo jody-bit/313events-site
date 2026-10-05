@@ -197,21 +197,36 @@ module.exports = async (req, res) => {
       venueRawReparseError = reparseErr.message;
     }
 
+    // 2026-10-05 (Sunday operations hardening): one real-world event, one
+    // canonical row. Deterministic duplicates (same feed twice, CivicPlus
+    // sibling feeds, two sources at one venue) are consolidated; anything
+    // less certain is left for Admin > Duplicates. See
+    // scripts/duplicate-consolidation.js. Same failure isolation as above.
+    let duplicateCounts = null;
+    let duplicateConsolidationError = null;
+    try {
+      const { consolidateDuplicates } = require("../scripts/duplicate-consolidation");
+      duplicateCounts = await consolidateDuplicates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    } catch (dupErr) {
+      duplicateConsolidationError = dupErr.message;
+    }
+
     const raCandidateWrittenIds = (raCandidateCounts && raCandidateCounts.writtenIds) || [];
+    const duplicateWrittenIds = (duplicateCounts && duplicateCounts.writtenIds) || [];
     const venueWrittenIds = venueCounts.writtenIds || [];
     const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
     const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
     const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
     const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
     const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds]);
+    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds]);
 
     // Step-level failures stay isolated (unchanged) -- but a run where any
     // step errored is not a clean 'success' for telemetry purposes either.
     // 'partial' mirrors the outcome vocabulary every ingestion connector
     // already uses for "ran, wrote some things, but not everything went
     // cleanly" (migration_035's own outcome check constraint).
-    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError].filter(Boolean);
+    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError, duplicateConsolidationError].filter(Boolean);
     await finishRun(runHandle, {
       outcome: stepErrors.length ? "partial" : "success",
       records_written: combinedWrittenIds.size,
@@ -234,6 +249,8 @@ module.exports = async (req, res) => {
       genericEnrichmentError,
       venueRawReparse: venueRawReparseCounts,
       venueRawReparseError,
+      duplicateConsolidation: duplicateCounts,
+      duplicateConsolidationError,
     });
   } catch (err) {
     // Previously unreachable safety net -- see this file's header TELEMETRY

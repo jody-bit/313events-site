@@ -215,6 +215,7 @@
       <button type="button" class="tab-btn active" data-tab="submissions" onclick="showTab('submissions')">Event submissions <span class="tab-badge hidden" id="badge-submissions">0</span></button>
       <button type="button" class="tab-btn" data-tab="followup" onclick="showTab('followup')">Needs follow-up <span class="tab-badge hidden" id="badge-followup">0</span></button>
       <button type="button" class="tab-btn" data-tab="feeds" onclick="showTab('feeds')">Feed sources <span class="tab-badge hidden" id="badge-feeds">0</span></button>
+      <button type="button" class="tab-btn" data-tab="duplicates" onclick="showTab('duplicates')">Duplicates <span class="tab-badge hidden" id="badge-duplicates">0</span></button>
       <button type="button" class="tab-btn" data-tab="live" onclick="showTab('live')">Live events</button>
       <button type="button" class="tab-btn" data-tab="hidden" onclick="showTab('hidden')">Recently hidden</button>
     </nav>
@@ -266,6 +267,17 @@
         <div id="followupBreakdown"></div>
         <div class="sub" id="sourceLimitedNote" style="margin-top:4px;"></div>
         <div id="incompleteList"></div>
+      </section>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="duplicates">
+      <section class="block" style="margin-top:0;">
+        <h2>Duplicates <span class="sub" style="font-weight:normal;">(only what the rules could not decide)</span></h2>
+        <div class="sub">One real-world event, one canonical row. The nightly pass merges the deterministic cases on its own — a feed that publishes the same item twice, a municipality's sibling category feeds carrying one CivicPlus item, two sources listing one event at the same venue with compatible times — keeping the better row, moving the other row's source identity, press links and any blank fields onto it, and retiring the other row (never deleted). Listed here are the pairs that share a title and date but differ in place or time in a way the rules will not guess at. "Merge" runs the exact same steps as the nightly pass with the left row as the survivor; "Not a duplicate" records the decision on both rows so the pair is never offered again.</div>
+        <div class="refresh" style="margin:0 0 12px;"><button onclick="loadDuplicates()">Refresh</button><span class="refresh-status" id="duplicatesStatus"></span></div>
+        <div class="err" id="duplicatesError" style="display:none;"></div>
+        <div class="sub" id="duplicatesPending" style="margin-top:4px;"></div>
+        <div id="duplicatesList"></div>
       </section>
     </div>
 
@@ -341,7 +353,7 @@ async function loadAll() {
   if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
   setRefreshStatus('refreshing');
   try {
-    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete()]);
+    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete(), loadDuplicates()]);
     const incompleteOk = results[results.length - 1] !== false;
     setRefreshStatus(incompleteOk ? 'ok' : 'error');
   } catch (err) {
@@ -390,6 +402,70 @@ function setTabBadge(key, count) {
   if (!el) return;
   el.textContent = count;
   el.classList.toggle('hidden', !count);
+}
+
+// ---- Duplicates (2026-10-05) — the pairs the deterministic rules left to a person ----
+function duplicateSideHtml(e) {
+  return '<div style="flex:1;min-width:0;">'
+    + '<div><strong>' + escapeHtml(e.title || '') + '</strong></div>'
+    + '<div class="sub">' + escapeHtml(e.start_date || '') + (e.time_display ? ' · ' + escapeHtml(e.time_display) : ' · no time') + '</div>'
+    + '<div class="sub">' + escapeHtml(e.venue_name_raw || 'no venue') + (e.venue_city_raw ? ' · ' + escapeHtml(e.venue_city_raw) : '') + (e.venue_id ? ' · linked venue' : '') + '</div>'
+    + '<div class="sub">' + escapeHtml(e.source || '') + ' · ' + escapeHtml(e.status || '') + (e.external_id ? ' · ' + escapeHtml(String(e.external_id).slice(0, 40)) : '') + '</div>'
+    + '</div>';
+}
+async function loadDuplicates() {
+  const errEl = document.getElementById('duplicatesError');
+  const list = document.getElementById('duplicatesList');
+  const pendingEl = document.getElementById('duplicatesPending');
+  if (!list) return true;
+  try {
+    const resp = await fetch('/api/admin-events?duplicates=1', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) {
+      if (errEl) { errEl.textContent = errText(data, 'Failed to load Duplicates (HTTP ' + resp.status + ')'); errEl.style.display = 'block'; }
+      return false;
+    }
+    if (errEl) errEl.style.display = 'none';
+    const review = data.review || [];
+    const pending = data.pending || [];
+    setTabBadge('duplicates', review.length);
+    if (pendingEl) pendingEl.textContent = pending.length
+      ? pending.length + ' deterministic pair' + (pending.length === 1 ? '' : 's') + ' will merge on the next nightly run (' + pending.map(function (p) { return p.title + ' · ' + p.start_date; }).slice(0, 6).join('; ') + (pending.length > 6 ? '; …' : '') + ').'
+      : 'No deterministic duplicates waiting for the nightly run.';
+    if (!review.length) { list.innerHTML = '<div class="sub">Nothing for a person to decide.</div>'; return true; }
+    list.innerHTML = review.map(function (r) {
+      return '<div class="card" style="display:flex;flex-direction:column;gap:8px;">'
+        + '<div class="sub"><strong>' + escapeHtml(r.reason.replace(/_/g, ' ')) + '</strong></div>'
+        + '<div style="display:flex;gap:16px;">' + duplicateSideHtml(r.a) + duplicateSideHtml(r.b) + '</div>'
+        + '<div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;">'
+        + '<button onclick="decideDuplicate(\'merge_duplicate\', \'' + r.a.id + '\', \'' + r.b.id + '\', this)">Merge — keep left</button>'
+        + '<button onclick="decideDuplicate(\'merge_duplicate\', \'' + r.b.id + '\', \'' + r.a.id + '\', this)">Merge — keep right</button>'
+        + '<button onclick="decideDuplicate(\'not_duplicate\', \'' + r.a.id + '\', \'' + r.b.id + '\', this)">Not a duplicate</button>'
+        + '</div></div>';
+    }).join('');
+    return true;
+  } catch (e) {
+    if (errEl) { errEl.textContent = 'Failed to load Duplicates: ' + e.message; errEl.style.display = 'block'; }
+    return false;
+  }
+}
+async function decideDuplicate(action, firstId, secondId, btn) {
+  const status = document.getElementById('duplicatesStatus');
+  if (btn) btn.disabled = true;
+  try {
+    const body = action === 'merge_duplicate' ? { action: action, survivorId: firstId, loserId: secondId } : { action: action, aId: firstId, bId: secondId };
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (status) status.textContent = resp.ok ? (action === 'merge_duplicate' ? 'Merged.' : 'Recorded as distinct.') : errText(data, 'Failed (HTTP ' + resp.status + ')');
+    await loadDuplicates();
+  } catch (e) {
+    if (status) status.textContent = 'Failed: ' + e.message;
+    if (btn) btn.disabled = false;
+  }
 }
 
 // ---- Needs follow-up (missing critical fields) — 2026-09-05 ----

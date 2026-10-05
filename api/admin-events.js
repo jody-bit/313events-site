@@ -233,6 +233,25 @@ module.exports = async (req, res) => {
       const hidden = req.query?.hidden === "1";
       const includePending = req.query?.includePending === "1";
       const incomplete = req.query?.incomplete === "1";
+      const duplicates = req.query?.duplicates === "1";
+
+      // 2026-10-05: Admin > Duplicates. The deterministic pairs are merged
+      // by the nightly pass; what is listed here is only what the rules
+      // could not decide (scripts/duplicate-consolidation.js, classifyPair),
+      // computed fresh each time from the upcoming inventory -- nothing is
+      // stored until a person decides. `pending` is what the next nightly
+      // run will merge on its own, shown so the queue is never a surprise.
+      if (duplicates) {
+        const { planConsolidation, fetchUpcomingRows, reviewSummary } = require("../scripts/duplicate-consolidation");
+        const rows = await fetchUpcomingRows(SUPABASE_URL, sbHeaders, fetch);
+        const plan = planConsolidation(rows);
+        res.status(200).json({
+          review: plan.reviews.map(reviewSummary),
+          pending: plan.merges.map((m) => ({ rule: m.rule, survivorId: m.survivor.id, loserId: m.loser.id, title: m.survivor.title, start_date: m.survivor.start_date, survivorSource: m.survivor.source, loserSource: m.loser.source })),
+          considered: rows.length,
+        });
+        return;
+      }
 
       let url;
       if (incomplete) {
@@ -310,6 +329,42 @@ module.exports = async (req, res) => {
     // generic "PATCH any column" endpoint: only the fields the follow-up
     // queue actually checks for are editable here, each validated the same
     // way api/submit.js validates the same fields on the public form.
+    // 2026-10-05: a person's decision on a Duplicates pair. merge_duplicate
+    // runs the very same steps as the nightly pass (survivor keeps the
+    // loser's identity, links and blank fields; the loser is retired, never
+    // deleted). not_duplicate marks both rows so the pair is never offered
+    // again. Both need the two current rows, read fresh.
+    if (action === "merge_duplicate" || action === "not_duplicate") {
+      const { survivorId, loserId, aId, bId } = body;
+      const firstId = action === "merge_duplicate" ? survivorId : aId;
+      const secondId = action === "merge_duplicate" ? loserId : bId;
+      if (!firstId || !secondId || firstId === secondId) {
+        res.status(400).json({ error: action === "merge_duplicate" ? "Body must include { action: 'merge_duplicate', survivorId, loserId }" : "Body must include { action: 'not_duplicate', aId, bId }" });
+        return;
+      }
+      try {
+        const { applyMerge, markDistinct, SELECT } = require("../scripts/duplicate-consolidation");
+        const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=in.(${encodeURIComponent(firstId)},${encodeURIComponent(secondId)})&select=${SELECT}`, { headers: sbHeaders });
+        const rows = resp.ok ? await resp.json() : [];
+        const first = Array.isArray(rows) ? rows.find((r) => r.id === firstId) : null;
+        const second = Array.isArray(rows) ? rows.find((r) => r.id === secondId) : null;
+        if (!first || !second) {
+          res.status(404).json({ error: "One or both events were not found" });
+          return;
+        }
+        if (action === "merge_duplicate") {
+          const result = await applyMerge(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { survivor: first, loser: second, rule: "admin_decision" });
+          res.status(result.retired ? 200 : 502).json({ ok: result.retired, ...result });
+        } else {
+          const ok = await markDistinct(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, first, second);
+          res.status(ok ? 200 : 502).json({ ok });
+        }
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
     if (action === "update_fields") {
       const EDITABLE_FIELDS = ["description", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display"];
       const fields = body.fields && typeof body.fields === "object" ? body.fields : {};
@@ -599,14 +654,26 @@ let genericCounts = null;
           venueRawReparseError = reparseErr.message;
         }
 
+        // Step 8 (2026-10-05): deterministic duplicate consolidation, the
+        // same pass the nightly run makes -- see scripts/duplicate-consolidation.js.
+        let duplicateCounts = null;
+        let duplicateConsolidationError = null;
+        try {
+          const { consolidateDuplicates } = require("../scripts/duplicate-consolidation");
+          duplicateCounts = await consolidateDuplicates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+        } catch (dupErr) {
+          duplicateConsolidationError = dupErr.message;
+        }
+
         const venueWrittenIds = venueCounts.writtenIds || [];
+        const duplicateWrittenIds = (duplicateCounts && duplicateCounts.writtenIds) || [];
         const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
         const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
         const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
         const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
         const visitDetroitLinkWrittenIds = (visitDetroitLinkCounts && visitDetroitLinkCounts.writtenIds) || [];
         const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds, ...venueRawReparseWrittenIds]);
+        const combinedWrittenIds = new Set([...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...visitDetroitLinkWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds]);
         const combinedFieldsWritten =
           venueCounts.fieldsWritten +
           ((descriptionCounts && descriptionCounts.written) || 0) +
@@ -634,6 +701,8 @@ let genericCounts = null;
           visitDetroitLinkError,
           venueRawReparse: venueRawReparseCounts,
           venueRawReparseError,
+          duplicateConsolidation: duplicateCounts,
+          duplicateConsolidationError,
         });
       } catch (err) {
         res.status(500).json({ error: err.message });
@@ -642,7 +711,7 @@ let genericCounts = null;
     }
 
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
       return;
     }
 
