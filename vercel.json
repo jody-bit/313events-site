@@ -108,7 +108,7 @@
       "maxDuration": 60
     },
     "api/cron-localist.js": {
-      "maxDuration": 60
+      "maxDuration": 120
     },
     "api/cron-metrotimes.js": {
       "maxDuration": 60

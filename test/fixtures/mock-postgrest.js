@@ -142,6 +142,8 @@ function makeMockPostgrest(tables, options) {
     gt: (a, b) => a != null && String(a) > b,
     lte: (a, b) => a != null && String(a) <= b,
     lt: (a, b) => a != null && String(a) < b,
+    // like.prefix-* -- PostgREST's `*` is SQL's `%`. Case-sensitive, as LIKE is.
+    like: (a, b) => a != null && new RegExp("^" + b.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join(".*") + "$").test(String(a)),
   };
 
   // in.(a,b,"c,d") -> ["a","b","c,d"]

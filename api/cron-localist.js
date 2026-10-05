@@ -1,11 +1,25 @@
 const crypto = require("crypto");
-const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const path = require("path");
+const { buildVenueDetailsMap, resolveVenueFromCandidate, normalizeVenueName, citiesConflict, isBlank } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
-const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
-const { knownCity } = require("./_lib/orbit-cities");
+const {
+  HORIZON_DAYS,
+  ORBIT_MILES,
+  mapCategory,
+  formatTimeDisplay,
+  parseLocalistLocation,
+  needsFullSchedule,
+  newFunnel,
+  selectEligible,
+  buildTenantRows,
+  isoDatePlusDays,
+} = require("./_lib/localist-rows");
+// The title-keyword table every feed already uses for its category
+// (api/cron-feeds.js requires it the same way).
+const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 
 // Vercel Cron job — the generalized `localist` adapter (INGESTION_BACKLOG.md
 // WP 6.1/6.2, the first "platform multiplier" in
@@ -67,52 +81,112 @@ const { knownCity } = require("./_lib/orbit-cities");
 // used exclusively -- no HTML page of any tenant's calendar is parsed
 // here.
 //
-// RECURRENCE / EXTERNAL_ID: a Localist "event" can carry multiple
-// `event_instances` (one per occurrence of a recurring series). This
-// project's `events` table is occurrence-level (one row per occurrence,
-// same model as cron-gottagacha.js's per-date rows), so this connector
-// emits one row per event_instance, not one per event. external_id is
-// `localist-${tenantSlug}-${instanceId}` -- the tenant prefix matters
-// here specifically because Localist's own instance ids are only unique
-// WITHIN one tenant's install, not globally (unlike Eventbrite's globally
-// unique event ids), so two different campuses could otherwise collide on
-// the same numeric id.
+// WHAT IS FETCHED, AND WHAT BECOMES A ROW (rewritten 2026-10-05, BUG-013)
+// The reading of each event -- eligibility, location, how occurrences become
+// rows, what a row is called -- is api/_lib/localist-rows.js, which carries
+// the measurements behind every rule. This file does the three things that
+// need the network or the database:
 //
-// CATEGORY: unlike cron-eventbrite.js (where Eventbrite's taxonomy has no
-// usable structural signal at all), Localist's `event.filters.event_types`
-// is a real, structured, per-tenant-configurable taxonomy. mapCategory()
-// below maps only the handful of type names actually confirmed in this
-// pass or standard enough across Localist installs to be high-confidence
-// ("Concerts & Performances" was directly observed on a real Macomb
-// Community College event during this verification pass; the others are
-// Localist's own common default type names, not invented). Anything else
-// -- including a tenant's own custom/renamed types, which this adapter has
-// no way to know in advance -- falls through to the same
-// placeholder-category + pending_review pattern every other connector
-// uses for a genuinely unclassifiable row, never a guess. Expect this list
-// to need real tuning once each tenant's actual configured type list is
-// observed live; see the stress-test report for what a live pilot would
-// need to validate first.
+//   1. THE LISTING, `GET /api/2/events?days=90`: every occurrence in the
+//      next 90 days, 100 to a page. Page 1 says how many pages there are;
+//      the rest are fetched a few at a time (Bowling Green's seven pages
+//      take about 27 seconds one after another). If ANY page of a tenant
+//      fails, nothing is written for that tenant in this run: a listing with
+//      a hole in it would break an exhibition's run of days in two and the
+//      second half would be written as a new event.
+//   2. THE FULL SCHEDULE of each eligible event that has an occurrence on
+//      the listing's first day, `GET /api/2/events/{id}` -- a handful a day.
+//      Without it a run already under way cannot be named after its first
+//      day (see localist-rows.js, problem 3). If that request fails the
+//      event is left out of this run and counted; it is never written from
+//      the partial view.
+//   3. THE WRITE, through the shared helper (api/_lib/event-upsert.js), with
+//      the status of an existing row preserved (api/_lib/status-lookup.js)
+//      and the venue resolved by the shared lookup, which refuses a
+//      same-name venue in a different city (api/_lib/venue-lookup.js).
 //
-// FIELDS DELIBERATELY LEFT NULL/DEFAULT (not demonstrated as reliably
-// present across Localist installs in this research pass -- never
-// invented):
-//   ticket_url  — some tenants attach a ticketing custom field, but its
-//                 name/shape isn't standardized across installs; only
-//                 mapped when the API itself returns a plain `ticket_url`
-//                 string, never guessed from description text.
-//   price_from  — no structured, cross-tenant-reliable cost field
-//                 confirmed; left null rather than regexed out of
-//                 free-text custom fields.
-//   is_free     — same reasoning; left at the schema default (false)
-//                 rather than inferred from the absence of a price field.
+//   4. THE WITHDRAWAL. When a tenant's listing was read in full, a stored
+//      row of that tenant, starting on or after the listing's first day,
+//      which this run did NOT produce is no longer what the source says: the
+//      event was cancelled or removed, is no longer listed for the public, or
+//      its schedule was edited so that its rows are named differently now.
+//      Such a row is hidden (status "rejected", with a note saying so and
+//      what its status was) -- never deleted. If the source lists it again,
+//      the note is recognised and the row gets its status back. Without this
+//      a cancelled concert stayed public for good, and an organiser adding a
+//      day to the front of a run left the old run beside the new one.
+//        - It happens BEFORE the write. An organiser who deletes an entry and
+//          makes a new one for the same event produces a new row that is the
+//          same occurrence as the stored one. Withdrawn first, the old row is
+//          out of the way before the new one exists, so the two are never
+//          both active for the nightly duplicate pass
+//          (scripts/duplicate-consolidation.js) to choose between.
+//        - A row that began before the listing's first day is left alone: a
+//          week-long event under way is not withdrawn for being under way.
+//        - THE NOTE IS ONE LINE, ADDED AT THE END of whatever note the row
+//          has, and only that line is ever removed again. A row gets its
+//          status back only while that line is still the LAST thing in its
+//          note: if the duplicate pass or the non-event pass has since
+//          written its own line after it (they hide rows too, and append),
+//          the row is theirs and stays hidden.
+//        - A REVIEWER'S DECISION OUTLIVES IT. A withdrawn row a reviewer
+//          restores is not withdrawn again -- it is marked as kept by a
+//          reviewer, for good; and once a row is listed again its withdrawal
+//          line is removed, so that a later rejection by a reviewer is not
+//          mistaken for a withdrawal and undone.
+//        - Refused, and reported, if an implausible share of a tenant's rows
+//          simply VANISH from the listing at once. A row whose occurrence is
+//          still in the listing but is now cancelled, or no longer for the
+//          public, is withdrawn on that evidence whatever the numbers.
+//        - Not done at all for a listing that does not say how many entries
+//          it has: nothing can then show that it was read whole.
 //
-// VENUE RESOLUTION: identical path as every other connector
-// (buildVenueNameToIdMap/resolveVenueId) -- exact normalized name match
-// only, never fuzzy, never auto-created. Campus buildings/rooms are
-// expected to mostly NOT match anything in `venues` today; that's the
-// stress-test finding this adapter exists partly to surface, not something
-// this file works around.
+// KNOWN LIMITS (third independent review; each needs more than this file)
+//   - A RUN ALREADY UNDER WAY that the source cancels or cuts short keeps its
+//     stored end date until that date passes: rows that began before the
+//     listing's first day are not revisited, because a stored row does not
+//     carry the event id needed to ask the source about it.
+//   - A row withdrawn, then restored AND rejected by a reviewer before the
+//     next run, is indistinguishable from a withdrawn row and comes back if
+//     the source lists it again.
+//
+// WHAT IS WRITTEN OVER, AND WHAT IS NOT (second and third independent reviews)
+// A row that already exists is written with every column this connector
+// owns -- one request for the whole batch -- and a column means one of three
+// things:
+//   - the source's word, always: title, dates, time, recurrence, free flag;
+//   - the source's word when it has one, otherwise what is stored:
+//     description, image, event link, ticket link, price. A description or
+//     ticket link the enrichment job, the duplicate pass or a reviewer added
+//     is not erased every morning (the cost: a link the source itself drops
+//     stays until someone removes it);
+//   - THE PLACE, as one thing. While the event is where the stored row says
+//     -- the same venue name and no disagreement about the city; or the
+//     source names no venue and its street and city do not contradict the
+//     stored ones -- blanks fall back to what is stored, and a stored venue
+//     link stands if that venue is in the same city. When the event MOVES,
+//     the whole place is the source's: name, street, city and venue link
+//     together, blanks included. The old street and the old venue's link do
+//     not stay behind under a new name or in a new city.
+// And for a row that already exists, the catch-all category is not written
+// over whatever category it has been given since.
+//
+// GUARDS, each from an independent review:
+//   - a listing whose pages do not add up to the count the tenant states --
+//     counted as distinct occurrences, so a page served twice does not make
+//     up for a page that came back empty -- or with a short page before the
+//     last, is treated as failed, exactly like a page that errors;
+//   - each tenant has a time budget, counted from the start of the run, so
+//     one slow tenant cannot take the other's rows down with it. The function
+//     is allowed 120 seconds (vercel.json); the tenants get the first 40.
+//
+// PUBLICATION: every row is still written `pending_review`. That is one
+// word per tenant (`defaultStatus` below) and is deliberately NOT changed by
+// the change that made the rows trustworthy; it is the Product Owner's
+// decision, taken on the evidence of what this connector writes.
+//
+// FIELDS LEFT ALONE: price_from (ticket_cost is free text), ticket_status.
+// is_free is the source's own `free` flag and nothing else.
 
 function timingSafeStringEqual(a, b) {
   if (typeof a !== "string" || typeof b !== "string") return false;
@@ -131,308 +205,383 @@ const CRON_SECRET = process.env.CRON_SECRET;
 
 const SOURCE_SLUG = SLUGS.localist;
 const AMBIGUOUS_STATUS = "pending_review";
-const AMBIGUOUS_CATEGORY = "community"; // migration_009b's documented catch-all
-const MAX_PAGES_PER_TENANT = 10; // bounded pagination -- see header
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 100; // the API's maximum
+// A ceiling, not an expectation: Bowling Green needs 7 pages for 90 days,
+// Macomb 3. Reaching it is reported as a failure of that tenant, never as a
+// quietly shorter listing.
+const MAX_PAGES_PER_TENANT = 25;
+const PAGE_CONCURRENCY = 3;
+const DETAIL_CONCURRENCY = 4;
+// More full schedules than this in one run means something is wrong with the
+// listing (a normal day is under 20 across both tenants).
+const MAX_DETAIL_FETCHES_PER_TENANT = 80;
+const REQUEST_TIMEOUT_MS = 20000;
+// One tenant's requests, all told, counted from the start of the run. The
+// function is allowed 120 seconds (vercel.json); the database work after the
+// tenants finish has the rest.
+const TENANT_BUDGET_MS = 40000;
+const USER_AGENT = "313.events event calendar";
+// Withdrawal (see header, 4). More than this many rows AND more than this
+// share of a tenant's stored upcoming rows vanishing in one run is not
+// believed: nothing is withdrawn and the run says so.
+const WITHDRAW_MAX_ROWS = 5;
+const WITHDRAW_MAX_SHARE = 0.2;
+const WITHDRAWN_PREFIX = "Withdrawn by the Localist connector";
+const KEPT_PREFIX = "Kept by a reviewer after the Localist connector withdrew it";
+const STORED_PAGE_SIZE = 1000;
+const ID_CHUNK = 100;
+// What this connector reads of a stored row before writing it again.
+const STORED_SELECT = "external_id,status,internal_note,category,description,image_url,event_url,price_from,venue_id,venue_name_raw,venue_address_raw,venue_city_raw";
+// The source's word when it has one; otherwise what is stored (see header).
+const KEEP_STORED_WHEN_BLANK = ["description", "image_url", "event_url", "ticket_url", "price_from"];
+// The connector's two marks are single LINES of internal_note; other jobs and
+// people write their own lines in the same field.
+const noteLines = (note) => String(note || "").split("\n").map((line) => line.trim()).filter(Boolean);
+const isWithdrawalLine = (line) => line.startsWith(WITHDRAWN_PREFIX);
+const isKeptLine = (line) => line.startsWith(KEPT_PREFIX);
+// Withdrawn, and nothing written after it: still this connector's to undo.
+const withdrawnAndUntouched = (row) => { const lines = noteLines(row.internal_note); return lines.length > 0 && isWithdrawalLine(lines[lines.length - 1]); };
+const withoutWithdrawalLines = (note) => noteLines(note).filter((line) => !isWithdrawalLine(line)).join("\n") || null;
+const withLine = (note, line) => [...noteLines(note), line].join("\n");
 
-// Config-driven, multi-tenant registry -- see header for how each entry
-// was verified. `source` is this tenant's own institutional identity
-// (DEC-005: events.source records where a listing was found; here that is
-// genuinely each institution's own calendar, not a shared third-party
-// platform the way Eventbrite is -- so unlike cron-eventbrite.js's single
-// "Eventbrite" literal, this is per-tenant).
+// Config-driven, multi-tenant registry -- see header for how each entry was
+// verified. `source` is this tenant's own institutional identity (DEC-005).
+//   publicAudiences  the name(s) this tenant's own "target audience" filter
+//                    uses for the general public. An event is written only
+//                    if the tenant lists it for one of them. Both tenants
+//                    say "General Public" (observed 2026-10-05).
+//   defaultStatus    the status of a NEW row. An existing row always keeps
+//                    its own.
 const TENANTS = Object.freeze([
-  Object.freeze({ tenantSlug: "bgsu", apiBase: "https://events.bgsu.edu", source: "Bowling Green State University" }),
-  Object.freeze({ tenantSlug: "macomb", apiBase: "https://events.macomb.edu", source: "Macomb Community College" }),
+  Object.freeze({
+    tenantSlug: "bgsu",
+    apiBase: "https://events.bgsu.edu",
+    source: "Bowling Green State University",
+    publicAudiences: Object.freeze(["General Public"]),
+    defaultStatus: AMBIGUOUS_STATUS,
+  }),
+  Object.freeze({
+    tenantSlug: "macomb",
+    apiBase: "https://events.macomb.edu",
+    source: "Macomb Community College",
+    publicAudiences: Object.freeze(["General Public"]),
+    defaultStatus: AMBIGUOUS_STATUS,
+  }),
 ]);
 
-// Confirmed-or-standard Localist event_type names -> this project's
-// category enum. First-match-wins against every name in
-// event.filters.event_types. See header CATEGORY note -- "Concerts &
-// Performances" is directly observed (Macomb); the rest are Localist's
-// own common default type names, kept deliberately narrow.
-const EVENT_TYPE_CATEGORY_RULES = [
-  [/^concerts?\s*(&|and)?\s*performances?$/i, "music"],
-  [/^music$/i, "music"],
-  [/^film/i, "film"],
-  [/^(athletics|sports)$/i, "sports"],
-];
+// The date in Detroit, as the tenants' own calendars count days. Only a
+// fallback: the listing states its own first day and that is what is used.
+function detroitToday(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Detroit", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+}
 
-function mapCategory(eventTypes) {
-  if (!Array.isArray(eventTypes)) return null;
-  for (const name of eventTypes) {
-    if (typeof name !== "string") continue;
-    for (const [re, category] of EVENT_TYPE_CATEGORY_RULES) {
-      if (re.test(name.trim())) return category;
+// `deadline` (ms since the epoch): no request is started after it, and none
+// is waited on past it.
+async function fetchJson(url, deadline) {
+  const left = deadline ? deadline - Date.now() : REQUEST_TIMEOUT_MS;
+  if (left <= 0) return { data: null, error: "Out of time: this tenant's budget for one run was used up" };
+  let r;
+  try {
+    r = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(Math.min(REQUEST_TIMEOUT_MS, left)) });
+  } catch (err) {
+    return { data: null, error: "Fetch failed: " + err.message };
+  }
+  if (!r.ok) return { data: null, error: `Fetch failed: HTTP ${r.status}` };
+  try {
+    return { data: await r.json(), error: null };
+  } catch (err) {
+    return { data: null, error: "Unparseable JSON response: " + err.message };
+  }
+}
+
+// Runs `worker` over `items`, at most `limit` at a time, results in order.
+async function mapLimit(items, limit, worker) {
+  const results = new Array(items.length);
+  let next = 0;
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const index = next++;
+      results[index] = await worker(items[index], index);
     }
-  }
-  return null;
-}
-
-// Mirrors cron-eventbrite.js's formatTimeDisplay() -- reads HH:MM directly
-// out of Localist's own ISO-with-offset instance datetime strings (e.g.
-// "2026-11-05T19:00:00-05:00") rather than constructing a Date, same
-// reasoning: the source already encodes local wall-clock time, so no
-// timezone math is needed or safe to attempt here.
-function formatTimeDisplay(startIso, endIso) {
-  if (!startIso || startIso.length < 16) return null;
-  const startHM = startIso.slice(11, 16);
-  const fmt = (hm) => {
-    const [hStr, mStr] = hm.split(":");
-    let h = parseInt(hStr, 10);
-    if (isNaN(h)) return null;
-    const ap = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${h}:${mStr} ${ap}`;
-  };
-  const startFmt = fmt(startHM);
-  if (!startFmt) return null;
-  if (endIso && endIso.length >= 16) {
-    const endHM = endIso.slice(11, 16);
-    if (endHM !== startHM) {
-      const endFmt = fmt(endHM);
-      if (endFmt) return `${startFmt} – ${endFmt}`;
-    }
-  }
-  return startFmt;
-}
-
-// ---- BUG-013 (2026-10-04): where the event is ---------------------------
-//
-// Until this change the connector read `e.venue_name` / `e.venue.name`.
-// Neither exists in what the API returns. Measured on the live Macomb
-// Community College API on 2026-10-04 (100 events, 30-day window): the
-// place is in three other fields --
-//   location_name  "Center Campus, C Building"                      (85 of 100)
-//   address        "44575 Garfield Road, Clinton Township, MI 48038" (85 of 100)
-//   geo            { latitude, longitude, street, city, state, zip }
-// -- so every row was written with no venue, no address and no city, and
-// every one of them (11 on 2026-10-04) was queued in Admin for a missing
-// location. An away game was indistinguishable from a campus event.
-//
-// What is read, and how far it is trusted:
-//   - the venue name is location_name (then the older `location`, then the
-//     venue_name fields the original code expected, in case a tenant has
-//     them);
-//   - street and city come from `address`, which is "<street>, <city>, <ST>
-//     <ZIP>": the last comma-separated part must be a state (and ZIP), the
-//     one before it is the city, everything before that is the street.
-//     The city must be a name on the closed list for that state
-//     (api/_lib/orbit-cities.js) -- "K Building, South Campus, MI 48088"
-//     does not make South Campus a city. The street must begin with a house
-//     number AND contain a street type, because tenants also put a
-//     building, a floor or a room there (Bowling Green State University,
-//     same day: "Jerome Library, Bowling Green, OH 43403"; "Bowen-Thompson
-//     Student Union 1001 E Wooster St , Bowling Green, OH 43402" -- the
-//     building name is dropped from the front of the street when it merely
-//     repeats the venue; "2nd Floor" and "101 Olscamp Hall" are not
-//     streets). Anything else is left alone -- never guessed;
-//   - geo.city fills in only when `address` gave no city ("One University
-//     Drive Huron, Ohio 44839" has no comma before the city; geo.city says
-//     Huron), and only when it too is on the list for geo.state. geo.street
-//     is NOT used: it is a geocoder fragment ("J" for "South Campus, J
-//     Building");
-//   - geo's coordinates decide one thing only: an event more than
-//     ORBIT_MILES from Detroit's border is not a Detroit Orbit event
-//     (SERVICE_AREA.md) and is not written. The handler counts those.
-//     An event with no coordinates is kept: absence of a location is not
-//     evidence of distance. Neither is a bad geocode -- coordinates outside
-//     North America (0,0; a dropped minus sign; latitude and longitude
-//     swapped) are treated as no coordinates at all.
-//   - a field the source did not give is LEFT OUT of the row, not sent as
-//     null: a null would overwrite an address or city already stored on the
-//     event (api/_lib/event-upsert.js; DEBT-011). The other side of that
-//     choice, accepted: if a source later REMOVES an address from an event
-//     it already sent, the stored one stays. Which of the two a connector
-//     may do is a per-field decision recorded under DEBT-011.
-const ORBIT_MILES = 75; // SERVICE_AREA.md; same figure as cron-ticketmaster.js's RADIUS_MILES
-// A real state or province code, optionally with a ZIP -- not any two
-// letters ("University Center, UC" is not a city and a state).
-const STATE_ZIP_RE =
-  /^(?:AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|ON|QC|BC|AB|MB|SK|NS|NB|NL|PE)(?:\s+\d{5}(?:-\d{4})?)?$/;
-// "<house number> ... <street type>": a street, not "2nd Floor" or "101 Olscamp Hall".
-const NUMBERED_STREET_RE =
-  /^\d+[A-Za-z]?\s.*\b(?:Road|Rd|Street|St|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Way|Highway|Hwy|Parkway|Pkwy|Place|Pl|Terrace|Ter)\b\.?/;
-
-function cleanString(v) {
-  return typeof v === "string" && v.trim() ? v.trim() : null;
-}
-
-function parseLocalistLocation(e) {
-  if (!e || typeof e !== "object") return { name: null, street: null, city: null, milesFromDetroit: null, outsideOrbit: false };
-  const geo = e.geo && typeof e.geo === "object" ? e.geo : {};
-  const name =
-    cleanString(e.location_name) ||
-    cleanString(e.location) ||
-    cleanString(e.venue_name) ||
-    (e.venue && typeof e.venue === "object" ? cleanString(e.venue.name) : null);
-
-  let street = null;
-  let city = null;
-  const address = cleanString(e.address);
-  if (address) {
-    const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
-    const stateZip = parts.length >= 2 ? STATE_ZIP_RE.exec(parts[parts.length - 1]) : null;
-    const listedCity = stateZip ? knownCity(parts[parts.length - 2], parts[parts.length - 1].slice(0, 2)) : null;
-    if (listedCity) {
-      city = listedCity;
-      const before = parts.slice(0, -2);
-      // The street is the first part that is a numbered street
-      // ("123 Main St, 2nd Floor, Warren, MI" -> "123 Main St").
-      street = before.find((part) => NUMBERED_STREET_RE.test(part)) || null;
-      if (!street && name && before.length) {
-        // A tenant may repeat the building in front of the street, with no
-        // comma: "Bowen-Thompson Student Union 1001 E Wooster St". Only a
-        // whole-name prefix followed by a space is dropped.
-        const joined = before.join(", ");
-        if (joined.toLowerCase().startsWith(name.toLowerCase() + " ")) {
-          const rest = joined.slice(name.length).trim();
-          if (NUMBERED_STREET_RE.test(rest)) street = rest;
-        }
-      }
-    }
-  }
-  if (!city) city = knownCity(cleanString(geo.city), cleanString(geo.state));
-
-  const lat = Number.parseFloat(geo.latitude);
-  const lng = Number.parseFloat(geo.longitude);
-  // Plausible for North America only; anything else is a bad geocode.
-  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng) && lat >= 24 && lat <= 60 && lng >= -141 && lng <= -52;
-  const milesFromDetroit = hasCoordinates ? milesFromDetroitBorder(lat, lng) : null;
-
-  return {
-    name,
-    street,
-    city,
-    milesFromDetroit,
-    outsideOrbit: milesFromDetroit !== null && milesFromDetroit > ORBIT_MILES,
-  };
-}
-
-// Pure parse of one Localist "event" object (as returned by
-// GET /api/2/events, each array entry shaped { event: {...} }) into ZERO
-// OR MORE row objects -- one per event_instance (see header RECURRENCE
-// note). Returns [] for a structurally unusable event (no id, no title, or
-// no usable instances). Exported for direct unit testing.
-function parseEvent(e, tenant) {
-  if (!e || typeof e !== "object") return [];
-  const title = typeof e.title === "string" ? e.title.trim() : null;
-  if (!e.id || !title) return [];
-  const instances = Array.isArray(e.event_instances) ? e.event_instances : [];
-  if (!instances.length) return [];
-
-  const description =
-    typeof e.description_text === "string" && e.description_text.trim()
-      ? e.description_text.trim()
-      : null;
-
-  const eventTypes =
-    e.filters && Array.isArray(e.filters.event_types)
-      ? e.filters.event_types.map((t) => (t && typeof t === "object" ? t.name : t)).filter((n) => typeof n === "string")
-      : [];
-  const category = mapCategory(eventTypes);
-  const isAmbiguous = category === null;
-
-  // BUG-013: the place, from the fields the API really sends.
-  const place = parseLocalistLocation(e);
-  const venueName = place.name;
-
-  const isRecurring = instances.length > 1;
-  const localistUrl = typeof e.localist_url === "string" ? e.localist_url : null;
-  const imageUrl = typeof e.photo_url === "string" && e.photo_url.trim() ? e.photo_url.trim() : null;
-  const ticketUrl = typeof e.ticket_url === "string" && e.ticket_url.trim() ? e.ticket_url.trim() : null;
-
-  const notes = isAmbiguous
-    ? [`Category not mappable from this tenant's configured Localist event types (event: "${title}") -- needs manual categorization.`]
-    : [];
-
-  const rows = [];
-  for (const wrapper of instances) {
-    const inst = wrapper && typeof wrapper === "object" ? wrapper.event_instance || wrapper : null;
-    if (!inst || typeof inst !== "object") continue;
-    const startIso = typeof inst.start === "string" ? inst.start : null;
-    if (!inst.id || !startIso) continue;
-    rows.push({
-      external_id: `localist-${tenant.tenantSlug}-${inst.id}`,
-      title,
-      description,
-      category: category || AMBIGUOUS_CATEGORY,
-      start_date: startIso.slice(0, 10),
-      time_display: inst.all_day === true ? null : formatTimeDisplay(startIso, typeof inst.end === "string" ? inst.end : null),
-      is_recurring: isRecurring,
-      is_all_day: inst.all_day === true,
-      is_free: false, // see header -- not reliably available cross-tenant, never guessed
-      price_from: null, // see header -- not reliably available cross-tenant, never guessed
-      ticket_url: ticketUrl,
-      event_url: localistUrl,
-      image_url: imageUrl,
-      source: tenant.source,
-      internal_note: notes.length ? notes.join(" ") : null,
-      _rawVenueName: venueName,
-      venue_address_raw: place.street,
-      venue_city_raw: place.city,
-      // Read by the handler and never written: an event held outside the
-      // Orbit (an away game, a trip) is not a Detroit Orbit event.
-      _outsideOrbit: place.outsideOrbit,
-      // Every confirmed tenant is brand new with zero production track
-      // record, so EVERY row -- classified or not -- is pending_review
-      // for now (always AMBIGUOUS_STATUS, regardless of isAmbiguous),
-      // the same "new, unproven source earns human review first" posture
-      // cron-metrotimes.js/cron-poppspacking.js already use for
-      // aggregator-like sources. This is a per-tenant trust decision, not
-      // a structural limitation of the parser: a tenant with a real,
-      // confirmed-accurate track record could later earn its own
-      // DEFAULT_STATUS = "approved" the way cron-gottagacha.js's
-      // first-party-API trust tier does, without touching parseEvent()'s
-      // shape at all.
-      _defaultStatusForRow: AMBIGUOUS_STATUS,
-    });
-  }
-  return rows;
+  });
+  await Promise.all(runners);
+  return results;
 }
 
 function tenantEventsUrl(tenant, page) {
-  const params = new URLSearchParams({ pp: String(PAGE_SIZE), page: String(page) });
+  const params = new URLSearchParams({ days: String(HORIZON_DAYS), pp: String(PAGE_SIZE), page: String(page) });
   return `${tenant.apiBase}/api/2/events?${params.toString()}`;
 }
 
-// Fetches every page (bounded by MAX_PAGES_PER_TENANT) of one tenant's
-// upcoming events. Terminates when a page returns fewer than PAGE_SIZE
-// events (a normal "last page") rather than depending on any particular
-// total-count/page-count field name, since that wasn't independently
-// confirmed for either tenant in this pass -- a conservative, verifiable
-// termination rule over trusting an unverified response field. Returns
-// { events, error } -- same contract as cron-eventbrite.js's
-// fetchOrganizerEvents.
-async function fetchTenantEvents(tenant) {
-  const events = [];
-  for (let page = 1; page <= MAX_PAGES_PER_TENANT; page++) {
-    let r;
-    try {
-      r = await fetch(tenantEventsUrl(tenant, page), { headers: { "User-Agent": "313.events event calendar" } });
-    } catch (err) {
-      return { events, error: "Fetch failed: " + err.message };
+function pageEvents(data) {
+  if (!data || typeof data !== "object" || !Array.isArray(data.events)) return null;
+  return data.events.map((w) => (w && typeof w === "object" ? w.event || w : null)).filter(Boolean);
+}
+
+// The whole 90-day listing of one tenant, or an error. All or nothing: see
+// the header. -> { events, windowStart, windowEnd, pages, error }
+async function fetchTenantEvents(tenant, deadline) {
+  const empty = { events: [], windowStart: null, windowEnd: null, pages: 0 };
+  const first = await fetchJson(tenantEventsUrl(tenant, 1), deadline);
+  if (first.error) return { ...empty, error: first.error };
+  const firstEvents = pageEvents(first.data);
+  if (!firstEvents) return { ...empty, error: "Unexpected API response shape (events was not an array)" };
+
+  const stated = first.data.date && typeof first.data.date === "object" ? first.data.date : {};
+  const isIsoDate = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  const windowStart = isIsoDate(stated.first) ? stated.first : detroitToday();
+  const windowEnd = isIsoDate(stated.last) ? stated.last : isoDatePlusDays(windowStart, HORIZON_DAYS);
+
+  const totalStated = first.data.page && Number.isInteger(first.data.page.total) ? first.data.page.total : null;
+  let events = firstEvents;
+  let pages = 1;
+  if (totalStated !== null) {
+    if (totalStated > MAX_PAGES_PER_TENANT) {
+      return { ...empty, windowStart, windowEnd, error: `Listing is ${totalStated} pages, more than the ${MAX_PAGES_PER_TENANT}-page ceiling; nothing written for this tenant` };
     }
-    if (!r.ok) {
-      return { events, error: `Fetch failed: HTTP ${r.status}` };
+    const rest = [];
+    for (let page = 2; page <= totalStated; page++) rest.push(page);
+    const results = await mapLimit(rest, PAGE_CONCURRENCY, async (page) => {
+      const r = await fetchJson(tenantEventsUrl(tenant, page), deadline);
+      if (r.error) return { error: `page ${page}: ${r.error}` };
+      const list = pageEvents(r.data);
+      return list ? { list } : { error: `page ${page}: unexpected API response shape` };
+    });
+    const bad = results.find((r) => r.error);
+    if (bad) return { ...empty, windowStart, windowEnd, error: bad.error };
+    // Every page but the last is full, or the listing has a hole in it.
+    const size = Number.isInteger(first.data.page.size) && first.data.page.size > 0 ? first.data.page.size : PAGE_SIZE;
+    const lists = [firstEvents, ...results.map((r) => r.list)];
+    const short = lists.findIndex((list, index) => index < lists.length - 1 && list.length < size);
+    if (short !== -1) return { ...empty, windowStart, windowEnd, error: `Listing is incomplete: page ${short + 1} of ${totalStated} holds ${lists[short].length} entries, not ${size}; nothing written for this tenant` };
+    for (const r of results) events = events.concat(r.list);
+    pages = totalStated;
+  } else {
+    // A tenant that does not state a page count: read until a short page.
+    while (events.length === pages * PAGE_SIZE) {
+      if (pages >= MAX_PAGES_PER_TENANT) {
+        return { ...empty, windowStart, windowEnd, error: `Listing ran past the ${MAX_PAGES_PER_TENANT}-page ceiling; nothing written for this tenant` };
+      }
+      const r = await fetchJson(tenantEventsUrl(tenant, pages + 1), deadline);
+      if (r.error) return { ...empty, windowStart, windowEnd, error: `page ${pages + 1}: ${r.error}` };
+      const list = pageEvents(r.data);
+      if (!list) return { ...empty, windowStart, windowEnd, error: `page ${pages + 1}: unexpected API response shape` };
+      events = events.concat(list);
+      pages++;
+      if (list.length < PAGE_SIZE) break;
     }
-    let data;
-    try {
-      data = await r.json();
-    } catch (err) {
-      return { events, error: "Unparseable JSON response: " + err.message };
-    }
-    if (!data || typeof data !== "object" || !Array.isArray(data.events)) {
-      return { events, error: "Unexpected API response shape (events was not an array)" };
-    }
-    const pageEvents = data.events.map((w) => (w && typeof w === "object" ? w.event || w : null)).filter(Boolean);
-    events.push(...pageEvents);
-    if (pageEvents.length < PAGE_SIZE) break;
   }
-  return { events, error: null };
+  // The tenant says how many entries the listing has. Fewer than that -- a
+  // page that answered 200 with nothing in it -- is a listing with a hole.
+  // Counted as DISTINCT occurrences: a page served twice does not make up
+  // for one that came back short.
+  const statedItems = first.data.page && Number.isInteger(first.data.page.total_items) ? first.data.page.total_items : null;
+  const distinct = new Set(events.map((e, index) => {
+    const wrapper = Array.isArray(e.event_instances) ? e.event_instances[0] : null;
+    const instance = wrapper && typeof wrapper === "object" ? wrapper.event_instance || wrapper : null;
+    return instance && instance.id != null ? `i:${instance.id}` : `n:${index}`;
+  })).size;
+  if (statedItems !== null && distinct !== statedItems) {
+    return { ...empty, windowStart, windowEnd, error: `Listing is incomplete: ${distinct} distinct entries read, ${statedItems} stated; nothing written for this tenant` };
+  }
+  // countStated: the tenant said how many entries there are, so the listing
+  // is KNOWN to be whole. Only then may anything be withdrawn on its strength.
+  return { events, windowStart, windowEnd, pages, countStated: statedItems !== null, error: null };
+}
+
+// One event's every instance, past ones included. -> { instanceWrappers, error }
+async function fetchEventSchedule(tenant, eventId, deadline) {
+  const r = await fetchJson(`${tenant.apiBase}/api/2/events/${encodeURIComponent(eventId)}`, deadline);
+  if (r.error) return { instanceWrappers: null, error: r.error };
+  const event = r.data && typeof r.data === "object" ? r.data.event || r.data : null;
+  if (!event || !Array.isArray(event.event_instances)) return { instanceWrappers: null, error: "Unexpected API response shape (no event_instances)" };
+  return { instanceWrappers: event.event_instances, error: null };
+}
+
+// Everything one tenant contributes to this run: its rows and the funnel
+// that produced them. Never throws; a failure is in `errors`. The decisions
+// are all in api/_lib/localist-rows.js; only the requests are made here.
+async function collectTenant(tenant, deadline = Date.now() + TENANT_BUDGET_MS) {
+  const funnel = newFunnel(tenant);
+  const listing = await fetchTenantEvents(tenant, deadline);
+  funnel.windowStart = listing.windowStart;
+  funnel.windowEnd = listing.windowEnd;
+  if (listing.error) return { rows: [], funnel, errors: [listing.error], complete: false };
+  funnel.pages = listing.pages;
+
+  const eligible = selectEligible(listing.events, tenant, funnel);
+
+  // Full schedule for an event with an occurrence at either edge of the window.
+  const wantSchedule = eligible.filter((g) => needsFullSchedule(g.instanceWrappers, listing.windowStart, listing.windowEnd));
+  if (wantSchedule.length > MAX_DETAIL_FETCHES_PER_TENANT) {
+    return { rows: [], funnel, errors: [`${wantSchedule.length} events need their full schedule, more than the ceiling of ${MAX_DETAIL_FETCHES_PER_TENANT}; nothing written for this tenant`], complete: false };
+  }
+  const fetched = await mapLimit(wantSchedule, DETAIL_CONCURRENCY, (g) => fetchEventSchedule(tenant, g.event.id, deadline));
+  const schedules = new Map(wantSchedule.map((g, i) => [String(g.event.id), fetched[i]]));
+
+  const { rows, errors } = buildTenantRows(
+    eligible,
+    schedules,
+    { tenant, windowStart: listing.windowStart, windowEnd: listing.windowEnd, categoryFromText: extractCategory },
+    funnel
+  );
+  // Occurrences the listing still contains but that are not ours to show (the
+  // event is cancelled, not for the public, virtual, outside the Orbit): a
+  // stored row for one of these is withdrawn on evidence, not on absence.
+  const eligibleIds = new Set(eligible.map((g) => String(g.event.id)));
+  const listedNotEligible = new Set();
+  for (const e of listing.events) {
+    if (!e || eligibleIds.has(String(e.id))) continue;
+    for (const wrapper of Array.isArray(e.event_instances) ? e.event_instances : []) {
+      const inst = wrapper && typeof wrapper === "object" ? wrapper.event_instance || wrapper : null;
+      if (inst && inst.id != null) listedNotEligible.add(`localist-${tenant.tenantSlug}-${inst.id}`);
+    }
+  }
+  // `complete`: these rows are everything this tenant has for the window --
+  // the listing was whole and every schedule that was needed was read.
+  return { rows, funnel, errors, complete: errors.length === 0, countStated: listing.countStated === true, listedNotEligible };
+}
+
+// Stored rows of one tenant, public or awaiting review, that start on or
+// after the listing's first day.
+async function fetchStoredRows(tenant, windowStart) {
+  const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
+  const query = `events?external_id=like.localist-${tenant.tenantSlug}-*&status=in.(approved,pending_review)&start_date=gte.${windowStart}&select=id,external_id,status,start_date,internal_note&order=id.asc`;
+  // `like` would also match another tenant whose name begins with this one's.
+  const own = new RegExp(`^localist-${tenant.tenantSlug}-[^-]+$`);
+  const rows = [];
+  for (let page = 0; page < 20; page++) {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/${query}&limit=${STORED_PAGE_SIZE}&offset=${rows.length}`, { headers, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+    if (!resp.ok) throw new Error(`reading stored rows returned ${resp.status}`);
+    const batch = await resp.json();
+    if (!Array.isArray(batch)) throw new Error("reading stored rows returned a non-array");
+    if (!batch.length) return rows.filter((r) => own.test(r.external_id));
+    rows.push(...batch);
+  }
+  throw new Error("too many stored rows to read safely");
+}
+
+async function patchRows(ids, statusFilter, body) {
+  const headers = { "Content-Type": "application/json", apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, Prefer: "return=minimal" };
+  for (let i = 0; i < ids.length; i += ID_CHUNK) {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=in.(${ids.slice(i, i + ID_CHUNK).join(",")})&status=${statusFilter}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  }
+}
+
+// rows -> [[row, row, ...]]: rows that take the same PATCH (same status,
+// same note), so that the usual case -- no note at all -- is one request.
+function groupBy(rows, keyOf) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = keyOf(row);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  }
+  return [...groups.values()];
+}
+
+// Hides the stored rows of a tenant that this (complete) run did not
+// produce. -> { withdrawn, keptByReviewer, error }. See the header, 4.
+async function withdrawStaleRows(tenant, collected) {
+  const { windowStart, windowEnd } = collected.funnel;
+  let stored;
+  try {
+    stored = await fetchStoredRows(tenant, windowStart);
+  } catch (err) {
+    return { withdrawn: 0, keptByReviewer: 0, error: `withdrawal skipped: ${err.message}` };
+  }
+  const produced = new Set(collected.rows.map((r) => r.external_id));
+  const unlisted = stored.filter((r) => !produced.has(r.external_id) && r.start_date <= windowEnd);
+  // ACTIVE and carrying this connector's withdrawal line: a reviewer restored
+  // it. It is theirs to keep, for good, and is marked so.
+  const kept = unlisted.filter((r) => noteLines(r.internal_note).some(isKeptLine));
+  const justRestored = unlisted.filter((r) => !kept.includes(r) && noteLines(r.internal_note).some(isWithdrawalLine));
+  const stale = unlisted.filter((r) => !kept.includes(r) && !justRestored.includes(r));
+  const keptByReviewer = kept.length + justRestored.length;
+  let withdrawn = 0;
+  try {
+    for (const group of groupBy(justRestored, (r) => r.internal_note || "")) {
+      await patchRows(group.map((r) => r.id), "in.(approved,pending_review)", { internal_note: withLine(withoutWithdrawalLines(group[0].internal_note), `${KEPT_PREFIX} (the source no longer lists it for the public).`) });
+    }
+    if (!stale.length) return { withdrawn, keptByReviewer, error: null };
+    // Still in the listing, and not ours to show: withdrawn on that evidence.
+    // Simply gone from the listing: believed only in plausible numbers.
+    const confirmed = stale.filter((r) => collected.listedNotEligible && collected.listedNotEligible.has(r.external_id));
+    const vanished = stale.filter((r) => !confirmed.includes(r));
+    const refused = vanished.length > WITHDRAW_MAX_ROWS && vanished.length > stored.length * WITHDRAW_MAX_SHARE;
+    const toWithdraw = refused ? confirmed : stale;
+    // One request per (status, existing note): each note keeps what it had and
+    // gains one last line, dated by the listing's own first day -- the day
+    // the source stopped listing it.
+    for (const group of groupBy(toWithdraw, (r) => `${r.status}\u0000${r.internal_note || ""}`)) {
+      const was = group[0].status;
+      await patchRows(group.map((r) => r.id), `eq.${was}`, { status: "rejected", internal_note: withLine(group[0].internal_note, `${WITHDRAWN_PREFIX} on ${windowStart}: no longer in the source's listing for the public (was ${was}).`) });
+      withdrawn += group.length;
+    }
+    return { withdrawn, keptByReviewer, error: refused ? `refusing to withdraw ${vanished.length} of ${stored.length} stored rows that vanished from the listing in one run; none of those withdrawn` : null };
+  } catch (err) {
+    return { withdrawn, keptByReviewer, error: `withdrawal failed part-way (${err.message}); it is tried again on the next run` };
+  }
+}
+
+// The status a stored row is written back with. A row this connector
+// withdrew, now listed again, gets back the status it had; anything else
+// keeps the status it has.
+function statusToKeep(stored) {
+  if (stored.status === "rejected" && withdrawnAndUntouched(stored)) {
+    const lines = noteLines(stored.internal_note);
+    const was = /\(was (approved|pending_review)\)/.exec(lines[lines.length - 1]);
+    return { status: was ? was[1] : AMBIGUOUS_STATUS, restored: true };
+  }
+  return { status: stored.status, restored: false };
+}
+
+// A row that already exists, as it is written back: `row` is what the source
+// says now, `stored` what the table holds. See the header, "what is written
+// over, and what is not".
+function mergeWithStored(row, stored, categoryConfident, venueMaps) {
+  const out = { ...row };
+  for (const field of KEEP_STORED_WHEN_BLANK) if (isBlank(out[field]) && !isBlank(stored[field])) out[field] = stored[field];
+
+  // Is the event still where the stored row says it is?
+  const street = (value) => (isBlank(value) ? "" : String(value).toLowerCase().replace(/[.,#]/g, "").replace(/\s+/g, " ").trim());
+  const cityAgrees = !citiesConflict(out.venue_city_raw, stored.venue_city_raw);
+  let samePlace;
+  if (isBlank(out.venue_name_raw)) {
+    // The source names no venue: it is silent about one, unless its street
+    // or city contradicts what is stored.
+    samePlace = cityAgrees && (!street(out.venue_address_raw) || !street(stored.venue_address_raw) || street(out.venue_address_raw) === street(stored.venue_address_raw));
+  } else {
+    samePlace = cityAgrees && normalizeVenueName(out.venue_name_raw) === normalizeVenueName(stored.venue_name_raw || "");
+  }
+  if (samePlace) {
+    for (const field of ["venue_name_raw", "venue_address_raw", "venue_city_raw"]) if (isBlank(out[field]) && !isBlank(stored[field])) out[field] = stored[field];
+    // A link someone or something made while the event has not moved stands
+    // -- if that venue is in the event's city (a row from before 2026-10-05
+    // may be linked to a same-named venue in another one).
+    // Dropped only on evidence: the venue is on file and its city disagrees.
+    // (A venue that could not be read this run is not evidence of anything.)
+    const linked = !isBlank(stored.venue_id) && venueMaps && venueMaps.byId ? venueMaps.byId.get(stored.venue_id) : null;
+    if (!isBlank(stored.venue_id) && !(linked && citiesConflict(out.venue_city_raw, linked.city))) out.venue_id = stored.venue_id;
+  }
+  // The catch-all category is not written over whatever the row has been
+  // given since. (The column cannot be left out of an upsert, so the stored
+  // value is sent back.)
+  if (!categoryConfident && stored.category) out.category = stored.category;
+  // The note is the stored row's, less this connector's own withdrawal line:
+  // the source lists the event, so that line has served its purpose.
+  out.internal_note = withoutWithdrawalLines(stored.internal_note);
+  return out;
 }
 
 module.exports = async (req, res) => {
+  const startedAt = Date.now();
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -447,55 +596,67 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // One source_runs row per invocation, across every tenant -- same
+  // convention as cron-feeds.js and cron-eventbrite.js. Tenants are read
+  // side by side; one failing never stops the other.
+  const collected = await Promise.all(TENANTS.map((tenant) => collectTenant(tenant, startedAt + TENANT_BUDGET_MS)));
   const failed = [];
+  const funnels = [];
+  const parsed = [];
   let totalFetched = 0;
-  const allParsed = [];
+  collected.forEach((c, i) => {
+    funnels.push(c.funnel);
+    totalFetched += c.funnel.occurrencesFetched;
+    for (const error of c.errors) failed.push({ tenant: TENANTS[i].tenantSlug, error });
+    parsed.push(...c.rows);
+  });
+  for (const funnel of funnels) console.log("[cron-localist] " + JSON.stringify(funnel));
+  // Kept for whoever reads the response: the total not written for being
+  // outside the Orbit, however that was known.
+  const skippedOutsideOrbit = funnels.reduce((n, f) => n + f.skipped.outside_orbit + f.skipped.city_not_listed, 0);
+  const errorSample = () => (failed.length ? failed.map((f) => `${f.tenant}: ${f.error}`).join("; ") : null);
 
-  // Single aggregate run across every configured tenant -- same
-  // "one source_runs row per invocation" convention as cron-feeds.js and
-  // cron-eventbrite.js. A per-tenant failure never aborts the other
-  // tenants in this same run; it is recorded in `failed`.
-  for (const tenant of TENANTS) {
-    const { events, error } = await fetchTenantEvents(tenant);
-    totalFetched += events.length;
-    if (error) failed.push({ tenant: tenant.tenantSlug, error });
-    for (const e of events) {
-      for (const row of parseEvent(e, tenant)) allParsed.push(row);
+  // Withdraw what a tenant no longer lists -- only for a tenant whose run was
+  // complete, and BEFORE the write (see the header, 4). Never throws.
+  let withdrawn = 0;
+  for (let i = 0; i < TENANTS.length; i++) {
+    if (!collected[i].complete || !collected[i].funnel.windowStart) continue;
+    if (!collected[i].countStated) {
+      failed.push({ tenant: TENANTS[i].tenantSlug, error: "withdrawal skipped: the listing does not say how many entries it has, so it cannot be shown to be whole" });
+      continue;
     }
+    const result = await withdrawStaleRows(TENANTS[i], collected[i]);
+    collected[i].funnel.withdrawn = result.withdrawn;
+    collected[i].funnel.keptByReviewer = result.keptByReviewer;
+    withdrawn += result.withdrawn;
+    if (result.error) failed.push({ tenant: TENANTS[i].tenantSlug, error: result.error });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const current = allParsed.filter((e) => e.start_date >= today);
-  // BUG-013: not written, and counted -- reported in this run's response.
-  const skippedOutsideOrbit = current.filter((e) => e._outsideOrbit).length;
-  if (skippedOutsideOrbit) console.log(`[cron-localist] ${skippedOutsideOrbit} event(s) outside the ${ORBIT_MILES}-mile Orbit were not written`);
-  const parsed = current.filter((e) => !e._outsideOrbit);
-
   if (!parsed.length) {
+    // Nothing to write. With no failure that is a quiet day; if every tenant
+    // failed it is a failed run, not a partial one.
     await finishRun(runHandle, {
-      outcome: failed.length ? "partial" : "success",
+      outcome: !failed.length ? "success" : collected.every((c) => c.errors.length) ? "failed" : "partial",
       records_fetched: totalFetched,
       records_parsed: 0,
       records_written: 0,
-      error_sample: failed.length ? failed.map((f) => `${f.tenant}: ${f.error}`).join("; ") : undefined,
+      error_sample: errorSample(),
     });
-    res.status(200).json({ upserted: 0, checked: totalFetched, skippedOutsideOrbit, failed, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: 0, withdrawn, checked: totalFetched, skippedOutsideOrbit, funnels, failed, fetchedAt: new Date().toISOString() });
     return;
   }
 
-  const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const venueMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   const rawRows = parsed.map((e) => {
-    const { _rawVenueName, _defaultStatusForRow, _outsideOrbit, ...row } = e;
-    // Not given by the source: left out, never sent as null (see header).
-    if (row.venue_address_raw === null) delete row.venue_address_raw;
-    if (row.venue_city_raw === null) delete row.venue_city_raw;
-    return {
-      ...row,
-      venue_name_raw: _rawVenueName,
-      venue_id: resolveVenueId(venueMap, _rawVenueName),
-      _defaultStatusForRow,
-    };
+    const { _rawVenueName, _runDays, ...row } = e;
+    // A venue is linked by its exact name, and only when BOTH the event and
+    // the venue on file state a city for the lookup to check one against the
+    // other. Never by address: a campus has one street address and many
+    // buildings, and a link by address made every one of them "Macomb Center
+    // for the Performing Arts".
+    const venue = e.venue_city_raw && _rawVenueName ? resolveVenueFromCandidate({ name: _rawVenueName, address: null, city: e.venue_city_raw }, venueMaps) : null;
+    return { ...row, venue_name_raw: _rawVenueName, venue_id: venue && !isBlank(venue.city) ? venue.id : null };
   });
 
   // De-dupe by external_id -- same reasoning as every other cron here.
@@ -506,28 +667,35 @@ module.exports = async (req, res) => {
   const rows = Array.from(seen.values());
 
   try {
-    let existingStatusByExternalId;
+    let existingByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      existingByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: STORED_SELECT }
       );
     } catch (lookupErr) {
       await finishRun(runHandle, {
         outcome: "failed",
         http_status: 502,
         records_fetched: totalFetched,
-        records_parsed: parsed.length,
+        records_parsed: rows.length,
         error_sample: "Status lookup failed: " + lookupErr.message,
       });
-      res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
+      res.status(502).json({ upserted: 0, withdrawn, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
+    let restored = 0;
     const rowsWithStatus = rows.map((row) => {
-      const { _defaultStatusForRow, ...rest } = row;
-      return { ...rest, status: existingStatusByExternalId.get(row.external_id) || _defaultStatusForRow };
+      const { _defaultStatusForRow, _categoryConfident, ...rest } = row;
+      const stored = existingByExternalId.get(row.external_id);
+      if (!stored) return { ...rest, status: _defaultStatusForRow };
+      const keep = statusToKeep(stored);
+      if (keep.restored) restored++;
+      return { ...mergeWithStored(rest, stored, _categoryConfident, venueMaps), status: keep.status };
     });
+    const newRows = rowsWithStatus.filter((row) => !existingByExternalId.has(row.external_id)).length;
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
@@ -536,38 +704,57 @@ module.exports = async (req, res) => {
         outcome: "failed",
         http_status: resp.status,
         records_fetched: totalFetched,
-        records_parsed: parsed.length,
+        records_parsed: rows.length,
         records_written: resp.written,
         error_sample: "Supabase upsert failed: " + errText,
       });
       res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
+
     await finishRun(runHandle, {
       outcome: failed.length ? "partial" : "success",
       http_status: resp.status,
       records_fetched: totalFetched,
-      records_parsed: parsed.length,
+      records_parsed: rows.length,
       records_written: rowsWithStatus.length,
-      error_sample: failed.length ? failed.map((f) => `${f.tenant}: ${f.error}`).join("; ") : undefined,
+      error_sample: errorSample(),
     });
-    res.status(200).json({ upserted: rowsWithStatus.length, checked: totalFetched, skippedOutsideOrbit, failed, fetchedAt: new Date().toISOString() });
+    res.status(200).json({
+      upserted: rowsWithStatus.length,
+      newRows,
+      restored,
+      withdrawn,
+      checked: totalFetched,
+      skippedOutsideOrbit,
+      funnels,
+      failed,
+      fetchedAt: new Date().toISOString(),
+    });
   } catch (err) {
     await finishRun(runHandle, {
       outcome: "failed",
       records_fetched: totalFetched,
-      records_parsed: parsed.length,
+      records_parsed: rows.length,
       error_sample: err.message,
     });
-    res.status(500).json({ upserted: 0, error: err.message });
+    res.status(500).json({ upserted: 0, withdrawn, error: err.message });
   }
 };
 
-module.exports.parseEvent = parseEvent; // exposed for test/cron-localist-runlog.test.js only
-module.exports.parseLocalistLocation = parseLocalistLocation; // exposed for test/cron-localist-location.test.js only
+// Exposed for the tests.
+module.exports.TENANTS = TENANTS;
+module.exports.MAX_PAGES_PER_TENANT = MAX_PAGES_PER_TENANT;
+module.exports.MAX_DETAIL_FETCHES_PER_TENANT = MAX_DETAIL_FETCHES_PER_TENANT;
+module.exports.fetchTenantEvents = fetchTenantEvents;
+module.exports.fetchEventSchedule = fetchEventSchedule;
+module.exports.collectTenant = collectTenant;
+module.exports.mergeWithStored = mergeWithStored;
+module.exports.WITHDRAWN_PREFIX = WITHDRAWN_PREFIX;
+module.exports.KEPT_PREFIX = KEPT_PREFIX;
+module.exports.detroitToday = detroitToday;
+module.exports.parseLocalistLocation = parseLocalistLocation;
+module.exports.mapCategory = mapCategory;
+module.exports.formatTimeDisplay = formatTimeDisplay;
 module.exports.ORBIT_MILES = ORBIT_MILES;
-module.exports.mapCategory = mapCategory; // exposed for test/cron-localist-runlog.test.js only
-module.exports.formatTimeDisplay = formatTimeDisplay; // exposed for test/cron-localist-runlog.test.js only
-module.exports.fetchTenantEvents = fetchTenantEvents; // exposed for test/cron-localist-runlog.test.js only
-module.exports.TENANTS = TENANTS; // exposed for test/cron-localist-runlog.test.js only
-module.exports.MAX_PAGES_PER_TENANT = MAX_PAGES_PER_TENANT; // exposed for test/cron-localist-runlog.test.js only
+module.exports.HORIZON_DAYS = HORIZON_DAYS;
