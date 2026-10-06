@@ -258,6 +258,36 @@ Initiative-level view. No dates are given anywhere in this file — none of the 
 
 ---
 
+## Initiative — Organizer Lifecycle & Cultural Archive (EPIC-018–EPIC-019)
+
+**Captured 2026-10-06, Product Owner request.** Direction preserved during Sprint Zero; documentation only, not sequenced, not part of the monetization build order (`DEC-019`). North star: 313.events should increasingly give organizers, audiences and the city value from the event record while requiring less clerical work from the Product Owner.
+
+## EPIC-018 — Organizer Event Lifecycle
+
+**Objective.** `SUBMIT → REVIEW → APPROVE → PUBLISH → PROMOTE → MANAGE → EVENT → PRESERVE/ARCHIVE`: a free, ungated, durable event home for every approved event; an automatic go-live email with permanent URL, QR download and a secure manage link; passwordless event management that routes material edits through the publication/field-authority system rather than overwriting canonical truth; a promotion kit; post-event preservation; and an organic distribution loop in which printed QR codes carry 313.events into the physical city.
+
+**Why it matters.** Submission is currently an ingestion endpoint with nothing returned to the organizer, and the Product Owner still handles corrections by hand. The event record is where value and less clerical work meet.
+
+**Current status.** IDEA/BACKLOG — 15 future work packages (`OL.1`–`OL.15`) recorded, none `READY`. Hard prerequisites (durable event identity, publication gate, historical retention, field authority, provenance, secure public/private boundaries) are Sprint Zero / readiness-review territory.
+
+**Related epic file.** `epics/EPIC-018-organizer-event-lifecycle.md`
+
+**Definition of success.** An organizer gets a permanent page, a printable QR and a way to correct or cancel, without Product Owner involvement, and keeps coming back.
+
+---
+
+## EPIC-019 — Cultural Archive, Tours & Data Products
+
+**Objective.** Preserve the direction that event pages become durable cultural artifacts, that Detroit/Orbit cultural data can compose personalized experiences and tours, and that the normalized historical database is itself a licensable product (API, feeds, widgets, reports, research access) — all without building a knowledge graph now.
+
+**Current status.** IDEA — direction only; the additive path is protected by the readiness-review guardrails (G-1–G-6).
+
+**Related epic file.** `epics/EPIC-019-cultural-archive-tours-data-products.md`
+
+**Definition of success.** Not definable yet; success today means history is never discarded and no foundation decision forecloses these paths.
+
+---
+
 ## Standalone item — Facebook auto-post distribution
 
 Not treated as a full epic; it's small, self-contained, and already code-complete. `api/cron-post-to-facebook.js` posts newly-approved events to 313.events' own Facebook Page feed (not native Facebook Events — that needs Meta's separate, heavier Official Events API partner program, not pursued). The code no-ops safely until Jody completes several external, non-engineering setup steps on Facebook/Meta's side (Business verification, Meta App creation, App Review for `pages_manage_posts`). See `BACKLOG.md` for the tracked item; no epic file needed unless native Facebook Events becomes a real ask later.

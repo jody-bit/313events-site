@@ -42,6 +42,10 @@ If built without a dedicated design pass: auth/security risk, moderation/abuse r
 
 Whether to pursue this at all (`PRODUCT DECISION REQUIRED`, `PRODUCT.md`).
 
+## Related (added 2026-10-06)
+
+`EPIC-018` (`OL.12`/`OL.13`) captures a narrower idea — organizer and audience content *about a specific event* — without accounts, profiles or chat. It does not resolve `DISCOVERY-003`.
+
 ## Relevant decisions
 
 None yet.

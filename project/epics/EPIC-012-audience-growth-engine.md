@@ -43,6 +43,10 @@ The main risk is exactly the failure mode the Product Owner's own framing warns 
 
 Which landing-page types to build first — likely ordered by `EPIC-001`'s own coverage-rings priority (§6.2's P0–P3 tiers) rather than independently re-prioritized here. Not resolved.
 
+## Related (added 2026-10-06)
+
+`EPIC-018` (Organizer Event Lifecycle) adds the physical-world arm of the distribution loop: a durable per-event QR code and promotion kit (`OL.5`, `OL.6`). The "Listed on 313.events" badge above remains owned here; `OL.6` links to it rather than duplicating it.
+
 ## Relevant decisions
 
 `DEC-014` (three-layer model — a landing page is a discovery-lens surface, category 2, same rules as `EPIC-009`'s lenses re: no implied editorial endorsement). `DEC-015`/`DEC-020` (badge-vs-sponsorship separation).

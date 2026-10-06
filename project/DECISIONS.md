@@ -349,3 +349,5 @@ These have been *raised* and researched but are explicitly **not** settled — l
 - **DISCOVERY-018 — Exact advertising density-ceiling percentage.** Principle locked at "~10% of the primary discovery experience" (`DEC-018`); the number itself needs real testing. See `EPIC-016`.
 - **DISCOVERY-019 — Venue/organizer claim-verification mechanism, and whether it's a new trust category or governed by `DEC-005`'s existing hand-curation rule.** Not decided. See `EPIC-017`.
 - **DISCOVERY-021 — Evidence sources for Detroit routing significance** (a "Don't Miss" candidate criterion, `EPIC-007`). No act/artist entity, appearance history, tour-routing or momentum data exists today; no source chosen. Not decided. See `EPIC-007`.
+- **DISCOVERY-022 — Organizer Event Lifecycle open decisions** (permanent URL/redirect, QR indirection, organizer edit tiers, token properties, go-live email classification, retention rule, media/audience-content design). Not decided; nothing is built. See `EPIC-018`.
+- **DISCOVERY-023 — Cultural archive, tours and data products: whether and when** (entity types, data-licensing position, supporter membership). Not evaluated. See `EPIC-019`.

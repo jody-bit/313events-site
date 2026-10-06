@@ -48,6 +48,10 @@ Building a Pro tier before there's a clear free-tier claim/verification flow ris
 
 Venue/organizer claim verification mechanism (not designed). Pro pricing (explicitly "need evidence first," not decided). Whether claim-venue should be gated by the same `DEC-005` hand-curation principle that governs `organizers` today, or whether a verified self-claim is treated as a new, distinct trust category. See `DISCOVERY-019` in `BACKLOG.md`.
 
+## Related (added 2026-10-06)
+
+`EPIC-018` (Organizer Event Lifecycle) records the first-generation path into this epic's free tier — secure email management links before claim/accounts (`OL.7`, `OL.15`). It does not duplicate "manage event" scope; this epic remains the owner of claim, accounts and Pro.
+
 ## Relevant decisions
 
 `DEC-005` ("source ≠ organizer," hand-curation-only — this epic's claim flow must be reconciled with it, not silently override it). `DEC-017` (four-revenue-stream model — this is the "recurring" stream). `DEC-019` (build order — Organizer Pro is last).

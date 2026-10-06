@@ -50,6 +50,10 @@ Building this before `EPIC-016` validates demand is the single largest risk the 
 
 Package pricing (no evidence yet — same "need evidence before pricing" caution the Product Owner applied to `EPIC-017`'s Organizer Pro). Payment processor choice. See `DISCOVERY-017` in `BACKLOG.md`.
 
+## Related (added 2026-10-06)
+
+`EPIC-018` (Organizer Event Lifecycle) is the **free** organizer path (event home, QR, manage link, promotion kit). Paid boosts remain solely this epic's scope and stay separate from, and never alter, the free event record (`EPIC-010`).
+
 ## Relevant decisions
 
 `DEC-017` (four-revenue-stream model — this is the "automated transactional" stream). `DEC-018` (display/sponsorship design principles — this epic's labeling must match them). `DEC-019` (build order and the "prove demand before automating" principle, stated here in its clearest form).
