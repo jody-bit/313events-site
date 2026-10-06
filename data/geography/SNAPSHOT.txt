@@ -1,0 +1,25 @@
+City of Detroit geography — snapshot
+====================================
+Copied on:   2026-10-05T15:46:32Z
+Copied by:   scripts/fetch-detroit-geography.sh
+Publisher:   City of Detroit (Detroit Open Data Portal)
+Public page: https://data.detroitmi.gov/datasets/detroitmi::current-city-of-detroit-neighborhoods
+Coordinates: latitude/longitude, WGS 84 (EPSG:4326), 6 decimal places
+
+1. Neighborhoods ("Current City of Detroit Neighborhoods")
+   file:            detroit-neighborhoods.geojson
+   polygons:        205
+   bytes:           383942
+   sha256:          c76e8f38c22a7d9ac931f3d4499e3fcfd75fc16e38fb983646a5637da58d4db1
+   City last edit:  2023-12-06
+   source:          https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Current_City_of_Detroit_Neighborhoods/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&geometryPrecision=6&f=geojson
+   layer record:    detroit-neighborhoods.layer.json  (https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Current_City_of_Detroit_Neighborhoods/FeatureServer/0?f=json)
+
+2. City limits ("City of Detroit Boundary")
+   file:            detroit-city-boundary.geojson
+   features:        1
+   bytes:           31525
+   sha256:          f63e5ff8eb20faceeac820331233575d0a35c8a1f732753fe8f4bbce0556e359
+   City last edit:  2023-05-16
+   source:          https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/City_of_Detroit_Boundary/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&geometryPrecision=6&f=geojson
+   layer record:    detroit-city-boundary.layer.json  (https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/City_of_Detroit_Boundary/FeatureServer/0?f=json)

@@ -91,6 +91,8 @@ const AUDITED_DIRECT_POSTS = [
   ["scripts/press-coverage-linking.js", "events", "row", "single object (one sourced editorial candidate, on_conflict=external_id, ignore-duplicates)"],
   ["scripts/ra-candidate-promotion.js", "events", "[row]", "one row"],
   ["scripts/ra-sync.js", "events", "payload", "batch; deriveEventRow() sets all 18 keys on every row, blanks as null (description, end_date, time_display, price_from, image_url, address, city, note)"],
+  ["scripts/venue-geography.js", "neighborhoods", "[{ name, area_note: null, is_district: false }]", "one row (a neighborhood label, only when labels from City names are asked for; on_conflict=name, ignore-duplicates)"],
+  ["scripts/venues-from-stated-places.js", "venues", "[{ name: place.name, address: place.address, city: place.city }]", "one row (one canonical venue)"],
 ];
 
 function findDirectPosts(file) {

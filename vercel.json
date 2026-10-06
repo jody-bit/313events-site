@@ -104,6 +104,9 @@
     "api/venue-meta.js": {
       "includeFiles": "venue-template.html"
     },
+    "api/cron-enrichment.js": {
+      "includeFiles": "data/geography/**"
+    },
     "api/cron-eventbrite.js": {
       "maxDuration": 60
     },

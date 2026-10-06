@@ -226,23 +226,75 @@ module.exports = async (req, res) => {
       duplicateConsolidationError = dupErr.message;
     }
 
+    // 2026-10-05: a place its sources keep naming, at a street address they
+    // keep stating, becomes a canonical venue, and its events are linked to
+    // it (Product Owner: "create canonical venue records when there is a
+    // stable source-stated venue/place name AND authoritative source-stated
+    // street address"). Detroit only for now. See
+    // scripts/venues-from-stated-places.js. Same failure isolation as above.
+    //
+    // OFF UNTIL TURNED ON: runs only when VENUE_RECORDS is set to "on". Two
+    // independent reviews showed it can be handed an address that no source
+    // stated for that listing (see the script's header); what it would create
+    // is to be read by a person before it is allowed to write.
+    let venueRecordCounts = null;
+    let venueRecordError = null;
+    const venueRecordsOn = String(process.env.VENUE_RECORDS || "").trim().toLowerCase() === "on";
+    if (venueRecordsOn) {
+      try {
+        const { createVenuesFromStatedPlaces } = require("../scripts/venues-from-stated-places");
+        venueRecordCounts = await createVenuesFromStatedPlaces({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+      } catch (venueRecordErr) {
+        venueRecordError = venueRecordErr.message;
+      }
+    }
+
+    // 2026-10-05: where each canonical venue is, and which City of Detroit
+    // neighborhood that is. A venue with a street address and no coordinates
+    // is geocoded once (U.S. Census Bureau); coordinates are tested against
+    // the City's own boundary and neighborhood polygons, a snapshot committed
+    // under data/geography/ -- no network for that part. A neighborhood a
+    // person assigned is never changed. Events inherit through their venue.
+    // See scripts/venue-geography.js. Same failure isolation as above.
+    //
+    // OFF UNTIL TURNED ON. Product Owner, 2026-10-05: "Do not run the new
+    // geography against production yet" -- its first run moves several
+    // hundred events on the public Map from a city-centre marker to an exact
+    // pin, and that is to be looked at in the Production Data Quality Audit
+    // first. The step runs only when the environment variable
+    // VENUE_GEOGRAPHY is set to "on". Absent, or anything else: it does not
+    // run, asks no geocoder, and writes nothing.
+    let venueGeographyCounts = null;
+    let venueGeographyError = null;
+    const venueGeographyOn = String(process.env.VENUE_GEOGRAPHY || "").trim().toLowerCase() === "on";
+    if (venueGeographyOn) {
+      try {
+        const { runVenueGeography } = require("../scripts/venue-geography");
+        venueGeographyCounts = await runVenueGeography({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+      } catch (geoErr) {
+        venueGeographyError = geoErr.message;
+      }
+    }
+
     const raCandidateWrittenIds = (raCandidateCounts && raCandidateCounts.writtenIds) || [];
     const duplicateWrittenIds = (duplicateCounts && duplicateCounts.writtenIds) || [];
     const nonEventWrittenIds = (nonEventCounts && nonEventCounts.writtenIds) || [];
+    const venueRecordWrittenIds = (venueRecordCounts && venueRecordCounts.writtenIds) || [];
+    const venueGeographyWrittenIds = (venueGeographyCounts && venueGeographyCounts.writtenIds) || [];
     const venueWrittenIds = venueCounts.writtenIds || [];
     const descriptionWrittenIds = (descriptionCounts && descriptionCounts.writtenIds) || [];
     const dossinWrittenIds = (dossinCounts && dossinCounts.writtenIds) || [];
     const redfordWrittenIds = (redfordCounts && redfordCounts.writtenIds) || [];
     const genericWrittenIds = (genericCounts && genericCounts.writtenIds) || [];
     const venueRawReparseWrittenIds = (venueRawReparseCounts && venueRawReparseCounts.writtenIds) || [];
-    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds, ...nonEventWrittenIds]);
+    const combinedWrittenIds = new Set([...raCandidateWrittenIds, ...venueWrittenIds, ...descriptionWrittenIds, ...dossinWrittenIds, ...redfordWrittenIds, ...genericWrittenIds, ...venueRawReparseWrittenIds, ...duplicateWrittenIds, ...nonEventWrittenIds, ...venueRecordWrittenIds, ...venueGeographyWrittenIds]);
 
     // Step-level failures stay isolated (unchanged) -- but a run where any
     // step errored is not a clean 'success' for telemetry purposes either.
     // 'partial' mirrors the outcome vocabulary every ingestion connector
     // already uses for "ran, wrote some things, but not everything went
     // cleanly" (migration_035's own outcome check constraint).
-    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError, nonEventRetirementError, duplicateConsolidationError].filter(Boolean);
+    const stepErrors = [raCandidatePromotionError, outerLimitsDescriptionError, dossinMetadataError, redfordMetadataError, genericEnrichmentError, venueRawReparseError, nonEventRetirementError, duplicateConsolidationError, venueRecordError, venueGeographyError].filter(Boolean);
     await finishRun(runHandle, {
       outcome: stepErrors.length ? "partial" : "success",
       records_written: combinedWrittenIds.size,
@@ -269,6 +321,10 @@ module.exports = async (req, res) => {
       nonEventRetirementError,
       duplicateConsolidation: duplicateCounts,
       duplicateConsolidationError,
+      venueRecords: venueRecordsOn ? venueRecordCounts : "off (set VENUE_RECORDS=on to run it)",
+      venueRecordError,
+      venueGeography: venueGeographyOn ? venueGeographyCounts : "off (set VENUE_GEOGRAPHY=on to run it)",
+      venueGeographyError,
     });
   } catch (err) {
     // Previously unreachable safety net -- see this file's header TELEMETRY

@@ -23,9 +23,12 @@
 //   ...
 //   venue_id: resolveVenueId(venueMap, row.venue_name_raw),
 
+// 2026-10-05: a typographic apostrophe is the same character as a typed one.
+// WDET writes "Terri\u2019s Detroit"; the venue is "Terri's Detroit". The two
+// are one name, and until this line the event never found its venue.
 function normalizeVenueName(name) {
   if (typeof name !== "string") return "";
-  return name.trim().toLowerCase().replace(/\s+/g, " ");
+  return name.trim().toLowerCase().replace(/[\u2018\u2019\u02BC]/g, "'").replace(/\s+/g, " ");
 }
 
 // Same trim + lowercase + whitespace-collapse normalization as
@@ -622,6 +625,7 @@ module.exports = {
   resolveVenueNameFromAddressRepair,
   resolveVenueFromCandidate,
   isPlaceholderVenueName,
+  normalizeCityForCompare,
   citiesConflict,
   resolveDigitalHomeLink,
   resolvePublicVenueDisplay,

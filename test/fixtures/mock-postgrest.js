@@ -138,6 +138,7 @@ function makeMockPostgrest(tables, options) {
 
   const OPS = {
     eq: (a, b) => String(a) === b,
+    neq: (a, b) => a != null && String(a) !== b,
     gte: (a, b) => a != null && String(a) >= b,
     gt: (a, b) => a != null && String(a) > b,
     lte: (a, b) => a != null && String(a) <= b,

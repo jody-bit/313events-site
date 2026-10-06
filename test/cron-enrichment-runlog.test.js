@@ -44,6 +44,11 @@ const SCRIPT_FILES = [
   "api/_lib/ra-provenance-note.js",
   "api/_lib/source-authority.js",
   "api/_lib/external-discovery.js",
+  "scripts/venue-geography.js",
+  "scripts/venues-from-stated-places.js",
+  "api/_lib/detroit-parcels.js",
+  "api/_lib/detroit-geography.js",
+  "api/_lib/census-geocoder.js",
 ];
 
 function freshHandler() {
@@ -76,6 +81,8 @@ function makeRes() {
 //   Generic            scripts/generic-metadata-enrichment.js:125           followup_dismissed=is.false
 //   venue-raw-reparse  scripts/venue-raw-reparse-repair.js:74-77            venue_name_raw=not.is.null
 function classifyGet(url) {
+  // scripts/venues-from-stated-places.js: public events with a venue name and no venue record.
+  if (url.includes("venue_id=is.null&status=eq.approved&venue_name_raw=not.is.null")) return "venueRecords";
   if (url.includes("followup_dismissed=is.false")) return "generic";
   if (url.includes("venue_name_raw=not.is.null")) return "venueRawReparse";
   if (url.includes("or=(description.is.null,ticket_url.is.null,event_url.is.null)")) return "redford";
@@ -130,6 +137,12 @@ function makeMockFetch({ runInsert, runUpdate, failGet = {} } = {}) {
     if (url.includes("/rest/v1/venues")) {
       return { ok: true, status: 200, json: async () => [] };
     }
+    // The venue-geography step (2026-10-05) also reads the neighborhood
+    // labels. No venues, no labels: it runs and has nothing to do.
+    if (url.includes("/rest/v1/neighborhoods") && method === "GET") {
+      if (failGet.neighborhoods) return { ok: false, status: 500, json: async () => ({}) };
+      return { ok: true, status: 200, json: async () => [] };
+    }
     if (url.includes("/rest/v1/events") && method === "GET") {
       const which = classifyGet(url);
       if (which && failGet[which]) return { ok: false, status: 500, json: async () => ({}) };
@@ -179,6 +192,66 @@ async function run() {
     assert.strictEqual(patches[0].body.outcome, "success");
     assert.strictEqual(patches[0].body.records_written, 0);
     assert.strictEqual(patches[0].body.error_sample, null, "no error_sample on a clean success");
+    // VENUE GEOGRAPHY IS OFF unless VENUE_GEOGRAPHY=on (Product Owner,
+    // 2026-10-05: not before the Production Data Quality Audit). Off means
+    // off: the neighborhood labels are not even read, no geocoder and no City
+    // service is asked, nothing is written.
+    assert.strictEqual(res._body.venueGeography, "off (set VENUE_GEOGRAPHY=on to run it)");
+    assert.strictEqual(res._body.venueGeographyError, null);
+    assert.ok(!calls.some((c) => /\/rest\/v1\/neighborhoods|census\.gov|arcgis\.com/.test(c.url)));
+    // VENUE RECORDS ARE OFF unless VENUE_RECORDS=on, the same way.
+    assert.strictEqual(res._body.venueRecords, "off (set VENUE_RECORDS=on to run it)");
+    assert.strictEqual(res._body.venueRecordError, null);
+    assert.ok(!calls.some((c) => c.method !== "GET" && /\/rest\/v1\/venues/.test(c.url)), "no venue is created or changed");
+    assert.ok(!calls.some((c) => /status=eq\.approved&venue_name_raw=not\.is\.null/.test(c.url)));
+  }
+  console.log("PASS: venue geography and venue records do not run unless switched on");
+
+  // Neither switch reaches the other; "on" is the only value that turns one on.
+  {
+    process.env.VENUE_RECORDS = "on";
+    const handler = freshHandler();
+    const { fetchFn, calls } = makeMockFetch({});
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+    delete process.env.VENUE_RECORDS;
+    assert.deepStrictEqual(res._body.venueRecords.created, []);
+    assert.strictEqual(res._body.venueGeography, "off (set VENUE_GEOGRAPHY=on to run it)");
+    assert.ok(calls.some((c) => /status=eq\.approved&venue_name_raw=not\.is\.null/.test(c.url)));
+    assert.ok(!calls.some((c) => /\/rest\/v1\/neighborhoods/.test(c.url)));
+  }
+  // Nothing in production asks for neighborhood labels to be created from City names.
+  {
+    const fs = require("fs");
+    for (const file of ["api/cron-enrichment.js", "api/admin-events.js"]) assert.ok(!/createLabels/.test(fs.readFileSync(`${REPO_DIR}/${file}`, "utf8")), `${file} must not pass createLabels`);
+  }
+
+  // --- 1b. turned on: it runs against the committed City snapshot and, with
+  //     no venues, asks no geocoder and writes nothing. ---
+  for (const value of ["on", " ON "]) {
+    process.env.VENUE_GEOGRAPHY = value;
+    const handler = freshHandler();
+    const { fetchFn, calls } = makeMockFetch({});
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+    delete process.env.VENUE_GEOGRAPHY;
+    assert.strictEqual(res._body.venueGeographyError, null);
+    assert.strictEqual(res._body.venueGeography.venues, 0);
+    assert.ok(calls.some((c) => /\/rest\/v1\/neighborhoods/.test(c.url)));
+    assert.ok(!calls.some((c) => /census\.gov|arcgis\.com/.test(c.url)), "no geocoder request when no venue needs coordinates");
+    assert.strictEqual(patchCalls(calls)[0].body.outcome, "success");
+  }
+  for (const value of ["", "off", "true", "1", "dry"]) {
+    process.env.VENUE_GEOGRAPHY = value;
+    const handler = freshHandler();
+    const { fetchFn, calls } = makeMockFetch({});
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+    delete process.env.VENUE_GEOGRAPHY;
+    assert.ok(!calls.some((c) => /\/rest\/v1\/neighborhoods/.test(c.url)), `"${value}" is not "on"`);
   }
   console.log("PASS: a normal run with zero candidates anywhere logs source_runs outcome=success, records_written=0");
 
@@ -246,6 +319,46 @@ async function run() {
     assert.strictEqual(patches.length, 0, "no PATCH is attempted when startRun() never produced a runId");
   }
   console.log("PASS: a source_runs logging outage does not affect cron-enrichment's own success/response (fail-safe, unchanged run-log.js behavior)");
+
+  // --- 5. the venue-geography step, turned on, fails (it cannot read the
+  //     neighborhood labels): isolated like every other step -- the rest of
+  //     the run is unaffected, the response stays ok:true, telemetry says
+  //     partial. ---
+  {
+    process.env.VENUE_GEOGRAPHY = "on";
+    const handler = freshHandler();
+    const { fetchFn, calls } = makeMockFetch({ failGet: { neighborhoods: true } });
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.ok, true);
+    assert.ok(/Failed to read neighborhoods/.test(res._body.venueGeographyError));
+    assert.strictEqual(res._body.duplicateConsolidationError, null, "the steps before it are untouched");
+    const patches = patchCalls(calls);
+    assert.strictEqual(patches[0].body.outcome, "partial");
+    assert.ok(/Failed to read neighborhoods/.test(patches[0].body.error_sample));
+    delete process.env.VENUE_GEOGRAPHY;
+  }
+  console.log("PASS: a venue-geography failure is isolated — outcome=partial, every other step unaffected");
+
+  // --- 6. the venue-records step, turned on, fails: isolated, like every other step. ---
+  {
+    process.env.VENUE_RECORDS = "on";
+    const handler = freshHandler();
+    const { fetchFn, calls } = makeMockFetch({ failGet: { venueRecords: true } });
+    global.fetch = fetchFn;
+    const res = makeRes();
+    await handler({ headers: {} }, res);
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.ok, true);
+    assert.ok(/Failed to read events without a venue/.test(res._body.venueRecordError));
+    assert.strictEqual(res._body.duplicateConsolidationError, null);
+    assert.strictEqual(patchCalls(calls)[0].body.outcome, "partial");
+    delete process.env.VENUE_RECORDS;
+  }
+  console.log("PASS: a venue-records failure is isolated — outcome=partial, every other step unaffected");
 
   console.log("\nAll cron-enrichment.js SH.5 telemetry tests passed.");
 }
