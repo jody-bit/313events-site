@@ -37,6 +37,8 @@ Set these per Vercel environment (Settings → Environment Variables). Never com
 | `APP_ENV` | `production` **only if** Vercel's system env vars are off | unset | See merge gate below |
 | `WEB_SEARCH_ENRICHMENT_ENABLED` | unset (closed) | unset | Stays closed (BUG-010) |
 
+> **Variables apply only to NEW deployments.** Adding or changing a Vercel environment variable does not affect a deployment that already exists. After changing Preview variables, push a commit or redeploy the Preview. (A Preview built before its variables existed serves `/config.js` as a loud 500 by design, rather than falling back to production.)
+
 ## MERGE GATE for this change (Product Owner check, before merging to `main`)
 
 The production-vs-non-production decision reads `VERCEL_ENV`. In Vercel → Project → Settings → Environment Variables, confirm **"Automatically expose System Environment Variables"** is checked. If it is NOT, add `APP_ENV=production` to the **Production** environment first. Without one of these, production would be treated as non-production and the database guard and `/config.js` would fail. Rollback is Vercel Instant Rollback.
@@ -59,6 +61,14 @@ Schema changes: apply to **staging first**, verify, then production, before the 
 ### Production smoke check
 - Home count > 0; an event page and the sitemap load; `/config.js` shows the production host; the next daily health check is green.
 
-## Staging setup (one time; needs the Product Owner)
+## Staging bootstrap procedure
 
-See the numbered owner actions in the Sprint Zero thread. Summary: create the staging Supabase project; build its schema from the production schema baseline (SZ-04); load `supabase/staging/seed_staging.sql`; set Preview-scoped variables in Vercel; enable GitHub branch protection requiring the `test` check.
+Project: `313events-staging` (Supabase ref `efxjdlogohcggpuftivm`). Schema comes only from `supabase/migrations/` (see its README).
+
+1. **Schema:** apply `20261006000000_baseline_schema.sql`, `20261006000001_reference_data.sql`, then `20261006000002_baseline_grants.sql` (legacy production grants, to be tightened by SZ-01), to staging. (Either Claude through the Supabase connector once approved, or `supabase db push` linked to the staging project. Never link the CLI to production for this.)
+2. **Verify:** run `supabase/verify/catalog_fingerprint.sql` and `supabase/verify/grants_check.sql` (expect 13/13) on staging; every hash must equal the production run recorded in the Sprint Zero report.
+3. **Seed:** run `supabase/staging/seed_staging.sql` (synthetic, idempotent). Optionally load the sanitized venue snapshot from SZ-15.
+4. **Wire up:** set the Preview-scoped Vercel variables (matrix above) to the staging URL/keys; redeploy a Preview; check `/config.js` names the staging project.
+5. **First forward migration through the flow:** apply `supabase/proposed/` (gaming category) to staging, verify, and only then ask for production approval.
+
+Account-level steps (Vercel variables, GitHub branch protection) stay with the Product Owner.
