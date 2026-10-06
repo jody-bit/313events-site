@@ -5545,7 +5545,6 @@ function foldICSLine(line){
 function buildEventDescription(e){
   const parts = [];
   if(e.description) parts.push(truncateText(e.description, 300));
-  if(e.note) parts.push(e.note);
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
   if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl) parts.push(safeUrl(e.eventPageUrl));
@@ -5776,7 +5775,6 @@ function streamRowHtml(e, dayIso, ctx){
             <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
             ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
             ${Discovery.featuresOf(e, ctx).includes('clothing_optional')?`<div class="evt-tag-clothing-optional">${escapeHtml(CLOTHING_OPTIONAL_LABEL)}</div>`:''}
-            ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
             ${editorialLinkHtml(e)}
             <div class="evt-actions">
               ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
@@ -7412,7 +7410,6 @@ function mapSupabaseRow(row) {
     // description, same as every other editorial caveat).
     clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
-    note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink, below); keeping
@@ -7492,7 +7489,7 @@ async function loadSupabaseEvents() {
     // That is the whole change: no other history is loaded (measured on
     // production the day it was made: 2,216 -> 2,230 rows, the 14 added all
     // in progress, the same three pages).
-    const url = `${SUPABASE_URL}/rest/v1/events_public?or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,note,ticket_url,event_url,price_from,is_clothing_optional,ticket_status&order=start_date.asc,id.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events_public?or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,ticket_url,event_url,price_from,is_clothing_optional,ticket_status&order=start_date.asc,id.asc`;
     const { rows } = await fetchAllRows(url, {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,

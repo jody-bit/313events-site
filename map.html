@@ -782,8 +782,7 @@ const BLOCKED_NAMES = ["Augustus Williams"];
 function isBlockedEvent(e){
   return BLOCKED_NAMES.some(name => {
     const n = name.toLowerCase();
-    return (e.title && e.title.toLowerCase().includes(n)) ||
-           (e.note && e.note.toLowerCase().includes(n));
+    return e.title && e.title.toLowerCase().includes(n);
   });
 }
 
@@ -1140,7 +1139,6 @@ function evtRowHtml(e){
           ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-        ${e.note?`<div class="note">${escapeHtml(e.note)}</div>`:''}
         ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
         ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
         ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
@@ -1860,7 +1858,6 @@ function mapSupabaseRow(row) {
     time: row.time_display || "",
     free: !!row.is_free,
     source: row.source || "Manual",
-    note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink); keeping this
@@ -1919,7 +1916,7 @@ async function loadSupabaseEvents() {
     // fetchAllRows() (paged-fetch.js) now pages through the whole result
     // instead; see that file's header for the mechanism. `id.asc` is the
     // tiebreak that makes the order total, which paging needs.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status&order=start_date.asc,id.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status&order=start_date.asc,id.asc`;
     const [, { rows }] = await Promise.all([
       loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run below, but not before this fetch starts
       fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded — caught below

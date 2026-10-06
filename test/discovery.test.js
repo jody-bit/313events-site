@@ -256,13 +256,14 @@ function run() {
   // =================================================================
   {
     const e = ev({ title: "Bahamas", venue: "El Club", city: "Hamtramck", cat: "music", neighborhood: "North End", source: "Resident Advisor", note: "Doors at eight", description: "zebra" });
-    for (const q of ["bahamas", "BAHAMAS", "el club", "hamtramck", "music", "north end", "resident advisor", "doors at"]) yes(e, st({ q }), CTX, `search finds "${q}"`);
+    for (const q of ["bahamas", "BAHAMAS", "el club", "hamtramck", "music", "north end", "resident advisor"]) yes(e, st({ q }), CTX, `search finds "${q}"`);
     no(e, st({ q: "zebra" }), CTX, "description is not part of the search text");
+    no(e, st({ q: "doors at" }), CTX, "an internal/editorial note is never part of the search text (2026-10-06)");
     no(e, st({ q: "bahamas zzz" }));
     yes(ev({ title: "No extras" }), st({ q: "no extras" }), CTX, "missing optional fields are fine");
     no(ev({ title: "Local show" }), st({ q: "detroit" }), CTX, "Detroit events store no city, exactly as the pages do today");
   }
-  console.log("PASS: SEARCH — one haystack (title, venue, city, category label, neighborhood, source, note), case-insensitive");
+  console.log("PASS: SEARCH — one haystack (title, venue, city, category label, neighborhood, source), case-insensitive; never the note");
 
   // =================================================================
   // F. WHERE
@@ -460,7 +461,7 @@ function run() {
     no(ev(Object.assign({}, hit, { free: false })), s, CTX, "not free");
 
     no(ev({ title: "An evening with AUGUSTUS WILLIAMS" }), D.defaults(), CTX, "blocked by title");
-    no(ev({ note: "feat. Augustus Williams" }), D.defaults(), CTX, "blocked by note");
+    yes(ev({ note: "feat. Augustus Williams" }), D.defaults(), CTX, "the note is no longer consulted (notes are never public data)");
     no(ev({ title: "Augustus Williams" }), D.defaults(), { now: NOW, includePast: true }, "blocked even with history on");
     assert.strictEqual(D.count([ev({ title: "Augustus Williams" }), ev({})], D.defaults(), CTX), 1);
 
