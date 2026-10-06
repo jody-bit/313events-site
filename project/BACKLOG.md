@@ -442,23 +442,25 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### TASK-007 — Sprint Zero: environment and release foundation
 
-- **Type:** TASK · **Status:** REVIEW (implemented and verified 2026-10-06; Product Owner acceptance pending) · **Priority:** High
+- **Type:** TASK · **Status:** ACCEPTED (Product Owner instruction 2026-10-06; evidence below satisfies it) · **Priority:** High
 - **Epic:** — · **Recommended Model:** n/a (complete)
 - **Delivered:** environment module (non-production runtimes refuse the production database; `/config.js` serves per-environment public config); a reproducible schema baseline (`supabase/migrations/20261006000000`–`02`) that reproduces production (10/10 catalog fingerprints, 13/13 ACLs); a staging database seeded with synthetic data; Vercel Preview pointed at staging; CI; `ENVIRONMENTS.md` (topology, variable matrix, release flow). Merged to `main` as `b22471b` (environment) and `2f8f973` (baseline); the baseline merge applied nothing to production.
 - **Evidence:** a real Preview submission wrote only to staging; production contained no matching row; production integrations did not fire; production schema/data fingerprints unchanged across both merges.
+- **Release flow proven end to end (2026-10-06):** feature branch → CI → Preview on staging → verification → merge → production, used for the environment foundation, the migration baseline, the `events.note` hotfix, SZ-01 and BUG-008.
+- **Not yet `DONE`:** post-acceptance cleanup is deliberately pending (the staging test rows below).
 - **Known limits:** `DROP`/`DELETE` statements wait for interactive confirmation in the assistant's database tool, so migrations in this project avoid them (neutralise or replace in place).
 
 ---
 
 ### TASK-008 — SZ-01: public/private data-access boundary
 
-- **Type:** TASK (security) · **Status:** REVIEW (applied to production and staging 2026-10-06; Product Owner acceptance pending) · **Priority:** Critical
+- **Type:** TASK (security) · **Status:** ACCEPTED (Product Owner instruction 2026-10-06, after the post-migration ingestion check below) · **Priority:** Critical
 - **Epic:** — · **Related:** `ENGINEERING_READINESS_REVIEW.md` SZ-01 / TD-03 / G-6; hotfix for the `events.note` exposure (`dcd4e23`)
 - **Delivered:** `supabase/migrations/20261006000003_sz01_public_access_boundary.sql` (merged `6ec62e1`, applied to production ~20:32 UTC): anonymous and authenticated clients may read only an explicit 21-column allowlist of `events` (`note`, `internal_note`, `submitter_email`, `submitter_org_name` and every other operational column are private); no anonymous writes anywhere; internal tables unreachable; `events_public` is `security_invoker` with `note` a constant NULL; the two anonymous INSERT policies are unsatisfiable (neutralised, not dropped); default privileges for new public tables/functions closed; `set_updated_at` search_path fixed. Verification: `supabase/verify/public_boundary_check.sql` 92/92 on production and staging; contract test `test/public-boundary.test.js`.
 - **Evidence:** production anonymous reads of every page path work; private columns, `select *` and direct writes are denied; pending/rejected rows non-public; service_role reads intact; security advisors show only the four intentional informational "RLS enabled, no policy" notices; no production event data deleted or rewritten. A Preview submission (Community) landed in staging as `pending_review`, outside `events_public`, absent from production.
-- **Pending verification:** a scheduled production ingestion run completing successfully after the migration (the last run before it started 20:00 UTC; none had started when checked). Owned by the production health check / the 21:10 UTC follow-up.
-- **Residue:** staging holds one synthetic row, "SZ01 CANARY approved event" (`rejected`, private marker note) because deletion needs interactive confirmation here. Harmless; delete when convenient. Staging also holds the test submissions "PREVIEW ISOLATION TEST 20261006" and "SZ01 SUBMISSION TEST 20261006 COMMUNITY" (`pending_review`).
-- **Not part of SZ-01 (still open):** cron authentication fail-open, `events.status` default, BUG-008 (gaming category), the missing-FK-index and unused-index advisor notes.
+- **Post-migration ingestion verified (2026-10-06 21:00 UTC):** the first scheduled connector run after the migration, `dossin`, recorded `success` with 4 records written (4 existing events updated: the event count stayed 3,641, the public view stayed 3,144). No run since the migration failed or reported a permission error (`42501`); no venue submissions or test rows reached production. So service-role writes through the new boundary work.
+- **Residue (left in place deliberately; not `DONE` until cleaned):** staging holds one synthetic row, "SZ01 CANARY approved event" (`rejected`, private marker note) because deletion needs interactive confirmation here. Harmless; delete when convenient. Staging also holds the test submissions "PREVIEW ISOLATION TEST 20261006", "SZ01 SUBMISSION TEST 20261006 COMMUNITY" and "BUG008 GAMING TEST 20261006" (`pending_review`). Staging also carries the `gaming` enum value (irreversible) and its `categories` row, matching production.
+- **Not part of SZ-01 (still open):** cron authentication fail-open, `events.status` default, the missing-FK-index and unused-index advisor notes. (BUG-008, the gaming category, was a separate defect and is now `ACCEPTED`.)
 
 ---
 
@@ -564,15 +566,20 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ### BUG-008 — `gaming` category missing from the production database (migrations 036/037 never applied)
 
-- **Type:** BUG · **Status:** READY (migrations written 2026-09-22, re-checked read-only against production 2026-10-03; not applied) · **Priority:** High
+- **Type:** BUG · **Status:** ACCEPTED (Product Owner, 2026-10-06; applied to production 2026-10-06) · **Priority:** High
 - **Epic:** EPIC-001 / `TASK-004` · **Recommended Model:** Sonnet 5
 - **Dependencies:** None. Independent of `BUG-007`.
 - **Discovered:** 2026-10-03 (`source_runs` shows all 10 GottaGacha runs since 2026-09-24 failed with `22P02 invalid input value for enum event_category: "gaming"`).
 - **Problem/User Need:** The site, the submit form, the admin form and three API allow-lists all offer "Gaming & Esports", but production's `event_category` enum has 14 values and no `gaming`. GottaGacha has never written an event (74 rejected on 2026-10-03, non-gaming ones included, since its rows go out as one request). A public submission, a registered feed's default category, or an editor-created event that uses Gaming is rejected by the database the same way.
 - **Acceptance Criteria:** `migration_036_gaming_category.sql` run by itself, then `migration_037_gaming_category_metadata.sql`; `select enum_range(null::event_category)` ends in `gaming`; `categories` has 15 rows; the next GottaGacha run records `success`.
 - **Implementation Notes:** 036 is one statement, `alter type event_category add value if not exists 'gaming'` — it cannot be undone (Postgres has no "drop enum value"). 037 upserts one `categories` row (`gaming`, "Gaming & Esports", `var(--c-gaming)`, sort order 15) and records both filenames in `schema_migrations`. Neither does anything else. Checked read-only 2026-10-03: `categories.slug` is unique and `schema_migrations.filename` is the primary key, so both `on conflict` clauses are valid; neither file is logged as applied; every page already defines `--c-gaming`. `test/wp07-affected-connectors.test.js` shows the GottaGacha run failing under today's enum and succeeding under the post-036 one.
-- **Discovered Work:** —
-- **Product Decisions Required:** approve applying the two migrations to production.
+- **Discovered Work:** `test/category-contract.test.js` (see Resolution).
+- **Product Decisions Required:** none remaining (applying the migrations was approved and done).
+- **Resolution (2026-10-06):** fixed by two migrations promoted from `supabase/proposed/` into `supabase/migrations/` — `20261006000004_gaming_category.sql` (enum value, run alone) and `20261006000005_gaming_category_reference.sql` (`categories` row) — merged as `56c3efa` (PR #7, CI green) and applied to production in that order, each in its own transaction. Not the legacy `migration_036/037` files (those stay as history; their `schema_migrations` bookkeeping insert was deliberately not carried over).
+- **Production verification (2026-10-06):** `supabase/verify/category_contract_check.sql` passes on production (enum equals `categories.slug` set; `gaming` in the enum; reference row `Gaming & Esports`, sort 15; 15 enum values, 15 `categories` rows). Production permissions/column/policy fingerprints identical before and after (SZ-01 untouched); 3,641 events and 3,144 public rows unchanged; a rolled-back service-role insert with `category = gaming` and a feed with a gaming default category were both accepted; anonymous clients still denied private columns and direct inserts. The live `submit.html` is identical to `main` and offers Gaming & Esports; the deployed `/api/submit` allow-list accepts `gaming`. No real submission was made against production.
+- **Staging evidence:** a real Preview submission with Gaming & Esports ("BUG008 GAMING TEST 20261006") landed in staging as `pending_review`, `category = gaming`, outside `events_public`, absent from production, with no production write in the API log.
+- **Regression guard:** `test/category-contract.test.js` derives the database taxonomy from `supabase/migrations/` and fails if the Submit form, the three API validators, the admin form, `discovery.js` or any connector can emit a category the database does not accept, in either direction (it fails on drift, and the connector scan asserts it still finds GottaGacha's `gaming`). Full suite 113/113.
+- **Pending verification (original acceptance criterion):** "the next GottaGacha run records `success`". GottaGacha runs once a day at 11:00 UTC; its last failure was 2026-10-06 11:00 UTC (`22P02`, before the fix). The first run able to process `gaming` is **2026-10-07 11:00 UTC**. Record the outcome here when it lands; if it fails for a reason other than the enum, open a new bug.
 
 ---
 
