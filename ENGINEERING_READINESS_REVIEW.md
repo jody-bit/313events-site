@@ -37,6 +37,8 @@ Every major finding is labeled:
 - §20–§25;
 - Appendices B–D.
 
+**Future product extensibility check** (whether SZ/P1 forecloses future capabilities or monetization): §26. Verdict: accept with minor guardrails G-1–G-6; no scope or timeline change.
+
 ---
 
 ## 1. Executive verdict
@@ -73,7 +75,7 @@ Everything downstream — "self-healing", the Needs Follow-up queue, dedupe batc
 **Partially continue** (detail in §25):
 
 - **Pause** new source connectors, re-opening search enrichment, and monetization/social features.
-- **Run a 4–6 week "Production Foundation" Sprint Zero** (§18). The addendum adds three identity packages, SZ-13–SZ-15.
+- **Run a 4–6 week "Production Foundation" Sprint Zero** (§18). The addendum adds three identity packages, SZ-13–SZ-15. The future-extensibility check (§26) adds six near-zero guardrails inside existing packages, with no scope or timeline change.
 - **Continue** small presentation work that does not touch the data model.
 
 ---
@@ -387,7 +389,7 @@ Assumes the repo's reference data (Eastern Market has no stored address, coordin
 
 **Safety outcome:** only the fully structured shape auto-links on first arrival. Every other shape produces a held row with a recorded, pre-filled proposal. This is the correct producer behavior: investigate, propose, and ask once, not guess and not give up.
 
-**Prerequisite (SZ-15, P1-13):** Eastern Market needs `kind` = district/campus parent, a verified official website and coordinates, and child sheds with addresses from authoritative sources only. Without those, most shapes correctly stay held.
+**Prerequisite (SZ-15, P1-13):** Eastern Market needs `kind` = campus as a parent of its sheds (the *area* stays in `neighborhoods`, G-4(c)), a verified official website and coordinates, and child sheds with addresses from authoritative sources only. Without those, most shapes correctly stay held.
 
 **Guards required:**
 - "Eastern Market Partnership" events at other places must not link to Eastern Market. Its feed carries, for example, an Ecorse Senior Center event (`test/duplicate-consolidation.test.js:27-28`).
@@ -402,7 +404,7 @@ Assumes the repo's reference data (Eastern Market has no stored address, coordin
    - `entity_match_decisions` (positive and negative);
    - `resolution_attempts`;
    - `venues.parent_venue_id` for sub-venues (Eastern Market → Shed 3/5);
-   - `venues.kind` (`venue | room | campus | district | outdoor_area | virtual | placeholder`), because "Eastern Market" is both a market venue and a district.
+   - `venues.kind` (`venue | room | campus | district | outdoor_area | virtual | placeholder`; text + CHECK, not an enum, G-3). "Eastern Market" is both a market (a `campus` venue, parent of its sheds) and a district (its existing `neighborhoods` row). `parent_venue_id` means physical part-of, never area containment (G-4(c)).
 3. **A resolver chain** run per unresolved field, in fixed order, each step returning a claim or nothing:
    1. source structured fields and source venue ids;
    2. source unstructured text (title segments split on ` - `, ` – `, `: `, ` | `, `@`, ` at `; `TBA - <place> | <addr>` strings; description address/city/"at …");
@@ -516,7 +518,7 @@ A lean, deterministic rule-plus-score model, the same for venue identity and eve
 - a recorded negative decision for this (candidate, alias or source key);
 - the event date is outside the venue's or alias's `valid_from`/`valid_to`;
 - the address matches, but the stated name matches a **different known occupant or room** at that address;
-- the candidate is a placeholder, or a district when a venue is required (a district can only be a parent);
+- the candidate is a placeholder, or an area (`kind = district`) when a venue is required (areas live in `neighborhoods` and are never `parent_venue_id` targets, G-4(c));
 - the candidate came only from an organization or series name;
 - two or more candidates survive within a 0.30 margin (ambiguity);
 - for researched evidence, the quote does not contain the value verbatim.
@@ -835,11 +837,11 @@ Mirrors the existing `event_source_identities` crosswalk (`migration_045`), but 
 2. **`venue_aliases`:**
    - `venue_id`, `alias_display` (verbatim), `alias_key` (normalizer v1 + version);
    - `kind` (`spelling | legacy | abbreviation | source_label | room_label`);
-   - `scope_source`, `scope_city_place_id` (generic and brand aliases **must** be scoped);
+   - `scope_source`, `scope_city_place_id`, `scope_parent_venue_id` (generic, brand and room aliases **must** be scoped);
    - `valid_from` / `valid_to`;
    - `status` (`proposed | verified | rejected`), `confidence`, `evidence` (method, matched_on, url + quote or event ids, run_id);
    - `created_by`, `decided_by` (`gate | human:<id>`), timestamps.
-   - Unique on `(alias_key, scope_source, scope_city_place_id)` where not rejected. One key cannot map to two venues in one scope.
+   - Unique on `(alias_key, scope_source, scope_city_place_id, scope_parent_venue_id)` where not rejected, treating NULL scopes as equal (`NULLS NOT DISTINCT` or coalesce). One key cannot map to two venues in one scope (G-4(b)).
 3. **`venue_external_ids`:**
    - primary key `(source, source_venue_id)` → `venue_id`, plus `first_seen_at`, `last_seen_at`, `status`, `decided_by`;
    - covers Ticketmaster/Eventbrite/Localist venue ids and replaces `VENUE_NAME` constants;
@@ -964,7 +966,7 @@ Supabase Branching is an alternative if the plan includes it; it is not required
    - expand/contract only (backward-compatible with the running code);
    - enum additions in their own migration;
    - data corrections as migrations or admin actions, never pasted SQL;
-   - destructive steps preceded by an archive copy of affected rows.
+   - rows in `events` and `venues` are never hard-deleted: retirement is a status plus a reason, and a takedown scrubs content but keeps a tombstone row (G-1, §26.3). Destructive steps on other tables are preceded by an archive copy of the affected rows.
 
 **6. What constitutes a release gate:**
 1. CI green: all tests, migrations apply, schema/RLS tests, and lint rules for known foot-guns:
@@ -1187,7 +1189,7 @@ Proportionate to a public events product.
 | **Admin** | Shared secret header, timing-safe, fails closed. No rate limit, no actor identity, no security headers. | Brute force is unlikely but possible; no audit trail of who changed what. | Rate limit; log admin actions with actor; add basic security headers. Real auth (Supabase Auth) only when a second operator exists. |
 | **Submission and upload** | Honeypot + timing; no rate limit (`api/submit.js:176`); unauthenticated 4 MB uploads to a public bucket (`api/upload-image.js:57`). | Spam/storage abuse. | Rate limiting (Vercel KV or Supabase table), upload tied to a submission token. |
 | **Secrets** | Env vars; fine-grained PAT; anon key public by design. Production URL/key hard-coded as fallbacks. | Environment bleed (§11). | Fail loudly on missing env. |
-| **Destructive operations** | Repair scripts write by default (`dryRun=false`); retire/merge are soft and capped (good); hand-run deletes. | Irreversible manual errors. | `events_history`; deletes only via reviewed migrations with archive copies. |
+| **Destructive operations** | Repair scripts write by default (`dryRun=false`); retire/merge are soft and capped (good); hand-run deletes. | Irreversible manual errors. | `events_history` (on `events` and `venues`, G-2). No hard deletes of events or venues (G-1); other deletes only via reviewed migrations with archive copies. |
 | **Backup / recovery** | Nothing in the repo. | Unknown. | Confirm plan coverage; run a restore drill. |
 | **Fetch reliability** | Timeouts only in Localist and run-log (`AbortSignal`). Ticketmaster keeps partial results on a failed page (`cron-ticketmaster.js:190`). | Hung source consumes the function; partial data treated as complete. | Shared `fetchWithPolicy` (timeout, retry, UA, size cap). |
 | **Source-terms compliance** | `DEC-010`: RA is manual-only on ToS grounds. `scripts/ra-sync.js:16-22` documents scheduled browser acquisition designed around DataDome. Spoofed Chrome UAs in 3 files, one against a WAF-blocked site. `robots.txt` is not checked at runtime. | Legal and reputational risk that contradicts the project's own published principles. | Owner decision on `DISCOVERY-001`. Honest UA everywhere. Runtime policy gate. |
@@ -1395,11 +1397,11 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 - **Problem:** no record of what a run changed; rollback is hand-written SQL.
 - **Risk if ignored:** a bad run (like BUG-010) can't be precisely reverted or measured.
 - **Scope:**
-  - an `events_history` trigger capturing old values of changed columns, `run_id` (via a session setting from the write path) or admin actor, and a timestamp;
+  - a table-agnostic history trigger function capturing table name, row id, old values of changed columns, `run_id` (via a session setting from the write path) or admin actor, and a timestamp, attached to `events` **and `venues`** (G-2);
   - a revert-by-`run_id` script (dry-run default);
-  - a retention policy.
+  - a retention policy that may compact or redact content values (PII, takedowns) but never deletes provenance (row id, column, actor/run, timestamp) or DELETE images (G-2).
 - **Acceptance criteria:**
-  - every UPDATE/DELETE on `events` produces a history row;
+  - every UPDATE/DELETE on `events` and `venues` produces a history row;
   - reverting a staged bad run restores the prior values exactly in staging.
 - **Dependencies:** SZ-04.
 - **Claude environment/model:** cloud or local; standard (Sonnet-class).
@@ -1766,6 +1768,147 @@ Then expand primarily through generic adapters (Localist-style), not bespoke scr
 **Why not pause everything:** the existing system works, its owners diagnose problems rigorously, and most foundations are additive. A full stop would lose momentum without making Sprint Zero faster.
 
 **Why not continue normally:** the project's own records show the current rate of production-discovered defects, manual SQL patches (85 in ~4 weeks) and hand-written descriptions (529 of 604 upcoming Ticketmaster events during one outage, `BUG-007`). That rate does not survive another doubling of sources.
+
+---
+
+## 26. Future Product Extensibility Check
+
+**Question.** Do any Sprint Zero or P1 decisions foreclose, conflict with, or make unnecessarily expensive the long-term direction? That direction is events, places, people/organizations, stories, relationships, evidence/rights, experience composition, human expertise, commerce, B2B/API and a historical archive. This is not a redesign; the bar for adding work was "near-zero cost, attached to an existing package, or demonstrated rework later".
+
+**Method.** Six read-only lens reviews: identity/claims, history/archive, places/taxonomy, provenance/rights, monetization, and API boundary. Each was challenged by an *anti-inflation* verifier (to strip speculative scope) and an *anti-complacency* verifier (to find missed foreclosures). A synthesis followed, then a critic and a revision. Load-bearing facts were re-checked for this section.
+
+### 26.1 Capability classification
+
+| # | Capability | Classification | Why (evidence) | Guardrail |
+|---|---|---|---|---|
+| 1 | Events & occurrences (recurrence, history) | **MINOR GUARDRAIL** | One row per occurrence + `series_key` + temporal v2 extend additively (§9.3). Two proposals could destroy history. P1-08 "stale/removed" handling applied to past rows would retire the archive, because sources list forward only (`cron-ticketmaster.js:172-184` fetches from *now*). P1-01's derived `time_display` would overwrite curated time text. | G-1 |
+| 2 | Places (venues, landmarks, parks, buildings, districts) | **MINOR GUARDRAIL** | `venues` already holds parks and plazas (`seed.sql:11,25`); §10.7 adds `kind`, parent, validity and redirect merges additively. P1-13 has three spec defects: the alias unique key lacks the parent scope §6.3 needs; Eastern Market is "district/campus", which collides with the §7.4.1 district veto; and venue edits get no history. | G-2, G-3, G-4 |
+| 3 | People & organizations | **SAFE PATH** | Nothing in SZ/P1 builds on the (empty) `organizers` table. `entity_match_decisions` already carries `entity_type` incl. organizer; P2-11 copies the alias shape. | — |
+| 4 | Stories / cultural knowledge | **SAFE PATH** | An attributed-content pattern already exists (title, excerpt, URL and source, never the body, `migration_011`). Stories can reference events/places by stable ids later. | — |
+| 5 | Relationships | **MINOR GUARDRAIL** | Typed FK/join tables with per-link provenance (`venue_link_method`) are the right pattern; no edge table needed. But P1-16's "unlink" would not stick as a DELETE: `cron-editorial.js:505-507` re-upserts links, and the join table has no per-link method or status (`migration_021:25-30`). | G-1 |
+| 6 | Evidence / provenance / rights | **MINOR GUARDRAIL** | §7.4 separates claim values from evidence, so rights fields can be added later. But the P1-03 gate checks facts only, so it would republish third-party text that passes on facts. Crosswalk source keys are already inconsistent: `'ra'` + bare id (`ra-sync.js:692`) vs a display label + prefixed id (`duplicate-consolidation.js:447`). | G-2, G-4, G-5 |
+| 7 | Experience composition (personalized discovery, tours) | **SAFE PATH** | Builds later on stable ids, versioned `discovery.js`, P1-01 time, the P1-13 part-of hierarchy and P2-02 geography. Personal state stays on device or aggregate (DEC-021). | (relies on G-1, G-4, G-6) |
+| 8 | Human expertise | **SAFE PATH** | Expert facts enter later as claims with `method = human`, credited to a future person entity. Note for P1-03: use one actor format (`human:<id>`, as §10.7) in both claims and decisions. | — |
+| 9 | Commerce | **MINOR GUARDRAIL** | No SZ/P1 decision adds commercial state. But existing code stores the affiliate redirect **as the canonical `ticket_url`** (`cron-ticketmaster.js:63-70, 296`). It flows into merge fill (`duplicate-consolidation.js:318`) and JSON-LD `Offer.url` (`event-template.html:833`), and disclosure is inferred from `source` (`legal-snippets.js:34`). The unwrap is lossless, so this is not a conflict, but SZ-06 must not codify the wrapper. | G-5, G-6 |
+| 10 | B2B / API / data products | **MINOR GUARDRAIL** | SZ-01 views + the P1-06 layer are the right boundary. As written, though, SZ-01's grants test covers only `events`; owner-rights views and RPCs bypass RLS (`migration_025:35-47`); and P1-06 could follow the house pattern of reading base tables with the service-role key. | G-6 |
+| 11 | Historical archive | **MINOR GUARDRAIL** | Closed venues (`valid_to`), legacy aliases and superseded decisions are non-destructive by design (§10.7). But the review as first written allowed "destructive steps preceded by an archive copy" (§11.2(5), now amended by G-1), and hand SQL has hard-deleted events (7 archive patches). SZ-07 history covers events only with an unspecified retention policy. Merge lineage is a free-text `internal_note` line that two crons overwrite (`cron-gottagacha.js:288`, `cron-eventbrite.js:212`) until SZ-06 #7 lands. | G-1, G-2 |
+
+**No capability is a FOUNDATION CONFLICT.** Every risk found is either a wording or type choice inside a package not yet built, or an existing reversible defect.
+
+### 26.2 Concrete foreclosure risks and their disposition
+
+| Risk | Source | Disposition |
+|---|---|---|
+| Hard DELETE of events/venues still permitted. Breaks public UUID links; cascades away crosswalk and editorial links (`migration_045:32`, `migration_021:26-27`). | §11.2(5), §15 | G-1 (§11.2(5) and §15 now amended to match) |
+| P1-08 staleness retires past occurrences | P1-08 | G-1(c) |
+| P1-01 regenerates `time_display` over curated text (recoverable from SZ-07 history, but wrong) | §9.3 | G-1(d) |
+| P1-16 unlink by DELETE is re-created by the cron; per-link method lost | P1-16 | G-1(e) |
+| History covers events only; retention unspecified; venue fixes and merges (SZ-02, P1-13) unrecoverable | SZ-07 | G-2 |
+| New open vocabularies built as Postgres enums (cannot drop values; one migration per value; BUG-008) | SZ-08, P1-01/03/13/16 | G-3 |
+| Mixed crosswalk source-key conventions; P1-08 makes every connector read the crosswalk | existing code, P1-08 | G-4(a) |
+| Alias unique key lacks parent scope and treats NULLs as distinct | §10.7 vs §6.3 | G-4(b) |
+| Eastern Market `kind` undecided; "district" collides with the district veto; `parent_venue_id` meaning undefined | §6.3, §7.4.1, §10.7 | G-4(c) |
+| P1-03 gate would republish third-party text whose facts pass | §7.4; DEC-016 | G-5(a) |
+| Affiliate wrapper as canonical `ticket_url`; merge fill and JSON-LD spread it | existing code; SZ-06 | G-5(b); the stored-row unwrap is deferred to EPIC-014; host-keyed disclosure is an SZ-10 defect fix |
+| Past hand dedupe patches cited the affiliate link among reasons to keep Ticketmaster rows (`archive/update_2026-09-17_dedupe-batch2-tm-vs-visitdetroit.sql:18-23`) | existing practice; P1-16 | G-5(c) |
+| Public/internal boundary enforced only for `events`; new internal views/RPCs or a service-role P1-06 could bypass it | SZ-01, P1-06 | G-6 |
+| Claims and issues keyed by `event_id` only | §7.4, §13.3 | **Deferred, not a conflict.** The additive path is a nullable typed FK arm (e.g. `venue_id`) plus an exactly-one-subject CHECK when the first venue-level writer exists: no backfill, no replacement (§26.4). |
+| Merged event ids soft-404; the survivor pointer is free text | existing | Deferred: a redirect is a small later backfill *if* the pointer survives (G-1(b)) |
+| `venues (lower(name), lower(city))` unique index collides with rooms and successors | `schema.sql:46` | Deferred: replace the index at the first collision; no data migration |
+
+### 26.3 Smallest guardrails needed now
+
+Each is wording, a type choice, a trigger or a predicate inside an existing package. None is a new table, service or framework.
+
+| ID | Invariant | Attaches to | Cost now |
+|---|---|---|---|
+| **G-1** | **Never destructively overwrite or delete what was published.**<br>(a) Rows in `events` and `venues` are never hard-deleted. Retirement is a status plus a reason; a takedown scrubs content but keeps a tombstone row. The SZ-04 rule carries this. A REVOKE of DELETE from API roles is only defense in depth, because hand SQL runs as the owner.<br>(b) Every merge keeps the loser and records the survivor id. This depends on SZ-06 #7 (line-wise `internal_note`); until then, record merges in the SZ-07 history.<br>(c) P1-08 staleness/removal applies only to occurrences that have not ended.<br>(d) Derivation never overwrites time text it did not derive.<br>(e) Automated relationship links (P1-16) carry their own `match_type` and are unlinked by status, never DELETE. | SZ-04, SZ-01, SZ-06, P1-01, P1-08, P1-16 | Rule wording; one REVOKE; two columns P1-16 already requires |
+| **G-2** | SZ-07's history trigger function is table-agnostic and is **also attached to `venues`**. Retention may compact content values or redact PII/takedowns, but **never deletes provenance** (row id, column, actor/run, timestamp) or DELETE images. | SZ-07 | One extra CREATE TRIGGER; retention wording |
+| **G-3** | **No new Postgres ENUM types** for open vocabularies: `kind`, alias kind/status, `entity_type`, decision, claim method/authority/status, issue codes, link methods, `time_precision`. Use text + CHECK. Existing enums stay; adding `held` to `event_status` is fine. `event_category` stays event-only; future entity kinds get their own vocabularies. | SZ-08, P1-01, P1-03, P1-13, P1-16 | Zero (type choice at creation) |
+| **G-4** | **Identity key shapes are fixed at creation.**<br>(a) Every crosswalk's `source` is a `source-slugs.js` slug (tenant-qualified where native ids are tenant-scoped), with the native id stored bare; display labels are never keys.<br>(b) The `venue_aliases` scope includes `scope_parent_venue_id`, and uniqueness treats NULL scopes as equal.<br>(c) `parent_venue_id` means physical part-of (room, shed, stage), never area containment. The Eastern Market venue is `kind = campus`; areas stay in `neighborhoods`.<br>(d) `merged_into_venue_id` is only for same-place duplicates. A rename is a legacy alias with `valid_to`; a successor is a new row. | P1-08, P1-13, §6.3 wording | A mapping constant, a small internal data fix, an index definition, three sentences |
+| **G-5** | **Canonical fields hold the value as stated by its source. Republication rights and commercial decoration are derived, never stored in those fields or used to choose them.**<br>(a) For claims produced by research/enrichment, the P1-03 gate projects third-party description/image text to public columns only when the authority is `primary_source` or `official_owner` (or the method is human/submission). Authority grades facts; it never grants republication rights (DEC-016).<br>(b) SZ-06 defines `ticket_url`/`event_url` as the destination URL as stated, and no new writer stores a tracking wrapper. The existing Ticketmaster unwrap waits for EPIC-014; affiliate decoration is applied at render/outbound time then.<br>(c) Survivor selection, field authority and eligibility priors never read commercial attributes (DEC-015), including a human's survivor choice in P1-16. | P1-03, SZ-06, P1-16 | One predicate, two policy lines, one sentence |
+| **G-6** | **Anon access is an explicit allowlist.** SZ-01's grants test snapshots anon privileges for every relation kind and function in exposed schemas. New tables get RLS with no anon policy, and internal views/RPCs (issues, held rows, claims) are unreachable by anon. P1-06 endpoints read only public views, using the publishable key or a read-only role, never base tables via the service-role key, and add no commercial ordering. | SZ-01, P1-06 | A wider query in a test SZ-01 already requires |
+
+**Defect fix, not a guardrail** (added to the SZ-10 sweep): key the affiliate disclosure on the URL host rather than `source = 'Ticketmaster'` (`legal-snippets.js:34`, `event-template.html:769`), because merges can carry a Ticketmaster affiliate link onto a non-Ticketmaster survivor.
+
+### 26.4 Does the claims/identity architecture generalize beyond venues?
+
+**Yes, without replacement.** The proposed design already follows two reusable patterns:
+- **Per-entity identity tables with real foreign keys:** aliases, external ids, part-of hierarchy, redirect merges. Organizations, people and series copy that shape when their triggers fire (P2-09, P2-11).
+- **Cross-cutting workflow records that carry `entity_type`:** `entity_match_decisions`, `resolution_attempts`. These already accept new entity types.
+
+**Claims and issues** are event-keyed today. They extend by adding a **nullable typed FK arm** (e.g. `venue_id`, later `organizer_id`) with an exactly-one-subject CHECK when the first writer for that entity exists. That is additive and needs no backfill. It keeps foreign-key integrity and PostgREST embeds, which a polymorphic text key would lose.
+
+**Nothing in SZ/P1 assumes every important entity is an event or a venue.** It simply doesn't build the others yet.
+
+**Durable domain: EVENTS + PLACES now; add PEOPLE / ORGANIZATIONS / STORIES / RELATIONSHIPS as typed tables when real rows need them.** A generalized entity model now would:
+- re-key or wrap the core;
+- lose the FK-based embeds the site depends on (`api/admin-events.js:265`, `event-template.html:912`, `map.html:1921`, `radar.html:324`);
+- touch ~30 `resolveVenueId` call sites;
+- contradict §4 row 2 and DEC-006.
+
+What generality needs now is the invariants above, not a new layer.
+
+### 26.5 Monetization readiness: **MINOR GUARDRAIL NEEDED**
+
+| Check | Status | Note |
+|---|---|---|
+| Editorial inclusion/ranking never depend on payment | MINOR GUARDRAIL | No SZ/P1 input is commercial: survivor ranking (`duplicate-consolidation.js:298-300`), eligibility priors and public ordering use status, source type and date. Past hand dedupe cited the affiliate link as one reason to keep Ticketmaster rows. → G-5(c). |
+| Sponsored/promoted state separate from editorial state | SAFE PATH | SZ-08 adds only `held`. DEC-015/020/025 already set the pattern of separate, dated, labelled placements (DISCOVERY-013). G-3 keeps vocabularies droppable. |
+| Referral attribution addable without replacing canonical ticket URLs or provenance | MINOR GUARDRAIL | The existing wrapper-as-canonical is reversible (the destination is embedded in `u=`). G-5(b) stops it spreading; the backfill waits for EPIC-014. |
+| Orgs/venues can have commercial accounts without being the canonical identity | SAFE PATH | `venues`/`organizers` hold identity only. Redirect merges keep future account FKs valid. Owner-supplied facts enter as claims with `official_owner` authority (§7.4). |
+| Transactions/subscriptions/bookings separate from cultural data | SAFE PATH | Nothing places commerce on events; `events_history` is an audit log, not a ledger. G-1 keeps future `event_id` references resolvable. |
+| API/data licensing layered over a stable public/internal boundary | MINOR GUARDRAIL | SZ-01 views + P1-06 are the base. G-6 makes the boundary an enforced allowlist. |
+| Provenance and redistribution rights independent of factual claims | MINOR GUARDRAIL | Claim values and evidence are already separate. Per-source policy lives in data (P1-09), where rights fields can be added later. G-5(a) stops authority acting as republication permission; G-4(a) makes evidence joinable by source; G-2 keeps write provenance. |
+
+### 26.6 Explicitly NOT to build yet
+
+- **Entity and relationship models:**
+  - no generalized knowledge graph, generic `entities` or edges table, or polymorphic subject framework;
+  - no renaming `venues` to `places`;
+  - no people, artist, guide, story, organization-account or series tables;
+  - no venue-level or polymorphic claims/issues tables before a venue-level writer exists.
+- **Geography and tours:** no places table, PostGIS, geocoder backfill, Orbit polygons, or tour/itinerary tables ahead of P2-02 and a real need.
+- **Commerce:**
+  - no promotions, placements, sponsorships, bookings, transactions, subscriptions, accounts, affiliate-config tables, `/go` redirect service or click logs;
+  - no commercial columns on core tables;
+  - no commercial values in `event_status`, `event_category` or eligibility.
+- **API products:** no public/partner API, API keys, metering, widget SDK or versioned view families.
+- **Rights and content storage:**
+  - no rights/licensing engine or per-field rights model;
+  - no stored page, article or snippet bodies;
+  - no copying or rehosting of images (`image_url` stays a pointer to the source).
+- **History mechanics:**
+  - no separate archive tables, bitemporal/SCD-2 versioning or event sourcing;
+  - no `merged_into_event_id` until a consumer exists;
+  - no Ticketmaster unwrap backfill before EPIC-014.
+- **Taxonomy:** no multi-scheme taxonomy framework, no reuse of `event_category` for other entity kinds, and no conversion of existing enums.
+
+### 26.7 Does Sprint Zero scope or sequencing change?
+
+**No.** Scope, sequence and the 4–6 week estimate stand. The guardrails are edits inside packages already planned:
+
+| Package | Edit |
+|---|---|
+| SZ-04 | Delete-rule wording |
+| SZ-01 | One REVOKE; wider grants test |
+| SZ-07 | Attach to `venues`; retention wording |
+| SZ-06 | Field-policy lines; #7 named as the prerequisite for merge lineage |
+| SZ-08 / P1-01 / P1-03 / P1-13 / P1-16 | Text + CHECK instead of enums |
+| P1-01 | Time-text rule |
+| P1-08 | Staleness scoped to future occurrences; small crosswalk data fix |
+| P1-03 | Gate predicate |
+| P1-13 | Key-shape sentences |
+| P1-16 | Per-link status/`match_type` (already required) |
+| P1-06 | Reads views only |
+| SZ-10 | Host-keyed affiliate disclosure (defect fix) |
+
+### 26.8 Verdict: **B. ACCEPT WITH MINOR GUARDRAILS**
+
+- No SZ/P1 decision is a foundation conflict. The events/venues core, per-entity identity tables, `entity_type`-tagged decisions and the claim/evidence split all leave additive paths to people, stories, relationships, archive, commerce and APIs.
+- Six near-zero invariants (G-1–G-6) close the places where the proposals as written would delete or overwrite history, freeze a bad key or vocabulary, let research text or affiliate decoration become canonical, or leave the public boundary unenforced.
+- Each is wording, a type choice, a trigger or a predicate inside an existing package. There is no new table, service, framework or timeline.
+- The two commercial issues found (wrapper stored as `ticket_url`; disclosure keyed on source) are existing, reversible defects, not design conflicts.
 
 ---
 
