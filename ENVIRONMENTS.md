@@ -37,6 +37,8 @@ Set these per Vercel environment (Settings → Environment Variables). Never com
 | `APP_ENV` | `production` **only if** Vercel's system env vars are off | unset | See merge gate below |
 | `WEB_SEARCH_ENRICHMENT_ENABLED` | unset (closed) | unset | Stays closed (BUG-010) |
 
+> **Variables apply only to NEW deployments.** Adding or changing a Vercel environment variable does not affect a deployment that already exists. After changing Preview variables, push a commit or redeploy the Preview. (A Preview built before its variables existed serves `/config.js` as a loud 500 by design, rather than falling back to production.)
+
 ## MERGE GATE for this change (Product Owner check, before merging to `main`)
 
 The production-vs-non-production decision reads `VERCEL_ENV`. In Vercel → Project → Settings → Environment Variables, confirm **"Automatically expose System Environment Variables"** is checked. If it is NOT, add `APP_ENV=production` to the **Production** environment first. Without one of these, production would be treated as non-production and the database guard and `/config.js` would fail. Rollback is Vercel Instant Rollback.
