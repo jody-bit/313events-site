@@ -1,0 +1,14 @@
+-- 20261006000004_gaming_category.sql
+--
+-- BUG-008. "Gaming & Esports" (key `gaming`) is the Product Owner's 15th
+-- category (decision 2026-09-22; see supabase/migration_036_gaming_category.sql).
+-- The Submit form, the three API allow-lists, the admin form and discovery.js
+-- have offered it since then, but the database enum never received it, so any
+-- write using it is rejected (22P02): public submissions, a feed registered with
+-- a gaming default category, and the GottaGacha connector.
+--
+-- RUN THIS FILE ALONE, in its own transaction, BEFORE
+-- 20261006000005_gaming_category_reference.sql. Postgres cannot use a new enum
+-- value in the transaction that adds it. Adding an enum value cannot be undone
+-- (there is no "drop enum value"); that is why it goes to staging first.
+alter type event_category add value if not exists 'gaming';
