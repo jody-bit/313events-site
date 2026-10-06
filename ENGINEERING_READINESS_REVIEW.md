@@ -2,7 +2,7 @@
 
 **Type:** independent, read-only architecture and engineering baseline review
 **Repository state reviewed:** `main` at `3eb2734` (2026-10-05), full history (411 commits, 2026-08-19 → 2026-10-05)
-**Review date:** 2026-10-06
+**Review date:** 2026-10-06 (includes the producer-level name/entity-matching addendum, same day)
 **Changes made by this review:** this file only. No code, schema, data, schedule, deployment or branch was changed. No production system was queried.
 
 ---
@@ -19,7 +19,23 @@ Every major finding is labeled:
 
 **Method.** Full read of the shared libraries, write path, enrichment pipeline, schema and migrations, admin endpoints and public data-loading code; targeted reads of all 30 cron files; four parallel read-only sub-reviews (ingestion, database, frontend, AI/admin) whose headline claims were spot-checked against the code before inclusion; local execution of the test suite (no credentials present, no network calls); and local, pure-function probes of the location parser using the defect examples from the recent production audit.
 
+**Addendum method (name/entity matching).** Six further independent read-only finders covered: venue-name matching paths, event-identity matching, alias persistence and repo data, content/title location extraction, an empirical normalizer probe, and tests/safeguards/cost. Each finder's output was checked by two adversarial verifiers, one for literal accuracy and one for overreach. 87 findings survived; none was refuted by both verifiers, and 54 had their wording or citations corrected. A synthesis was then reviewed by a completeness critic, and its 6 gaps and 4 errors were fixed in an amendment pass. The headline probes in §10.4 were re-run independently for this document.
+
 **Model-tier labels.** Work packages recommend a Claude tier rather than a version: *deep-reasoning (Opus-class)*, *standard (Sonnet-class)*, *fast (Haiku-class)*.
+
+**Where the name/entity-matching addendum lives:**
+- §1 (verdict);
+- §4 rows 12, 14, 18, 32, 34, 36, 37;
+- §6.1–6.4 (content-producer intelligence and the Eastern Market trace);
+- §7.4.1 (identity confidence model);
+- **§10.1–10.9** (main assessment);
+- §12.1–12.3 (tests and the gold-set plan);
+- §14.1;
+- §17 TD-33–TD-37;
+- §18 SZ-13–SZ-15 and the do-not list;
+- §19 P1-13–P1-17, P2-10, P2-11;
+- §20–§25;
+- Appendices B–D.
 
 ---
 
@@ -35,24 +51,29 @@ The core problem is not the stack, the two-table model, or the per-source cron d
 
 Everything downstream — "self-healing", the Needs Follow-up queue, dedupe batches, 85 hand-written data-patch SQL files — is compensation for that one missing gate.
 
+**Entity identity is simultaneously too strict and too loose** (§10.1–10.9):
+- **Too strict.** The venue linker matches only after lowercasing and whitespace collapse. "Fox Theater" vs "Fox Theatre", curly vs straight apostrophes, "St." vs "Saint" and a leading "The" all fail. Exact matching has already split real venues into duplicate canonical rows (e.g. "Magic Stick" and "The Magic Stick").
+- **Too loose.** Several paths let a single signal decide identity: an address alone, a title alone, or a substring. A probe links "Big Time Bingo" at its poster's "4120 Woodward Ave" to The Magic Stick, and renames the event's venue. The venue's own listing gives Garden Bowl as 4140.
+- **No learning.** Nothing persists a confirmed alias, so every reconciliation, human or automated, is lost.
+
 ### Short answers
 
 | Question | Answer |
 |---|---|
 | **What is production-ready?** | Vercel + Supabase hosting. The shared discovery semantics in `discovery.js` (homepage only). The uniform-batch upsert helper (`api/_lib/event-upsert.js`). The fail-closed status lookup. The submission → `pending_review` moderation path. Soft-reject duplicate consolidation and non-event retirement. The Localist connector (the reference implementation). The test fixture that reproduces PostgREST's write rules. The decision log. |
-| **What is still prototype-grade?** | Field-level data contracts and validation. Overwrite authority. The temporal model (`date` + free-text `time_display`). Eligibility (a 3-rule title denylist). Venue resolution (exact match only). The web-search enrichment tier. Admin queue metrics. Monitoring/alerting. Environments, release and migrations. Public data loading at scale (whole inventory to the browser). |
+| **What is still prototype-grade?** | Field-level data contracts and validation. Overwrite authority. The temporal model (`date` + free-text `time_display`). Eligibility (a 3-rule title denylist). Venue/entity identity (exact-only name keys, no aliases, no learning, while address-only, title-only and substring paths still decide identity on one signal). The web-search enrichment tier. Admin queue metrics. Monitoring/alerting. Environments, release and migrations. Public data loading at scale (whole inventory to the browser). |
 | **Keep** | The stack. The two-table core. Per-source connectors for now. `discovery.js`. `event-upsert.js`. Soft retirement. The "never guess / honest gap" principles. The documentation and decision discipline. |
-| **Harden** | Write path (contract + field authority). RLS/grants. Cron auth. Run logging. Venue lookup. Location parser. Release process. Test suite (CI). Admin auth. SSR pages. |
-| **Refactor** | Temporal model (additive timestamps). Eligibility (filter → decision layer). Admin queue (client-side blankness → persisted issues). Healthcheck. Frontend data access. Calendar/Map onto `discovery.js`. Migrations tooling. Self-healing orchestration. Template descriptions (store → render). Connector layer → adapters (later, P2). |
+| **Harden** | Write path (contract + field authority). RLS/grants. Cron auth. Run logging. Location parser. Single-signal identity paths (SZ-13). Event-identity matchers. Release process. Test suite (CI). Admin auth. SSR pages. |
+| **Refactor** | Temporal model (additive timestamps). Eligibility (filter → decision layer). Venue/entity identity decision layer (one normalizer, alias store, corroboration scoring; §10). Admin queue (client-side blankness → persisted issues). Healthcheck. Frontend data access. Calendar/Map onto `discovery.js`. Migrations tooling. Self-healing orchestration. Template descriptions (store → render). Connector layer → adapters (later, P2). |
 | **Rebuild** | One thing: the **web-search research tier** (`api/_lib/external-discovery.js` and its callers). It publishes raw search-snippet text as `authoritative` and creates canonical venues from third-party pages. Heuristic hardening already failed once in production (`project/BACKLOG.md` `BUG-010`). It is gated closed today. It should come back only as a propose → verify → gate researcher. |
-| **Retire** | Static fallback dataset and 103 KB stale JSON-LD in `index.html`. Source-specific post-publication repair scripts. Hand-written SQL as an operating mode. Spoofed browser User-Agents. Unused `sources` table and `category_id` mirror. The RA git message-bus on `main` in its current form. |
+| **Retire** | Static fallback dataset and 103 KB stale JSON-LD in `index.html`. Source-specific post-publication repair scripts. Hand-written SQL as an operating mode. Spoofed browser User-Agents. Unused `sources` table and `category_id` mirror. The RA git message-bus on `main` in its current form. Creating canonical venue rows from variant spellings. `VENUE_NAME` string constants as connector identity. `"Venue TBA"` as stored data. |
 
 ### Recommendation on feature work
 
 **Partially continue** (detail in §25):
 
 - **Pause** new source connectors, re-opening search enrichment, and monetization/social features.
-- **Run a 3–5 week "Production Foundation" Sprint Zero** (§18).
+- **Run a 4–6 week "Production Foundation" Sprint Zero** (§18). The addendum adds three identity packages, SZ-13–SZ-15.
 - **Continue** small presentation work that does not touch the data model.
 
 ---
@@ -129,7 +150,8 @@ Grades: **PR** = production-ready · **PG** = production-capable with gaps · **
 | Field overwrite authority | — | Last writer wins per column; one-off protections in a handful of connectors (DEBT-011). |
 | Temporal model | PT | `start_date date` + `time_display text` (`supabase/schema.sql:70-72`); `end_date` means different things per connector. |
 | Eligibility | PT | Title denylist, 3 rule families (`api/_lib/non-event-filter.js:79-122`); used at ingest by 3 connectors. |
-| Venue/entity resolution | PT | Exact normalized name or exact address+city only (`api/_lib/venue-lookup.js:26-29, 426-443`). |
+| Venue/entity resolution | PT | Exact normalized name or exact address+city only (`api/_lib/venue-lookup.js:26-29, 426-443`). No aliases, candidates, corroboration scoring or learning. Address-only and title-only identity decisions exist (§10). |
+| Producer-level name matching | — | Normalization folds only case and whitespace; 13+ normalizers disagree; nothing persists a confirmed variant (§10.1–10.9). |
 | Evidence / provenance | — | `description_source` (one column) plus free-text `internal_note` lines. |
 | Research / enrichment | PT | Tavily search + regex. Gated off after publishing wrong facts (`BUG-010`). |
 | Duplicate consolidation / non-event retirement | PG | Deterministic, soft (`status='rejected'`), capped per run. Run detail not persisted. |
@@ -160,13 +182,13 @@ Grades: **PR** = production-ready · **PG** = production-capable with gaps · **
 | 9 | Field overwrite semantics | **REFACTOR** | `merge-duplicates` overwrites every sent key. Explicit-`null` erasers in at least 7 connectors (§5.4). Venue map fails soft to empty, nulling all links (`venue-lookup.js:51-73`). |
 | 10 | Temporal model | **REFACTOR** | Cannot represent time, timezone, overnight or occurrence. Fix additively (§9). Not a rebuild. |
 | 11 | Eligibility (`non-event-filter.js` + `retire-non-events.js`) | **REFACTOR** | The rules are carefully engineered, but eligibility is not a domain concept: no column, no UNCERTAIN state, no evidence (§8). Keep the rules as one input to a decision layer. |
-| 12 | Venue resolution (`venue-lookup.js`) | **HARDEN** | Tiered and conservative (good). Missing: aliases, a parent/child place hierarchy, title extraction, a placeholder guard in `resolveVenueId` (`:76-80`), fail-closed fetch. |
+| 12 | Venue/entity identity resolution (`venue-lookup.js` and the event-identity matchers) | **REFACTOR** | The exact-key core, the `AMBIGUOUS_VENUE_NAME` sentinel and `citiesConflict` are sound; KEEP them. But the identity *decision layer* is wrong in both directions (§10):<br>- harmless variants never match (normalizer folds only case and whitespace, `:26-29`);<br>- an address alone links and renames (`:387-402, 437-441`; `cron-feeds.js:309`);<br>- `resolveVenueId` is city-blind, last-row-wins and placeholder-blind (`:61-64, 76-80`);<br>- nothing is learned (no alias, external-id or decision store).<br>Guard now (SZ-13, SZ-14); refactor into one resolver with a durable identity store and corroboration scoring (P1-13–P1-15). |
 | 13 | ICS location parser (`ics-location.js`) | **HARDEN** | Good grammar design. `stripHtmlTags` keeps `<style>` bodies (`:100-102`). `"MI 48207"` lands in postal. |
-| 14 | Web-search research tier (`external-discovery.js`, Level-1 path in `generic-metadata-enrichment.js`, `discoverEventVenue`) | **REBUILD** | The model itself is wrong (§7): it stores raw snippet text as an `authoritative` description; it creates canonical venues with the result page's host as `website`; and the authority tier is a label, not a gate (`generic-metadata-enrichment.js:455-470`). The 2026-10-01 heuristic hardening did not prevent wrong facts (`BUG-010`). |
+| 14 | Web-search research tier (`external-discovery.js`, Level-1 path in `generic-metadata-enrichment.js`, `discoverEventVenue`) | **REBUILD** | The model itself is wrong (§7): it stores raw snippet text as an `authoritative` description; it creates canonical venues with the result page's host as `website`; and the authority tier is a label, not a gate (`generic-metadata-enrichment.js:455-470`). It mints a new canonical venue row from a variant spelling (`venue-lookup.js:592-597`). Its "daily" budget resets per invocation, with no negative cache (P1-17). The 2026-10-01 heuristic hardening did not prevent wrong facts (`BUG-010`). |
 | 15 | Template "generated" descriptions (`description-enrichment.js`) | **REFACTOR** | Stores derivable text as a fact. Can print placeholders. Satisfies the follow-up queue while adding no information. Render at display time instead. |
 | 16 | Source-specific repair scripts (Outer Limits, Dossin, Redford, VisitDetroit backfills/repairs) | **RETIRE** | These are connector capture defects repaired after publication. Fold each fix into its connector, then delete the script. |
 | 17 | Self-healing orchestration (`cron-enrichment.js`, Admin Auto-Repair) | **REFACTOR** | Two hand-maintained step lists, "duplicated here deliberately" (`cron-enrichment.js:139-143`). Order spends work on rows about to be retired. No `maxDuration`. No per-step persistence. |
-| 18 | Duplicate consolidation, non-event retirement scripts | **KEEP** | Deterministic, soft, capped (`duplicate-consolidation.js:103`, `retire-non-events.js:40`), human-restore respected. Add persisted run detail. |
+| 18 | Duplicate consolidation, non-event retirement scripts | **KEEP** | Deterministic, soft, capped (`duplicate-consolidation.js:103`, `retire-non-events.js:40`), human-restore respected. Add persisted run detail. One guard to add: `samePlace` skips the city veto when two rows share a `venue_id` and both have their own venue text (`duplicate-consolidation.js:192-196`). A probe auto-merged "City Hall" events in Livonia and Troy (SZ-13). |
 | 19 | Admin Needs-Follow-up queue | **REFACTOR** | Measures blankness client-side. Template text, placeholders and wrong facts all "resolve" a gap. Dismissal hides the whole event permanently (`admin.html:768`). Feed it from a persisted issues table (§13). |
 | 20 | Run logging (`run-log.js`, `source_runs`) | **HARDEN** | Good schema and redaction. Missing in 11 connectors. "Parsed 0" logs `success`. |
 | 21 | Healthcheck (`cron-healthcheck.js`) | **REFACTOR** | Hard-coded lists missing 7 connectors (`:89-105, 194-229`). Advisory by construction. No data quality. No alerting. |
@@ -180,9 +202,11 @@ Grades: **PR** = production-ready · **PG** = production-capable with gaps · **
 | 29 | Calendar/Map filter logic | **REFACTOR** | Move onto `discovery.js`; an unmerged branch already does it (`origin/claude/calendar-map-shared-layer-repcmh`). |
 | 30 | Static `FALLBACK_EVENTS` and the static JSON-LD block | **RETIRE** | 187 hand-curated events rendered first on every load (`index.html:4601-4802`, copy in `calendar.html:983-1184`). 103 KB of schema.org Events in `<head>` (`index.html:42-3360`), 150 of them already past. |
 | 31 | `sources` table (migration_004), `events.source_id`, `events.category_id` | **RETIRE** | No code reads or writes them (`category_id` has no writer after a one-time backfill). Either adopt `sources` as the registry in P2 or drop it; don't keep a dormant second registry. |
-| 32 | Editorial article matching (`cron-editorial.js`, `press-coverage-linking.js`) | **HARDEN** | Article-page text stored as an `authoritative` description, page chrome included (`BUG-010` item 3). Unpaged candidate queries. Spoofed UA. |
+| 32 | Editorial article matching (`cron-editorial.js`, `press-coverage-linking.js`) | **HARDEN** | Article-page text stored as an `authoritative` description, page chrome included (`BUG-010` item 3). Unpaged candidate queries. Spoofed UA. Venue-and-date and title links use substrings with no word boundary and no corroboration (`cron-editorial.js:383-406`; `press-coverage-linking.js:203-225`; a probe matched "Rave On!" inside "brave one"). Automated duplicate links are stamped `manual` (`press-coverage-linking.js:1136-1160`). → P1-16. |
 | 33 | Spoofed browser User-Agents | **RETIRE** | `cron-metrotimes.js:79`, `cron-editorial.js:257`, `press-coverage-linking.js:104` send desktop Chrome. That contradicts the stated honest-UA convention, and Metro Times WAF-blocks the connector. |
-| 34 | RA acquisition lane (browser-driven ra.co walk + git message-bus on `main`) | **RETIRE** (current form) | `DEC-010` declares RA manual-only because its Terms prohibit automated scraping. `scripts/ra-sync.js:16-22` documents a scheduled browser session designed around RA's DataDome anti-bot defenses. The transport commits payloads to the production branch (27 `ra-sync: submit` commits). Needs an explicit policy decision (`DISCOVERY-001`); the server-side derivation code is reusable. |
+| 34 | RA acquisition lane (browser-driven ra.co walk + git message-bus on `main`) | **RETIRE** (current form) | `DEC-010` declares RA manual-only because its Terms prohibit automated scraping. `scripts/ra-sync.js:16-22` documents a scheduled browser session designed around RA's DataDome anti-bot defenses. The transport commits payloads to the production branch (27 `ra-sync: submit` commits). Needs an explicit policy decision (`DISCOVERY-001`). The server-side derivation code is reusable, except `findConservativeDuplicate`: it decides duplicates on title tokens alone, ignoring venue, city and status (it matches rejected rows), and records a permanent identity (`ra-sync.js:392-424, 683-696`). Harden it before reuse (SZ-13). |
+| 36 | Single-venue connector `VENUE_NAME` constants as identity (~13–16 connectors, e.g. `cron-oldmiami.js:91`, `cron-lagerhouse.js:83`) | **RETIRE** | Each constant must equal `venues.name` byte-for-byte, so a canonical rename silently unlinks every event. Replace with a source → `venue_id` mapping (`venue_external_ids`, P1-13). |
+| 37 | Cross-source event suppression in VisitDetroit (`cron-visitdetroit.js:357-377`) | **HARDEN** | Suppresses a new row on exact title + date from any other source, in any city and any status, over an unpaged read. Require venue/city non-conflict and exclude rejected rows (P1-16). |
 | 35 | Project documentation and decision system (`project/`) | **HARDEN** | Unusually strong decision records. Statuses drift: e.g. `BUG-007`'s status line says "not merged, not deployed" while its body says deployed as `7bdce19`. README describes a 4-cron product. |
 
 ---
@@ -287,36 +311,110 @@ Ship it in **report-only (shadow) mode for one week** to measure rejection rates
 - **Ambiguity sentinel** for same-name venues in different cities (`AMBIGUOUS_VENUE_NAME`, `:135`) and a `citiesConflict` guard (`:305-310`).
 - **Location grammars** for Tribe/CivicPlus feeds (`ics-location.js:28-60`); Localist's closed-list city resolution (`localist-rows.js:395-500`).
 
-**Trace of the example (INFERRED from code):**
+### 6.1 Does the system interrogate its own knowledge first?
 
-| How it arrives | What happens today |
+For "Eastern Market Shed 3 - ProsperUs Detroit Family Block Party":
+
+| Producer question | Answer from the repository (OBSERVED unless marked) |
 |---|---|
-| As a **title** | Titles are never parsed for location. No connector does title-location extraction; only article text has an "at <Venue>" regex (`external-discovery.js:228-277`). |
-| As LOCATION `"Eastern Market Shed 3"` | Unparseable → stored whole as `venue_name_raw`, city `null`. No exact match to `"Eastern Market"` → no `venue_id` → Needs Follow-up `NO_CANONICAL_VENUE_DATA`. With the search gate open, it would have been web-searched and a new venue `"Eastern Market Shed 3"` created with city defaulted to Detroit (`test/venue-lookup-placeholder-and-city.test.js:168-187` asserts that `"Shed 5"` is searched). |
-| As Tribe LOCATION `"Shed 3, 2810 Russell St, Detroit, 48207, United States"` | Parses to name `"Shed 3"`. Links to Eastern Market only if the stored venue address string is byte-identical after lowercasing. Otherwise the event leaves the queue (it has an address) but stays unlinked from the venue, its neighborhood and its coordinates. |
-| No location at all | `"Venue TBA"` is written as data (`cron-feeds.js:246`) and the event publishes as `approved`. |
+| Do we already know Eastern Market? | **Partly, three ways that the schema cannot tell apart:** a venue row with **name and city only, no address** (`supabase/seed.sql:21`); a district in `neighborhoods` (`migration_002:61`); and a feed organization, "Eastern Market Partnership" (`migration_043:5-9`). Archive notes record a deliberate decision not to store an address (`archive/seed_2026-09-04_more_annual_events.sql:40-43, 64-67`). |
+| Do we know "Shed 3", or an alias? | No. There is no alias, parent or child store (`grep alias supabase/` → 0). "Shed 5, 2810 Russell St" appears only in a test fixture (`test/cron-feeds-city-recovery.test.js:268-282`), and must not be used as data. |
+| Does a verified record establish its address? | No committed SQL sets one. "2810 Russell" appears nowhere in repo data. Production may differ (Appendix C). |
+| Does the incoming record carry corroborating evidence elsewhere? | Often, but it is never read. Connectors mine titles and descriptions for category, non-event rules and `no_fixed_venue`, never for place (`api/cron-feeds.js:444, 459, 488`). A description's address would be recoverable with the existing extractors, but no connector calls them. |
+| Does the source carry more location evidence? | Discarded at ingest: Ticketmaster venue id and coordinates, ICS `GEO`/`ORGANIZER`, Localist geo (except for the Orbit check) (`api/cron-ticketmaster.js:245-249`; `api/cron-feeds.js:180-196`; `api/_lib/localist-rows.js:425-516`). |
 
-**Conclusion on "Venue TBA" (OBSERVED + INFERRED):** today "Venue TBA" is the **first** fallback, not the final unresolved state. It is assigned the moment a structured location field is blank or unparseable, before any title, description, internal-history or alias evidence is consulted. It is then treated as *resolved* by the admin queue (`admin.html:637-639` exempts an exact "Venue TBA").
+**Policy note (OBSERVED).** "Never infer a venue from a title" is a recorded convention, not an oversight: `api/_lib/localist-rows.js:79` and `api/_lib/ics-location.js:42-52`. Producer-level extraction therefore needs an explicit decision. It is safe only if extraction **proposes candidates** that must be corroborated, and **never writes canonical fields directly**.
 
-### Foundational changes required (RECOMMENDED)
+### 6.2 What happens today, by arrival shape
+
+These were run through the real `cron-feeds` handler with mocked fetch (sub-review CX, verified).
+
+| Arrival shape | What happens today |
+|---|---|
+| Title only, blank LOCATION | `"Venue TBA"` written (`cron-feeds.js:282`), `venue_id` null, city null, `status` approved. Admin exempts an exact "Venue TBA" as source-limited (`admin.html:637-649, 766-779`), so nobody is asked. |
+| Title + a description containing the address | Same as title only. The description is never read for location. |
+| LOCATION `"Eastern Market Shed 3"` | Unparseable, stored whole as `venue_name_raw`, unlinked. Admin shows `NO_CANONICAL_VENUE_DATA`. With the search gate open, it is queued for an external search of the literal string. INFERRED: research would mint a separate canonical venue "Eastern Market Shed 3" with city defaulted to Detroit (`venue-lookup.js:592-597`). The test asserts that "Shed 5" is searched (`test/venue-lookup-placeholder-and-city.test.js:168-187`). |
+| Tribe `"Shed 3, 2810 Russell St, Detroit, MI 48207"` | Name "Shed 3", unlinked. It leaves the queue because it has an address. |
+| Comma composite `"Eastern Market, Shed 3, Detroit, MI 48207"` | Links to Eastern Market by name, but stores `venue_address_raw = "Shed 3"` (`cron-feeds.js:311`). |
+| No location at all | `"Venue TBA"` as data, published. |
+
+Two further effects:
+- Event dedupe never pairs the title-prefixed "Venue TBA" row with a placed copy of the same event (probe: 2 groups considered, 0 merges, 0 reviews).
+- The article matcher misses it because the event title carries the place prefix.
+
+The extractors that already exist are wired only to editorial articles and search results:
+- `extractStreetAddress` / `extractCity` (`scripts/press-coverage-linking.js:519-573`);
+- `extractVenuePhraseFromText` (`api/_lib/external-discovery.js:262-277`).
+
+They have defects that block reuse as-is (OBSERVED by probe):
+- the "at [Venue]" pattern rejects any phrase ending in "Market", "Fair" or "Festival" (`:256`);
+- it cannot capture numbered sub-units;
+- its character class lists the straight apostrophe twice and omits `’` (`:229`);
+- the "returns to" branch truncates to "Eastern Market Shed" (`:233, 264-267`);
+- `extractCity` finds "Detroit" inside the organization name "ProsperUs Detroit".
+
+**Conclusion on "Venue TBA" (OBSERVED + INFERRED):** today "Venue TBA" is the **first** fallback, not the final unresolved state.
+- It is written the moment a structured location field is blank or unparseable, before any title, description, internal-history or alias evidence is consulted. It is written even when an address and city were parsed (`cron-feeds.js:316`).
+- It is then effectively **terminal**:
+  - it blocks the reverse address tier (`venue-lookup.js:391`);
+  - repair and discovery skip it as a placeholder;
+  - via the unguarded `resolveVenueId` it can link to the seeded "Venue TBA" venue row (`supabase/seed.sql:47`), whose "Detroit" city then flows onto the event;
+  - Admin exempts it, while the *more informative* "Eastern Market Shed 3" is escalated. Escalation is inverted.
+- "Unknown venue" has at least six encodings ("Venue TBA", "Location TBA", null, skipped, a link to the placeholder row, "Venue TBA (Detroit)"/"Multiple Locations" rows). Placeholder detection is implemented four different ways.
+
+**What "Venue TBA" should mean (RECOMMENDED).** `venue_id` and `venue_name_raw` are null. An explicit resolution state carries a reason code and evidence trail:
+
+| State | Meaning | Public? | Admin? |
+|---|---|---|---|
+| `source_blank_uninvestigated` | Transient: resolvers still running | No (`held`, SZ-08) | No |
+| `source_states_tba` | The source explicitly says TBA / secret location | Yes, rendered as "Venue TBA" | No (a real source limitation) |
+| `investigated_unresolved` | Every internal step and permitted research exhausted; attempts recorded | Policy choice (rendered "Venue TBA") | Yes, as an issue with the candidate list |
+| `no_fixed_venue` | Existing flag (`migration_040`): walks, tours, crawls | Yes | No |
+
+"Venue TBA" becomes display text derived from the state, never a stored name. Existing "Venue TBA" rows that also carry an address or city are migrated to null + reason, so the deterministic tiers can fire again. The placeholder venue rows are flagged `kind = placeholder` and excluded from every lookup.
+
+### 6.3 Target outcomes for the example (RECOMMENDED, consistent with the §7.4.1 confidence model)
+
+Assumes the repo's reference data (Eastern Market has no stored address, coordinates or verified website).
+
+| Arrival shape | Evidence available | First arrival | After an Admin-verified child or alias exists |
+|---|---|---|---|
+| Title only, blank LOCATION | Title-derived known-parent prefix (V 0.45). No city: "Detroit" inside "ProsperUs Detroit" is an organization name and contributes nothing. | **Held → propose** a claim: parent Eastern Market, sub-unit "Shed 3", title span as evidence. One research attempt through the gateway (P1-17). Then escalate with the candidate pre-filled for one-click confirmation. **Never "Venue TBA", never a new canonical row.** | Verified, specific alias (A 0.60). Auto-links only when this feed already has ≥ 3 human- or S-anchored decisions for this alias (C1, giving 0.85); otherwise one click. |
+| Title + description with address and city | V 0.45 + city from the description address (L3 0.25) = 0.70 | **Held → propose** child "Shed 3", with the description address as evidence | A 0.60 + L1 0.35 (if the verified child address equals it) + L3 0.25 → **auto-link to the child** |
+| LOCATION "Eastern Market Shed 3" | V 0.45 | Same as title only | Same as title only |
+| Comma composite (after the parser fix) | Exact structured name (A 0.60) + city (L3 0.25) = 0.85 | **Auto-link to parent Eastern Market**. "Shed 3" is kept as a sub-location claim (never as `venue_address_raw`), and a child venue is proposed. | Link to the child if one is verified |
+| Tribe "Shed 3, 2810 Russell St, …" | A generic room label (no global alias allowed) + city; address agreement only against a verified child | **Held → propose** | Parent-scoped alias "Shed 3" + L1 → auto-link to the child |
+
+**Safety outcome:** only the fully structured shape auto-links on first arrival. Every other shape produces a held row with a recorded, pre-filled proposal. This is the correct producer behavior: investigate, propose, and ask once, not guess and not give up.
+
+**Prerequisite (SZ-15, P1-13):** Eastern Market needs `kind` = district/campus parent, a verified official website and coordinates, and child sheds with addresses from authoritative sources only. Without those, most shapes correctly stay held.
+
+**Guards required:**
+- "Eastern Market Partnership" events at other places must not link to Eastern Market. Its feed carries, for example, an Ecorse Senior Center event (`test/duplicate-consolidation.test.js:27-28`).
+- An organization or series name never supplies venue or city evidence.
+
+### 6.4 Foundational changes required (RECOMMENDED)
 
 1. **A claims/evidence store** (§7) so a resolver can record a candidate with its method, authority, evidence and confidence instead of writing straight into canonical columns.
-2. **Place model extensions:**
-   - `venue_aliases (venue_id, alias, source, verified)`;
+2. **Place model extensions and a durable identity store** (§10.7):
+   - `venue_aliases` (scoped, with status and evidence);
+   - `venue_external_ids`;
+   - `entity_match_decisions` (positive and negative);
+   - `resolution_attempts`;
    - `venues.parent_venue_id` for sub-venues (Eastern Market → Shed 3/5);
-   - `venues.kind` (`venue | campus | district | outdoor_area | virtual`), because "Eastern Market" is both a market venue and a district.
+   - `venues.kind` (`venue | room | campus | district | outdoor_area | virtual | placeholder`), because "Eastern Market" is both a market venue and a district.
 3. **A resolver chain** run per unresolved field, in fixed order, each step returning a claim or nothing:
-   1. source structured fields;
-   2. source unstructured text (title segments split on ` - `, `: `, ` | `, `@`; description "at …");
-   3. internal canonical venues/aliases;
-   4. prior events from the same source or series;
-   5. authoritative external lookup (the venue's own site; a geocoder for address → coordinates);
-   6. LLM extraction only for residual ambiguity, constrained to quote its evidence;
-   7. self-check (§7.4);
-   8. confidence gate.
+   1. source structured fields and source venue ids;
+   2. source unstructured text (title segments split on ` - `, ` – `, `: `, ` | `, `@`, ` at `; `TBA - <place> | <addr>` strings; description address/city/"at …");
+   3. internal canonical venues, verified aliases and known parents (gazetteer longest-prefix / token-boundary match);
+   4. prior human- or S-anchored decisions for the same source;
+   5. authoritative external lookup, only for held residual cases and only after checking `resolution_attempts` (the venue's own site; a geocoder for address → coordinates);
+   6. LLM extraction only for residual segmentation, constrained to quote its evidence;
+   7. independent self-check (§7.4.1);
+   8. confidence gate (§7.4.1).
 4. **A `held` publication state** (§8) so an unresolved row is not public while automation is still working on it, and **issue records** (§13) so the final escalation to Admin is explicit and counted.
 
-None of this requires replacing `venue-lookup.js`. Its tiers become steps 3–4 of the chain.
+None of this requires replacing `venue-lookup.js`. Its tiers become steps 3–4 of the chain. The name-matching part of this (normalization, aliases, candidate generation, corroboration, false-match vetoes, learning) is assessed in §10.1–10.9.
 
 ---
 
@@ -389,7 +487,76 @@ Rules:
   - (d) the per-field threshold is met.
 
   Otherwise the row stays `held` and the next resolver runs; if all resolvers are exhausted, an issue is raised for Admin.
-- **Budgets:** persisted per day in the database, not per invocation. Cache by content hash. Only run on rows the deterministic chain left UNCERTAIN.
+- **Budgets:** persisted per day in the database, not per invocation, and shared by every entry point, press-coverage search included (P1-17). Cache by content hash. Only run on rows the deterministic chain left UNCERTAIN.
+- **An LLM never makes an identity decision and never performs normalization.** At most it proposes quote-constrained candidates, which the deterministic gate below decides.
+
+### 7.4.1 Identity claims: evidence families, vetoes and thresholds (RECOMMENDED)
+
+A lean, deterministic rule-plus-score model, the same for venue identity and event identity. **The weights are starting values to be calibrated against the gold set (SZ-14, P2-10); the structural properties are the requirement.**
+
+**Evidence families.** A candidate collects at most one value per family; scores do not stack within a family.
+
+| Family | Evidence | Start weight |
+|---|---|---|
+| **I. Identity anchor** | **S:** confirmed `(source, source_venue_id)` mapping, or the source *is* the venue (a single-venue connector mapped by `venue_id`) | 1.00 |
+| | **A:** exact match under normalizer v1, or a *verified* alias in scope | 0.60 |
+| | **V:** variant-equivalence candidate (Theatre/Theater, St./Saint, leading article, & / and, known city/room-suffix strip, known-parent prefix) | 0.45 |
+| | **F:** fuzzy candidate (edit distance ≤ 2 on names of ≥ 8 characters, token-boundary containment) | 0.20 |
+| **II. Location** | **L1:** standardized address (number + street + suffix) and city equal | 0.35 |
+| | **L2:** coordinates within ~75 m | 0.35 |
+| | **L3:** stated city resolves to the same canonical place id. Counts only if the venue's city has non-default provenance: `venues.city` defaults to `'Detroit'` (`schema.sql:31`), and seeded cities have been wrong, e.g. Elektricity seeded as Detroit but in Pontiac (`migration_002:164-167`). | 0.25 |
+| | *(use `max(L1, L2) + L3`)* | |
+| **III. Context** (capped at 0.30) | **C1:** ≥ 3 prior decisions for this same source key that were made by a **human** or anchored by **S**. Never links made by A/V/F/C1, which would make evidence circular. Counted as distinct decisions, not events, so one decision fanned over a series counts once. Not applicable to generic or room labels on aggregator feeds (`location_per_event = true`, `migration_043:29-30`). | 0.25 |
+| | **C2:** the event URL or organizer domain equals the venue's *human-verified* website | 0.25 |
+| | **C3:** recorded organizer → venue relationship (P2-11) | 0.15 |
+
+**Hard vetoes.** Any one rejects the candidate whatever the score:
+- the stated city, state or country resolves to a different place id;
+- coordinates more than ~1 km apart;
+- a recorded negative decision for this (candidate, alias or source key);
+- the event date is outside the venue's or alias's `valid_from`/`valid_to`;
+- the address matches, but the stated name matches a **different known occupant or room** at that address;
+- the candidate is a placeholder, or a district when a venue is required (a district can only be a parent);
+- the candidate came only from an organization or series name;
+- two or more candidates survive within a 0.30 margin (ambiguity);
+- for researched evidence, the quote does not contain the value verbatim.
+
+**Auto-link** requires all of:
+- (a) no veto;
+- (b) exactly one surviving candidate;
+- (c) score ≥ 0.85;
+- (d) an A or S anchor, *or* a V anchor plus ≥ 0.40 of location evidence;
+- (e) at least one family besides I contributes, unless the anchor is S.
+
+**Resulting guarantees (checked):**
+
+| Evidence present | Score | Outcome |
+|---|---|---|
+| Name similarity alone (V or F), with any context | ≤ 0.75 | **Never auto-links** |
+| Address + city alone, no name anchor | 0.60 | **Never auto-links** (fails d) |
+| Exact name, blank city, no context | 0.60 | Held |
+| Exact name, blank city, C1 (human/S history) or C2 (verified domain) | 0.85 | Auto-link (deliberate) |
+| Exact name + agreeing city of non-default provenance | 0.85 | Auto-link (today's common correct path keeps working) |
+| V + L1 + L3 (e.g. "Fox Theater" at the standardized Fox address) | 1.05 | Auto-link, and propose "Fox Theater" as a verified-pending alias |
+| Exact name + address of a different known room in the same complex | — | Veto, then held / escalate |
+
+**Outcome bands:**
+- **Held-continue:** 0.50 to < 0.85, or vetoed by ambiguity only. Next resolvers run.
+- **Propose:** research, or a V/F match with corroboration, creates a *proposed* alias or child venue, never a canonical row.
+- **Escalate:** resolvers exhausted, or a hard name-versus-occupant conflict. An `event_issue` carries the candidates, scores and evidence.
+- **Unresolved:** below 0.50 with no candidates; record `investigated_unresolved`.
+
+**Self-check (step 9).** Before writing, a separate pure function recomputes the decision from the persisted evidence bundle, against the canonical row re-read fresh. It re-checks every veto, and for researched evidence confirms that the page's address and city match the candidate's stored address and city. Any disagreement leaves the row held.
+
+**Alias promotion.** Proposed → verified only by a human, or by ≥ 2 independent auto-links from *different sources* with no conflicts. A verified alias resolves later variants deterministically, at zero research cost.
+
+**Address and number rules** (amends P1-14):
+- House numbers match only by exact equality after standardization; never by digit edit distance. 4120 and 4140 Woodward are one edit apart and are different rooms.
+- A malformed number (`2l11`) is treated as no address and raises a data-quality issue; it is never auto-corrected.
+- A range (`4120-4140 Woodward Avenue`, as RA writes it, `update_2026-09-18_ra-manual-pull-6.sql:76`) is compatible with each number inside it but is never L1. In a complex it signals ambiguity.
+- ZIP is a consistency check against the city's ZIP set. A mismatch raises an issue and weakens L1; it never establishes or vetoes identity alone. Today ZIP is stripped from city comparison (`venue-lookup.js:289-293`), and `venues.zip_code` (`migration_005:40`) is never read.
+- When a name-anchored candidate's stored address differs from the stated one on the same street, record `address_discrepancy` on the claim. Do not veto (sources misprint) and never overwrite the canonical address.
+- An unknown city spelling ("Detriot") resolves to *unknown*, not *conflict* and not *same*.
 
 ---
 
@@ -490,10 +657,13 @@ RECOMMENDED:
 | Area | OBSERVED state | Gap |
 |---|---|---|
 | Canonical venues | 83 rows on 2026-09-13 per the `venue-lookup.js` header comment (current count not in the repo); unique on `(lower(name), lower(city))` (`schema.sql:46`) | No state/country, no `updated_at`, no provenance, `city` defaults to `'Detroit'`. Five search-created rows with aggregator websites are still canonical (`BUG-010`). |
-| Aliases | None ("No fuzzy… No alias inference", `venue-lookup.js:116-118`) | "DIA" ≠ "Detroit Institute of Arts" (prior audit E4, still open). |
-| Same-name venues | `AMBIGUOUS_VENUE_NAME` sentinel + `citiesConflict` (good) | SQL patches link by name only, ignoring city (e.g. `update_2026-09-20_ra-manual-pull-9.sql:121-125`). |
-| Address matching | Exact normalized address + city key | No street normalization ("St." vs "Street"), no geocoder. |
-| Title/description extraction | None in connectors | Required for the producer workflow (§6). |
+| Aliases | None ("No fuzzy… No alias inference", `venue-lookup.js:116-118`; `grep alias supabase/` → 0) | *Supersedes the prior "DIA ≠ Detroit Institute of Arts" note (audit E4).* "DIA – Detroit Film Theatre", "DIA – Rivera Court" and "Detroit Institute of Arts" are three separate canonical rows (`seed.sql:16,17,19`), so DIA is both an acronym-alias problem and a parent/room problem. A substring gate already mis-verifies "DIA" inside "Indian Village" (`external-discovery.js:150-160`). → P1-13: verified, city-scoped acronym alias; DFT and Rivera Court as children of DIA; never substring. |
+| Name variants / normalizers | Linker folds only case and whitespace (`venue-lookup.js:26-29`); 13+ other normalizers with incompatible rules | Harmless variants miss; the same pair is "same place" in dedupe and "different" in the linker (§10.2). → SZ-14. |
+| Same-name venues | `AMBIGUOUS_VENUE_NAME` sentinel + `citiesConflict` (good), but only in the detail-map tiers | `resolveVenueId` (the ingest linker in ~28 files) is city-blind and last-row-wins. SQL patches link by name only, ignoring city (e.g. `update_2026-09-20_ra-manual-pull-9.sql:121-125`). → SZ-13. |
+| Address matching | Exact normalized address + city key, **used as identity on its own** (`venue-lookup.js:387-402, 437-441`) | Address-only links that rename the event's venue (§10.4). No street standardization ("St." vs "Street", "Ave" vs "Avenue"); raw "Detroit, MI 48207" in the key; ZIP unused; house-number transcription errors undetected. → SZ-13, P1-14. |
+| Title/description extraction | None in connectors (a deliberate "never guess" convention, `localist-rows.js:79`) | Required for the producer workflow (§6). → P1-15. |
+| Learning / persistence | Nothing persists a confirmed name relationship. Admin cannot set `venue_id` (`admin-events.js:372`). The learned map is recomputed from the 500 newest rows (`venue-lookup.js:200-228`). | The system never learns; variants are re-resolved, or minted as duplicate venues. → P1-13. |
+| Research cost | Per-invocation "daily" budget, no negative cache, research before internal steps | → P1-17. |
 | Source-stated location | Good in Localist and ICS; per-connector elsewhere | No shared location contract. |
 | City inference | Closed list in 2 paths; defaults to "Detroit" in DMOD, the venues table and search-created venues | Unknown city should be `null` + issue, never a default. |
 | Neighborhood inheritance | Via venue only; event-level column ignored by `events_public` | Coverage ~20% of upcoming events (`DEBT-004`). |
@@ -503,15 +673,229 @@ RECOMMENDED:
 | Venue fetch failure | Returns empty map (`venue-lookup.js:51-73`) | One failed fetch sends `venue_id: null` for every row (DEBT-011 #6). |
 | Scale | `venues?limit=1000` unpaged (`:55`); learned map reads 500 rows (`:205`) | Silent truncation past 1,000 venues. |
 
-**"Venue TBA" verdict:** convenient first fallback, not a final unresolved state (§6).
+**"Venue TBA" verdict:** convenient first fallback, not a final unresolved state. It should become one of four explicit resolution states (§6.2).
 
 **RECOMMENDED:**
-- placeholder → `null` + issue;
-- alias table + parent venue;
-- resolver chain;
-- fail-closed venue map;
-- paged venue reads;
-- connectors consult `event_source_identities` before insert.
+- placeholder → `null` + reason state;
+- false-match guards on existing paths (SZ-13);
+- one shared normalizer and gold-set precision gate (SZ-14);
+- reproducible venue reference data (SZ-15);
+- a durable identity store with aliases, external ids and decisions (P1-13);
+- candidate generation plus corroboration scoring (P1-14);
+- content location candidates (P1-15);
+- event-identity matcher hardening (P1-16);
+- internal-first research with a negative cache (P1-17);
+- fail-closed venue map and paged venue reads (SZ-06, P2-05);
+- connectors consult `event_source_identities` and `venue_external_ids` before insert.
+
+### 10.1 Producer-level name/entity matching: capability against the target reasoning sequence
+
+| Step | Status | What exists (OBSERVED) | Gap |
+|---|---|---|---|
+| 1. Normalize harmless differences | **Partial** | The linker folds case and whitespace, including NBSP (`venue-lookup.js:26-29`). At least 13 other normalizers fold different things: dedupe strips punctuation and drops accented letters (`scripts/duplicate-consolidation.js:110-125`); `source-authority` strips a leading "the" (`:105-107`); the city comparator expands only mt/twp/hts (`venue-lookup.js:280`). | No single versioned normalizer. Curly quotes, dashes, & / and and diacritics are not folded in the linker; no street-suffix standardization. |
+| 2. Search canonical entities and known aliases | **Partial** | Exact lookups by name or by address+city; a "learned" name → address map rebuilt each run from 500 rows (`venue-lookup.js:51-80, 147-183, 200-228`). | No alias, external-id or parent store. Legacy and source spellings live only in SQL comments and connector constants (e.g. `update_2026-10-01_bagley-venues-and-boundary.sql:29-33`; `cron-oldmiami.js:91`). |
+| 3. Generate candidates via similarity | **Absent** (in the linker) | None, by design (`venue-lookup.js:116-118`). Where similarity exists elsewhere, it **decides** rather than proposes: editorial substring links (`cron-editorial.js:383-406`); RA title-token ≥ 0.8 (`ra-sync.js:392-424`); `verifyOfficialResult` substring (`external-discovery.js:150-160`). No `pg_trgm`/edit-distance anywhere. | No candidate generator that feeds corroboration or review. Variant duplicates never reach Admin. |
+| 4. Corroborate with independent evidence | **Absent** | An exact address+city match is an *alternative identity key*, not corroboration. Coordinates (`venues.lat/lng`, never selected, `venue-lookup.js:153`), source venue ids, official domain, organizer and source history are never used for venue identity. Ticketmaster venue id/coordinates and ICS `GEO`/`ORGANIZER` are discarded at ingest. | The design rule is "no contradiction ⇒ same", not "independent corroboration ⇒ same". |
+| 5. Detect conflicting evidence | **Partial** | `citiesConflict` veto when both cities are stated; the ambiguity sentinel in the detail maps; the learned map drops disagreeing names; dedupe's city veto and `DUP_DISTINCT`; Localist refuses address links (`cron-localist.js:652-658`). | Not in `resolveVenueId`. The address tier never compares names. `samePlace` skips the city veto on a shared `venue_id`. RA dedupe never checks venue, city or status. "St."/"Saint" city spellings produce false conflicts. |
+| 6. Confidence from combined evidence | **Absent** | Every tier is a binary hit or nothing, with no score, candidate list or reason code. On collision the sentinel discards all candidates, even when a stated city would uniquely identify one. | No evidence/confidence structure (→ §7.4.1). |
+| 7. Auto-resolve only above a threshold | **Absent** | Any single exact key auto-links and writes `venue_id`. In `cron-feeds` and the re-parse repair it also overwrites `venue_name_raw` with the canonical name (`cron-feeds.js:296-312`; `scripts/venue-raw-reparse-repair.js:158-165`). | No threshold and no held outcome. Placeholder literals link to the seeded "Venue TBA" row. |
+| 8. Research when internal evidence is insufficient | **Partial** (gated off) | Tavily `discoverVenueKnowledge`/`discoverEventVenue`; the query is hard-coded to "Detroit" (`external-discovery.js:311`); results persist as a **new canonical row named with the variant spelling** (`venue-lookup.js:557-611`). | Runs before cheaper internal steps (`cron-enrichment.js:177` vs `:194`). It cannot verify the canonical page from a variant, because the verifier requires the raw variant string. |
+| 9. Self-check before writing | **Absent** | Post-upsert "revalidation" re-runs the same exact match (`generic-metadata-enrichment.js:354-355`); press-coverage skips even that. | Nothing checks a proposed link against address, city, coordinates or the page's canonical name. A probe created a duplicate "Majestic Theater" row at an address already held by two rows. |
+| 10. Escalate only when automation is exhausted | **Partial** | Needs Follow-up, `NO_CANONICAL_VENUE_DATA`, the duplicate review list. | **Inverted:** an exact "Venue TBA" is exempted while "Eastern Market Shed 3" is escalated (`admin.html:600-605, 637-649`). Escalations carry no candidates or evidence. Admin cannot set `venue_id` (`admin-events.js:372`), so a human identity decision is never captured. |
+
+### 10.2 Variant classes
+
+"Linker" means `normalizeVenueName` / `resolveVenueId` and the detail-map tiers. All results are from local probes of the actual functions.
+
+| Variant class | Linker today | Elsewhere | Safe fix class |
+|---|---|---|---|
+| Capitalization | Handled | All normalizers fold case | normalization |
+| Spacing / NBSP / double space | Handled | Admin autofill, map/calendar pin keys and SQL backfills do not collapse internal whitespace (`admin-venues.js:90,110`; `map.html:1184,1797`) | normalization |
+| Curly vs straight apostrophe | **Not handled** ("Cliff Bell's" ≠ "Cliff Bell’s") | Dedupe/press/editorial fold it; `external-discovery`'s "at [Venue]" class omits `’` (`:229`) | normalization |
+| Punctuation, trailing period, en dash vs hyphen | **Not handled**. The seeded "DIA – Detroit Film Theatre" (en dash) misses the hyphen form | Dedupe folds them | normalization (identity key only; display keeps the source text) |
+| Hyphenation / compound spacing (Hart-Plaza; Spkrbox / Spkr Box) | **Not handled** | Dedupe folds hyphens, not compounds | hyphen: normalization; compounds: candidate + corroboration |
+| & vs and | **Not handled** | Only `normalizeTitle` and press `normalizeAmpersand` | normalization |
+| Diacritics (Café / Cafe) | **Not handled** | Dedupe **deletes** accented letters ("Café" → "caf"). That is untested for venues; `test/duplicate-consolidation.test.js:16` locks it for titles. | normalization (NFKD + strip marks; deliberate test change for titles) |
+| Leading article ("The Magic Stick" / "Magic Stick") | **Not handled**. The repo holds both as separate canonical rows (`seed.sql:29`; `archive/update_2026-09-15_admin-followup-batch2.sql:75`) | Only `source-authority` strips it | candidate key only, then verified alias ("The Loft" vs "Loft" can be distinct) |
+| St. vs Saint | **Not handled**, for names or cities. `citiesConflict("St. Clair Shores","Saint Clair Shores")` is **true** (a false conflict) | None | alias / place alias. **Never folded inside street addresses**: "12138 St Aubin" is Saint, while "… St" is Street. |
+| Theater vs Theatre | **Not handled**. It already produced a duplicate canonical row (`seed.sql:30-31`), merged by hand with the legacy spelling deleted (`migration_002:174-182`) | None | candidate + corroboration, then persisted alias |
+| Abbreviations / acronyms (DIA, LCA, MOCAD, DSO; Ave/Avenue; Pte/Pointe) | **Not handled** | Substring gates collide: "DIA" ⊂ "Indian Village" (verified probe) | verified, scoped alias for names; an address standardizer for suffixes |
+| Common misspellings / transcription errors (Trinosophez, Ford Feild, "Detriot") | **Not handled**; fails safe for names (no link). A misspelled city is a *false conflict*. | None | candidate (edit distance ≤ 2, names ≥ 8 chars) + corroboration; persist alias once confirmed |
+| Transcription errors in numbers (`2221` for `2211`; `2l11`; transposed ZIP) | Fails safe (no link), but L1 and learned knowledge are lost. **One wrong digit in a multi-room complex points at a different real room** (§10.4). | ZIP stripped and never compared | exact house numbers only; ZIP as a consistency check; data-quality issue on malformed numbers |
+| Shortened names / city or room suffix ("Lager House" / "PJ's Lager House"; "Fox Theatre - Detroit"; "Paris Bar (Hamtramck)") | **Not handled** | Containment matchers accept these as substrings with no corroboration: the dangerous direction | candidate (strip a known city suffix and require that city to agree) + corroboration; persist alias |
+| Sub-place / parent ("Eastern Market Shed 3", "DIA – Rivera Court", "Black Box at Planet Ant") | **Not handled**. No parent model; the address tier collapses rooms into whichever row holds the address | — | known-parent prefix candidate + `parent_venue_id`; new child proposed, never auto-created |
+| Alternate / legacy names (Pine Knob ↔ DTE Energy Music Theatre; Live6 Alliance ↔ Neighborhood Home Base) | **Not handled**; recorded only in SQL comments; renames done by one-off SQL that discards the old name | — | alias `kind=legacy` with `valid_from`/`valid_to`; research or human to confirm |
+| Source-specific variations ("Old Miami" vs "The Old Miami"; RA "Magic Stick" at "4120-4140 Woodward Avenue"; "TBA - place" strings with a pipe-separated address) | **Partial**. ~13–16 single-venue connectors hard-code a `VENUE_NAME` that must equal `venues.name` byte-for-byte | Hand-fixed per event in SQL | source-scoped mapping to `venue_id` (`venue_external_ids`) |
+| Placeholder spellings ("Location TBD", "Venue: TBA", "TBA - Detroit") | **Partial**. A 6-string set in detail maps (`venue-lookup.js:273-277`); probe: `isPlaceholderVenueName("Location TBD")` → **false** | 4 different implementations | one shared placeholder classifier (SZ-14), placeholder → null + reason (SZ-05) |
+
+### 10.3 False-match safeguards
+
+| Risk | Status | Current behavior (OBSERVED) | Required rule (RECOMMENDED) |
+|---|---|---|---|
+| Similar or identical names in different cities | **Partial** | `citiesConflict` vetoes the detail-map tiers and Localist, but only when both cities are stated. `resolveVenueId` is city-blind and last-row-wins (`venue-lookup.js:61-64, 76-80`). A name-only match with a blank event city links (probe: blank-city "The Loft" links; "Ferndale" is refused), and the test asserts this (`test/venue-lookup-placeholder-and-city.test.js:136-139`). The repair then **writes the venue's city onto the event**, manufacturing the corroboration later checks rely on. | City agreement must be *positive* evidence (same canonical place id), not just absence of conflict. Blank city + name ⇒ held, unless an S mapping or human/S source history exists (§7.4.1). Never resolve same-name collisions by fetch order. |
+| Chains / multiple locations | **Absent** | No brand or parent concept. Unique `(lower(name), lower(city))` allows one row per city, so two branches in one city cannot both carry the brand name. | A brand name alone is never sufficient; require address/coordinates or a source venue id. Brand and generic aliases must be city- or source-scoped. Optional `brand_id` (P2-11). |
+| Renamed venue at the same address | **Absent** | The address tier links the new name to the old row and **overwrites `venue_name_raw` with the old canonical name** (`venue-lookup.js:437-441`; `cron-feeds.js:309`). Renames are one-off SQL that discard the old spelling. | Address match + different name ⇒ propose a `legacy` alias with `valid_from`, held for corroboration (official site or human). Never a silent link plus a silent rename. |
+| Different venues sequentially at one address | **Absent** | Same mechanism: the new occupant is linked to the previous one. Only Localist refuses address links, after a production false match (`cron-localist.js:652-657`). | Address equality alone is never identity. Venue rows and aliases carry `valid_from`/`valid_to`; an event date outside the window is a veto. |
+| Multiple rooms or venues in one building or complex (4120/4140 Woodward; Saint Andrew's Hall / The Shelter; Planet Ant / Black Box; Eastern Market sheds) | **Partial** | The sentinel refuses a link when ≥ 2 rows share the exact address string (works at 4140 Woodward). With one row on file, every room links to it and is renamed (probe: "Planet Ant Theatre" → "Black Box"). | `parent_venue_id` + `kind`. A room name at a parent address resolves to the known child, or proposes one. Never overwrite the stated name. |
+| Event series vs venue names (Movement vs Hart Plaza; "Eastern Market Partnership" org vs Eastern Market venue) | **Partial** | `external-discovery`'s noun filter rejects phrases ending "Festival/Market/Fair", which also blocks real places like "Eastern Market". RA dedupe treats a series title as identity across venues. | Decide by gazetteer + aliases + corroboration, not token lists. Event identity needs venue or city agreement as well as title. An organization or series name never supplies venue evidence. |
+| Similar organization or venue abbreviations (DIA vs Indian Village; DSO vs DSA; DPL vs DPL-Campbell Branch) | **Partial** | Exact keys never expand acronyms (so no collisions there), but substring gates collide (verified probe). | Acronyms resolve only through verified, scoped aliases. Token-boundary matching at minimum. Tokens of ≤ 5 characters never generate candidates without an exact alias. |
+| Name similarity alone establishes identity | **Partial** | Prevented in the linker. Violated by: editorial/press substring links (persisted, with no unlink); RA title-only dedupe (recorded permanently in `event_source_identities`, `ra-sync.js:683-696`); VisitDetroit title+date suppression; `verifyOfficialResult` (website persisted, later trusted as "human-confirmed", `venue-lookup.js:455-476`). | Similarity only proposes. Every persisted identity decision needs ≥ 1 non-name corroborator, no veto, and a recorded method, evidence and actor. |
+| **Address equality alone establishes identity** | **Absent** | Violated in `resolveVenueFromCandidate` (callers: `cron-feeds`, re-parse repair) and `resolveVenueNameFromAddressRepair` (generic enrichment). Policy is inconsistent with Localist. | Address + agreeing name (exact, verified alias, or corroborated variant) ⇒ link. Address + blank name ⇒ held / propose. Address + conflicting name ⇒ conflict ⇒ held / research / escalate. |
+| Shared `venue_id` treated as proof in event dedupe | **Partial** | `samePlace` accepts a shared `venue_id` without a city veto when both rows have their own venue text (`duplicate-consolidation.js:192-196`). A probe auto-merged Livonia vs Troy "City Hall" events (confirmed by both verifiers). | Run the city veto unconditionally before any deterministic merge (SZ-13). |
+| Placeholder treated as a venue | **Partial** | Guarded in the detail maps and search skip; **not** in `resolveVenueId`. Ticketmaster, Planet Ant and DMOD "Venue TBA", and RA "Location TBA", can link to seeded placeholder rows (`seed.sql:36, 47-50`), whose "Detroit" city then flows onto the event. | Placeholders become null + reason; placeholder venue rows are flagged `kind=placeholder` and excluded from every lookup. |
+
+**Principle check.** Neither name similarity nor address equality alone should establish identity:
+- **Name similarity:** respected by the venue linker; violated by the article, RA and VisitDetroit matchers and the research verifier.
+- **Address equality:** violated by the shared resolver, the re-parse repair and generic enrichment.
+
+### 10.4 Reproduced probes
+
+Local, pure functions, using venue rows built from repo data (`archive/update_2026-09-15_admin-followup-batch2.sql:75`; `update_2026-09-22_gardenbowl-venue.sql`).
+
+| Input (name, address, city) | `resolveVenueFromCandidate` result | What it shows |
+|---|---|---|
+| "Big Time Bingo", "4120 Woodward Ave", "Detroit" | **The Magic Stick** | The Big Time Bingo poster prints **4120** for Garden Bowl, whose own listing gives 4140 (`api/_lib/bigtimebingo-occurrences.js:13-18`; `update_2026-09-22_gardenbowl-venue.sql:14-32`). 4120 is the Magic Stick's address, so a one-digit discrepancy links a different real room by address alone. `cron-feeds.js:309` would then rename the event's venue. |
+| "Some Pop-Up Gallery", "2211 Woodward Ave", "Detroit" | **Fox Theatre** | Address alone overrides a conflicting stated name |
+| "Planet Ant Theatre", "2357 Caniff Ave", "Hamtramck" | **Black Box** | Room / venue collapse at one address |
+| "Fox Theater", "2211 Woodward Avenue", "Detroit" | **null** | A harmless name variant plus a suffix variant both miss |
+| "The Loft", no address, no city | **The Loft** (Detroit row) | Name-only identity with a blank city |
+| "The Loft", no address, "Ferndale" | null | The city veto works when the city is stated |
+| `resolveVenueId(map with "venue tba" row, "Venue TBA")` | **links to the placeholder row** | No placeholder guard in the ingest linker |
+| `normalizeVenueName` pairs: Saint/St.; Theatre/Theater; "The Fillmore Detroit" / "Fillmore Detroit"; "Cliff Bell's" / "Cliff Bells"; hyphenation; "Eastern Market" / "Eastern Market Shed 3" | all **no match** | Only case and whitespace fold |
+| `normalizeAddressCity`: "2810 Russell St." vs "2810 Russell Street" | **no match** | No address standardization |
+| `isPlaceholderVenueName("Location TBD")`, `("TBA - Detroit")` | **false**, **false** | Placeholder set is incomplete |
+
+### 10.5 Exact-string dependencies and loose-match hazards (summary)
+
+**Exact-string dependencies (OBSERVED).** Each of these breaks on a harmless variant:
+- `resolveVenueId` (~28 files);
+- the detail-map name/address keys;
+- the learned map (an "Ave" vs "Avenue" difference drops knowledge, e.g. "Pronto Royal Oak" in `update_2026-09-18_ra-manual-pull-5.sql:100` vs `ra-manual-pull-7.sql:111`);
+- `VENUE_NAME` constants in single-venue connectors;
+- four placeholder checks (`venue-lookup.js:273-277`, `admin.html:637-639`, `description-enrichment.js:67`, `ra-sync.js:394`);
+- map/calendar pins keyed by display name, not `venue_id` (`map.html:1184-1218`);
+- the Admin venue autofill;
+- 36 SQL files repeating the `lower(trim(venue_name_raw)) = lower(trim(name))` backfill;
+- the unique index `(lower(name), lower(city))`, which cannot catch Theater/Theatre or "The X"/"X" duplicates;
+- event dedupe grouping on exact `normalizeTitle|start_date` (`duplicate-consolidation.js:345-354`);
+- the reverse address tier, which fires only when the name is blank, so a literal "Venue TBA" blocks it permanently (`venue-lookup.js:391`).
+
+**Loose-match hazards (OBSERVED).** Each lets one signal decide identity:
+- address-only links and renames (above);
+- name-only with a blank city, where the repair then writes the venue's city onto the event;
+- the learned map keyed by name with no source or parent scope ("Library" or "Shed 3" learned in one city fills a city-less event elsewhere);
+- `upsertVenueKnowledge` PATCHes the first same-named row in **any city** (latent behind the gate, `venue-lookup.js:562-590`);
+- the enrichment discovery guard **fails open on an ambiguous name**: it tests `typeof sameNameRow === "object"`, and the sentinel is a Symbol (`generic-metadata-enrichment.js:309-313`);
+- editorial/press venue-and-date and title substrings with no word boundary;
+- RA title-only dedupe against rejected rows too;
+- VisitDetroit title+date suppression;
+- `samePlace` on a shared `venue_id`;
+- map pins merging same-name venues.
+
+### 10.6 Persistence and learning
+
+**OBSERVED: nothing persists a confirmed name relationship.**
+- **No store.** There is no alias, legacy-name, parent, source-venue-id or match/non-match table or column (`schema.sql:27-46` and later venue ALTERs).
+- **The "learned" tier isn't learning.** It is recomputed every run from the 500 most recently updated events and yields only address/city text, never a `venue_id` or an alias. `updated_at` churns on every upsert, so older knowledge ages out.
+- **The only automated write path mints a new canonical row** named with the variant spelling (`upsertVenueKnowledge`, `venue-lookup.js:557-611`). A probe created "Majestic Theater" again at 4140 Woodward. Repo-recorded production damage from this path already exists (`BUG-010`).
+- **Resolved variants are overwritten** with the canonical name, destroying the evidence (`cron-feeds.js:309`; `venue-raw-reparse-repair.js:163`).
+- **Human decisions are not captured.** Admin cannot set `venue_id` (`admin-events.js:372`). `DUP_DISTINCT` is free text in `internal_note`, which GottaGacha and Eventbrite overwrite (`cron-gottagacha.js:288`; `cron-eventbrite.js:212`).
+- **Manual reconciliation went into one-off SQL:**
+  - 36 files repeat the exact-name backfill;
+  - 23 `insert into venues` statements and 27 `update venues` statements;
+  - 128 per-event address assignments in 5 archive files;
+  - the Majestic Theater merge *deleted* the legacy spelling (`migration_002:174-182`);
+  - two rename files are listed in the ledger but absent from the repo (`migration_023:97,101`).
+- **Negative research results** are remembered within one call only (`generic-metadata-enrichment.js:247`).
+
+**INFERRED consequences:**
+- Today the only way to "teach" a variant is to mint another venue row, which splits canonical identity: "Magic Stick" / "The Magic Stick"; "Majestic Theatre" / "The Majestic Theatre" (`seed.sql:29-31`; `batch2.sql:75-76`).
+- Once research reopens, every variant costs again on every run.
+
+**Answer to the learning question.** Yes, confirmed aliases and spelling variations should be persisted. That is the single biggest lever on both clerical work and research cost:
+- a verified alias makes every later occurrence resolve deterministically, at zero AI/research cost;
+- a recorded *negative* decision stops the same false pair being re-proposed;
+- a `resolution_attempts` row stops the same unresolvable name being re-researched.
+
+A verified alias only survives connector re-runs if `venue_id` is protected by field authority (SZ-06; `DEBT-011` #6).
+
+### 10.7 Durable identity storage (RECOMMENDED, minimal and additive; P1-13)
+
+Mirrors the existing `event_source_identities` crosswalk (`migration_045`), but fixes its weakness: it uses ignore-duplicates, so a conflicting key is silently accepted (`api/_lib/event-source-identities.js:94-104`).
+
+1. **`venues` additions:**
+   - `normalized_key` (normalizer v1 + version);
+   - `kind` (`venue | room | campus | district | outdoor_area | virtual | placeholder`, separate from the free-text `venue_type`);
+   - `parent_venue_id`;
+   - `valid_from` / `valid_to`;
+   - `source_provenance` (`human | seed | research | migration`);
+   - `website_provenance` (the code wrongly assumes the website is human-confirmed, `venue-lookup.js:455-456`);
+   - `updated_at`;
+   - `merged_into_venue_id` (merge by redirect + legacy alias, **never DELETE**).
+2. **`venue_aliases`:**
+   - `venue_id`, `alias_display` (verbatim), `alias_key` (normalizer v1 + version);
+   - `kind` (`spelling | legacy | abbreviation | source_label | room_label`);
+   - `scope_source`, `scope_city_place_id` (generic and brand aliases **must** be scoped);
+   - `valid_from` / `valid_to`;
+   - `status` (`proposed | verified | rejected`), `confidence`, `evidence` (method, matched_on, url + quote or event ids, run_id);
+   - `created_by`, `decided_by` (`gate | human:<id>`), timestamps.
+   - Unique on `(alias_key, scope_source, scope_city_place_id)` where not rejected. One key cannot map to two venues in one scope.
+3. **`venue_external_ids`:**
+   - primary key `(source, source_venue_id)` → `venue_id`, plus `first_seen_at`, `last_seen_at`, `status`, `decided_by`;
+   - covers Ticketmaster/Eventbrite/Localist venue ids and replaces `VENUE_NAME` constants;
+   - a conflicting insert **fails loudly**.
+4. **`entity_match_decisions`:** `entity_type` (venue/event/organizer), `subject_key`, `object_id`, `decision` (`same | different | parent_of | renamed_to`), `reason`, `evidence`, `decided_by`, `decided_at`, `superseded_by`. It replaces `DUP_DISTINCT` free text and stops nightly re-proposal of rejected pairs.
+5. **`resolution_attempts`:** `subject_key`, `kind`, `method`, `outcome` (`resolved | none | error | ambiguous`), `evidence_ref`, `cost_units`, `attempted_at`, `next_retry_at` (exponential TTL). Consulted before **any** external call. It never blocks deterministic resolution.
+6. **`place_aliases`** for cities: a closed list of canonical place ids plus aliases (St./Saint Clair Shores, Grosse Pte/Pointe, "Detroit, MI"). Distinct municipalities (Plymouth vs Plymouth Township) stay distinct.
+7. **On `events`:** `venue_link_method` and a link-evidence/claim id, so a later alias revocation or merge can find and re-evaluate the events it affected. These are also needed for the non-circular C1 rule in §7.4.1.
+
+### 10.8 AI / research cost implications
+
+- **Today (OBSERVED).**
+  - There are no LLM calls. A repo-wide grep for Anthropic/OpenAI endpoints matches only comments in `api/_lib/description-enrichment.js:11,23`, and there is no `package.json`, so no SDK.
+  - Research means Tavily search credits: `fetch("https://api.tavily.com/search")` at `external-discovery.js:285`, on a 1,000-credit/month free tier (`:36-38`).
+  - The gate is closed, so current spend is 0.
+- **If the gate reopened under today's design (mechanics OBSERVED, spend INFERRED).**
+  - **The budget is per call, not per day.** The "20/day" budget is an in-memory counter created per call (`generic-metadata-enrichment.js:112-128, 247-251`). The code comment assumes one daily cron run. In fact it is reached directly from `cron-enrichment.js:177-178` and Admin `admin-events.js:582-583`, and conditionally through `linkPressCoverageQueue` from `cron-editorial.js:720` and Admin `admin-editorial.js:166`. Each call gets a fresh 20.
+  - **Press-coverage venue search sits outside the budget.** It is uncapped and runs even in dry-run mode (`press-coverage-linking.js:1084-1096`).
+  - **No negative cache, and variants multiply.** An unresolvable name costs one search per call for as long as its events are upcoming, and every spelling variant costs its own search.
+  - **Starvation and wasted spend.** Candidates are unordered, so the same first ~20 names starve the rest. Research runs before cheaper internal steps.
+  - **Success creates more work.** A successful search is stored as a duplicate canonical row, which creates more unresolved variants later.
+  - **Scale.** At one credit per search, one daily run at cap is ~600 credits/month; about 20 extra Admin clicks exhaust the quota.
+- **With the recommended design.**
+  - Internal-first, free steps run first: normalizer → verified aliases/external ids → content candidates and gazetteer → source history.
+  - Research runs only for held residual cases, through one gateway that checks `resolution_attempts` and a persisted budget shared by every entry point (P1-17).
+  - A verified alias makes every later variant cost 0. INFERRED: research volume should *fall* over time as aliases accumulate, rather than recur nightly.
+- **LLM use, if introduced.**
+  - Fast tier (Haiku-class), only for residual title/description segmentation that the grammars cannot parse.
+  - Quote-constrained and cached by content hash.
+  - **Never** for normalization or for the identity decision itself.
+
+### 10.9 Classification and verdict
+
+**REFACTOR the identity decision layer; KEEP its strict core.**
+
+- **Keep:**
+  - exact-key determinism as the only *automatic name* path;
+  - `AMBIGUOUS_VENUE_NAME` and `citiesConflict`;
+  - Localist's name+city-required, no-address-link policy;
+  - duplicate consolidation's discipline (deterministic merge only on multi-signal agreement, everything else to review, identity recorded before retire).
+- **Harden now (SZ-13):** `resolveVenueId` gets city, ambiguity and placeholder checks; address tiers never decide identity alone; the `samePlace` city veto becomes unconditional; the RA, editorial and VisitDetroit matchers require corroboration.
+- **Refactor (P1-13–P1-16):** one resolver with:
+  - one shared normalizer and placeholder classifier (replacing 13+);
+  - a durable alias, external-id and decision store;
+  - scored candidates with evidence;
+  - the veto + threshold model;
+  - held instead of default;
+  - escalation with candidates.
+- **Rebuild:** the research verifier and persistence (P1-04/P1-17).
+- **Retire:**
+  - creating canonical rows from variants;
+  - raw substring identity decisions;
+  - `"Venue TBA"` as stored data;
+  - `VENUE_NAME` constants as identity.
+
+**Why not KEEP or REBUILD.** The exact matcher is *safe but brittle*: it has already split canonical identity and forgets every reconciliation. The real false matches occur in the loose paths *outside* it: address-only, blank-city name-only, substring and title-only. The tiers and safeguards are sound and well tested, so incremental refactoring is cheaper and safer than a rebuild. **Bolting fuzzy matching onto today's linker would remove the one property that keeps it safe.**
 
 ---
 
@@ -622,7 +1006,8 @@ Supabase Branching is an alternative if the plan includes it; it is not required
 | Data-quality assertions | **None persisted** | Audits were ad hoc anon-key queries (`NEEDS_FOLLOWUP_ROOT_CAUSE.md:12-19`). |
 | Adversarial / malformed input | Targeted, not systematic | Excellent adversarial titles for the closure rule; placeholder/city tests; submit validation. No fuzzing of parsers. |
 | Test runner / CI | **None** | Only workflow is `ra-sync-bridge.yml`. Nothing runs tests on push. |
-| Clock independence | **Broken in one place** | `test/cron-bigtimebingo-runlog.test.js:161` fails because the handler uses the real date (`api/cron-bigtimebingo.js:85`) and the test hard-codes 2026-09-28. Its later sections, including write-path checks, no longer execute. `BACKLOG.md` (BUG-007 "Known limits") notes it was already failing on `main` and it was accepted. |
+| Clock independence | **Broken in one place** | `test/cron-bigtimebingo-runlog.test.js:161` fails because the handler uses the real date (`api/cron-bigtimebingo.js:85`) and the test hard-codes 2026-09-28. Its later sections, including write-path checks, no longer execute. `BACKLOG.md` (BUG-007 "Known limits") notes it was already failing on `main` and it was accepted. Its venue-resolution assertions pass before the failure point, so it is not a matching failure. |
+| Identity / name-matching precision | **Partial, exact-only** | 25 matching-related files pass locally (262 PASS lines): `venue-lookup*`, `venue-address-repair`, `venue-raw-reparse-repair`, `sh1-repair-existing-events`, `sh-n-venue-display`, `admin-auto-repair-venue`, `cron-feeds-location-per-event`, `cron-feeds-city-recovery`, `cron-feeds-venue-repair`, `cron-feeds-no-fixed-venue`, `ics-location`, `localist-rows`, `duplicate-consolidation`, `event-source-identities`, `ra-sync`, `press-coverage-linking`, `external-discovery*`, `generic-metadata-enrichment`, `source-authority`, `link-health`, `visitdetroit-link-recovery`. They cover case and whitespace positives; typo, extra-word and leading-article *negatives* (`test/venue-lookup.test.js:108-118`); the city veto; placeholders; ambiguity in the detail maps; two venues at one address. **Not covered:** `resolveVenueId` with duplicates, placeholders or city; address-only identity with one row on file; chains; renames; sequential occupants; abbreviations; title-embedded places; Theater/Theatre or St./Saint for venues; editorial venue-and-date links (0 files); RA same-title-at-another-venue. There is no cross-module gold set and no precision gate. |
 
 ### 12.2 Failures that can reach production today with nothing to stop them
 
@@ -637,6 +1022,42 @@ Supabase Branching is an alternative if the plan includes it; it is not required
 9. RLS/column exposure: no security tests.
 10. Rendering regressions: no browser tests.
 11. A new connector missing from healthcheck/run-log: no enforcement test (prior audit K4, still open).
+12. A false identity link: wrong venue, wrong merge, wrong article link, or a suppressed event. There is no cross-module gold set and no precision gate, and several existing assertions encode single-signal behavior (e.g. a blank-city name-only link, `test/venue-lookup-placeholder-and-city.test.js:136-139`).
+
+### 12.3 Identity regression plan (RECOMMENDED; SZ-14)
+
+1. **Golden identity fixtures** (`test/fixtures/entity-gold.json`). Each record holds an input, a canonical set, the expected decision (`link:<id> | held | propose_alias | escalate | distinct`) and the evidence families that must be recorded. Seed from **repo evidence only**, never from synthetic probe values.
+   - **Positives:**
+     - curly/straight apostrophes; en dash/hyphen (`seed.sql:16`); trailing period; NBSP; accents; & / and;
+     - Majestic Theater/Theatre; Magic Stick / The Magic Stick; Paris Bar (Hamtramck) / Paris Bar; Old Miami / The Old Miami;
+     - "Fox Theatre - Detroit"; "608 Washington Ave" vs "Ave."; "Detroit, MI 48207" as a city;
+     - Mt./Mount Clemens; St./Saint Clair Shores (city);
+     - the Eastern Market shapes from §6.3 with their expected (mostly *held/propose*) outcomes.
+   - **Negatives and adversarial cases:**
+     - The Loft (Detroit vs Ferndale); Black Box (Hamtramck vs Ann Arbor); "Library"/"Community Center" with no city;
+     - an unrelated name at a known address; Planet Ant Theatre vs Black Box at 2357 Caniff; the 4120/4140 Woodward rooms; **Big Time Bingo at "4120 Woodward" (must not link to Magic Stick)**; Saint Andrew's Hall vs The Shelter;
+     - a rename at the same address; sequential occupants with validity windows;
+     - Eastern Market Partnership (organization) vs the Eastern Market venue; Movement vs Hart Plaza; "ProsperUs Detroit" (a city inside an organization name);
+     - DIA vs Indian Village; DSO vs DSA; DPL vs DPL–Campbell Branch; Majestic Theatre vs Majestic Cafe;
+     - Trinosophez (typo with no corroborator: held, not link); Plymouth vs Plymouth Township; "12138 St Aubin" (Saint inside an address);
+     - placeholder spellings; "Techno Tuesday" at different venues; a rejected-status match target; "rave on" vs "brave one"; a recap article;
+     - malformed and wrong-digit house numbers; a transposed ZIP; "Detriot";
+     - every `BUG-010` production failure.
+2. **One harness runs every identity path** against the same gold set, so cross-module divergence fails a test: `resolveVenueId`, `resolveVenueFromCandidate`, the repair tiers, venue upsert (proposal mode), dedupe `samePlace`/classification, RA `findConservativeDuplicate`, the editorial/press matchers, the map pin key and the placeholder classifier.
+3. **Precision gate in CI** (amends SZ-03):
+   - **zero** false links on the negative/adversarial set (hard fail);
+   - recall on positives reported, and allowed to decrease only with a recorded justification;
+   - both the decision *and* its recorded evidence families asserted;
+   - a property test: candidates with only a name family, or only an address family, never auto-link.
+4. **Cost assertions:** a verified alias resolves with 0 external calls; a negative `resolution_attempts` row prevents a repeat call within its TTL; dry-run makes 0 searches; the persisted budget is shared across all entry points.
+5. **Shadow mode** for every normalizer or alias change: run old and new resolvers side by side on staging data and review every gained and lost link before enforcing.
+6. **Production-sampled gold:** once staging holds a production snapshot (SZ-15), add 50–100 human-labelled real `venue_name_raw` values that failed to link, refreshed quarterly.
+
+**Deliberate test rewrites, not silent flips:**
+- `venue-lookup.test.js:108-118`: split into harmless (normalizer v1) cases and must-stay-distinct-until-alias cases;
+- `venue-lookup-placeholder-and-city.test.js:136-139` (blank-city name link) and `:168-187` ("Shed 5" searched externally);
+- `cron-feeds-location-per-event.test.js:158-170` ("Venue TBA" only after the content step has run);
+- `duplicate-consolidation.test.js:16` (title accent folding; venue accent folding has no test and needs one).
 
 ---
 
@@ -718,6 +1139,7 @@ Supabase Branching is an alternative if the plan includes it; it is not required
   - one non-idempotent note append (`update_2026-09-20_numa-crew-ra-merge.sql:23-24`).
 - **Hard deletes:** in `migration_002:182`, `migration_015:42-43` and 7 archived patches. No transactions, archive tables or row-count assertions. `editorial_article_events` cascades on event delete (`migration_021:27`).
 - **Integrity:** FKs are present and appropriate (`SET NULL`/cascade). `status` default `approved`. `rejected` overloaded. No `updated_at` on venues.
+- **Identity schema:** there is no alias, external-id, parent, validity-window or match-decision structure for venues. `venues.zip_code` exists (`migration_005:40`) but the resolver never selects it (`venue-lookup.js:153`). The venue registry cannot be rebuilt from the repo: about 83 production venues on 2026-09-13 against about 42 committed inserts (`archive/update_2026-09-13_backfill_venue_id_matched_venues.sql:6-10`), and two rename files are absent. The repo also contradicts itself on some venue cities (`seed.sql:38,40` vs `migration_002:169-171`). → SZ-15, P1-13 (§10.7).
 
 ### 14.2 Query patterns and indexes
 
@@ -815,7 +1237,7 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | TD-09 | Admin queue measures blankness client-side; dismissal hides events | S2 | §13.3 | SZ-08, P1-05 |
 | TD-10 | Temporal model (date + text; overloaded `end_date`; UTC "today") | S2 | §9 | SZ-11, P1-01 |
 | TD-11 | Eligibility not a domain concept; no UNCERTAIN state | S2 | §8 | SZ-08, P1-02 |
-| TD-12 | Exact-match-only venue resolution; "Venue TBA" as data | S2 | §6, §10 | SZ-05, P1-03 |
+| TD-12 | Exact-match-only venue resolution; "Venue TBA" as data | S2 | §6, §10 | SZ-05, SZ-14, P1-03, P1-13–P1-15 |
 | TD-13 | No provenance/evidence model | S2 | §7 | P1-03 |
 | TD-14 | No write history / data rollback | S1 | §11.2(7) | SZ-07 |
 | TD-15 | Cron auth fails open | S2 | §15 | SZ-01 |
@@ -836,6 +1258,11 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | TD-30 | RA acquisition policy contradiction; git bus on `main`; spoofed UAs | S2 | §15 | SZ-12, P1-09 |
 | TD-31 | Missing `end_date` index; offset paging | S3 | §14.2 | P2-05 |
 | TD-32 | Doc/status drift; stale safety comments | S3 | §16 | ongoing |
+| TD-33 | Single-signal identity decisions: address-only links that rename, blank-city name-only links, RA title-only dedupe, editorial substring links, VisitDetroit title+date suppression, `samePlace` on a shared `venue_id` | S1 | §10.3–10.5 | SZ-13, P1-16 |
+| TD-34 | 13+ divergent name normalizers; 4+ placeholder definitions | S2 | §10.2, §10.5 | SZ-14 |
+| TD-35 | No alias, external-id or match-decision store; Admin cannot set `venue_id`; the system cannot learn | S2 | §10.6 | P1-13 |
+| TD-36 | Venue reference data not reproducible from the repo; duplicate and placeholder canonical rows | S2 | §14.1 | SZ-15 |
+| TD-37 | Research budget per invocation; no negative cache; research before internal steps; research creates canonical rows from variants | S2 | §10.8 | P1-17, P1-04 |
 
 ---
 
@@ -843,7 +1270,7 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 
 **Goal:** make defects stop at the write path, make failures loud, and stop using production as the test environment. All P0 items should exist before significant audience or source expansion.
 
-**Shape:** roughly 3–5 weeks for one owner working with Claude sessions. Items are ordered by dependency.
+**Shape:** roughly 4–6 weeks for one owner working with Claude sessions. The identity packages SZ-13–SZ-15 add about a week. Items are ordered by dependency, except SZ-13–SZ-15, which are numbered after the original twelve; §24 gives the actual sequence.
 
 ### SZ-01 — Close exposure and fail-open paths
 - **Priority:** P0
@@ -1067,10 +1494,97 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 - **Claude environment/model:** cloud; standard (Sonnet-class) for code; the decision is the owner's.
 - **Effort:** XS–S
 
+### SZ-13 — False-match vetoes on existing identity paths
+- **Priority:** P0
+- **Problem:** several shipped paths let a single signal establish identity (§10.3–10.5):
+  - `resolveVenueId` is city-blind, last-row-wins and placeholder-blind (`venue-lookup.js:61-64, 76-80`);
+  - the address tiers link **and rename** on address alone (`:387-402, 437-441`; `cron-feeds.js:309`; `venue-raw-reparse-repair.js:163`);
+  - `samePlace` skips the city veto on a shared `venue_id` (`duplicate-consolidation.js:192-196`);
+  - RA dedupe decides on title alone, against rejected rows too, and records the identity permanently (`ra-sync.js:392-424, 683-696`);
+  - the enrichment discovery guard fails open on an ambiguous name (`generic-metadata-enrichment.js:309-313`);
+  - `upsertVenueKnowledge` patches same-named rows in other cities (`venue-lookup.js:562-590`).
+- **Risk if ignored:** every new source multiplies same-name venues and shared addresses. The expected harms:
+  - silent wrong-city links;
+  - events renamed to a different room (the Big Time Bingo → Magic Stick probe);
+  - real events suppressed by a permanent RA crosswalk;
+  - auto-merges that retire public events.
+- **Scope:** small guard-only changes, with **no new matching capability**. Each lands first in shadow (logging would-have-refused counts), then enforces.
+  1. `resolveVenueId` takes an optional city; returns null on duplicate normalized names; refuses on `citiesConflict`; links a blank-city event only when the name is unique **and** the source is a single-venue connector. This amends SZ-06's placeholder guard and fail-closed map, which touch the same function.
+  2. The address tier links only when the stated name is blank (repair) or agrees with the canonical name. Otherwise it returns `conflict` and keeps the source name. **Never overwrite `venue_name_raw`.** This aligns `cron-feeds`, the re-parse repair and enrichment with Localist's policy.
+  3. `samePlace` applies `citiesConflict` unconditionally.
+  4. `findConservativeDuplicate` also requires no venue conflict, no city conflict, and a non-rejected target; otherwise it reports a candidate and records no identity.
+  5. The discovery guard treats the ambiguity sentinel as not discoverable.
+  6. `upsertVenueKnowledge` never PATCHes a row whose city conflicts (it stays dormant behind the gate).
+- **Acceptance criteria:**
+  - adversarial tests for each case (The Loft ×2; Black Box Ann Arbor; Planet Ant at 2357 Caniff; Big Time Bingo at 4120 Woodward; an unrelated name at a known address; Livonia/Troy "City Hall"; "Techno Tuesday" at different venues; a rejected target; the ambiguous-name search) each assert no link, no merge and no identity record;
+  - the existing suite passes except the documented deliberate rewrites (§12.3);
+  - a staging shadow run lists every link that would change, and each is reviewed before enforcement.
+- **Dependencies:** SZ-03, SZ-04, SZ-06; SZ-15 makes the shadow diff interpretable.
+- **Claude environment/model:** cloud; standard (Sonnet-class) for implementation; deep-reasoning (Opus-class) to review the shadow diff.
+- **Effort:** M
+
+### SZ-14 — Shared identity normalizer v1, placeholder classifier, gold set and precision gate
+- **Priority:** P0
+- **Problem:**
+  - 13+ name, place and placeholder normalizers disagree on the same pairs, e.g. curly apostrophes are "same place" to dedupe and "different" to the linker;
+  - placeholder rules are implemented four different ways;
+  - no test guards identity precision across modules (§10.2, §12.1).
+- **Risk if ignored:**
+  - any P1 alias or candidate work would write keys other modules cannot read;
+  - each new source's spelling quirks become new canonical rows or silent misses;
+  - there is no objective way to show that a matching change did not add false links.
+- **Scope:**
+  1. `api/_lib/identity-normalize.js`, normalizer **v1**, folds only **harmless** differences: case, whitespace including NBSP, curly → straight quotes, dash variants → hyphen, NFKD diacritic strip, & → "and", and punctuation → space in the comparison key. It exposes a version. Variant folds (Theatre/Theater, St./Saint, leading article) live in a separate `candidateKeys()` that is **not** used for linking until P1-14.
+  2. One placeholder classifier returning `generic_placeholder | specific_placeholder_row | not_placeholder`. This keeps the deliberate "Venue TBA (Paxahau)" distinction.
+  3. The linker, dedupe, Admin autofill and map pin keys adopt v1 **in shadow**, logging both keys and reporting link differences before switching.
+  4. The gold set, harness and CI precision gate from §12.3.
+- **Acceptance criteria:**
+  - ≥ 60 gold records from repo evidence, ≥ 25 of them adversarial;
+  - the harness covers every identity path;
+  - CI fails on any false link;
+  - the shadow diff on a staging snapshot shows only v1-harmless changes (e.g. the en-dash DIA row) and is reviewed;
+  - every module imports the shared placeholder classifier.
+- **Dependencies:** SZ-03, SZ-04; feeds SZ-05 (placeholder → null + reason).
+- **Claude environment/model:** cloud; deep-reasoning (Opus-class) for the fold policy and gold-set curation; standard (Sonnet-class) for implementation.
+- **Effort:** M
+
+### SZ-15 — Venue reference-data snapshot and identity-debt inventory
+- **Priority:** P0
+- **Problem:**
+  - the canonical venue registry cannot be rebuilt from the repo (§14.1);
+  - duplicate canonical pairs exist in repo data: Magic Stick / The Magic Stick, Majestic, Small's, Paris Bar;
+  - placeholder rows are canonical (`seed.sql:36, 47-50`), and `BUG-010` search-created venue rows remain.
+- **Risk if ignored:**
+  - staging seeded from the repo would resolve far fewer venues than production, so the SZ-13/SZ-14 shadow diffs, and all P1 alias work, would be validated against the wrong reference data;
+  - duplicate rows keep splitting events;
+  - placeholder rows keep absorbing links.
+- **Scope:**
+  - an owner-run, read-only export of production venues (id, name, city, address, lat/lng, website, created_at), plus the distinct `(venue_name_raw, venue_city_raw, venue_id)` values on events with counts, into staging and a versioned reference file;
+  - an inventory of: duplicate normalized names across cities; variant-duplicate clusters; placeholder rows and their linked event counts; `BUG-010` rows; the top unlinked `venue_name_raw` values by event count.
+  - Each finding is assigned to SZ-02/SZ-10 (cleanup) or P1-13 (alias seeds).
+  - **No production writes.**
+- **Acceptance criteria:**
+  - staging venue names and count equal production at the snapshot date;
+  - the inventory answers the Appendix C identity questions;
+  - `seed.sql` no longer re-introduces merged variants.
+- **Dependencies:** SZ-04; SZ-01 (secure read access); owner-run export.
+- **Claude environment/model:** cloud for analysis; standard (Sonnet-class); the export is run by the owner.
+- **Effort:** S
+
 ### Work that should NOT be done yet
 
-- **New bespoke source connectors**, or onboarding sources that publish directly, until SZ-05/06/08/09 exist. The ICS self-service feed may continue only in `held`/dry-run mode.
-- **Re-opening web-search enrichment**, or adding LLM generation of descriptions, before the evidence model (P1-03/P1-04).
+- **New bespoke source connectors**, or onboarding sources that publish directly, until SZ-05/06/08/09 and SZ-13/14 exist. The ICS self-service feed may continue only in `held`/dry-run mode.
+- **Re-opening web-search enrichment**, or adding LLM generation of descriptions, before the evidence model, the research rebuild and the research gateway exist (P1-03/P1-04/P1-17). Research must never create a canonical venue row; it may only propose.
+- **Fuzzy, trigram or edit-distance matching in any auto-link path** before the P1-14 veto + threshold model and the SZ-14 precision gate exist. Today's strict keys are the main reason name keys do not false-match.
+- **Changing `normalizeVenueName` in place.** About 28 files depend on it. Ship normalizer v1 in shadow with a link-diff review.
+- **Treating address equality, or a shared `venue_id`, as identity**, or overwriting a source's stated venue name with the canonical name.
+- **Token folds inside street addresses** (St. → Saint), or collapsing distinct municipalities (Plymouth vs Plymouth Township).
+- **Global aliases for generic or room names** ("Black Box", "Shed 3", "Main Stage", "Library", "The Loft"). Scope them to a source, city or parent.
+- **Merging duplicate venues by DELETE + rename SQL** (as `migration_002:174-182` did). Use a redirect plus a legacy alias so the variant keeps resolving.
+- **Seeding aliases or addresses from test fixtures or probe values** (e.g. "Shed 5, 2810 Russell St"). Seed only from verified production or authoritative evidence.
+- **LLM identity decisions or LLM normalization.** LLMs may only propose quote-constrained candidates.
+- **Auto-linking a title-derived place on its own.** An organization or series name never qualifies as evidence.
+- **New `VENUE_NAME` constants, per-connector content regexes** (like the Lager House sister-room rule), **new placeholder literals, or wider placeholder exemptions in Admin.**
 - **The full EPIC-001 platform** (registry, job queue, `source_records`, adapters) before the contract, authority and temporal foundations; it would encode today's ambiguities into a bigger system.
 - **Monetization (EPIC-011–017), the social layer (EPIC-005), and Radar scoring (EPIC-007)** on top of data whose accuracy is unmeasured.
 - **A frontend framework migration** or SSR rewrite.
@@ -1087,8 +1601,8 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 |---|---|---|---|---|---|---|
 | P1-01 | **Temporal model v2** | Date + text → `start_at`/`end_at timestamptz`, `timezone`, `time_precision`, `service_date`, `series_key` (§9.3); readers derive from them; shared `isCurrent` in JS and SQL | Fixture suite (overnight, DST weekends, all-day, multi-week, Ontario) passes in JS and SQL; Calendar, Map, Home and SSR agree | SZ-05, SZ-11 | cloud; deep-reasoning design, standard implementation | L |
 | P1-02 | **Eligibility decision layer** | Denylist → positive/negative/uncertain chain with evidence (§8); per-source priors; sampled review | Labeled sample per source; precision ≥ agreed target; UNCERTAIN routes to `held`, not Admin | SZ-05, SZ-08, P1-03 | cloud; deep-reasoning | M–L |
-| P1-03 | **Evidence/claims model + venue resolver chain** | Direct writes → claims with method, authority, evidence; aliases; `parent_venue_id`; `venues.kind`; title/description location extraction (§6, §7.4) | "Eastern Market Shed 3 …" resolves to the Eastern Market place in staging with a recorded claim; ambiguous cases become issues, never defaults | SZ-05, SZ-08 | cloud; deep-reasoning | L |
-| P1-04 | **Rebuild research tier** | Snippet → propose-with-quote, verified, gated; never creates venues directly (proposes); persisted daily budget; per-attempt log | Every BUG-010 production failure kept as a fixture and rejected; dry run reviewed line-by-line before enabling (BUG-010 release conditions) | P1-03, SZ-09 | cloud; deep-reasoning | M |
+| P1-03 | **Evidence/claims model + venue resolver chain** | Direct writes → claims with method, authority, evidence; aliases; `parent_venue_id`; `venues.kind`; title/description location extraction (§6, §7.4) | The Eastern Market shapes produce the outcomes in §6.3: the comma composite auto-links to the parent; the other shapes are held with a recorded parent + sub-unit proposal, never "Venue TBA" and never a new standalone venue. Ambiguous cases become issues, never defaults. | SZ-05, SZ-08; delivered with P1-13–P1-15 | cloud; deep-reasoning | L |
+| P1-04 | **Rebuild research tier** | Snippet → propose-with-quote, verified, gated; never creates venues directly (proposes); persisted daily budget; per-attempt log | Every BUG-010 production failure kept as a fixture and rejected; dry run reviewed line-by-line before enabling (BUG-010 release conditions) | P1-03, P1-17, SZ-09 | cloud; deep-reasoning | M |
 | P1-05 | **Admin exceptions queue on `event_issues`** | Client blankness → server-side open, escalated issues; suppression per issue; shows suppressed and held counts | Badge equals a SQL count of open escalated issues; no client-side membership logic | SZ-08 | cloud; standard | M |
 | P1-06 | **Public data-access layer + page unification** | Whole inventory → cached, windowed endpoint(s); Calendar no all-history load; Calendar/Map/Radar/venue pages on `discovery.js` (merge and complete the existing branch); one "today" | Homepage payload under an agreed budget (e.g. < 300 KB gzip) at 10k rows in staging; identical counts across pages | SZ-10 | cloud; standard | M–L |
 | P1-07 | **Retire per-source repair scripts; template descriptions at render time** | Fold Outer Limits/Dossin/Redford/VisitDetroit fixes into connectors; one ordered enrichment step registry used by cron and Admin | Scripts deleted; cron and Admin share one step list; no stored template descriptions | SZ-06 | cloud; standard | M |
@@ -1097,6 +1611,11 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | P1-10 | **Backup and restore drill** | Unknown → verified recovery | Restore of a production backup into a scratch project documented with timing | SZ-04 | owner + local | S |
 | P1-11 | **Browser smoke tests in the release gate** | No browser tests → Playwright smoke on preview + staging | Smoke runs on every PR; blocks on failure | SZ-03, SZ-04 | cloud (Chromium preinstalled); standard | S |
 | P1-12 | **Rate limiting and admin audit** | Submit/upload abuse; no actor trail | Limits enforced; admin actions logged with actor | SZ-07 | cloud; standard | S |
+| P1-13 | **Durable identity store** (§10.7) | Nothing learned → `venue_aliases`, `venue_external_ids`, `entity_match_decisions`, `resolution_attempts`, `place_aliases`, venue `kind`/`parent_venue_id`/validity/provenance. Resolution order: external id → verified alias in scope → exact key. Admin actions "link to venue", "save as alias (scoped)", "different place", "merge venues (redirect + legacy alias)" (amends P1-05). Single-venue connectors map by `venue_id`, not `VENUE_NAME`. Aliases seeded as *proposed* from the SZ-15 inventory, verified by a human. | In staging: an Admin alias for "Majestic Theater" makes the next ingest link with 0 external calls and no new venue row; a "different place" decision suppresses that pair from future candidates; merging Magic Stick / The Magic Stick redirects events and keeps both spellings resolvable; a conflicting external-id insert fails loudly; gold-set precision stays 100% | SZ-06, SZ-08, SZ-14, SZ-15; P1-03 | cloud; deep-reasoning for schema and policy, standard to implement | L |
+| P1-14 | **Candidate generation + corroboration scorer** (§7.4.1) | No candidates or evidence combination → candidate generators that only *propose* (normalizer v1 exact, `candidateKeys` variant folds, token-boundary containment, edit distance ≤ 2 on names of ≥ 8 chars, known-parent prefix); address standardizer (number/street/suffix/directional/unit/range, never St. → Saint); city → place id via `place_aliases`; capture Ticketmaster venue id + coordinates, Eventbrite venue id, ICS `GEO`, Localist place id/geo at ingest; read `venues.lat/lng`; scorer, vetoes, bands and an independent self-check | 100% precision on gold negatives; ≥ 80% of gold positives auto-link or propose correctly with recorded evidence families; the name-only/address-only property test passes; a staging shadow report of every would-be link is human-sampled before enabling | SZ-13, SZ-14, P1-13; P1-03 claims | cloud; deep-reasoning for model and vetoes, standard to implement | L |
+| P1-15 | **Content location candidates before any "Venue TBA"** (§6) | Titles and descriptions unused → after structured fields and **before** any placeholder: title segmentation; "TBA - place" string parsing; description address/city/"at …" extraction (fixed for `’`, numbered sub-units, the "Market" rejection and truncation); gazetteer parent + sub-unit match; fixed `parseIcsLocation` composites (never "Shed 3" as an address); the four "Venue TBA" states, with the Admin exemption narrowed to `source_states_tba`; replace the Lager House sister-room regex. Requires a recorded policy decision reversing "no venue from title" (candidates only). Optional fast-tier LLM segmentation for residual cases, quote-constrained and cached. | §6.3 outcomes in staging; Eastern Market Partnership events elsewhere do **not** link to Eastern Market; "ProsperUs Detroit" contributes no city; the rewritten `cron-feeds-location-per-event` test asserts "Venue TBA" only after the content step has run; zero external calls when internal evidence suffices | P1-13, P1-14, SZ-05, SZ-08, SZ-12 | cloud; deep-reasoning for grammar and policy, standard to implement, fast (Haiku-class) for any residual segmentation | L |
+| P1-16 | **Event-identity matching: similarity proposes, corroboration decides** | Single-signal event matchers → variant candidates (shared normalizer + `candidateKeys` + date ±1) feed the Admin duplicate review list only. Editorial/press: word-boundary matching, placeholder venues excluded, venue-and-date links need a title or performer anchor, date bounds on every pass, a distinct `match_type` for automated links (not `manual`), and an unlink action. VisitDetroit filter: venue/city non-conflict, rejected rows excluded, paged read. PostgREST `or=()` values quoted. Decisions recorded in `entity_match_decisions`. | Gold event pairs (Devils/Devil's, Café/Cafe, St./Saint, Shed 3 prefix, "Trivia Night" in different cities, "rave on"/"brave one", recap article, placeholder-venue article) produce the expected review/link/no-link; no automated link is labelled `manual`; a comma-containing title is retrieved correctly in staging | SZ-13, SZ-14, P1-13; P1-05 | cloud; standard | M |
+| P1-17 | **Internal-first research gateway and negative cache** | Every external call goes through one gateway that checks `resolution_attempts` (TTL + backoff) and verified aliases first, and decrements **one persisted daily budget shared by all entry points**, press-coverage included. Research runs only for held residual cases, after content candidates, gazetteer, re-parse and duplicate checks. The query uses the event's resolved city, not hard-coded "Detroit". Dry-run makes no external calls. Candidates are ordered by priority with rotation, so names don't starve. (Amends P1-04.) | A second call within the TTL makes 0 searches; a verified alias makes 0 searches; three entry points together cannot exceed the cap; dry-run makes 0 searches; a staging report shows ≤ 1 search per distinct subject per TTL | P1-13, P1-04 | cloud; standard | S |
 
 ### P2 — scalability and maintainability
 
@@ -1111,6 +1630,8 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | P2-07 | **Coverage measurement**: per place × category; recall sampling | Before marketing "comprehensive" claims | M |
 | P2-08 | **Least-privilege DB roles** for ingestion vs admin | With P2-01 | S |
 | P2-09 | **Organizer entity** (DISCOVERY-006/009) | Organizer pages or dedupe needs | M |
+| P2-10 | **Identity quality monitoring and calibration**: weekly sampled audit of auto-links and auto-promoted aliases; precision/recall per source; weight recalibration against labelled data; a revocation workflow that re-resolves events linked through a revoked alias; `pg_trgm` candidate generation only when in-memory scans become slow | After P1-14 is live; `pg_trgm` beyond ~1,000 venues (`venue-lookup.js:55` reads `limit=1000`) | M |
+| P2-11 | **Organizer, series and brand entities for disambiguation**: organizers and series with scoped aliases (same pattern as `venue_aliases`); organizer → venue relationships (feeds C3 evidence); optional `venues.brand_id` for chains. Extends P2-09. | Organizer/series confusion or chain collisions appear in the gold set or the audits | M |
 
 ---
 
@@ -1122,6 +1643,7 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 - **`discovery.js`.** It is the best-specified part of the frontend; spread it.
 - **`event-upsert.js` and the fail-closed `status-lookup.js`.** Both are correct and production-proven.
 - **The Localist connector.** It is the template for future adapters.
+- **The strict identity core:** the exact-key linker, `AMBIGUOUS_VENUE_NAME`, `citiesConflict`, and Localist's no-address-link policy. Add guards, aliases and corroborated candidates *around* it (§10.9); do not replace it with a fuzzy matcher.
 - **Duplicate consolidation and non-event retirement.** Deterministic, soft, capped and reversible enough. Keep them, and log them.
 - **The mock PostgREST fixture.** Keep it alongside (not instead of) real-Postgres tests.
 - **The submission → moderation path and the self-service ICS feed concept.**
@@ -1139,7 +1661,7 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | Frontend (framework/SSR) | Listing pages need server rendering for SEO beyond what SSR meta + JSON-LD provide, **or** the shared-module extraction (P2-04) cannot be done without a build step, **or** more than ~2 regular contributors make inline-script coordination costly. |
 | Admin | More than one human moderator needs roles and permissions, **or** issue volume needs workflow features (assignment, SLA) that a single page can't serve. |
 | Database platform | Never on current evidence. Postgres handles 100k+ rows trivially; the bottlenecks are elsewhere. |
-| Venue resolution | Aliases + hierarchy + the resolver chain (P1-03) still leave > ~10% of upcoming events unlinked after a month. Even then, add a geocoder before redesigning. |
+| Venue/entity resolution | Aliases + hierarchy + the resolver chain + corroboration scoring (P1-03, P1-13–P1-15) still leave > ~10% of upcoming events unlinked after a month, **or** the gold-set precision gate cannot be held at 100% without dropping recall below a useful level. Even then, add a geocoder and source-supplied coordinates before redesigning. |
 | Research tier (after the P1-04 rebuild) | Measured precision on a labeled sample is below the publication threshold. Then keep it proposal-only (Admin-assisted), not autonomous. |
 
 ---
@@ -1164,9 +1686,11 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
    - A month-long Ticketmaster write outage was reported healthy.
    - 11 connectors are unlogged; there is no alerting.
    - Evidence: §13; DEBT-010.
-6. **Wrong search-derived facts remain canonical and feed other automation.**
-   - Authority is a label, not a gate.
-   - Evidence: §7.2; BUG-010.
+6. **Entity identity is decided on single signals, and wrong derived facts become canonical.**
+   - Address-only links rename events to a different room (probe: "Big Time Bingo" @ "4120 Woodward" → The Magic Stick). Blank-city names link city-blind. RA title-only dedupe and editorial substring links are recorded permanently.
+   - Search-derived facts are stored as `authoritative` and feed other automation; authority is a label, not a gate.
+   - Nothing is learned, so the same reconciliations recur.
+   - Evidence: §7.2, §10.3–10.6; BUG-010.
 7. **The temporal model can't represent the product's core inventory** (overnight nightlife, running exhibitions).
    - Semantics differ per connector and per page.
    - Evidence: §9.
@@ -1192,7 +1716,7 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 6. **`event_issues` + data-quality assertions + alerting** (SZ-08/09). Metrics become system truth; failures become loud.
 7. **A `held` state** (SZ-08). Lets UNCERTAIN mean "automation is still working", not "public" or "Admin".
 8. **Structured time** (SZ-11 → P1-01). Fixes overnight, running and "tonight" semantics at the root.
-9. **Venue aliases + parent places + title extraction in a resolver chain with claims** (P1-03). This is the producer intelligence, built on the existing tiers.
+9. **A durable identity store + corroborated candidates + content location extraction** (P1-03, P1-13–P1-15), gated by the SZ-14 precision gate. This is the producer intelligence, built on the existing tiers. It makes the system *learn*: every confirmed alias resolves future variants at zero research cost.
 10. **A cached, windowed public query layer** (P1-06). Flattens payload growth and removes silent caps.
 
 ---
@@ -1202,10 +1726,10 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | When | Work | Notes |
 |---|---|---|
 | **Week 0 (days)** | SZ-01 (verify exposure first) · SZ-02 · SZ-12 decision · RA transport off `main` · SZ-03 | Stop the bleeding; make tests mandatory. |
-| **Weeks 1–2** | SZ-04 staging + baseline · SZ-07 history trigger · SZ-08 `held` + issues schema · SZ-05 contract in **shadow mode** | Measure before enforcing: one week of would-reject/would-hold data per source. |
-| **Weeks 2–3** | SZ-06 field authority · SZ-09 monitoring/alerting · SZ-10 defect sweep · SZ-11 overnight | Validate each in a staging shadow run with diff reports. |
-| **Weeks 3–4** | Enforce SZ-05 · release gate fully on · first post-Sprint-Zero quality audit | Repeat the 100-listing audit on the same method. Compare to the 19/100 baseline, and separately track "core fact wrong" (was 6/100). |
-| **P1 (≈ 6–10 weeks)** | P1-01 → P1-03 → P1-02 → P1-04 · P1-05 · P1-06 · P1-07/08 in parallel where independent · P1-10/11/12 | Temporal first (everything else references time); claims before eligibility/research (both store claims). |
+| **Weeks 1–2** | SZ-04 staging + baseline · SZ-15 venue reference snapshot with SZ-04 · SZ-07 history trigger · SZ-08 `held` + issues schema · SZ-05 contract in **shadow mode** · SZ-14 normalizer v1 + gold set in **shadow** | Measure before enforcing: one week of would-reject/would-hold data per source, and the identity link diff. |
+| **Weeks 2–4** | SZ-06 field authority · SZ-13 identity vetoes (shadow, then enforce) · SZ-09 monitoring/alerting · SZ-10 defect sweep · SZ-11 overnight | Validate each in a staging shadow run with diff reports. |
+| **Weeks 4–6** | Enforce SZ-05 and SZ-14's precision gate · release gate fully on · first post-Sprint-Zero quality audit | Repeat the 100-listing audit on the same method. Compare to the 19/100 baseline, and separately track "core fact wrong" (was 6/100) and wrong-venue links. |
+| **P1 (≈ 8–12 weeks)** | P1-01 → P1-03 → P1-13 → P1-14 → P1-15 → P1-02; P1-17 together with P1-04; P1-16 after P1-13; P1-05 (with the P1-13 Admin actions) · P1-06 · P1-07/08 in parallel where independent · P1-10/11/12 | Temporal first (everything else references time). Claims and the identity store before eligibility and research (all of them store claims). Research reopens only after P1-17's gateway and negative cache exist. |
 | **P2** | Triggered by the conditions in §19 | Don't start P2-01 until P1-03 exists. |
 
 **Success measures for Sprint Zero** (all from persisted data, not UI):
@@ -1213,7 +1737,8 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 - 0 nulls written over stored fill-blank fields;
 - 0 connectors without run logs;
 - an alert fired for every injected failure in staging;
-- 0 production-only discoveries of schema drift.
+- 0 production-only discoveries of schema drift;
+- 0 false links on the identity gold set, and 0 address-only or title-only identity writes in shadow logs after SZ-13 enforcement.
 
 ---
 
@@ -1223,7 +1748,7 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 
 **Pause until Sprint Zero's P0 is complete:**
 - **New source connectors and source onboarding that auto-publish.** Each new source adds defects at today's per-row rate into a system that can't yet reject, hold, attribute or roll them back. This is the mechanism by which "more events create proportionally more manual work."
-- **Re-opening or extending AI/search enrichment.** Without an evidence model and a gate, it repeats BUG-010.
+- **Re-opening or extending AI/search enrichment.** Without an evidence model, a gate, and a research gateway with a negative cache, it repeats BUG-010 and mints duplicate venues from spelling variants.
 - **Monetization, social, and Radar-scoring features.** They depend on trustworthy, measured data, and they increase audience exposure to current error rates (19/100 fully correct in the recent sample).
 
 **Continue, in parallel, with small scope:**
@@ -1231,9 +1756,10 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 - The self-service ICS feed path, only with new feeds in `held`/dry-run mode once SZ-08 exists.
 - Decision work the foundations need: the eligibility taxonomy, the RA policy, and field-authority rules per field. These are product decisions, and they can proceed now.
 
-**Resume source expansion** when SZ-03 through SZ-09 are done and the post-Sprint-Zero audit shows:
+**Resume source expansion** when SZ-03 through SZ-09 and SZ-13/SZ-14 are done and the post-Sprint-Zero audit shows:
 - the "core fact wrong" rate is clearly below the 6/100 baseline;
-- every defect class from the warning list is either rejected or held by the contract.
+- every defect class from the warning list is either rejected or held by the contract;
+- the identity precision gate is green. New sources add same-name venues, shared addresses and spelling variants, and those must not turn into wrong links.
 
 Then expand primarily through generic adapters (Localist-style), not bespoke scrapers.
 
@@ -1273,7 +1799,7 @@ Then expand primarily through generic adapters (Localist-style), not bespoke scr
 - **D5** — unquoted IDs.
 - **E1** — cross-source dedupe at ingest.
 - **E2** — title IDs.
-- **E4** — aliases.
+- **E4** — aliases: still open. It is broader than first stated (no alias, external-id or decision store; single-signal identity paths), and is superseded by SZ-13/SZ-14 and P1-13–P1-16 (§10).
 - **F1** — retirement of removed events.
 - **G1** — Orbit enforcement.
 - **I1** — timeouts.
@@ -1291,3 +1817,30 @@ That pattern (problems well diagnosed, structural causes still in place) is the 
 3. Supabase plan, backup/PITR coverage, max-rows setting (documented as 1,000 in `paged-fetch.js`).
 4. Whether Vercel deploys on RA payload commits (Vercel project settings).
 5. Current counts behind the inferred sitemap truncation and the description flip-flop (queries against `events` / `events_history`-equivalent data).
+6. The production venue registry (SZ-15):
+   - duplicate and variant venue names (do both Magic Stick / The Magic Stick and both Majestic rows exist?);
+   - whether the "Venue TBA" / "Location TBA" / "Multiple Locations" venue rows exist and how many events link to them;
+   - whether Eastern Market has a stored address, coordinates or website;
+   - the top unlinked `venue_name_raw` values by event count;
+   - how many current links were made by address alone.
+
+## Appendix D — Addendum evidence index (name/entity matching)
+
+- **Matching code:**
+  - `api/_lib/venue-lookup.js` — `normalizeVenueName :26-29`, `normalizeAddressCity :37-42`, `buildVenueNameToIdMap/resolveVenueId :51-80`, `AMBIGUOUS_VENUE_NAME :135`, detail maps `:147-183`, learned map `:200-228`, placeholders `:273-277`, city compare `:280-310`, reverse address tier `:387-402`, `resolveVenueFromCandidate :426-443`, `upsertVenueKnowledge :557-611`;
+  - `scripts/duplicate-consolidation.js :110-129, 186-221, 345-354`;
+  - `scripts/ra-sync.js :392-424, 683-696`;
+  - `api/cron-editorial.js :383-406`; `scripts/press-coverage-linking.js :203-225, 519-573, 1084-1160`;
+  - `api/cron-visitdetroit.js :357-377`;
+  - `api/_lib/external-discovery.js :150-160, 228-277, 311, 319-331`;
+  - `api/_lib/source-authority.js :105-116`;
+  - `api/cron-feeds.js :276-316`; `api/_lib/ics-location.js :42-52, 100-102`; `api/_lib/localist-rows.js :79`; `api/cron-localist.js :652-658`;
+  - `scripts/generic-metadata-enrichment.js :112-128, 247-251, 309-313, 354-355, 384, 455-470`;
+  - `admin.html :600-605, 637-649, 766-779`; `api/admin-events.js :372`.
+- **Data:**
+  - `supabase/seed.sql :16-19, 21, 29-31, 36, 38, 40, 47-50`;
+  - `supabase/migration_002_neighborhoods_and_organizers.sql :61, 164-182`;
+  - `supabase/archive/update_2026-09-15_admin-followup-batch2.sql :75-76`;
+  - `supabase/update_2026-09-22_gardenbowl-venue.sql`; `api/_lib/bigtimebingo-occurrences.js :13-18`;
+  - `supabase/migration_043_feed_sources_location_per_event.sql :5-9, 29-30`; `supabase/migration_045_event_source_identities.sql`.
+- **Tests:** the 25 matching-related files listed in §12.1, all passing locally (262 PASS lines). The assertions to rewrite deliberately are listed in §12.3.
