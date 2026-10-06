@@ -818,8 +818,7 @@
     function isBlocked(e) {
       for (var i = 0; i < BLOCKED_NAMES.length; i++) {
         var n = BLOCKED_NAMES[i].toLowerCase();
-        if ((e.title && String(e.title).toLowerCase().indexOf(n) !== -1) ||
-            (e.note && String(e.note).toLowerCase().indexOf(n) !== -1)) return true;
+        if (e.title && String(e.title).toLowerCase().indexOf(n) !== -1) return true;
       }
       return false;
     }
@@ -856,7 +855,7 @@
     function matchSearch(e, q) {
       if (!q) return true;
       var node = NODES.get(e.cat);
-      var hay = [e.title, e.venue, e.city, node ? node.label : "", e.neighborhood, e.source, e.note]
+      var hay = [e.title, e.venue, e.city, node ? node.label : "", e.neighborhood, e.source]
         .filter(Boolean).join(" ").toLowerCase();
       return hay.indexOf(q.toLowerCase()) !== -1;
     }
