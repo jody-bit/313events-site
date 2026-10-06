@@ -771,6 +771,23 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### DEBT-012 — Supabase advisor findings (production, 2026-10-06)
+
+- **Type:** DEBT (security and performance) · **Status:** BACKLOG (recorded 2026-10-06 by Product Owner request; **no fix drafted or applied**; do not begin before the Sprint Zero merge sequence is complete and reported) · **Priority:** see each item
+- **Epic:** EPIC-001 (Sprint Zero, `ENGINEERING_READINESS_REVIEW.md` §18; debt register TD-38 to TD-40)
+- **Source:** Supabase security and performance advisors run read-only against production on 2026-10-06. Already-recorded items are referenced, not duplicated: owner-rights views and RLS bypass (G-6, §18 SZ-01), redundant `events` indexes and the missing `end_date` index (§14.2, TD-31).
+- **Findings and disposition:**
+  1. **`events_public` is SECURITY DEFINER** (ERROR). Belongs to **SZ-01**. Considered together with grants, RLS, public/private field exposure, submission permissions and the intended public access boundary. **Not changed independently**; it may be the intended public read path.
+  2. **`set_updated_at` has a mutable `search_path`** (WARN, TD-38). Low-risk security debt, addressed in the appropriate security pass.
+  3. **Missing FK indexes** on `events.organizer_id` and `venues.neighborhood_id` (INFO, TD-39). Performance debt, not a launch blocker. Folded into P2-05.
+  4. **RLS enabled, no policies** on `event_source_identities`, `healthchecks`, `schema_migrations`, `source_runs` (INFO). May be intentional. **Do not add policies merely to clear the advisor**; confirm intent inside SZ-01's anon-allowlist test (G-6).
+  5. **Unused indexes** `events_category_idx`, `source_runs_started_outcome_idx` (INFO, TD-40). Require usage evidence before any removal.
+- **Acceptance Criteria (proposed):** each item resolved or explicitly accepted as intentional with a recorded reason, within SZ-01 / the security pass / P2-05 as above.
+- **Implementation Notes:** none yet.
+- **Product Decisions Required:** the SZ-01 public access boundary (view invoker vs owner-rights with a tested allowlist).
+
+---
+
 ## Discovery / decisions needed
 
 ### DISCOVERY-001 — Resident Advisor / Instagram capture policy
