@@ -25,8 +25,12 @@ select 'internal table unreadable by '||r||': '||t, not has_table_privilege(r, '
 union all
 select 'events_public is security_invoker', coalesce((select 'security_invoker=true' = any(reloptions) from pg_class where oid='public.events_public'::regclass), false)
 union all
-select 'no anon/authenticated INSERT policy on events or feed_sources',
-       not exists (select 1 from pg_policies where schemaname='public' and cmd='INSERT' and tablename in ('events','feed_sources'))
+select 'every INSERT policy is unsatisfiable (with check false)',
+       not exists (select 1 from pg_policies where schemaname='public' and cmd='INSERT' and coalesce(with_check,'') <> 'false')
+union all
+select 'events_public does not read note', not (pg_get_viewdef('public.events_public'::regclass) ilike '%e.note%')
+union all
+select 'events_public: anon/authenticated can only SELECT', not (has_table_privilege('anon','public.events_public','INSERT') or has_table_privilege('anon','public.events_public','UPDATE') or has_table_privilege('authenticated','public.events_public','INSERT'))
 union all
 select 'set_updated_at has a fixed search_path', exists (select 1 from pg_proc where proname='set_updated_at' and pronamespace='public'::regnamespace and proconfig is not null)
 union all

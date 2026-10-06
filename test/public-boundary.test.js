@@ -33,11 +33,12 @@ const tableGrant = grants.find((g) => /^select on table/i.test(g));
 for (const t of ["event_source_identities", "feed_sources", "healthchecks", "schema_migrations", "source_runs"])
   assert(!new RegExp("\\b" + t + "\\b").test(tableGrant), t + " is internal and must not be granted");
 assert(!/\bevents,/.test(tableGrant) && !/\bevents\b(?!_)/.test(tableGrant.replace(/events_public/g, "")), "events must only be column-granted");
-assert(/create view events_public with \(security_invoker = true\)/.test(sql), "events_public must be security_invoker");
-const viewSql = sql.slice(sql.indexOf("create view events_public"));
-assert(!/\be\.note\b/.test(viewSql.split(";")[0]), "events_public must not expose note");
-assert(/drop policy if exists "public submit pending events" on events/.test(sql));
-assert(/drop policy if exists "public submit pending feed sources" on feed_sources/.test(sql));
+assert(/alter view events_public set \(security_invoker = true\)/.test(sql), "events_public must be security_invoker");
+const viewSql = sql.slice(sql.indexOf("create or replace view events_public")).split(";")[0];
+assert(viewSql.length > 50 && !/\be\.note\b/.test(viewSql) && /null::text as note/.test(viewSql), "events_public must not read note");
+assert(/alter policy "public submit pending events" on events with check \(false\)/.test(sql));
+assert(/alter policy "public submit pending feed sources" on feed_sources with check \(false\)/.test(sql));
+assert(!/\bdrop\b/i.test(sql), "the migration must not drop anything");
 assert(/alter function set_updated_at\(\) set search_path = ''/.test(sql));
 
 // ---- 2. anon-key reads of events must stay inside the allowlist ------------

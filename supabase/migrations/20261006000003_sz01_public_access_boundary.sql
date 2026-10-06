@@ -74,18 +74,24 @@ grant select (
 ) on table events to anon, authenticated;
 
 -- 4. The anonymous write paths are unused (server-side service role only).
-drop policy if exists "public submit pending events" on events;
-drop policy if exists "public submit pending feed sources" on feed_sources;
+--    The insert grants are gone above; the two INSERT policies are also made
+--    unsatisfiable. They are neutralised, not dropped: this project does not
+--    drop what it can disable, and a policy that can never pass cannot be
+--    revived by a stray grant. (A later cleanup may drop them.)
+alter policy "public submit pending events" on events with check (false);
+alter policy "public submit pending feed sources" on feed_sources with check (false);
 
--- 5. The public view: runs with the caller's rights and no longer carries `note`.
---    `note` is free text that staff and research sessions filled with editorial
---    commentary ("included per Jody's request ..."); it is NOT public data
---    (2026-10-06 incident). A view cannot lose a column in place, so it is
---    recreated. Deploy the page hotfix first: pages must stop selecting `note`.
-drop view events_public;
-create view events_public with (security_invoker = true) as
+-- 5. The public view: runs with the caller's rights and no longer exposes
+--    `note`. `note` is free text that staff and research sessions filled with
+--    editorial commentary ("included per Jody's request ..."); it is NOT public
+--    data (BUG-011, 2026-10-06). The column stays in the view, always NULL,
+--    so a page cached from before the BUG-011 hotfix that still selects it keeps
+--    working (it just receives nothing). Replaced in place; nothing is dropped.
+create or replace view events_public as
 select e.id, e.title, e.description, e.image_url, e.start_date, e.end_date, e.time_display,
-       e.category, e.is_free, e.price_from, e.source, e.ticket_url, e.event_url, e.venue_id,
+       e.category, e.is_free, e.price_from, e.source,
+       null::text as note,
+       e.ticket_url, e.event_url, e.venue_id,
        coalesce(v.name, e.venue_name_raw) as venue_name,
        coalesce(v.city, e.venue_city_raw) as venue_city,
        n.name as neighborhood,
@@ -94,8 +100,7 @@ from events e
 left join venues v on v.id = e.venue_id
 left join neighborhoods n on n.id = v.neighborhood_id
 where e.status = 'approved'::event_status;
-grant select on events_public to anon, authenticated;
-grant all on events_public to service_role;
+alter view events_public set (security_invoker = true);
 
 -- 6. Future public objects start private.
 alter default privileges for role postgres in schema public
