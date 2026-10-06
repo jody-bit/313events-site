@@ -2,7 +2,7 @@
 
 `20261006000000_baseline_schema.sql` is the production application schema on
 2026-10-06, rebuilt from the production catalog (schema only). With
-`20261006000001_reference_data.sql` it produces a database whose catalog is
+`20261006000001_reference_data.sql` and `20261006000002_baseline_grants.sql` it produces a database whose catalog is
 identical to production (verified: 10 catalog fingerprints match; see
 `supabase/verify/catalog_fingerprint.sql`).
 
@@ -25,3 +25,12 @@ data patches are production-specific). New work is a new file in this directory.
 ## Verify a build against production
 Run `supabase/verify/catalog_fingerprint.sql` against the new database and
 against production (read-only); every row's hash must match.
+
+## About the grants (legacy production baseline)
+Production gives `anon`, `authenticated` and `service_role` full privileges on
+every public table and the `events_public` view. That came from Supabase's
+default privileges when the project was created; **it is not a current Supabase
+default**, and new projects get far fewer. `20261006000002_baseline_grants.sql`
+therefore states them explicitly so a rebuilt database matches production.
+They are intentionally broad and **scheduled to be tightened by SZ-01** (a
+later migration, staging first); the baseline does not endorse them.

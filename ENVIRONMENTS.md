@@ -63,8 +63,8 @@ Schema changes: apply to **staging first**, verify, then production, before the 
 
 Project: `313events-staging` (Supabase ref `efxjdlogohcggpuftivm`). Schema comes only from `supabase/migrations/` (see its README).
 
-1. **Schema:** apply `20261006000000_baseline_schema.sql`, then `20261006000001_reference_data.sql`, to staging. (Either Claude through the Supabase connector once approved, or `supabase db push` linked to the staging project. Never link the CLI to production for this.)
-2. **Verify:** run `supabase/verify/catalog_fingerprint.sql` on staging; every hash must equal the production run recorded in the Sprint Zero report.
+1. **Schema:** apply `20261006000000_baseline_schema.sql`, `20261006000001_reference_data.sql`, then `20261006000002_baseline_grants.sql` (legacy production grants, to be tightened by SZ-01), to staging. (Either Claude through the Supabase connector once approved, or `supabase db push` linked to the staging project. Never link the CLI to production for this.)
+2. **Verify:** run `supabase/verify/catalog_fingerprint.sql` and `supabase/verify/grants_check.sql` (expect 13/13) on staging; every hash must equal the production run recorded in the Sprint Zero report.
 3. **Seed:** run `supabase/staging/seed_staging.sql` (synthetic, idempotent). Optionally load the sanitized venue snapshot from SZ-15.
 4. **Wire up:** set the Preview-scoped Vercel variables (matrix above) to the staging URL/keys; redeploy a Preview; check `/config.js` names the staging project.
 5. **First forward migration through the flow:** apply `supabase/proposed/` (gaming category) to staging, verify, and only then ask for production approval.
