@@ -18,6 +18,8 @@
 // validation, and hard-coding status regardless of what the client sends.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Non-production deployments must never use the production database (api/_lib/environment.js).
+require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const VALID_CATEGORIES = new Set([
@@ -120,7 +122,7 @@ async function notifyFeedSubmission(row) {
           ${row.website ? `<p>Website: ${escapeHtmlForEmail(row.website)}</p>` : ""}
           ${row.notes ? `<p>${escapeHtmlForEmail(row.notes)}</p>` : ""}
           <p><i>${isManual ? "This is not polled automatically — it will stay in the queue until a human follows up." : "This feed will NOT be polled until approved in the admin queue."}</i></p>
-          <p><a href="https://313.events/admin.html">Review in the admin queue &rarr;</a></p>
+          <p><a href="${require("./_lib/environment").siteUrl()}/admin.html">Review in the admin queue &rarr;</a></p>
         `,
       }),
     });

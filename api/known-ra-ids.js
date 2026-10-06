@@ -60,6 +60,8 @@ const { parseCandidateIds, computeKnownIds, RaKnownIdsValidationError } = requir
 // for the full explanation (MotorCity Wine connector ownership).
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Non-production deployments must never use the production database (api/_lib/environment.js).
+require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const RA_AUTOMATION_SECRET = process.env.RA_AUTOMATION_SECRET;
 

@@ -70,6 +70,8 @@ const crypto = require("crypto");
 // same thing to the public site (not shown), and "restore" un-does either.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Non-production deployments must never use the production database (api/_lib/environment.js).
+require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
@@ -106,7 +108,7 @@ function isSafeHttpUrl(url) {
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const SITE_URL = "https://313.events";
+const SITE_URL = require("./_lib/environment").siteUrl();
 
 function escapeHtmlForEmail(str) {
   return String(str == null ? "" : str)

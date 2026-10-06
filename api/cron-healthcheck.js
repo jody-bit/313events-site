@@ -73,12 +73,14 @@ const { SLUGS } = require("./_lib/source-slugs"); // WP 0.5 reuse -- see api/_li
 // registered slug has a calling connector yet -- see source-slugs.js's own
 // header) log their next real run, source_runs-backed checks become live
 // automatically, no further code change required.
-const BASE_URL = "https://313.events";
+const BASE_URL = require("./_lib/environment").siteUrl();
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Non-production deployments must never use the production database (api/_lib/environment.js).
+require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 // Same publishable/anon key every public page already ships in its own
 // client-side JS (see index.html) — not a secret, safe to inline here too.
-const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5";
+const SUPABASE_ANON_KEY = (require("./_lib/environment").publicConfig().supabaseAnonKey) || "";
 const CRON_SECRET = process.env.CRON_SECRET;
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 // Intentionally wrong on every run — this suite never has, and never

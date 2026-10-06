@@ -465,6 +465,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
+<script src="/config.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1770,8 +1771,8 @@ buildFilterBar();
 render();
 
 // ---- Live database (Supabase) ----
-const SUPABASE_URL = "https://afvyfjfqukptnfmgshzn.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5"; // publishable key — safe for client code, read-only via RLS
+const SUPABASE_URL = window.__313_CONFIG.supabaseUrl; // from /config.js (api/config.js): per-environment, never hard-coded
+const SUPABASE_ANON_KEY = window.__313_CONFIG.supabaseAnonKey; // publishable key — safe for client code, read-only via RLS
 
 function decodeEntities(str){
   if(!str) return str;
