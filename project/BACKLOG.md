@@ -440,6 +440,28 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### TASK-007 — Sprint Zero: environment and release foundation
+
+- **Type:** TASK · **Status:** REVIEW (implemented and verified 2026-10-06; Product Owner acceptance pending) · **Priority:** High
+- **Epic:** — · **Recommended Model:** n/a (complete)
+- **Delivered:** environment module (non-production runtimes refuse the production database; `/config.js` serves per-environment public config); a reproducible schema baseline (`supabase/migrations/20261006000000`–`02`) that reproduces production (10/10 catalog fingerprints, 13/13 ACLs); a staging database seeded with synthetic data; Vercel Preview pointed at staging; CI; `ENVIRONMENTS.md` (topology, variable matrix, release flow). Merged to `main` as `b22471b` (environment) and `2f8f973` (baseline); the baseline merge applied nothing to production.
+- **Evidence:** a real Preview submission wrote only to staging; production contained no matching row; production integrations did not fire; production schema/data fingerprints unchanged across both merges.
+- **Known limits:** `DROP`/`DELETE` statements wait for interactive confirmation in the assistant's database tool, so migrations in this project avoid them (neutralise or replace in place).
+
+---
+
+### TASK-008 — SZ-01: public/private data-access boundary
+
+- **Type:** TASK (security) · **Status:** REVIEW (applied to production and staging 2026-10-06; Product Owner acceptance pending) · **Priority:** Critical
+- **Epic:** — · **Related:** `ENGINEERING_READINESS_REVIEW.md` SZ-01 / TD-03 / G-6; hotfix for the `events.note` exposure (`dcd4e23`)
+- **Delivered:** `supabase/migrations/20261006000003_sz01_public_access_boundary.sql` (merged `6ec62e1`, applied to production ~20:32 UTC): anonymous and authenticated clients may read only an explicit 21-column allowlist of `events` (`note`, `internal_note`, `submitter_email`, `submitter_org_name` and every other operational column are private); no anonymous writes anywhere; internal tables unreachable; `events_public` is `security_invoker` with `note` a constant NULL; the two anonymous INSERT policies are unsatisfiable (neutralised, not dropped); default privileges for new public tables/functions closed; `set_updated_at` search_path fixed. Verification: `supabase/verify/public_boundary_check.sql` 92/92 on production and staging; contract test `test/public-boundary.test.js`.
+- **Evidence:** production anonymous reads of every page path work; private columns, `select *` and direct writes are denied; pending/rejected rows non-public; service_role reads intact; security advisors show only the four intentional informational "RLS enabled, no policy" notices; no production event data deleted or rewritten. A Preview submission (Community) landed in staging as `pending_review`, outside `events_public`, absent from production.
+- **Pending verification:** a scheduled production ingestion run completing successfully after the migration (the last run before it started 20:00 UTC; none had started when checked). Owned by the production health check / the 21:10 UTC follow-up.
+- **Residue:** staging holds one synthetic row, "SZ01 CANARY approved event" (`rejected`, private marker note) because deletion needs interactive confirmation here. Harmless; delete when convenient. Staging also holds the test submissions "PREVIEW ISOLATION TEST 20261006" and "SZ01 SUBMISSION TEST 20261006 COMMUNITY" (`pending_review`).
+- **Not part of SZ-01 (still open):** cron authentication fail-open, `events.status` default, BUG-008 (gaming category), the missing-FK-index and unused-index advisor notes.
+
+---
+
 ## Bugs
 
 ### BUG-001 — Verify: does a failed status-lookup risk re-approving a previously-rejected event?
