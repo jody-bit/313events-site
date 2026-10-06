@@ -46,12 +46,14 @@ const crypto = require("crypto");
 // anything, so Jody can sanity-check before ever letting it write live.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Non-production deployments must never use the production database (api/_lib/environment.js).
+require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const CRON_SECRET = process.env.CRON_SECRET;
 const FACEBOOK_PAGE_ID = process.env.FACEBOOK_PAGE_ID;
 const FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 const GRAPH_API_VERSION = "v21.0";
-const SITE_URL = "https://313.events";
+const SITE_URL = require("./_lib/environment").siteUrl();
 const POST_LIMIT = 8; // per-run cap — see SAFETY note above
 
 function timingSafeStringEqual(a, b) {
@@ -92,6 +94,11 @@ function buildMessage(event) {
 }
 
 module.exports = async (req, res) => {
+  // Never publish to the real Facebook Page from Preview/staging/local.
+  if (!require("./_lib/environment").isProduction()) {
+    res.status(200).json({ ok: true, skipped: "not a production deployment" });
+    return;
+  }
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {

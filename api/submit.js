@@ -8,6 +8,8 @@
 // and hard-code status regardless of what the client sends.
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
+// Non-production deployments must never use the production database (api/_lib/environment.js).
+require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 
@@ -140,7 +142,7 @@ async function notifySubmission(row) {
           <p>Venue: ${escapeHtmlForEmail(row.venue_name_raw)}</p>
           <p>Submitted by: ${escapeHtmlForEmail(row.submitter_org_name)} (${escapeHtmlForEmail(row.submitter_email)})</p>
           ${row.description ? `<p>${escapeHtmlForEmail(row.description)}</p>` : ""}
-          <p><a href="https://313.events/admin.html">Review in the admin queue &rarr;</a></p>
+          <p><a href="${require("./_lib/environment").siteUrl()}/admin.html">Review in the admin queue &rarr;</a></p>
         `,
       }),
     });

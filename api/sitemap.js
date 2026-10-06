@@ -37,9 +37,12 @@
 // explicitly documented there as "safe for client code, read-only via
 // RLS") fixes this without depending on a Vercel dashboard change; an
 // explicitly-configured env var (if one's ever added later) still wins.
-const SUPABASE_URL = process.env.SUPABASE_URL || "https://afvyfjfqukptnfmgshzn.supabase.co";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5";
-const SITE_URL = "https://313.events";
+const { publicConfig, siteUrl } = require("./_lib/environment");
+// Non-production has NO production fallback (api/_lib/environment.js).
+const _cfg = publicConfig();
+const SUPABASE_URL = _cfg.ok ? _cfg.supabaseUrl : "";
+const SUPABASE_ANON_KEY = _cfg.ok ? _cfg.supabaseAnonKey : "";
+const SITE_URL = siteUrl();
 const MAX_EVENTS = 5000;
 
 function xmlEscape(str) {

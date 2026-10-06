@@ -67,14 +67,17 @@ const path = require("path");
 // functions["api/event-meta.js"].includeFiles was updated to match.
 
 const { resolvePublicVenueDisplay } = require("./_lib/venue-lookup");
-const SUPABASE_URL = process.env.SUPABASE_URL || "https://afvyfjfqukptnfmgshzn.supabase.co";
+const { publicConfig, siteUrl } = require("./_lib/environment");
+// Non-production has NO production fallback (api/_lib/environment.js).
+const _cfg = publicConfig();
+const SUPABASE_URL = _cfg.ok ? _cfg.supabaseUrl : "";
 // Same public/publishable key every client-facing page already hardcodes
 // (documented there as "safe for client code, read-only via RLS") — see
 // api/sitemap.js's 2026-09-13 header for the identical env-var fallback
 // reasoning; this function only ever reads status=approved rows, same as
 // any browser tab.
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "sb_publishable_NQgem2pH8h_ynP8ikwdmFw_5aoN34Q5";
-const SITE_URL = "https://313.events";
+const SUPABASE_ANON_KEY = _cfg.ok ? _cfg.supabaseAnonKey : "";
+const SITE_URL = siteUrl();
 const DEFAULT_OG_IMAGE = `${SITE_URL}/assets/social/og-default.png`;
 
 function decodeEntities(str) {

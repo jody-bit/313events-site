@@ -1,0 +1,34 @@
+name: CI
+
+# Runs the repository's test suite on every pull request and on pushes to
+# any branch except main (main deploys to production; changes reach it
+# through a pull request that has already passed this check).
+#
+# No secrets are used or needed: tests run against in-memory fakes and
+# test/run-all.js strips every credential variable from the environment.
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+    paths-ignore:
+      - 'ra-sync/inbox/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run all tests
+        run: node test/run-all.js
