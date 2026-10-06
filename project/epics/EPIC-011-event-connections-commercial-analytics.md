@@ -43,6 +43,10 @@ The main risk is scope drift into a full analytics-platform build (dashboards, r
 
 Exact event taxonomy for "meaningful action" (e.g., does a map "directions" click count the same as a ticket click, or is it weighted differently?) — a product definition call, not an engineering one. See `DISCOVERY-014` in `BACKLOG.md`.
 
+## Related (added 2026-10-06)
+
+`EPIC-018` `OL.14` (aggregate QR scans, event-page visits, ticket-link clicks, contributions) is a consumer of this epic's instrumentation, not a separate tracking system.
+
 ## Relevant decisions
 
 `DEC-017` (four-revenue-stream model, which this epic's reporting serves). `DEC-019` (build order — Measurement first). `DEC-021` (no individual data sale — this epic's aggregate-only design is how that promise is kept in practice, not just in policy).

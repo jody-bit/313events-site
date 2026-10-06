@@ -52,6 +52,10 @@ Low — this is incremental, additive work on an already-partially-built foundat
 
 Organizer population strategy and timeline (`PRODUCT DECISION REQUIRED`, `PRODUCT.md`). Whether a structured `start_time` column is worth the migration effort given current approximation is "good enough" for existing features.
 
+## Related (added 2026-10-06)
+
+`EPIC-019` records the long-term direction (artists, organizations, landmarks, cultural relationships supporting archive/tour/data products). No entity infrastructure is introduced by that capture.
+
 ## Relevant decisions
 
 `DEC-005` (source ≠ organizer, hand-curation only), `DEC-012` (venue_id resolution pattern this epic's remaining work builds on top of).
