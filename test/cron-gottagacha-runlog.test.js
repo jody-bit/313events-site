@@ -9,6 +9,15 @@ const assert = require("assert");
 const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
+// The handler drops events dated before "today", and these fixtures name
+// specific dates (2026-10-06 ...). Freeze "now" so the test does not rot as
+// the calendar moves (same fix as cron-bigtimebingo-runlog.test.js).
+const RealDate = Date;
+const FROZEN_NOW = RealDate.parse("2026-10-05T15:00:00Z");
+global.Date = class extends RealDate {
+  constructor(...args) { if (args.length === 0) super(FROZEN_NOW); else super(...args); }
+  static now() { return FROZEN_NOW; }
+};
 const SUPABASE_URL = "https://example.supabase.co";
 
 function freshHandler() {
