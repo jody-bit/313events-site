@@ -3,6 +3,7 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { applyPublicationGate } = require("./_lib/event-contract");
 const { upsertEventRows } = require("./_lib/event-upsert");
 // Vercel Cron job — pulls Dossin Great Lakes Museum events from the Detroit
 // Historical Society's combined events page (detroithistorical.org/events,
@@ -345,10 +346,21 @@ const handler = async (req, res) => {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    // Publication gate (api/_lib/event-contract.js, first slice 2026-10-07):
+    // the shared decision about whether a NEW row is public. DEFAULT_STATUS
+    // is now only this source's trust tier -- what a row gets if it passes;
+    // a row the gate holds or rejects is written non-public, one it cannot
+    // write safely is not sent, and an existing row keeps its stored status
+    // exactly as before. This connector no longer picks a new row's status.
+    const gate = applyPublicationGate(rows, {
+      existingStatus: existingStatusByExternalId,
+      intendedStatus: DEFAULT_STATUS,
+      // Dossin's page sometimes lists a date with no time (the parser then
+      // emits time: null); that is a legitimate listing, so no time is
+      // required and none is ever invented.
+      ctx: {},
+    });
+    const rowsWithStatus = gate.rows;
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
@@ -370,8 +382,9 @@ const handler = async (req, res) => {
       records_fetched: null,
       records_parsed: parsed.length,
       records_written: rowsWithStatus.length,
+      session_data: { publication_gate: gate.summary },
     });
-    res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, gate: gate.summary, fetchedAt: new Date().toISOString() });
   } catch (err) {
     await finishRun(runHandle, {
       outcome: "failed",
