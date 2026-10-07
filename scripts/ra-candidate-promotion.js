@@ -55,13 +55,12 @@ const {
   findConservativeDuplicate,
   deriveCategory,
   LISTING_METADATA_FIELDS,
+  parseRaListingDate,
 } = require(path.join(__dirname, "ra-sync"));
 const { lookupExistingRows } = require(path.join(__dirname, "..", "api", "_lib", "status-lookup"));
 const { lookupKnownSourceIds, recordSourceIdentity } = require(path.join(__dirname, "..", "api", "_lib", "event-source-identities"));
 const { SLUGS } = require(path.join(__dirname, "..", "api", "_lib", "source-slugs"));
 const { buildRaDiscoveryNote } = require(path.join(__dirname, "..", "api", "_lib", "ra-provenance-note"));
-
-const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}/;
 
 // How many of the most recent Resident Advisor source_runs rows to
 // consider when looking for one with usable session_data. Defensive only
@@ -169,6 +168,8 @@ async function promoteRaCandidates({
   insertCandidateRowFn = insertCandidateRow,
   recordSourceIdentityFn = recordSourceIdentity,
   maxPerRun = DEFAULT_MAX_PER_RUN,
+  parseRaListingDateFn = parseRaListingDate,
+  now = new Date(),
 } = {}) {
   // SAFETY GATE (2026-10-01): Product Owner decision 1/2 is explicit --
   // pending_review auto-creation is approved for THIS MVP, but must not
@@ -255,7 +256,13 @@ async function promoteRaCandidates({
     const meta = (listingMetadata && listingMetadata[id]) || {};
     const title = typeof meta.title === "string" ? meta.title.trim() : "";
     const dateStr = typeof meta.date === "string" ? meta.date.trim() : "";
-    const startDate = ISO_DATE_RE.test(dateStr) ? dateStr.slice(0, 10) : "";
+    // DEFECT 1 fix (2026-10-07): parseRaListingDateFn (scripts/ra-sync.js)
+    // accepts both an already-ISO date (old behavior, unchanged) and RA's
+    // actual listing-card format ("Thu, 8 Oct", no year) with deterministic
+    // year-rollover -- see its own header for why the old bare ISO_DATE_RE
+    // check here caused every real RA candidate to be marked
+    // insufficientIdentity regardless of this gate's state.
+    const startDate = parseRaListingDateFn(dateStr, now) || "";
 
     if (!title || !startDate) {
       counts.insufficientIdentity++;

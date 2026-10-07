@@ -381,11 +381,113 @@ async function runIdentityWideningTests() {
   console.log("\nAll event_source_identities widening/persistence tests passed.");
 }
 
+// 7. DEFECT 1 fix regression (2026-10-07): real RA listing-date format
+// ("Thu, 8 Oct", no year) must actually promote -- this is the exact
+// production root cause that made every real RA candidate since Oct 1
+// silently fail identity validation regardless of RA_CANDIDATE_PROMOTION_
+// ENABLED. Also proves the rest of Part 4's "never invent" guarantees
+// explicitly against a candidate carrying ONLY what RA's listing card
+// itself provides, and that repeated promotion of the same backlog is
+// idempotent (no duplicate row, no duplicate write).
+async function runRealListingDateTests() {
+  process.env.RA_CANDIDATE_PROMOTION_ENABLED = "true";
+  const lib = freshLib();
+  const REFERENCE_NOW = new Date("2026-10-07T12:00:00.000Z");
+
+  // The two real, named production candidates (ra-2552525, ra-2554901),
+  // confirmed directly against today's actual source_runs.session_data --
+  // RA's own listing card gives title/date/venueName/url only, nothing
+  // else.
+  const session = {
+    id: "run-real-oct8",
+    allNewIds: ["ra-2552525", "ra-2554901", "ra-9999999"],
+    listingMetadata: {
+      "ra-2552525": {
+        title: "E L I X I R  THURSDAY  •  wsg Joshua Tree • DR. Disko Dust aka John Ryan",
+        date: "Thu, 8 Oct",
+        venueName: "Northern Lights Lounge",
+        url: "https://ra.co/events/2552525",
+      },
+      "ra-2554901": {
+        title: "J. Scott",
+        date: "Thu, 8 Oct",
+        venueName: "Tigris",
+        url: "https://ra.co/events/2554901",
+      },
+      "ra-9999999": {
+        title: "Malformed Date Show",
+        date: "TBA", // RA sometimes shows this verbatim -- must never be guessed at
+        venueName: "Somewhere",
+      },
+    },
+  };
+
+  const inserted = [];
+  const counts = await lib.promoteRaCandidates({
+    SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+    now: REFERENCE_NOW,
+    getLatestRaSessionFn: async () => session,
+    lookupExistingRowsFn: async () => new Map(),
+    findConservativeDuplicateFn: async () => null,
+    insertCandidateRowFn: async (url, key, row) => { inserted.push(row); return true; },
+  });
+
+  assert.strictEqual(counts.insufficientIdentity, 1, "TBA is still correctly rejected -- the fix does not loosen validation, only the date SHAPE it accepts");
+  assert.deepStrictEqual(counts.insufficientIdentityIds, ["ra-9999999"]);
+  assert.strictEqual(counts.promotable, 2);
+  assert.strictEqual(counts.written, 2, "both real Oct 8 candidates are promoted once the listing-date format is actually understood");
+  assert.deepStrictEqual(inserted.map((r) => r.external_id).sort(), ["ra-2552525", "ra-2554901"]);
+  console.log("PASS: real production listing dates ('Thu, 8 Oct') now promote; RA's own 'TBA' string still correctly rejected, not guessed");
+
+  const elixir = inserted.find((r) => r.external_id === "ra-2552525");
+  const jscott = inserted.find((r) => r.external_id === "ra-2554901");
+  for (const row of [elixir, jscott]) {
+    assert.strictEqual(row.start_date, "2026-10-08");
+    assert.strictEqual(row.status, "pending_review");
+    // Part 4, items 2-5: nothing RA's listing card doesn't state is ever
+    // invented. The draft row this file builds has no address/description/
+    // price/time keys at all -- confirming that directly (rather than
+    // merely checking a null) is the strongest guarantee that no later
+    // change could silently start defaulting one of these to a guessed
+    // value without a test noticing.
+    for (const neverInvented of ["venue_address_raw", "venue_city_raw", "description", "price_from", "is_free", "time_display", "ticket_url"]) {
+      assert.ok(!Object.prototype.hasOwnProperty.call(row, neverInvented), `${neverInvented} must not be present at all on a listing-only promoted row -- missing stays missing, never defaulted/guessed`);
+    }
+  }
+  assert.strictEqual(elixir.venue_name_raw, "Northern Lights Lounge");
+  assert.strictEqual(jscott.venue_name_raw, "Tigris");
+  console.log("PASS: both named Oct 8 candidates promoted with start_date=2026-10-08, status=pending_review, and no invented address/description/price/time/ticket field");
+
+  // Idempotency (Part 4, item 8): re-running promotion against the SAME
+  // session, now with the two rows already present (exactly what a real
+  // re-run would see via lookupExistingRowsFn against production), must
+  // write nothing a second time -- no duplicate row, no duplicate call.
+  {
+    const alreadyPresentMap = new Map(inserted.map((r) => [r.external_id, { external_id: r.external_id }]));
+    const secondRunInserted = [];
+    const secondCounts = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      now: REFERENCE_NOW,
+      getLatestRaSessionFn: async () => session,
+      lookupExistingRowsFn: async () => alreadyPresentMap,
+      findConservativeDuplicateFn: async () => null,
+      insertCandidateRowFn: async (url, key, row) => { secondRunInserted.push(row); return true; },
+    });
+    assert.strictEqual(secondCounts.alreadyPresent, 2, "both previously-promoted candidates are now alreadyPresent");
+    assert.strictEqual(secondCounts.written, 0, "repeated promotion of the same backlog writes nothing new");
+    assert.strictEqual(secondRunInserted.length, 0, "insertCandidateRowFn must not be called again for an already-promoted id");
+  }
+  console.log("PASS: repeated promotion of the same backlog is idempotent -- no duplicate row, no duplicate write");
+
+  console.log("\nAll real-listing-date / never-invent / idempotency tests passed.");
+}
+
 run()
   .then(runSafetyGateTests)
   .then(runMaxPerRunTests)
   .then(runIdentityWideningTests)
-  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate + max-per-run cap + identity widening/persistence) passed."))
+  .then(runRealListingDateTests)
+  .then(() => console.log("\nAll ra-candidate-promotion.js tests (incl. safety gate + max-per-run cap + identity widening/persistence + real-listing-date fix) passed."))
   .catch((err) => {
     console.error(err);
     process.exitCode = 1;
