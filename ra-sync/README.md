@@ -30,8 +30,8 @@ pushes.
 ## The two-phase flow, now routed through GitHub
 
 1. Browser session walks RA's listing, same as always.
-2. Claude commits `ra-sync/inbox/start-<runToken>.json` (candidate ids)
-   and pushes.
+2. Claude submits `ra-sync/inbox/start-<runToken>.json` (candidate ids)
+   — see "Transport" below for exactly how.
 3. A GitHub Actions workflow (`.github/workflows/ra-sync-bridge.yml`,
    logic in `.github/scripts/ra-sync-bridge.js`), triggered by that push,
    calls `POST /api/cron-ra` with `action: "start"` using `CRON_SECRET`
@@ -39,19 +39,59 @@ pushes.
    the JSON response as the **message of a new annotated git tag**:
    `ra-sync/start-response/<runToken>` — never a commit.
 4. Claude polls for that tag (`scripts/ra-bridge-client.js wait start
-   <runToken>` — plain `git fetch`, no GitHub API token needed) and reads
-   the unknown-id list + `runId` back out of it.
+   <runToken>`) and reads the unknown-id list + `runId` back out of it.
 5. Browser session fetches detail pages for only those ids (still capped
    at ~30/run, enforced server-side exactly as before).
-6. Claude commits `ra-sync/inbox/complete-<runToken>.json` (the fetched
-   detail data + `runId`) and pushes.
+6. Claude submits `ra-sync/inbox/complete-<runToken>.json` (the fetched
+   detail data + `runId`) the same way as step 2.
 7. The same workflow relays `action: "complete"` the same way, and pushes
    `ra-sync/complete-response/<runToken>`.
 8. Claude polls for that tag to get the final import counts.
 
 `scripts/ra-bridge-client.js` (device side) and
 `.github/scripts/ra-sync-bridge.js` (Action side) implement each half;
-`test/ra-sync-bridge.test.js` covers both.
+`test/ra-bridge-client.test.js` and `test/ra-sync-bridge.test.js` cover
+them.
+
+## Transport: GitHub REST API, not a local git push (2026-10-07)
+
+**Principle: daily RA inventory acquisition must not depend on the
+state of a mutable developer git checkout.** A device-side checkout can
+end up dirty, mid-rebase, on the wrong branch, or otherwise unable to
+commit/push through no fault of that day's RA run — and today's capture
+must still get to GitHub when that happens.
+
+So `scripts/ra-bridge-client.js submit` and `wait` talk to
+`api.github.com` directly over HTTPS instead of running `git add` /
+`git commit` / `git push` / `git fetch` / `git cat-file` against the
+local checkout:
+
+- **submit** creates `ra-sync/inbox/<action>-<runToken>.json` on `main`
+  in one call to the [Contents
+  API](https://docs.github.com/en/rest/repos/contents#create-or-update-file-contents)
+  (`PUT /repos/{owner}/{repo}/contents/{path}`) — the file and its
+  commit are created atomically, server-side, with no local working
+  tree involved at all.
+- **wait** reads the response tag via the [Git Data
+  API](https://docs.github.com/en/rest/git) (`GET
+  .../git/ref/tags/{tag}` then `GET .../git/tags/{sha}`) instead of
+  `git fetch` + `git cat-file -p`.
+
+Both reuse the same `GH_PUSH_TOKEN` the device already authenticates
+pushes with today — no new token, secret, or permission. It's sent only
+as an HTTP `Authorization: Bearer` header, never written into argv,
+logs, or any payload. The one local call left anywhere in this script
+is a **read-only** `git remote get-url origin`, used only to learn
+`owner/repo` when the `GITHUB_REPOSITORY` env var isn't already set
+(it is, automatically, inside GitHub Actions). That call only opens
+`.git/config` — it can't be blocked by a dirty index, a stuck rebase,
+or a locked ref.
+
+Because this still produces an ordinary push to `main` touching
+`ra-sync/inbox/*.json`, `.github/workflows/ra-sync-bridge.yml`'s
+existing `on: push` trigger fires exactly as before. Nothing on the
+Action side (`.github/scripts/ra-sync-bridge.js`, the workflow file, or
+`/api/cron-ra`) changed.
 
 ## Why a tag, and not a commit, carries the response
 
@@ -97,9 +137,9 @@ does automatically.
 `CRON_SECRET` must exist as a **GitHub Actions repository secret**
 (Settings → Secrets and variables → Actions → New repository secret,
 name `CRON_SECRET`, same value already in `.env.local`). Nothing else —
-no new tokens, no new services. Everything else here only uses git
-operations against this repo's own GitHub remote, which the device
-already authenticates for pushes today.
+no new tokens, no new services. The device side authenticates its
+`submit`/`wait` GitHub REST API calls with the same `GH_PUSH_TOKEN` it
+already uses to push today; see "Transport" above.
 
 ## 2026-09-29 repair: listing evidence and backlog survive a mid-run block
 

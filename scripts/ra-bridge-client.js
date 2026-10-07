@@ -7,28 +7,48 @@
 // .github/scripts/ra-sync-bridge.js and ra-sync/README.md for the full
 // design). Two subcommands, both run from the repo root:
 //
-//   node scripts/ra-bridge-client.js submit <start|complete> <jsonFile>
-//     Generates a fresh runToken, writes
-//     ra-sync/inbox/<action>-<runToken>.json, commits it, and pushes to
-//     the current branch. Prints ONLY the runToken to stdout on success
-//     -- everything else goes to stderr, so a caller can do
+//   node scripts/ra-bridge-client.js submit <start|complete|promote> <jsonFile>
+//     Generates a fresh runToken and creates
+//     ra-sync/inbox/<action>-<runToken>.json directly on the remote's
+//     main branch via the GitHub REST Contents API (one HTTPS call).
+//     Prints ONLY the runToken to stdout on success -- everything else
+//     goes to stderr, so a caller can do
 //       TOKEN=$(node scripts/ra-bridge-client.js submit start payload.json)
 //     without stray log lines ending up in $TOKEN.
 //
-//   node scripts/ra-bridge-client.js wait <start|complete> <runToken> [timeoutSec] [pollSec]
-//     Polls (git fetch -- no GitHub API, no token needed) for the
-//     response tag .github/scripts/ra-sync-bridge.js pushes once the
-//     Action has relayed that payload, then prints the response JSON to
-//     stdout. Exit code is 0 only when the relay itself reported
-//     ok:true; 1 if the relay reported a failure (the JSON is still
-//     printed so the caller can see why); 2 on timeout (tag never
-//     appeared -- check the repo's Actions tab).
+//   node scripts/ra-bridge-client.js wait <start|complete|promote> <runToken> [timeoutSec] [pollSec]
+//     Polls the GitHub REST Git Data API (no git fetch, no local
+//     checkout involved) for the response tag
+//     .github/scripts/ra-sync-bridge.js pushes once the Action has
+//     relayed that payload, then prints the response JSON to stdout.
+//     Exit code is 0 only when the relay itself reported ok:true; 1 if
+//     the relay reported a failure (the JSON is still printed so the
+//     caller can see why); 2 on timeout (tag never appeared -- check the
+//     repo's Actions tab).
+//
+// 2026-10-07: rewritten to drop the local git checkout as a dependency
+// for BOTH commands. The previous version wrote the inbox file to disk
+// and ran `git add` / `git commit` / `git push`, and polled with `git
+// fetch` + `git cat-file` -- all of which require a clean, push-able
+// local working tree. A stuck/dirty/mid-rebase checkout (see this
+// file's git history, 2026-10-04 and 2026-10-07) could then block the
+// one thing -- getting today's RA payload to GitHub -- that must never
+// depend on local developer git state. Every network operation here is
+// now a plain HTTPS call to api.github.com using the exact same
+// GH_PUSH_TOKEN the old git-push path already used; nothing else
+// changed about what gets sent or what comes back. The one remaining
+// local call is a READ-ONLY `git remote get-url origin` (to learn
+// owner/repo when GITHUB_REPOSITORY isn't set) -- that only opens
+// .git/config and cannot be blocked by a stuck rebase, a dirty index,
+// or this sandbox's delete restriction.
 //
 // Nothing here ever touches CRON_SECRET -- it lives only in GitHub
 // Actions Secrets and is used only inside the Action's own environment.
 // This script never talks to 313.events, Supabase, or Vercel directly;
-// every network call it makes is a git operation against the GitHub
-// remote this repo already pushes to.
+// every network call it makes is a GitHub REST API call authenticated
+// with GH_PUSH_TOKEN, which is never written into argv, logs, or
+// payloads -- only ever read from the environment and placed into an
+// HTTP Authorization header.
 
 const fs = require("fs");
 const path = require("path");
@@ -39,58 +59,12 @@ function repoRoot() {
   return process.env.REPO_DIR || process.cwd();
 }
 
+// run(cmd, args) -- the one local git call this script still makes
+// (inside repoSlug's fallback path): a read-only `git remote get-url
+// origin`. Kept as its own tiny wrapper, injectable as `runFn`, so
+// tests never need a real git repo on disk.
 function run(cmd, args) {
   return execFileSync(cmd, args, { cwd: repoRoot(), encoding: "utf8" });
-}
-
-// clearStaleRefLock(name, maxAgeMs) -- guards against exactly one known
-// failure mode: a prior git process (this script, another automated
-// session, or a human) locked a ref (e.g. created .git/HEAD.lock or
-// .git/index.lock) and exited. Normally the OS would let git (or
-// anyone) unlink that leftover lock without a second thought. In this
-// sandboxed checkout, though, unlink() fails (EPERM) by default every
-// session (see device_request_delete_permission), so the file survives
-// and blocks every later commit with a fatal "Unable to create '.git/
-// HEAD.lock': File exists" even though nothing is actually running
-// anymore. Confirmed 2026-10-04: a plain `git commit` + `git push` in a
-// session that already has delete permission leaves no such file
-// behind -- the leftover only happens when that permission isn't there
-// yet, which is this sandbox's default state every session.
-//
-// This never races a lock that might still be live: if it's younger
-// than maxAgeMs it's left alone and this throws, on the assumption
-// that a concurrent git operation could still be using it. Only a lock
-// older than that -- long past how long this script's own git calls
-// ever take -- gets reclaimed.
-function clearStaleRefLock(name, maxAgeMs = 5 * 60 * 1000) {
-  const lockPath = path.join(repoRoot(), ".git", name);
-  let stat;
-  try {
-    stat = fs.statSync(lockPath);
-  } catch {
-    return; // no lock -- nothing to do, the common case
-  }
-  const ageMs = Date.now() - stat.mtimeMs;
-  if (ageMs < maxAgeMs) {
-    throw new Error(
-      `.git/${name} exists and is only ${Math.round(ageMs / 1000)}s old ` +
-        `(< ${Math.round(maxAgeMs / 1000)}s) -- leaving it alone in case a ` +
-        `concurrent git operation is still using it.`
-    );
-  }
-  try {
-    fs.unlinkSync(lockPath);
-    console.error(
-      `Reclaimed stale .git/${name} (age ${Math.round(ageMs / 1000)}s, left behind by an earlier process).`
-    );
-  } catch (err) {
-    throw new Error(
-      `.git/${name} is stale (age ${Math.round(ageMs / 1000)}s) but could not be removed ` +
-        `(${err.code || err.message}). This checkout's sandbox denies delete by default each ` +
-        `session -- grant delete permission for this folder (device_request_delete_permission) ` +
-        `and re-run.`
-    );
-  }
 }
 
 function makeRunToken(now = new Date()) {
@@ -102,41 +76,64 @@ function makeRunToken(now = new Date()) {
   return `${stamp}-${rand}`;
 }
 
-function currentBranch() {
-  return run("git", ["rev-parse", "--abbrev-ref", "HEAD"]).trim();
-}
-
-// pushBranch(branch) — pushes using GH_PUSH_TOKEN when it's set (the
-// unattended/daily path: device_bash has read-only GitHub access, no
-// ambient push credential, confirmed 2026-09-27), falling back to
-// whatever ambient git auth is already configured (e.g. a human running
-// this by hand in their own Terminal) when it isn't.
-//
-// The token's literal value is never assembled into any argv this
-// process constructs, and so never appears in argv, in a thrown error's
-// message, or in a process listing. It's referenced only by name
-// ($GH_PUSH_TOKEN) inside a credential-helper shell snippet; git spawns
-// that snippet as its own subprocess at push time and THAT subprocess
-// (inheriting this one's environment) is what expands the variable --
-// exactly the same "shell substitutes it, this script never sees it"
-// pattern CRON_SECRET already uses for the /api/cron-ra calls.
-function pushBranch(branch) {
-  if (process.env.GH_PUSH_TOKEN) {
-    const helper = '!f() { echo "username=x-access-token"; echo "password=$GH_PUSH_TOKEN"; }; f';
-    run("git", ["-c", `credential.helper=${helper}`, "push", "origin", branch]);
-    return;
+// repoSlug() -- "owner/repo", preferring (in order): GITHUB_REPOSITORY
+// (set automatically inside GitHub Actions; harmless to also allow it
+// device-side), then RA_BRIDGE_REPO (explicit override, e.g. for
+// tests), then parsing the local origin remote -- the one read-only
+// git call described above.
+function repoSlug({ env = process.env, runFn = run } = {}) {
+  if (env.GITHUB_REPOSITORY) return env.GITHUB_REPOSITORY;
+  if (env.RA_BRIDGE_REPO) return env.RA_BRIDGE_REPO;
+  const url = runFn("git", ["remote", "get-url", "origin"]).trim();
+  const m = url.match(/github\.com[/:]([^/]+)\/([^/]+?)(\.git)?$/);
+  if (!m) {
+    throw new Error(`Could not parse "owner/repo" out of git remote origin URL: ${url}`);
   }
-  run("git", ["push", "origin", branch]);
+  return `${m[1]}/${m[2]}`;
 }
 
-function cmdSubmit(action, jsonFilePath) {
+// ghRequest(method, urlPath, opts) -- thin wrapper around fetch for the
+// GitHub REST API. `token`, if given, is placed only in the
+// Authorization header -- never in urlPath, body, or any log/error
+// message this module produces. Returns { status, ok, body } where
+// `body` is the parsed JSON response (or { raw: <text> } if the
+// response wasn't valid JSON, e.g. an empty 204).
+async function ghRequest(method, urlPath, { token, body, fetchFn = fetch } = {}) {
+  const headers = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "313events-site-ra-bridge-client",
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+
+  const res = await fetchFn(`https://api.github.com${urlPath}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  const text = await res.text();
+  let parsed;
+  try {
+    parsed = text ? JSON.parse(text) : {};
+  } catch {
+    parsed = { raw: text };
+  }
+  return { status: res.status, ok: res.ok, body: parsed };
+}
+
+async function cmdSubmit(
+  action,
+  jsonFilePath,
+  { env = process.env, fetchFn = fetch, runFn = run, readFileFn = fs.readFileSync, log = console.error } = {}
+) {
   if (action !== "start" && action !== "complete" && action !== "promote") {
     throw new Error(`submit: action must be "start", "complete", or "promote", got ${JSON.stringify(action)}`);
   }
   if (!jsonFilePath) {
     throw new Error("submit: missing <jsonFile> argument");
   }
-  const raw = fs.readFileSync(jsonFilePath, "utf8");
+  const raw = readFileFn(jsonFilePath, "utf8");
   const data = JSON.parse(raw);
   if (action === "start" && (!Array.isArray(data.candidateIds) || data.candidateIds.length === 0)) {
     throw new Error(`submit start: ${jsonFilePath} needs a non-empty "candidateIds" array`);
@@ -150,50 +147,46 @@ function cmdSubmit(action, jsonFilePath) {
   // accept.
 
   const runToken = makeRunToken();
-  const outRel = ["ra-sync", "inbox", `${action}-${runToken}.json`].join("/");
-  const outAbs = path.join(repoRoot(), outRel);
-  fs.mkdirSync(path.dirname(outAbs), { recursive: true });
   const payload = Object.assign({ runToken, action }, data);
-  fs.writeFileSync(outAbs, JSON.stringify(payload, null, 2) + "\n");
+  const content = JSON.stringify(payload, null, 2) + "\n";
+  const outRel = ["ra-sync", "inbox", `${action}-${runToken}.json`].join("/");
+  const branch = env.RA_BRIDGE_BRANCH || "main";
+  const slug = repoSlug({ env, runFn });
 
-  try {
-    clearStaleRefLock("index.lock");
-    clearStaleRefLock("HEAD.lock");
-    run("git", ["add", outRel]);
-    run("git", ["commit", "-m", `ra-sync: submit ${action} payload ${runToken}`]);
-    pushBranch(currentBranch());
-  } catch (err) {
-    // Never leave outRel sitting around as an untracked file for the
-    // next run (or a human's `git status`) to trip over just because
-    // the commit itself didn't happen. Best-effort only -- a failure
-    // here (e.g. the same delete restriction) never masks the real
-    // error below.
-    try {
-      fs.unlinkSync(outAbs);
-    } catch {
-      // Can't clean up -- the caller already gets the real error.
-    }
-    throw err;
+  // Single atomic call: creates the file and the commit together. No
+  // local file is ever written, so there is nothing to clean up if this
+  // fails -- the previous git-based version's "leftover untracked file"
+  // failure mode doesn't exist anymore.
+  const res = await ghRequest("PUT", `/repos/${slug}/contents/${outRel}`, {
+    token: env.GH_PUSH_TOKEN,
+    fetchFn,
+    body: {
+      message: `ra-sync: submit ${action} payload ${runToken}`,
+      content: Buffer.from(content, "utf8").toString("base64"),
+      branch,
+    },
+  });
+  if (!res.ok) {
+    const reason = (res.body && res.body.message) || `HTTP ${res.status}`;
+    throw new Error(`submit ${action}: GitHub Contents API create failed for ${outRel}: ${reason}`);
   }
 
-  console.error(`Submitted ${outRel} and pushed (runToken ${runToken}).`);
+  log(`Submitted ${outRel} via GitHub API (runToken ${runToken}, branch ${branch}).`);
   process.stdout.write(runToken + "\n");
-}
-
-function parseTagMessage(catFileOutput) {
-  // Annotated tag object format: a few header lines (object/type/tag/
-  // tagger), a blank line, then the message verbatim -- same shape as a
-  // commit object. We only want what's after that first blank line.
-  const idx = catFileOutput.indexOf("\n\n");
-  if (idx === -1) throw new Error("Could not find the tag message (no blank line after tag headers)");
-  return JSON.parse(catFileOutput.slice(idx + 2));
+  return runToken;
 }
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function cmdWait(action, runToken, timeoutSec, pollSec) {
+async function cmdWait(
+  action,
+  runToken,
+  timeoutSec,
+  pollSec,
+  { env = process.env, fetchFn = fetch, runFn = run, log = console.error, sleepFn = sleep, now = Date.now } = {}
+) {
   if (action !== "start" && action !== "complete" && action !== "promote") {
     throw new Error(`wait: action must be "start", "complete", or "promote", got ${JSON.stringify(action)}`);
   }
@@ -201,29 +194,33 @@ async function cmdWait(action, runToken, timeoutSec, pollSec) {
     throw new Error("wait: missing <runToken> argument");
   }
   const tagName = `ra-sync/${action}-response/${runToken}`;
-  const refspec = `refs/tags/${tagName}:refs/tags/${tagName}`;
-  const deadline = Date.now() + timeoutSec * 1000;
+  const slug = repoSlug({ env, runFn });
+  const token = env.GH_PUSH_TOKEN;
+  const deadline = now() + timeoutSec * 1000;
 
   for (;;) {
-    try {
-      run("git", ["fetch", "origin", refspec]);
-      const raw = run("git", ["cat-file", "-p", `refs/tags/${tagName}`]);
-      const payload = parseTagMessage(raw);
-      process.stdout.write(JSON.stringify(payload, null, 2) + "\n");
-      process.exitCode = payload.ok ? 0 : 1;
-      return;
-    } catch {
-      // Tag doesn't exist yet -- keep polling until the deadline.
+    const refRes = await ghRequest("GET", `/repos/${slug}/git/ref/tags/${tagName}`, { token, fetchFn });
+    if (refRes.ok && refRes.body && refRes.body.object && refRes.body.object.sha) {
+      const tagRes = await ghRequest("GET", `/repos/${slug}/git/tags/${refRes.body.object.sha}`, { token, fetchFn });
+      if (tagRes.ok && typeof tagRes.body.message === "string") {
+        const payload = JSON.parse(tagRes.body.message);
+        process.stdout.write(JSON.stringify(payload, null, 2) + "\n");
+        process.exitCode = payload.ok ? 0 : 1;
+        return payload;
+      }
     }
-    if (Date.now() >= deadline) {
-      console.error(
+    // Tag doesn't exist yet (404) or wasn't readable yet -- keep polling
+    // until the deadline, same as the old git-fetch-based version did
+    // for "tag not found".
+    if (now() >= deadline) {
+      log(
         `Timed out after ${timeoutSec}s waiting for ${tagName}. The GitHub Action may still be running, ` +
           `or may have failed before pushing a response tag -- check the repo's Actions tab.`
       );
       process.exitCode = 2;
-      return;
+      return undefined;
     }
-    await sleep(pollSec * 1000);
+    await sleepFn(pollSec * 1000);
   }
 }
 
@@ -231,7 +228,7 @@ async function main() {
   const [, , sub, ...rest] = process.argv;
   if (sub === "submit") {
     const [action, jsonFilePath] = rest;
-    cmdSubmit(action, jsonFilePath);
+    await cmdSubmit(action, jsonFilePath);
     return;
   }
   if (sub === "wait") {
@@ -247,8 +244,37 @@ async function main() {
   process.exitCode = 1;
 }
 
-module.exports = { makeRunToken, parseTagMessage, clearStaleRefLock, cmdSubmit };
+module.exports = { makeRunToken, repoSlug, ghRequest, cmdSubmit, cmdWait };
 
+// Node's global `fetch` does NOT read HTTP_PROXY/HTTPS_PROXY on its own --
+// confirmed 2026-10-07 on the device: `curl` and `git` (both proxy-aware)
+// reach api.github.com fine through this environment's allowlist proxy,
+// while a plain `fetch()` call fails DNS resolution outright (EAI_AGAIN),
+// because it never goes through the proxy at all. Node 22 ships a real fix
+// for exactly this, gated behind a flag: `--use-env-proxy` (confirmed
+// working on this device's Node v22.23.2). Rather than require every
+// caller to remember to pass that flag, the CLI entrypoint re-execs itself
+// with it added whenever a proxy is configured and it isn't already
+// active -- one extra short-lived child process, invisible to anything
+// that just runs `node scripts/ra-bridge-client.js ...` the way the header
+// comment documents. This never affects `require("./ra-bridge-client.js")`
+// (tests, or any other caller importing the functions directly) -- only
+// the `require.main === module` CLI path re-execs.
 if (require.main === module) {
-  main();
+  const hasProxyEnv =
+    process.env.HTTPS_PROXY || process.env.HTTP_PROXY || process.env.https_proxy || process.env.http_proxy;
+  if (hasProxyEnv && !process.env.NODE_USE_ENV_PROXY) {
+    // NODE_USE_ENV_PROXY=1 is Node's own env-var equivalent of the
+    // --use-env-proxy flag -- setting it (not just the flag) for the
+    // child is what lets this guard see "already handled" on the child's
+    // own startup and not re-spawn forever.
+    const { spawnSync } = require("child_process");
+    const result = spawnSync(process.execPath, [__filename, ...process.argv.slice(2)], {
+      stdio: "inherit",
+      env: Object.assign({}, process.env, { NODE_USE_ENV_PROXY: "1" }),
+    });
+    process.exit(result.status == null ? 1 : result.status);
+  } else {
+    main();
+  }
 }
