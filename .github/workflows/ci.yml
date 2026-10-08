@@ -32,3 +32,12 @@ jobs:
           node-version: '20'
       - name: Run all tests
         run: node test/run-all.js
+      # The same suite with the clock moved four months ahead. A test that
+      # silently depends on today's date fails here, in review, instead of
+      # turning every branch red months later. (Tests that pin their own clock
+      # with test/fixtures/freeze-clock.js are unaffected, by design.)
+      - name: Run all tests, clock +120 days
+        run: node test/run-all.js
+        env:
+          SHIFT_DAYS: '120'
+          NODE_OPTIONS: '--require ./test/fixtures/shift-clock.js'
