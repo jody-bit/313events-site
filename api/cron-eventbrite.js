@@ -390,6 +390,10 @@ module.exports = async (req, res) => {
     }
     const rowsWithStatus = rows.map((row) => {
       const { _defaultStatusForRow, ...rest } = row;
+      // An existing row's internal_note belongs to people and to the
+      // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
+      // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.
+      if (existingStatusByExternalId.has(row.external_id)) delete rest.internal_note;
       return {
         ...rest,
         status: existingStatusByExternalId.get(row.external_id) || _defaultStatusForRow,

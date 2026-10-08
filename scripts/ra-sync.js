@@ -301,7 +301,16 @@ function deriveEventRow(raw, venueMap) {
 // external_id is still the hard backstop against a true RA-vs-RA
 // duplicate either way; this check only ever affects the softer
 // RA-vs-legacy-import case.
-const DUPLICATE_DATE_WINDOW_DAYS = 2;
+// IDENTITY IS NEVER INFERRED FROM TITLE SIMILARITY ALONE (2026-10-08,
+// duplicate-durability hardening). A match is persisted forever
+// (event_source_identities) and removes the candidate from view, so a wrong
+// match silently hides a real event. The old rule accepted a similar title
+// within +/-2 days with no venue check: the second night of a two-night run,
+// or one weekly show at two rooms, was "the same event". A match now needs
+// the SAME start date AND both rows stating the SAME venue. Anything less is
+// ambiguous: not a duplicate here, so the candidate becomes its own
+// pending_review row and a person decides (Needs Follow Up).
+const DUPLICATE_DATE_WINDOW_DAYS = 0;
 const MIN_MATCHABLE_LENGTH = 6;
 
 // TITLE IDENTITY CHECK (2026-10-01, RA candidate-recovery MVP correction --
@@ -389,6 +398,22 @@ function titleIdentityCompatible(titleA, titleB, ratio = TITLE_IDENTITY_MATCH_RA
   return shared / tokensA.size >= ratio && shared / tokensB.size >= ratio;
 }
 
+function venueKeyForIdentity(name) {
+  const k = String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().replace(/^the /, "");
+  if (!k || k.length < MIN_MATCHABLE_LENGTH - 1 || /^(venue |location )?(tba|tbd)\b|^to be announced/.test(k)) return null;
+  return k;
+}
+
+// Pure. Same date + compatible title + the same STATED venue on both sides.
+function identityEvidenceSufficient(candidate, existing) {
+  if (!candidate || !existing) return false;
+  if (!candidate.start_date || candidate.start_date !== existing.start_date) return false;
+  const va = venueKeyForIdentity(candidate.venue_name_raw);
+  const vb = venueKeyForIdentity(existing.venue_name_raw);
+  if (!va || !vb || va !== vb) return false;
+  return titleIdentityCompatible(candidate.title, existing.title);
+}
+
 async function findConservativeDuplicate(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, row, fetchFn) {
   const titleOk = row.title && row.title.length >= MIN_MATCHABLE_LENGTH;
   const venueOk = row.venue_name_raw && row.venue_name_raw !== "Location TBA" && row.venue_name_raw.length >= MIN_MATCHABLE_LENGTH;
@@ -415,7 +440,7 @@ async function findConservativeDuplicate(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     // surfaced it (title ilike, venue ilike, or both).
     return (
       rows.find(
-        (r) => (!r.external_id || !RA_ID_PATTERN.test(r.external_id)) && titleIdentityCompatible(row.title, r.title)
+        (r) => (!r.external_id || !RA_ID_PATTERN.test(r.external_id)) && identityEvidenceSufficient(row, r)
       ) || null
     );
   } catch {
@@ -995,6 +1020,7 @@ module.exports = {
   deriveCategory,
   deriveEventRow,
   findConservativeDuplicate,
+  identityEvidenceSufficient,
   tokenizeTitleForIdentity,
   titleIdentityCompatible,
   sanitizeListingMetadata,
