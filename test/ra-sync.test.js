@@ -21,6 +21,12 @@
 // Part 6: api/admin-ra.js's summarizeRun -- proves an incomplete
 //   (outcome='started') session reads back as incomplete, never as a
 //   successful sync.
+// Part 7: parseRaListingDate (added 2026-10-07, RA_CANDIDATE_PROMOTION
+//   DEFECT 1 fix) -- RA's real bare "Thu, 8 Oct" listing-card date format,
+//   deterministic year-rollover, backward compatibility with the
+//   already-ISO strings every other fixture in this file (and in
+//   test/ra-candidate-promotion.test.js) already uses, and malformed/
+//   missing-input handling. Never infers a time.
 "use strict";
 const assert = require("assert");
 
@@ -978,6 +984,67 @@ async function run() {
     assert.strictEqual(summarizeRun(null), null);
   }
   console.log("PASS: api/admin-ra.js summarizeRun -- an incomplete session reads back as incomplete, never as a quiet success");
+
+  // ============================================================
+  // Part 7: parseRaListingDate
+  // ============================================================
+  {
+    const { parseRaListingDate } = freshRaSync();
+    const REFERENCE_NOW = new Date("2026-10-07T12:00:00.000Z"); // "today" for this task
+
+    // Real example: RA's actual listing-card string for the two named
+    // 2026-10-08 candidates (ra-2552525, ra-2554901), confirmed directly
+    // against production session_data.
+    assert.strictEqual(parseRaListingDate("Thu, 8 Oct", REFERENCE_NOW), "2026-10-08");
+    console.log("PASS: parseRaListingDate -- real RA example 'Thu, 8 Oct' -> 2026-10-08");
+
+    // Normal same-year date, no weekday prefix.
+    assert.strictEqual(parseRaListingDate("25 Oct", REFERENCE_NOW), "2026-10-25");
+    // Full weekday name + full month name, with a trailing period variant.
+    assert.strictEqual(parseRaListingDate("Thursday, 8 October", REFERENCE_NOW), "2026-10-08");
+    assert.strictEqual(parseRaListingDate("Thu., 8 Oct.", REFERENCE_NOW), "2026-10-08");
+    console.log("PASS: parseRaListingDate -- same-year date, with or without a weekday prefix, abbreviated or full month name");
+
+    // Year rollover near December/January: "today" is late December, a
+    // bare "3 Jan" must resolve to NEXT January, not the January that
+    // already passed earlier this same calendar year.
+    const lateDecember = new Date("2026-12-28T12:00:00.000Z");
+    assert.strictEqual(parseRaListingDate("Sat, 3 Jan", lateDecember), "2027-01-03");
+    // But a bare "30 Dec" from that same vantage point is only 2 days in
+    // the past (inside the slack window) -- still THIS December, not
+    // pushed forward a year.
+    assert.strictEqual(parseRaListingDate("Wed, 30 Dec", lateDecember), "2026-12-30");
+    // And a date comfortably more than the slack window in the past this
+    // same year (not a Dec/Jan boundary case) also rolls forward.
+    assert.strictEqual(parseRaListingDate("3 Jan", REFERENCE_NOW), "2027-01-03", "a January date seen in October must mean next January, not the one already 9 months gone");
+    console.log("PASS: parseRaListingDate -- deterministic year-rollover at the December/January boundary, slack window respected");
+
+    // Malformed dates never promote a guess.
+    assert.strictEqual(parseRaListingDate("TBA", REFERENCE_NOW), null);
+    assert.strictEqual(parseRaListingDate("Thu, 31 Feb", REFERENCE_NOW), null, "not a real calendar date");
+    assert.strictEqual(parseRaListingDate("Thu, 8 Octobr", REFERENCE_NOW), null, "unrecognized month name");
+    assert.strictEqual(parseRaListingDate("Thu, 40 Oct", REFERENCE_NOW), null, "day out of range");
+    console.log("PASS: parseRaListingDate -- malformed dates (bad month, impossible day, non-calendar date) return null, never a guess");
+
+    // Missing date never promotes a guess.
+    assert.strictEqual(parseRaListingDate("", REFERENCE_NOW), null);
+    assert.strictEqual(parseRaListingDate(undefined, REFERENCE_NOW), null);
+    assert.strictEqual(parseRaListingDate(null, REFERENCE_NOW), null);
+    console.log("PASS: parseRaListingDate -- empty/missing input returns null, never a guess");
+
+    // Backward compatibility: every existing fixture in this codebase
+    // (test/ra-candidate-promotion.test.js, and detail-page-derived ISO
+    // timestamps) already passes an ISO-prefixed string -- this must keep
+    // working exactly as the old bare ISO_DATE_RE check did, unchanged.
+    assert.strictEqual(parseRaListingDate("2026-11-06T00:00:00.000", REFERENCE_NOW), "2026-11-06");
+    assert.strictEqual(parseRaListingDate("2026-11-06", REFERENCE_NOW), "2026-11-06");
+    console.log("PASS: parseRaListingDate -- already-ISO input (existing test fixtures, detail-page timestamps) still returned verbatim");
+
+    // Never infers or returns a time of any kind, regardless of input shape.
+    assert.strictEqual(parseRaListingDate("Thu, 8 Oct", REFERENCE_NOW).length, 10, "return value is always a bare YYYY-MM-DD date, never a time component");
+    assert.ok(!parseRaListingDate("2026-11-06T21:00:00.000", REFERENCE_NOW).includes(":"), "a time-bearing ISO input is still truncated to its date part only");
+    console.log("PASS: parseRaListingDate -- never infers or returns a start time, from either input shape");
+  }
 
   console.log("\nAll ra-sync tests passed.");
 }

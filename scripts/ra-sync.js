@@ -511,6 +511,111 @@ function sanitizeListingMetadata(parsedCandidateIds, rawMetadata) {
   return out;
 }
 
+// parseRaListingDate(dateStr, now) -> "YYYY-MM-DD" | null
+//
+// RA_CANDIDATE_PROMOTION DEFECT 1 FIX (2026-10-07): scripts/ra-candidate-
+// promotion.js used to require listingMetadata's `date` field to already
+// be ISO (`^\d{4}-\d{2}-\d{2}`) before it would populate a candidate's
+// start_date. That was never true of what RA's own listing cards actually
+// show -- confirmed in production, every one of a real 129-entry
+// listingMetadata capture was a bare, no-year string like "Thu, 8 Oct" --
+// so every real candidate failed that check and was marked
+// insufficientIdentity, unconditionally, regardless of
+// RA_CANDIDATE_PROMOTION_ENABLED. This is the ONE shared parser for RA
+// listing dates both promotion and (if a future caller needs it) any
+// other listing-metadata consumer should use, rather than each growing
+// its own copy.
+//
+// Two input shapes are accepted, by design:
+//   1. An already-ISO-prefixed string ("2026-11-06" or
+//      "2026-11-06T00:00:00.000") -- returned verbatim (just the date
+//      part), unchanged from the old behavior. This is what every
+//      existing test fixture in this codebase already uses for
+//      listingMetadata.date, and what a detail-page-derived ISO
+//      timestamp would already look like, so it must keep working
+//      exactly as before.
+//   2. RA's REAL listing-card format: a bare day-level date with no
+//      year, optionally prefixed with a weekday abbreviation --
+//      "Thu, 8 Oct", "8 Oct", "Thursday, 8 October". The leading
+//      weekday (when present) is RA's own display convention, never
+//      itself checked against the computed date -- RA's listing date is
+//      trusted verbatim, the same posture this whole file already takes
+//      toward every other listing-card field.
+//
+// Year inference (shape 2 only -- an explicit ISO year in shape 1 is
+// never second-guessed): RA's listing only ever shows upcoming events, so
+// a bare day/month is assumed to fall in `now`'s own year UNLESS that
+// would already be more than RA_LISTING_DATE_PAST_SLACK_DAYS days in the
+// past, in which case it must mean next year instead. Same "small
+// backward-slack window, then roll the year forward" convention already
+// used by api/cron-redford-theatre.js's nextOccurrenceOf and
+// scripts/press-coverage-linking.js's resolveDateMatch for the identical
+// reason (a bare, year-less date always describes a future occurrence,
+// never one that silently happened many days ago) -- not a new, competing
+// rule invented just for RA.
+//
+// Never attempts to parse, infer, or return a TIME of any kind -- see
+// LISTING_METADATA_FIELDS' own note: `displayedTime` is a separate,
+// deliberately-never-authoritative field, untouched by this function.
+//
+// Returns null (never throws, never guesses) for anything malformed or
+// missing -- an empty/non-string input, an unrecognized month name, an
+// out-of-range day, or a day/month combination that isn't a real
+// calendar date (e.g. "31 Feb").
+const RA_LISTING_DATE_ISO_RE = /^\d{4}-\d{2}-\d{2}/;
+const RA_LISTING_DATE_BARE_RE = /^(?:[A-Za-z]{3,9}\.?,?\s+)?(\d{1,2})\s+([A-Za-z]{3,9})\.?\b/;
+const RA_LISTING_DATE_PAST_SLACK_DAYS = 3;
+// Exact-match whitelist (abbreviation AND full name) -- deliberately NOT
+// a slice(0,3)-of-anything check, which would wrongly accept a misspelled
+// or unrelated word that merely starts with a real month's first 3
+// letters (e.g. "Octobr", "Octopus").
+const RA_LISTING_DATE_MONTHS = {
+  jan: 0, january: 0,
+  feb: 1, february: 1,
+  mar: 2, march: 2,
+  apr: 3, april: 3,
+  may: 4,
+  jun: 5, june: 5,
+  jul: 6, july: 6,
+  aug: 7, august: 7,
+  sep: 8, sept: 8, september: 8,
+  oct: 9, october: 9,
+  nov: 10, november: 10,
+  dec: 11, december: 11,
+};
+
+function parseRaListingDate(dateStr, now = new Date()) {
+  if (typeof dateStr !== "string") return null;
+  const trimmed = dateStr.trim();
+  if (!trimmed) return null;
+
+  if (RA_LISTING_DATE_ISO_RE.test(trimmed)) return trimmed.slice(0, 10);
+
+  const m = RA_LISTING_DATE_BARE_RE.exec(trimmed);
+  if (!m) return null;
+  const day = parseInt(m[1], 10);
+  const month = RA_LISTING_DATE_MONTHS[m[2].toLowerCase()];
+  if (month === undefined || day < 1 || day > 31) return null;
+
+  const nowUtcMidnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  let year = now.getUTCFullYear();
+  let candidateMs = Date.UTC(year, month, day);
+  const candidate = new Date(candidateMs);
+  // Reject calendar-invalid day/month combinations (e.g. "31 Feb") --
+  // same UTC round-trip check scripts/press-coverage-linking.js's
+  // resolveDateMatch already uses for the same purpose.
+  if (candidate.getUTCMonth() !== month || candidate.getUTCDate() !== day) return null;
+
+  const slackFloorMs = nowUtcMidnight - RA_LISTING_DATE_PAST_SLACK_DAYS * 86400000;
+  if (candidateMs < slackFloorMs) {
+    year += 1;
+    candidateMs = Date.UTC(year, month, day);
+  }
+
+  const iso = new Date(candidateMs);
+  return `${year}-${String(iso.getUTCMonth() + 1).padStart(2, "0")}-${String(iso.getUTCDate()).padStart(2, "0")}`;
+}
+
 // startRaSyncSession({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, candidateIds, ... })
 //   -> { runId, candidateCount, knownCount, newCount, allNewCount, ids }
 //
@@ -893,6 +998,7 @@ module.exports = {
   tokenizeTitleForIdentity,
   titleIdentityCompatible,
   sanitizeListingMetadata,
+  parseRaListingDate,
   MERGE_BLANK_FIELDS,
   LISTING_METADATA_FIELDS,
   getSourceRun,
