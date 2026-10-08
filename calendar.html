@@ -25,7 +25,10 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Fonts: the homepage's three voices (Archivo at 62% width / 900, Inter,
+     Space Mono), plus Archivo Narrow for the legacy Month/Map views' own
+     labels (Leaflet popups) during the transition. -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Calendar — 313.events">
@@ -40,141 +43,122 @@
 <meta name="twitter:description" content="Browse every arts, culture, and nightlife event within 75 miles of Detroit by day, week, or month.">
 <meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 
+<link rel="stylesheet" href="/site.css">
 <style>
-  :root{
-    /* Detroit Signal V2 — locked color architecture */
-    --bg:#0A0A0A;          /* asphalt — primary dark environment */
-    --panel:#202020;       /* charcoal — raised surface: cards, panels */
-    --panel-alt:#161616;   /* slightly recessed surface: strip headers, muted rows */
-    --panel-hover:#272727;
-    --ink:#F2F0E8;         /* warm white — primary text */
-    --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
-    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
-    --line:#2c2c2c;
-    --line-soft:#212121;
-    --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
-    --on-accent:#0A0A0A;   /* required dark text/icon color on chartreuse fills */
-    --today:rgba(215,255,0,.09);
-    --today-ring:#D7FF00;
-    /* Structural containers use a hard edge (0) rather than a soft rounded
-       corner — a direct, deliberately conservative move toward the Detroit
-       Signal concept board's rectilinear, editorial-broadcast language.
-       Scoped to this single token: every var(--radius) consumer is a
-       structural chrome container (.notice, .controls, .cal, #dayPanel,
-       #listView), not an interactive pill/chip/badge, so this doesn't touch
-       any control's tap-target shape or affordance. */
-    --radius:0px;
+  /* =====================================================================
+     calendar.html — the Calendar surface (Detroit Signal, Calendar FINAL).
 
-    /* Event Type palette — "UV signal" set (2026-08-26): Jody asked to keep
-       per-category color for scanability, restyled as a cohesive family of
-       saturated blacklight-poster neons rather than the old grab-bag of
-       hues, so it reads as on-brand next to the chartreuse accent instead of
-       competing with it. Kept clear of chartreuse's own yellow-green band. */
-    --c-music:#5B3EFF;    /* electric indigo */
-    --c-theatre:#FF6A00;  /* neon orange */
-    --c-dance:#FF2ECC;    /* neon magenta */
-    --c-visual:#00E5FF;   /* electric cyan */
-    --c-museum:#00FFA6;   /* UV spring-teal */
-    --c-family:#FFC400;   /* neon amber */
-    --c-fest:#FF2D55;     /* neon crimson */
-    --c-food:#9D00FF;     /* UV violet */
-    --c-film:#2979FF;     /* electric blue */
-    --c-night:#E100FF;    /* UV fuchsia */
-    --c-sports:#FF3B3B;   /* neon scarlet */
-    --c-community:#3DFF6E; /* neon green */
-    --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  button{font-family:inherit;}
-  /* Visible keyboard-only focus ring (not shown on mouse click) across every
-     interactive control added/converted for the Chunk 4 accessibility pass —
-     chartreuse matches the brand's existing "state" usage (today ring,
-     live badge), not decoration. */
-  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
-    outline:2px solid var(--accent);outline-offset:2px;
-  }
-  body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    line-height:1.4;
-  }
-  .wrap{max-width:1180px;margin:0 auto;padding:14px 20px 48px;}
+     The design system's shared primitives — tokens, type voices, header,
+     nav, Submit, the WHEN / WHERE / WHAT / SEARCH board and its sheets, the
+     departure-board stream (day headings, rows, actions, foot) and the
+     footer — come from /site.css, linked just before this block. They are
+     verbatim copies of the live homepage's own rules and must not be
+     restyled here. What follows is only what the Calendar adds:
+       1. the surface title + readouts;
+       2. List-only extensions of the shared day heading (the view control)
+          and the List's loading / error / empty states;
+       3. the LEGACY Month and Map views, kept working exactly as they were
+          during the transition (Product Owner, 2026-10-08: view=month and
+          view=map keep showing the existing views until their redesigns
+          ship). Their rules are scoped to their own class names (lg-*) so
+          the shared stream rules cannot leak into them.
+     ===================================================================== */
 
-  header.site{
-    display:flex;justify-content:space-between;align-items:center;
-    gap:16px;flex-wrap:wrap;
-    padding-bottom:10px;margin-bottom:10px;border-bottom:2px solid var(--ink);
-  }
-  /* Primary nav (Now/Tonight/This Weekend/Calendar/Browse) — plain uppercase
-     text links, not the bordered-chip look .when-btn has elsewhere on the
-     page. The class is still .when-btn for the 3 time-range items (so they
-     ride the existing activateWhen()/updateWhenButtons() wiring); this
-     scoped override just restyles them to match the nav bar visually. */
-  /* min-width:0 (2026-10-03 fix, Jody: "the submit button is wrapping" on
-     Safari) — see index.html's identical comment on this same rule for the
-     full explanation. Kept byte-for-byte identical across index.html,
-     calendar.html, and map.html, same as every other duplicated header
-     rule in this file. */
-  .site-nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap;row-gap:8px;min-width:0;}
-  .site-nav .when-btn, .site-nav-link{
-    border:none;background:none;padding:0 0 4px;border-radius:0;
-    font-family:'Inter',-apple-system,sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;
-    text-transform:uppercase;color:var(--ink-soft);text-decoration:none;cursor:pointer;
-    border-bottom:2px solid transparent;white-space:nowrap;
-  }
-  .site-nav .when-btn:hover, .site-nav-link:hover{color:var(--ink);}
-  /* 2026-08-28 fix: .when-btn.active (below, ~line 194) sets background +
-     border-color for the boxy discovery-bar chip treatment elsewhere on
-     this page. This nav-scoped rule only ever overrode color/border-bottom
-     -color, so on a nav item (This Weekend/etc.) the chip's cream
-     background (var(--ink)) and full border-color leaked through untouched
-     — same specificity fight, but background/border-color have no
-     competing declaration here, so the cascade doesn't even need to
-     resolve specificity; whichever rule sets a property wins by default.
-     Result: a solid pale box behind chartreuse text in the nav, instead of
-     the plain text-link look .site-nav-link.current already has correctly.
-     Explicitly resetting background/border-color here makes this rule
-     fully self-contained, matching .site-nav-link.current's treatment. */
-  .site-nav .when-btn.active{background:none;color:var(--accent);border-color:transparent;border-bottom-color:var(--accent);}
-  /* Marks whichever nav link is the current page (e.g. Calendar, on
-     calendar.html) — same visual treatment as an active time-range chip. */
-  .site-nav-link.current{color:var(--accent);border-bottom-color:var(--accent);}
-  /* Search icon (mockup parity) — opens/focuses the real search input that
-     already lives in .controls, rather than duplicating a second search
-     field up here. No new search logic, just a shortcut to the existing one. */
-  .nav-search-btn{
-    border:none;background:none;padding:0;color:var(--ink-soft);cursor:pointer;
-    display:flex;align-items:center;
-  }
-  .nav-search-btn:hover{color:var(--ink);}
-  .nav-search-btn svg{display:block;width:18px;height:18px;}
+  /* ---- 1. surface title + readouts (the hero's proof grammar) ----
+     Readouts are counts, never controls, and never chartreuse. Four, not
+     the board's five: "Active cities" is withheld under DEC-026. */
+  .cal-title{display:grid;grid-template-columns:minmax(0,1fr) auto;border:1px solid var(--line);margin-bottom:12px;}
+  .cal-title-cell{padding:22px 24px 18px;border-right:1px solid var(--line);min-width:0;}
+  .cal-title h1{margin:0;font-size:92px;color:var(--ink);}
+  .cal-title p{margin:10px 0 0;font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);line-height:1.5;}
+  .cal-title .sub-short{display:none;}
+  .cal-readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
+  .cal-readout{padding:18px 16px 14px;border-right:1px solid var(--line);min-width:118px;}
+  .cal-readout:last-child{border-right:none;}
+  .cal-readout b{display:block;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:44px;line-height:.9;color:var(--ink);}
+  .cal-readout b.is-pending{color:var(--ink-soft);}
+  .cal-readout span{display:block;margin-top:8px;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
   @media (max-width:900px){
-    .site-nav{gap:14px;order:3;flex-basis:100%;}
+    .cal-title{grid-template-columns:1fr;}
+    .cal-title-cell{border-right:none;border-bottom:1px solid var(--line);}
   }
-  header.site h1{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
-    font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
+  @media (max-width:640px){
+    .cal-title-cell{padding:16px 16px 14px;}
+    .cal-title h1{font-size:56px;}
+    .cal-title .sub-long{display:none;}
+    .cal-title .sub-short{display:inline;}
+    .cal-readouts{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .cal-readout{min-width:0;padding:12px 12px 10px;}
+    .cal-readout:nth-child(3){border-right:none;}
+    .cal-readout.cal-readout-wide{display:none;}
+    .cal-readout b{font-size:32px;}
   }
-  /* The locked tagline ("THE CITY IS ON.") gets its own oversized display
-     treatment — same approved condensed grotesk already used for the
-     wordmark/headings, no new font. This is a typographic-hierarchy change
-     only: the words are unchanged (previously run into the description
-     sentence in lowercase), just presented at the scale/weight the tagline
-     is meant to carry as a locked brand asset, per the Detroit Signal
-     concept board's typographic energy. */
-  /* (No separate brand-dot here — the wordmark SVG itself already has a
-     built-in chartreuse dot; adding another produced a visible double-dot.) */
 
-  /* ---- Hero: photography + real TODAY data (replaces the removed
-     prototype "What this is" notice — brand + live current-day activity,
-     not explanatory copy). ---- */
-  /* No hero on this page — calendar.html is the dedicated calendar view;
-     the hero/headline/stat-panel treatment lives only on the homepage. */
+  /* ---- 2. the List ----
+     The day heading, column strip, rows and foot are the homepage stream's
+     own (site.css). The Calendar extends the heading with the view control
+     on its first day, and puts the day's counts beside the date. The
+     heading does NOT stick here yet: the sticky day heading is a later
+     slice (it sticks under the header, and on phone a compact bar sticks
+     instead). */
+  #calList{display:block;}
+  #calList[hidden]{display:none;}
+  #calList .list-day-heading{position:static;}
+  #calList .ldh-count{margin-left:0;}
+  .cal-view{order:4;margin-left:auto;display:flex;align-items:center;gap:10px;align-self:flex-end;}
+  .cal-view-label{font-family:var(--font-data);font-size:10px;font-weight:400;letter-spacing:.1em;color:var(--ink-soft);}
+  .cal-seg{display:inline-flex;border:1px solid var(--line);}
+  .cal-seg button{
+    border:none;border-right:1px solid var(--line);background:none;border-radius:0;cursor:pointer;
+    font-family:var(--font-data);font-size:10px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;
+    padding:7px 12px;line-height:1.2;color:var(--ink-soft);
+  }
+  .cal-seg button:last-child{border-right:none;}
+  .cal-seg button:hover{color:var(--ink);}
+  .cal-seg button.on{background:var(--accent);color:var(--on-accent);}
+  @media (max-width:640px){
+    .cal-view{flex:0 0 100%;order:-1;margin:0 0 10px;justify-content:flex-start;}
+    .cal-view-label{display:none;}
+  }
+  /* Loading: never blank, never fake — the readouts show "—" and the rows
+     reserve their height with the 1px rules only (no shimmer). */
+  .cal-pending-row{height:96px;border-top:1px solid var(--line);}
+  .cal-pending-row:first-child{border-top:none;}
+  /* Error: one line in the foot slot; the last good inventory stays. */
+  .cal-error{color:var(--ink-soft);}
+  .cal-retry{
+    border:none;background:none;padding:0;cursor:pointer;color:var(--accent);
+    font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .cal-retry:hover{color:var(--ink);}
+  /* Empty: honest zero — the query restated, and each way to widen it with
+     its real count. */
+  .cal-empty{padding:22px 0 18px;border-top:1px solid var(--ink);margin-top:6px;}
+  .cal-empty h2{margin:0;font-size:64px;color:var(--ink);}
+  .cal-empty-query{margin:12px 0 0;font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);}
+  .cal-empty-count{margin:6px 0 0;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .cal-widen{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .cal-widen button{
+    border:1px solid var(--line);background:none;color:var(--ink);border-radius:0;cursor:pointer;
+    padding:8px 12px;font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .cal-widen button:hover{border-color:var(--ink);}
+  .cal-widen button b{font-weight:400;color:var(--ink-soft);margin-left:6px;}
+  @media (max-width:640px){ .cal-empty h2{font-size:48px;} }
 
+  /* The legacy views are hidden in List. */
+  body.mode-list .controls, body.mode-list #calWrap, body.mode-list #mapView, body.mode-list #dayPanel{display:none;}
+
+  /* The shared sheets sit above Leaflet's panes on phone (Leaflet's own
+     panes reach z-index 700, so the homepage's 39/40 would put the legacy
+     Map on top of an open sheet — fixed 2026-09-02, kept here). */
+  @media (max-width:720px){
+    .sheet-backdrop{z-index:900;}
+    .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{z-index:901;}
+  }
+
+  /* ---- 3. LEGACY Month and Map views (unchanged, transition only) ---- */
+  /* Legacy Month toolbar (month paging + the Month / List / Map toggle). */
   .controls{
     display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
@@ -193,115 +177,7 @@
     border:none;background:var(--panel-alt);padding:7px 14px;font-size:13px;cursor:pointer;color:var(--ink-soft);
   }
   .view-toggle button.active{background:var(--accent);color:var(--on-accent);font-weight:700;}
-  #search{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;font-size:13.5px;min-width:200px;
-    background:var(--panel-alt);color:var(--ink);
-  }
-  #search::placeholder{color:var(--ink-dim);}
 
-  /* Discovery bar — time-range shortcuts. Deliberately styled like the
-     existing view-toggle/chip controls (ink-on-active, not chartreuse) —
-     the brief is explicit that Signal stays scarce and controls need
-     conventional usability, not brand theatrics. */
-  .discovery-bar{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
-  }
-  .when-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);
-    border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;
-  }
-  .when-btn:hover{background:var(--panel-hover);}
-  .when-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
-
-  /* Active-filter tray — one visible summary of whatever is currently
-     narrowing the event universe (time-range shortcut, free-only, search
-     text, a narrowed category set), each independently removable, per the
-     brief's "filter state must never be invisible" requirement. */
-  .active-filters{
-    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;
-  }
-  .af-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-  .af-chip{
-    display:flex;align-items:center;gap:6px;background:var(--panel-alt);border:1px solid var(--line);
-    border-radius:var(--radius);padding:5px 8px 5px 12px;font-size:12.5px;font-weight:600;color:var(--ink);
-  }
-  .af-chip button{
-    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
-    width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  }
-  .af-chip button:hover{background:var(--ink);color:var(--bg);}
-  .af-clear{
-    border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
-    font-size:12.5px;font-weight:600;cursor:pointer;
-  }
-
-  .filters{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;
-  }
-  .chip{
-    border:1px solid var(--line);background:var(--panel-alt);border-radius:var(--radius);padding:6px 12px;
-    font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink-soft);
-    user-select:none;
-  }
-  .chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  /* Selected/active state on every chip (Event Type dots included) is Signal
-     Chartreuse — the one color that always means "this is on," independent
-     of whichever per-category dot color the chip also carries. freeChip
-     below keeps its own distinct green for the same reason "Free only"
-     already had one before this pass. */
-  .chip.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:700;}
-  .chip.active .dot{outline:1.5px solid var(--on-accent);}
-  .chip#freeChip.active{background:#3fbf6a;border-color:#3fbf6a;color:#06210f;}
-  .chip#clearChip{color:#e07a72;border-color:#4a2a28;}
-
-  /* Location + radius bar — Phase 1 Chunk 3. Same restrained styling as the
-     discovery bar (ink-on-active, chartreuse reserved for state, not chrome). */
-  .location-bar{
-    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px;
-  }
-  .loc-control{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-  .loc-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
-  .loc-combo{position:relative;min-width:200px;}
-  #locInput{
-    border:1px solid var(--line);border-radius:var(--radius);padding:8px 30px 8px 12px;font-size:13.5px;width:100%;min-width:200px;
-    background:var(--panel-alt);color:var(--ink);
-  }
-  #locInput::placeholder{color:var(--ink-dim);}
-  .loc-clear-btn{
-    position:absolute;right:6px;top:50%;transform:translateY(-50%);
-    border:none;background:var(--panel-hover);color:var(--ink-soft);border-radius:50%;
-    width:20px;height:20px;font-size:11px;line-height:1;cursor:pointer;align-items:center;justify-content:center;display:flex;
-  }
-  .loc-clear-btn:hover{background:var(--ink);color:var(--bg);}
-  .loc-suggestions{
-    position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;max-height:280px;overflow-y:auto;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);
-  }
-  .loc-item{
-    padding:8px 12px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;
-    border-bottom:1px solid var(--line-soft);
-  }
-  .loc-item:last-child{border-bottom:none;}
-  .loc-item:hover, .loc-item.hl{background:var(--panel-hover);}
-  .loc-item-name{color:var(--ink);font-weight:600;}
-  .loc-item-type{color:var(--ink-dim);font-size:10.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
-  .loc-empty{padding:10px 12px;font-size:12.5px;color:var(--ink-dim);}
-  .loc-geo-btn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:var(--radius);
-    padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
-  }
-  .loc-geo-btn:hover:not(:disabled){background:var(--panel-hover);}
-  .loc-geo-btn:disabled{opacity:.6;cursor:default;}
-  .radius-group{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .radius-label{font-size:11.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-right:2px;}
-  .radius-chip{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink-soft);border-radius:var(--radius);
-    padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
-  }
-  .radius-chip:hover{background:var(--panel-hover);}
-  .radius-chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
-
-  /* Calendar grid */
   .cal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;}
   .cal-head{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:0;background:var(--panel-alt);border-bottom:1px solid var(--line);}
   .cal-head div{padding:9px 0;text-align:center;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -352,56 +228,49 @@
   #dayPanel h2{margin:0 0 12px;font-size:17px;display:flex;justify-content:space-between;align-items:center;}
   #dayPanel h2 button{border:none;background:none;font-size:14px;color:var(--ink-soft);cursor:pointer;}
 
-  .evt-row{
+  /* Legacy day-panel and city-rail rows (renamed lg-* 2026-10-08 so the
+     shared departure-board .evt-* rules in site.css cannot restyle them). */
+  .lg-row{
     display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;
   }
-  .evt-row:first-of-type{border-top:none;}
+  .lg-row:first-of-type{border-top:none;}
   /* Time promoted from muted-secondary to primary ink — the design doc's
      interface priority order is DATE → TIME → EVENT → PLACE → ..., so time
      leading the row in full-contrast ink (not chartreuse — that's reserved
      for state, not decoration) is a hierarchy correction, not new styling
      for its own sake. */
-  .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;font-weight:700;padding-top:2px;}
-  .evt-main{flex:1;}
-  /* Thumbnail (2026-09-04) — same "flex row inside .evt-main, only when an
+  .lg-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;font-weight:700;padding-top:2px;}
+  .lg-main{flex:1;}
+  /* Thumbnail (2026-09-04) — same "flex row inside .lg-main, only when an
      image exists" approach as index.html's identical addition; see that
      file's comment for the full reasoning. */
-  .evt-main-body{display:flex;gap:10px;align-items:flex-start;min-width:0;}
-  .evt-thumb{flex:0 0 auto;width:52px;height:52px;object-fit:cover;border-radius:var(--radius);background:var(--panel-alt);}
-  .evt-text{min-width:0;flex:1 1 auto;}
-  .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
+  .lg-body{display:flex;gap:10px;align-items:flex-start;min-width:0;}
+  .lg-thumb{flex:0 0 auto;width:52px;height:52px;object-fit:cover;border-radius:var(--radius);background:var(--panel-alt);}
+  .lg-text{min-width:0;flex:1 1 auto;}
+  .lg-title{font-size:15px;font-weight:800;margin-bottom:2px;}
   /* 2026-08-28: same title-link + description-excerpt treatment added to
      index.html — see that file's comments for the full reasoning. */
-  a.evt-title-link{color:inherit;text-decoration:none;}
-  a.evt-title-link:hover{text-decoration:underline;}
-  a.evt-venue-link{color:inherit;text-decoration:none;}
-  a.evt-venue-link:hover{text-decoration:underline;}
-  .evt-desc{
+  a.lg-title-link{color:inherit;text-decoration:none;}
+  a.lg-title-link:hover{text-decoration:underline;}
+  a.lg-venue-link{color:inherit;text-decoration:none;}
+  a.lg-venue-link:hover{text-decoration:underline;}
+  .lg-desc{
     font-size:12.5px;color:var(--ink-soft);line-height:1.4;margin:3px 0;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
-  .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .lg-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .tag{
     display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
     padding:2px 7px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;
   }
   .tag.free{background:#3fbf6a;}
   .tag.price{background:var(--panel-hover);color:var(--ink);}
-  .note{font-size:12px;color:#d1b34a;margin-top:3px;font-style:italic;}
-  .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
-  .evt-link:hover{text-decoration:underline;}
-  .evt-link::after{content:'→';}
+  .lg-main .note, .lg-row .note{font-size:12px;color:#d1b34a;margin-top:3px;font-style:italic;}
+  .lg-row .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
+  .lg-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
+  .lg-link:hover{text-decoration:underline;}
+  .lg-link::after{content:'→';}
 
-  /* List view */
-  #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
-  #listView.show{display:block;}
-
-  /* Map view (added 2026-08-28, Jody: "what if map was also a choice on the
-     list/calendar option?" — a third view-toggle tab alongside Month/List,
-     rather than only living on its own dedicated map.html page. This CSS
-     block, and the matching JS further down, is ported from map.html —
-     same class names on purpose, so both pages render identically. */
   #mapView{display:none;}
   #mapView.show{display:block;}
   .map-stat-line{font-size:12px;color:var(--ink-soft);margin:0 0 8px;}
@@ -493,148 +362,11 @@
     #leafletMap{width:100%;height:380px;flex:none;}
     .city-rail{width:100%;height:380px;flex:none;}
   }
-  .list-day-group{padding:18px 0 12px;border-top:2px solid var(--line);}
-  .list-day-group:first-child{border-top:none;padding-top:0;}
-  /* Sized up + brightened 2026-09-04 — same fix, same reasoning, as
-     index.html's .list-day-heading (see its comment there): a 13px dim
-     heading was too easy to scroll past unnoticed. */
-  .list-day-heading{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px;}
-  @media (max-width:640px){
-    .list-day-heading{font-size:17px;}
-  }
-  .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
-  .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
-  .es-action{
-    border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);border-radius:var(--radius);
-    padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
-  }
-  .es-action:hover{background:var(--panel-hover);}
-
-  footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
-  footer.site a{color:var(--ink-soft);}
-  footer.site p{margin:0 0 6px;}
-  footer.site p:last-child{margin-bottom:0;}
-  /* Footer + data-transparency amendment: a quiet, editorial link out to the
-     full methodology/status page, styled as a small uppercase label rather
-     than an inline sentence — the homepage stays slick, sources.html stays
-     the transparent one. */
-  /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
-     same quiet uppercase-label treatment as footer-sources/footer-social,
-     just a longer link list. */
-  footer.site .footer-links{font-size:11px;}
-  footer.site .footer-links a{
-    text-transform:uppercase;letter-spacing:.04em;font-size:10.5px;font-weight:700;
-    color:var(--ink-dim);text-decoration:none;
-  }
-  footer.site .footer-links a:hover{color:var(--ink-soft);text-decoration:underline;}
-  footer.site .footer-sources a, footer.site .footer-social a{
-    text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:700;
-    color:var(--ink-dim);text-decoration:none;
-  }
-  footer.site .footer-sources a:hover, footer.site .footer-social a:hover{color:var(--ink-soft);text-decoration:underline;}
-  footer.site .footer-credit{font-size:11px;color:var(--ink-dim);}
-  footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
-
   @media (max-width:720px){
     .day-cell{min-height:78px;}
     .pill{display:none;}
     .more-link{display:none;} /* redundant once .day-count shows the total */
     #monthLabel{min-width:0;}
-  }
-
-  /* ---- Unified discovery row (Homepage Redesign pass) ----
-     WHEN / WHERE / CATEGORY now render as one compact row of boxed
-     triggers at every breakpoint — each shows its current value and, when
-     clicked, expands the same underlying bar (same DOM/IDs/JS state that
-     powered the old always-open three-row layout) rather than replacing it
-     with new controls. Below 720px that expansion is the original fixed
-     bottom sheet (unchanged, proven mobile pattern). At 721px+ it expands
-     inline, directly under the trigger row, styled like a dropdown panel —
-     no new filtering logic anywhere, purely a presentation change. */
-  .discovery-shell{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:12px 14px;margin-bottom:10px;
-  }
-  .mobile-triggers{display:flex;gap:8px;}
-  .mobile-trigger{
-    flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-alt);color:var(--ink);
-    border-radius:var(--radius);padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;
-    display:flex;flex-direction:column;align-items:flex-start;gap:2px;
-  }
-  .mobile-trigger:hover{background:var(--panel-hover);}
-  .mobile-trigger .mt-label{
-    font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-dim);text-transform:uppercase;
-  }
-  .mobile-trigger .mt-sub{
-    font-size:13px;font-weight:700;color:var(--ink-soft);max-width:100%;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  }
-  .mobile-trigger .mt-sub::after{content:' \25be';font-size:10px;color:var(--ink-dim);} /* ▾ */
-  .mobile-trigger.has-value{border-color:var(--accent);}
-  .mobile-trigger.has-value .mt-sub{color:var(--ink);}
-  .mobile-trigger[aria-expanded="true"]{background:var(--panel-hover);border-color:var(--ink);}
-
-  .sheet-backdrop{display:none;}
-
-  /* Panels are hidden until their trigger opens them, at every breakpoint —
-     the always-open three-row layout they used to be is gone for good. */
-  .discovery-bar, .location-bar, .filters{display:none;}
-  .sheet-header{display:none;}
-  .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
-    display:flex;flex-direction:column;flex-wrap:nowrap;
-    background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-top:10px;
-  }
-  .discovery-bar.sheet-active .sheet-header,
-  .location-bar.sheet-active .sheet-header,
-  .filters.sheet-active .sheet-header{
-    display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
-    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
-  }
-  /* Once inside an open panel, the discovery/location/filter bars go back to
-     being a normal wrapping row of chips — same look they always had. */
-  .discovery-bar.sheet-active, .filters.sheet-active{flex-direction:row;flex-wrap:wrap;gap:8px;}
-  .location-bar.sheet-active{flex-direction:row;flex-wrap:wrap;gap:10px;align-items:center;}
-  .sheet-close{
-    border:none;background:var(--panel-hover);color:var(--ink);border-radius:50%;
-    width:26px;height:26px;font-size:12px;cursor:pointer;line-height:1;
-  }
-  .sheet-close:hover{background:var(--ink);color:var(--bg);}
-
-  @media (max-width:720px){
-    .discovery-shell{padding:10px 10px 0;background:none;border:none;}
-    .mobile-trigger{align-items:center;text-align:center;}
-    .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
-
-    .sheet-backdrop{
-      /* z-index 900+ (not the old 39/40) — Leaflet's own panes go up to
-         z-index:700 (tooltipPane) internally, and .leaflet-container never
-         establishes its own stacking context (Leaflet only sets
-         position:relative on it, no z-index), so those pane z-indices were
-         being compared directly against this sheet's old z-index:39/40 in
-         the shared root stacking context and winning. On a phone (this
-         media query), opening the When/Where/Category sheet while the Map
-         tab was active let the map render on top of the sheet instead of
-         under it — unreadable, functionally broken. Confirmed live
-         2026-09-02 (same bug fixed in map.html). Comfortably above
-         Leaflet's max (700) with headroom for anything else layered later.
-      */
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;
-    }
-    .sheet-backdrop.show{display:block;}
-
-    .discovery-bar.sheet-active, .location-bar.sheet-active, .filters.sheet-active{
-      flex-direction:column;flex-wrap:nowrap;
-      position:fixed;left:0;right:0;bottom:0;z-index:901;
-      border-bottom:none;
-      border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.5);
-      padding:16px 16px calc(16px + env(safe-area-inset-bottom));
-      max-height:75vh;overflow-y:auto;margin:10px 0 0;
-    }
-    /* Radius/location controls stack full-width inside the sheet rather
-       than trying to fit the desktop's side-by-side row. */
-    .location-bar.sheet-active .loc-control{flex-direction:column;align-items:stretch;}
-    .location-bar.sheet-active .loc-combo{min-width:0;width:100%;}
   }
 </style>
 <!-- Leaflet (Map view, added 2026-08-28 — see the "Detroit Orbit Map" view-toggle
@@ -643,9 +375,10 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
+<script src="/discovery.js"></script>
 <script src="/config.js"></script>
 </head>
-<body>
+<body class="mode-list">
 <div class="wrap">
 
   <header class="site">
@@ -655,29 +388,43 @@
       </a></h1>
     </div>
     <nav class="site-nav" aria-label="Time range and browse">
-      <!-- Reuses the existing .when-btn/data-when/activateWhen() machinery
-           (see the discovery bar's own Now/Today/Tonight/This Weekend/Date
-           buttons below) — clicking these keeps them in sync via the shared
-           updateWhenButtons(), since both sets share the .when-btn class.
-           "NOW" here maps to whenMode 'today' (all of today, unnarrowed) per
-           Jody's definition — distinct from the sheet's own "Now" button,
-           which still narrows to the remaining hours today. -->
-      <button type="button" class="when-btn" data-when="today">Now</button>
+      <button type="button" class="site-nav-link" id="todayNavBtn">Today</button>
       <button type="button" class="when-btn" data-when="tonight">Tonight</button>
+      <button type="button" class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button type="button" class="when-btn" data-when="weekend">This Weekend</button>
-      <a class="site-nav-link current" href="calendar.html" aria-current="page">Calendar</a>
-      <a class="site-nav-link" href="map.html">Map</a>
+      <a class="site-nav-link current" href="calendar.html" data-surface="calendar" aria-current="page">Calendar</a>
+      <a class="site-nav-link" href="map.html" data-surface="map">Map</a>
       <a class="site-nav-link" href="venues.html">Venues</a>
+      <a class="site-nav-link" href="neighborhoods.html">Neighborhoods</a>
       <button type="button" class="site-nav-link" id="browseBtn">Browse</button>
     </nav>
     <div style="display:flex;align-items:center;gap:18px;flex-shrink:0;">
       <button type="button" class="nav-search-btn" id="navSearchBtn" aria-label="Search events and venues">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
       </button>
-      <a href="submit.html" style="display:inline-block;background:none;border:1.5px solid var(--accent);color:var(--accent);text-decoration:none;font-family:'Inter',-apple-system,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:8px 16px;border-radius:var(--radius);white-space:nowrap;">Submit Event</a>
+      <a href="submit.html" style="display:inline-block;background:var(--accent);border:1px solid var(--accent);color:var(--on-accent);text-decoration:none;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:0;white-space:nowrap;">Submit Event</a>
     </div>
   </header>
 
+  <!-- The surface title and its live readouts: the homepage hero's proof
+       grammar (a big number, a mono caption). Counts are of the current
+       WHERE / WHAT / SEARCH, never hard-coded, never chartreuse. "Active
+       cities" from the Calendar FINAL board is withheld (DEC-026). -->
+  <section class="cal-title" aria-label="Calendar">
+    <div class="cal-title-cell">
+      <h1 class="disp">Calendar</h1>
+      <p><span class="sub-long">When is the city on? &middot; Everything current and upcoming across the Detroit Orbit, in date order</span><span class="sub-short">When is the city on? &middot; Everything, in date order</span></p>
+    </div>
+    <div class="cal-readouts" id="calReadouts">
+      <div class="cal-readout"><b id="roTotal" class="is-pending">&mdash;</b><span>Current + upcoming</span></div>
+      <div class="cal-readout"><b id="roToday" class="is-pending">&mdash;</b><span>Today</span></div>
+      <div class="cal-readout"><b id="roNext7" class="is-pending">&mdash;</b><span>Next 7 days</span></div>
+      <div class="cal-readout cal-readout-wide"><b id="roHoods" class="is-pending">&mdash;</b><span>Active neighborhoods</span></div>
+    </div>
+  </section>
+
+  <!-- The same discovery board as the homepage: same markup, same state,
+       same URL. -->
   <div class="discovery-shell" id="discoveryShell">
     <div class="mobile-triggers" id="mobileTriggers">
       <button type="button" class="mobile-trigger" id="whenTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="discoveryBar">
@@ -687,18 +434,31 @@
         <span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <span class="mt-label">Category</span><span class="mt-sub" id="filterTriggerSub">All types</span>
+        <span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All types</span>
       </button>
+      <label class="search-field" for="search">
+        <span class="mt-label">Search</span>
+        <input type="text" id="search" aria-label="Search events, venues, or neighborhoods" placeholder="Events, venues, neighborhoods&hellip;">
+      </label>
     </div>
     <div class="sheet-backdrop" id="sheetBackdrop"></div>
 
     <div class="discovery-bar" id="discoveryBar" role="group" aria-label="Jump to a time range">
       <div class="sheet-header"><span>When</span><button type="button" class="sheet-close" aria-label="Close">&#10005;</button></div>
-      <button class="when-btn" data-when="now">Now</button>
-      <button class="when-btn" data-when="today">Today</button>
       <button class="when-btn" data-when="tonight">Tonight</button>
+      <button class="when-btn" data-when="tomorrow">Tomorrow</button>
       <button class="when-btn" data-when="weekend">This Weekend</button>
-      <button class="when-btn" data-when="date">Date</button>
+      <button class="when-btn" data-when="all">All Upcoming</button>
+      <div class="when-date-range">
+        <label class="when-date-picker" for="whenDateInput">
+          <span>From</span>
+          <input type="date" id="whenDateInput" aria-label="Jump to a specific date, or start of a date range">
+        </label>
+        <label class="when-date-picker" for="whenDateEndInput">
+          <span>To <span class="when-date-optional">(optional)</span></span>
+          <input type="date" id="whenDateEndInput" aria-label="End of date range (optional)">
+        </label>
+      </div>
     </div>
 
     <div class="location-bar" id="locationBar" role="group" aria-label="Filter by location and distance">
@@ -726,21 +486,27 @@
     <div class="filters" id="filterBar"></div>
   </div>
 
-  <div class="controls">
+  <div class="active-filters" id="activeFilters" style="display:none;"></div>
+
+  <!-- LIST — the default view: one chronological stream of everything the
+       query matches, from today on, in the homepage's departure-board rows.
+       Written by renderCalList(). -->
+  <div class="stream" id="calList"></div>
+
+  <!-- LEGACY Month / Map toolbar — shown only in view=month and view=map,
+       which keep working unchanged during the transition. -->
+  <div class="controls" id="legacyControls">
     <div class="nav-group" id="monthNavGroup">
       <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
       <div id="monthLabel">August 2026</div>
       <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
     </div>
-    <input type="text" id="search" aria-label="Search events or venues" placeholder="Search events, venues&hellip;">
     <div class="view-toggle">
       <button id="monthViewBtn" class="active">Month</button>
       <button id="listViewBtn">List</button>
       <button id="mapViewBtn">Map</button>
     </div>
   </div>
-
-  <div class="active-filters" id="activeFilters" style="display:none;"></div>
 
   <div class="cal" id="calWrap">
     <div class="cal-head">
@@ -749,7 +515,6 @@
     <div class="cal-grid" id="calGrid"></div>
   </div>
 
-  <div id="listView"></div>
 
   <!-- Map view (2026-08-28) — same #leafletMap/#cityRail structure as the
        dedicated map.html page, reused verbatim so a visitor sees the exact
@@ -785,23 +550,49 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
+// ---- Discovery: shared rules, this page's presentation ----
+// What discovery MEANS on 313.events — the category list, the places table,
+// the Detroit Orbit, what "today" is, the date rules, search, the
+// blocked-names list, which events match which filters, and how filters are
+// written into and read out of a URL — is defined once, in /discovery.js
+// (loaded in <head>), and shared with the homepage and the map. See DEC-022
+// and that file's header. This page used to carry its own copy of all of it
+// (CATS labels, LOCATIONS, CITY_LOOKUP, haversineMiles, BLOCKED_NAMES,
+// FEATURE_CHIPS, parseHour, getWeekendDates, matchesFilters,
+// syncURL()/readStateFromURL()) and the copies had drifted. Those copies are
+// gone (2026-10-05). What stays here is what is genuinely this page's own:
+// layout, copy, colour, fetching, rendering and VIEW state (month vs list vs
+// map, the month being browsed, the day panel). The page holds ONE filter
+// state (`state`, below), changes it only through Discovery.change(), and
+// asks Discovery what matches. Do not re-add a local copy of a rule — change
+// discovery.js.
+//
+// Category keys, labels and order come from Discovery.categories; the colour
+// per category is presentation and stays here.
+const CAT_COLORS = {
+  music:    "var(--c-music)",
+  theatre:  "var(--c-theatre)",
+  dance:    "var(--c-dance)",
+  visual:   "var(--c-visual)",
+  museum:   "var(--c-museum)",
+  family:   "var(--c-family)",
+  fest:     "var(--c-fest)",
+  food:     "var(--c-food)",
+  film:     "var(--c-film)",
+  nightlife:"var(--c-night)",
+  sports:   "var(--c-sports)",
+  community:"var(--c-community)",
+  vendor:   "var(--c-vendor)",
+  training: "var(--c-training)",
+  gaming:   "var(--c-gaming)"
 };
+const CATS = {};
+Discovery.categories.forEach(c => {
+  CATS[c.key] = {label: c.label, color: CAT_COLORS[c.key] || "var(--ink-soft)"};
+});
+
+// "Today" as a state, for getTodayISO() (further down).
+const TODAY_STATE = Discovery.change(Discovery.defaults(), {when: 'today'});
 
 // Literal-hex mirror of the --c-* tokens above, for the one spot that can't
 // use a CSS var(): Leaflet's SVG renderer sets marker color as a raw
@@ -834,146 +625,12 @@ function dominantCategory(events){
   return best;
 }
 
-// ---- Location reference data (Phase 1 Chunk 3) ----
-// Static, hand-curated dataset backing predictive location search and
-// city-level radius filtering — see DISCOVERY_PHASE1_AUDIT.md §2/§3 for the
-// full reasoning. No geocoding API, no per-venue backfill: this alone covers
-// autocomplete and city-level distance math. Two tiers:
-//   - type:'neighborhood' — Detroit's 39 named areas (Detroit-only by
-//     design; see SERVICE_AREA.md's "Neighborhood scope — resolved" note).
-//     Selectable as a search origin only — events don't carry neighborhood
-//     data yet (the venue_id gap, see audit §1), so these never match an
-//     event's own location, only the chosen "from here" point.
-//   - type:'city' — every city SERVICE_AREA.md names as inside the 75-mile
-//     boundary, plus a supplementary set of well-known Detroit-metro
-//     suburbs (all comfortably inside 75mi already) added so real
-//     venue_city_raw values — which come straight from Ticketmaster's own
-//     venue data and can legitimately be any city in the region — have a
-//     real chance of resolving to coordinates. Only this tier is matched
-//     against event data; see CITY_LOOKUP below.
-// Coordinates are hand-sourced city-centroid estimates, not survey-grade —
-// entirely adequate for bucketing into 5/10/25/50/75-mile rings, not meant
-// for turn-by-turn precision. Re-derivable/correctable independently of
-// event data since this ships as a plain static list, not a migration.
-const LOCATIONS = [
-  {name:"Detroit", type:"city", region:"Michigan", lat:42.3314, lng:-83.0458},
-
-  // --- Detroit neighborhoods (39) — see migration_002_neighborhoods_and_organizers.sql ---
-  {name:"Downtown", type:"neighborhood", region:"Detroit", lat:42.3316, lng:-83.0466},
-  {name:"Midtown", type:"neighborhood", region:"Detroit", lat:42.3536, lng:-83.0666},
-  {name:"New Center", type:"neighborhood", region:"Detroit", lat:42.3707, lng:-83.0710},
-  {name:"Corktown", type:"neighborhood", region:"Detroit", lat:42.3308, lng:-83.0680},
-  {name:"North Corktown", type:"neighborhood", region:"Detroit", lat:42.3385, lng:-83.0710},
-  {name:"Core City", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-83.0790},
-  {name:"Woodbridge", type:"neighborhood", region:"Detroit", lat:42.3480, lng:-83.0790},
-  {name:"Eastern Market", type:"neighborhood", region:"Detroit", lat:42.3459, lng:-83.0416},
-  {name:"Brush Park", type:"neighborhood", region:"Detroit", lat:42.3435, lng:-83.0530},
-  {name:"Lafayette Park", type:"neighborhood", region:"Detroit", lat:42.3350, lng:-83.0290},
-  {name:"Rivertown", type:"neighborhood", region:"Detroit", lat:42.3395, lng:-83.0180},
-  {name:"Indian Village", type:"neighborhood", region:"Detroit", lat:42.3660, lng:-82.9840},
-  {name:"West Village", type:"neighborhood", region:"Detroit", lat:42.3610, lng:-82.9910},
-  {name:"Islandview", type:"neighborhood", region:"Detroit", lat:42.3630, lng:-82.9950},
-  {name:"Milwaukee Junction", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0570},
-  {name:"North End", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.0660},
-  {name:"Poletown East", type:"neighborhood", region:"Detroit", lat:42.3730, lng:-83.0330},
-  {name:"Jefferson-Chalmers", type:"neighborhood", region:"Detroit", lat:42.4000, lng:-82.9350},
-  {name:"Belle Isle", type:"neighborhood", region:"Detroit", lat:42.3390, lng:-82.9700},
-  {name:"Morningside", type:"neighborhood", region:"Detroit", lat:42.4070, lng:-82.9550},
-  {name:"East English Village", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-82.9420},
-  {name:"Boston-Edison", type:"neighborhood", region:"Detroit", lat:42.3800, lng:-83.1010},
-  {name:"Arden Park-East Boston", type:"neighborhood", region:"Detroit", lat:42.3830, lng:-83.0900},
-  {name:"University District", type:"neighborhood", region:"Detroit", lat:42.4150, lng:-83.1350},
-  {name:"Palmer Park", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1350},
-  {name:"Palmer Woods", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1400},
-  {name:"Sherwood Forest", type:"neighborhood", region:"Detroit", lat:42.4270, lng:-83.1470},
-  {name:"Bagley", type:"neighborhood", region:"Detroit", lat:42.4180, lng:-83.1500},
-  {name:"Russell Woods", type:"neighborhood", region:"Detroit", lat:42.3860, lng:-83.1450},
-  {name:"Fitzgerald", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.1670},
-  {name:"Grandmont-Rosedale", type:"neighborhood", region:"Detroit", lat:42.4080, lng:-83.2000},
-  {name:"Old Redford", type:"neighborhood", region:"Detroit", lat:42.4090, lng:-83.2260},
-  {name:"Warrendale", type:"neighborhood", region:"Detroit", lat:42.3670, lng:-83.2100},
-  {name:"Brightmoor", type:"neighborhood", region:"Detroit", lat:42.4020, lng:-83.2350},
-  {name:"Mexicantown / Southwest Detroit", type:"neighborhood", region:"Detroit", lat:42.3210, lng:-83.0940},
-  {name:"Springwells", type:"neighborhood", region:"Detroit", lat:42.3110, lng:-83.1170},
-  {name:"Delray", type:"neighborhood", region:"Detroit", lat:42.2900, lng:-83.1180},
-  {name:"Dexter-Fenkell", type:"neighborhood", region:"Detroit", lat:42.3870, lng:-83.1560},
-  {name:"Wildemere Park", type:"neighborhood", region:"Detroit", lat:42.3760, lng:-83.1290},
-
-  // --- SERVICE_AREA.md cities (75-mile boundary), nearest to farthest ---
-  {name:"Windsor", type:"city", region:"Ontario", lat:42.3149, lng:-83.0364},
-  {name:"Bloomfield Hills", type:"city", region:"Michigan", lat:42.5836, lng:-83.2455},
-  {name:"Rochester", type:"city", region:"Michigan", lat:42.6806, lng:-83.1341},
-  {name:"Pontiac", type:"city", region:"Michigan", lat:42.6389, lng:-83.2910},
-  {name:"Ypsilanti", type:"city", region:"Michigan", lat:42.2411, lng:-83.6130},
-  {name:"Milford", type:"city", region:"Michigan", lat:42.5926, lng:-83.6002},
-  {name:"Clarkston", type:"city", region:"Michigan", lat:42.7364, lng:-83.4199},
-  {name:"Monroe", type:"city", region:"Michigan", lat:41.9164, lng:-83.3977},
-  {name:"Ann Arbor", type:"city", region:"Michigan", lat:42.2808, lng:-83.7430},
-  {name:"Brighton", type:"city", region:"Michigan", lat:42.5297, lng:-83.7796},
-  {name:"Chatham", type:"city", region:"Ontario", lat:42.4048, lng:-82.1910},
-  {name:"Fenton", type:"city", region:"Michigan", lat:42.7970, lng:-83.7054},
-  {name:"Howell", type:"city", region:"Michigan", lat:42.6072, lng:-83.9294},
-  {name:"Toledo", type:"city", region:"Ohio", lat:41.6528, lng:-83.5379},
-  {name:"Port Huron", type:"city", region:"Michigan", lat:42.9709, lng:-82.4252},
-  {name:"Sarnia", type:"city", region:"Ontario", lat:42.9748, lng:-82.4066},
-  {name:"Flint", type:"city", region:"Michigan", lat:43.0125, lng:-83.6875},
-  {name:"Adrian", type:"city", region:"Michigan", lat:41.8975, lng:-84.0372},
-  {name:"Jackson", type:"city", region:"Michigan", lat:42.2459, lng:-84.4013},
-  {name:"Owosso", type:"city", region:"Michigan", lat:42.9964, lng:-84.1783},
-
-  // --- Supplementary Detroit-metro suburbs (added for venue-city match
-  // coverage beyond the SERVICE_AREA.md boundary-illustration list above —
-  // all comfortably inside the 75-mile radius already established there) ---
-  {name:"Hamtramck", type:"city", region:"Michigan", lat:42.3922, lng:-83.0497},
-  {name:"Highland Park", type:"city", region:"Michigan", lat:42.4054, lng:-83.0997},
-  {name:"Dearborn", type:"city", region:"Michigan", lat:42.3223, lng:-83.1763},
-  {name:"Dearborn Heights", type:"city", region:"Michigan", lat:42.3373, lng:-83.2733},
-  {name:"Ferndale", type:"city", region:"Michigan", lat:42.4606, lng:-83.1344},
-  {name:"Royal Oak", type:"city", region:"Michigan", lat:42.4895, lng:-83.1446},
-  {name:"Berkley", type:"city", region:"Michigan", lat:42.5023, lng:-83.1838},
-  {name:"Oak Park", type:"city", region:"Michigan", lat:42.4595, lng:-83.1830},
-  {name:"Southfield", type:"city", region:"Michigan", lat:42.4734, lng:-83.2219},
-  {name:"Birmingham", type:"city", region:"Michigan", lat:42.5467, lng:-83.2113},
-  {name:"Troy", type:"city", region:"Michigan", lat:42.6064, lng:-83.1499},
-  {name:"Sterling Heights", type:"city", region:"Michigan", lat:42.5803, lng:-83.0302},
-  {name:"Warren", type:"city", region:"Michigan", lat:42.5145, lng:-83.0147},
-  {name:"Madison Heights", type:"city", region:"Michigan", lat:42.5292, lng:-83.1057},
-  {name:"Auburn Hills", type:"city", region:"Michigan", lat:42.6875, lng:-83.2341},
-  {name:"Rochester Hills", type:"city", region:"Michigan", lat:42.6583, lng:-83.1499},
-  {name:"Waterford", type:"city", region:"Michigan", lat:42.6892, lng:-83.3585},
-  {name:"Novi", type:"city", region:"Michigan", lat:42.4806, lng:-83.4755},
-  {name:"Farmington Hills", type:"city", region:"Michigan", lat:42.4989, lng:-83.3677},
-  {name:"Livonia", type:"city", region:"Michigan", lat:42.3684, lng:-83.3527},
-  {name:"Westland", type:"city", region:"Michigan", lat:42.3242, lng:-83.4002},
-  {name:"Taylor", type:"city", region:"Michigan", lat:42.2409, lng:-83.2699},
-  {name:"Lincoln Park", type:"city", region:"Michigan", lat:42.2506, lng:-83.1785},
-  {name:"Wyandotte", type:"city", region:"Michigan", lat:42.2142, lng:-83.1499},
-  {name:"Grosse Pointe", type:"city", region:"Michigan", lat:42.3861, lng:-82.9116},
-  {name:"St. Clair Shores", type:"city", region:"Michigan", lat:42.4970, lng:-82.8888},
-  {name:"Roseville", type:"city", region:"Michigan", lat:42.4973, lng:-82.9371},
-  {name:"Eastpointe", type:"city", region:"Michigan", lat:42.4670, lng:-82.9560},
-  {name:"Utica", type:"city", region:"Michigan", lat:42.6264, lng:-83.0341},
-  {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
-  {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
-  {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
-];
-
-// Only cities are matched against event data (venue_city_raw) — neighborhoods
-// are origin-only, see the note above LOCATIONS.
+// City centroids for the map view's fallback pin: the shared places table
+// (Discovery.places), indexed by lower-cased city name. Neighborhoods are
+// origin-only and are never matched against an event's own city.
 const CITY_LOOKUP = new Map(
-  LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
+  Discovery.places.filter(p => p.type === 'city').map(p => [p.name.toLowerCase(), p])
 );
-
-// Great-circle distance in miles — matches the method used to derive
-// SERVICE_AREA.md's own boundary table, so radius math stays consistent
-// with the reasoning that document already documents.
-function haversineMiles(lat1, lng1, lat2, lng2){
-  const R = 3958.8;
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
-  return R * 2 * Math.asin(Math.sqrt(a));
-}
 
 // Real, sourced Detroit events, Aug 19 - Oct 31 2026.
 // date: YYYY-MM-DD. time: display string. free: boolean. note: optional caveat.
@@ -1225,103 +882,62 @@ const MIN_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStar
 const MAX_MONTH = new Date(_navTodayMonthStart.getFullYear(), _navTodayMonthStart.getMonth() + 12, 1);
 let current = new Date(_navTodayMonthStart);
 
-// Hard content block: events matching any name on this list are excluded
-// from every view (calendar, list, Today strip) regardless of source —
-// checked against the event title and note/description, case-insensitively.
-// This is a manual, always-on suppression list independent of the normal
-// category/free/search/when filters. Add additional blocked names as
-// simple strings.
-const BLOCKED_NAMES = ["Augustus Williams"];
-function isBlockedEvent(e){
-  return BLOCKED_NAMES.some(name => {
-    const n = name.toLowerCase();
-    return e.title && e.title.toLowerCase().includes(n);
-  });
+// The chips shown are Discovery's DERIVED features. 'radar' (On the Radar)
+// needs press-coverage data that only the homepage loads, so this page does
+// not offer the chip; a link that carries it still round-trips (the state
+// keeps it and the Showing: tray lists it, removable).
+const FEATURE_CHIPS = Discovery.features.filter(f => f.kind === 'derived' && f.key !== 'radar');
+
+// The ONE filter state: { when, where, what, q }, frozen, changed only by
+// setState(patch) -> Discovery.change(). It replaces what used to be eight
+// separate globals (activeCats, freeOnly, activeFeatures, query, whenMode,
+// cachedWeekendDates, originLocation, radiusMiles). Returns true if anything
+// actually changed.
+let state = Discovery.defaults();
+function setState(patch){
+  const next = Discovery.change(state, patch);
+  const changed = next !== state;
+  state = next;
+  return changed;
 }
 
-// Secondary "Features" filters — ported from index.html's own FEATURE_CHIPS
-// (added 2026-08-28, see that file's comment for the full reasoning: a
-// scoped, on-brand answer to Metro Times-style Category/Region/Features
-// filters, limited to fields the audit doc's Section 7 data table already
-// calls "solid"). Deliberately 3 of index.html's 4 here, not 4 — 'radar'
-// (On the Radar) depends on editorialByEvent, which only index.html builds
-// (the "As seen in" / On the Radar sidebar integration doesn't exist on
-// this page); porting that whole fetch+widget just to support one filter
-// chip is out of scope for this change.
-const FEATURE_CHIPS = [
-  { key: 'tickets', label: 'Tickets available' },
-  { key: 'photo', label: 'Has photo' },
-  { key: 'submitted', label: 'Community submitted' },
-];
+// What Discovery needs to know about this surface and this moment. Calendar
+// browses history: with no When chosen, past dates stay visible (includePast);
+// once a When is chosen it means what it means everywhere else (today onward).
+function discoveryCtx(){
+  // The List starts today (locked Calendar rule: WHEN = Anytime means today
+  // onward). The legacy Month and Map views keep browsing history when no
+  // When is chosen, as they always have.
+  return {now: new Date(), defaultWhen: 'all', includePast: mode !== 'list' && state.when.mode === null};
+}
 
-let activeCats = new Set(Object.keys(CATS));
-let freeOnly = false;
-// Zero or more of FEATURE_CHIPS' keys, AND'd with every other filter
-// dimension — same semantics as index.html's activeFeatures.
-let activeFeatures = new Set();
-let query = "";
-let mode = "month"; // month | list
-// Active time-range shortcut from the discovery bar: null | 'now' | 'today' |
-// 'tonight' | 'weekend'. Independent of category/free/search filters — see
-// matchesFilters() below, which combines all of them.
-let whenMode = null;
-// Populated only while whenMode === 'weekend' — the 3 ISO dates (Fri/Sat/Sun)
-// currently in scope. Recomputed each time weekend mode is (re)activated,
-// not on every render, since "this weekend" only changes at midnight.
-let cachedWeekendDates = [];
+// The chosen "from here" point in the shape the location controls use: a
+// place from Discovery.places, or the visitor's own device location (never
+// written to the URL). null when no origin is set.
+function originLocation(){
+  if(state.where.here) return {name: 'Your location', type: 'here', region: '', lat: state.where.here.lat, lng: state.where.here.lng};
+  if(state.where.place) return Discovery.places.find(p => p.name === state.where.place) || null;
+  return null;
+}
+
+// VIEW state — not Discovery's. Which month is browsed, which day's panel is
+// open and which view (month | list | map) is showing are this page's own
+// position; they are never part of the shared query.
+let mode = "list"; // list (the default) | month | map — the legacy Month and Map views stay during the transition
 let selectedDate = null;
-// originLocation: the chosen search-radius origin — {name, type, region,
-// lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
-// null means no location filter is active at all.
-let originLocation = null;
-// radiusMiles: 5/10/25/50 (number) or 'all' — labeled "Detroit Orbit" in the
-// UI, this is the widest tier and the default. It is NOT narrowed by
-// whatever origin the user searched (that's what makes it the widest tier),
-// but matchesFilters() still hard-caps it at 75 miles from Detroit's own
-// city center specifically — the fixed definition of the Detroit Orbit
-// boundary, per SERVICE_AREA.md — so results can never drift outside the
-// site's real coverage area regardless of the chosen origin. A separate
-// literal "75 mi" option (measured from the user's origin, like the other
-// numeric tiers) used to exist alongside it, which was a redundant way of
-// saying almost the same boundary twice; removed 2026-08-26 in favor of
-// "Detroit Orbit" being the one Detroit-anchored 75-mile option. Only
-// meaningful while originLocation is set.
-let radiusMiles = null;
 
 function fmtMonth(d){ return d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 
-// Uses local date components (not toISOString(), which is UTC) — same
-// reasoning as renderMonth()'s own todayISO: Detroit is UTC-4/-5, so late
-// evening through midnight local time would otherwise read as tomorrow.
+// "Today" is the date in Detroit (America/Detroit), from Discovery — the
+// same "today" every filter on every surface uses — not the visitor's clock.
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-// Best-effort parse of the free-text time_display field ("7:30 PM",
-// "12:00–3:00 PM", "Evening", "3:00 & 7:00 PM"...) into a 24h hour number.
-// This is a soft convenience signal for the NOW/TONIGHT shortcuts, not
-// authoritative scheduling data — see DISCOVERY_PHASE1_AUDIT.md. For a
-// range like "12:00–3:00 PM" this returns whichever time the regex finds
-// first (often the end of the range, since the start half usually has no
-// AM/PM of its own) — good enough to classify "roughly when", not precise
-// enough for anything that needs a real start time. Returns null when
-// nothing parseable is found; callers decide how to treat that.
-function parseHour(timeStr){
-  if(!timeStr) return null;
-  if(/evening/i.test(timeStr)) return 19;
-  const m = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-  if(!m) return null;
-  let hour = parseInt(m[1],10) % 12;
-  if(/PM/i.test(m[3])) hour += 12;
-  return hour;
+  return Discovery.window(TODAY_STATE, {now: new Date()}).from;
 }
 
 // Parses ALL AM/PM clock times out of time_display, not just the first —
 // used by the NOW quick filter below to find an event's actual END time
-// (parseHour() above only ever returns one number, so it can't tell start
-// from end). Ported from index.html's own parseTimeRange() (added
+// (a bare start hour can't tell start from end). Ported from index.html's own parseTimeRange() (added
 // 2026-08-28 for the same "hides too soon" fix there) rather than
 // duplicated-and-drifted — same regex, same {start,end} shape, same
 // "second match, if any, is the end" convention as every other time string
@@ -1374,94 +990,21 @@ function timeSortMinutes(timeStr){
   return range ? range.start.h*60 + range.start.m : Infinity;
 }
 
-// "This weekend" = the Friday/Saturday/Sunday currently in progress or the
-// next upcoming one — never a weekend that's already fully over. Returns 3
-// ISO date strings.
-function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay(); // 0=Sun..6=Sat
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
-  return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
-  });
+// Which events this page shows is Discovery.matches(event, state, ctx) — the
+// blocked-names list and every filter rule live there. These two helpers only
+// apply it to this page's shapes.
+function inView(list){
+  const ctx = discoveryCtx();
+  return list.filter(e => Discovery.matches(e, state, ctx));
 }
-
-function matchesFilters(e){
-  if(isBlockedEvent(e)) return false;
-  if(!activeCats.has(e.cat)) return false;
-  if(freeOnly && !e.free) return false;
-  // FEATURE_CHIPS filters — see their declaration above for the reasoning.
-  if(activeFeatures.has('tickets') && !e.ticketUrl) return false;
-  if(activeFeatures.has('photo') && !e.imageUrl) return false;
-  if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
-  if(query){
-    const q = query.toLowerCase();
-    if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
-  }
-  if(whenMode){
-    const todayIso = getTodayISO();
-    if(whenMode === 'weekend'){
-      if(!cachedWeekendDates.includes(e.date)) return false;
-    } else {
-      // now / today / tonight are all "today", narrowed further below
-      if(e.date !== todayIso) return false;
-      if(whenMode === 'now'){
-        // Same fix applied to index.html's default list view (Jody,
-        // 2026-08-28: "just because it began already doesn't mean the user
-        // cannot still go or be interested"). This used to hide an event
-        // the moment its START hour passed, even if it was still ongoing
-        // (a 6-10pm show vanished from NOW at 7pm). Now it only excludes
-        // once the event's own parsed END time has passed. An event with
-        // no parseable end (a bare start time, or a vague string like
-        // "Evening") has no cutoff at all and stays included — NOW is a
-        // safety net ("what's still ahead / still happening"), not a
-        // deliberate narrowing, so an unknown time should never silently
-        // disappear from it.
-        const range = parseTimeRange(e.time);
-        if(range && range.end && range.end.h >= range.start.h){
-          // The >= guard skips a range that crosses midnight (e.g.
-          // 10pm-2am): still legitimately "now" all the way through.
-          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
-          const endHour = range.end.h + range.end.m/60;
-          if(endHour < nowHour) return false;
-        }
-      } else if(whenMode === 'tonight'){
-        // Unlike NOW, TONIGHT *is* a deliberate narrowing — an event with no
-        // parseable time isn't confidently "tonight", so it's excluded here
-        // rather than guessed at.
-        const hr = parseHour(e.time);
-        if(hr === null || hr < 17) return false;
-      }
-    }
-  }
-  if(originLocation && radiusMiles !== null){
-    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
-    // An event whose city isn't in the reference table has no resolvable
-    // distance from the chosen origin — excluded rather than guessed at,
-    // the same "deliberate narrowing over silent inclusion" call made for
-    // TONIGHT above (this is an active, opt-in radius filter, not a safety
-    // net like NOW).
-    if(!loc) return false;
-    if(radiusMiles === 'all'){
-      // Detroit Orbit: not narrowed by the chosen origin location itself
-      // (that's what makes it the widest tier), but still hard-capped at 75
-      // miles from Detroit's own city center — the fixed definition of the
-      // Detroit Orbit boundary — so results never drift outside the site's
-      // real coverage area no matter where the user searched from.
-      const detroit = CITY_LOOKUP.get('detroit');
-      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
-    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
-      return false;
-    }
-  }
-  return true;
+// A day's events: those that match, on a day inside the chosen When. (An
+// event matches as a whole, so a multi-day run would otherwise also appear
+// on its days outside, say, "Tomorrow".)
+function eventsOn(iso){
+  const w = Discovery.window(state, discoveryCtx());
+  if((w.from && iso < w.from) || (w.to && iso > w.to)) return [];
+  return inView(byDate[iso]||[]);
 }
-
-// (No isInDetroitOrbit()/renderHeroToday() on this page — that stat panel
-// backs the homepage hero, which doesn't exist here. See index.html.)
 
 function buildFilterBar(){
   const bar = document.getElementById('filterBar');
@@ -1474,7 +1017,7 @@ function buildFilterBar(){
   const header = document.createElement('div');
   header.className = 'sheet-header';
   const headerLabel = document.createElement('span');
-  headerLabel.textContent = 'Filter';
+  headerLabel.textContent = 'What';
   const headerClose = document.createElement('button');
   headerClose.type = 'button';
   headerClose.className = 'sheet-close';
@@ -1486,14 +1029,11 @@ function buildFilterBar(){
 
   // "All types" — a single, explicit way back to the unfiltered Event Type
   // state, distinct from "Reset filters" below (which also clears When,
-  // Where, and search). Active whenever every category is currently
-  // selected, i.e. nothing has actually been narrowed yet.
+  // Where, and search). Active whenever no category has been narrowed.
   const allChip = document.createElement('button');
   allChip.type = 'button';
-  const allActive = activeCats.size === Object.keys(CATS).length;
-  allChip.className = 'chip' + (allActive ? ' active' : '');
+  allChip.className = 'chip';
   allChip.id = 'allTypesChip';
-  allChip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
   // Taxonomy-lock amendment (2026-08-26 clarification): the preserved list is
   // "All types" (sentence case) plus the categories below, unchanged and
   // unreordered. The amendment is explicit that it locks the taxonomy only,
@@ -1504,8 +1044,7 @@ function buildFilterBar(){
   // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
   allChip.textContent = 'All types';
   allChip.onclick = ()=>{
-    activeCats = new Set(Object.keys(CATS));
-    buildFilterBar();
+    setState({what: {clear: true}});
     render();
   };
   bar.appendChild(allChip);
@@ -1513,51 +1052,38 @@ function buildFilterBar(){
   Object.entries(CATS).forEach(([key,c])=>{
     const chip = document.createElement('button');
     chip.type = 'button';
-    // Reflects actual activeCats state (not hardcoded active) — matters once
-    // state can also arrive from the URL or a "Clear All" that only clears
-    // some dimensions, not just from clicking chips one at a time.
-    chip.className = 'chip' + (activeCats.has(key) ? ' active' : '');
+    chip.className = 'chip';
     chip.dataset.cat = key;
-    chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
-    // Per-category dot restored per Jody's 2026-08-26 note: keep the color
-    // variety for scanability, just made cohesive (see the --c-* "UV signal"
-    // palette above). Active/selected state is still Signal Chartreuse only.
-    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    // Label only (2026-10-04): the per-category colour dot is gone — the
+    // locked design rules allow no category rainbow. A chip's only colour
+    // is Signal Chartreuse, when it is selected.
+    chip.textContent = c.label;
     chip.onclick = ()=>{
-      if(activeCats.has(key)){ activeCats.delete(key); chip.classList.remove('active'); }
-      else { activeCats.add(key); chip.classList.add('active'); }
-      chip.setAttribute('aria-pressed', activeCats.has(key) ? 'true' : 'false');
+      toggleCategory(key);
       render();
     };
     bar.appendChild(chip);
   });
   const freeChip = document.createElement('button');
   freeChip.type = 'button';
-  freeChip.className = 'chip' + (freeOnly ? ' active' : '');
+  freeChip.className = 'chip';
   freeChip.id = 'freeChip';
-  freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
-  freeChip.innerHTML = `<span class="dot" style="background:#16713a"></span>Free only`;
+  freeChip.textContent = 'Free only';
   freeChip.onclick = ()=>{
-    freeOnly = !freeOnly;
-    freeChip.classList.toggle('active');
-    freeChip.setAttribute('aria-pressed', freeOnly ? 'true' : 'false');
+    setState({free: !state.what.free});
     render();
   };
   bar.appendChild(freeChip);
 
-  // FEATURE_CHIPS row — plain text chips (no color dot), same treatment as
-  // the category chips' allChip/clearChip rather than the per-category dots.
+  // FEATURE_CHIPS row — plain text chips, like every other chip here.
   FEATURE_CHIPS.forEach(({key, label})=>{
     const chip = document.createElement('button');
     chip.type = 'button';
-    chip.className = 'chip' + (activeFeatures.has(key) ? ' active' : '');
+    chip.className = 'chip';
     chip.dataset.feature = key;
-    chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
     chip.textContent = label;
     chip.onclick = ()=>{
-      if(activeFeatures.has(key)){ activeFeatures.delete(key); chip.classList.remove('active'); }
-      else { activeFeatures.add(key); chip.classList.add('active'); }
-      chip.setAttribute('aria-pressed', activeFeatures.has(key) ? 'true' : 'false');
+      setState({feature: state.what.features.includes(key) ? {remove: key} : {add: key}});
       render();
     };
     bar.appendChild(chip);
@@ -1570,76 +1096,84 @@ function buildFilterBar(){
   clearChip.textContent = 'Reset filters';
   clearChip.onclick = ()=>{ clearAllFilters(); };
   bar.appendChild(clearChip);
+
+  syncFilterBar();
 }
 
-// Resets every discovery dimension at once: categories, free-only, search
-// text, and the when-shortcut. Used by both the category bar's "Reset
-// filters" chip and the active-filter tray's "Clear All", so there's exactly
-// one reset behavior instead of two subtly different ones. Also returns the
-// calendar to the current month (today) rather than leaving it wherever the
-// user had navigated to — a reset should feel like coming back to "now",
-// not just clearing filters on whatever month happens to be on screen.
+// Lights the chips from the state — called on every render(), so a change
+// from anywhere (a chip, the Showing: tray, a link) shows on the chips.
+function syncFilterBar(){
+  const bar = document.getElementById('filterBar');
+  if(!bar) return;
+  const selected = state.what.paths;
+  const all = selected.length === 0;
+  const light = (el, on)=>{
+    el.classList.toggle('active', on);
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  };
+  const allChip = document.getElementById('allTypesChip');
+  if(allChip) light(allChip, all);
+  bar.querySelectorAll('.chip[data-cat]').forEach(chip => light(chip, selected.includes(chip.dataset.cat)));
+  const freeChip = document.getElementById('freeChip');
+  if(freeChip) light(freeChip, state.what.free);
+  bar.querySelectorAll('.chip[data-feature]').forEach(chip => light(chip, state.what.features.includes(chip.dataset.feature)));
+}
+
+// Resets every discovery dimension at once (When, Where, What, search) —
+// the homepage's reset — and returns the legacy Month view to this month.
+// Used by "Reset filters", the tray's "Clear all", the empty state's
+// "Clear all" and the header's Browse.
 function clearAllFilters(){
-  activeCats = new Set(Object.keys(CATS));
-  freeOnly = false;
-  activeFeatures = new Set();
+  setState({reset: true});
   document.getElementById('search').value = '';
-  query = '';
-  whenMode = null;
+  setWhenInputs(getTodayISO(), ''); // Anytime's baseline "From" default — see initWhenDatePicker()
+  clearLocation({skipRender: true});
   selectedDate = null;
   const t = new Date(getTodayISO()+"T12:00:00");
   current = new Date(t.getFullYear(), t.getMonth(), 1);
-  clearLocation({skipRender: true});
-  buildFilterBar();
   render();
 }
 
-// Renders the "what am I looking at" summary tray above the calendar/list —
-// each active dimension shown as its own removable chip, per the brief's
-// "filter state must be visible" requirement. Categories only show up here
-// when narrowed below the full set (showing all 11 active chips twice, once
-// in the category bar and again here, would just be noise).
+function removeFilter(entry){
+  if(entry.dim === 'where' && entry.key === 'origin'){ clearLocation(); return; }
+  setState(entry.remove);
+  if(entry.dim === 'when') setWhenInputs(getTodayISO(), '');
+  if(entry.dim === 'search') document.getElementById('search').value = '';
+  render();
+}
+
+// Resets every discovery dimension at once (When, Where, What, search), and
+// returns the calendar to the current month (today) rather than leaving it
+// wherever the user had navigated to — a reset should feel like coming back
+// to "now". Used by both "Reset filters" and the tray's "Clear all".
+function toggleCategory(key){
+  setState({what: state.what.paths.includes(key) ? {remove: key} : {add: key}});
+}
+
+
+// Renders the "Showing:" tray above the calendar/list — each active filter
+// as its own removable chip. What the filters are called, and how to remove
+// each, come from Discovery.describe().
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
+  const entries = Discovery.describe(state);
+  const isCategory = e => e.dim === 'what' && Object.prototype.hasOwnProperty.call(CATS, e.key);
   const chips = [];
+  const add = e => chips.push({label: e.label, onRemove: ()=> removeFilter(e)});
 
-  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
-  if(whenMode && WHEN_LABELS[whenMode]){
-    chips.push({label: WHEN_LABELS[whenMode], onRemove: ()=>{ whenMode = null; updateWhenButtons(); render(); }});
-  }
-  if(freeOnly){
-    chips.push({label: 'Free only', onRemove: ()=>{
-      freeOnly = false;
-      document.getElementById('freeChip').classList.remove('active');
+  entries.filter(e => e.dim === 'when').forEach(add);
+  entries.filter(e => e.dim === 'what' && e.key === 'free').forEach(add);
+  entries.filter(e => e.dim === 'what' && e.key !== 'free' && !isCategory(e)).forEach(add); // features
+  entries.filter(e => e.dim === 'search').forEach(add);
+  const selectedCats = entries.filter(isCategory).length;
+  if(selectedCats){
+    chips.push({label: `${selectedCats} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
+      setState({what: {clear: true}});
       render();
     }});
   }
-  FEATURE_CHIPS.forEach(({key, label})=>{
-    if(!activeFeatures.has(key)) return;
-    chips.push({label, onRemove: ()=>{
-      activeFeatures.delete(key);
-      buildFilterBar();
-      render();
-    }});
-  });
-  if(query){
-    chips.push({label: `"${query}"`, onRemove: ()=>{
-      query = '';
-      document.getElementById('search').value = '';
-      render();
-    }});
-  }
-  if(activeCats.size < Object.keys(CATS).length){
-    chips.push({label: `${activeCats.size} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
-      activeCats = new Set(Object.keys(CATS));
-      buildFilterBar();
-      render();
-    }});
-  }
-  if(originLocation){
-    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
-    chips.push({label: `${radiusLabel} · ${originLocation.name}`, onRemove: ()=> clearLocation()});
-  }
+  entries.filter(e => e.dim === 'where' && e.key === 'origin').forEach(add);
+  entries.filter(e => e.dim === 'where' && e.key === 'neighborhood').forEach(add);
 
   if(!chips.length){ tray.style.display = 'none'; tray.innerHTML = ''; return; }
 
@@ -1698,8 +1232,7 @@ function renderMonth(){
   // UTC-4/-5, so from evening through midnight local time, the UTC date has
   // already rolled to the next day while it's still "today" here. This
   // matches whatever timezone the visitor's own browser/device is set to.
-  const _now = new Date();
-  const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
+  const todayISO = getTodayISO();
 
   for(let i=0;i<totalCells;i++){
     const cell = document.createElement('div');
@@ -1722,7 +1255,7 @@ function renderMonth(){
     // navigable and their events stay fully visible, nothing is disabled.
     if(iso < todayISO) cell.classList.add('past');
 
-    const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
+    const events = eventsOn(iso);
     if(events.length) cell.classList.add('hasEvents');
 
     const num = document.createElement('div');
@@ -1845,32 +1378,32 @@ function priceTag(e){
 
 function showDayPanel(iso){
   const panel = document.getElementById('dayPanel');
-  const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
+  const events = eventsOn(iso);
   const dateObj = new Date(iso+"T12:00:00");
   const label = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   if(!events.length){
-    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${emptyStateMessage()}</div>`;
+    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state lg-empty">${emptyStateMessage()}</div>`;
   } else {
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
-        <div class="evt-row">
-          <div class="evt-time">${escapeHtml(e.time)||''}</div>
-          <div class="evt-main">
-            <div class="evt-main-body">
-              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
-              <div class="evt-text">
-                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-                <div class="evt-meta">
+        <div class="lg-row">
+          <div class="lg-time">${escapeHtml(e.time)||''}</div>
+          <div class="lg-main">
+            <div class="lg-body">
+              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="lg-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
+              <div class="lg-text">
+                <div class="lg-title">${eventUrl(e)?`<a class="lg-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+                <div class="lg-meta">
                   <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
                   ${priceTag(e)}
-                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="lg-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
-                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+                ${e.description?`<div class="lg-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="lg-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+                ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="lg-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
                 ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
@@ -1884,65 +1417,510 @@ function showDayPanel(iso){
 }
 function closeDayPanel(){ document.getElementById('dayPanel').classList.remove('show'); selectedDate=null; }
 
-// dateList, if provided, is an explicit array of ISO date strings to render
-// instead of every day in current's month — needed for "This Weekend", which
-// can span a month boundary (e.g. Fri Jan 30 → Sun Feb 1) that a plain
-// daysInMonth loop over `current` alone wouldn't catch.
-function renderList(dateList){
-  const el = document.getElementById('listView');
-  const y = current.getFullYear(), m = current.getMonth();
-  const daysInMonth = new Date(y,m+1,0).getDate();
-  const isos = dateList && dateList.length
-    ? dateList
-    : Array.from({length: daysInMonth}, (_,i)=> toISO(y,m,i+1));
-  let html = '';
-  let any = false;
-  for(const iso of isos){
-    const events = (byDate[iso]||[]).filter(e=>matchesFilters(e));
-    if(!events.length) continue;
-    any = true;
-    const label = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    html += `<div class="list-day-group"><div class="list-day-heading">${label}</div>` +
-      events.map(e=>`
-        <div class="evt-row">
-          <div class="evt-time">${escapeHtml(e.time)||''}</div>
-          <div class="evt-main">
-            <div class="evt-main-body">
-              ${e.imageUrl && safeUrl(e.imageUrl)?`<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`:''}
-              <div class="evt-text">
-                <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-                <div class="evt-meta">
-                  <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
-                  ${priceTag(e)}
-                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
-                  ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
-                </div>
-                ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-                ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
-                ${affiliateDisclosureHtml(e)}
-                ${ticketStatusNoteHtml(e)}
-              </div>
-            </div>
-          </div>
-        </div>
-      `).join('') + `</div>`;
-  }
-  el.innerHTML = any ? html : `<div class="empty-state">${emptyStateMessage(dateList ? null : fmtMonth(current))}</div>`;
-}
 
 // Shared empty-state copy for both the list and day-panel views. Per the
 // brief: never a dead end — always paired with concrete actions to widen
 // the search, not just a flat "nothing here."
 function emptyStateMessage(scopeLabel){
   const actions = [];
-  if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
-  if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
-  if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
-  if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
+  if(state.when.mode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
+  if(state.where.radius !== null && state.where.radius !== 'orbit') actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
+  if(state.what.paths.length) actions.push(`<button type="button" class="es-action" onclick="showAllCategories()">Show all categories</button>`);
+  if(state.q) actions.push(`<button type="button" class="es-action" onclick="clearSearch()">Clear search</button>`);
   const scope = scopeLabel ? ` in ${escapeHtml(scopeLabel)}` : '';
   return `Nothing on the signal here${scope}.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
+}
+function showAllCategories(){ setState({what: {clear: true}}); render(); }
+function clearSearch(){ setState({q: ''}); document.getElementById('search').value = ''; render(); }
+
+// ---- Row helpers: the homepage stream's own (Add to Calendar, Share, the
+// time cell, the artwork fallback), so a Calendar row is the same element
+// as a homepage row. ----
+function shouldShowSource(e){
+  if(!e.source) return false;
+  const norm = s => String(s).trim().toLowerCase().replace(/[^a-z0-9]/g,'');
+  const src = norm(e.source);
+  if(!src || src === 'manual') return false;
+  if(e.venue && norm(e.venue) === src) return false;
+  return true;
+}
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function eventDateTimeParts(e){
+  const [y,m,d] = e.date.split('-').map(Number);
+  const range = parseTimeRange(e.time);
+  const dateStr = `${y}${pad2(m)}${pad2(d)}`;
+  if(!range){
+    const next = new Date(y, m-1, d+1);
+    const nextStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
+    return { allDay:true, startDate:dateStr, endDate:nextStr };
+  }
+  const startTime = `${pad2(range.start.h)}${pad2(range.start.m)}00`;
+  let endDateStr = dateStr;
+  let endTime;
+  if(range.end){
+    endTime = `${pad2(range.end.h)}${pad2(range.end.m)}00`;
+    // An end clock-time earlier than the start (e.g. "10:00 PM–2:00 AM")
+    // means the event actually runs past midnight — roll DTEND to the next
+    // calendar day rather than encoding an end before its own start.
+    if(range.end.h < range.start.h || (range.end.h === range.start.h && range.end.m < range.start.m)){
+      const next = new Date(y, m-1, d+1);
+      endDateStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
+    }
+  } else {
+    // No explicit end in the source data — default to a 2-hour block, a
+    // reasonable middle ground for the kinds of events this site lists
+    // (gallery hours, sets, screenings) without ever calling it "all day."
+    const endDt = new Date(y, m-1, d, range.start.h, range.start.m + 120);
+    endDateStr = `${endDt.getFullYear()}${pad2(endDt.getMonth()+1)}${pad2(endDt.getDate())}`;
+    endTime = `${pad2(endDt.getHours())}${pad2(endDt.getMinutes())}00`;
+  }
+  return { allDay:false, startDate:dateStr, startTime, endDate:endDateStr, endTime };
+}
+
+function icsEscape(str){
+  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+}
+
+function foldICSLine(line){
+  if(line.length <= 75) return line;
+  let out = line.slice(0,75);
+  let rest = line.slice(75);
+  while(rest.length){
+    out += '\r\n ' + rest.slice(0,74);
+    rest = rest.slice(74);
+  }
+  return out;
+}
+
+function buildEventDescription(e){
+  const parts = [];
+  if(e.description) parts.push(truncateText(e.description, 300));
+  if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
+  if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl) parts.push(safeUrl(e.eventPageUrl));
+  const permalink = eventUrl(e);
+  parts.push(`Details: ${permalink ? 'https://313.events/'+permalink : 'https://313.events/'}`);
+  return parts.join('\n');
+}
+
+function buildEventLocation(e){
+  return e.city ? `${e.venue}, ${e.city}` : e.venue;
+}
+
+function buildICS(e){
+  const parts = eventDateTimeParts(e);
+  const uid = `${e.date}-${e.title}-${e.venue}`.replace(/[^a-zA-Z0-9]+/g,'-').slice(0,150) + '@313.events';
+  const now = new Date();
+  const dtstamp = `${now.getUTCFullYear()}${pad2(now.getUTCMonth()+1)}${pad2(now.getUTCDate())}T${pad2(now.getUTCHours())}${pad2(now.getUTCMinutes())}${pad2(now.getUTCSeconds())}Z`;
+  const dtstart = parts.allDay ? `DTSTART;VALUE=DATE:${parts.startDate}` : `DTSTART:${parts.startDate}T${parts.startTime}`;
+  const dtend = parts.allDay ? `DTEND;VALUE=DATE:${parts.endDate}` : `DTEND:${parts.endDate}T${parts.endTime}`;
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//313.events//Add to Calendar//EN',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${dtstamp}`,
+    dtstart,
+    dtend,
+    `SUMMARY:${icsEscape(e.title)}`,
+    `LOCATION:${icsEscape(buildEventLocation(e))}`,
+    `DESCRIPTION:${icsEscape(buildEventDescription(e))}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ];
+  return lines.map(foldICSLine).join('\r\n');
+}
+
+function buildGoogleCalUrl(e){
+  const parts = eventDateTimeParts(e);
+  const dates = parts.allDay
+    ? `${parts.startDate}/${parts.endDate}`
+    : `${parts.startDate}T${parts.startTime}/${parts.endDate}T${parts.endTime}`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: e.title,
+    dates,
+    details: buildEventDescription(e),
+    location: buildEventLocation(e),
+    ctz: 'America/Detroit',
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function addToCalendarHtml(e){
+  const icsBlob = new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'});
+  const icsHref = URL.createObjectURL(icsBlob);
+  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+  const gcalHref = buildGoogleCalUrl(e);
+  return `<span class="evt-cal">
+    <a href="${escapeHtml(gcalHref)}" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>
+  </span>`;
+}
+
+function shareEvent(btn){
+  const {title, venue, date, time, url: permalink} = btn.dataset;
+  const bits = [title, venue].filter(Boolean).join(' — ');
+  const when = [date, time].filter(Boolean).join(' ');
+  const text = when ? `${bits} (${when})` : bits;
+  const url = permalink || 'https://313.events/';
+  if(navigator.share){
+    navigator.share({title, text, url}).catch(()=>{}); // user cancel throws — nothing to do
+    return;
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(`${text}\n${url}`).then(()=>{
+      const original = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.disabled = true;
+      setTimeout(()=>{ btn.textContent = original; btn.disabled = false; }, 1600);
+    }).catch(()=>{}); // no clipboard permission — nothing else to fall back to
+  }
+}
+
+function shareButtonHtml(e){
+  const dateLabel = new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const permalink = eventUrl(e);
+  return `<button type="button" class="evt-share" onclick="shareEvent(this)"
+    data-title="${escapeHtml(e.title)}" data-venue="${escapeHtml(e.venue)}"
+    data-date="${escapeHtml(dateLabel)}" data-time="${escapeHtml(e.time||'')}"
+    ${permalink?`data-url="https://313.events/${escapeHtml(permalink)}"`:''}>Share</button>`;
+}
+
+function runNoteHtml(e, dayIso){
+  if(!e.endDate || e.endDate <= dayIso) return '';
+  return `<span class="evt-run">Through ${escapeHtml(formatDateLabel(e.endDate))}</span>`;
+}
+
+function timeCellHtml(time){
+  const t = (time || '').trim();
+  if(!t) return '';
+  const m = t.match(/^(.+?)\s*[–—-]\s*(.+)$/);
+  if(m && /\d/.test(m[1]) && /\d/.test(m[2])) return `${escapeHtml(m[1])}<small>to ${escapeHtml(m[2])}</small>`;
+  return escapeHtml(t);
+}
+
+const ART_CODES = {
+  music:'Music', theatre:'Theatre', dance:'Dance', visual:'Visual', museum:'Museum', family:'Family',
+  fest:'Fest', food:'Food', film:'Film', nightlife:'Night', sports:'Sports', community:'Community',
+  vendor:'Vendor', training:'Training', gaming:'Gaming'
+};
+const ART_ORBITS = [
+  [96,72,56,44],[8,74,64,28],[52,-8,28,50],[96,72,40,36],
+  [8,74,80,22],[52,-8,76,48],[96,72,22,28],[8,74,60,16]
+];
+function artFallbackSvg(e){
+  let h = 0;
+  const key = String(e.id || e.title || '');
+  for(let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  const [cx, cy, dx, dy] = ART_ORBITS[h % ART_ORBITS.length];
+  return `<svg viewBox="0 0 104 70" preserveAspectRatio="xMidYMid slice"><g fill="none"><circle cx="${cx}" cy="${cy}" r="20" stroke="#2a2a2a"/><circle cx="${cx}" cy="${cy}" r="40" stroke="#232323"/><circle cx="${cx}" cy="${cy}" r="60" stroke="#1c1c1c"/><circle cx="${cx}" cy="${cy}" r="80" stroke="#171717"/></g><circle cx="${dx}" cy="${dy}" r="2" fill="#5c5d58"/></svg>`;
+}
+
+function formatDateLabel(iso){
+  return new Date(iso+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function formatRangeLabel(startIso, endIso){
+  return startIso === endIso ? formatDateLabel(startIso) : `${formatDateLabel(startIso)}–${formatDateLabel(endIso)}`;
+}
+
+
+// ---- LIST — the Calendar's default view (Calendar FINAL, slice 1) ----
+// One chronological stream of everything the current query matches, from
+// today on, in the homepage's departure-board rows. Which events belong is
+// Discovery's (matches / window); the layout is the homepage stream's own
+// (site.css). Each event is listed ONCE, on the first day of the view it
+// occupies (its start date, or the view's first day if it began earlier),
+// and says how long it runs ("Through Oct 24") — the homepage's rule.
+//
+// Pagination (locked Calendar rule): 40 rows on first paint; "Show N more"
+// appends WHOLE days — a press adds at least 60 rows and then runs on to the
+// end of the day it lands in, so a day is never split by paging. Paging is
+// view state: it never touches the URL.
+const LIST_INITIAL = 40;
+const LIST_STEP = 60;
+let listShown = LIST_INITIAL; // rows on the page for the current query
+let listViewKey = null;       // the query listShown belongs to
+
+// Where the event feed stands: 'loading' (first load in flight), 'ready'
+// (the live inventory is on the page) or 'error' (the feed could not be
+// reached). The List never shows FALLBACK_EVENTS as if they were live: it
+// waits, or says it could not reach the feed.
+let feedStatus = 'loading';
+let feedEverLoaded = false;
+
+// Every event the query matches, once each, with the day it is listed under;
+// in date order, then start-time order (unknown times last).
+function calListRows(ctx){
+  const w = Discovery.window(state, ctx);
+  const seen = new Set();
+  const rows = [];
+  EVENTS.forEach(e=>{
+    if(e.id != null){
+      if(seen.has(e.id)) return;
+      seen.add(e.id);
+    }
+    if(!Discovery.matches(e, state, ctx)) return;
+    const day = (w.from && e.date < w.from) ? w.from : e.date;
+    if(w.to && day > w.to) return;
+    rows.push({event: e, day});
+  });
+  rows.sort((a, b)=> a.day < b.day ? -1 : a.day > b.day ? 1 : timeSortMinutes(a.event.time) - timeSortMinutes(b.event.time));
+  return rows;
+}
+
+// How many rows the next "Show more" adds: LIST_STEP, then on to the end of
+// the day that step lands in.
+function nextListStep(rows, shown){
+  let target = Math.min(shown + LIST_STEP, rows.length);
+  while(target < rows.length && target > 0 && rows[target].day === rows[target - 1].day) target++;
+  return target - shown;
+}
+function showMoreList(){
+  const rows = calListRows(discoveryCtx());
+  listShown += nextListStep(rows, listShown);
+  renderCalList();
+}
+
+function isoAddDays(iso, n){
+  const d = new Date(iso+"T12:00:00");
+  d.setDate(d.getDate() + n);
+  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function daysBetween(fromIso, toIsoStr){
+  return Math.round((new Date(toIsoStr+"T12:00:00") - new Date(fromIso+"T12:00:00")) / 86400000);
+}
+
+// The relative label above a day's date (locked rule): Today (chartreuse),
+// Tomorrow, In N days up to a week out, the weekday's name after that.
+function relativeDayLabel(dayIso, todayIso){
+  const diff = daysBetween(todayIso, dayIso);
+  if(diff === 0) return '<span class="ldh-rel is-today">Today</span>';
+  if(diff === 1) return '<span class="ldh-rel">Tomorrow</span>';
+  if(diff >= 2 && diff <= 7) return `<span class="ldh-rel">In ${diff} days</span>`;
+  const weekday = new Date(dayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'long'});
+  return `<span class="ldh-rel">${escapeHtml(weekday)}</span>`;
+}
+
+// The view control: List is this view; Month and Map are the existing
+// views, kept as they are during the transition. Day and Week are later
+// slices and are not offered until they exist.
+function calViewControlHtml(){
+  return `<span class="cal-view"><span class="cal-view-label">View</span><span class="cal-seg" role="group" aria-label="Calendar view">` +
+    `<button type="button" class="on" aria-pressed="true">List</button>` +
+    `<button type="button" onclick="setMode('month')" aria-pressed="false">Month</button>` +
+    `</span></span>`;
+}
+
+// One day's group: the homepage's day heading (relative label, the date in
+// the display voice, the day's counts) and column strip, then its rows.
+// `counts` is the whole query's count for that day (starts and continuing),
+// not just the rows written so far.
+function calDayGroupHtml(dayIso, rows, counts, todayIso, ctx, withViewControl, continued){
+  const label = new Date(dayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const c = counts[dayIso] || {total: 0, starts: 0, continuing: 0};
+  let countText = `${c.total.toLocaleString('en-US')} event${c.total===1?'':'s'}`;
+  if(c.continuing) countText += ` &middot; ${c.starts.toLocaleString('en-US')} start${dayIso === todayIso ? ' today' : ''} &middot; ${c.continuing.toLocaleString('en-US')} continuing`;
+  return `<div class="list-day-group" data-day="${dayIso}">` +
+    `<div class="list-day-heading">${relativeDayLabel(dayIso, todayIso)}<span class="ldh-date">${label}</span>${continued ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${countText}</span>${withViewControl ? calViewControlHtml() : ''}</div>` +
+    `<div class="ldh-cols" aria-hidden="true"><span>Time</span><span>Art</span><span>Event &middot; place</span><span class="lc-type">Type &middot; price</span><span>Go</span></div>` +
+    rows.map(r => calRowHtml(r.event, dayIso, ctx)).join('') +
+    `</div>`;
+}
+
+// The foot: Show more, how much of the query is on the page, and the
+// sibling path to the Orbit with the same query.
+function calFootHtml(shown, total, step, ctx){
+  const more = step > 0
+    ? `<button type="button" class="stream-more-btn" onclick="showMoreList()">Show ${step.toLocaleString('en-US')} more</button>`
+    : '';
+  const note = step > 0
+    ? `${shown.toLocaleString('en-US')} of ${total.toLocaleString('en-US')} shown &middot; in date order`
+    : `All ${total.toLocaleString('en-US')} shown &middot; in date order`;
+  return `<div class="stream-foot">${more}<span class="stream-foot-note">${note}</span>` +
+    `<a class="stream-foot-link" href="${escapeHtml(Discovery.href('map', state, ctx))}">Where is the city on? &rarr; Detroit Orbit</a></div>`;
+}
+
+// Rows reserved while the feed loads: 1px rules and their height, nothing
+// else — no shimmer, no fake rows.
+function calPendingHtml(){
+  return `<div class="ldh-cols" aria-hidden="true"><span>Time</span><span>Art</span><span>Event &middot; place</span><span class="lc-type">Type &middot; price</span><span>Go</span></div>` +
+    `<div class="cal-pending" aria-hidden="true">${'<div class="cal-pending-row"></div>'.repeat(8)}</div>`;
+}
+function calErrorFootHtml(){
+  return `<div class="stream-foot cal-error"><span class="stream-foot-note">Couldn&rsquo;t reach the event feed</span><span class="stream-foot-note">&middot;</span><button type="button" class="cal-retry" onclick="retryFeed()">Retry</button></div>`;
+}
+function retryFeed(){
+  feedStatus = 'loading';
+  render();
+  loadSupabaseEvents();
+}
+
+// The empty query: honest about why it is empty, with each way to widen it
+// and the real count that widening would give. A widening that would still
+// show nothing is not offered.
+function widenings(ctx){
+  const entries = Discovery.describe(state);
+  const out = [];
+  const add = (from, to, patch) => {
+    const n = Discovery.count(EVENTS, Discovery.change(state, patch), ctx);
+    if(n > 0) out.push({label: `${from} → ${to}`, count: n, patch});
+  };
+  entries.filter(e => e.dim === 'when').forEach(e => add(e.label, 'Anytime', e.remove));
+  entries.filter(e => e.dim === 'where').forEach(e => {
+    if(e.key === 'origin' && typeof state.where.radius === 'number'){
+      const steps = Discovery.radii;
+      const next = steps[Math.min(steps.indexOf(state.where.radius) + 1, steps.length - 1)];
+      add(`${state.where.radius} mi`, next === 'orbit' ? 'Detroit Orbit' : `${next} mi`, {where: {radius: next}});
+    } else {
+      add(e.label, 'Everywhere', e.remove);
+    }
+  });
+  const cats = entries.filter(e => e.dim === 'what' && Object.prototype.hasOwnProperty.call(CATS, e.key));
+  if(cats.length) add(cats.length === 1 ? cats[0].label : `${cats.length} categories`, 'All types', {what: {clear: true}});
+  entries.filter(e => e.dim === 'what' && !Object.prototype.hasOwnProperty.call(CATS, e.key)).forEach(e => add(e.label, 'Any', e.remove));
+  entries.filter(e => e.dim === 'search').forEach(e => add(e.label, 'No search', e.remove));
+  return out;
+}
+function applyWidening(i){
+  const w = widenings(discoveryCtx())[i];
+  if(!w) return;
+  setState(w.patch);
+  if(!state.q) document.getElementById('search').value = '';
+  if(state.when.mode !== 'dates') setWhenInputs(state.when.mode ? '' : getTodayISO(), '');
+  if(!originLocation()) document.getElementById('locInput').value = '';
+  render();
+}
+function calEmptyHtml(ctx){
+  const restated = Discovery.describe(state).map(e => e.label);
+  const total = Discovery.count(EVENTS, Discovery.defaults(), ctx);
+  const chips = widenings(ctx).map((w, i) =>
+    `<button type="button" onclick="applyWidening(${i})">${escapeHtml(w.label)}<b>&middot; ${w.count.toLocaleString('en-US')}</b></button>`).join('');
+  return `<div class="cal-empty">` +
+    `<h2 class="disp">Nothing on</h2>` +
+    (restated.length ? `<p class="cal-empty-query">${restated.map(escapeHtml).join(' &middot; ')}</p>` : '') +
+    `<p class="cal-empty-count">0 of ${total.toLocaleString('en-US')} current + upcoming match</p>` +
+    `<div class="cal-widen">${chips}<button type="button" onclick="clearAllFilters()">Clear all<b>&middot; ${total.toLocaleString('en-US')}</b></button></div>` +
+    `</div>`;
+}
+
+// Writes the List for the current query.
+function renderCalList(){
+  const el = document.getElementById('calList');
+  const ctx = discoveryCtx();
+  if(feedStatus === 'loading' || (feedStatus === 'error' && !feedEverLoaded)){
+    el.innerHTML = calPendingHtml() + (feedStatus === 'error' ? calErrorFootHtml() : '');
+    return;
+  }
+  const rows = calListRows(ctx);
+
+  // A different query starts again from the top; the same query re-rendered
+  // (the data arriving, a neighborhood lookup landing) keeps what is open.
+  const viewKey = Discovery.toQuery(state) + (state.where.here ? '|here' : '');
+  if(viewKey !== listViewKey){ listViewKey = viewKey; listShown = LIST_INITIAL; }
+
+  if(!rows.length){
+    el.innerHTML = calEmptyHtml(ctx) + (feedStatus === 'error' ? calErrorFootHtml() : '');
+    return;
+  }
+
+  const total = rows.length;
+  const shown = Math.min(listShown, total);
+  const counts = {};
+  rows.forEach(r => {
+    const c = counts[r.day] || (counts[r.day] = {total: 0, starts: 0, continuing: 0});
+    c.total++;
+    if(r.event.date < r.day) c.continuing++; else c.starts++;
+  });
+  const todayIso = getTodayISO();
+  const visible = rows.slice(0, shown);
+  let html = '';
+  let i = 0;
+  while(i < visible.length){
+    const dayIso = visible[i].day;
+    let j = i;
+    while(j < visible.length && visible[j].day === dayIso) j++;
+    html += calDayGroupHtml(dayIso, visible.slice(i, j), counts, todayIso, ctx, i === 0, false);
+    i = j;
+  }
+  const step = nextListStep(rows, shown);
+  el.innerHTML = html + (feedStatus === 'error' ? calErrorFootHtml() : calFootHtml(shown, total, step, ctx));
+}
+
+// The readouts under the title: the current + upcoming inventory, today,
+// the next 7 days and the active neighborhoods — each for the current
+// WHERE / WHAT / SEARCH (the When is the readouts' own), counted by
+// Discovery. "Active cities" is withheld under DEC-026. Until the live
+// feed is on the page they read "—", never a fallback figure.
+function renderReadouts(){
+  const set = (id, n) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const ready = feedEverLoaded && typeof n === 'number';
+    el.textContent = ready ? n.toLocaleString('en-US') : '—';
+    el.classList.toggle('is-pending', !ready);
+  };
+  if(!feedEverLoaded){ ['roTotal','roToday','roNext7','roHoods'].forEach(id => set(id, null)); return; }
+  const ctx = {now: new Date(), defaultWhen: 'all'};
+  const all = Discovery.change(state, {when: 'all'});
+  set('roTotal', Discovery.count(EVENTS, all, ctx));
+  set('roToday', Discovery.count(EVENTS, Discovery.change(state, {when: 'today'}), ctx));
+  set('roNext7', Discovery.count(EVENTS, Discovery.change(state, {when: 'next7'}), ctx));
+  const hoods = new Set();
+  EVENTS.forEach(e => { if(e.neighborhood && Discovery.matches(e, all, ctx)) hoods.add(e.neighborhood); });
+  set('roHoods', hoods.size);
+}
+
+// One row of the List: the homepage stream's row (same element, same
+// fields, same order), with the Calendar's action rule — never more than
+// four actions: Tickets & info (or, with no ticket link, the event's own
+// page), Google Cal, Apple/Outlook, Share. This page loads no press
+// coverage, so it has no "As seen in" line.
+function calRowHtml(e, dayIso, ctx){
+  const cat = CATS[e.cat] ? CATS[e.cat].label : '';
+  const thumb = e.imageUrl && safeUrl(e.imageUrl)
+    ? `<img class="evt-thumb" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">`
+    : '';
+  const go = eventUrl(e)
+    ? `<a href="${escapeHtml(eventUrl(e))}" aria-label="Open ${escapeHtml(e.title)}">&rarr;</a>`
+    : '';
+  const ticket = e.ticketUrl && safeUrl(e.ticketUrl);
+  const page = !ticket && e.eventPageUrl && safeUrl(e.eventPageUrl);
+  return `
+        <div class="evt-row">
+          <div class="evt-time">${timeCellHtml(e.time)}</div>
+          <div class="evt-art" aria-hidden="true">${artFallbackSvg(e)}${cat?`<span class="evt-art-code">${escapeHtml(ART_CODES[e.cat] || cat)}</span>`:''}${thumb}</div>
+          <div class="evt-main">
+            <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
+            <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
+            ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
+            <div class="evt-actions">
+              ${ticket?`<a class="evt-link" href="${escapeHtml(ticket)}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              ${page?`<a class="evt-link" href="${escapeHtml(page)}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+              ${addToCalendarHtml(e)}
+              ${shareButtonHtml(e)}
+            </div>
+            ${affiliateDisclosureHtml(e)}
+            ${ticketStatusNoteHtml(e)}
+          </div>
+          <div class="evt-side"><div class="evt-meta">${cat?`<span class="evt-cat cat-${escapeHtml(e.cat)}">${escapeHtml(cat)}</span>`:''}${streamPriceHtml(e)}</div></div>
+          <div class="evt-go">${go}</div>
+        </div>`;
+}
+
+// FREE in chartreuse, a real price in warm white, nothing when there is no
+// price (never "TBA") — the homepage stream's priceTag().
+function streamPriceHtml(e){
+  if(e.free) return '<div class="evt-price free">Free</div>';
+  if(typeof e.priceFrom === 'number' && isFinite(e.priceFrom) && e.priceFrom > 0){
+    return `<div class="evt-price">${escapeHtml(fmtPrice(e.priceFrom))}</div>`;
+  }
+  return '';
 }
 
 // ---- Map view (net-new, 2026-08-28) ----
@@ -1989,7 +1967,7 @@ function resolvePlace(e){
 
 function buildPlaces(){
   const places = new Map();
-  EVENTS.filter(matchesFilters).forEach(e=>{
+  inView(EVENTS).forEach(e=>{
     const place = resolvePlace(e);
     if(!place) return;
     if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
@@ -2134,11 +2112,11 @@ function renderCityRail(places){
           <span class="cr-caret">&#9656;</span>
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(e=>`
-          <div class="evt-row">
-            <div class="evt-time">${escapeHtml(e.time)||''}</div>
-            <div class="evt-main">
-              <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
-              <div class="evt-meta">
+          <div class="lg-row">
+            <div class="lg-time">${escapeHtml(e.time)||''}</div>
+            <div class="lg-main">
+              <div class="lg-title">${eventUrl(e)?`<a class="lg-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+              <div class="lg-meta">
                 <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
                 ${priceTag(e)}
                 <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
@@ -2197,11 +2175,14 @@ function updateMapStat(places){
 
 function render(){
   updateMonthHeader();
+  syncFilterBar();
   updateWhenButtons();
   updateRadiusButtons();
+  updateLocationControlUI();
   updateMobileTriggers();
+  updateSurfaceLinks();
   renderActiveFilters();
-  // No hero on this page — see index.html for the homepage's stat panel.
+  renderReadouts();
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
@@ -2217,7 +2198,7 @@ function render(){
     renderMap(places);
     renderCityRail(places);
   } else {
-    renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
+    renderCalList();
   }
   syncURL();
 }
@@ -2230,115 +2211,202 @@ document.getElementById('nextBtn').onclick = ()=>{
   const n = new Date(current.getFullYear(), current.getMonth()+1, 1);
   if(n <= MAX_MONTH){ current = n; closeDayPanel(); render(); }
 };
-document.getElementById('search').addEventListener('input', (e)=>{ query = e.target.value.trim(); closeDayPanel(); render(); });
+// Search-as-you-type, from the board's SEARCH cell (the homepage's). The
+// state holds the trimmed text; the input keeps whatever was typed.
+document.getElementById('search').addEventListener('input', (e)=>{ setState({q: e.target.value}); closeDayPanel(); render(); });
 
-document.getElementById('monthViewBtn').onclick = ()=>{
-  mode='month';
-  document.getElementById('monthViewBtn').classList.add('active');
-  document.getElementById('listViewBtn').classList.remove('active');
-  document.getElementById('mapViewBtn').classList.remove('active');
-  document.getElementById('monthNavGroup').style.display='flex';
-  document.getElementById('calWrap').style.display='block';
-  document.getElementById('listView').classList.remove('show');
-  document.getElementById('mapView').classList.remove('show');
+// ---- Views ----
+// List is the default; Month and Map are the existing views, kept as they
+// are during the transition (Product Owner, 2026-10-08): ?view=month and
+// ?view=map keep opening them. Which view is showing is VIEW state, never
+// part of the shared query.
+function applyMode(){
+  document.body.classList.toggle('mode-list', mode === 'list');
+  document.getElementById('calList').hidden = mode !== 'list';
+  document.getElementById('monthViewBtn').classList.toggle('active', mode === 'month');
+  document.getElementById('listViewBtn').classList.toggle('active', mode === 'list');
+  document.getElementById('mapViewBtn').classList.toggle('active', mode === 'map');
+  // The month prev/next controls are meaningless on the map — it isn't
+  // scoped to the browsed month (see buildPlaces()'s comment).
+  document.getElementById('monthNavGroup').style.display = mode === 'month' ? 'flex' : 'none';
+  document.getElementById('calWrap').style.display = mode === 'month' ? 'block' : 'none';
+  document.getElementById('mapView').classList.toggle('show', mode === 'map');
+}
+function setMode(next){
+  if(next !== 'list' && next !== 'month' && next !== 'map') return;
+  const prev = mode;
+  mode = next;
+  if(prev === 'month' && next !== 'month') closeDayPanel();
+  applyMode();
+  if(mode === 'map'){
+    // Leaflet needs its container to actually be visible (non-zero size) to
+    // lay itself out correctly — init on first real switch to this view;
+    // on a later switch back, invalidateSize() re-checks the container.
+    if(!mapInitTried) initLeaflet();
+    else if(leafletMap) setTimeout(()=> leafletMap.invalidateSize(), 40);
+  }
   render();
-};
-document.getElementById('listViewBtn').onclick = ()=>{
-  mode='list';
-  document.getElementById('listViewBtn').classList.add('active');
-  document.getElementById('monthViewBtn').classList.remove('active');
-  document.getElementById('mapViewBtn').classList.remove('active');
-  document.getElementById('monthNavGroup').style.display='flex';
-  document.getElementById('calWrap').style.display='none';
-  closeDayPanel();
-  document.getElementById('listView').classList.add('show');
-  document.getElementById('mapView').classList.remove('show');
-  render();
-};
-document.getElementById('mapViewBtn').onclick = ()=>{
-  mode='map';
-  document.getElementById('mapViewBtn').classList.add('active');
-  document.getElementById('monthViewBtn').classList.remove('active');
-  document.getElementById('listViewBtn').classList.remove('active');
-  // The month prev/next controls are meaningless here — the map isn't
-  // scoped to the browsed month (see buildPlaces()'s comment) — so they
-  // hide entirely rather than sitting there doing nothing if clicked.
-  document.getElementById('monthNavGroup').style.display='none';
-  document.getElementById('calWrap').style.display='none';
-  closeDayPanel();
-  document.getElementById('listView').classList.remove('show');
-  document.getElementById('mapView').classList.add('show');
-  // Leaflet needs its container to actually be visible (non-zero size) to
-  // lay itself out correctly — init on first real switch to this tab
-  // rather than at page load, when #mapView is still display:none. On a
-  // later switch back, invalidateSize() re-checks the container in case
-  // anything about the layout changed while it was hidden.
-  if(!mapInitTried) initLeaflet();
-  else if(leafletMap) setTimeout(()=> leafletMap.invalidateSize(), 40);
-  render();
-};
+  if(prev !== next && typeof window.scrollTo === "function") window.scrollTo({top: 0});
+}
+document.getElementById('monthViewBtn').onclick = ()=> setMode('month');
+document.getElementById('listViewBtn').onclick = ()=> setMode('list');
+document.getElementById('mapViewBtn').onclick = ()=> setMode('map');
 
-// ---- Discovery bar (time-range shortcuts) ----
+// Brings the results in front of the visitor after a When shortcut — the
+// homepage does the same with its stream.
+function scrollToResults(){
+  const target = mode === 'list' ? document.getElementById('calList') : document.getElementById('legacyControls');
+  if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ---- Discovery bar (time-range shortcuts) — the homepage's ----
+
+// The two date inputs in the When sheet are a display of the state, set
+// explicitly at the same moments the homepage sets them.
+function setWhenInputs(fromIso, toIso){
+  document.getElementById('whenDateInput').value = fromIso || '';
+  document.getElementById('whenDateEndInput').value = toIso || '';
+}
 
 function updateWhenButtons(){
+  const mode = state.when.mode;
+  const isRange = mode === 'dates' && state.when.from !== state.when.to;
   document.querySelectorAll('.when-btn').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.when === whenMode);
+    btn.classList.toggle('active', btn.dataset.when === mode);
   });
+  document.getElementById('whenDateInput').closest('.when-date-picker').classList.toggle('active', mode === 'dates');
+  document.getElementById('whenDateEndInput').closest('.when-date-picker').classList.toggle('active', isRange);
+}
+
+// Puts the legacy month grid where the chosen When is: a single day opens
+// that day's panel, any other window opens the month it starts in, and a
+// weekend (three days the day panel can't show) opens the List. This is
+// view positioning only — what matches is Discovery's.
+function positionForWhen(opts){
+  const m = state.when.mode;
+  if(m === null){ return; }
+  const w = Discovery.window(state, {now: new Date(), defaultWhen: 'all'});
+  const from = w.from || getTodayISO();
+  const t = new Date(from+"T12:00:00");
+  const monthStart = new Date(t.getFullYear(), t.getMonth(), 1);
+  if(monthStart >= MIN_MONTH && monthStart <= MAX_MONTH) current = monthStart;
+  const singleDay = m === 'today' || m === 'tonight' || m === 'tomorrow' || (m === 'dates' && state.when.from === state.when.to);
+  if(m === 'weekend'){
+    selectedDate = null;
+    closeDayPanel();
+    if(opts && opts.fromURL){
+      if(!opts.explicitView) mode = 'list'; // readStateFromURL() applies the view itself
+    } else if(mode === 'month'){
+      setMode('list');
+    }
+  } else if(singleDay){
+    selectedDate = from;
+  } else {
+    selectedDate = null;
+  }
 }
 
 function activateWhen(key){
-  if(key === 'date'){
-    // "Date" isn't a filter of its own — it just clears any active time
-    // shortcut and returns to ordinary free browsing of the calendar.
-    whenMode = null;
-    selectedDate = null;
-    updateWhenButtons();
-    render();
-    closeSheet(); // no-op on desktop / when no sheet is open
-    return;
-  }
-
-  whenMode = key;
-  const todayIso = getTodayISO();
-
-  if(key === 'weekend'){
-    cachedWeekendDates = getWeekendDates();
-    const fri = new Date(cachedWeekendDates[0]+"T12:00:00");
-    current = new Date(fri.getFullYear(), fri.getMonth(), 1);
-    selectedDate = null;
-    closeDayPanel();
-    // Weekend spans 3 days — the single-date day panel can't show that, so
-    // this shortcut always switches to List view rather than Month.
-    if(mode !== 'list') document.getElementById('listViewBtn').onclick();
-  } else {
-    // now / today / tonight are all "today" — jump there and open its day
-    // panel directly rather than making the user click the highlighted cell.
-    const t = new Date(todayIso+"T12:00:00");
-    current = new Date(t.getFullYear(), t.getMonth(), 1);
-    selectedDate = todayIso;
-  }
-
+  setState({when: key});
+  setWhenInputs('', '');
+  positionForWhen();
   updateWhenButtons();
   render();
-  closeSheet(); // each WHEN option is a single, complete choice — dismiss the mobile sheet after picking one, unlike WHERE/FILTER which stay open for further adjustment.
+  closeSheet(); // each WHEN option is a single, complete choice — dismiss the mobile sheet after picking one, unlike WHERE/WHAT which stay open for further adjustment.
+  scrollToResults();
 }
 
 document.querySelectorAll('.when-btn').forEach(btn=>{
   btn.onclick = ()=> activateWhen(btn.dataset.when);
 });
 
+function activateDateFrom(iso){
+  if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+  const endInput = document.getElementById('whenDateEndInput');
+  endInput.min = iso; // "To" can never be before "From"
+  const endVal = endInput.value;
+  if(endVal && endVal >= iso){
+    setState({when: {from: iso, to: endVal}});
+  } else {
+    // No "To" set, or it's now before the new "From" — a stale "To" from a
+    // previous pick would silently build an invalid/backwards range, so
+    // it's cleared rather than left to produce confusing results.
+    if(endVal && endVal < iso) endInput.value = '';
+    setState({when: {from: iso, to: iso}});
+  }
+  positionForWhen();
+  updateWhenButtons();
+  render();
+  closeSheet();
+}
+
+function activateDateTo(iso){
+  const fromInput = document.getElementById('whenDateInput');
+  const fromVal = fromInput.value;
+  if(!iso){
+    // "To" cleared — fall back to whatever "From" alone means.
+    if(fromVal) setState({when: {from: fromVal, to: fromVal}});
+    else setState({when: null});
+  } else if(fromVal && iso >= fromVal){
+    setState({when: {from: fromVal, to: iso}});
+  } else {
+    return; // "To" before "From" (shouldn't happen given min=, but don't apply an invalid range if it does)
+  }
+  positionForWhen();
+  updateWhenButtons();
+  render();
+  closeSheet();
+}
+
+function initWhenDatePicker(){
+  const fromInput = document.getElementById('whenDateInput');
+  const toInput = document.getElementById('whenDateEndInput');
+  const todayIso = getTodayISO();
+  // toISO() is a pure formatter, not a date normalizer — day 0 has to be
+  // resolved to "the last day of the previous month" via a real Date first,
+  // then formatted, rather than handed to toISO() directly (that would
+  // format literally as "-00" instead of rolling back a month).
+  const lastDayOfMax = new Date(MAX_MONTH.getFullYear(), MAX_MONTH.getMonth()+1, 0);
+  const maxIso = toISO(lastDayOfMax.getFullYear(), lastDayOfMax.getMonth(), lastDayOfMax.getDate());
+  fromInput.min = todayIso;
+  fromInput.max = maxIso;
+  toInput.min = todayIso;
+  toInput.max = maxIso;
+  // Jody (2026-08-27): the "Anytime" baseline state should default the
+  // "From" field to today's date rather than leaving it blank — so opening
+  // the native date picker starts on today (the same day the default
+  // rolling-window list already opens on) instead of an empty field with no
+  // starting point. This is a DISPLAY default only: it does not change the
+  // filter state (that still requires an actual change event, i.e. the user
+  // confirming a date), and readStateFromURL() below still overwrites it
+  // whenever a shared link actually specifies a date/range/tomorrow/weekend.
+  fromInput.value = todayIso;
+  fromInput.addEventListener('change', (e)=> activateDateFrom(e.target.value));
+  toInput.addEventListener('change', (e)=> activateDateTo(e.target.value));
+}
+initWhenDatePicker();
+
+// TODAY (header nav) — the homepage's shortcut: Discovery's own Today
+// ("today in Detroit, whenever this is opened"), not a picked date.
+function viewToday(){
+  setState({when: 'today'});
+  setWhenInputs('', '');
+  positionForWhen();
+  updateWhenButtons();
+  render();
+  scrollToResults();
+}
+document.getElementById('todayNavBtn').onclick = ()=>{ viewToday(); };
+
 // BROWSE (header nav) — the unfiltered, see-everything shortcut: clears
-// every narrowing dimension (time range, categories, location, search) and
-// switches to List view, which reads chronologically top-to-bottom — the
-// closest thing this site has to "just show me all of it."
+// every narrowing dimension and shows the List, which reads chronologically
+// top to bottom.
 document.getElementById('browseBtn').onclick = ()=>{
   clearAllFilters();
-  if(mode !== 'list') document.getElementById('listViewBtn').onclick();
+  if(mode !== 'list') setMode('list');
 };
 
-// Header search icon (mockup parity) — no separate search field up here;
-// this just scrolls to and focuses the one real search input already in
-// .controls, rather than duplicating search logic in a second place.
+// Header search icon — scrolls to and focuses the board's own SEARCH cell.
 document.getElementById('navSearchBtn').onclick = ()=>{
   const input = document.getElementById('search');
   input.scrollIntoView({behavior:'smooth', block:'center'});
@@ -2349,19 +2417,19 @@ document.getElementById('navSearchBtn').onclick = ()=>{
 
 function updateRadiusButtons(){
   document.querySelectorAll('.radius-chip').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.radius === String(radiusMiles));
+    btn.classList.toggle('active', btn.dataset.radius === (state.where.radius === 'orbit' ? 'all' : String(state.where.radius)));
   });
 }
 
 // Keeps the location combobox's visible state (input text, clear button,
-// radius group visibility) in sync with originLocation — needed both after
-// a manual selection and after restoring state from the URL on load.
+// radius group visibility) in sync with the state — needed both after a
+// manual selection and after restoring state from the URL on load.
 function updateLocationControlUI(){
   const input = document.getElementById('locInput');
   const clearBtn = document.getElementById('locClearBtn');
   const radiusGroup = document.getElementById('radiusGroup');
-  if(originLocation){
-    input.value = originLocation.name;
+  if(originLocation()){
+    input.value = originLocation().name;
     clearBtn.style.display = 'flex';
     radiusGroup.style.display = 'flex';
   } else {
@@ -2388,7 +2456,7 @@ function renderLocationSuggestions(q){
     return;
   }
   const ql = q.trim().toLowerCase();
-  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
+  const matches = Discovery.places.filter(l => l.name.toLowerCase().includes(ql)).slice(0, 8);
   if(!matches.length){
     box.innerHTML = `<div class="loc-empty">No matches in the service area</div>`;
   } else {
@@ -2435,34 +2503,30 @@ function setLocHighlight(i){
   }
 }
 
-// Sets the active search-radius origin, defaulting radius to 'all' (visible,
-// non-narrowing) so choosing a location alone never silently hides events —
-// the user has to deliberately pick a mile ring to actually narrow anything.
+// Sets the active search-radius origin. Discovery defaults the radius to the
+// Detroit Orbit (visible, non-narrowing) so choosing a location alone never
+// silently hides events — the user has to deliberately pick a mile ring to
+// actually narrow anything.
 function selectLocation(loc){
-  originLocation = loc;
-  if(radiusMiles === null) radiusMiles = 'all';
+  setState(loc.type === 'here' ? {where: {here: {lat: loc.lat, lng: loc.lng}}} : {where: {place: loc.name}});
   document.getElementById('locSuggestions').style.display = 'none';
   document.getElementById('locSuggestions').innerHTML = '';
-  updateLocationControlUI();
   render();
 }
 
-// opts.skipRender lets clearAllFilters() reset location state without
-// triggering a second render() right before its own render() call.
+// Removes the origin and the distance measured from it (the neighborhood, if
+// the link carried one, is a separate filter and stays).
 function clearLocation(opts){
-  originLocation = null;
-  radiusMiles = null;
+  setState({where: {place: null, here: null, radius: null}});
   document.getElementById('locInput').value = '';
   document.getElementById('locSuggestions').style.display = 'none';
-  updateLocationControlUI();
   if(!(opts && opts.skipRender)) render();
 }
 
 function expandRadius(){
-  const steps = [5, 10, 25, 50, 'all'];
-  const idx = steps.indexOf(radiusMiles);
-  radiusMiles = steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)];
-  updateRadiusButtons();
+  const steps = Discovery.radii; // 5, 10, 25, 50, 'orbit'
+  const idx = steps.indexOf(state.where.radius);
+  setState({where: {radius: steps[idx === -1 ? steps.length - 1 : Math.min(idx + 1, steps.length - 1)]}});
   render();
 }
 
@@ -2520,8 +2584,7 @@ document.getElementById('locClearBtn').onclick = ()=> clearLocation();
 document.getElementById('useMyLocationBtn').onclick = useMyLocation;
 document.querySelectorAll('.radius-chip').forEach(btn=>{
   btn.onclick = ()=>{
-    radiusMiles = btn.dataset.radius === 'all' ? 'all' : parseInt(btn.dataset.radius, 10);
-    updateRadiusButtons();
+    setState({where: {radius: btn.dataset.radius === 'all' ? 'orbit' : parseInt(btn.dataset.radius, 10)}});
     render();
   };
 });
@@ -2616,69 +2679,75 @@ window.addEventListener('resize', ()=>{
 // collapsing WHEN/WHERE/FILTER into three buttons never hides what's
 // currently active from someone who hasn't opened a sheet.
 function updateMobileTriggers(){
-  const WHEN_LABELS = {now:'Now', today:'Today', tonight:'Tonight', weekend:'This Weekend'};
+  const active = Discovery.describe(state);
+  const mode = state.when.mode;
   const whenSub = document.getElementById('whenTriggerSub');
-  whenSub.textContent = (whenMode && WHEN_LABELS[whenMode]) ? WHEN_LABELS[whenMode] : 'Anytime';
-  document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!whenMode);
+  if(mode === 'dates'){
+    // This button's own, shorter wording for a picked date ("Oct 3", no weekday).
+    whenSub.textContent = formatRangeLabel(state.when.from, state.when.to);
+  } else {
+    const when = active.find(e => e.dim === 'when');
+    whenSub.textContent = when ? when.label : 'Anytime';
+  }
+  document.getElementById('whenTriggerBtn').classList.toggle('has-value', !!mode);
 
   const whereSub = document.getElementById('whereTriggerSub');
-  if(originLocation){
-    const radiusLabel = (radiusMiles === 'all' || radiusMiles === null) ? 'Detroit Orbit' : `${radiusMiles} mi`;
-    whereSub.textContent = `${radiusLabel} · ${originLocation.name}`;
-  } else {
-    whereSub.textContent = 'Everywhere';
-  }
-  document.getElementById('whereTriggerBtn').classList.toggle('has-value', !!originLocation);
+  const origin = active.find(e => e.dim === 'where' && e.key === 'origin');
+  whereSub.textContent = origin ? origin.label : 'Everywhere';
+  document.getElementById('whereTriggerBtn').classList.toggle('has-value', !!origin);
 
   const filterSub = document.getElementById('filterTriggerSub');
   const totalCats = Object.keys(CATS).length;
+  const selectedCats = state.what.paths.length, features = state.what.features.length;
   const parts = [];
-  if(activeCats.size < totalCats) parts.push(`${activeCats.size}/${totalCats} cats`);
-  if(freeOnly) parts.push('Free');
-  if(activeFeatures.size) parts.push(`${activeFeatures.size} feature${activeFeatures.size===1?'':'s'}`);
+  if(selectedCats) parts.push(`${selectedCats}/${totalCats} cats`);
+  if(state.what.free) parts.push('Free');
+  if(features) parts.push(`${features} feature${features===1?'':'s'}`);
   filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
+// Links to the other surfaces carry the current filters (Discovery.href), so
+// Home -> Calendar -> Map -> Calendar keeps the same query. Calendar's own
+// month, day and view are position, not filters, and are not carried.
+function updateSurfaceLinks(){
+  const ctx = discoveryCtx();
+  document.querySelectorAll('a[data-surface]').forEach(a=>{
+    a.setAttribute('href', Discovery.href(a.dataset.surface, state, ctx));
+  });
+}
+
 // ---- URL state ----
-// Reflects date/view/categories/search/when in the URL so a state can be
-// bookmarked, shared, or reloaded — per the brief's "filter state + URLs"
-// requirement. Uses replaceState (not pushState) on every change so normal
+// Reflects the state in the URL so a view can be bookmarked, shared, or
+// reloaded. Uses replaceState (not pushState) on every change so normal
 // browsing doesn't spam browser history with one entry per keystroke/click;
 // the URL still updates live and reloading/sharing it reproduces the view.
+//
+// The FILTERS are Discovery's codec (toQuery/fromQuery) — the same encoding
+// every surface reads and writes: when (+ from/to), cats, free, features, q,
+// loc, radius, neighborhood. Calendar adds its own POSITION on top, which
+// Discovery never reads: `date` (the day open / month browsed) and `view`
+// (list | map; month is the default and is omitted).
 function syncURL(){
-  const params = new URLSearchParams();
-  // The restore logic below only ever reads the month/year back out of this
-  // param (see dateParam handling), so which exact day gets encoded here is
-  // purely cosmetic — it doesn't change what a reloaded/shared URL shows.
-  // Still, showing an arbitrary "01" when the real default is today reads as
-  // wrong at a glance. Prefer, in order: the actually-selected day, else
-  // today's real date (while browsing the current month, which is the
-  // homepage default), else just the 1st of whatever other month is showing.
-  const todayIso = getTodayISO();
-  const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
-  const dateForUrl = selectedDate || (isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1));
-  params.set('date', dateForUrl);
-  if(mode !== 'month') params.set('view', mode);
-  if(whenMode) params.set('when', whenMode);
-  if(activeCats.size < Object.keys(CATS).length) params.set('cats', Array.from(activeCats).join(','));
-  if(freeOnly) params.set('free', '1');
-  if(activeFeatures.size) params.set('features', Array.from(activeFeatures).join(','));
-  if(query) params.set('q', query);
-  // A geolocation-derived origin (type:'here') has no stable name to
-  // round-trip through a URL — omitted rather than encoding raw coordinates,
-  // which would put the visitor's location in a shareable link.
-  if(originLocation && originLocation.type !== 'here'){
-    params.set('loc', originLocation.name);
-    if(radiusMiles !== null) params.set('radius', String(radiusMiles));
+  // List (the default) writes only the shared query — no `view`, no `date`,
+  // so a List link is the same link every surface writes. The legacy Month
+  // and Map views write their position as they always have (`date`, the
+  // browsed month or the open day) plus an explicit `view`, which is how a
+  // link keeps opening them now that List is the default.
+  const filters = Discovery.toQuery(state);
+  const parts = [];
+  if(mode !== 'list'){
+    const todayIso = getTodayISO();
+    const isCurrentMonth = current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1;
+    const dateForUrl = selectedDate || (isCurrentMonth ? todayIso : toISO(current.getFullYear(), current.getMonth(), 1));
+    parts.push('date=' + dateForUrl);
+    parts.push('view=' + mode);
   }
-  const qs = params.toString();
+  if(filters) parts.push(filters);
   // Wrapped defensively: history.replaceState throws a SecurityError in a
-  // sandboxed about:srcdoc context (e.g. an embedded preview iframe, which
-  // has no real address of its own to rewrite) — URL bookmarking is a
-  // nice-to-have, so a failure here should never break the rest of render().
+  // sandboxed about:srcdoc context (e.g. an embedded preview iframe).
   try {
-    history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
+    history.replaceState(null, '', parts.length ? `${location.pathname}?${parts.join('&')}` : location.pathname);
   } catch (err) {
     // Silently skip — nothing else depends on this succeeding.
   }
@@ -2686,98 +2755,42 @@ function syncURL(){
 
 // Reads the above back out on initial load, so a shared/bookmarked link
 // reproduces the same view. Applied once, before the first render() — every
-// later interaction just goes through the normal state variables + syncURL().
+// later interaction just goes through setState() + syncURL().
+//
+// What the filters in a link mean is decided by Discovery.fromQuery(),
+// including every old form (when=now, a cats= list from the old "everything
+// on" model, radius=all, ...). Calendar's own `date` and `view` are read here.
 function readStateFromURL(){
   const params = new URLSearchParams(location.search);
+  // What the filters in a link mean is decided by Discovery.fromQuery(),
+  // including every legacy form (when=now, radius=all, old cats= lists…).
+  state = Discovery.fromQuery(location.search);
+  if(state.q) document.getElementById('search').value = state.q;
+  // A picked date / range shows in the When sheet's two inputs.
+  if(state.when.mode === 'dates'){
+    setWhenInputs(state.when.from, state.when.to !== state.when.from ? state.when.to : '');
+  }
 
+  // `date` is the legacy Month view's position (the browsed month and the
+  // open day); the List reads its days from the query instead.
   const dateParam = params.get('date');
   if(dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)){
     const d = new Date(dateParam+"T12:00:00");
     const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
     if(monthStart >= MIN_MONTH && monthStart <= MAX_MONTH){
       current = monthStart;
-      // 2026-09-15 fix: a ?date= link (e.g. the homepage's right-rail mini
-      // calendar) used to only move the visible month, leaving the actual
-      // day unselected — the visitor landed on the right month but saw
-      // "today" highlighted instead of the day they clicked, and no event
-      // list opened at all. Selecting the date here means the existing
-      // `if(selectedDate) showDayPanel(selectedDate)` in render() (a few
-      // hundred lines down) does the rest: opens that day's event list and
-      // scrolls it into view, same as clicking the cell by hand would.
       selectedDate = dateParam;
     }
   }
 
-  const catsParam = params.get('cats');
-  if(catsParam !== null){
-    // An empty/invalid list intentionally means "show nothing" — matching
-    // whatever state was actually shared, rather than silently falling back
-    // to "show everything" and misrepresenting the link.
-    activeCats = new Set(catsParam.split(',').filter(k=>CATS[k]));
-  }
-
-  if(params.get('free') === '1') freeOnly = true;
-
-  const featuresParam = params.get('features');
-  if(featuresParam){
-    const validKeys = new Set(FEATURE_CHIPS.map(f=>f.key));
-    activeFeatures = new Set(featuresParam.split(',').filter(k=>validKeys.has(k)));
-  }
-
-  const qParam = params.get('q');
-  if(qParam){ query = qParam; document.getElementById('search').value = qParam; }
-
+  // `view`: list (the default, also when absent or unknown), month or map.
   const viewParam = params.get('view');
   const explicitView = viewParam === 'list' || viewParam === 'month' || viewParam === 'map';
-  if(viewParam === 'list') mode = 'list';
-  if(viewParam === 'map') mode = 'map';
+  mode = viewParam === 'month' ? 'month' : viewParam === 'map' ? 'map' : 'list';
 
-  const whenParam = params.get('when');
-  if(whenParam && ['now','today','tonight','weekend'].includes(whenParam)){
-    whenMode = whenParam;
-    if(whenParam === 'weekend'){
-      cachedWeekendDates = getWeekendDates();
-      if(!explicitView) mode = 'list';
-    } else {
-      selectedDate = getTodayISO();
-    }
-  }
-
-  if(mode === 'list'){
-    document.getElementById('listViewBtn').classList.add('active');
-    document.getElementById('monthViewBtn').classList.remove('active');
-    document.getElementById('calWrap').style.display = 'none';
-    document.getElementById('listView').classList.add('show');
-  }
-
-  if(mode === 'map'){
-    document.getElementById('mapViewBtn').classList.add('active');
-    document.getElementById('monthViewBtn').classList.remove('active');
-    document.getElementById('monthNavGroup').style.display = 'none';
-    document.getElementById('calWrap').style.display = 'none';
-    document.getElementById('mapView').classList.add('show');
-    // Same reasoning as mapViewBtn's own click handler: Leaflet needs its
-    // container visible before init, which is now true since the classList
-    // toggle above already happened.
-    initLeaflet();
-  }
-
-  // A shared link only restores a NAMED location (a real match in
-  // LOCATIONS) — a one-off geolocation origin was never put in the URL to
-  // begin with (see syncURL), so there's nothing to restore for those.
-  const locParam = params.get('loc');
-  if(locParam){
-    const found = LOCATIONS.find(l => l.name.toLowerCase() === locParam.toLowerCase());
-    if(found){
-      originLocation = found;
-      const radiusParam = params.get('radius');
-      if(radiusParam === 'all') radiusMiles = 'all';
-      else {
-        const n = parseInt(radiusParam, 10);
-        radiusMiles = (!isNaN(n) && [5,10,25,50].includes(n)) ? n : 'all';
-      }
-    }
-  }
+  positionForWhen({fromURL: true, explicitView});
+  applyMode();
+  if(mode === 'map') initLeaflet();
   updateLocationControlUI();
 }
 
@@ -2883,7 +2896,48 @@ function mapSupabaseRow(row) {
     eventPageUrl: row.event_url || undefined,
     ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
+    // The venue's neighborhood, by the real FK chain events_public uses
+    // server-side (venue_id -> venues.neighborhood_id -> neighborhoods.name;
+    // migration_025) — see loadVenueNeighborhoods(). Never matched by name,
+    // never guessed: no venue_id, or a venue with no neighborhood, is null.
+    neighborhood: neighborhoodForVenue(row.venue_id),
   };
+}
+
+// venue_id -> neighborhood name, once loadVenueNeighborhoods() answers.
+let VENUE_NEIGHBORHOOD = null;
+function neighborhoodForVenue(venueId){
+  if(venueId == null || !VENUE_NEIGHBORHOOD) return null;
+  return VENUE_NEIGHBORHOOD.get(venueId) || null;
+}
+// The List's neighborhood line, the WHERE neighborhood filter and the
+// Active neighborhoods readout need each event's neighborhood. This page
+// reads the `events` table (with its venues embed, which the legacy Map's
+// precise pins use), which has no neighborhood column, so the join
+// events_public does in Postgres is made here from the same two public
+// tables venues.html already reads. Loaded beside the events, applied to
+// whatever is on the page when it lands. Silent on failure: rows then show
+// no neighborhood, exactly as before.
+async function loadVenueNeighborhoods(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  try {
+    const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+    const [venueRes, hoodResp] = await Promise.all([
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/venues?select=id,neighborhood_id&neighborhood_id=not.is.null&order=id.asc`, headers),
+      fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?select=id,name&limit=200`, { headers }),
+    ]);
+    if(!hoodResp.ok) return;
+    const hoods = await hoodResp.json();
+    if(!Array.isArray(hoods)) return;
+    const names = new Map(hoods.map(n => [n.id, n.name]));
+    const map = new Map();
+    (venueRes.rows || []).forEach(v => { const name = names.get(v.neighborhood_id); if(name) map.set(v.id, name); });
+    VENUE_NEIGHBORHOOD = map;
+    EVENTS.forEach(e => { if(e.venueId != null) e.neighborhood = neighborhoodForVenue(e.venueId); });
+    render();
+  } catch (err) {
+    // Silent by design — rows simply show no neighborhood.
+  }
 }
 
 // Ticket-status fallback note (2026-10-01, Needs Follow-up remaining-gap
@@ -2932,7 +2986,7 @@ async function loadVenueLatLng(){
 }
 
 async function loadSupabaseEvents() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) { feedStatus = 'error'; render(); return; } // not configured — the List says so; Month/Map stay on fallback data
   try {
     // Venue coordinates load first so the very first map render (if the
     // visitor is already on the Map tab, e.g. from a shared view=map link)
@@ -2963,9 +3017,11 @@ async function loadSupabaseEvents() {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
     }); // throws if nothing could be loaded — caught below, fallback data stays on screen
-    if (!rows.length) return;
+    if (!rows.length) { feedStatus = 'error'; render(); return; } // an empty feed is not an inventory
 
     EVENTS = rows.map(mapSupabaseRow);
+    feedStatus = 'ready';
+    feedEverLoaded = true;
     byDate = {};
     EVENTS.forEach(e => { addToByDate(byDate, e); });
     Object.values(byDate).forEach(list => list.sort((a,b) => timeSortMinutes(a.time) - timeSortMinutes(b.time)));
@@ -2973,9 +3029,14 @@ async function loadSupabaseEvents() {
     buildFilterBar();
     render();
   } catch (err) {
-    // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
+    // The legacy Month and Map views stay usable on FALLBACK_EVENTS, as
+    // before. The List says it could not reach the feed (with Retry) and
+    // keeps the last good inventory if it ever had one.
+    feedStatus = 'error';
+    render();
   }
 }
+loadVenueNeighborhoods();
 loadSupabaseEvents();
 </script>
 </body>

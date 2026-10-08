@@ -107,6 +107,8 @@ class FakeElement {
   removeAttribute(k) { delete this.attributes[k]; }
   // tree
   appendChild(child) { child.parentNode = this; this.children.push(child); this._html = ""; this._text = null; return child; }
+  // ParentNode.append(): nodes are appended, strings become text nodes.
+  append(...nodes) { nodes.forEach((n) => { if (n && typeof n === "object") this.appendChild(n); else { const t = new FakeElement("span", this._doc); t.textContent = String(n); this.appendChild(t); } }); }
   remove() { if (this.parentNode) this.parentNode.children = this.parentNode.children.filter((c) => c !== this); this.parentNode = null; }
   contains(other) { for (let n = other; n; n = n.parentNode) if (n === this) return true; return false; }
   _descendants(out) { this.children.forEach((c) => { out.push(c); c._descendants(out); }); return out; }
@@ -174,6 +176,7 @@ function makeDocument(seed) {
     body,
     listeners: {},
     createElement: (tag) => new FakeElement(tag, doc),
+    createTextNode: (text) => { const t = new FakeElement("span", doc); t.textContent = text; return t; },
     getElementById(id) {
       // An element the script itself built and gave this id wins…
       const built = body._descendants([]).find((el) => el.id === id && !el._standIn);
