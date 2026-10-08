@@ -16,6 +16,9 @@
 //     the date window had an end but no start.
 //   - Oct. 10 end date: "the last of any two dates" became an end date.
 //   - "10 a.m.": "a.m. " read as a sentence boundary.
+//   - (five other events) the page <title> and site menus were stripped
+//     along with the article, so the event's name first "appeared" in the
+//     <title> and the description became the title plus the menu.
 // The same footer address is on two more published events (Backyard and
 // Beyond, Your Attention Please).
 //
@@ -87,6 +90,26 @@ async function run() {
     assert.strictEqual(counts.stillHuman, 1, "it stays in Press Coverage for a decision");
   }
   console.log("PASS: without a confirmed venue the article stays with a person instead of publishing Venue TBA / Warren");
+
+  // 3b. header/navigation: the page <title> and site menus are outside the
+  //     article. Shape of the Grosse Pointe News pages that gave five events
+  //     a description made of the page title plus the menu.
+  {
+    const gp = `<html><head><title>Harvest Fest around the corner - Grosse Pointe News</title></head><body>
+<header><form>Search for: Search Submit</form><ul><li>Advertising</li><li>Obituary Submission Form</li><li>Wedding Submission Form</li><li>Warren</li><li>Troy</li></ul></header>
+<main><h1>Harvest Fest around the corner</h1><p>By staff on September 17, 2026</p>
+<p>Neighbors gather at the Grand Hall next month when the Harvest Fest returns Oct. 10 with games and cider.</p></main>
+<footer>Copyright Grosse Pointe News. All Rights Reserved.</footer></body></html>`;
+    const t = await pageText(gp);
+    assert.ok(!/Submission Form|Search for|Grosse Pointe News|Troy/.test(t), `only the article: ${t}`);
+    const gid = pc.extractEventIdentity("Harvest Fest around the corner", t, "2026-09-17T12:00:00Z");
+    assert.ok(gid.description && !/Submission|Search/.test(gid.description), `description is article prose: ${gid.description}`);
+    assert.strictEqual(gid.startDate, "2026-10-10", "the byline's Sept. 17 is not the event date");
+    assert.strictEqual(pc.dropLeadingByline("Headline By Erica Banas - September 18, 2026 The show opens Oct. 1."), "The show opens Oct. 1.", "dash-style byline");
+    assert.strictEqual(pc.dropLeadingByline("The show opens Oct. 1, 2026. By then it will be cold."), "The show opens Oct. 1, 2026. By then it will be cold.", "no byline: unchanged");
+    assert.strictEqual(pc.articleRegion("<div>a</div><main>x</main><main>y</main>"), "<div>a</div><main>x</main><main>y</main>", "two <main> elements: ambiguous, whole page as before");
+  }
+  console.log("PASS: the page title, site menus and footer stay out of extraction (one <article>/<main> is the article)");
 
   // 4. no regressions in what the window and ranges are meant to keep
   const P = "2026-10-01T12:00:00Z";

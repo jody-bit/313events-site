@@ -17,6 +17,9 @@
 //   4. rows go out with event_url and WITHOUT a ticket_url key, so the daily
 //      merge-duplicates upsert can no longer erase a ticket link entered by
 //      hand (it sent ticket_url: null before)
+//   6. a stored event link is never replaced, except a blank one or the bare
+//      GottaGacha homepage; generic enrichment's venue-website fallback can
+//      never put the homepage over an occurrence link
 //   5. admin.html, unchanged, stops flagging such a row; the same row without
 //      a link is still flagged (GottaGacha is NOT a source limitation -- the
 //      queue shrinks because the gap is filled, not because it is hidden)
@@ -40,7 +43,8 @@ process.env.SUPABASE_URL = "https://example.supabase.co";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
 delete process.env.CRON_SECRET;
 const gg = require(`${REPO_DIR}/api/cron-gottagacha.js`);
-const { eventDetailUrl, parseEvent, buildExternalId } = gg;
+const { eventDetailUrl, parseEvent, buildExternalId, keepEventUrl } = gg;
+const { resolveDigitalHomeLink } = require(`${REPO_DIR}/api/_lib/venue-lookup.js`);
 
 const FNM = "d1eeabd3-3385-44af-a25d-406c8a544bf9"; // Friday Night Magic (weekly)
 const COUNTERHIT = "88284bee-c852-482c-9407-063eac5c2788"; // CounterHit: Tourney of Terror
@@ -114,6 +118,57 @@ async function run() {
     assert.strictEqual(rows.find((r) => r.title.startsWith("CounterHit")).event_url, eventDetailUrl(COUNTERHIT, "2026-10-10"), "a description's start.gg link is still never extracted");
   }
   console.log("PASS: every row carries its event_url and omits ticket_url, so a hand-entered ticket link survives the daily run");
+
+  // 6. better stored links win; the homepage never wins
+  {
+    const derived = eventDetailUrl(FNM, "2026-10-09");
+    assert.strictEqual(keepEventUrl(undefined, derived), derived, "new row: the occurrence link");
+    assert.strictEqual(keepEventUrl(null, derived), derived, "stored blank: filled");
+    assert.strictEqual(keepEventUrl("  ", derived), derived, "stored whitespace: filled");
+    assert.strictEqual(keepEventUrl("https://www.gottagacha.com/", derived), derived, "stored homepage: replaced by the occurrence link");
+    assert.strictEqual(keepEventUrl("https://gottagacha.com", derived), derived);
+    assert.strictEqual(keepEventUrl("https://www.start.gg/tournament/x/details", derived), undefined, "a stored specific link a person chose is kept (key omitted)");
+    assert.strictEqual(keepEventUrl(derived, derived), undefined, "an existing occurrence link is left as it is");
+    assert.strictEqual(keepEventUrl(null, null), undefined, "nothing derivable: no key, so nothing is blanked");
+    assert.strictEqual(keepEventUrl("https://www.start.gg/x", null), undefined);
+
+    // end to end: one row keeps a hand-set link, one has its homepage replaced
+    const calls = [];
+    global.fetch = async (url, opts = {}) => {
+      calls.push({ url, opts });
+      if (url.includes("www.gottagacha.com/api/events")) return { ok: true, status: 200, json: async () => ({ events: [apiEvent(), apiEvent({ eventDate: "2026-10-16" }), apiEvent({ id: "not-a-uuid", eventDate: "2026-10-23" })] }) };
+      if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
+      if (url.includes("/rest/v1/source_runs") && opts.method === "POST") return { ok: true, status: 201, json: async () => [{ id: "run-1" }] };
+      if (url.includes("/rest/v1/source_runs") && opts.method === "PATCH") return { ok: true, status: 204, json: async () => ({}) };
+      if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) {
+        assert.ok(url.includes("select=external_id,status,event_url"), "the existing event_url is read before writing");
+        return { ok: true, status: 200, json: async () => [
+          { external_id: buildExternalId(FNM, "2026-10-09"), status: "approved", event_url: "https://www.start.gg/tournament/fnm/details" },
+          { external_id: buildExternalId(FNM, "2026-10-16"), status: "approved", event_url: "https://www.gottagacha.com/" },
+          { external_id: buildExternalId("not-a-uuid", "2026-10-23"), status: "approved", event_url: "https://example.org/kept" },
+        ] };
+      }
+      if (url.includes("/rest/v1/events") && opts.method === "POST") return strictWriteResponse(url, opts);
+      throw new Error("unmocked URL in test: " + url);
+    };
+    const res = { status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } };
+    await gg({ headers: {} }, res);
+    assert.strictEqual(res._status, 200, JSON.stringify(res._body));
+    const rows = calls.filter((c) => c.url.includes("/rest/v1/events") && c.opts.method === "POST").flatMap((c) => JSON.parse(c.opts.body));
+    const byDate = (d) => rows.find((r) => r.start_date === d);
+    assert.ok(!("event_url" in byDate("2026-10-09")), "the hand-set start.gg link is not overwritten");
+    assert.strictEqual(byDate("2026-10-16").event_url, eventDetailUrl(FNM, "2026-10-16"), "the homepage is replaced by the occurrence link");
+    assert.ok(!("event_url" in byDate("2026-10-23")), "no derivable link: nothing sent, the stored link survives");
+    assert.ok(rows.every((r) => !("ticket_url" in r)));
+  }
+  // generic enrichment's last-resort venue-website link cannot touch a row that has its occurrence link
+  {
+    const venue = { id: "v1", name: "GottaGacha", website: "https://www.gottagacha.com/" };
+    const maps = { byId: new Map([["v1", venue]]) };
+    assert.strictEqual(resolveDigitalHomeLink({ venue_id: "v1", event_url: eventDetailUrl(FNM, "2026-10-09"), ticket_url: null }, maps), null, "an occurrence link is never replaced by the homepage");
+    assert.strictEqual(resolveDigitalHomeLink({ venue_id: "v1", event_url: null, ticket_url: null }, maps), "https://www.gottagacha.com/", "(the fallback only ever fills a link that is blank)");
+  }
+  console.log("PASS: stored specific links are kept, the homepage is replaced, and enrichment's homepage fallback cannot override an occurrence link");
 
   // 5. admin.html (unchanged) stops flagging it -- because the gap is filled
   {

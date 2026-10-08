@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 
 // Vercel Cron job — pulls upcoming events from GottaGacha (gottagacha.com),
@@ -207,6 +207,22 @@ function eventDetailUrl(seriesId, eventDate) {
   if (typeof seriesId !== "string" || !SERIES_ID_RE.test(seriesId)) return null;
   if (typeof eventDate !== "string" || !EVENT_DATE_RE.test(eventDate)) return null;
   return `https://www.gottagacha.com/events/${seriesId.toLowerCase()}?date=${eventDate}`;
+}
+
+// keepEventUrl(existing, derived) -> the event_url to send, or undefined to
+// send no event_url at all (the stored value stands). Admin Hardening
+// slice 1 safeguards, 2026-10-08:
+//   - a stored link a person or another process set is never replaced,
+//     unless it is blank or the bare GottaGacha homepage (the one value this
+//     source must never carry -- e.g. a venue-website fallback);
+//   - a derived link is never "replaced" by nothing: when no occurrence URL
+//     can be derived (malformed id/date) the key is omitted, so a stored
+//     link survives and a new row gets the column default (null).
+const GOTTAGACHA_HOMEPAGE_RE = /^https?:\/\/(?:www\.)?gottagacha\.com\/?$/i;
+function keepEventUrl(existing, derived) {
+  const stored = typeof existing === "string" ? existing.trim() : "";
+  if (stored && !GOTTAGACHA_HOMEPAGE_RE.test(stored)) return undefined;
+  return derived || undefined;
 }
 
 // `location` normalizes to "gottagacha" for every currently-observed
@@ -438,12 +454,14 @@ module.exports = async (req, res) => {
     // (<=100 ids/request) this also fixes. Any failure aborts this run
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
-    let existingStatusByExternalId;
+    let existingRows;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      // event_url too (2026-10-08): see keepEventUrl() below.
+      existingRows = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,event_url" }
       );
     } catch (lookupErr) {
       await finishRun(runHandle, {
@@ -454,12 +472,17 @@ module.exports = async (req, res) => {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
+    const existingStatusByExternalId = new Map([...existingRows].map(([id, r]) => [id, r.status]));
+    const existingEventUrlByExternalId = new Map([...existingRows].map(([id, r]) => [id, r.event_url]));
     const rowsWithStatus = rows.map((row) => {
       const { _defaultStatusForRow, ...rest } = row;
       // An existing row's internal_note belongs to people and to the
       // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
       // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.
       if (existingStatusByExternalId.has(row.external_id)) delete rest.internal_note;
+      const eventUrl = keepEventUrl(existingEventUrlByExternalId.get(row.external_id), rest.event_url);
+      if (eventUrl === undefined) delete rest.event_url;
+      else rest.event_url = eventUrl;
       return {
         ...rest,
         status: existingStatusByExternalId.get(row.external_id) || _defaultStatusForRow,
@@ -501,6 +524,7 @@ module.exports = async (req, res) => {
 
 module.exports.parseEvent = parseEvent; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.mapCategory = mapCategory; // exposed for test/cron-gottagacha-runlog.test.js only
+module.exports.keepEventUrl = keepEventUrl; // exposed for test/gottagacha-event-url.test.js only
 module.exports.eventDetailUrl = eventDetailUrl; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.buildExternalId = buildExternalId; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.isCanonicalGottaGachaLocation = isCanonicalGottaGachaLocation; // exposed for test/cron-gottagacha-runlog.test.js only

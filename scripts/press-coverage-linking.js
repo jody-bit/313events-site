@@ -195,13 +195,51 @@ function trimTrailingBoilerplate(text) {
   return out;
 }
 
+// articleRegion(html) -> the HTML of the page's one <article>, else its one
+// <main>, else the whole page (the previous behavior). Admin Hardening
+// slice 1 (2026-10-08): stripping the WHOLE page put the <title> tag and the
+// site menus ahead of the article, and the event's name first "appeared" in
+// the <title>. Five of the eight auto-created editorial events got the page
+// title plus the menu as their description ("... - Grosse Pointe News
+// Search for: Search Submit Advertising ... Wedding Submission Form ...").
+// Checked on the three outlets that produced them (C&G Newspapers, Grosse
+// Pointe News, Hour Detroit): each page has exactly one <main> or <article>
+// holding the headline, byline and body and none of the menus, sidebars or
+// footer. More than one such element is ambiguous, so the whole page is
+// used, exactly as before.
+function articleRegion(html) {
+  if (!html) return html;
+  for (const tag of ["article", "main"]) {
+    const re = new RegExp(`<${tag}\\b[\\s\\S]*?<\\/${tag}>`, "gi");
+    const found = html.match(re);
+    if (found && found.length === 1) return found[0];
+  }
+  return html;
+}
+
+// dropLeadingByline(text) -> the text after the article's byline, when a
+// byline ("By <name> on <Month> <D>, <YYYY>" or "By <name> - <Month> <D>,
+// <YYYY>") opens the article. Admin Hardening slice 1 (2026-10-08): the
+// headline and byline sit inside the article element, and the byline's
+// publish date counted as the event's date -- Stone Wall Pumpkin Festival
+// (byline Oct. 6, event Oct. 10) and Tau Beta Fall Market (byline Sept. 17).
+// Only a byline within the first 600 characters, with a full date and year,
+// is recognised; anything else leaves the text unchanged. The headline is
+// still passed to the extractors separately.
+function dropLeadingByline(text) {
+  if (!text) return text;
+  const re = new RegExp(`^[\\s\\S]{0,600}?\\bBy\\s+[^.]{1,80}?(?:\\s+on|\\s*[-–—|·])\\s+${MONTH_NAMES_RE}\\s+\\d{1,2},\\s+\\d{4}\\b`);
+  const m = text.match(re);
+  return m ? text.slice(m[0].length).trim() : text;
+}
+
 async function fetchArticleText(url, fetchFn) {
   try {
     const doFetch = fetchFn || fetch;
     const resp = await doFetch(url, { headers: { "User-Agent": UA, Accept: "text/html" } });
     if (!resp.ok) return null;
     const html = await resp.text();
-    return trimTrailingBoilerplate(stripHtml(html)).slice(0, MAX_ARTICLE_CHARS);
+    return dropLeadingByline(trimTrailingBoilerplate(stripHtml(articleRegion(html)))).slice(0, MAX_ARTICLE_CHARS);
   } catch {
     return null; // fail closed — never throws; caller treats this as "no body text available"
   }
@@ -1288,6 +1326,8 @@ module.exports = {
   createEvent,
   dismissArticle,
   fetchArticleText,
+  articleRegion,
+  dropLeadingByline,
 };
 
 if (require.main === module) {
