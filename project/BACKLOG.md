@@ -462,6 +462,20 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Residue (left in place deliberately; not `DONE` until cleaned):** staging holds one synthetic row, "SZ01 CANARY approved event" (`rejected`, private marker note) because deletion needs interactive confirmation here. Harmless; delete when convenient. Staging also holds the test submissions "PREVIEW ISOLATION TEST 20261006", "SZ01 SUBMISSION TEST 20261006 COMMUNITY" and "BUG008 GAMING TEST 20261006" (`pending_review`). Staging also carries the `gaming` enum value (irreversible) and its `categories` row, matching production.
 - **Not part of SZ-01 (still open):** cron authentication fail-open, `events.status` default, the missing-FK-index and unused-index advisor notes. (BUG-008, the gaming category, was a separate defect and is now `ACCEPTED`.)
 
+### TASK-009 — Engineering foundation: minimum sufficient
+
+- **Type:** TASK (foundation) · **Status:** REVIEW (Product Owner acceptance pending) · **Priority:** Critical
+- **Related:** `ENGINEERING_READINESS_REVIEW.md`; TASK-007, TASK-008
+- **Delivered:** environment/release foundation (TASK-007); SZ-01 access boundary (TASK-008); BUG-008 category contract; internal-note containment; clock-independent CI (#9, `97f5734`, plus a +120-day CI pass); safe `events.status` default `pending_review` (#10, `5030bc3`, applied to production 2026-10-08); publication gate first slice (#11, `75f56fb`: Dossin, new rows only; 24 connectors remain on the ratchet list in `test/publication-gate-adoption.test.js`); duplicate durability (#12, `593b674`): RA identity match needs compatible title + same date + same stated venue, and Eventbrite/GottaGacha no longer overwrite an existing row's `internal_note` (where `DUP_MERGED_INTO`/`DUP_DISTINCT` live).
+- **Verified (2026-10-08 21:00 UTC Dossin run):** `success`, `publication_gate` summary recorded, the 8 existing Dossin rows byte-identical to the pre-merge fingerprint, all connector runs since the deploy succeeded, no `GATE v` notes outside Dossin, 32 merged duplicates still `rejected` with their 36 source identities intact.
+- **Preserved CAN-WAIT backlog (not foundation blockers):**
+  - **HIGH:** cross-source duplicate detection before public publication (reuse the conservative/durable duplicate contract; no aggressive fuzzy matching).
+  - durable structured decisions table replacing free-text duplicate markers; authoritative event follow-up/revalidation; cancellation/postponement/reschedule representation; event change history/provenance (SZ-07); proximity/risk-based recheck scheduling.
+  - broader publication-gate adoption (other 24 connectors, starting with Ticketmaster in report-only mode); held state + issues table (SZ-08); shared taxonomy check in the gate; field authority beyond blank-protection (DEBT-011).
+  - Orbit authority incl. the Ontario gap and strict Orbit; explicit venue-unlink channel and address-reuse false-match veto (SZ-13/14); advanced venue/entity identity.
+  - truthful monitoring (SZ-09); cron auth fail-closed (CRON_SECRET is set in Production); `ra-sync` approves directly (RA lane).
+- **Staging residue:** gate test rows are all `rejected`; deletion needs interactive confirmation, so they are left in place.
+
 ---
 
 ## Bugs
