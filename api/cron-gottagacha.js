@@ -90,16 +90,25 @@ const { upsertEventRows } = require("./_lib/event-upsert");
 //
 // FIELDS DELIBERATELY LEFT NULL (verified unavailable or unauthorized to
 // infer — see discovery notes):
-//   event_url    — no event-specific URL exists in either source format
-//                  (confirmed: JSON has none; ICS's URL property is
-//                  always the bare site root). NOT set to the site root
-//                  merely because the ICS feed contains it.
+//   event_url    — NOT a data field in either source format (JSON has
+//                  none; ICS's URL property is always the bare site
+//                  root, which is still never used). BUT the source's own
+//                  site has a per-occurrence detail page, and its own
+//                  /events calendar links to it -- see eventDetailUrl()
+//                  below (Admin Hardening slice 1, 2026-10-08). That URL
+//                  is built from the same two authoritative fields as
+//                  external_id, so it is derived, not guessed.
 //   ticket_url   — no structured, authoritative per-event ticket field
 //                  exists. Some descriptions incidentally contain a
 //                  third-party link (start.gg, Eventbrite, TicketTailor)
 //                  as free text -- never extracted; that would be the same
 //                  unauthorized description-scraping this project already
 //                  declined to do for Cinema Detroit's description (SH.8).
+//                  The key is OMITTED from every row rather than sent as
+//                  null: with merge-duplicates an explicit null erases a
+//                  ticket link a person entered by hand (api/_lib/
+//                  event-upsert.js, "key OMITTED"). New rows still get the
+//                  column default, null.
 //   image_url    — VERIFIED UNAVAILABLE: no image/artwork field of any
 //                  kind in the JSON response's field set or the ICS
 //                  feed's property list.
@@ -174,6 +183,30 @@ function apiUrl() {
 // different dates of the same series, distinct across different series.
 function buildExternalId(seriesId, eventDate) {
   return `gottagacha-${seriesId}-${eventDate}`;
+}
+
+// The source's own per-occurrence detail page (Admin Hardening slice 1,
+// 2026-10-08). Evidence, checked live in a browser that day:
+//   - the /events calendar's own "See full details" link for an occurrence
+//     is exactly `/events/<series id>?date=<eventDate>` (e.g. CounterHit:
+//     Tourney of Terror -> /events/88284bee-...-063eac5c2788?date=2026-10-10),
+//     the same two fields buildExternalId() uses;
+//   - the page renders THAT occurrence: Friday Night Magic's series id with
+//     date=2026-10-16 shows "Friday, October 16, 2026 9:00 PM - 2:00 AM";
+//     Zam's Club: Melee #7 renders its own title and date;
+//   - an unknown id renders "Event not found";
+//   - production already held one such URL (Friday Night Magic, 2026-10-09),
+//     entered by hand from Admin > Needs follow-up.
+// Built only when both fields have the exact shapes the API returns (a
+// UUID series id, an ISO date); anything else -> null, never a guess and
+// never the bare site root. It is an event page, not a ticket page, so it
+// goes in event_url.
+const SERIES_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const EVENT_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+function eventDetailUrl(seriesId, eventDate) {
+  if (typeof seriesId !== "string" || !SERIES_ID_RE.test(seriesId)) return null;
+  if (typeof eventDate !== "string" || !EVENT_DATE_RE.test(eventDate)) return null;
+  return `https://www.gottagacha.com/events/${seriesId.toLowerCase()}?date=${eventDate}`;
 }
 
 // `location` normalizes to "gottagacha" for every currently-observed
@@ -283,8 +316,8 @@ function parseEvent(e) {
     is_all_day: false, // see header note -- every demonstrated event is timed
     is_free: false, // schema default; never inferred from absence of price (explicit instruction)
     price_from: null, // no structured price field demonstrated
-    ticket_url: null, // no authoritative event-specific URL demonstrated
-    event_url: null, // VERIFIED UNAVAILABLE -- see header note
+    // ticket_url deliberately omitted (not null) -- see header note.
+    event_url: eventDetailUrl(e.id, e.eventDate), // the source's own occurrence page -- see eventDetailUrl()
     image_url: null, // VERIFIED UNAVAILABLE -- see header note
     source: "GottaGacha",
     internal_note: isAmbiguous
@@ -468,5 +501,6 @@ module.exports = async (req, res) => {
 
 module.exports.parseEvent = parseEvent; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.mapCategory = mapCategory; // exposed for test/cron-gottagacha-runlog.test.js only
+module.exports.eventDetailUrl = eventDetailUrl; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.buildExternalId = buildExternalId; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.isCanonicalGottaGachaLocation = isCanonicalGottaGachaLocation; // exposed for test/cron-gottagacha-runlog.test.js only
