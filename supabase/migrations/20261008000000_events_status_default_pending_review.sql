@@ -1,0 +1,18 @@
+-- 20261008000000_events_status_default_pending_review.sql
+--
+-- The default for a new event is NOT public.
+--
+-- events.status has defaulted to 'approved' since the first schema, so any
+-- code path that inserts an event and forgets to say its status publishes it.
+-- Every writer that exists today states its status explicitly (submit and RA
+-- promotion: pending_review; Admin and RA sync: approved by a person or a
+-- decided pipeline; the 25 ingestion connectors: their trust tier, or the
+-- shared publication gate) — test/events-status-default.test.js pins that —
+-- so this changes no current behavior. It protects code that does not exist
+-- yet: organizer submissions, imports, a new connector, a manual SQL insert.
+-- Publishing must be an explicit act (ENGINEERING_READINESS_REVIEW.md SZ-01
+-- item 5).
+--
+-- Metadata-only (no table rewrite), idempotent, reversible by setting the
+-- default back. Existing rows are untouched.
+alter table events alter column status set default 'pending_review';
