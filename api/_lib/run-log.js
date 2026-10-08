@@ -132,6 +132,21 @@ async function startRun(sourceSlug) {
 //   error_sample     string | undefined — sanitized here, callers don't need to pre-sanitize
 const VALID_FINISH_OUTCOMES = new Set(["success", "partial", "failed", "blocked"]);
 
+const MAX_SESSION_DATA_CHARS = 6000;
+function capSessionData(value) {
+  if (!value || typeof value !== "object") return null;
+  try {
+    const json = JSON.stringify(value);
+    if (json.length <= MAX_SESSION_DATA_CHARS) return value;
+    // Too large: keep the counters, drop the samples.
+    const { samples, ...rest } = value.publication_gate && typeof value.publication_gate === "object" ? value.publication_gate : value;
+    const trimmed = value.publication_gate ? { publication_gate: { ...rest, samples_truncated: true } } : { ...rest, truncated: true };
+    return JSON.stringify(trimmed).length <= MAX_SESSION_DATA_CHARS ? trimmed : { truncated: true };
+  } catch (_) {
+    return null;
+  }
+}
+
 async function finishRun(runHandle, fields = {}) {
   if (!runHandle || !runHandle.runId) return; // startRun no-opped or failed — nothing to finish
   if (!configured()) return;
@@ -150,6 +165,12 @@ async function finishRun(runHandle, fields = {}) {
     error_sample: sanitizeErrorSample(fields.error_sample) ?? null,
     duration_ms,
   };
+  // Optional structured detail (the publication gate's per-run summary).
+  // Only written when a caller supplies it, so every existing caller's
+  // request body is unchanged; size-capped so a log can never become the
+  // reason a run is slow or large.
+  const sessionData = capSessionData(fields.session_data);
+  if (sessionData) body.session_data = sessionData;
   try {
     await fetch(`${supabaseUrl()}/rest/v1/source_runs?id=eq.${encodeURIComponent(runHandle.runId)}`, {
       method: "PATCH",
@@ -170,4 +191,4 @@ async function finishRun(runHandle, fields = {}) {
   }
 }
 
-module.exports = { startRun, finishRun, sanitizeErrorSample };
+module.exports = { startRun, finishRun, sanitizeErrorSample, capSessionData };
