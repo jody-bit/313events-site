@@ -4163,8 +4163,8 @@
     color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;white-space:nowrap;
   }
   /* The signal dot is part of the title: "DON'T MISS ●" is one lockup, a
-     fixed em gap after the S, at every width. */
-  .dm-sig{display:inline-block;width:.3em;height:.3em;border-radius:50%;background:var(--accent);margin-left:.22em;vertical-align:.12em;}
+     fixed pixel gap after the S (7 / 6 / 5px by width), at every width. */
+  .dm-sig{display:inline-block;width:.3em;height:.3em;border-radius:50%;background:var(--accent);margin-left:6.25px;vertical-align:.12em;}
   .dm-sub{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.3;}
   .dm-rail{position:relative;min-width:0;}
   .dm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
@@ -4200,11 +4200,13 @@
     .dm-grid::-webkit-scrollbar{display:none;}
     .dm-card{flex:0 0 44%;scroll-snap-align:start;}
     .dm-dots{display:flex;}
+    .dm-sig{margin-left:5.25px;}
   }
   @media (max-width:640px){
     .dont-miss{margin-bottom:18px;}
     .dm-head{gap:2px 10px;padding-bottom:6px;margin-bottom:10px;}
     .dm-title{font-size:22px;}
+    .dm-sig{margin-left:5px;}
     .dm-sub{font-size:12px;}
     .dm-card{flex-basis:70%;}
     .dm-name{font-size:19px;}
