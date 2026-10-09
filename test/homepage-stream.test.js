@@ -320,7 +320,9 @@ async function run() {
 
     // Given placements (as a future source would supply them), it shows the
     // ones that are in their period and whose event is current — at most three.
+    page.run(`EVENTS.forEach(e => { e.imageUrl = e.id === "w03" ? "" : "https://img.example/" + e.id + ".jpg"; });`);
     page.run(`dontMissPlacements = [
+      { eventId: "w03", reason: "Has no image, so it is skipped." },
       { eventId: "u03", reason: "One night only.", eyebrow: "Detroit debut" },
       { eventId: "x01", reason: "Already over today." },
       { eventId: "x02", reason: "A blocked name." },
@@ -336,6 +338,13 @@ async function run() {
     assert.strictEqual(page.el("dontMissSection").style.display, "");
     assert.deepStrictEqual([...html.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Sunday 03", "Long Run", "Later 01"]);
     assert.deepStrictEqual([...html.matchAll(/class="dm-reason">([^<]*)</g)].map((m) => m[1]), ["One night only.", "Third."], "the reason is the editor's; none is invented where none was given");
+    assert.ok(!/Has no image/.test(html), "a placement whose event has no usable image is skipped; the next one fills the slot");
+    assert.strictEqual([...html.matchAll(/<img class="dm-art"/g)].length, 3, "every rendered card has its image");
+    // An image that fails to load drops its card and the next placement takes the slot.
+    page.run(`dmImageFailed({ getAttribute: () => "https://img.example/u03.jpg" });`);
+    const afterFail = page.el("dontMissSection").innerHTML;
+    assert.ok(!/Sunday 03/.test(afterFail) && [...afterFail.matchAll(/class="dm-card"/g)].length === 3, "a failed image removes its card and the rail refills to three");
+    page.run(`dmBadImages.clear(); renderDontMiss();`);
     assert.ok(/<h2 class="dm-title">Don't Miss<\/h2>/.test(html));
     assert.ok(html.includes("Extraordinary events. Handpicked for this moment."), "the descriptor");
     assert.deepStrictEqual([...html.matchAll(/class="dm-eyebrow">([^<]*)</g)].map((m) => m[1]), ["Detroit debut"], "an eyebrow only where an editor wrote one");

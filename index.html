@@ -6147,6 +6147,18 @@ function viewToday(){
 let dontMissPlacements = [];
 const DONT_MISS_LIMIT = 3;
 
+// A Don't Miss card is an image card: an event with no usable image is skipped
+// and the next configured placement takes its slot (no generic stand-in art).
+const dmBadImages = new Set();
+function dmHasImage(e){
+  const u = e.imageUrl && safeUrl(e.imageUrl);
+  return !!u && !dmBadImages.has(u);
+}
+function dmImageFailed(img){
+  dmBadImages.add(img.getAttribute('src'));
+  renderDontMiss();
+}
+
 function activeDontMiss(){
   const today = getTodayISO(), ctx = inventoryCtx();
   const out = [];
@@ -6155,6 +6167,7 @@ function activeDontMiss(){
     if((p.from && today < p.from) || (p.to && today > p.to)) return;
     const event = EVENTS.find(e => String(e.id) === String(p.eventId));
     if(!event || !Discovery.matches(event, Discovery.defaults(), ctx)) return;
+    if(!dmHasImage(event)) return;
     if(out.some(o => o.event === event)) return;
     out.push({event, reason: p.reason || '', eyebrow: p.eyebrow || ''});
   });
@@ -6174,7 +6187,7 @@ function dontMissCardHtml({event: e, reason, eyebrow}){
     : `<span class="dm-date"><span class="dm-date-m">${start.mon}</span><span class="dm-date-d">${start.day}</span></span>`;
   const where = [e.venue, e.neighborhood || e.city].filter(Boolean).join(' · ');
   const body = `
-    ${e.imageUrl && safeUrl(e.imageUrl) ? `<img class="dm-art" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+    ${e.imageUrl && safeUrl(e.imageUrl) ? `<img class="dm-art" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="dmImageFailed(this)">` : ''}
     <span class="dm-scrim" aria-hidden="true"></span>
     ${eyebrow ? `<span class="dm-eyebrow">${escapeHtml(eyebrow)}</span>` : ''}
     <div class="dm-body">
