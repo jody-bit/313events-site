@@ -4244,6 +4244,7 @@
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/discovery.js"></script>
+<script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -5524,23 +5525,10 @@ function eventDateTimeParts(e){
   return { allDay:false, startDate:dateStr, startTime, endDate:endDateStr, endTime };
 }
 
-function icsEscape(str){
-  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
-}
-
-// Folds a single logical iCalendar line at 75 octets, per RFC 5545 §3.1 —
-// long SUMMARY/DESCRIPTION/LOCATION values would otherwise produce an
-// invalid file that some calendar apps silently truncate or reject.
-function foldICSLine(line){
-  if(line.length <= 75) return line;
-  let out = line.slice(0,75);
-  let rest = line.slice(75);
-  while(rest.length){
-    out += '\r\n ' + rest.slice(0,74);
-    rest = rest.slice(74);
-  }
-  return out;
-}
+// RFC 5545 TEXT escaping and octet-correct line folding live in
+// calendar-location.js so every export path shares one implementation.
+const icsEscape = CalendarLocation.icsEscape;
+const foldICSLine = CalendarLocation.foldICSLine;
 
 function buildEventDescription(e){
   const parts = [];
@@ -5553,8 +5541,11 @@ function buildEventDescription(e){
   return parts.join('\n');
 }
 
+// The calendar LOCATION ("Venue, Street, City, ST ZIP") is resolved by the
+// shared calendar-location.js -- the same result feeds the .ics LOCATION
+// property and Google's `location` parameter. Do not format it here.
 function buildEventLocation(e){
-  return e.city ? `${e.venue}, ${e.city}` : e.venue;
+  return CalendarLocation.resolveForEvent(e).text;
 }
 
 function buildICS(e){
@@ -5575,12 +5566,12 @@ function buildICS(e){
     dtstart,
     dtend,
     `SUMMARY:${icsEscape(e.title)}`,
-    `LOCATION:${icsEscape(buildEventLocation(e))}`,
+    CalendarLocation.icsLocationLine(CalendarLocation.resolveForEvent(e)),
     `DESCRIPTION:${icsEscape(buildEventDescription(e))}`,
     'END:VEVENT',
     'END:VCALENDAR',
   ];
-  return lines.map(foldICSLine).join('\r\n');
+  return lines.filter(Boolean).map(foldICSLine).join('\r\n');
 }
 
 function buildGoogleCalUrl(e){
@@ -5593,7 +5584,7 @@ function buildGoogleCalUrl(e){
     text: e.title,
     dates,
     details: buildEventDescription(e),
-    location: buildEventLocation(e),
+    location: CalendarLocation.googleLocationParam(CalendarLocation.resolveForEvent(e)),
     ctz: 'America/Detroit',
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
@@ -5621,7 +5612,12 @@ function addToCalendarHtml(e){
   const icsHref = URL.createObjectURL(icsBlob);
   const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
   const gcalHref = buildGoogleCalUrl(e);
-  return `<span class="evt-cal">
+  // data-location-incomplete: the export has no street address, so it must
+  // not be presented as navigable; the missing parts are listed for QA and
+  // for the enrichment follow-up (project/BACKLOG.md DEBT-013).
+  const loc = CalendarLocation.resolveForEvent(e);
+  const locAttr = loc.navigable ? '' : ` data-location-incomplete="${escapeHtml(loc.missing.join(','))}"`;
+  return `<span class="evt-cal"${locAttr}>
     <a href="${escapeHtml(gcalHref)}" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>
   </span>`;
 }
@@ -7402,6 +7398,11 @@ function mapSupabaseRow(row) {
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
     // shows, since that's exactly the info that was silently missing before.
     city: (row.venue_city && row.venue_city.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city) : undefined,
+    // Calendar-export location inputs (calendar-location.js). The display
+    // city above hides "Detroit"; the calendar needs the real one. The
+    // street address is not in events_public -- loadCalendarLocations()
+    // below fills locEventAddress / locVenue* in after the first render.
+    locEventCity: row.venue_city ? decodeEntities(row.venue_city) : undefined,
     cat: row.category,
     time: row.time_display || "",
     free: !!row.is_free,
@@ -7504,11 +7505,49 @@ async function loadSupabaseEvents() {
     buildFilterBar();
     render();
     renderNeighborhoodsRail();
+    loadCalendarLocations();
   } catch (err) {
     // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
   }
 }
 loadSupabaseEvents();
+
+// Street addresses for Add to Calendar (calendar-location.js). events_public
+// carries only venue_name/venue_city, so the address the calendar LOCATION
+// needs is read separately, after the first render, from two small public
+// reads that need no schema change: every venues row (id, address, city,
+// zip_code -- ~130 rows) and the events' own venue_address_raw. Both are on
+// the anon grant list (SZ-01). If either read fails, the calendar entry
+// falls back to whatever it already had (venue name + city) and is marked
+// data-location-incomplete -- it is never given an invented address.
+async function loadCalendarLocations(){
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
+  try {
+    const [venueRes, eventRes] = await Promise.all([
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/venues?select=id,address,city,zip_code&order=id.asc`, headers),
+      fetchAllRows(`${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&venue_address_raw=not.is.null&select=id,venue_address_raw,venue_city_raw&order=id.asc`, headers),
+    ]);
+    const venues = new Map(venueRes.rows.map(v => [v.id, v]));
+    const raw = new Map(eventRes.rows.map(r => [r.id, r]));
+    EVENTS.forEach(e => {
+      const r = raw.get(e.id);
+      if (r) {
+        e.locEventAddress = decodeEntities(r.venue_address_raw);
+        if (r.venue_city_raw) e.locEventCity = decodeEntities(r.venue_city_raw);
+      }
+      const v = e.venueId ? venues.get(e.venueId) : null;
+      if (v) {
+        e.locVenueAddress = v.address ? decodeEntities(v.address) : undefined;
+        e.locVenueCity = v.city ? decodeEntities(v.city) : undefined;
+        e.locVenueZip = v.zip_code || undefined;
+      }
+    });
+    render();
+  } catch (err) {
+    // Silent by design: Add to Calendar keeps its venue-name/city fallback.
+  }
+}
 
 // Dedicated exact count for the Detroit Orbit widget's "events loaded"
 // teaser (Jody, 2026-08-27: "the total number of current and upcoming

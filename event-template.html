@@ -241,6 +241,7 @@
 </style>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
+<script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -510,16 +511,12 @@ function eventDateTimeParts(e){
   }
   return { allDay:false, startDate:dateStr, startTime, endDate:endDateStr, endTime };
 }
-function icsEscape(str){
-  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
-}
-function foldICSLine(line){
-  if(line.length <= 75) return line;
-  let out = line.slice(0,75), rest = line.slice(75);
-  while(rest.length){ out += '\r\n ' + rest.slice(0,74); rest = rest.slice(74); }
-  return out;
-}
-function buildEventLocation(e){ return e.city ? `${e.venue}, ${e.city}` : e.venue; }
+// RFC 5545 TEXT escaping and octet-correct folding live in calendar-location.js
+// (shared with index.html) so every export path uses one implementation.
+const icsEscape = CalendarLocation.icsEscape;
+const foldICSLine = CalendarLocation.foldICSLine;
+// Calendar LOCATION = "Venue, Street, City, ST ZIP", resolved once by calendar-location.js.
+function buildEventLocation(e){ return CalendarLocation.resolveForEvent(e).text; }
 function buildEventDescription(e){
   const parts = [];
   if(e.description) parts.push(truncateText(e.description, 300));
@@ -538,17 +535,17 @@ function buildICS(e){
   const lines = [
     'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//313.events//Add to Calendar//EN','CALSCALE:GREGORIAN',
     'BEGIN:VEVENT', `UID:${uid}`, `DTSTAMP:${dtstamp}`, dtstart, dtend,
-    `SUMMARY:${icsEscape(e.title)}`, `LOCATION:${icsEscape(buildEventLocation(e))}`,
+    `SUMMARY:${icsEscape(e.title)}`, CalendarLocation.icsLocationLine(CalendarLocation.resolveForEvent(e)),
     `DESCRIPTION:${icsEscape(buildEventDescription(e))}`, 'END:VEVENT', 'END:VCALENDAR',
   ];
-  return lines.map(foldICSLine).join('\r\n');
+  return lines.filter(Boolean).map(foldICSLine).join('\r\n');
 }
 function buildGoogleCalUrl(e){
   const parts = eventDateTimeParts(e);
   const dates = parts.allDay ? `${parts.startDate}/${parts.endDate}` : `${parts.startDate}T${parts.startTime}/${parts.endDate}T${parts.endTime}`;
   const params = new URLSearchParams({
     action: 'TEMPLATE', text: e.title, dates, details: buildEventDescription(e),
-    location: buildEventLocation(e), ctz: 'America/Detroit',
+    location: CalendarLocation.googleLocationParam(CalendarLocation.resolveForEvent(e)), ctz: 'America/Detroit',
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
@@ -622,6 +619,15 @@ function mapRow(row) {
     // when venue_id resolves and is nonblank, raw venue_address_raw
     // otherwise, blank/undefined (no invented address) if neither has one.
     address: vd.address ? decodeEntities(vd.address) : undefined,
+    // Calendar-export inputs (calendar-location.js): the event's own raw
+    // address/city and the canonical venue row kept SEPARATE, because the
+    // calendar prefers a complete event-level address over a venue default
+    // while the page above shows canonical-first.
+    locEventAddress: row.venue_address_raw ? decodeEntities(row.venue_address_raw) : undefined,
+    locEventCity: row.venue_city_raw ? decodeEntities(row.venue_city_raw) : undefined,
+    locVenueAddress: row.venues && row.venues.address ? decodeEntities(row.venues.address) : undefined,
+    locVenueCity: row.venues && row.venues.city ? decodeEntities(row.venues.city) : undefined,
+    locVenueZip: row.venues && row.venues.zip_code ? row.venues.zip_code : undefined,
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
     cat: row.category,
     time: row.time_display || "",
@@ -754,6 +760,9 @@ function renderEvent(e){
   actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
+  // No street address -> the calendar entry is not navigable; mark it for QA/enrichment (DEBT-013).
+  const calLoc = CalendarLocation.resolveForEvent(e);
+  if(calLoc.navigable) delete actions.dataset.locationIncomplete; else actions.dataset.locationIncomplete = calLoc.missing.join(',');
 
   // Conditional Ticketmaster affiliate disclosure (2026-10-01, Phase 1
   // Legal + Trust pass, item F / Jody's decision 1: "Only show this
@@ -902,7 +911,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();

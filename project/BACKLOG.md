@@ -829,6 +829,17 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** none yet.
 - **Product Decisions Required:** none new; any change to `events_public` must preserve the deployed SZ-01 contract (`supabase/verify/public_boundary_check.sql`, `test/public-boundary.test.js`).
 
+### DEBT-013 — Calendar exports: venue/event records still missing a ZIP or street address
+
+- **Type:** DEBT (data enrichment) · **Status:** BACKLOG (recorded 2026-10-09; the export defect itself is fixed in code by the shared `calendar-location.js`, see Implementation Notes) · **Priority:** P2
+- **Source:** the calendar-location fix (P0). The formatter never invents a component, so data gaps now show up as an incomplete calendar LOCATION instead of being hidden.
+- **Findings:**
+  1. Production `venues` has no state column, and only 26 of 131 rows have `zip_code`. State is derived from the city (Michigan/Ohio lists shared with `api/_lib/orbit-cities.js`); ZIP is shown only when a record carries it.
+  2. **Glenn Barr: The Beautiful and the Banal** (event `15c5c165-ab1e-4d8a-817b-8cc1eb135b9f`) has `venue_id` null and no venue row for The Gallery at Ideation Orange; the event stores `420 W. 9 Mile Rd` / `Hazel Park` and no ZIP. Its calendar LOCATION is `The Gallery at Ideation Orange, 420 W 9 Mile Rd, Hazel Park, MI` until a canonical venue with `zip_code` (48030 expected, to be confirmed from a first-party source) exists. Creating the venue row is a data change and waits for approval (see `DEBT-002`).
+  3. 76 of 131 venues have no `address`; upcoming approved events with no street address anywhere are exposed to the same gap (18 with no `venue_id` and no raw address, 2 with a `venue_id` whose venue has no address, on 2026-10-09). Their exports carry `data-location-incomplete` and are not presented as navigable.
+- **Acceptance Criteria (proposed):** venue ZIPs backfilled from first-party sources through the existing Needs Follow-up / venue-knowledge flow (`api/_lib/venue-knowledge.js`, `admin.html` `getMissingFields()`); no new schema.
+- **Implementation Notes:** the calendar location is resolved only by `calendar-location.js`; `index.html` reads addresses through `loadCalendarLocations()` (no change to `events_public`, so the SZ-01 contract is untouched).
+
 ---
 
 ## Discovery / decisions needed
