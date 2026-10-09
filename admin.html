@@ -69,6 +69,30 @@
   .health-banner .fail-list li{margin-bottom:2px;}
   .health-banner .checked-at{color:var(--ink-soft);font-weight:400;}
 
+  /* Control tower (2026-10-09, Admin Hardening Slice 2) -- read-only.
+     System health (sources) and human decisions (event classes) are two
+     separate blocks on purpose: one is fixed by engineering, the other by
+     a person; mixing them is how a broken connector turned into 600 cards. */
+  .ct-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;margin:10px 0 16px;}
+  .ct-tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);}
+  .ct-tile .n{font-size:20px;font-weight:800;color:var(--ink);}
+  .ct-tile .l{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+  .ct-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .ct-table th{text-align:left;color:var(--ink-soft);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  .ct-table td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-soft);}
+  .ct-table td b{color:var(--ink);}
+  .ct-wrap{overflow-x:auto;}
+  .ct-table tr.ct-main td{border-bottom:none;padding-bottom:3px;}
+  .ct-state{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+  .ct-state.blocked,.ct-state.failing{background:var(--bad-ink);color:var(--bad);border:1px solid var(--bad);}
+  .ct-state.needs_decision,.ct-state.unscheduled,.ct-state.stale{background:#443a1a;color:#e8c96b;}
+  .ct-state.repairable,.ct-state.degraded{background:#1f3344;color:#8cc4ef;}
+  .ct-state.advisory,.ct-state.insufficient_evidence,.ct-state.inactive{background:var(--panel-alt);color:var(--ink-soft);border:1px solid var(--line);}
+  .ct-state.cleared,.ct-state.healthy{background:var(--ok-ink);color:var(--ok);border:1px solid var(--ok);}
+  .ct-events{margin:6px 0 0;padding-left:18px;}
+  .ct-events li{margin-bottom:3px;}
+  .ct-link{background:none;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:12.5px;font-family:inherit;}
+
   .refresh{margin-bottom:16px;display:flex;align-items:center;gap:10px;}
   .refresh button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
   .refresh button:disabled{opacity:.6;cursor:default;}
@@ -211,6 +235,7 @@
          used to be the first section a moderator scrolled to. -->
     <nav class="tabs" id="adminTabs">
       <button type="button" class="tab-btn" data-tab="health" onclick="showTab('health')">Smoke tests <span class="tab-badge hidden" id="badge-health">0</span></button>
+      <button type="button" class="tab-btn" data-tab="tower" onclick="showTab('tower')">Control tower <span class="tab-badge hidden" id="badge-tower">0</span></button>
       <button type="button" class="tab-btn" data-tab="editorial" onclick="showTab('editorial')">Press coverage <span class="tab-badge hidden" id="badge-editorial">0</span></button>
       <button type="button" class="tab-btn active" data-tab="submissions" onclick="showTab('submissions')">Event submissions <span class="tab-badge hidden" id="badge-submissions">0</span></button>
       <button type="button" class="tab-btn" data-tab="followup" onclick="showTab('followup')">Needs follow-up <span class="tab-badge hidden" id="badge-followup">0</span></button>
@@ -237,6 +262,26 @@
         <h2>Resident Advisor sync</h2>
         <div class="sub">The device's browser-driven scheduled task still walks ra.co's listing and fetches each event's detail page -- RA's anti-bot defenses require a real browser, so that part is unchanged. Everything after that (deciding what's genuinely new, deriving fields, a conservative duplicate check, and the actual database write) now happens server-side here, tracked as one sync session per run.</div>
         <div id="raSyncBanner" class="health-banner"></div>
+      </section>
+    </div>
+
+    <!-- Control tower (2026-10-09, Admin Hardening Slice 2). Observability
+         only: nothing on this tab writes, repairs, merges, hides or changes
+         any event's status. See api/_lib/control-tower.js. -->
+    <div class="tab-panel" data-tab-panel="tower">
+      <section class="block" style="margin-top:0;">
+        <h2>System health <span class="sub" style="font-weight:normal;">(sources — fixed by engineering, not by editing events)</span></h2>
+        <div class="sub">A run that "succeeded" is not a healthy source. Each source is measured on execution, retrieval, useful output, records written and inventory currency separately; "insufficient evidence" means the connector keeps no run log, not that it is fine. Stale means not re-seen at the source on schedule — it never means cancelled.</div>
+        <div class="err" id="towerError" style="display:none;"></div>
+        <div class="sub" id="towerSystemSummary"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerSources"></table></div>
+        <div class="sub" id="towerAnomalies" style="margin-top:10px;"></div>
+      </section>
+      <section class="block">
+        <h2>Human decisions <span class="sub" style="font-weight:normal;">(public upcoming events, grouped by problem)</span></h2>
+        <div class="sub">Every event gets exactly one state — Cleared, Advisory, Repairable, Needs decision or Blocked — and every state but Cleared says why. A problem shared by many events is listed once, with how many it affects: a repair class, not a pile of cards.</div>
+        <div class="ct-tiles" id="towerTiles"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerClasses"></table></div>
       </section>
     </div>
 
@@ -353,8 +398,8 @@ async function loadAll() {
   if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
   setRefreshStatus('refreshing');
   try {
-    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete(), loadDuplicates()]);
-    const incompleteOk = results[results.length - 1] !== false;
+    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete(), loadDuplicates(), loadControlTower()]);
+    const incompleteOk = results[7] !== false; // loadIncomplete()
     setRefreshStatus(incompleteOk ? 'ok' : 'error');
   } catch (err) {
     // None of the current loaders reject (each catches its own errors), so
@@ -402,6 +447,84 @@ function setTabBadge(key, count) {
   if (!el) return;
   el.textContent = count;
   el.classList.toggle('hidden', !count);
+}
+
+// ---- Control tower (2026-10-09, Admin Hardening Slice 2) — read-only ----
+let TOWER = null;
+const TOWER_STATE_LABELS = { cleared: 'Cleared', advisory: 'Advisory', repairable: 'Repairable', needs_decision: 'Needs decision', blocked: 'Blocked' };
+function towerPct(x) { return x === null || x === undefined ? '—' : Math.round(x * 100) + '%'; }
+function towerWhen(iso) { if (!iso) return '—'; const d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+function towerChip(state, label) { return '<span class="ct-state ' + escapeHtml(state) + '">' + escapeHtml(label || TOWER_STATE_LABELS[state] || state.replace(/_/g, ' ')) + '</span>'; }
+async function loadControlTower() {
+  const errEl = document.getElementById('towerError');
+  if (!errEl) return true;
+  errEl.style.display = 'none';
+  try {
+    const resp = await fetch('/api/admin-events?integrity=1', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'HTTP ' + resp.status));
+    TOWER = data;
+    renderControlTower(data);
+    return true;
+  } catch (e) {
+    errEl.textContent = 'Failed to load the control tower: ' + e.message;
+    errEl.style.display = 'block';
+    return false;
+  }
+}
+function renderControlTower(data) {
+  const sys = data.system, dec = data.decisions;
+  const order = { failing: 0, unscheduled: 1, stale: 2, degraded: 3, insufficient_evidence: 4, healthy: 5, inactive: 6 };
+  const sources = sys.sources.slice().sort((a, b) => (order[a.status] - order[b.status]) || (b.upcomingPublic - a.upcomingPublic));
+  const by = sys.summary.byStatus || {};
+  document.getElementById('towerSystemSummary').innerHTML = '<b>' + sys.summary.sources + '</b> sources · <b>' + sys.summary.unhealthy + '</b> unhealthy · '
+    + Object.keys(by).sort((a, b) => order[a] - order[b]).map(k => towerChip(k) + ' ' + by[k]).join(' ')
+    + '<br>Currency basis: ' + escapeHtml(data.currencyBasis) + (sys.summary.runsError ? ' · <span style="color:var(--bad)">run log unreadable: ' + escapeHtml(sys.summary.runsError) + '</span>' : '')
+    + ' · computed ' + escapeHtml(towerWhen(data.generatedAt));
+  const dim = (d) => ['execution', 'retrieval', 'useful', 'written', 'currency'].map(k => {
+    const v = d[k] || 'unknown';
+    const color = v === 'ok' ? 'var(--ok)' : v === 'fail' ? 'var(--bad)' : 'var(--ink-soft)';
+    return '<span title="' + k + (k === 'useful' && d.usefulBasis ? ' (from ' + d.usefulBasis + ')' : '') + '" style="color:' + color + '">' + k[0].toUpperCase() + (v === 'ok' ? '✓' : v === 'fail' ? '✗' : '?') + '</span>';
+  }).join(' ');
+  document.getElementById('towerSources').innerHTML = '<tr><th>Source</th><th>Schedule</th><th>Last run / success</th><th>Fetched → written</th><th title="Execution, Retrieval, Useful records, Written, Currency">E R U W C</th><th>Public upcoming</th><th>Re-seen / last seen</th></tr>'
+    + sources.map(s => '<tr class="ct-main">'
+      + '<td><b>' + escapeHtml(s.label.replace(/\s*\(.*\)$/, '')) + '</b><br>' + towerChip(s.status) + '</td>'
+      + '<td>' + (s.schedule ? escapeHtml(s.schedule.expr || 'external') + (s.schedule.cadenceHours ? ' (' + s.schedule.cadenceHours + 'h)' : '') : '<b style="color:var(--bad)">none</b>') + '</td>'
+      + '<td>' + (s.runLogged ? escapeHtml(towerWhen(s.lastAttemptAt)) + ' ' + escapeHtml(s.lastOutcome || '') + '<br>ok ' + escapeHtml(towerWhen(s.lastSuccessAt)) : 'no run log') + '</td>'
+      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') : '—') + '</td>'
+      + '<td style="white-space:nowrap">' + dim(s.dimensions || {}) + '</td>'
+      + '<td>' + s.upcomingPublic + (s.upcomingPending ? ' (+' + s.upcomingPending + ' pending)' : '') + '</td>'
+      + '<td>' + towerPct(s.reseenShare) + '<br>' + escapeHtml(towerWhen(s.lastSeenPublicAt)) + (s.missingLinkRate !== null ? '<br>weak links ' + towerPct(s.missingLinkRate) : '') + '</td>'
+      + '</tr><tr><td colspan="7" style="padding-top:0;">' + s.reasons.map(escapeHtml).join(' · ') + '</td></tr>').join('');
+  const anomalies = sys.anomalies || [];
+  document.getElementById('towerAnomalies').innerHTML = (anomalies.length ? '<b>Unexplained anomalies:</b> ' + anomalies.map(a => escapeHtml(a.source + ' — ' + a.detail)).join(' · ') : 'No unexplained volume anomalies.')
+    + ' · ' + sys.unattributedPublicEvents + ' public upcoming events have no recurring source (manual, researched or one-off imports).';
+  const c = dec.counts, cur = dec.currency;
+  const tiles = [
+    ['Evaluated', dec.evaluated], ['Cleared', c.cleared], ['Advisory', c.advisory], ['Repairable', c.repairable], ['Needs decision', c.needs_decision], ['Blocked', c.blocked],
+    ['Stale currency', cur.stale], ['Unknown currency', cur.unknown], ['Unhealthy sources', sys.summary.unhealthy], ['Unexplained anomalies', anomalies.length],
+  ];
+  document.getElementById('towerTiles').innerHTML = tiles.map(t => '<div class="ct-tile"><div class="n">' + t[1] + '</div><div class="l">' + escapeHtml(t[0]) + '</div></div>').join('');
+  document.getElementById('towerClasses').innerHTML = '<tr><th>State</th><th>Problem</th><th>Affected</th><th>Where</th><th></th></tr>'
+    + dec.classes.map((k, i) => '<tr>'
+      + '<td>' + towerChip(k.state) + '</td>'
+      + '<td><b>' + escapeHtml(k.code) + '</b><br>' + escapeHtml(k.message) + '<div id="towerClassEvents' + i + '"></div></td>'
+      + '<td><b>' + k.count + '</b></td>'
+      + '<td>' + k.bySource.slice(0, 5).map(x => escapeHtml(x[0]) + ' ' + x[1]).join('<br>') + (k.bySource.length > 5 ? '<br>…' : '') + '</td>'
+      + '<td><button type="button" class="ct-link" onclick="toggleTowerClass(' + i + ')">events</button></td>'
+      + '</tr>').join('');
+  setTabBadge('tower', (c.needs_decision || 0) + (c.blocked || 0));
+}
+function toggleTowerClass(i) {
+  const el = document.getElementById('towerClassEvents' + i);
+  if (!el || !TOWER) return;
+  if (el.innerHTML) { el.innerHTML = ''; return; }
+  const code = TOWER.decisions.classes[i].code;
+  const hits = (TOWER.decisions.events || []).filter(e => e.reasons.some(r => r.code === code));
+  el.innerHTML = '<ul class="ct-events">' + hits.slice(0, 50).map(e => {
+    const why = e.reasons.find(r => r.code === code);
+    return '<li><a href="/event.html?id=' + encodeURIComponent(e.id) + '" target="_blank" rel="noopener">' + escapeHtml(e.title || e.id) + '</a> · ' + escapeHtml(e.start_date || '') + ' · ' + escapeHtml(e.source || '') + ' — ' + escapeHtml(why ? why.message : '') + '</li>';
+  }).join('') + (hits.length > 50 ? '<li>… and ' + (hits.length - 50) + ' more</li>' : '') + '</ul>';
 }
 
 // ---- Duplicates (2026-10-05) — the pairs the deterministic rules left to a person ----
