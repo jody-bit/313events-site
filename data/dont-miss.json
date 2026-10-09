@@ -1,0 +1,4 @@
+{
+  "_readme": "Don't Miss placements (DEC-025). Each entry features ONE existing event. eventId is the id= in the event's event.html?id=... link. Order here is the order on the homepage; at most 3 show. Remove an entry (or set `to`) to stop featuring it. eyebrow and reason are optional editorial text. Selection is editorial only and is never paid for.",
+  "placements": []
+}
