@@ -415,6 +415,55 @@ async function checkSourceHealth(target) {
   return checkSourceFreshnessAdvisory(target.source, target.days);
 }
 
+// 2026-10-09, Admin Hardening Slice 2 (Part E, truthful healthcheck).
+// Everything above asks "did the connector run". That is the EXECUTION
+// dimension only, and on 2026-10-08 it reported "ok" for Cinema Detroit
+// (fetched 38, wrote 0, eight days running), Belle Isle (fetched 0) and
+// Planet Ant (no run log; events last touched 2026-09-14), and said nothing
+// at all about Ticketmaster's 500+ public events with no schedule. These
+// checks report each source on five separate dimensions -- execution,
+// retrieval, useful records, records written, inventory currency -- from
+// the same snapshot Admin's control tower reads (api/_lib/control-tower.js),
+// so the banner and the control tower can never disagree.
+//   failing / stale / unscheduled-with-public-inventory -> the check fails
+//   degraded (a short zero streak, a volume anomaly)    -> passes, "WARN"
+//   insufficient evidence (no run log)                  -> passes, labelled
+//                                                          as such, never "healthy"
+// An inactive source (unscheduled, nothing public) is not reported.
+function sourceOutputCheck(source) {
+  const d = source.dimensions || {};
+  const dims = ["execution", "retrieval", "useful", "written", "currency"].map((k) => `${k}=${d[k] || "unknown"}`).join(" ");
+  const why = (source.reasons || []).join("; ");
+  const failing = ["failing", "stale", "unscheduled"].includes(source.status);
+  let detail;
+  if (failing) detail = `${source.status.toUpperCase()} — ${why} [${dims}]`;
+  else if (source.status === "degraded") detail = `WARN degraded — ${why} [${dims}]`;
+  else if (source.status === "insufficient_evidence") detail = `INSUFFICIENT EVIDENCE (no run log; not proof of health) — ${why} [${dims}]`;
+  else detail = `healthy — ${why} [${dims}]`;
+  return { name: `source output: ${source.label}`, ok: !failing, level: failing ? "fail" : source.status === "healthy" ? "ok" : source.status === "degraded" ? "warn" : "unknown", detail, dimensions: d, status: source.status };
+}
+
+async function checkSourceOutputs() {
+  const start = Date.now();
+  try {
+    const { loadSnapshot, buildReport } = require("./_lib/control-tower");
+    const snapshot = await loadSnapshot({ supabaseUrl: SUPABASE_URL, serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY, fetchFn: fetch });
+    const report = buildReport(snapshot, { includeEvents: false });
+    const checks = report.system.sources.filter((s) => s.status !== "inactive").map((s) => Object.assign(sourceOutputCheck(s), { ms: Date.now() - start }));
+    const dec = report.decisions;
+    checks.push({
+      name: "inventory integrity (advisory summary)",
+      ok: true, // integrity is a human-decision queue, not an outage
+      level: dec.counts.blocked ? "warn" : "ok",
+      detail: `${dec.evaluated} public upcoming: ${Object.entries(dec.counts).map(([k, v]) => `${k} ${v}`).join(", ")}; currency current ${dec.currency.current} / stale ${dec.currency.stale} / unknown ${dec.currency.unknown}`,
+      ms: Date.now() - start,
+    });
+    return checks;
+  } catch (err) {
+    return [{ name: "source output: snapshot", ok: false, level: "fail", detail: `could not read the inventory/run snapshot: ${err.message}`, ms: Date.now() - start }];
+  }
+}
+
 // cron-feeds.js has no fixed source string — it polls whatever's currently
 // approved in the organizer-submitted feed_sources registry (see
 // migration_008_feed_sources.sql: venue_name/feed_url/status, status enum
@@ -596,7 +645,8 @@ module.exports = async (req, res) => {
 
   const runStart = Date.now();
 
-  const checks = await Promise.all([
+  const sourceOutputChecks = checkSourceOutputs();
+  const baseChecks = await Promise.all([
     ...PAGES.map((p) => runCheck(`page: ${p}`, () => checkPage(p))),
     runCheck("supabase: approved events reachable", checkSupabaseData),
     ...SOURCE_FRESHNESS_TARGETS.map((t) =>
@@ -613,6 +663,7 @@ module.exports = async (req, res) => {
     runCheck("upload-image: real upload succeeds", checkUploadImageSuccess),
     runCheck("sitemap.xml", checkSitemap),
   ]);
+  const checks = baseChecks.concat(await sourceOutputChecks);
 
   const overall = checks.every((c) => c.ok) ? "ok" : "fail";
   const durationMs = Date.now() - runStart;
@@ -650,3 +701,5 @@ module.exports.checkSourceFreshnessAdvisory = checkSourceFreshnessAdvisory;
 module.exports.SOURCE_NAME_TO_SLUG = SOURCE_NAME_TO_SLUG;
 module.exports.SOURCE_FRESHNESS_TARGETS = SOURCE_FRESHNESS_TARGETS;
 module.exports.STARTED_RUN_TIMEOUT_MINUTES = STARTED_RUN_TIMEOUT_MINUTES;
+module.exports.sourceOutputCheck = sourceOutputCheck;
+module.exports.checkSourceOutputs = checkSourceOutputs;

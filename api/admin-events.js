@@ -236,6 +236,19 @@ module.exports = async (req, res) => {
       const includePending = req.query?.includePending === "1";
       const incomplete = req.query?.incomplete === "1";
       const duplicates = req.query?.duplicates === "1";
+      const integrityView = req.query?.integrity === "1";
+
+      // 2026-10-09, Admin Hardening Slice 2: the control tower. Read-only:
+      // system health (per source) kept apart from human decisions (per
+      // event, grouped into classes). Computed fresh each time from the
+      // same inventory the other views read -- see api/_lib/control-tower.js.
+      // Nothing is written, and no event's status is ever changed here.
+      if (integrityView) {
+        const { loadSnapshot, buildReport } = require("./_lib/control-tower");
+        const snapshot = await loadSnapshot({ supabaseUrl: SUPABASE_URL, serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY, fetchFn: fetch });
+        res.status(200).json(buildReport(snapshot, { includeEvents: true }));
+        return;
+      }
 
       // 2026-10-05: Admin > Duplicates. The deterministic pairs are merged
       // by the nightly pass; what is listed here is only what the rules
