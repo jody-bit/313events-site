@@ -202,6 +202,7 @@ function decide(rows, canonical) {
   const familyList = [...families.values()].map((f) => ({
     family: f.family, label: f.label, firstParty: f.firstParty, rows: f.rows, dates: f.dates.size, sampleIds: f.ids,
     corroborates: !COPY_PRONE(f.family),
+    confirms: false,
   })).sort((a, b) => b.rows - a.rows || (a.family < b.family ? -1 : 1));
   const evidence = { rows: rows.length, sources: familyList };
 
@@ -223,7 +224,7 @@ function decide(rows, canonical) {
   if (canonicalStreet) {
     const base = { address: canonical.address, city: canonical.city || null, venueId: canonical.id, evidence };
     if (disagreements.length) return { ...base, status: "canonical_conflict", disagreements: disagreements.slice(0, 10) };
-    return { ...base, status: "canonical" };
+    return { ...base, status: "canonical", basis: "the canonical venue record" };
   }
 
   const partial = canonical && !isBlank(canonical.city)
@@ -241,9 +242,11 @@ function decide(rows, canonical) {
   }
   // A canonical record without a street, whose city contradicts every statement.
   if (canonical && canonicalCity && canonicalCity !== rows[0].s.cityKey) {
+    // address/city are what the RECORD says; disagreements are what its events say.
     return {
-      status: "canonical_conflict", address: commonest(rows.map((r) => r.s.address)), city: commonest(rows.map((r) => r.s.city)),
-      venueId: canonical.id, evidence, disagreements: [{ id: null, source: "canonical venue record", address: canonical.address || null, city: canonical.city, cityDiffers: true, streetDiffers: false }],
+      status: "canonical_conflict", address: canonical.address || null, city: canonical.city,
+      venueId: canonical.id, evidence,
+      disagreements: [{ id: rows[0].e.id, source: rows[0].e.source, address: commonest(rows.map((r) => r.s.address)), city: commonest(rows.map((r) => r.s.city)), cityDiffers: true, streetDiffers: false }],
     };
   }
   const address = commonest(rows.map((r) => r.s.address));
@@ -252,7 +255,13 @@ function decide(rows, canonical) {
   let status = "single_source";
   if (corroborating.length >= MIN_INDEPENDENT_SOURCES) status = "learned";
   else if (corroborating.length === 1 && corroborating[0].firstParty && corroborating[0].dates >= MIN_FIRST_PARTY_DATES) status = "learned_first_party";
-  const out = { status, address, city, venueId: canonical ? canonical.id : null, canonicalGap: !!canonical, evidence };
+  // Which sources actually satisfied the trust rule. Copy-prone sources are
+  // observations only: they never confirm, whatever they state.
+  if (status === "learned" || status === "learned_first_party") for (const f of familyList) f.confirms = f.corroborates;
+  const basis = status === "learned" ? `${corroborating.length} independent sources agree`
+    : status === "learned_first_party" ? `the place's own source, on ${corroborating[0].dates} dates`
+    : null;
+  const out = { status, basis, address, city, venueId: canonical ? canonical.id : null, canonicalGap: !!canonical, evidence };
   if (partial && !TRUSTED.has(status)) out.fallback = partial;
   return out;
 }
@@ -343,8 +352,9 @@ function buildVenueKnowledge({ events = [], venues = [] } = {}) {
     const decided = decide(rows, null);
     if (!decided) continue;
     const fam = decided.evidence.sources[0];
-    const campusOk = decided.status !== "conflict" && decided.status !== "ambiguous" && decided.evidence.sources.length === 1 && fam.firstParty && fam.dates >= MIN_FIRST_PARTY_DATES;
-    const entry = { key: ck, name: ck.split("|")[1], ...decided, status: campusOk ? "learned_campus" : decided.status, campus: true };
+    const campusOk = decided.status !== "conflict" && decided.status !== "ambiguous" && decided.evidence.sources.length === 1 && fam.firstParty && fam.corroborates && fam.dates >= MIN_FIRST_PARTY_DATES;
+    if (campusOk) fam.confirms = true;
+    const entry = { key: ck, name: ck.split("|")[1], ...decided, status: campusOk ? "learned_campus" : decided.status, basis: campusOk ? `one campus street from the campus's own source, on ${fam.dates} dates` : decided.basis, campus: true };
     byCampus.set(ck, entry);
     entries.push(entry);
   }
@@ -477,7 +487,7 @@ function resolveLocationGap(event, knowledge) {
     if (clash) return { action: "conflict", patch: {}, entry: null, tier: "stated_in_location", reason: `event_${clash}_disagrees` };
     const patch = fillFrom(event, stated.address, stated.city);
     if (Object.keys(patch).length) {
-      const entry = { status: "stated_in_location", name: null, address: stated.address, city: stated.city, evidence: { rows: 1, sources: [{ family: sourceFamily(event), label: event.source, rows: 1 }] } };
+      const entry = { status: "stated_in_location", basis: "stated in full in this event's own location text", name: null, address: stated.address, city: stated.city, evidence: { rows: 1, sources: [{ family: sourceFamily(event), label: event.source, rows: 1, corroborates: true, confirms: true }] } };
       return { action: "fill", patch, entry, tier: "stated_in_location", reason: "stated_in_location" };
     }
   }
@@ -487,11 +497,27 @@ function resolveLocationGap(event, knowledge) {
 }
 
 // One line for internal_note, so a filled field always says where it came from.
+// It separates the sources that SATISFIED the trust rule ("confirmed by")
+// from everything else that was observed and did not count ("not counted"),
+// so no reader can take a copy-prone source -- Ticketmaster, a feed, a
+// connector that never states an address -- for the one that established
+// the address.
+function sourceList(list) {
+  return list.map((s) => `${s.label || s.family}×${s.rows}`).join(", ");
+}
 function provenanceLine(result, today) {
   const e = result.entry || {};
   const fields = Object.keys(result.patch || {}).join(", ");
-  const sources = ((e.evidence && e.evidence.sources) || []).map((s) => `${s.label || s.family}×${s.rows}`).join(", ");
-  return `${FILL_MARKER} ${today || new Date().toISOString().slice(0, 10)}: ${fields} from ${result.tier} (${e.status || result.reason})${e.name ? ` for "${e.name}"` : ""}${sources ? `; evidence: ${sources}` : ""}`;
+  const sources = (e.evidence && e.evidence.sources) || [];
+  const confirming = sources.filter((s) => s.confirms === true);
+  const copyProne = sources.filter((s) => s.confirms !== true && s.corroborates === false);
+  const observed = sources.filter((s) => s.confirms !== true && s.corroborates !== false);
+  const parts = [`${FILL_MARKER} ${today || new Date().toISOString().slice(0, 10)}: ${fields} from ${result.tier} (${e.status || result.reason})${e.name ? ` for "${e.name}"` : ""}`];
+  if (e.basis) parts.push(`basis: ${e.basis}`);
+  if (confirming.length) parts.push(`confirmed by: ${sourceList(confirming)}`);
+  if (observed.length) parts.push(`${e.status === "canonical" ? "agreeing, not needed" : "observed, not counted"}: ${sourceList(observed)}`);
+  if (copyProne.length) parts.push(`not counted (copy-prone): ${sourceList(copyProne)}`);
+  return parts.join("; ");
 }
 
 // ---------------------------------------------------------------------------
@@ -524,7 +550,6 @@ function summarizeVenueRepairs(events, knowledge) {
     if (noStreet) totals.withoutStreetAddress++;
     if (noCity) totals.withoutCity++;
     if (!noStreet && !noCity) continue;
-    if (e.no_fixed_venue === true && noStreet) { totals.gaps++; totals.excluded++; totals.excludedByReason.mobile = (totals.excludedByReason.mobile || 0) + 1; continue; }
     totals.gaps++;
     // What the public sees is the event's own field, or its venue's.
     const view = { ...e, venue_address_raw: noStreet ? null : e.venue_address_raw || linked.address, venue_city_raw: noCity ? null : e.venue_city_raw || linked.city };
@@ -550,7 +575,8 @@ function summarizeVenueRepairs(events, knowledge) {
         venue: name, action, reason: d.reason, tier: d.tier, status: entry ? entry.status : null,
         address: entry ? entry.address || null : null, city: entry ? entry.city || null : null,
         venueId: entry ? entry.venueId || null : null, events: 0, sampleIds: [], sources: new Set(),
-        evidence: entry && entry.evidence ? entry.evidence.sources.map((x) => ({ source: x.label || x.family, rows: x.rows, dates: x.dates, corroborates: x.corroborates !== false })) : [],
+        evidence: entry && entry.evidence ? entry.evidence.sources.map((x) => ({ source: x.label || x.family, rows: x.rows, dates: x.dates, corroborates: x.corroborates !== false, confirms: x.confirms === true })) : [],
+        basis: entry ? entry.basis || null : null,
         disagreements: entry && entry.disagreements ? entry.disagreements.slice(0, 5) : [],
       });
     }

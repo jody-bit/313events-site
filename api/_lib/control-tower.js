@@ -153,7 +153,11 @@ function venueRepairs(snapshot, publicEvents) {
       error: null,
       knowledge: { venueNames: knowledge.entries.length, byStatus: statusCounts, evidenceRows: snapshot.venueEvidence.length },
       totals: summary.totals,
-      byVenue: summary.byVenue.filter((g) => g.action !== "unknown" || g.events > 1).slice(0, 80),
+      // The human queue: what fills, what needs one venue confirmation, what
+      // needs a decision, what is deliberately excluded. Places nothing is
+      // known about are diagnostics, not tasks: listed separately, largest first.
+      byVenue: summary.byVenue.filter((g) => g.action !== "unknown"),
+      unknownPlaces: summary.byVenue.filter((g) => g.action === "unknown").slice(0, 40).map((g) => ({ venue: g.venue, events: g.events, reason: g.reason, sources: g.sources })),
       canonicalRepairs: summary.canonicalRepairs,
       canonicalConflicts: summary.canonicalConflicts,
     };

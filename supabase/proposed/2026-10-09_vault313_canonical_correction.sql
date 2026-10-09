@@ -79,7 +79,13 @@ commit;
 -- NOT DONE HERE (Product Owner decisions):
 --   - 4e1b5171 "TBA - The Vault 313 (16940 Hamilton)": RA says TBA. Link it only if
 --     the PO decides the TBA is the Vault.
---   - c1f7587f / 5388ef4e: probable duplicate RA rows of one event -> duplicate review.
+--   - c1f7587f / 5388ef4e: probable duplicate RA rows of one event (KICK Invites,
+--     2026-10-10, both public). Today the nightly duplicate pass already lists the
+--     pair for review (Admin > Duplicates, reason same_source_place_differs) because
+--     the two rows name the place differently. CAUTION: once this correction links
+--     both rows to one venue, that pass (measured 2026-10-09) neither merges nor
+--     lists them any more -- the pair would silently leave the review queue.
+--     Resolve the duplicate (tracked on GitHub) BEFORE or together with applying this.
 --   - No status changes. No event address/city changes.
 --
 -- ROLLBACK (if needed):

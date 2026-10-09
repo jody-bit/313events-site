@@ -283,7 +283,68 @@ check("provenance: a learned fill writes what filled it, and the marker", () => 
   const d = K.resolveLocationGap(ev({ venue_name_raw: "Tigris" }), know(TIGRIS));
   const line = K.provenanceLine(d, "2026-10-09");
   assert.ok(line.startsWith(`${K.FILL_MARKER} 2026-10-09: venue_address_raw, venue_city_raw from learned (learned) for "Tigris"`), line);
-  assert.ok(/Resident Advisor×1/.test(line) && /Venue Submission×1/.test(line), line);
+  assert.ok(line.includes("basis: 2 independent sources agree"), line);
+  assert.ok(line.includes("confirmed by: Resident Advisor×1, Venue Submission×1"), line);
+});
+
+check("provenance never presents a copy-prone or non-confirming source as evidence that established the address", () => {
+  const rows = [
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1526 Broadway St.", venue_city_raw: "Detroit", source: "VisitDetroit", external_id: "vd-1" }),
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1526 Broadway St.", venue_city_raw: "Detroit", source: "Manual", external_id: null }),
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1526 Broadway St.", venue_city_raw: "Detroit", source: "Ticketmaster", external_id: "vvT1" }),
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1526 Broadway St.", venue_city_raw: "Detroit", source: "Ticketmaster", external_id: "vvT2" }),
+  ];
+  const k = know(rows);
+  const entry = k.byName.get("opera");
+  assert.deepStrictEqual(entry.evidence.sources.map((s) => [s.label, s.confirms]).sort(), [["Manual", true], ["Ticketmaster", false], ["VisitDetroit", true]]);
+  const line = K.provenanceLine(K.resolveLocationGap(ev({ venue_name_raw: "Opera" }), k), "2026-10-09");
+  const confirmedPart = line.split("; ").find((p) => p.startsWith("confirmed by: "));
+  assert.ok(confirmedPart && !/Ticketmaster/.test(confirmedPart), line);
+  assert.ok(line.includes("not counted (copy-prone): Ticketmaster×2"), line);
+  // A first-party fill names the one source that counted; copy-prone extras are labelled as such.
+  const fp = know([1, 2].map((i) => ev({ venue_name_raw: "Arena", venue_address_raw: "417 N Mercer Rd", venue_city_raw: "Bowling Green", source: "Bowling Green State University", external_id: `localist-bgsu-${i}`, start_date: `2026-11-0${i}` }))
+    .concat([ev({ venue_name_raw: "Arena", venue_address_raw: "417 N Mercer Rd", venue_city_raw: "Bowling Green", source: "Ticketmaster", external_id: "vvA" })]));
+  const fpLine = K.provenanceLine(K.resolveLocationGap(ev({ venue_name_raw: "Arena" }), fp), "2026-10-09");
+  assert.ok(fpLine.includes("basis: the place's own source, on 2 dates") && fpLine.includes("confirmed by: Bowling Green State University×2") && fpLine.includes("not counted (copy-prone): Ticketmaster×1"), fpLine);
+  // A copy-prone connector's rows never confirm, even when they are the only ones.
+  const halo = know([1, 2, 3].map((i) => ev({ venue_name_raw: "HALO Detroit", venue_address_raw: "8070 Greenfield Rd", venue_city_raw: "Detroit", source: "HALO Detroit", external_id: `halo-${i}`, start_date: `2026-10-0${i}` })));
+  assert.ok(halo.byName.get("halo detroit").evidence.sources.every((s) => s.confirms === false));
+  // The campus rule names its one confirming source.
+  const camp = know([1, 2].map((i) => ev({ venue_name_raw: `Center Campus, B${i}`, venue_address_raw: "44575 Garfield Road", venue_city_raw: "Clinton Township", source: "Macomb Community College", external_id: `localist-m-${i}`, start_date: `2026-10-2${i}` })));
+  const cLine = K.provenanceLine(K.resolveLocationGap(ev({ venue_name_raw: "Center Campus, APEX", source: "Macomb Community College", external_id: "localist-m-9" }), camp), "2026-10-09");
+  assert.ok(cLine.includes("confirmed by: Macomb Community College×2"), cLine);
+});
+
+check("Control Tower: unknown places are one collapsed diagnostic line, not a list of tasks", () => {
+  const vm = require("vm");
+  const fs = require("fs");
+  const html = fs.readFileSync(path.join(ROOT, "admin.html"), "utf8");
+  const a = html.indexOf("function renderVenueRepairs(v)");
+  const b = html.indexOf("\n}\n", a) + 3;
+  const els = {};
+  const ctx = {
+    document: { getElementById: (id) => (els[id] = els[id] || { innerHTML: "" }) },
+    escapeHtml: (x) => String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])),
+    towerChip: (state, lbl) => `<span class="ct-state ${state}">${lbl || state}</span>`,
+  };
+  vm.createContext(ctx);
+  vm.runInContext(html.slice(a, b) + ";this.r=renderVenueRepairs;", ctx);
+  const venues = [ev({ venue_name_raw: "Opera" })];
+  const k = know([
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1 A St", venue_city_raw: "Detroit", source: "VisitDetroit", external_id: "vd-1" }),
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1 A St", venue_city_raw: "Detroit", source: "Manual", external_id: null }),
+    ev({ venue_name_raw: "Opera", venue_address_raw: "1 A St", venue_city_raw: "Detroit", source: "Ticketmaster", external_id: "vvX" }),
+  ]);
+  const pub = [...venues, ...Array.from({ length: 30 }, (_, i) => ev({ venue_name_raw: `Room ${i}`, source: "Library" }))];
+  const s = K.summarizeVenueRepairs(pub, k);
+  ctx.r({ error: null, knowledge: { venueNames: 1, byStatus: {}, evidenceRows: 3 }, totals: s.totals, byVenue: s.byVenue.filter((g) => g.action !== "unknown"), unknownPlaces: s.byVenue.filter((g) => g.action === "unknown").slice(0, 40), canonicalRepairs: [], canonicalConflicts: [] });
+  const list = els.towerVenues.innerHTML;
+  assert.ok(/Fill automatically/.test(list) && /Opera/.test(list));
+  assert.ok(!/Room \d/.test(list), "no unknown place in the repair queue");
+  assert.ok(/Confirmed by:<\/b> (?:Manual ×1, VisitDetroit ×1|VisitDetroit ×1, Manual ×1)/.test(list), list);
+  assert.ok(/Not counted \(copy-prone\): Ticketmaster ×1/.test(list), list);
+  const unk = els.towerVenueUnknown.innerHTML;
+  assert.ok(unk.startsWith("<details>") && /<b>30<\/b> events at <b>30<\/b> places/.test(unk) && /not a task/.test(unk), unk);
 });
 
 (async () => {
