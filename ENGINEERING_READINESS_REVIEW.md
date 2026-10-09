@@ -1148,6 +1148,7 @@ Supabase Branching is an alternative if the plan includes it; it is not required
 - **Public "current + upcoming" filter** `or=(start_date.gte.X,end_date.gte.Y)` (`discovery.js:1016`): **no `end_date` index**, and the OR defeats `(status, start_date)` (`migration_024:36`). RECOMMENDED: an expression index on `coalesce(end_date, start_date)` with `status`, and rewrite the filter as `coalesce(end_date,start_date) >= today`.
 - **Paging:** offset paging over the 1,000-row server cap. At 50k rows, deep offsets get slower; prefer keyset.
 - **Redundant indexes:** `events_status_idx`, `events_start_date_idx` (covered by the composite).
+- **Advisor index findings (2026-10-06):** TD-39 (two unindexed foreign keys) and TD-40 (two indexes reported unused). Neither blocks launch. Indexes are removed only with evidence (usage statistics across a representative window, including admin and cron paths), never because the advisor lists them.
 - **Unpaged reads silently capped at 1,000:**
   - `api/sitemap.js:81` — INFERRED: about half of today's ~2,200 current events are missing from the sitemap;
   - `radar.html:324`, `neighborhoods.html:247`, `index.html:7618`;
@@ -1265,6 +1266,9 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
 | TD-35 | No alias, external-id or match-decision store; Admin cannot set `venue_id`; the system cannot learn | S2 | §10.6 | P1-13 |
 | TD-36 | Venue reference data not reproducible from the repo; duplicate and placeholder canonical rows | S2 | §14.1 | SZ-15 |
 | TD-37 | Research budget per invocation; no negative cache; research before internal steps; research creates canonical rows from variants | S2 | §10.8 | P1-17, P1-04 |
+| TD-38 | `public.set_updated_at` has a mutable `search_path` (Supabase advisor WARN `function_search_path_mutable`, production, 2026-10-06). Low-risk security debt | S3 | §15; `DEBT-012` | the security pass; `TASK-008` records it fixed by the SZ-01 migration, so open only until a fresh advisor run confirms |
+| TD-39 | Foreign keys without covering indexes: `events.organizer_id` (`events_organizer_id_fkey`) and `venues.neighborhood_id` (`venues_neighborhood_id_fkey`) (advisor INFO `unindexed_foreign_keys`, 2026-10-06). Performance debt, not a launch blocker | S3 | §14.2; `DEBT-012` | P2-05 (alongside TD-31) |
+| TD-40 | Advisor flags `events_category_idx` and `source_runs_started_outcome_idx` as unused (2026-10-06). Removal needs usage evidence over a representative window; also see the redundant-indexes note in §14.2 | S3 | §14.2; `DEBT-012` | P2-05; evidence first |
 
 ---
 
@@ -1284,6 +1288,8 @@ Severity: **S1** = live data loss/corruption or exposure · **S2** = blocks scal
   3. Revoke anon INSERT on `events` (and review `feed_sources`).
   4. A shared fail-closed `requireCron()` used by every cron.
   5. `events.status` default → `pending_review`.
+  6. **Follow-up finding (added 2026-10-06; SZ-01 is already delivered, see `TASK-008` in `project/BACKLOG.md`).** The SZ-01 public/private access boundary is deployed and production verified. The Supabase advisor's `events_public` SECURITY DEFINER finding (ERROR `security_definer_view`) is a follow-up security-hardening item, tracked as `DEBT-012` item 1. Any change must preserve the established public/private contract and be evaluated together with the current grants, RLS behavior, field exposure, submission permissions and the anonymous-access boundary (G-6). Do not change the view property in isolation merely to clear the advisor. The advisor run predates the SZ-01 migration, so the finding may already be superseded; it stays open until a fresh run confirms it.
+  7. **RLS-enabled tables with no policies** (advisor INFO `rls_enabled_no_policy`: `event_source_identities`, `healthchecks`, `schema_migrations`, `source_runs`) may be intentional. Do **not** add policies merely to silence the advisor, and verify the intended access behavior before changing RLS or grants. Advisor output is evidence to investigate, not an implementation prescription.
 - **Acceptance criteria:**
   - an anon request for `submitter_email` returns an error or empty;
   - all pages render from views;

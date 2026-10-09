@@ -814,6 +814,23 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### DEBT-012 — Supabase advisor findings (production, 2026-10-06)
+
+- **Type:** DEBT (security and performance) · **Status:** BACKLOG (recorded 2026-10-06 by Product Owner request; **no fix drafted or applied**; SZ-01 itself is already delivered, see `TASK-008`) · **Priority:** see each item
+- **Epic:** EPIC-001 (Sprint Zero, `ENGINEERING_READINESS_REVIEW.md` §18; debt register TD-38 to TD-40)
+- **Source:** Supabase security and performance advisors run read-only against production on 2026-10-06. Already-recorded items are referenced, not duplicated: owner-rights views and RLS bypass (G-6, §18 SZ-01), redundant `events` indexes and the missing `end_date` index (§14.2, TD-31).
+- **Findings and disposition:**
+  1. **`events_public` is SECURITY DEFINER** (ERROR), a **follow-up security-hardening finding**. The SZ-01 public/private access boundary is already deployed and production verified (`TASK-008`). Any change must preserve that established contract and be evaluated together with the current grants, RLS behavior, field exposure, submission permissions and anonymous-access boundary. Do not change the view property in isolation merely to clear the advisor. Timing note: this advisor run (2026-10-06 17:53 UTC) predates the SZ-01 migration (applied ~20:32 UTC), and `TASK-008` records `events_public` as `security_invoker` after it, so this finding may already be superseded. It stays **open** until a fresh advisor run on production confirms that.
+  2. **`set_updated_at` has a mutable `search_path`** (WARN, TD-38). Low-risk security debt. `TASK-008` records its search_path as fixed by the SZ-01 migration; same timing note as item 1, so it stays **open** until a fresh advisor run confirms it.
+  3. **Missing FK indexes** on `events.organizer_id` and `venues.neighborhood_id` (INFO, TD-39). Performance debt, not a launch blocker. Folded into P2-05.
+  4. **RLS enabled, no policies** on `event_source_identities`, `healthchecks`, `schema_migrations`, `source_runs` (INFO). May be intentional. **Do not add policies merely to clear the advisor**; verify intended access behavior before changing RLS or grants. The advisor reports evidence to investigate, not an implementation prescription. `TASK-008` already records these as the four intentional informational notices.
+  5. **Unused indexes** `events_category_idx`, `source_runs_started_outcome_idx` (INFO, TD-40). Require usage evidence before any removal.
+- **Acceptance Criteria (proposed):** each item resolved or explicitly accepted as intentional with a recorded reason, as above (item 1 and 2 against a fresh advisor run and the deployed SZ-01 contract; items 3 and 5 in P2-05, with usage evidence).
+- **Implementation Notes:** none yet.
+- **Product Decisions Required:** none new; any change to `events_public` must preserve the deployed SZ-01 contract (`supabase/verify/public_boundary_check.sql`, `test/public-boundary.test.js`).
+
+---
+
 ## Discovery / decisions needed
 
 ### DISCOVERY-001 — Resident Advisor / Instagram capture policy
