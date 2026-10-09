@@ -224,11 +224,13 @@ function articleRegion(html) {
 // publish date counted as the event's date -- Stone Wall Pumpkin Festival
 // (byline Oct. 6, event Oct. 10) and Tau Beta Fall Market (byline Sept. 17).
 // Only a byline within the first 600 characters, with a full date and year,
-// is recognised; anything else leaves the text unchanged. The headline is
+// is recognised; anything else leaves the text unchanged. The name may hold
+// dots (C&G bylines are e-mail addresses: "By jshelton@candgnews.com on
+// October 06, 2026"). The headline is
 // still passed to the extractors separately.
 function dropLeadingByline(text) {
   if (!text) return text;
-  const re = new RegExp(`^[\\s\\S]{0,600}?\\bBy\\s+[^.]{1,80}?(?:\\s+on|\\s*[-–—|·])\\s+${MONTH_NAMES_RE}\\s+\\d{1,2},\\s+\\d{4}\\b`);
+  const re = new RegExp(`^[\\s\\S]{0,600}?\\bBy\\s+[^\\n]{1,80}?(?:\\s+on|\\s*[-–—|·])\\s+${MONTH_NAMES_RE}\\s+\\d{1,2},\\s+\\d{4}\\b`);
   const m = text.match(re);
   return m ? text.slice(m[0].length).trim() : text;
 }

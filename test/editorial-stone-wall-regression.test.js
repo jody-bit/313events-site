@@ -106,6 +106,7 @@ async function run() {
     assert.ok(gid.description && !/Submission|Search/.test(gid.description), `description is article prose: ${gid.description}`);
     assert.strictEqual(gid.startDate, "2026-10-10", "the byline's Sept. 17 is not the event date");
     assert.strictEqual(pc.dropLeadingByline("Headline By Erica Banas - September 18, 2026 The show opens Oct. 1."), "The show opens Oct. 1.", "dash-style byline");
+    assert.strictEqual(pc.dropLeadingByline("Pumpkin festival celebrates fall By jshelton@candgnews.com on October 06, 2026 By Mary Beth Almond ROCHESTER HILLS — Fun."), "By Mary Beth Almond ROCHESTER HILLS — Fun.", "C&G's e-mail byline");
     assert.strictEqual(pc.dropLeadingByline("The show opens Oct. 1, 2026. By then it will be cold."), "The show opens Oct. 1, 2026. By then it will be cold.", "no byline: unchanged");
     assert.strictEqual(pc.articleRegion("<div>a</div><main>x</main><main>y</main>"), "<div>a</div><main>x</main><main>y</main>", "two <main> elements: ambiguous, whole page as before");
   }
