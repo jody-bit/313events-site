@@ -52,7 +52,7 @@ const CONNECTORS = [
   ["cron-dossin.js", "no-undefined"],
   ["cron-eventbrite.js", "no-undefined"],
   ["cron-feeds.js", "no-undefined"],
-  ["cron-gottagacha.js", "no-undefined"],
+  ["cron-gottagacha.js", "LATENT"], // 2026-10-08: event_url is omitted where a stored link is kept (keepEventUrl); mixed shapes covered by test/gottagacha-event-url.test.js
   ["cron-halo.js", "no-undefined"],
   ["cron-lagerhouse.js", "LATENT"],
   ["cron-localist.js", "no-undefined"],

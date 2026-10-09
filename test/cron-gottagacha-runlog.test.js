@@ -259,11 +259,17 @@ async function run() {
   console.log("PASS: missing price stays null and is_free stays false -- never inferred");
 
   // --- 15. root-site URL does not become event_url ---
+  // (Admin Hardening slice 1, 2026-10-08: event_url is now the source's own
+  // occurrence page -- test/gottagacha-event-url.test.js -- but it is still
+  // never the bare site root, and never anything for a malformed id.)
   {
     const parsed = parseEvent(apiEvent());
-    assert.strictEqual(parsed.event_url, null, "never set to https://www.gottagacha.com merely because the ICS feed's URL property contains it");
+    assert.notStrictEqual(parsed.event_url, "https://www.gottagacha.com", "never the bare site root");
+    assert.notStrictEqual(parsed.event_url, "https://www.gottagacha.com/", "never the bare site root");
+    assert.strictEqual(parsed.event_url, "https://www.gottagacha.com/events/5bcbabc3-35d4-40de-90bc-26ed9ef959c8?date=2026-10-06");
+    assert.strictEqual(parseEvent(apiEvent({ id: "youmacon-1" })).event_url, null, "a non-UUID id yields no link at all");
   }
-  console.log("PASS: event_url stays null -- the bare site root is never used as a fabricated event URL");
+  console.log("PASS: event_url is never the bare site root -- only the source's own per-occurrence page, or null");
 
   // --- 16. malformed API response produces no writes ---
   {
