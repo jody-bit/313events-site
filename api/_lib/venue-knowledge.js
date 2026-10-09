@@ -207,7 +207,8 @@ function decide(rows, canonical) {
     if (!anchor) break;
     const cityDiffers = anchor.cityKey && s.cityKey !== anchor.cityKey;
     const streetDiffers = !sameStreet(anchor.street, s.street);
-    if (cityDiffers || streetDiffers) disagreements.push({ id: e.id, source: e.source, address: s.address, city: s.city, cityDiffers: !!cityDiffers, streetDiffers });
+    const seen = disagreements.some((d) => d.address === s.address && d.city === s.city);
+    if ((cityDiffers || streetDiffers) && !seen) disagreements.push({ id: e.id, source: e.source, address: s.address, city: s.city, cityDiffers: !!cityDiffers, streetDiffers });
   }
 
   if (canonicalStreet) {
