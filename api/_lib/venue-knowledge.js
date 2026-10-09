@@ -88,8 +88,17 @@ const isFirstParty = (source) => !isBlank(source) && !NOT_FIRST_PARTY.test(Strin
 //     api/cron-metrotimes.js);
 //   - Ticketmaster sends venue_address_raw: null on every run (DEBT-011), so
 //     every address on a Ticketmaster row was written by a repair. Measured
-//     2026-10-09: 423 of 1,060 Ticketmaster rows carry one.
-const COPY_PRONE = (family) => family.startsWith("feed:") || family === "metrotimes" || family === "ticketmaster";
+//     2026-10-09: 423 of 1,060 Ticketmaster rows carry one;
+//   - connectors that never write venue_address_raw at all (checked against
+//     every api/cron-*.js on 2026-10-09): any address on their rows was put
+//     there by a repair or a person, from somewhere else. Found in the PR #50
+//     review: Trinosophes (28 rows) and HALO (16) looked like "the place's own
+//     source on two dates" although neither connector states an address.
+const NO_ADDRESS_CONNECTORS = new Set([
+  "trinosophes", "halo", "gottagacha", "lagerhouse", "redford-theatre", "bigtimebingo",
+  "cinema-detroit", "belle-isle-nature-center", "detroitmonthofdesign", "eventbrite-org",
+]);
+const COPY_PRONE = (family) => family.startsWith("feed:") || family === "metrotimes" || family === "ticketmaster" || NO_ADDRESS_CONNECTORS.has(family);
 
 // ---------------------------------------------------------------------------
 // Names that must never inherit a fixed address.
@@ -591,4 +600,5 @@ module.exports = {
   FILL_MARKER,
   TRUSTED,
   NOT_FIRST_PARTY,
+  NO_ADDRESS_CONNECTORS,
 };

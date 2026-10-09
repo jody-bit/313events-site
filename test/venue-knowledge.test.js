@@ -221,6 +221,22 @@ check("a blank incoming Ticketmaster address cannot erase learned canonical know
   assert.strictEqual(s.canonicalRepairs[0].events, 3);
 });
 
+check("a connector that never states an address cannot be the place's own evidence for one (copies are not statements)", () => {
+  // Trinosophes' connector writes no venue_address_raw; every address on its rows came from a repair.
+  const rows = [1, 2, 3].map((i) => ev({ venue_name_raw: "Trinosophes", venue_address_raw: "1464 Gratiot Ave", venue_city_raw: "Detroit", source: "Trinosophes", external_id: `trinosophes-${i}`, start_date: `2026-10-0${i}` }));
+  const k = know(rows);
+  assert.strictEqual(k.byName.get("trinosophes").status, "single_source", "not learned_first_party");
+  assert.strictEqual(K.resolveLocationGap(ev({ venue_name_raw: "Trinosophes", source: "Trinosophes", external_id: "trinosophes-9" }), k).action, "confirm");
+  // The list matches the code: none of these connectors writes an address. If one starts to, take it off the list.
+  const fs = require("fs");
+  const file = { trinosophes: "cron-trinosophes", halo: "cron-halo", gottagacha: "cron-gottagacha", lagerhouse: "cron-lagerhouse", "redford-theatre": "cron-redford-theatre", bigtimebingo: "cron-bigtimebingo", "cinema-detroit": "cron-cinema-detroit", "belle-isle-nature-center": "cron-belle-isle-nature-center", detroitmonthofdesign: "cron-detroitmonthofdesign", "eventbrite-org": "cron-eventbrite" };
+  for (const slug of K.NO_ADDRESS_CONNECTORS) {
+    assert.ok(file[slug], `${slug}: connector file known`);
+    const src = fs.readFileSync(path.join(ROOT, "api", `${file[slug]}.js`), "utf8");
+    assert.ok(!/venue_address_raw/.test(src), `${file[slug]}.js writes venue_address_raw: remove "${slug}" from NO_ADDRESS_CONNECTORS`);
+  }
+});
+
 check("a street-only conflict keeps the undisputed canonical city for a linked event, and fills no street", () => {
   const venues = [{ id: "em", name: "Eastern Market", address: null, city: "Detroit" }];
   const k = know([
