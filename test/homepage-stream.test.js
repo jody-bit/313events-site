@@ -11,8 +11,9 @@
 //   2. the stream — each event once, a first section and a continuation,
 //      "show more", counts of the whole view;
 //   3. the hero's figures and what following one does;
-//   4. Don't Miss — hidden, with nothing selected in the page's source, and
-//      shown only for an active placement of a current event.
+//   4. NOT TO BE MISSED (formerly Don't Miss) — the three seasonal cards, never
+//      linking to a page that is not live, and event placements still shown
+//      only for an active placement of a current event.
 //
 // Like the adoption test it RUNS index.html's real script against a small
 // in-memory database and a fixed clock (test/fixtures/fake-dom.js).
@@ -311,9 +312,18 @@ async function run() {
     assert.ok(/^let dontMissPlacements = \[\];$/m.test(SCRIPT), "the placement list is empty in the source");
     assert.strictEqual([...SCRIPT.matchAll(/dontMissPlacements\s*=[^=]/g)].length, 1, "…and nothing else in the page assigns it");
     const page = await open("/");
-    assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");
-    assert.strictEqual(page.el("dontMissSection").innerHTML, "");
+    assert.strictEqual(page.el("dontMissSection").style.display, "", "the seasonal cards show the section");
+    const base = page.el("dontMissSection").innerHTML;
+    assert.ok(/<h2 class="dm-title">NOT TO BE MISSED<\/h2>/.test(base));
+    assert.deepStrictEqual([...base.matchAll(/class="ntbm-title">([^<]*)</g)].map((m) => m[1]), ["DETROIT ORBIT FALL GUIDE", "HALLOWEEN IN THE ORBIT", "FALL COLORS"]);
+    assert.deepStrictEqual([...base.matchAll(/class="ntbm-cta">([^<]*)</g)].map((m) => m[1]), ["EXPLORE FALL →", "GET SPOOKY →", "CHASE COLOR →"]);
+    assert.ok(!/<a class="ntbm-card"/.test(base), "no card links to a route that is not live");
+    assert.ok(!/class="dm-grid"/.test(base), "no event placements, so no event cards");
     assert.ok(!page.requests.some((r) => /miss|placement/i.test(r.table)), "no placement data is requested (there is no source yet)");
+    // Flipping a card live makes exactly that card a link.
+    page.run(`NTBM_CARDS[0].routeLive = true; renderDontMiss();`);
+    assert.deepStrictEqual([...page.el("dontMissSection").innerHTML.matchAll(/<a class="ntbm-card" href="([^"]*)"/g)].map((m) => m[1]), ["/fall"]);
+    page.run(`NTBM_CARDS[0].routeLive = false; renderDontMiss();`);
 
     // Given placements (as a future source would supply them), it shows the
     // ones that are in their period and whose event is current — at most three.
@@ -333,13 +343,18 @@ async function run() {
     assert.strictEqual(page.el("dontMissSection").style.display, "");
     assert.deepStrictEqual([...html.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Sunday 03", "Long Run", "Later 01"]);
     assert.deepStrictEqual([...html.matchAll(/class="dm-reason">([^<]*)</g)].map((m) => m[1]), ["One night only.", "Third."], "the reason is the editor's; none is invented where none was given");
-    assert.ok(/<h2 class="dm-title">Don't Miss<\/h2>/.test(html));
-    // And it clears again.
+    assert.ok(/<h2 class="dm-title">NOT TO BE MISSED<\/h2>/.test(html));
+    assert.strictEqual([...html.matchAll(/class="ntbm-card"/g)].length, 3, "the seasonal cards stay alongside event placements");
+    // Event placements clear again; the seasonal cards remain.
     page.run("dontMissPlacements = []; render();");
+    assert.strictEqual(page.el("dontMissSection").style.display, "");
+    assert.ok(!/class="dm-grid"/.test(page.el("dontMissSection").innerHTML));
+    // With no cards and no placements the section hides.
+    page.run("const saved = NTBM_CARDS.splice(0); renderDontMiss(); globalThis.__saved = saved;");
     assert.strictEqual(page.el("dontMissSection").style.display, "none");
     assert.strictEqual(page.el("dontMissSection").innerHTML, "");
   }
-  console.log("PASS: 4. Don't Miss — nothing selected in the source and nothing requested; hidden with no placements; shows only active placements of current events, at most three");
+  console.log("PASS: 4. NOT TO BE MISSED — three seasonal cards with the approved copy, no link to a route that is not live, nothing requested; event placements still show only for current events, at most three");
 
   console.log("\nAll homepage stream tests passed.");
 }

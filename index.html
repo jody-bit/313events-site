@@ -4172,6 +4172,38 @@
   .dm-reason{font-size:13px;color:var(--ink);line-height:1.45;margin-top:8px;border-left:2px solid var(--accent);padding-left:10px;}
   @media (max-width:640px){.dont-miss{padding:12px 14px 14px;}}
 
+  /* ---- NOT TO BE MISSED: editorial feature cards. The photograph is the
+     card; the scrim exists only so the words stay legible over it. ---- */
+  .ntbm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+  .dm-grid + .ntbm-grid, .ntbm-grid + .dm-grid{margin-top:12px;}
+  .ntbm-card{position:relative;display:block;overflow:hidden;aspect-ratio:3/2;min-width:0;background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);text-decoration:none;}
+  .ntbm-card:first-child{grid-column:1 / -1;aspect-ratio:2/1;}
+  .ntbm-card:first-child .ntbm-title{font-size:40px;}
+  .ntbm-card:first-child .ntbm-body{padding:24px 24px 20px;}
+  .ntbm-card:first-child .ntbm-copy{font-size:15px;max-width:520px;}
+  .ntbm-card picture, .ntbm-card img{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .ntbm-card img{object-fit:cover;object-position:var(--ntbm-pos,50% 50%);transition:transform .5s ease;}
+  .ntbm-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,.92) 0%,rgba(10,10,10,.62) 38%,rgba(10,10,10,0) 68%);}
+  .ntbm-body{position:absolute;left:0;right:0;bottom:0;padding:18px 18px 16px;}
+  .ntbm-title{margin:0 0 8px;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;text-transform:uppercase;color:var(--ink);}
+  .ntbm-copy{margin:0 0 12px;font-size:13px;line-height:1.45;color:var(--ink);}
+  .ntbm-cta{display:inline-block;font-family:var(--font-data);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding-bottom:3px;border-bottom:1px solid var(--ink);}
+  a.ntbm-card:hover .ntbm-cta, a.ntbm-card:focus-visible .ntbm-cta{color:var(--accent);border-bottom-color:var(--accent);}
+  a.ntbm-card:hover img{transform:scale(1.03);}
+  a.ntbm-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  @media (max-width:900px){
+    .ntbm-card:first-child{aspect-ratio:16/9;}
+    .ntbm-card:first-child .ntbm-title{font-size:34px;}
+  }
+  @media (max-width:640px){
+    .ntbm-grid{grid-template-columns:minmax(0,1fr);}
+    .ntbm-card, .ntbm-card:first-child{aspect-ratio:16/10;}
+    .ntbm-title, .ntbm-card:first-child .ntbm-title{font-size:26px;}
+    .ntbm-body, .ntbm-card:first-child .ntbm-body{padding:14px 14px 12px;}
+    .ntbm-card:first-child .ntbm-copy{font-size:13px;}
+  }
+  @media (prefers-reduced-motion:reduce){.ntbm-card img{transition:none;}a.ntbm-card:hover img{transform:none;}}
+
   /* ---- footer ---- */
   footer.site{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
@@ -4489,11 +4521,11 @@
 
   <div class="home-body">
     <div class="home-main">
-      <!-- Don't Miss: a temporary, human-curated editorial placement
-           (DEC-025). Nothing is selected in this file and there is no
-           placement data source yet, so this stays hidden — see
-           renderDontMiss(). -->
-      <section class="dont-miss" id="dontMissSection" style="display:none;" aria-label="Don't Miss"></section>
+      <!-- NOT TO BE MISSED (formerly "Don't Miss", DEC-025): the editorial
+           rail. It holds the seasonal feature cards (NTBM_CARDS) and, when
+           a source exists, event placements. Hidden when it has neither —
+           see renderDontMiss(). -->
+      <section class="dont-miss" id="dontMissSection" style="display:none;" aria-label="Not to be missed"></section>
 
       <!-- The event stream. #listView holds its head and first section;
            #listMore continues it after the Explore Neighborhoods interlude.
@@ -6124,15 +6156,68 @@ function activeDontMiss(){
   return out.slice(0, DONT_MISS_LIMIT);
 }
 
+// ---- NOT TO BE MISSED seasonal feature cards ----
+// The next rotation is an edit to this list (and its images) — nothing else
+// on the page knows what the cards are. `route` is where a card is meant to
+// go; `routeLive` stays false until that page exists, so a card never links
+// to a page that isn't there. Flip it per card when the page ships.
+const NTBM_CARDS = [
+  {
+    id: 'fall-guide',
+    title: 'DETROIT ORBIT FALL GUIDE',
+    copy: 'Cider mills. Pumpkin patches. Orchards. Donuts. Hayrides. Find your fall.',
+    cta: 'EXPLORE FALL →',
+    route: '/fall', routeLive: false,
+    image: '/assets/guides/fall-guide', position: '50% 45%',
+    alt: 'A wooden cider press pouring fresh cider beside baskets of apples and pumpkins, with a red barn and hayride at sunset.'
+  },
+  {
+    id: 'halloween-guide',
+    title: 'HALLOWEEN IN THE ORBIT',
+    copy: 'Haunts. Horror. Ghosts. Oddities. Family fun. Halloween across the Detroit Orbit.',
+    cta: 'GET SPOOKY →',
+    route: '/halloween', routeLive: false,
+    image: '/assets/guides/halloween-guide', position: '50% 50%',
+    alt: 'Glowing jack-o\'-lanterns and a scarecrow beside a foggy path leading visitors toward a haunted manor under a full moon.'
+  },
+  {
+    id: 'fall-color-guide',
+    title: 'FALL COLORS',
+    copy: 'Trails. Parks. Scenic drives. Waterfronts. Find the Detroit Orbit at peak color.',
+    cta: 'CHASE COLOR →',
+    route: '/fall-color', routeLive: false,
+    image: '/assets/guides/fall-color-guide', position: '72% 50%',
+    alt: 'Red and orange autumn maples above a river at sunset, with the Detroit skyline on the horizon.'
+  }
+];
+
+function ntbmCardHtml(c){
+  const inner = `
+    <picture>
+      <source media="(max-width:640px)" srcset="${escapeHtml(c.image)}-800.webp">
+      <img src="${escapeHtml(c.image)}-1600.webp" width="1600" height="900" alt="${escapeHtml(c.alt)}" loading="lazy" decoding="async" style="--ntbm-pos:${escapeHtml(c.position || '50% 50%')}">
+    </picture>
+    <span class="ntbm-scrim" aria-hidden="true"></span>
+    <span class="ntbm-body">
+      <h3 class="ntbm-title">${escapeHtml(c.title)}</h3>
+      <span class="ntbm-copy" style="display:block">${escapeHtml(c.copy)}</span>
+      <span class="ntbm-cta">${escapeHtml(c.cta)}</span>
+    </span>`;
+  return c.routeLive && c.route
+    ? `<a class="ntbm-card" href="${escapeHtml(c.route)}">${inner}</a>`
+    : `<div class="ntbm-card">${inner}</div>`;
+}
+
 function renderDontMiss(){
   const section = document.getElementById('dontMissSection');
   if(!section) return;
   const picks = activeDontMiss();
-  if(!picks.length){ section.style.display = 'none'; section.innerHTML = ''; return; }
+  if(!picks.length && !NTBM_CARDS.length){ section.style.display = 'none'; section.innerHTML = ''; return; }
   section.style.display = '';
   section.innerHTML = `
-    <div class="dm-head"><h2 class="dm-title">Don't Miss</h2></div>
-    <div class="dm-grid">
+    <div class="dm-head"><h2 class="dm-title">NOT TO BE MISSED</h2></div>
+    ${NTBM_CARDS.length ? `<div class="ntbm-grid">${NTBM_CARDS.map(ntbmCardHtml).join('')}</div>` : ''}
+    ${picks.length ? `<div class="dm-grid">
       ${picks.map(({event: e, reason})=>{
         const when = [formatDateLabel(e.date) + (e.endDate && e.endDate > e.date ? '–' + formatDateLabel(e.endDate) : ''), e.time].filter(Boolean).join(' · ');
         const body = `
@@ -6145,7 +6230,7 @@ function renderDontMiss(){
           </div>`;
         return eventUrl(e) ? `<a class="dm-card" href="${escapeHtml(eventUrl(e))}">${body}</a>` : `<div class="dm-card">${body}</div>`;
       }).join('')}
-    </div>
+    </div>` : ''}
   `;
 }
 
