@@ -312,9 +312,13 @@ async function run() {
     assert.strictEqual([...SCRIPT.matchAll(/dontMissPlacements\s*=[^=]/g)].length, 2, "…and only the placements-file loader assigns it");
     assert.ok(/dontMissPlacements = data\.placements/.test(SCRIPT));
     const seeded = JSON.parse(read("data/dont-miss.json"));
-    assert.ok(seeded.placements.length <= 3, "the shipped placements file is a short hand-curated list");
-    assert.ok(seeded.placements.every((p) => /^[0-9a-f-]{36}$/.test(p.eventId) && p.reason), "every shipped placement names a canonical event id and carries an editor's reason");
-    assert.strictEqual(new Set(seeded.placements.map((p) => p.eventId)).size, seeded.placements.length, "no event is listed twice");
+    // Shipped today: the three seasonal guides as static editorial cards (no
+    // canonical event is selected), each with its optimized artwork on disk.
+    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Halloween in the Orbit", "Fall Colors"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
+    assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
+    for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
+    assert.ok(seeded.placements.every((p) => !p.href && !p.url), "the cards do not navigate: the guide pages do not exist yet");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");
     assert.strictEqual(page.el("dontMissSection").innerHTML, "");
@@ -347,13 +351,26 @@ async function run() {
     const afterFail = page.el("dontMissSection").innerHTML;
     assert.ok(!/Sunday 03/.test(afterFail) && [...afterFail.matchAll(/class="dm-card"/g)].length === 3, "a failed image removes its card and the rail refills to three");
     page.run(`dmBadImages.clear(); renderDontMiss();`);
-    assert.ok(/<h2 class="dm-title">Don't Miss<\/h2>/.test(html));
+    assert.ok(/<h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"><\/span><\/h2>/.test(html));
     assert.ok(html.includes("Extraordinary events. Handpicked for this moment."), "the descriptor");
     assert.deepStrictEqual([...html.matchAll(/class="dm-eyebrow">([^<]*)</g)].map((m) => m[1]), ["Detroit debut"], "an eyebrow only where an editor wrote one");
     assert.strictEqual([...html.matchAll(/<a class="dm-card" href="event\.html\?id=/g)].length, 3, "each card links to its canonical event page");
     assert.strictEqual([...html.matchAll(/class="dm-date"/g)].length, 3, "each card carries its date");
     assert.ok(!/View all/i.test(html), "no View all: there is no destination for it");
-    assert.ok(!/ntbm|NOT TO BE MISSED/i.test(html), "no seasonal-guide cards in this rail");
+    assert.ok(!/ntbm|NOT TO BE MISSED/i.test(html), "not the old giant seasonal-card treatment");
+    // Static editorial cards share the rail and its three-card limit with
+    // event placements; one without artwork is skipped like an event without.
+    page.run(`dontMissPlacements = [
+      { title: "No art", copy: "Skipped.", cta: "Go" },
+      { title: "Fall Guide", copy: "Cider mills.", cta: "Explore fall", image: "/assets/guides/fall-guide-800.webp", image2x: "/assets/guides/fall-guide-1600.webp", alt: "A cider press.", focus: "right" },
+      { eventId: "u03", reason: "An event beside it." },
+    ]; renderDontMiss();`);
+    const mixed = page.el("dontMissSection").innerHTML;
+    assert.deepStrictEqual([...mixed.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Fall Guide", "Sunday 03"]);
+    assert.ok(/class="dm-cta">Explore fall &rarr;</.test(mixed), "the CTA text shows");
+    assert.ok(/srcset="[^"]*\/assets\/guides\/fall-guide-800\.webp 800w, [^"]*\/assets\/guides\/fall-guide-1600\.webp 1600w"/.test(mixed) && /alt="A cider press\."/.test(mixed) && /object-position:right/.test(mixed));
+    assert.strictEqual([...mixed.matchAll(/<div class="dm-card dm-feature">/g)].length, 1, "a static card is not a link");
+    assert.ok(/<h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"><\/span><\/h2>/.test(mixed), "the signal dot is inside the title: one lockup");
     // The loader reads the placements file; an unusable file changes nothing.
     page.run(`dontMissPlacements = []; globalThis.fetch = async () => ({ ok: true, json: async () => ({ placements: [{ eventId: "u03", eyebrow: "From the file" }] }) }); loadDontMissPlacements();`);
     await page.settle();

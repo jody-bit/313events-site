@@ -1,19 +1,30 @@
 {
-  "_readme": "Don't Miss placements (DEC-025). Each entry features ONE existing event. eventId is the id= in the event's event.html?id=... link. Order here is the order on the homepage; at most 3 show. Remove an entry (or set `to`) to stop featuring it. eyebrow and reason are optional editorial text. Selection is editorial only and is never paid for.",
+  "_readme": "Don't Miss placements (DEC-025). Order here is the order on the homepage; at most 3 show. Two kinds of entry: an EVENT placement {eventId, eyebrow?, reason?} featuring one existing canonical event (eventId is the id= in its event.html?id=... link; it shows only while that event is current and has an image), or a STATIC EDITORIAL card {title, copy, cta, image, image2x?, alt, focus?} such as the seasonal guides (non-navigating until its page exists). Optional from/to (YYYY-MM-DD) on either kind. Remove an entry to stop featuring it. Selection is editorial only and is never paid for.",
   "placements": [
     {
-      "eventId": "77d9a62e-e8f1-4e97-96e8-0582382f2ec2",
-      "reason": "Montréal's Ballets Jazz company brings its athletic blend of jazz, ballet and modern dance to the Detroit Opera House."
+      "title": "Detroit Orbit Fall Guide",
+      "copy": "Cider mills. Pumpkin patches. Orchards. Donuts. Hayrides. Find your fall.",
+      "cta": "Explore fall",
+      "image": "/assets/guides/fall-guide-800.webp",
+      "image2x": "/assets/guides/fall-guide-1600.webp",
+      "alt": "A wooden cider press pouring fresh cider beside baskets of apples and pumpkins, with a red barn and hayride at sunset."
     },
     {
-      "eventId": "8d2fc3c6-c336-4260-9714-da2e52cd1e77",
-      "eyebrow": "Retrospective",
-      "reason": "A major retrospective of metro Detroit-born designer Anna Sui, with more than 100 looks from her archive."
+      "title": "Halloween in the Orbit",
+      "copy": "Haunts. Horror. Ghosts. Oddities. Family fun. Halloween across the Detroit Orbit.",
+      "cta": "Get spooky",
+      "image": "/assets/guides/halloween-guide-800.webp",
+      "image2x": "/assets/guides/halloween-guide-1600.webp",
+      "alt": "Glowing jack-o'-lanterns and a scarecrow beside a foggy path leading visitors toward a haunted manor under a full moon."
     },
     {
-      "eventId": "bbb03a7b-634d-4a69-ba2f-d5b229e529a7",
-      "eyebrow": "Opening night",
-      "reason": "A six-decade retrospective by longtime Detroit artist Pat Duff, opening with a free reception."
+      "title": "Fall Colors",
+      "copy": "Trails. Parks. Scenic drives. Waterfronts. Find the Detroit Orbit at peak color.",
+      "cta": "Chase color",
+      "image": "/assets/guides/fall-color-guide-800.webp",
+      "image2x": "/assets/guides/fall-color-guide-1600.webp",
+      "alt": "Red and orange autumn maples above a river at sunset, with the Detroit skyline on the horizon.",
+      "focus": "right"
     }
   ]
 }

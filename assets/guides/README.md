@@ -1,8 +1,8 @@
-# Seasonal guide images (preserved, not currently displayed)
+# Seasonal guide images
 
-Optimized from the three supplied 1672x941 originals (1600w and 800w webp, 16:9). Built for the seasonal guides
-(Fall Guide, Halloween, Fall Colors) and kept for that later work; they are not shown in Don't Miss, which is an
-event rail. The earlier homepage card implementation is in git history (PR #53, commit 2e84bbf).
+Optimized from the three supplied 1672x941 originals (1600w and 800w webp, 16:9). Shown today as the three static
+cards of the homepage DON'T MISS rail (configured in data/dont-miss.json, non-navigating until /fall, /halloween and
+/fall-color exist). The seasonal guide pages are designed separately.
 
 | Files | Approved card copy | Alt text |
 |---|---|---|
