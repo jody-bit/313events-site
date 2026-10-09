@@ -312,7 +312,9 @@ async function run() {
     assert.strictEqual([...SCRIPT.matchAll(/dontMissPlacements\s*=[^=]/g)].length, 2, "…and only the placements-file loader assigns it");
     assert.ok(/dontMissPlacements = data\.placements/.test(SCRIPT));
     const seeded = JSON.parse(read("data/dont-miss.json"));
-    assert.deepStrictEqual(seeded.placements, [], "the shipped placements file selects nothing: no mockup events are published");
+    assert.ok(seeded.placements.length <= 3, "the shipped placements file is a short hand-curated list");
+    assert.ok(seeded.placements.every((p) => /^[0-9a-f-]{36}$/.test(p.eventId) && p.reason), "every shipped placement names a canonical event id and carries an editor's reason");
+    assert.strictEqual(new Set(seeded.placements.map((p) => p.eventId)).size, seeded.placements.length, "no event is listed twice");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");
     assert.strictEqual(page.el("dontMissSection").innerHTML, "");

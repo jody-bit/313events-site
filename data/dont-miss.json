@@ -1,4 +1,19 @@
 {
   "_readme": "Don't Miss placements (DEC-025). Each entry features ONE existing event. eventId is the id= in the event's event.html?id=... link. Order here is the order on the homepage; at most 3 show. Remove an entry (or set `to`) to stop featuring it. eyebrow and reason are optional editorial text. Selection is editorial only and is never paid for.",
-  "placements": []
+  "placements": [
+    {
+      "eventId": "77d9a62e-e8f1-4e97-96e8-0582382f2ec2",
+      "reason": "Montréal's Ballets Jazz company brings its athletic blend of jazz, ballet and modern dance to the Detroit Opera House."
+    },
+    {
+      "eventId": "8d2fc3c6-c336-4260-9714-da2e52cd1e77",
+      "eyebrow": "Retrospective",
+      "reason": "A major retrospective of metro Detroit-born designer Anna Sui, with more than 100 looks from her archive."
+    },
+    {
+      "eventId": "bbb03a7b-634d-4a69-ba2f-d5b229e529a7",
+      "eyebrow": "Opening night",
+      "reason": "A six-decade retrospective by longtime Detroit artist Pat Duff, opening with a free reception."
+    }
+  ]
 }
