@@ -49,6 +49,8 @@ const {
   normalizeVenueName,
 } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 
+const { provenanceLine } = require(path.join(__dirname, "..", "api", "_lib", "venue-knowledge"));
+
 const REPAIRABLE_FIELDS = ["venue_address_raw", "venue_city_raw", "venue_id"];
 
 function todayIso() {
@@ -59,7 +61,13 @@ function todayIso() {
 // report the Product Owner asked for (refinement 10). This is reporting
 // only — it never influences the actual repair decision, which is made
 // solely by resolveVenueAddressCityRepair().
-function classifyTier(event, canonicalMaps, learnedMap) {
+function classifyTier(event, canonicalMaps, learnedMap, decision) {
+  // Issue #49: the decision itself says which tier answered it.
+  if (decision && decision.tier) {
+    if (decision.tier === "canonical_venue_id") return "canonical_venue_id";
+    if (decision.tier === "canonical_name") return "canonical_name_match";
+    return "learned_historical"; // learned, canonical_gap, campus, stated_in_location
+  }
   if (event.venue_id && canonicalMaps.byId.has(event.venue_id)) return "canonical_venue_id";
   if (!event.venue_id) {
     const key = normalizeVenueName(event.venue_name_raw);
@@ -85,7 +93,7 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
       `?start_date=gte.${todayIso()}` +
       `&status=neq.rejected` +
       `&or=(venue_address_raw.is.null,venue_city_raw.is.null)` +
-      `&select=id,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,start_date,status` +
+      `&select=id,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,start_date,status,source,external_id,feed_source_id,no_fixed_venue,internal_note,updated_at` +
       `&order=start_date.asc,id.asc` +
       `&limit=${REPAIR_PAGE_SIZE}&offset=${page * REPAIR_PAGE_SIZE}`;
     const resp = await fetch(url, { headers: sbHeaders });
@@ -102,14 +110,18 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
 // re-requires each of those fields to still be null right now. Returns
 // true if the write actually applied (PostgREST returned the row),
 // false if a concurrent change made the filter no longer match.
-async function applyPatch(SUPABASE_URL, sbHeaders, eventId, patch) {
+async function applyPatch(SUPABASE_URL, sbHeaders, eventId, patch, options = {}) {
   const stillBlankFilters = Object.keys(patch)
     .filter((k) => k === "venue_address_raw" || k === "venue_city_raw" || k === "venue_id")
     .map((k) => `${k}.is.null`);
   const filterQs = stillBlankFilters.length > 1
     ? `and=(${stillBlankFilters.join(",")})`
     : stillBlankFilters.map((f) => f.replace(".", "=")).join("");
-  const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(eventId)}&${filterQs}`;
+  // Issue #49: a patch that also appends a provenance line to internal_note
+  // is applied only if the row is exactly as it was read (updated_at), so a
+  // note written in between is never lost.
+  const guard = patch.internal_note !== undefined && options.updatedAt ? `&updated_at=eq.${encodeURIComponent(options.updatedAt)}` : "";
+  const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(eventId)}&${filterQs}${guard}`;
   const resp = await fetch(url, {
     method: "PATCH",
     headers: { ...sbHeaders, "Content-Type": "application/json", Prefer: "return=representation" },
@@ -159,6 +171,14 @@ async function repairExistingEvents({
     // blank description) -- summing the two counters alone would double-
     // count that event. Purely additive; nothing here reads or uses it.
     writtenIds: [],
+    // Issue #49: why the rest were not filled. A conflict goes to a person
+    // (Needs Decision); a venue known from one source only is confirmed
+    // once, at venue level; an excluded name (TBA, secret, multiple
+    // locations, online, mobile, street segment, ambiguous) never inherits.
+    conflicts: 0,
+    needsVenueConfirmation: 0,
+    excluded: 0,
+    byTier: {},
   };
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -175,14 +195,30 @@ async function repairExistingEvents({
   const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders);
   counts.totalConsidered = candidates.length;
 
+  const today = todayIso();
   for (const event of candidates) {
-    const patch = resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap);
-    if (Object.keys(patch).length === 0) {
+    const fieldPatch = resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap);
+    const decision = fieldPatch._decision || null;
+    if (Object.keys(fieldPatch).length === 0) {
       counts.unresolved++;
+      if (decision && decision.action === "conflict") counts.conflicts++;
+      else if (decision && decision.action === "confirm") counts.needsVenueConfirmation++;
+      else if (decision && decision.action === "excluded") counts.excluded++;
       continue;
     }
     counts.repairable++;
-    const tier = classifyTier(event, canonicalMaps, learnedMap);
+    if (decision && decision.tier) counts.byTier[decision.tier] = (counts.byTier[decision.tier] || 0) + 1;
+    // Provenance: a fill from LEARNED knowledge (anything but the event's
+    // own canonical venue record) says what filled it and from what
+    // evidence, and the marker keeps the filled row out of future venue
+    // evidence. A canonical fill is already traceable: it is the linked
+    // venue's own record (venue_id).
+    const patch = { ...fieldPatch };
+    if (decision && decision.tier && decision.tier !== "canonical_venue_id" && decision.tier !== "canonical_name") {
+      const line = provenanceLine(decision, today);
+      patch.internal_note = event.internal_note ? `${event.internal_note}\n${line}` : line;
+    }
+    const tier = classifyTier(event, canonicalMaps, learnedMap, decision);
     if (tier === "canonical_venue_id") counts.repairableFromCanonicalVenueId++;
     else if (tier === "canonical_name_match") counts.repairableFromCanonicalName++;
     else if (tier === "learned_historical") counts.repairableFromLearnedHistorical++;
@@ -191,10 +227,10 @@ async function repairExistingEvents({
       logger.log(`[dry-run] would patch event ${event.id} (${event.venue_name_raw || "no venue name"}):`, patch);
       continue;
     }
-    const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, patch);
+    const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, patch, { updatedAt: event.updated_at || null });
     if (applied) {
       counts.written++;
-      counts.fieldsWritten += Object.keys(patch).length;
+      counts.fieldsWritten += Object.keys(fieldPatch).length;
       counts.writtenIds.push(event.id);
     } else {
       counts.skippedConcurrentChange++;
