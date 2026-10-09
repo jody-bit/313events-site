@@ -221,6 +221,25 @@ check("a blank incoming Ticketmaster address cannot erase learned canonical know
   assert.strictEqual(s.canonicalRepairs[0].events, 3);
 });
 
+check("a street-only conflict keeps the undisputed canonical city for a linked event, and fills no street", () => {
+  const venues = [{ id: "em", name: "Eastern Market", address: null, city: "Detroit" }];
+  const k = know([
+    ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_address_raw: "2934 Russell", venue_city_raw: "Detroit", source: "Eastern Market Partnership", external_id: null }),
+    ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_address_raw: "2810 Russell St.", venue_city_raw: "Detroit", source: "VisitDetroit", external_id: "vd-9" }),
+  ], venues);
+  assert.strictEqual(k.byVenueId.get("em").status, "conflict");
+  const d = K.resolveLocationGap(ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_address_raw: "2934 Russell" }), k);
+  assert.strictEqual(d.action, "fill");
+  assert.deepStrictEqual(d.patch, { venue_city_raw: "Detroit" }, "the city nobody disputes; never a street");
+  assert.deepStrictEqual(K.resolveLocationGap(ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_city_raw: "Detroit" }), k).patch, {}, "no street from a street conflict");
+  // A city conflict gives nothing at all.
+  const k2 = know([
+    ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_address_raw: "2934 Russell", venue_city_raw: "Hamtramck", source: "A", external_id: null }),
+    ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_address_raw: "2934 Russell", venue_city_raw: "Detroit", source: "B", external_id: null }),
+  ], venues);
+  assert.deepStrictEqual(K.resolveLocationGap(ev({ venue_name_raw: "Eastern Market", venue_id: "em", venue_address_raw: "2934 Russell" }), k2).patch, {});
+});
+
 check("campus/building names: one first-party source, one campus street, two or more dates", () => {
   const mk = (b, d, addr = "44575 Garfield Road") => ev({ venue_name_raw: `Center Campus, ${b}`, venue_address_raw: addr, venue_city_raw: addr ? "Clinton Township" : null, source: "Macomb Community College", external_id: `localist-macomb-${++seq}`, start_date: d });
   const k = know([mk("E Building", "2026-10-21"), mk("University Center 1", "2026-10-20"), mk("K Building", "2026-11-21")]);

@@ -223,7 +223,12 @@ function decide(rows, canonical) {
   if (!rows.length) return partial;
   if (disagreements.length) {
     const status = cityKeys.size > 1 ? "ambiguous" : "conflict";
-    return { status, address: null, city: null, evidence, disagreements: disagreements.slice(0, 10) };
+    const out = { status, address: null, city: null, venueId: canonical ? canonical.id : null, evidence, disagreements: disagreements.slice(0, 10) };
+    // Sources that disagree only on the STREET, in the canonical record's own
+    // city, leave that city undisputed: a linked event keeps the record's city
+    // (and its link), as before #49, and never gets either street.
+    if (status === "conflict" && partial && normalizeCityForCompare(cityText(canonical.city)) === [...cityKeys][0]) out.fallback = partial;
+    return out;
   }
   // A canonical record without a street, whose city contradicts every statement.
   if (canonical && canonicalCity && canonicalCity !== rows[0].s.cityKey) {
