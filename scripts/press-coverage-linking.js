@@ -173,11 +173,66 @@ function daysBetween(isoA, isoB) {
 // at where the real article "seems" to end.
 const TRAILING_BOILERPLATE_RE = /\b(You May Also Be Interested In|Related Articles|More From This Section|Read Next|You Might Also Like)\b/i;
 
+// Admin Hardening slice 1 (2026-10-08, Stone Wall Pumpkin Festival): the
+// server-rendered C&G page carries no "Related Articles" heading, so nothing
+// was trimmed and the site footer -- "Copyright C & G Publishing. All Rights
+// Reserved. ... OFFICE: 13650 E. 11 Mile Road, Warren, MI 48089" -- reached
+// extractStreetAddress(). The publisher's own office became the event's
+// address and city on three published events. A copyright line followed
+// closely by "All Rights Reserved" (or "©" followed by it) is the end of the
+// article on every outlet page; nothing after it is ever about the event. A
+// bare "©" (a photo credit) or the word "copyright" in a sentence is not.
+// Same "only cut AFTER a known marker" rule as above.
+const COPYRIGHT_FOOTER_RE = /(?:\bCopyright\b|©)[^\n]{0,80}?\bAll Rights Reserved\b/i;
+
 function trimTrailingBoilerplate(text) {
   if (!text) return text;
-  const m = text.match(TRAILING_BOILERPLATE_RE);
-  if (!m) return text;
-  return text.slice(0, m.index).trim();
+  let out = text;
+  for (const re of [TRAILING_BOILERPLATE_RE, COPYRIGHT_FOOTER_RE]) {
+    const m = out.match(re);
+    if (m) out = out.slice(0, m.index).trim();
+  }
+  return out;
+}
+
+// articleRegion(html) -> the HTML of the page's one <article>, else its one
+// <main>, else the whole page (the previous behavior). Admin Hardening
+// slice 1 (2026-10-08): stripping the WHOLE page put the <title> tag and the
+// site menus ahead of the article, and the event's name first "appeared" in
+// the <title>. Five of the eight auto-created editorial events got the page
+// title plus the menu as their description ("... - Grosse Pointe News
+// Search for: Search Submit Advertising ... Wedding Submission Form ...").
+// Checked on the three outlets that produced them (C&G Newspapers, Grosse
+// Pointe News, Hour Detroit): each page has exactly one <main> or <article>
+// holding the headline, byline and body and none of the menus, sidebars or
+// footer. More than one such element is ambiguous, so the whole page is
+// used, exactly as before.
+function articleRegion(html) {
+  if (!html) return html;
+  for (const tag of ["article", "main"]) {
+    const re = new RegExp(`<${tag}\\b[\\s\\S]*?<\\/${tag}>`, "gi");
+    const found = html.match(re);
+    if (found && found.length === 1) return found[0];
+  }
+  return html;
+}
+
+// dropLeadingByline(text) -> the text after the article's byline, when a
+// byline ("By <name> on <Month> <D>, <YYYY>" or "By <name> - <Month> <D>,
+// <YYYY>") opens the article. Admin Hardening slice 1 (2026-10-08): the
+// headline and byline sit inside the article element, and the byline's
+// publish date counted as the event's date -- Stone Wall Pumpkin Festival
+// (byline Oct. 6, event Oct. 10) and Tau Beta Fall Market (byline Sept. 17).
+// Only a byline within the first 600 characters, with a full date and year,
+// is recognised; anything else leaves the text unchanged. The name may hold
+// dots (C&G bylines are e-mail addresses: "By jshelton@candgnews.com on
+// October 06, 2026"). The headline is
+// still passed to the extractors separately.
+function dropLeadingByline(text) {
+  if (!text) return text;
+  const re = new RegExp(`^[\\s\\S]{0,600}?\\bBy\\s+[^\\n]{1,80}?(?:\\s+on|\\s*[-–—|·])\\s+${MONTH_NAMES_RE}\\s+\\d{1,2},\\s+\\d{4}\\b`);
+  const m = text.match(re);
+  return m ? text.slice(m[0].length).trim() : text;
 }
 
 async function fetchArticleText(url, fetchFn) {
@@ -186,7 +241,7 @@ async function fetchArticleText(url, fetchFn) {
     const resp = await doFetch(url, { headers: { "User-Agent": UA, Accept: "text/html" } });
     if (!resp.ok) return null;
     const html = await resp.text();
-    return trimTrailingBoilerplate(stripHtml(html)).slice(0, MAX_ARTICLE_CHARS);
+    return dropLeadingByline(trimTrailingBoilerplate(stripHtml(articleRegion(html)))).slice(0, MAX_ARTICLE_CHARS);
   } catch {
     return null; // fail closed — never throws; caller treats this as "no body text available"
   }
@@ -384,6 +439,20 @@ function nearestCueIndexBefore(text, re, fromIdx) {
 // extraction MORE permissive than extractDates() already is, only ever
 // narrower. Never infers a missing end date, time, or price -- purely a
 // disambiguation of dates the article itself already, textually, states.
+// sentenceStartBefore(text, idx) -> index where the sentence containing idx
+// begins: just after the last real ". " boundary before idx (abbreviations
+// such as "Oct." or "a.m." are not boundaries), else 0.
+function sentenceStartBefore(text, idx) {
+  let from = idx;
+  while (from > 0) {
+    const dot = text.lastIndexOf(". ", from - 1);
+    if (dot === -1) return 0;
+    if (!endsWithAbbreviation(text, dot)) return dot + 2;
+    from = dot;
+  }
+  return 0;
+}
+
 function extractEventDates(bodyText, publishedAtIso, titlePhrase) {
   const text = bodyText || "";
   const allDates = extractDates(text, publishedAtIso);
@@ -394,12 +463,19 @@ function extractEventDates(bodyText, publishedAtIso, titlePhrase) {
   const publishedDate = publishedAtIso ? new Date(publishedAtIso) : new Date();
   const publishedYear = publishedDate.getUTCFullYear();
   const windowEnd = titleIdx + titlePhrase.length + DATE_SEARCH_WINDOW_CHARS;
+  // Admin Hardening slice 1 (2026-10-08): the window had no START. Anything
+  // before the event's own first mention -- the page header, the byline's
+  // "on October 06, 2026" publish date -- counted as an event date, which
+  // published the Stone Wall Pumpkin Festival (Sat. Oct. 10 only) as
+  // "Oct. 6-10". The window now opens at the start of the sentence that
+  // first names the event, so "On Oct. 10, the X Festival ..." still counts.
+  const windowStart = sentenceStartBefore(text, titleIdx);
 
   const found = new Set();
   let m;
   DATE_RE.lastIndex = 0;
   while ((m = DATE_RE.exec(text))) {
-    if (m.index >= windowEnd) continue;
+    if (m.index < windowStart || m.index >= windowEnd) continue;
     const eventCueIdx = nearestCueIndexBefore(text, EVENT_OCCURRENCE_CUE_RE, m.index);
     const nonEventCueIdx = nearestCueIndexBefore(text, NON_EVENT_DATE_CUE_RE, m.index);
     if (nonEventCueIdx > eventCueIdx) continue; // a closer non-event (deadline-type) cue -> a different date, exclude
@@ -645,7 +721,11 @@ const SENTENCE_ABBREV = new Set([
 ]);
 
 function endsWithAbbreviation(text, periodIdx) {
-  const m = text.slice(0, periodIdx).match(/([A-Za-z]+)$/);
+  const before = text.slice(0, periodIdx);
+  // "10 a.m. to 4 p.m. Saturday" is one sentence (Stone Wall Pumpkin
+  // Festival, 2026-10-08: the description was cut at "from 10 a.m.").
+  if (/\b[ap]\.m$/i.test(before)) return true;
+  const m = before.match(/([A-Za-z]+)$/);
   return !!(m && SENTENCE_ABBREV.has(m[1].toLowerCase()));
 }
 
@@ -683,6 +763,38 @@ function extractDescriptionSentence(bodyText, titlePhrase) {
   return sentence.length > MAX_DESCRIPTION_CHARS ? sentence.slice(0, MAX_DESCRIPTION_CHARS).trim() + "…" : sentence;
 }
 
+// statedEndDate(bodyText, publishedAtIso, dates) -> iso | null
+//
+// Admin Hardening slice 1 (2026-10-08): an end date used to be "the last of
+// any two dates found", so any second date (a publish date, a different
+// session, a deadline the cue words missed) turned a one-day event into a
+// range. An end date is now kept only when the article STATES a range that
+// starts on the event's own start date: "Oct. 10 through Oct. 12",
+// "Oct. 10 to Nov. 1", "Oct. 10-12", "Oct. 10 - 12". Never inferred.
+const RANGE_CONNECTOR = "\\s*(?:through|thru|until|to|[-–—])\\s*";
+const FULL_RANGE_RE = new RegExp(`\\b${MONTH_NAMES_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s+(\\d{4}))?${RANGE_CONNECTOR}${MONTH_NAMES_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s+(\\d{4}))?\\b`, "gi");
+const DAY_RANGE_RE = new RegExp(`\\b${MONTH_NAMES_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?\\s*[-–—]\\s*(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s+(\\d{4}))?\\b`, "gi");
+function statedEndDate(bodyText, publishedAtIso, dates) {
+  if (!dates || !dates.length) return null;
+  const start = dates[0];
+  const publishedDate = publishedAtIso ? new Date(publishedAtIso) : new Date();
+  const publishedYear = publishedDate.getUTCFullYear();
+  let m;
+  FULL_RANGE_RE.lastIndex = 0;
+  while ((m = FULL_RANGE_RE.exec(bodyText))) {
+    const a = resolveDateMatch([m[0], m[1], m[2], m[3]], publishedYear, publishedDate);
+    const b = resolveDateMatch([m[0], m[4], m[5], m[6] || m[3]], publishedYear, publishedDate);
+    if (a === start && b && b > a && dates.includes(b)) return b;
+  }
+  DAY_RANGE_RE.lastIndex = 0;
+  while ((m = DAY_RANGE_RE.exec(bodyText))) {
+    const a = resolveDateMatch([m[0], m[1], m[2], m[4]], publishedYear, publishedDate);
+    const b = resolveDateMatch([m[0], m[1], m[3], m[4]], publishedYear, publishedDate);
+    if (a === start && b && b > a) return b;
+  }
+  return null;
+}
+
 function extractEventIdentity(headline, bodyText, publishedAtIso) {
   const title = extractTitle(headline, bodyText);
   const venue = extractVenue(bodyText || "");
@@ -712,7 +824,10 @@ function extractEventIdentity(headline, bodyText, publishedAtIso) {
     streetAddress: streetAddress ? streetAddress.address : null,
     category,
     startDate: dates.length ? dates[0] : null,
-    endDate: dates.length > 1 ? dates[dates.length - 1] : null,
+    endDate: statedEndDate(bodyText || "", publishedAtIso, dates),
+    // The last date the article ties to the event, stated range or not --
+    // only for the "is this already over?" check below, never written.
+    latestDate: dates.length ? dates[dates.length - 1] : null,
     description,
     contextTerms: extractContextEntities(bodyText || ""),
     isDistributed: isDistributedEvent(`${headline || ""} ${bodyText || ""}`),
@@ -765,6 +880,7 @@ function mergeIdentities(identities) {
     return null;
   };
   const endDates = identities.map((id) => id.endDate).filter(Boolean).sort();
+  const latestDates = identities.map((id) => id.latestDate).filter(Boolean).sort();
   return {
     title: first("title"),
     venueName: first("venueName"),
@@ -773,6 +889,7 @@ function mergeIdentities(identities) {
     category: first("category"),
     startDate: first("startDate"),
     endDate: endDates.length ? endDates[endDates.length - 1] : null,
+    latestDate: latestDates.length ? latestDates[latestDates.length - 1] : null,
     description: first("description"),
     contextTerms: Array.from(new Set(identities.flatMap((id) => id.contextTerms || []))),
     isDistributed: identities.some((id) => id.isDistributed),
@@ -1030,7 +1147,9 @@ async function linkPressCoverageQueue({
     // never left for a human to dismiss by hand, and never carried forward
     // to Phase B where a lucky full extraction could otherwise create it as
     // a bogus past-dated event.
-    const latestKnownDate = identity.endDate || identity.startDate;
+    // latestDate, not endDate: since 2026-10-08 endDate is only a STATED
+    // range end, while this check needs the latest date mentioned at all.
+    const latestKnownDate = identity.latestDate || identity.endDate || identity.startDate;
     if (latestKnownDate && latestKnownDate < nowIso) {
       if (!dryRun) await dismissArticleFn(SUPABASE_URL, sbHeaders, article.id);
       counts.autoDismissedPast++;
@@ -1197,6 +1316,7 @@ module.exports = {
   extractCategory,
   extractDates,
   extractEventDates,
+  statedEndDate,
   trimTrailingBoilerplate,
   extractDescriptionSentence,
   isSufficientForCreate,
@@ -1208,6 +1328,8 @@ module.exports = {
   createEvent,
   dismissArticle,
   fetchArticleText,
+  articleRegion,
+  dropLeadingByline,
 };
 
 if (require.main === module) {

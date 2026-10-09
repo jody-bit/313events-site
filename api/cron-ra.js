@@ -136,6 +136,42 @@ module.exports = async (req, res) => {
         runId: body.runId,
         events: body.events,
       });
+      // RA_CANDIDATE_PROMOTION DEFECT 2 fix (2026-10-07): close the
+      // discovery/promotion timing gap. Before this, promoteRaCandidates()
+      // was only ever invoked by api/cron-enrichment.js's once-daily Step
+      // 0 (around 12:30 UTC) and on demand via the "promote_candidates"
+      // bridge action -- both of which historically ran BEFORE that same
+      // day's RA sync session even started (13:23-15:19 UTC in the week of
+      // production evidence this fix is based on), so getLatestRaSession()
+      // was always looking at YESTERDAY's session, already largely
+      // resolved, never today's fresh backlog. Smallest safe integration
+      // point: this session's own "complete" call already IS the moment
+      // its listingMetadata/allNewIds backlog is both durably recorded
+      // (written at start(), unchanged by this call) and as current as it
+      // will ever get for today -- so give promoteRaCandidates() a chance
+      // at whatever remains unresolved RIGHT HERE, rather than waiting for
+      // a cron that structurally always arrives too late. No session id
+      // needs to be threaded through: getLatestRaSession() orders by
+      // started_at desc, and the session this very call just completed
+      // is -- by construction -- the newest Resident Advisor source_runs
+      // row at this exact moment.
+      //
+      // Deliberately isolated from completeRaSyncSession's own result:
+      // promoteRaCandidates() never writes to source_runs and never
+      // touches the events this call just imported (it only acts on ids
+      // STILL outside the events table), so a failure here can never
+      // corrupt or retry the detail-fetch import that just succeeded --
+      // only this additive `candidatePromotion` field is affected, and the
+      // response is still 200 with completeRaSyncSession's own result
+      // either way. Reuses promoteRaCandidates() completely unmodified,
+      // including its own RA_CANDIDATE_PROMOTION_ENABLED gate, its own
+      // per-run cap, and its own conservative dedupe -- nothing here
+      // duplicates any of that logic.
+      try {
+        result.candidatePromotion = await promoteRaCandidates({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+      } catch (promotionErr) {
+        result.candidatePromotion = { error: promotionErr.message };
+      }
       res.status(200).json(result);
     } catch (err) {
       if (err instanceof RaSyncSessionError) {

@@ -67,9 +67,31 @@
 //     against its group (status null), the remaining groups are still sent,
 //     and the caller gets a result that says what was written rather than
 //     an exception that says nothing.
+//
+// CURRENCY STAMP (Admin Hardening Slice 2, Part C) — OFF unless
+// EVENTS_LAST_SEEN_AT_SOURCE=on.
+// Every row a connector sends here is a row it has just seen at its
+// source. When the switch is on, each row of an events upsert carries
+// last_seen_at_source = the moment this batch was handed over, the same
+// value on every row, so every group keeps one key shape. This is the one
+// key the helper ever adds, and it is a real observation, never a null to
+// square up a batch. It needs migration_046 (events.last_seen_at_source);
+// if the column is missing, PostgREST answers 400 naming it, and that
+// group is resent once without the key — so turning the switch on before
+// the migration costs one extra request per group, never a lost write.
 "use strict";
 
 const DEFAULT_TABLE = "events";
+const LAST_SEEN_COLUMN = "last_seen_at_source";
+
+function lastSeenStampEnabled(env = process.env) {
+  return String(env.EVENTS_LAST_SEEN_AT_SOURCE || "").toLowerCase() === "on";
+}
+
+// A 400 from PostgREST that names the column: it does not exist yet.
+function isMissingLastSeenColumn(status, errorText) {
+  return status === 400 && typeof errorText === "string" && errorText.includes(LAST_SEEN_COLUMN);
+}
 const DEFAULT_ON_CONFLICT = "external_id";
 const DEFAULT_PREFER = "resolution=merge-duplicates,return=minimal";
 
@@ -144,7 +166,11 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
   const onConflict = (options && options.onConflict) || DEFAULT_ON_CONFLICT;
   const prefer = (options && options.prefer) || DEFAULT_PREFER;
 
-  let shapeGroups = groupRowsByKeyShape(Array.from(rows));
+  const stamp = table === DEFAULT_TABLE && lastSeenStampEnabled() ? new Date().toISOString() : null;
+  const input = stamp ? Array.from(rows).map((row) => (row && typeof row === "object" && !Array.isArray(row) ? Object.assign({}, row, { [LAST_SEEN_COLUMN]: stamp }) : row)) : Array.from(rows);
+  const originals = Array.from(rows);
+  const originalsOf = (group) => (stamp ? group.positions.map((p) => originals[p]) : group.rows);
+  let shapeGroups = groupRowsByKeyShape(input);
 
   // Conflict keys that occur in more than one shape group: withheld, loudly.
   const conflictColumns = onConflict.split(",");
@@ -169,7 +195,7 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
       .map((group) => {
         const kept = { keys: group.keys, rows: [], json: [], sent: [], positions: [] };
         group.sent.forEach((sent, i) => {
-          if (crossShapeDuplicates.has(conflictKeyOf(sent))) { held.push({ row: group.rows[i], position: group.positions[i] }); return; }
+          if (crossShapeDuplicates.has(conflictKeyOf(sent))) { held.push({ row: stamp ? originals[group.positions[i]] : group.rows[i], position: group.positions[i] }); return; }
           kept.rows.push(group.rows[i]);
           kept.json.push(group.json[i]);
           kept.sent.push(sent);
@@ -186,22 +212,37 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
   const failedRows = [];
   let written = 0;
 
+  const send = ({ body }) =>
+    fetch(`${supabaseUrl}/rest/v1/${table}?on_conflict=${onConflict}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        Prefer: prefer,
+      },
+      body,
+    });
+  let stampColumnMissing = false;
+
   for (const group of shapeGroups) {
     let resp;
     try {
-      resp = await fetch(`${supabaseUrl}/rest/v1/${table}?on_conflict=${onConflict}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
-          Prefer: prefer,
-        },
-        body: `[${group.json.join(",")}]`,
-      });
+      const unstamped = () => `[${group.sent.map((sent) => { const { [LAST_SEEN_COLUMN]: _omit, ...rest } = sent; return JSON.stringify(rest); }).join(",")}]`;
+      resp = await send(stamp && stampColumnMissing ? { body: unstamped() } : { body: `[${group.json.join(",")}]` });
+      if (stamp && !stampColumnMissing && resp.status === 400) {
+        const errorText = await resp.text().catch(() => "");
+        if (isMissingLastSeenColumn(resp.status, errorText)) {
+          stampColumnMissing = true;
+          console.warn(`[event-upsert] ${LAST_SEEN_COLUMN} is not in the events table yet (migration_046) — sending without it`);
+          resp = await send({ body: unstamped() });
+        } else {
+          resp = { ok: false, status: resp.status, text: async () => errorText };
+        }
+      }
     } catch (err) {
       if (totalGroups === 1) throw err; // a single request: exactly what a bare fetch did
-      failedRows.push(...group.rows);
+      failedRows.push(...originalsOf(group));
       groups.push({ keys: group.keys, rowCount: group.rows.length, ok: false, status: null, error: `request failed: ${err && err.message ? err.message : err}` });
       continue;
     }
@@ -210,7 +251,7 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
       groups.push({ keys: group.keys, rowCount: group.rows.length, ok: true, status: resp.status, error: null });
     } else {
       const error = await resp.text();
-      failedRows.push(...group.rows);
+      failedRows.push(...originalsOf(group));
       groups.push({ keys: group.keys, rowCount: group.rows.length, ok: false, status: resp.status, error });
     }
   }
@@ -255,6 +296,9 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
 
 module.exports = {
   upsertEventRows,
+  lastSeenStampEnabled,
+  isMissingLastSeenColumn,
+  LAST_SEEN_COLUMN,
   groupRowsByKeyShape,
   keyShapeOf,
   DEFAULT_PREFER,

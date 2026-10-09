@@ -184,7 +184,8 @@ function fixtureEvents(today) {
       time: times[next(times.length)],
       free: next(3) === 0,
       source: sources[next(sources.length)],
-      note: next(9) === 0 ? "Doors at eight" : undefined,
+      // no `note`: the pages no longer read it (2026-10-06); the frozen pre-Discovery
+      // oracle still searches one, so the fixtures must not carry one.
       ticketUrl: next(2) ? "https://tickets.example/" + i : undefined,
       imageUrl: next(4) === 0 ? "https://img.example/" + i : undefined,
     });
@@ -599,7 +600,7 @@ function run() {
     // Calendar and Map still carry their own copies of these.
     ["calendar.html", "map.html"].forEach((f) => {
       assert.deepStrictEqual(plain(evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES")), blocked, `${f} blocked names match`);
-      evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES").forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", note: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${f}: ${name} is blocked by discovery.js too`));
+      evalIn(line(read(f), "BLOCKED_NAMES"), "BLOCKED_NAMES").forEach((name) => assert.strictEqual(D.matches({ id: "b", date: "2026-10-03", cat: "music", title: "with " + name }, D.defaults(), { now: new Date("2026-10-03T19:00:00Z") }), false, `${f}: ${name} is blocked by discovery.js too`));
     });
     console.log("PASS: (drift guard) places, boundary, Orbit membership of every city, derived features and blocked names in discovery.js match the server, what the homepage had, and Calendar's and Map's remaining copies");
   }

@@ -69,6 +69,30 @@
   .health-banner .fail-list li{margin-bottom:2px;}
   .health-banner .checked-at{color:var(--ink-soft);font-weight:400;}
 
+  /* Control tower (2026-10-09, Admin Hardening Slice 2) -- read-only.
+     System health (sources) and human decisions (event classes) are two
+     separate blocks on purpose: one is fixed by engineering, the other by
+     a person; mixing them is how a broken connector turned into 600 cards. */
+  .ct-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;margin:10px 0 16px;}
+  .ct-tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);}
+  .ct-tile .n{font-size:20px;font-weight:800;color:var(--ink);}
+  .ct-tile .l{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+  .ct-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .ct-table th{text-align:left;color:var(--ink-soft);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  .ct-table td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-soft);}
+  .ct-table td b{color:var(--ink);}
+  .ct-wrap{overflow-x:auto;}
+  .ct-table tr.ct-main td{border-bottom:none;padding-bottom:3px;}
+  .ct-state{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+  .ct-state.blocked,.ct-state.failing{background:var(--bad-ink);color:var(--bad);border:1px solid var(--bad);}
+  .ct-state.needs_decision,.ct-state.unscheduled,.ct-state.stale{background:#443a1a;color:#e8c96b;}
+  .ct-state.repairable,.ct-state.degraded{background:#1f3344;color:#8cc4ef;}
+  .ct-state.advisory,.ct-state.insufficient_evidence,.ct-state.inactive{background:var(--panel-alt);color:var(--ink-soft);border:1px solid var(--line);}
+  .ct-state.cleared,.ct-state.healthy{background:var(--ok-ink);color:var(--ok);border:1px solid var(--ok);}
+  .ct-events{margin:6px 0 0;padding-left:18px;}
+  .ct-events li{margin-bottom:3px;}
+  .ct-link{background:none;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:12.5px;font-family:inherit;}
+
   .refresh{margin-bottom:16px;display:flex;align-items:center;gap:10px;}
   .refresh button{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;}
   .refresh button:disabled{opacity:.6;cursor:default;}
@@ -211,6 +235,7 @@
          used to be the first section a moderator scrolled to. -->
     <nav class="tabs" id="adminTabs">
       <button type="button" class="tab-btn" data-tab="health" onclick="showTab('health')">Smoke tests <span class="tab-badge hidden" id="badge-health">0</span></button>
+      <button type="button" class="tab-btn" data-tab="tower" onclick="showTab('tower')">Control tower <span class="tab-badge hidden" id="badge-tower">0</span></button>
       <button type="button" class="tab-btn" data-tab="editorial" onclick="showTab('editorial')">Press coverage <span class="tab-badge hidden" id="badge-editorial">0</span></button>
       <button type="button" class="tab-btn active" data-tab="submissions" onclick="showTab('submissions')">Event submissions <span class="tab-badge hidden" id="badge-submissions">0</span></button>
       <button type="button" class="tab-btn" data-tab="followup" onclick="showTab('followup')">Needs follow-up <span class="tab-badge hidden" id="badge-followup">0</span></button>
@@ -237,6 +262,34 @@
         <h2>Resident Advisor sync</h2>
         <div class="sub">The device's browser-driven scheduled task still walks ra.co's listing and fetches each event's detail page -- RA's anti-bot defenses require a real browser, so that part is unchanged. Everything after that (deciding what's genuinely new, deriving fields, a conservative duplicate check, and the actual database write) now happens server-side here, tracked as one sync session per run.</div>
         <div id="raSyncBanner" class="health-banner"></div>
+      </section>
+    </div>
+
+    <!-- Control tower (2026-10-09, Admin Hardening Slice 2). Observability
+         only: nothing on this tab writes, repairs, merges, hides or changes
+         any event's status. See api/_lib/control-tower.js. -->
+    <div class="tab-panel" data-tab-panel="tower">
+      <section class="block" style="margin-top:0;">
+        <h2>System health <span class="sub" style="font-weight:normal;">(sources — fixed by engineering, not by editing events)</span></h2>
+        <div class="sub">A run that "succeeded" is not a healthy source. Each source is measured on execution, retrieval, useful output, records written and inventory currency separately; "insufficient evidence" means the connector keeps no run log, not that it is fine. Stale means not re-seen at the source on schedule — it never means cancelled.</div>
+        <div class="err" id="towerError" style="display:none;"></div>
+        <div class="sub" id="towerSystemSummary"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerSources"></table></div>
+        <div class="sub" id="towerAnomalies" style="margin-top:10px;"></div>
+      </section>
+      <section class="block">
+        <h2>Human decisions <span class="sub" style="font-weight:normal;">(public upcoming events, grouped by problem)</span></h2>
+        <div class="sub">Every event gets exactly one state — Cleared, Advisory, Repairable, Needs decision or Blocked — and every state but Cleared says why. A problem shared by many events is listed once, with how many it affects: a repair class, not a pile of cards.</div>
+        <div class="ct-tiles" id="towerTiles"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerClasses"></table></div>
+      </section>
+      <section class="block">
+        <h2>Venue repairs <span class="sub" style="font-weight:normal;">(location gaps, grouped by venue)</span></h2>
+        <div class="sub">What 313.events already knows about each venue, and what that knowledge does for public upcoming events with no street address or no city. <b>Fill</b>: trusted knowledge (the canonical record, two independent sources, or the place's own source on two dates) — filled automatically, with provenance. <b>Confirm</b>: only one source states it — one confirmation at venue level resolves every event there. <b>Conflict</b>: the event and the venue disagree — a person decides; nothing is moved between cities. <b>Excluded</b>: TBA, secret, multiple locations, online, mobile or street-segment names never inherit an address. Read-only: nothing here writes.</div>
+        <div class="sub" id="towerVenueSummary" style="margin-top:8px;"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerVenueCanonical"></table></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerVenues"></table></div>
+        <div class="sub" id="towerVenueUnknown" style="margin-top:10px;"></div>
       </section>
     </div>
 
@@ -353,8 +406,8 @@ async function loadAll() {
   if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
   setRefreshStatus('refreshing');
   try {
-    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete(), loadDuplicates()]);
-    const incompleteOk = results[results.length - 1] !== false;
+    const results = await Promise.all([loadQueue(), loadFeedQueue(), loadEditorial(), loadHidden(), loadHealthcheck(), loadRaSync(), loadVenues(), loadIncomplete(), loadDuplicates(), loadControlTower()]);
+    const incompleteOk = results[7] !== false; // loadIncomplete()
     setRefreshStatus(incompleteOk ? 'ok' : 'error');
   } catch (err) {
     // None of the current loaders reject (each catches its own errors), so
@@ -402,6 +455,145 @@ function setTabBadge(key, count) {
   if (!el) return;
   el.textContent = count;
   el.classList.toggle('hidden', !count);
+}
+
+// ---- Control tower (2026-10-09, Admin Hardening Slice 2) — read-only ----
+let TOWER = null;
+const TOWER_STATE_LABELS = { cleared: 'Cleared', advisory: 'Advisory', repairable: 'Repairable', needs_decision: 'Needs decision', blocked: 'Blocked' };
+function towerPct(x) { return x === null || x === undefined ? '—' : Math.round(x * 100) + '%'; }
+function towerWhen(iso) { if (!iso) return '—'; const d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+function towerChip(state, label) { return '<span class="ct-state ' + escapeHtml(state) + '">' + escapeHtml(label || TOWER_STATE_LABELS[state] || state.replace(/_/g, ' ')) + '</span>'; }
+async function loadControlTower() {
+  const errEl = document.getElementById('towerError');
+  if (!errEl) return true;
+  errEl.style.display = 'none';
+  try {
+    const resp = await fetch('/api/admin-events?integrity=1', { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'HTTP ' + resp.status));
+    TOWER = data;
+    renderControlTower(data);
+    return true;
+  } catch (e) {
+    errEl.textContent = 'Failed to load the control tower: ' + e.message;
+    errEl.style.display = 'block';
+    return false;
+  }
+}
+function renderControlTower(data) {
+  const sys = data.system, dec = data.decisions;
+  const order = { failing: 0, unscheduled: 1, stale: 2, degraded: 3, insufficient_evidence: 4, healthy: 5, inactive: 6 };
+  const sources = sys.sources.slice().sort((a, b) => (order[a.status] - order[b.status]) || (b.upcomingPublic - a.upcomingPublic));
+  const by = sys.summary.byStatus || {};
+  document.getElementById('towerSystemSummary').innerHTML = '<b>' + sys.summary.sources + '</b> sources · <b>' + sys.summary.unhealthy + '</b> unhealthy · '
+    + Object.keys(by).sort((a, b) => order[a] - order[b]).map(k => towerChip(k) + ' ' + by[k]).join(' ')
+    + '<br>Currency basis: ' + escapeHtml(data.currencyBasis) + (sys.summary.runsError ? ' · <span style="color:var(--bad)">run log unreadable: ' + escapeHtml(sys.summary.runsError) + '</span>' : '')
+    + ' · computed ' + escapeHtml(towerWhen(data.generatedAt));
+  const dim = (d) => ['execution', 'retrieval', 'useful', 'written', 'currency'].map(k => {
+    const v = d[k] || 'unknown';
+    const color = v === 'ok' ? 'var(--ok)' : v === 'fail' ? 'var(--bad)' : 'var(--ink-soft)';
+    return '<span title="' + k + (k === 'useful' && d.usefulBasis ? ' (from ' + d.usefulBasis + ')' : '') + '" style="color:' + color + '">' + k[0].toUpperCase() + (v === 'ok' ? '✓' : v === 'fail' ? '✗' : '?') + '</span>';
+  }).join(' ');
+  document.getElementById('towerSources').innerHTML = '<tr><th>Source</th><th>Schedule</th><th>Last run / success</th><th>Fetched → written</th><th title="Execution, Retrieval, Useful records, Written, Currency">E R U W C</th><th>Public upcoming</th><th>Re-seen / last seen</th></tr>'
+    + sources.map(s => '<tr class="ct-main">'
+      + '<td><b>' + escapeHtml(s.label.replace(/\s*\(.*\)$/, '')) + '</b><br>' + towerChip(s.status) + '</td>'
+      + '<td>' + (s.schedule ? escapeHtml(s.schedule.expr || 'external') + (s.schedule.cadenceHours ? ' (' + s.schedule.cadenceHours + 'h)' : '') : '<b style="color:var(--bad)">none</b>') + '</td>'
+      + '<td>' + (s.runLogged ? escapeHtml(towerWhen(s.lastAttemptAt)) + ' ' + escapeHtml(s.lastOutcome || '') + '<br>ok ' + escapeHtml(towerWhen(s.lastSuccessAt)) : 'no run log') + '</td>'
+      + '<td>' + (s.runLogged ? (s.lastFetched === null ? '?' : s.lastFetched) + ' → ' + (s.lastWritten === null ? '?' : s.lastWritten) + (s.zeroFetchStreak ? '<br>0 fetched ×' + s.zeroFetchStreak : '') + (s.zeroWriteStreak ? '<br>0 written ×' + s.zeroWriteStreak : '') : '—') + '</td>'
+      + '<td style="white-space:nowrap">' + dim(s.dimensions || {}) + '</td>'
+      + '<td>' + s.upcomingPublic + (s.upcomingPending ? ' (+' + s.upcomingPending + ' pending)' : '') + '</td>'
+      + '<td>' + towerPct(s.reseenShare) + '<br>' + escapeHtml(towerWhen(s.lastSeenPublicAt)) + (s.missingLinkRate !== null ? '<br>weak links ' + towerPct(s.missingLinkRate) : '') + '</td>'
+      + '</tr><tr><td colspan="7" style="padding-top:0;">' + s.reasons.map(escapeHtml).join(' · ') + '</td></tr>').join('');
+  const anomalies = sys.anomalies || [];
+  document.getElementById('towerAnomalies').innerHTML = (anomalies.length ? '<b>Unexplained anomalies:</b> ' + anomalies.map(a => escapeHtml(a.source + ' — ' + a.detail)).join(' · ') : 'No unexplained volume anomalies.')
+    + ' · ' + sys.unattributedPublicEvents + ' public upcoming events have no recurring source (manual, researched or one-off imports).';
+  const c = dec.counts, cur = dec.currency;
+  const tiles = [
+    ['Evaluated', dec.evaluated], ['Cleared', c.cleared], ['Advisory', c.advisory], ['Repairable', c.repairable], ['Needs decision', c.needs_decision], ['Blocked', c.blocked],
+    ['Stale currency', cur.stale], ['Unknown currency', cur.unknown], ['Unhealthy sources', sys.summary.unhealthy], ['Unexplained anomalies', anomalies.length],
+  ];
+  document.getElementById('towerTiles').innerHTML = tiles.map(t => '<div class="ct-tile"><div class="n">' + t[1] + '</div><div class="l">' + escapeHtml(t[0]) + '</div></div>').join('');
+  document.getElementById('towerClasses').innerHTML = '<tr><th>State</th><th>Problem</th><th>Affected</th><th>Where</th><th></th></tr>'
+    + dec.classes.map((k, i) => '<tr>'
+      + '<td>' + towerChip(k.state) + '</td>'
+      + '<td><b>' + escapeHtml(k.code) + '</b><br>' + escapeHtml(k.message) + '<div id="towerClassEvents' + i + '"></div></td>'
+      + '<td><b>' + k.count + '</b></td>'
+      + '<td>' + k.bySource.slice(0, 5).map(x => escapeHtml(x[0]) + ' ' + x[1]).join('<br>') + (k.bySource.length > 5 ? '<br>…' : '') + '</td>'
+      + '<td><button type="button" class="ct-link" onclick="toggleTowerClass(' + i + ')">events</button></td>'
+      + '</tr>').join('');
+  renderVenueRepairs(dec.venues);
+  setTabBadge('tower', (c.needs_decision || 0) + (c.blocked || 0));
+}
+// Issue #49: location gaps grouped by venue.
+function renderVenueRepairs(v) {
+  const sum = document.getElementById('towerVenueSummary');
+  const canon = document.getElementById('towerVenueCanonical');
+  const list = document.getElementById('towerVenues');
+  if (!sum || !canon || !list) return;
+  if (!v || v.error) { sum.innerHTML = '<span style="color:var(--bad)">Venue knowledge unavailable: ' + escapeHtml((v && v.error) || 'not computed') + '</span>'; canon.innerHTML = ''; list.innerHTML = ''; return; }
+  const t = v.totals, vn = t.venues || {};
+  const reasons = Object.entries(t.excludedByReason || {}).map(([k, n]) => escapeHtml(k.replace(/_/g, ' ')) + ' ' + n).join(', ');
+  sum.innerHTML = '<b>' + t.withoutStreetAddress + '</b> public upcoming events show no street address, <b>' + t.withoutCity + '</b> no city. Of ' + t.gaps + ' with a gap: '
+    + '<b>' + t.fill + '</b> filled from trusted knowledge (' + (vn.fill || 0) + ' venues) · '
+    + '<b>' + t.confirm + '</b> need one venue-level confirmation (' + (vn.confirm || 0) + ' venues) · '
+    + '<b>' + t.conflict + '</b> conflict (' + (vn.conflict || 0) + ') · '
+    + '<b>' + t.excluded + '</b> excluded' + (reasons ? ' (' + reasons + ')' : '') + ' · '
+    + '<b>' + t.unknown + '</b> with no venue knowledge yet (' + (vn.unknown || 0) + ' places; not tasks — see below).'
+    + (v.knowledge ? '<br>Knowledge: ' + v.knowledge.venueNames + ' venue names from ' + v.knowledge.evidenceRows + ' address-bearing approved events — ' + Object.entries(v.knowledge.byStatus).map(([k, n]) => escapeHtml(k.replace(/_/g, ' ')) + ' ' + n).join(', ') + '.' : '');
+  const rows = [];
+  for (const c of v.canonicalConflicts || []) rows.push('<tr><td>' + towerChip('needs_decision') + '</td><td><b>' + escapeHtml(c.venue) + '</b><br>record: ' + escapeHtml((c.address || 'no street') + ', ' + (c.city || 'no city')) + '</td><td>' + c.linkedPublicEvents + ' linked</td><td>events say: ' + (c.disagreements || []).map(d => escapeHtml((d.address || '—') + ', ' + (d.city || '—'))).slice(0, 3).join(' · ') + '</td></tr>');
+  // Venue records whose address trusted knowledge could fill: the durable fix,
+  // proposed only (nothing here writes a venue). Single-source venues are in
+  // the Confirm group below, not repeated here.
+  for (const c of (v.canonicalRepairs || []).filter(c => c.kind === 'fill_canonical_address')) rows.push('<tr><td>' + towerChip('repairable', 'venue record') + '</td><td><b>' + escapeHtml(c.venue) + '</b><br>record has no street (proposed fill, not automatic)</td><td>' + c.events + ' event' + (c.events === 1 ? '' : 's') + '</td><td>' + escapeHtml((c.address || '—') + ', ' + (c.city || '—')) + '</td></tr>');
+  canon.innerHTML = rows.length ? '<tr><th>State</th><th>Venue record</th><th>Affects</th><th>Evidence</th></tr>' + rows.join('') : '';
+  const chip = { fill: 'repairable', confirm: 'advisory', conflict: 'needs_decision', excluded: 'inactive' };
+  // Evidence: what confirmed the address, kept apart from what was only observed.
+  const evidenceHtml = (g) => {
+    const ev = g.evidence || [];
+    const confirmed = ev.filter(x => x.confirms);
+    const stated = ev.filter(x => !x.confirms && x.corroborates !== false);
+    const copies = ev.filter(x => !x.confirms && x.corroborates === false);
+    const item = (x) => escapeHtml(x.source) + ' ×' + x.rows;
+    const lines = [];
+    if (g.basis) lines.push('<i>' + escapeHtml(g.basis) + '</i>');
+    if (confirmed.length) lines.push('<b>Confirmed by:</b> ' + confirmed.map(item).join(', '));
+    if (stated.length) lines.push((g.action === 'confirm' ? '<b>One source only:</b> ' : 'Stated by: ') + stated.map(item).join(', '));
+    if (copies.length) lines.push('<span style="color:var(--ink-soft)">Not counted (copy-prone): ' + copies.map(item).join(', ') + '</span>');
+    return lines.join('<br>');
+  };
+  const order = ['fill', 'confirm', 'conflict', 'excluded'];
+  const label = { fill: 'Fill automatically', confirm: 'Confirm once, at venue level', conflict: 'Needs decision', excluded: 'Excluded — never inherits an address' };
+  list.innerHTML = order.map(a => {
+    const rows = (v.byVenue || []).filter(g => g.action === a);
+    if (!rows.length) return '';
+    const events = rows.reduce((n, g) => n + g.events, 0);
+    return '<tr><th colspan="5" style="padding-top:14px;">' + towerChip(chip[a], a) + ' ' + escapeHtml(label[a]) + ' — ' + rows.length + ' venue' + (rows.length === 1 ? '' : 's') + ', ' + events + ' event' + (events === 1 ? '' : 's') + '</th></tr>'
+      + rows.map(g => '<tr>'
+        + '<td></td>'
+        + '<td><b>' + escapeHtml(g.venue) + '</b>' + (g.reason ? '<br>' + escapeHtml(String(g.reason).replace(/_/g, ' ')) : '') + '</td>'
+        + '<td><b>' + g.events + '</b></td>'
+        + '<td>' + escapeHtml(g.address ? g.address + ', ' + (g.city || '') : '—') + '</td>'
+        + '<td>' + evidenceHtml(g) + '</td>'
+        + '</tr>').join('');
+  }).join('');
+  // Unknown is a diagnostic, not a queue: one line, details on request.
+  const unk = v.unknownPlaces || [];
+  const unkEl = document.getElementById('towerVenueUnknown');
+  if (unkEl) unkEl.innerHTML = t.unknown ? '<details><summary><b>' + t.unknown + '</b> events at <b>' + (vn.unknown || 0) + '</b> places with no venue knowledge yet — not a task; shown for diagnosis</summary>'
+    + '<ul class="ct-events">' + unk.map(g => '<li>' + escapeHtml(g.venue) + ' · ' + g.events + ' event' + (g.events === 1 ? '' : 's') + ' · ' + escapeHtml(String(g.reason || '').replace(/_/g, ' ')) + (g.sources && g.sources.length ? ' · ' + escapeHtml(g.sources.slice(0, 3).join(', ')) : '') + '</li>').join('')
+    + (unk.length < (vn.unknown || 0) ? '<li>… and ' + ((vn.unknown || 0) - unk.length) + ' more places</li>' : '') + '</ul></details>' : '';
+}
+function toggleTowerClass(i) {
+  const el = document.getElementById('towerClassEvents' + i);
+  if (!el || !TOWER) return;
+  if (el.innerHTML) { el.innerHTML = ''; return; }
+  const code = TOWER.decisions.classes[i].code;
+  const hits = (TOWER.decisions.events || []).filter(e => e.reasons.some(r => r.code === code));
+  el.innerHTML = '<ul class="ct-events">' + hits.slice(0, 50).map(e => {
+    const why = e.reasons.find(r => r.code === code);
+    return '<li><a href="/event.html?id=' + encodeURIComponent(e.id) + '" target="_blank" rel="noopener">' + escapeHtml(e.title || e.id) + '</a> · ' + escapeHtml(e.start_date || '') + ' · ' + escapeHtml(e.source || '') + ' — ' + escapeHtml(why ? why.message : '') + '</li>';
+  }).join('') + (hits.length > 50 ? '<li>… and ' + (hits.length - 50) + ' more</li>' : '') + '</ul>';
 }
 
 // ---- Duplicates (2026-10-05) — the pairs the deterministic rules left to a person ----

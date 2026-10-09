@@ -1,0 +1,63 @@
+{
+  "runToken": "20261007-172151-0389f8",
+  "action": "complete",
+  "runId": "241d4c53-725d-4d34-b545-ad33c1631ea2",
+  "events": [
+    {
+      "id": "ra-2553048",
+      "title": "Nightcap Detroit",
+      "description": null,
+      "startDate": "2026-10-07T23:00:00.000",
+      "endDate": "2026-10-08T01:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/3f69ab8cd88d238dfeca9a8c89e5a3b9095ed942.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2554889",
+      "title": "MyGodComplex (Phoenix)",
+      "description": null,
+      "startDate": "2026-10-07T20:00:00.000",
+      "endDate": "2026-10-08T01:00:00.000",
+      "venueName": "Tigris",
+      "address": "2545 Bagley St, Detroit, MI 48216, United States",
+      "image": [
+        "https://images.ra.co/47e68fc93f65694b8e1c909e32c7ad3f9ee4ad5b.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2555268",
+      "title": "XTRA",
+      "description": "XTRA! XTRA! HALLOWEEN EDITION\n\nyou already know the vibe\n\ncome early\nstay late\nbe xtra\n\nbut this time come in a costume ~\n",
+      "startDate": "2026-10-08T22:00:00.000",
+      "endDate": "2026-10-09T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/ce34dd2169edc7cf1ab8ba410e6422ff3bd7ca7b.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2554750",
+      "title": "Groove Night",
+      "description": null,
+      "startDate": "2026-10-08T22:00:00.000",
+      "endDate": "2026-10-09T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": [
+        "https://images.ra.co/97bafa744f33c28e75d5b1c126d9728505ab70ac.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}

@@ -69,17 +69,21 @@ console.log("PASS: \"Venue TBA\" is never matched by name — no link, no city, 
 
 // --- 1b. What is unchanged around the placeholder. ---
 {
-  // An event already linked to a placeholder row (tier A) is left as it is.
+  // Issue #49 (Product Owner, 2026-10-09: "TBA, secret, mobile, street-
+  // segment, multiple-location and ambiguous venues never inherit fixed
+  // addresses"): a placeholder name inherits nothing -- not through an
+  // existing link to a placeholder row (whose "Detroit" is the column's
+  // default, not a fact), and not through a specific secret/TBA row either.
+  // Until 2026-10-09 both were given the row's city.
   const linked = { venue_id: "venue-tba", venue_name_raw: "Venue TBA", venue_address_raw: null, venue_city_raw: null };
-  assert.deepStrictEqual(resolveVenueAddressCityRepair(linked, M, NO_LEARNED), { venue_city_raw: "Detroit" });
-  // A specific, deliberately created row is a different name and still matches.
+  assert.deepStrictEqual(resolveVenueAddressCityRepair(linked, M, NO_LEARNED), {});
   const secret = { venue_id: null, venue_name_raw: "Venue TBA (secret loft, revealed to ticket holders)", venue_address_raw: null, venue_city_raw: null };
-  assert.deepStrictEqual(resolveVenueAddressCityRepair(secret, M, NO_LEARNED), { venue_city_raw: "Detroit", venue_id: "venue-secret" });
+  assert.deepStrictEqual(resolveVenueAddressCityRepair(secret, M, NO_LEARNED), {});
   // A real venue still resolves exactly as before.
   const bar = { venue_id: null, venue_name_raw: "Paris Bar", venue_address_raw: null, venue_city_raw: null };
   assert.deepStrictEqual(resolveVenueAddressCityRepair(bar, M, NO_LEARNED), { venue_address_raw: "1300 Porter St", venue_city_raw: "Detroit", venue_id: "venue-bar" });
 }
-console.log("PASS: an existing link, a specific placeholder row and a real venue all behave as before");
+console.log("PASS: placeholder and secret names inherit nothing; a real venue resolves exactly as before");
 
 // --- 2. A name match is refused when the event's own city says otherwise. ---
 {
@@ -137,14 +141,19 @@ console.log("PASS: an existing link, a specific placeholder row and a real venue
   assert.deepStrictEqual(resolveVenueAddressCityRepair(noCityCc, M, NO_LEARNED), { venue_address_raw: "100 Main St", venue_city_raw: "Detroit", venue_id: "venue-cc-det" });
   assert.strictEqual(resolveVenueFromCandidate({ name: "Community Center", address: null, city: "Detroit" }, M), DETROIT_CC);
   assert.strictEqual(resolveVenueFromCandidate({ name: "Community Center", address: null, city: null }, M), DETROIT_CC);
-  // An existing link (tier A) is not second-guessed by a city difference.
+  // An existing link (tier A) keeps its link, but a city difference is now a
+  // conflict for a person (Issue #49: "never silently move an event between
+  // municipalities"): a Detroit street is no longer written onto an event
+  // that says Hamtramck.
   const linkedElsewhere = { venue_id: "venue-bar", venue_name_raw: "Paris Bar", venue_address_raw: null, venue_city_raw: "Hamtramck" };
-  assert.deepStrictEqual(resolveVenueAddressCityRepair(linkedElsewhere, M, NO_LEARNED), { venue_address_raw: "1300 Porter St" });
+  const elsewhere = resolveVenueAddressCityRepair(linkedElsewhere, M, NO_LEARNED);
+  assert.deepStrictEqual(elsewhere, {});
+  assert.strictEqual(elsewhere._decision.action, "conflict");
   // The address tier already required the same city.
   assert.strictEqual(resolveVenueFromCandidate({ name: null, address: "1300 Porter St", city: "Detroit" }, M), BAR);
   assert.strictEqual(resolveVenueFromCandidate({ name: null, address: "1300 Porter St", city: "Livonia" }, M), null);
 }
-console.log("PASS: a name match in a different stated city is refused; the same city, no city, an existing link and the address tier are unchanged");
+console.log("PASS: a name match in a different stated city is refused; the same city, no city and the address tier are unchanged; a linked event in another city is a conflict");
 
 // --- 3. The gated web search is never spent on a name that is not a
 //        venue, and never writes onto another city's venue. (Third review:

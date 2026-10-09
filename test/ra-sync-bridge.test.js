@@ -296,20 +296,18 @@ async function run() {
   }
 
   // ============================================================
-  // Part 6: ra-bridge-client.js — runToken shape and tag-message parsing
+  // Part 6: ra-bridge-client.js — runToken shape. (Tag-message parsing
+  // used to be tested here too, against a `git cat-file -p` header
+  // format -- that format no longer exists on the device side as of
+  // the 2026-10-07 rewrite, which reads a response tag's message
+  // straight out of the GitHub Git Data API's JSON `message` field
+  // instead of `git fetch` + `git cat-file`; see
+  // test/ra-bridge-client.test.js for that transport's own coverage.)
   // ============================================================
   {
     const token = client.makeRunToken(new Date(Date.UTC(2026, 8, 26, 12, 34, 56)));
     assert.match(token, /^20260926-123456-[0-9a-f]{6}$/);
   }
-  {
-    const catFileOutput =
-      "object abc123\ntype commit\ntag ra-sync/start-response/TOK1\ntagger bot <bot@example.com> 0 +0000\n\n" +
-      JSON.stringify({ ok: true, runToken: "TOK1", response: { runId: "run-1" } });
-    const parsed = client.parseTagMessage(catFileOutput);
-    assert.deepStrictEqual(parsed, { ok: true, runToken: "TOK1", response: { runId: "run-1" } });
-  }
-  assert.throws(() => client.parseTagMessage("no blank line here"), /Could not find the tag message/);
 
   console.log("ra-sync-bridge.test.js: all assertions passed");
 }

@@ -23,6 +23,9 @@
 // file in this project. Run: node test/cron-bagleycommunity.test.js
 
 "use strict";
+// Clock pinned (these fixtures name specific calendar dates; see
+// test/fixtures/freeze-clock.js). Before the code under test loads.
+require("./fixtures/freeze-clock.js").freezeClock("2026-10-08T15:00:00Z");
 const assert = require("assert");
 const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 const fs = require("fs");

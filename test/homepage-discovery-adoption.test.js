@@ -537,7 +537,7 @@ async function run() {
     assert.deepStrictEqual(finds("festivals & parades"), ["Fall Festival"], "category label");
     assert.deepStrictEqual(finds("midtown"), ["Running Exhibit", "Season Exhibition"], "neighborhood");
     assert.deepStrictEqual(finds("venue submission"), ["Wednesday Social"], "source");
-    assert.deepStrictEqual(finds("towel"), ["Wednesday Social"], "note");
+    assert.deepStrictEqual(finds("towel"), [], "an event's note is never searchable");
     assert.deepStrictEqual(finds("augustus"), [], "a blocked event is not findable");
     const empty = view(page).empty;
     assert.strictEqual(empty.text, 'Nothing on the signal here in matching "augustus".');
@@ -548,7 +548,7 @@ async function run() {
     assert.strictEqual(v.allEvents, true, "back to all events");
     assert.strictEqual(v.titles.length, 12);
   }
-  console.log("PASS: F. Search — looks across every upcoming date; matches title, venue, city, category, neighborhood, source and note; never a blocked event");
+  console.log("PASS: F. Search — looks across every upcoming date; matches title, venue, city, category, neighborhood and source (never the note); never a blocked event");
 
   // =====================================================================
   // G. WHERE

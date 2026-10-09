@@ -274,7 +274,6 @@
 
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
       <div class="evt-tag-clothing-optional" id="evtClothingOptional" style="display:none;">Clothing optional</div>
-      <div class="evt-detail-note" id="evtNote" style="display:none;"></div>
       <div class="evt-resale-box" id="evtResale" style="display:none;"></div>
       <a class="evt-editorial" id="evtEditorial" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-editorial-also" id="evtEditorialAlso" style="display:none;"></div>
@@ -524,7 +523,6 @@ function buildEventLocation(e){ return e.city ? `${e.venue}, ${e.city}` : e.venu
 function buildEventDescription(e){
   const parts = [];
   if(e.description) parts.push(truncateText(e.description, 300));
-  if(e.note) parts.push(e.note);
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
   parts.push(`Details: ${window.location.href}`);
@@ -631,7 +629,6 @@ function mapRow(row) {
     // See migration_034_clothing_optional.sql.
     clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
-    note: row.note ? decodeEntities(row.note) : undefined,
     ticketUrl: row.ticket_url || undefined,
     // Named eventPageUrl, not eventUrl — index.html/calendar.html/map.html
     // each already have a function called eventUrl(e) (the internal
@@ -794,11 +791,6 @@ function renderEvent(e){
   if(e.clothingOptional){
     document.getElementById('evtClothingOptional').style.display = 'inline-block';
   }
-  if(e.note){
-    const n = document.getElementById('evtNote');
-    n.textContent = e.note;
-    n.style.display = 'block';
-  }
   const resaleHtml = resaleNoteHtml(e);
   if(resaleHtml){
     const r = document.getElementById('evtResale');
@@ -910,7 +902,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,note,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();
