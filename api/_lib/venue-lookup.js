@@ -192,42 +192,107 @@ async function buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) {
   return { byName, byId, byAddress };
 }
 
-// Builds the tier-C "learned from historical events" fallback: every event
-// that ever carried a real venue_address_raw, most-recently-updated first,
-// deduped by exact normalized venue name — deliberately the same shape as
-// api/admin-venues.js's source 2, but MORE conservative: if two historical
-// rows for the same normalized name disagree on the address, that name is
-// dropped from the map entirely (unresolved) rather than trusting whichever
-// row is most recent, since this map feeds automatic writes with no human
-// review, unlike admin-venues.js's human-facing autofill suggestion.
+// Builds the tier-C "learned" venue knowledge (Issue #49, 2026-10-09).
+//
+// It used to read the 500 most recently UPDATED address-bearing events and
+// learn from any of them -- a window that moved every day (on 2026-10-09 it
+// began at 08:00 UTC that morning, 500 of 2,470 rows) and that counted ten
+// copies of one listing as ten confirmations. It now reads EVERY approved
+// address-bearing event, in pages, and hands them to
+// api/_lib/venue-knowledge.js, which groups them by the source they came
+// from and decides, per venue name, whether what they state is trusted
+// (canonical, or two independent sources, or the place's own source on two
+// dates) or must go to a person (one source only, a conflict, a name used in
+// several cities). Only trusted, non-canonical knowledge is in the returned
+// Map (canonical venues are tier B); the whole knowledge object rides along
+// as the Map's non-enumerable `knowledge` property, which
+// resolveVenueAddressCityRepair below reads for the campus, stated-address,
+// conflict and exclusion rules. Fails soft to an empty Map, as before.
+const LEARNED_PAGE_SIZE = 1000;
+const LEARNED_MAX_PAGES = 40;
+const TRUSTED_LEARNED = new Set(["learned", "learned_first_party"]);
 async function buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) {
   const map = new Map();
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return map;
+  const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
+  const events = [];
   try {
-    const resp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?venue_address_raw=not.is.null&select=venue_name_raw,venue_address_raw,venue_city_raw,updated_at&order=updated_at.desc&limit=500`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
-    if (!resp.ok) return map;
-    const rows = await resp.json();
-    if (!Array.isArray(rows)) return map;
-    const conflicted = new Set();
-    for (const e of rows) {
-      const key = normalizeVenueName(e.venue_name_raw);
-      if (!key) continue;
-      const addr = (e.venue_address_raw || "").trim().toLowerCase();
-      if (!map.has(key)) {
-        map.set(key, { address: e.venue_address_raw || null, city: e.venue_city_raw || null });
-      } else if (!conflicted.has(key)) {
-        const existingAddr = (map.get(key).address || "").trim().toLowerCase();
-        if (existingAddr !== addr) conflicted.add(key);
-      }
+    for (let page = 0; page < LEARNED_MAX_PAGES; page++) {
+      const resp = await fetch(
+        `${SUPABASE_URL}/rest/v1/events?venue_address_raw=not.is.null&status=eq.approved` +
+          `&select=id,status,start_date,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,source,external_id,feed_source_id,no_fixed_venue,internal_note` +
+          `&order=id.asc&limit=${LEARNED_PAGE_SIZE}&offset=${page * LEARNED_PAGE_SIZE}`,
+        { headers }
+      );
+      if (!resp.ok) return map;
+      const rows = await resp.json();
+      if (!Array.isArray(rows)) return map;
+      events.push(...rows);
+      if (rows.length < LEARNED_PAGE_SIZE) break;
     }
-    for (const key of conflicted) map.delete(key);
   } catch {
-    // fail-soft, same convention as every other lookup builder here.
+    return map; // fail-soft, same convention as every other lookup builder here.
+  }
+  let venues = [];
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/venues?select=id,name,address,city&limit=1000`, { headers });
+    if (resp.ok) {
+      const rows = await resp.json();
+      if (Array.isArray(rows)) venues = rows;
+    }
+  } catch {
+    // Without the canonical list, knowledge is still built from the events alone.
+  }
+  try {
+    const { buildVenueKnowledge } = require("./venue-knowledge");
+    const knowledge = buildVenueKnowledge({ events, venues });
+    for (const [key, entry] of knowledge.byName) {
+      if (entry.venueId || !TRUSTED_LEARNED.has(entry.status)) continue;
+      map.set(key, { address: entry.address, city: entry.city, status: entry.status, evidence: entry.evidence });
+    }
+    Object.defineProperty(map, "knowledge", { value: knowledge, enumerable: false });
+  } catch {
+    // fail-soft
   }
   return map;
+}
+
+// Adapts the maps every caller already builds (buildVenueDetailsMap, plus
+// the learned Map above or a plain Map in tests) to the lookups
+// api/_lib/venue-knowledge.js resolveLocationGap() reads.
+function knowledgeLookups(canonicalMaps, learnedMap) {
+  const byId = (canonicalMaps && canonicalMaps.byId) || new Map();
+  const byName = (canonicalMaps && canonicalMaps.byName) || new Map();
+  const K = learnedMap && learnedMap.knowledge;
+  const synth = (c) => {
+    if (!isBlank(c.address)) return { status: "canonical", address: c.address, city: c.city || null, venueId: c.id, name: c.name || null, evidence: { rows: 0, sources: [] } };
+    if (!isBlank(c.city)) return { status: "canonical_partial", address: null, city: c.city, venueId: c.id, name: c.name || null, evidence: { rows: 0, sources: [] } };
+    return undefined;
+  };
+  return {
+    venueId(id) {
+      const c = byId.get(id);
+      if (!c) return undefined;
+      const k = K && K.byVenueId.get(id);
+      return k || synth(c);
+    },
+    name(key) {
+      const c = byName.get(key);
+      if (c === AMBIGUOUS_VENUE_NAME) return { status: "ambiguous", address: null, city: null, venueId: null, evidence: { rows: 0, sources: [] } };
+      if (c) {
+        const k = K && K.byName.get(key);
+        return k && k.venueId === c.id ? k : synth(c);
+      }
+      const k = K && K.byName.get(key);
+      if (k) return k.venueId ? undefined : k; // a canonical venue this caller does not know: not a learned fact
+      const l = learnedMap && typeof learnedMap.get === "function" ? learnedMap.get(key) : undefined;
+      if (l) return { status: l.status || "learned", address: l.address || null, city: l.city || null, venueId: null, name: key, evidence: l.evidence || { rows: 0, sources: [] } };
+      return undefined;
+    },
+    campus(key) {
+      return K && K.byCampus ? K.byCampus.get(key) : undefined;
+    },
+  };
 }
 
 // The pure repair decision itself — no network, no side effects. Given one
@@ -312,56 +377,29 @@ function citiesConflict(eventCity, venueCity) {
   return a !== b;
 }
 
+// Issue #49 (2026-10-09): the decision itself now lives in
+// api/_lib/venue-knowledge.js resolveLocationGap(), with the same authority
+// order (A: the event's own venue_id; B: an exact canonical name; C: trusted
+// learned knowledge) and three additions the Product Owner approved: a
+// first-party "<X> Campus, <building>" rule, an address the event's own
+// location text states, and conflicts. What it returns here is unchanged in
+// shape -- ONLY the blank fields to fill, plus venue_id on an exact canonical
+// name match -- and the full decision (action, tier, evidence) is attached
+// as the patch's non-enumerable `_decision`, for provenance and reporting.
+// Behaviour that changed, deliberately:
+//   - a TBA, secret, multiple-location, online, mobile or street-segment
+//     name never inherits an address OR a city, even through an existing
+//     link to a placeholder venues row ("Venue TBA" is not in Detroit);
+//   - an event whose own city or street disagrees with its venue's is a
+//     conflict and is left alone, even when it is linked (tier A no longer
+//     writes a Detroit street onto a Hamtramck event);
+//   - a canonical record the events' own statements dispute
+//     (canonical_conflict) fills nothing until a person decides.
 function resolveVenueAddressCityRepair(event, canonicalMaps, learnedMap) {
-  const patch = {};
-  if (!event) return patch;
-
-  const addressBlank = isBlank(event.venue_address_raw);
-  const cityBlank = isBlank(event.venue_city_raw);
-  if (!addressBlank && !cityBlank) return patch; // fully populated — never touch it
-
-  const byId = (canonicalMaps && canonicalMaps.byId) || new Map();
-  const byName = (canonicalMaps && canonicalMaps.byName) || new Map();
-  const learned = learnedMap || new Map();
-
-  let candidate = null;
-  let resolvedVenueId = null;
-
-  if (event.venue_id) {
-    // Tier A. Trust the existing link or nothing — do not fall back to a
-    // name-based tier when venue_id is already set.
-    if (byId.has(event.venue_id)) {
-      candidate = byId.get(event.venue_id);
-    }
-  } else {
-    const key = isPlaceholderVenueName(event.venue_name_raw) ? null : normalizeVenueName(event.venue_name_raw);
-    if (key) {
-      const nameMatch = byName.get(key);
-      if (nameMatch && nameMatch !== AMBIGUOUS_VENUE_NAME) {
-        // Tier B.
-        candidate = nameMatch;
-        resolvedVenueId = nameMatch.id;
-      } else if (!nameMatch) {
-        // Tier C — only when there is no canonical entry at all for this
-        // exact name (an AMBIGUOUS_VENUE_NAME entry also skips this: an
-        // ambiguous canonical name is left unresolved, not handed to the
-        // less-authoritative learned tier).
-        const learnedMatch = learned.get(key);
-        if (learnedMatch) candidate = learnedMatch;
-      }
-    }
-  }
-
-  if (!candidate) return patch;
-  // Tiers B and C matched on the NAME alone. If the event states a different
-  // city, it is a different place -- see citiesConflict above. (Tier A is an
-  // existing link, not a name match, and is left as it is.)
-  if (!event.venue_id && citiesConflict(event.venue_city_raw, candidate.city)) return patch;
-
-  if (addressBlank && !isBlank(candidate.address)) patch.venue_address_raw = candidate.address;
-  if (cityBlank && !isBlank(candidate.city)) patch.venue_city_raw = candidate.city;
-  if (resolvedVenueId && isBlank(event.venue_id)) patch.venue_id = resolvedVenueId;
-
+  const { resolveLocationGap } = require("./venue-knowledge");
+  const decision = resolveLocationGap(event, knowledgeLookups(canonicalMaps, learnedMap));
+  const patch = decision.action === "fill" ? { ...decision.patch } : {};
+  Object.defineProperty(patch, "_decision", { value: decision, enumerable: false });
   return patch;
 }
 
@@ -622,6 +660,8 @@ module.exports = {
   buildVenueDetailsMap,
   buildLearnedVenueAddressCityMap,
   resolveVenueAddressCityRepair,
+  knowledgeLookups,
+  AMBIGUOUS_VENUE_NAME,
   resolveVenueNameFromAddressRepair,
   resolveVenueFromCandidate,
   isPlaceholderVenueName,

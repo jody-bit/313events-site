@@ -99,10 +99,24 @@ async function loadSnapshot({ supabaseUrl, serviceRoleKey, fetchFn = fetch, now 
   } catch (err) {
     feedsError = err.message;
   }
+  // Issue #49: venue knowledge reads every approved event that states an
+  // address (not only upcoming ones) and every canonical venue.
+  let venueEvidence = null;
+  let venues = null;
+  let venueKnowledgeError = null;
+  try {
+    venueEvidence = await readAll(fetchFn, `${supabaseUrl}/rest/v1/events?venue_address_raw=not.is.null&status=eq.approved&select=id,status,start_date,venue_id,venue_name_raw,venue_address_raw,venue_city_raw,source,external_id,feed_source_id,no_fixed_venue,internal_note&order=id.asc`, headers);
+    venues = await readAll(fetchFn, `${supabaseUrl}/rest/v1/venues?select=id,name,address,city&order=id.asc`, headers);
+  } catch (err) {
+    venueKnowledgeError = err.message; // reported, never silently "nothing known"
+  }
   return {
     now,
     today,
     events,
+    venueEvidence,
+    venues,
+    venueKnowledgeError,
     runs,
     runsError,
     feeds,
@@ -123,6 +137,28 @@ function duplicateKnowledge(events) {
     return { review, pending, reviewPairs: plan.reviews.length, pendingMerges: plan.merges.length, error: null };
   } catch (err) {
     return { review: new Set(), pending: new Set(), reviewPairs: null, pendingMerges: null, error: err.message };
+  }
+}
+
+// Issue #49: location gaps grouped by VENUE -- one decision per venue, not
+// one task per event. Read-only; nothing here writes.
+function venueRepairs(snapshot, publicEvents) {
+  if (!snapshot.venueEvidence || !snapshot.venues) return { error: snapshot.venueKnowledgeError || "venue knowledge not read" };
+  try {
+    const { buildVenueKnowledge, summarizeVenueRepairs } = require("./venue-knowledge");
+    const knowledge = buildVenueKnowledge({ events: snapshot.venueEvidence, venues: snapshot.venues });
+    const summary = summarizeVenueRepairs(publicEvents, knowledge);
+    const statusCounts = knowledge.entries.reduce((acc, e) => { acc[e.status] = (acc[e.status] || 0) + 1; return acc; }, {});
+    return {
+      error: null,
+      knowledge: { venueNames: knowledge.entries.length, byStatus: statusCounts, evidenceRows: snapshot.venueEvidence.length },
+      totals: summary.totals,
+      byVenue: summary.byVenue.filter((g) => g.action !== "unknown" || g.events > 1).slice(0, 80),
+      canonicalRepairs: summary.canonicalRepairs,
+      canonicalConflicts: summary.canonicalConflicts,
+    };
+  } catch (err) {
+    return { error: err.message };
   }
 }
 
@@ -152,6 +188,7 @@ function buildReport(snapshot, { includeEvents = true } = {}) {
     duplicates: { reviewPairs: duplicates.reviewPairs, pendingMerges: duplicates.pendingMerges, error: duplicates.error },
     pendingReview: events.filter((e) => e.status === "pending_review").length,
   };
+  decisions.venues = venueRepairs(snapshot, publicEvents);
   if (includeEvents) {
     const titleById = new Map(publicEvents.map((e) => [e.id, e]));
     decisions.events = summary.results

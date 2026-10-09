@@ -126,7 +126,11 @@ async function run() {
     assert.strictEqual(rows.founders.venue_id, null);
 
     assert.strictEqual(rows.hazwaste.venue_city_raw, "Taylor");
-    assert.strictEqual(rows.hazwaste.venue_address_raw, null, "no street address is recovered from free text");
+    // Issue #49 (Product Owner, 2026-10-09: "authoritative addresses already
+    // embedded in source location text"): the location text states a full
+    // street, a known city and a state, and that city is the one kept above.
+    // Text that names no street (Founder's Day, Spooktacular) still gives none.
+    assert.strictEqual(rows.hazwaste.venue_address_raw, "21000 Northline Rd", "the street the location text itself states");
     assert.strictEqual(rows.hazwaste.venue_name_raw, "- Wayne County Community College 21000 Northline Rd. Taylor MI 48180");
     assert.strictEqual(rows.hazwaste.venue_id, null, "no venue is invented or linked");
 

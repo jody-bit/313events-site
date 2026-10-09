@@ -177,7 +177,10 @@ async function run() {
           status: 200,
           json: async () => [
             { id: "e1", venue_id: "v1", venue_name_raw: "The Loft", venue_address_raw: null, venue_city_raw: null, start_date: "2026-12-01", status: "approved" },
-            { id: "e2", venue_id: "v1", venue_name_raw: "The Loft", venue_address_raw: "42 Already Set Ave", venue_city_raw: null, start_date: "2026-12-05", status: "approved" },
+            // Issue #49: e2 states the venue's own street in its own spelling, so
+            // only its blank city is filled. (An event stating a DIFFERENT
+            // street is a conflict and is left alone -- test/venue-knowledge.test.js.)
+            { id: "e2", venue_id: "v1", venue_name_raw: "The Loft", venue_address_raw: "123 Main Street", venue_city_raw: null, start_date: "2026-12-05", status: "approved" },
           ],
         };
       }

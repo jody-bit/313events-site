@@ -283,6 +283,13 @@
         <div class="ct-tiles" id="towerTiles"></div>
         <div class="ct-wrap"><table class="ct-table" id="towerClasses"></table></div>
       </section>
+      <section class="block">
+        <h2>Venue repairs <span class="sub" style="font-weight:normal;">(location gaps, grouped by venue)</span></h2>
+        <div class="sub">What 313.events already knows about each venue, and what that knowledge does for public upcoming events with no street address or no city. <b>Fill</b>: trusted knowledge (the canonical record, two independent sources, or the place's own source on two dates) — filled automatically, with provenance. <b>Confirm</b>: only one source states it — one confirmation at venue level resolves every event there. <b>Conflict</b>: the event and the venue disagree — a person decides; nothing is moved between cities. <b>Excluded</b>: TBA, secret, multiple locations, online, mobile or street-segment names never inherit an address. Read-only: nothing here writes.</div>
+        <div class="sub" id="towerVenueSummary" style="margin-top:8px;"></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerVenueCanonical"></table></div>
+        <div class="ct-wrap"><table class="ct-table" id="towerVenues"></table></div>
+      </section>
     </div>
 
     <div class="tab-panel" data-tab-panel="editorial">
@@ -513,7 +520,38 @@ function renderControlTower(data) {
       + '<td>' + k.bySource.slice(0, 5).map(x => escapeHtml(x[0]) + ' ' + x[1]).join('<br>') + (k.bySource.length > 5 ? '<br>…' : '') + '</td>'
       + '<td><button type="button" class="ct-link" onclick="toggleTowerClass(' + i + ')">events</button></td>'
       + '</tr>').join('');
+  renderVenueRepairs(dec.venues);
   setTabBadge('tower', (c.needs_decision || 0) + (c.blocked || 0));
+}
+// Issue #49: location gaps grouped by venue.
+function renderVenueRepairs(v) {
+  const sum = document.getElementById('towerVenueSummary');
+  const canon = document.getElementById('towerVenueCanonical');
+  const list = document.getElementById('towerVenues');
+  if (!sum || !canon || !list) return;
+  if (!v || v.error) { sum.innerHTML = '<span style="color:var(--bad)">Venue knowledge unavailable: ' + escapeHtml((v && v.error) || 'not computed') + '</span>'; canon.innerHTML = ''; list.innerHTML = ''; return; }
+  const t = v.totals, vn = t.venues || {};
+  const reasons = Object.entries(t.excludedByReason || {}).map(([k, n]) => escapeHtml(k.replace(/_/g, ' ')) + ' ' + n).join(', ');
+  sum.innerHTML = '<b>' + t.withoutStreetAddress + '</b> public upcoming events show no street address, <b>' + t.withoutCity + '</b> no city. Of ' + t.gaps + ' with a gap: '
+    + '<b>' + t.fill + '</b> filled from trusted knowledge (' + (vn.fill || 0) + ' venues) · '
+    + '<b>' + t.confirm + '</b> need one venue-level confirmation (' + (vn.confirm || 0) + ' venues) · '
+    + '<b>' + t.conflict + '</b> conflict (' + (vn.conflict || 0) + ') · '
+    + '<b>' + t.excluded + '</b> excluded' + (reasons ? ' (' + reasons + ')' : '') + ' · '
+    + '<b>' + t.unknown + '</b> unknown (' + (vn.unknown || 0) + ' places).'
+    + (v.knowledge ? '<br>Knowledge: ' + v.knowledge.venueNames + ' venue names from ' + v.knowledge.evidenceRows + ' address-bearing approved events — ' + Object.entries(v.knowledge.byStatus).map(([k, n]) => escapeHtml(k.replace(/_/g, ' ')) + ' ' + n).join(', ') + '.' : '');
+  const rows = [];
+  for (const c of v.canonicalConflicts || []) rows.push('<tr><td>' + towerChip('needs_decision') + '</td><td><b>' + escapeHtml(c.venue) + '</b><br>record: ' + escapeHtml((c.address || 'no street') + ', ' + (c.city || 'no city')) + '</td><td>' + c.linkedPublicEvents + ' linked</td><td>events say: ' + (c.disagreements || []).map(d => escapeHtml((d.address || '—') + ', ' + (d.city || '—'))).slice(0, 3).join(' · ') + '</td></tr>');
+  for (const c of v.canonicalRepairs || []) rows.push('<tr><td>' + towerChip(c.kind === 'fill_canonical_address' ? 'repairable' : c.kind === 'correct_canonical_record' ? 'needs_decision' : 'advisory') + '</td><td><b>' + escapeHtml(c.venue) + '</b><br>' + escapeHtml(c.kind.replace(/_/g, ' ')) + '</td><td>' + c.events + ' events</td><td>' + escapeHtml((c.address || '—') + ', ' + (c.city || '—')) + '</td></tr>');
+  canon.innerHTML = rows.length ? '<tr><th>State</th><th>Venue record</th><th>Affects</th><th>Evidence</th></tr>' + rows.join('') : '';
+  const chip = { fill: 'repairable', confirm: 'advisory', conflict: 'needs_decision', excluded: 'inactive', unknown: 'insufficient_evidence' };
+  list.innerHTML = '<tr><th>Action</th><th>Venue</th><th>Events</th><th>Known address</th><th>Evidence</th></tr>'
+    + (v.byVenue || []).map(g => '<tr>'
+      + '<td>' + towerChip(chip[g.action] || 'advisory', g.action) + '</td>'
+      + '<td><b>' + escapeHtml(g.venue) + '</b>' + (g.reason ? '<br>' + escapeHtml(String(g.reason).replace(/_/g, ' ')) : '') + '</td>'
+      + '<td><b>' + g.events + '</b></td>'
+      + '<td>' + escapeHtml(g.address ? g.address + ', ' + (g.city || '') : '—') + '</td>'
+      + '<td>' + (g.evidence || []).map(x => escapeHtml(x.source) + ' ×' + x.rows + (x.corroborates === false ? ' (copy-prone)' : '')).join('<br>') + '</td>'
+      + '</tr>').join('');
 }
 function toggleTowerClass(i) {
   const el = document.getElementById('towerClassEvents' + i);
