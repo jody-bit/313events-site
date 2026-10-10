@@ -829,6 +829,14 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** none yet.
 - **Product Decisions Required:** none new; any change to `events_public` must preserve the deployed SZ-01 contract (`supabase/verify/public_boundary_check.sql`, `test/public-boundary.test.js`).
 
+### DEBT-013 — Public event/venue data cannot carry a state or province
+
+- **Type:** DEBT (data model) · **Status:** BACKLOG (recorded 2026-10-09, revised 2026-10-10) · **Priority:** P2
+- **Source:** the global calendar-location fix (PR #54). Calendar exports now use only stored address facts and never infer a state/province from a city (Detroit's orbit spans Michigan, Ohio and Ontario).
+- **Systemic gap:** neither `venues` nor `events` has a state/province column (`venues` has `zip_code` only; `events` has `venue_address_raw` / `venue_city_raw`). Of 131 venues, none carries a state in `address`. A calendar LOCATION can therefore show `ST ZIP` only when the address text itself contains it, so the contract string `Venue, Street, City, ST ZIP` is not reachable from structured data today.
+- **Acceptance Criteria (proposed):** a bounded, approved schema addition for state/province (e.g. `venues.state`, plus the matching event-level raw field), exposed through the SZ-01 public boundary (grants checked), then a backfill from first-party sources. Needs Product Owner approval; not part of PR #54.
+- **Not tracked here:** individual missing ZIPs or addresses (e.g. Glenn Barr) are ordinary data corrections through the existing Needs Follow-up / venue-knowledge flow.
+
 ---
 
 ## Discovery / decisions needed

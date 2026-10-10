@@ -95,6 +95,8 @@ async function runPageLoader(file, floorDaysBack, extraRows) {
     function buildFilterBar(){ calls.buildFilterBar++; }
     function render(){ calls.render++; }
     function renderNeighborhoodsRail(){ calls.renderNeighborhoodsRail++; }
+    function markCalendarLocationsReady(){}
+    function loadCalendarLocations(){}
     ${loader}
     `,
     sandbox
