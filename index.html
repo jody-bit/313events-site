@@ -4002,6 +4002,9 @@
      across (six on a narrower desktop) and the rail scrolls for the rest.
      Orbit and On the Radar share the row beneath, end to end. */
   @media (min-width:981px){
+    /* No press coverage to show: Orbit takes the whole row rather than
+       sitting in the left column beside nothing. */
+    .home-body.no-radar #nearYouCard{grid-column:1 / -1;}
     .neigh-card{flex-basis:calc((100% - 70px) / 8);}
     #nearYouCard, #onRadarCard{align-self:stretch;display:flex;flex-direction:column;}
     #nearYouCard .orbit-board{flex:1 1 auto;}
@@ -8023,6 +8026,8 @@ function renderOnRadarCard(){
   // Hides the whole section rather than rendering an empty list when
   // nothing qualifies yet (a quiet week for press pickup shouldn't leave an
   // awkward blank band) — same convention as renderNeighborhoodsRail().
+  const homeBody = document.querySelector && document.querySelector('.home-body');
+  if(homeBody && homeBody.classList) homeBody.classList.toggle('no-radar', !candidates.length);
   if(!candidates.length){
     el.style.display = 'none';
     el.innerHTML = '';

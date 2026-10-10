@@ -31,7 +31,8 @@ const at = (s) => { const i = body.indexOf(s); assert.ok(i !== -1, `the page has
   assert.ok(!/<aside\b|homeSidebar|class="side-card"/.test(body), "no right sidebar");
   assert.ok(/grid-template-areas:\s*"dm dm"\s*"list list"\s*"nb nb"\s*"orbit radar";/.test(css), "desktop grid: Don't Miss, stream, Neighborhoods across the page, then Orbit beside On the Radar");
   assert.ok(/grid-template-columns:minmax\(0,1fr\) minmax\(0,1\.45fr\)/.test(flat), "Orbit is the narrower column, On the Radar the wider");
-  assert.ok(/@media \(min-width:981px\)\s*\{\s*\.neigh-card\{flex-basis:calc\(\(100% - 70px\) \/ 8\)/.test(flat) && /@media \(min-width:981px\) and \(max-width:1200px\)\s*\{\s*\.neigh-card\{flex-basis:calc\(\(100% - 50px\) \/ 6\)/.test(flat), "full-width Neighborhoods: eight portrait cards across (six on a narrower desktop), the rest by scrolling");
+  assert.ok(/@media \(min-width:981px\)\s*\{[^@]*?\.neigh-card\{flex-basis:calc\(\(100% - 70px\) \/ 8\)/.test(flat) && /@media \(min-width:981px\) and \(max-width:1200px\)\s*\{\s*\.neigh-card\{flex-basis:calc\(\(100% - 50px\) \/ 6\)/.test(flat), "full-width Neighborhoods: eight portrait cards across (six on a narrower desktop), the rest by scrolling");
+  assert.ok(/\.home-body\.no-radar #nearYouCard\{grid-column:1 \/ -1;\}/.test(flat) && /classList\.toggle\('no-radar', !candidates\.length\)/.test(html), "with no press coverage, Orbit takes the whole row instead of sitting in the left column beside nothing");
   assert.ok(/\.radar-rail\{display:flex;/.test(flat) && !/\.radar-rail\{display:grid/.test(flat) && /\.radar-card\{flex:0 0 calc\(\(100% - 10px\) \/ 1\.8\)/.test(flat), "desktop On the Radar is the same swipe carousel, one card and most of a second, the rest by swiping");
   assert.ok(/@media \(max-width:980px\)\{\s*\.home-body\{[^}]*grid-template-areas:"dm" "list" "nb" "orbit" "radar";/.test(css), "below 981px: one column, same order");
 }
