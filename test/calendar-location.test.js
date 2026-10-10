@@ -8,10 +8,13 @@
 // surfaces, Calendar / Orbit map / venue pages, link to event.html).
 //
 // Glenn Barr: The Beautiful and the Banal is the required regression
-// fixture. Production holds its street address ("420 W. 9 Mile Rd",
-// "Hazel Park") but no ZIP and no venue row, so the full expected string is
-// produced when the venue record supplies the ZIP, and WITHOUT a ZIP (never
-// an invented one) when it does not.
+// canary. Production stores "420 W. 9 Mile Rd" / "Hazel Park" at event level
+// with no state and no ZIP, and no venue row. The formatter never infers a
+// state from a city and never invents a ZIP, so that record exports
+// "..., 420 W 9 Mile Rd, Hazel Park"; the full
+// "..., Hazel Park, MI 48030" is produced as soon as the stored data carries
+// the state and ZIP (venue record or event address text). No test or code
+// path special-cases the event.
 //
 // Run: node test/calendar-location.test.js
 "use strict";
@@ -21,7 +24,6 @@ const vm = require("vm");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const { CalendarLocation: CL } = require(`${REPO_DIR}/calendar-location.js`);
-const { CITIES_BY_STATE } = require(`${REPO_DIR}/api/_lib/orbit-cities.js`);
 
 const GLENN_EXPECTED = "The Gallery at Ideation Orange, 420 W 9 Mile Rd, Hazel Park, MI 48030";
 const GLENN_NAME = "The Gallery at Ideation Orange";
@@ -55,7 +57,8 @@ function load(file, startMarker, endMarker, href) {
   const ctx = {
     CalendarLocation: CL, URL, URLSearchParams, Date, Math, String, Array, Object, JSON, Number, RegExp,
     Blob: class { constructor(parts) { this.text = parts.join(""); blobs.push(this.text); } },
-    window: { location: { href } },
+    window: { location: { href }, open: () => null },
+    EVENTS: [], setTimeout, document: undefined,
     truncateText: (s) => s,
     shouldShowSource: () => false,
     safeUrl: (u) => (/^https?:\/\//.test(u) ? u : null),
@@ -66,14 +69,16 @@ function load(file, startMarker, endMarker, href) {
   vm.createContext(ctx);
   const code = html.slice(a, b);
   const exportsList = file === "index.html"
-    ? "({ buildICS, buildGoogleCalUrl, addToCalendarHtml, buildEventLocation })"
-    : "({ buildICS, buildGoogleCalUrl, buildEventLocation })";
+    ? "({ buildICS, buildGoogleCalUrl, addToCalendarHtml, handleCalendarClick, markCalendarLocationsReady, EVENTS })"
+    : "({ buildICS, buildGoogleCalUrl })";
   const api = vm.runInContext(`${code}\n;${exportsList}`, ctx);
   api.blobs = blobs;
+  api.ctx = ctx;
   return api;
 }
+const loadIndex = () => load("index.html", "// ---- Add to Calendar ----", "// ---- Share ----", "https://313.events/");
 const PAGES = {
-  "index.html": load("index.html", "// ---- Add to Calendar ----", "// ---- Share ----", "https://313.events/"),
+  "index.html": loadIndex(),
   "event-template.html": load("event-template.html", "// ---- Add to Calendar", "function shareEvent(e)", "https://313.events/event.html?id=abc"),
 };
 
@@ -89,28 +94,34 @@ const glennEvent = (over) => Object.assign({
   // as stored in production: event-level raw address + city, no venue row, no ZIP
   locEventAddress: "420 W. 9 Mile Rd", locEventCity: "Hazel Park",
 }, over || {});
-const glennWithVenueRecord = () => glennEvent({ locVenueAddress: "420 W 9 Mile Rd", locVenueCity: "Hazel Park", locVenueZip: "48030" });
+// Once the stored venue data carries state + ZIP (here: in the address text, the only place the
+// current model can hold a state), the canary produces the full contract string.
+const glennWithVenueRecord = () => glennEvent({ locEventAddress: undefined, locEventCity: undefined, locVenueAddress: "420 W 9 Mile Rd, Hazel Park, MI 48030", locVenueCity: "Hazel Park" });
 
 function run() {
   // =================================================================
   // A. The formatter
   // =================================================================
-  // A1. Glenn Barr -- full contract when the venue record supplies the ZIP.
+  // A1. Glenn Barr -- full contract once the stored data carries state + ZIP.
   assert.strictEqual(CL.resolveForEvent(glennWithVenueRecord()).text, GLENN_EXPECTED);
 
-  // A2. Glenn Barr exactly as production stores it today: no ZIP is invented.
+  // A2. Glenn Barr exactly as production stores it today: no state and no ZIP are invented.
   {
     const r = CL.resolveForEvent(glennEvent());
-    assert.strictEqual(r.text, `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park, MI`);
-    assert.strictEqual(r.navigable, true, "a street + city is navigable even without a ZIP");
-    assert.ok(!/\d{5}/.test(r.text), "no ZIP fabricated");
+    assert.strictEqual(r.text, `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park`);
+    assert.strictEqual(r.navigable, true, "a street + city is navigable without a state or ZIP");
+    assert.ok(!/\d{5}/.test(r.text) && !/\bMI\b/.test(r.text), "no ZIP or state fabricated");
+    assert.strictEqual(r.state, "");
   }
 
   // A3. Venue-record fallback: no event-level address at all.
   {
-    const r = CL.resolveForEvent(glennEvent({ locEventAddress: undefined, locEventCity: undefined, locVenueAddress: "420 W 9 Mile Rd", locVenueCity: "Hazel Park", locVenueZip: "48030" }));
+    const r = CL.resolveForEvent(glennWithVenueRecord());
     assert.strictEqual(r.text, GLENN_EXPECTED);
     assert.strictEqual(r.source, "venue");
+    // a venue row with only street/city/zip_code (today's model): the ZIP is used, no state is guessed
+    const z = CL.resolveForEvent(glennEvent({ locEventAddress: undefined, locEventCity: undefined, locVenueAddress: "420 W 9 Mile Rd", locVenueCity: "Hazel Park", locVenueZip: "48030" }));
+    assert.strictEqual(z.text, `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park 48030`);
   }
 
   // A4. Event-specific precedence: a complete event address beats a different venue default.
@@ -119,22 +130,22 @@ function run() {
       locEventAddress: "1 Pop Up Way", locEventCity: "Ferndale",
       locVenueAddress: "420 W 9 Mile Rd", locVenueCity: "Hazel Park", locVenueZip: "48030",
     }));
-    assert.strictEqual(r.text, `${GLENN_NAME}, 1 Pop Up Way, Ferndale, MI`);
+    assert.strictEqual(r.text, `${GLENN_NAME}, 1 Pop Up Way, Ferndale`);
     assert.ok(!r.text.includes("48030"), "the other street's ZIP must not be borrowed");
   }
 
   // A5. An incomplete address never replaces a complete one (either direction).
   {
     const venueComplete = CL.resolve({ name: "V", eventAddress: "Downtown", eventCity: "Detroit", venueAddress: "100 Main St", venueCity: "Royal Oak", venueZip: "48067" });
-    assert.strictEqual(venueComplete.text, "V, 100 Main St, Royal Oak, MI 48067");
+    assert.strictEqual(venueComplete.text, "V, 100 Main St, Royal Oak 48067");
     const eventComplete = CL.resolve({ name: "V", eventAddress: "100 Main St", eventCity: "Royal Oak", venueAddress: "Downtown", venueCity: "Detroit" });
-    assert.strictEqual(eventComplete.text, "V, 100 Main St, Royal Oak, MI");
+    assert.strictEqual(eventComplete.text, "V, 100 Main St, Royal Oak");
   }
 
   // A6. Incomplete addresses: keep what is known, say what is missing, never claim navigable.
   {
     const r = CL.resolve({ name: "Some Gallery", eventCity: "Ferndale" });
-    assert.strictEqual(r.text, "Some Gallery, Ferndale, MI");
+    assert.strictEqual(r.text, "Some Gallery, Ferndale");
     assert.strictEqual(r.navigable, false);
     assert.deepStrictEqual(r.missing, ["street_address"]);
     const nothing = CL.resolve({ name: "", });
@@ -152,7 +163,7 @@ function run() {
     "Fox Theatre, 2211 Woodward Ave, Detroit, MI 48201");
   assert.strictEqual(
     CL.resolve({ name: "Fox Theatre", eventAddress: "2211 Woodward Ave, Detroit", eventCity: "Detroit" }).text,
-    "Fox Theatre, 2211 Woodward Ave, Detroit, MI");
+    "Fox Theatre, 2211 Woodward Ave, Detroit");
   assert.strictEqual(
     CL.resolve({ name: "A", eventAddress: "5 Elm St, Troy, MI, 48083, USA", eventCity: "Troy" }).text,
     "A, 5 Elm St, Troy, MI 48083");
@@ -168,19 +179,15 @@ function run() {
   assert.strictEqual(CL.resolve({ name: "Gare", eventAddress: "1 Rue Sainte-Catherine, Montréal, QC H3B 1A1, Canada", eventCity: "Montréal" }).text,
     "Gare, 1 Rue Sainte-Catherine, Montréal, QC H3B 1A1, Canada");
 
-  // A9. A state is inferred only for a city that belongs to exactly one known state.
-  assert.strictEqual(CL.resolve({ name: "V", eventAddress: "1 A St", eventCity: "Toledo" }).text, "V, 1 A St, Toledo, OH");
-  assert.strictEqual(CL.resolve({ name: "V", eventAddress: "1 A St", eventCity: "Atlantis" }).text, "V, 1 A St, Atlantis");
-
-  // A10. The state table equals api/_lib/orbit-cities.js (no silent drift).
-  {
-    const norm = (n) => String(n).toLowerCase().replace(/\./g, "").replace(/\s+/g, " ").trim().replace(/\btwp$/, "township").replace(/\bhts$/, "heights");
-    for (const st of Object.keys(CITIES_BY_STATE)) {
-      const mine = new Set(CL._citiesByState[st].map(norm));
-      const theirs = new Set([...CITIES_BY_STATE[st].keys()]);
-      assert.deepStrictEqual([...mine].sort(), [...theirs].sort(), `${st} city list drifted from orbit-cities.js`);
-    }
+  // A9. NO city -> state/province inference, anywhere in the Orbit (MI / OH / ON).
+  for (const city of ["Toledo", "Detroit", "Windsor", "Hazel Park", "Atlantis"]) {
+    const r = CL.resolve({ name: "V", eventAddress: "1 A St", eventCity: city });
+    assert.strictEqual(r.text, `V, 1 A St, ${city}`, `${city}: nothing guessed`);
+    assert.strictEqual(r.state, "");
   }
+  // ...but a state/ZIP that the stored text DOES contain is used as written.
+  assert.strictEqual(CL.resolve({ name: "V", eventAddress: "1 A St, Toledo, OH 43604", eventCity: "Toledo" }).text, "V, 1 A St, Toledo, OH 43604");
+  assert.ok(!/orbit-cities|STATE_BY_CITY|inferState|MICHIGAN/.test(fs.readFileSync(`${REPO_DIR}/calendar-location.js`, "utf8").replace(/\/\/.*$/gm, "")), "no city list left in the formatter code");
 
   // =================================================================
   // B. Serialisation rules
@@ -227,8 +234,8 @@ function run() {
     assert.ok(unfold(ics).split("\r\n").some((l) => l.startsWith("LOCATION:")), label("LOCATION property present"));
 
     // C4. Glenn Barr as stored in production (no ZIP, no venue row).
-    assert.strictEqual(icsLocation(page.buildICS(glennEvent())), `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park, MI`, label("prod-shaped ICS"));
-    assert.strictEqual(googleLocation(page.buildGoogleCalUrl(glennEvent())), `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park, MI`);
+    assert.strictEqual(icsLocation(page.buildICS(glennEvent())), `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park`, label("prod-shaped ICS"));
+    assert.strictEqual(googleLocation(page.buildGoogleCalUrl(glennEvent())), `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park`);
 
     // C5. No regression: title, schedule, timezone, description, ticket URL, UID.
     assert.strictEqual(unescapeText(props.SUMMARY), "Glenn Barr: The Beautiful and the Banal");
@@ -269,7 +276,7 @@ function run() {
 
     // C9. Incomplete location: omitted from LOCATION only when truly empty; otherwise preserved.
     const partial = glennEvent({ locEventAddress: undefined, locEventCity: "Ferndale" });
-    assert.strictEqual(icsLocation(page.buildICS(partial)), `${GLENN_NAME}, Ferndale, MI`);
+    assert.strictEqual(icsLocation(page.buildICS(partial)), `${GLENN_NAME}, Ferndale`);
     const empty = glennEvent({ venue: "Venue TBA", locEventAddress: undefined, locEventCity: undefined });
     assert.strictEqual(icsLocation(page.buildICS(empty)), undefined, "no empty LOCATION: line");
     assert.strictEqual(googleLocation(page.buildGoogleCalUrl(empty)), "");
@@ -279,7 +286,8 @@ function run() {
   // D. Apple / Outlook: the file actually handed to the OS has the location
   // =================================================================
   {
-    const page = PAGES["index.html"];
+    const page = loadIndex();
+    page.markCalendarLocationsReady();
     page.blobs.length = 0;
     const html = page.addToCalendarHtml(glennWithVenueRecord());
     assert.strictEqual(page.blobs.length, 1, "one downloadable .ics Blob");
@@ -287,35 +295,120 @@ function run() {
     assert.ok(html.includes("Apple/Outlook") && html.includes("Google Cal"));
     assert.ok(html.includes("location=The+Gallery+at+Ideation+Orange%2C+420+W+9+Mile+Rd"), "Google link in the rendered anchor");
     assert.ok(!html.includes("data-location-incomplete"), "navigable event is not marked incomplete");
-    // an event without a street is rendered with the incomplete marker (not claimed navigable)
     const bare = page.addToCalendarHtml(glennEvent({ locEventAddress: undefined }));
-    assert.ok(bare.includes('data-location-incomplete="street_address"'));
+    assert.ok(bare.includes('data-location-incomplete="street_address"'), "no street -> marked for enrichment, not claimed navigable");
   }
 
   // =================================================================
-  // E. Every Add to Calendar entry point is wired to the shared module
+  // E. Homepage early-click race: the export never depends on click timing
   // =================================================================
   {
-    const idx = fs.readFileSync(`${REPO_DIR}/index.html`, "utf8");
-    const det = fs.readFileSync(`${REPO_DIR}/event-template.html`, "utf8");
-    for (const [name, src] of [["index.html", idx], ["event-template.html", det]]) {
-      assert.ok(src.includes('<script src="/calendar-location.js"></script>'), `${name} loads calendar-location.js`);
-      assert.ok(!/e\.city\s*\?\s*`\$\{e\.venue\}, \$\{e\.city\}`/.test(src), `${name} still has the old venue+city formatter`);
-      assert.ok(!/function icsEscape\(/.test(src), `${name} has its own icsEscape`);
-      assert.ok(!/function foldICSLine\(/.test(src), `${name} has its own foldICSLine`);
-    }
-    // Pages that list events but have no export of their own: they must not grow a private one.
-    for (const f of ["calendar.html", "map.html", "radar.html", "venue-template.html", "venues.html", "neighborhoods.html"]) {
-      const src = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
-      assert.ok(!/BEGIN:VCALENDAR|calendar\/render\?|buildICS/.test(src), `${f} has a private calendar export; route it through calendar-location.js`);
-    }
-    // Homepage supplies street addresses (events_public has none).
-    assert.ok(/loadCalendarLocations\(\)/.test(idx) && /venue_address_raw/.test(idx));
-    // Detail page reads the venue ZIP.
-    assert.ok(/venues\(name,address,city,zip_code,/.test(det));
-  }
+    // The homepage first has only what events_public gives (name + city). The street arrives later.
+    const early = () => glennEvent({ locEventAddress: undefined, locEventCity: "Hazel Park" });
+    const enrich = (e) => { e.locEventAddress = "420 W. 9 Mile Rd"; };
+    const mkClick = (page, e, kind) => {
+      const popup = { location: { href: "" }, closed: false, close() { this.closed = true; } };
+      page.ctx.window.open = () => popup;
+      const anchor = { closest: (sel) => (sel === "a[data-cal]" ? anchor : { getAttribute: () => e.id }), getAttribute: () => kind };
+      let prevented = false;
+      page.handleCalendarClick({ target: { closest: (sel) => (sel === "a[data-cal]" ? anchor : null) }, preventDefault() { prevented = true; } });
+      return { popup, wasPrevented: () => prevented };
+    };
 
+    // E1. While pending, NO weaker export exists at all: links are inert (href="#"), no location baked in.
+    {
+      const page = loadIndex();
+      const e = early(); page.EVENTS.push(e);
+      const html = page.addToCalendarHtml(e);
+      assert.ok(html.includes('data-cal-pending="1"') && !html.includes("calendar.google.com") && !html.includes("blob:"), "pending links export nothing");
+      assert.strictEqual((html.match(/href="#"/g) || []).length, 2);
+    }
+    // E2. Click BEFORE the lookup settles -> held, then exported WITH the street (same as a late click).
+    {
+      const early1 = loadIndex();
+      const e1 = early(); early1.EVENTS.push(e1); early1.addToCalendarHtml(e1);
+      const c = mkClick(early1, e1, "google");
+      assert.strictEqual(c.wasPrevented(), true, "early click is held");
+      assert.strictEqual(c.popup.location.href, "", "nothing exported before the lookup settles");
+      enrich(e1); early1.markCalendarLocationsReady();
+      return Promise.resolve().then(() => Promise.resolve()).then(() => {
+        const earlyUrl = c.popup.location.href;
+        assert.strictEqual(googleLocation(earlyUrl), `${GLENN_NAME}, 420 W 9 Mile Rd, Hazel Park`, "early click carries the street");
+
+        // late click: same event after readiness -> real href, identical location
+        const late = loadIndex();
+        const e2 = early(); enrich(e2); late.EVENTS.push(e2); late.markCalendarLocationsReady();
+        const lateHtml = late.addToCalendarHtml(e2);
+        const lateUrl = new URL(/href="(https:\/\/calendar\.google\.com[^"]+)"/.exec(lateHtml)[1].replace(/&amp;/g, "&"));
+        assert.strictEqual(googleLocation(lateUrl.href), googleLocation(earlyUrl), "early and late clicks export the SAME location");
+        // after readiness the handler steps aside
+        const c2 = mkClick(late, e2, "google");
+        assert.strictEqual(c2.wasPrevented(), false);
+
+        // E3. Lookup fails / data has no address: the held click exports the incomplete fallback, marked, not stale-complete.
+        const failed = loadIndex();
+        const e3 = early(); failed.EVENTS.push(e3); failed.addToCalendarHtml(e3);
+        const c3 = mkClick(failed, e3, "google");
+        failed.markCalendarLocationsReady();
+        return Promise.resolve().then(() => Promise.resolve()).then(() => {
+          assert.strictEqual(googleLocation(c3.popup.location.href), `${GLENN_NAME}, Hazel Park`);
+          assert.ok(failed.addToCalendarHtml(e3).includes('data-location-incomplete="street_address"'));
+          // E4. The wiring: the lookup always settles and re-renders.
+          const idx = fs.readFileSync(`${REPO_DIR}/index.html`, "utf8");
+          const body = idx.slice(idx.indexOf("async function loadCalendarLocations"));
+          assert.ok(/markCalendarLocationsReady\(\);\s*try \{ render\(\); \}/.test(body.slice(0, 2600)), "settle + re-render after the lookup, success or failure");
+          assert.ok(/if \(!SUPABASE_URL \|\| !SUPABASE_ANON_KEY\) \{ markCalendarLocationsReady\(\)/.test(idx), "unconfigured path settles");
+          finish();
+        });
+      });
+    }
+  }
+}
+
+// =================================================================
+// F. Global-contract guard: every calendar exporter goes through the shared formatter
+// =================================================================
+function finish() {
+  const walk = (dir, out) => {
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (["node_modules", ".git", "test", "supabase", "_to_delete", "assets", "data", "project", "ra-sync"].includes(ent.name)) continue;
+      const full = `${dir}/${ent.name}`;
+      if (ent.isDirectory()) walk(full, out); else if (/\.(html|js)$/.test(ent.name)) out.push(full);
+    }
+    return out;
+  };
+  const files = walk(REPO_DIR, []).map((f) => f.slice(REPO_DIR.length + 1));
+  // KNOWN exporters (pages that build an Add to Calendar link or .ics). A new one must be added here
+  // deliberately -- and will then be held to the rules below.
+  const EXPORTERS = ["index.html", "event-template.html"];
+  // Ingestion code that merely READS calendars is not an exporter.
+  const READERS = ["api/cron-feeds.js", "api/cron-motorcitywine.js"];
+  const exportsCalendar = /BEGIN:VCALENDAR|calendar\.google\.com\/calendar\/render|text\/calendar/;
+  const found = files.filter((f) => f !== "calendar-location.js" && exportsCalendar.test(fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")));
+  assert.deepStrictEqual(found.filter((f) => !READERS.includes(f)).sort(), EXPORTERS.slice().sort(),
+    "a calendar exporter exists outside the known list (or one vanished): route it through calendar-location.js, then list it here");
+
+  for (const f of EXPORTERS) {
+    const src = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
+    assert.ok(src.includes('<script src="/calendar-location.js"></script>'), `${f} must load calendar-location.js`);
+    assert.ok(/CalendarLocation\.icsLocationLine\(CalendarLocation\.resolveForEvent\(/.test(src), `${f}: ICS LOCATION must come from the shared formatter`);
+    assert.ok(/location: CalendarLocation\.googleLocationParam\(CalendarLocation\.resolveForEvent\(/.test(src), `${f}: Google location must come from the shared formatter`);
+  }
+  // Nobody else may (re)define a location builder or hand-write the properties.
+  for (const f of files) {
+    if (f === "calendar-location.js") continue;
+    const src = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
+    assert.ok(!/function\s+buildEventLocation\b|buildEventLocation\s*=/.test(src), `${f} defines its own buildEventLocation(); use CalendarLocation`);
+    if (EXPORTERS.includes(f)) {
+      assert.ok(!/[`'"]LOCATION:/.test(src), `${f} hand-writes an ICS LOCATION line`);
+      assert.ok(!/function\s+icsEscape\b|function\s+foldICSLine\b/.test(src), `${f} has its own ICS escaping/folding`);
+    }
+  }
+  // Pages that list events but link to event.html must not grow a private export.
+  for (const f of ["calendar.html", "map.html", "radar.html", "venue-template.html", "venues.html", "neighborhoods.html"]) {
+    assert.ok(files.includes(f) && !exportsCalendar.test(fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")), `${f} must not contain its own calendar export`);
+  }
   console.log("calendar-location: all assertions passed");
 }
 
-run();
+Promise.resolve(run()).catch((err) => { console.error(err); process.exit(1); });

@@ -515,8 +515,6 @@ function eventDateTimeParts(e){
 // (shared with index.html) so every export path uses one implementation.
 const icsEscape = CalendarLocation.icsEscape;
 const foldICSLine = CalendarLocation.foldICSLine;
-// Calendar LOCATION = "Venue, Street, City, ST ZIP", resolved once by calendar-location.js.
-function buildEventLocation(e){ return CalendarLocation.resolveForEvent(e).text; }
 function buildEventDescription(e){
   const parts = [];
   if(e.description) parts.push(truncateText(e.description, 300));

@@ -5541,13 +5541,6 @@ function buildEventDescription(e){
   return parts.join('\n');
 }
 
-// The calendar LOCATION ("Venue, Street, City, ST ZIP") is resolved by the
-// shared calendar-location.js -- the same result feeds the .ics LOCATION
-// property and Google's `location` parameter. Do not format it here.
-function buildEventLocation(e){
-  return CalendarLocation.resolveForEvent(e).text;
-}
-
 function buildICS(e){
   const parts = eventDateTimeParts(e);
   const uid = `${e.date}-${e.title}-${e.venue}`.replace(/[^a-zA-Z0-9]+/g,'-').slice(0,150) + '@313.events';
@@ -5607,20 +5600,73 @@ function buildGoogleCalUrl(e){
 // per-render memory footprint (each blob is a few hundred bytes of ICS
 // text) — not worth the added bookkeeping to eliminate given how small it
 // is, and it's cleared on page reload regardless.
+//
+// 2026-10-10 EARLY-CLICK RACE (PR #54 review). events_public has no street
+// address, so the address is read separately after first render
+// (loadCalendarLocations() below). Until that read settles, NOTHING weaker is
+// ever exported: the links render with href="#" and a click is held until the
+// read finishes (success, failure or a 15s ceiling), then the Google URL /
+// .ics is generated from the data as it is by then. The same event therefore
+// exports the same location whether it is clicked at 200ms or at 3s. If the
+// read fails or the data genuinely has no address, the export is the
+// incomplete-location fallback (data-location-incomplete), by design.
+let calLocReady = false;
+let calLocDone;
+const calLocPromise = new Promise(r => { calLocDone = r; });
+function markCalendarLocationsReady(){ calLocReady = true; calLocDone(); }
+const CAL_EVENTS = new Map(); // key -> the event object a pending link was rendered for
+function calEventKey(e){ return e.id || ('fb:' + e.date + '|' + e.title); }
+function icsFilenameFor(e){
+  return `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+}
+
 function addToCalendarHtml(e){
+  const key = calEventKey(e);
+  if(!calLocReady){
+    CAL_EVENTS.set(key, e);
+    return `<span class="evt-cal" data-cal-event="${escapeHtml(key)}" data-cal-pending="1">
+    <a href="#" data-cal="google" rel="noopener noreferrer">Google Cal</a><a href="#" data-cal="ics">Apple/Outlook</a>
+  </span>`;
+  }
   const icsBlob = new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'});
   const icsHref = URL.createObjectURL(icsBlob);
-  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
   const gcalHref = buildGoogleCalUrl(e);
   // data-location-incomplete: the export has no street address, so it must
   // not be presented as navigable; the missing parts are listed for QA and
   // for the enrichment follow-up (project/BACKLOG.md DEBT-013).
   const loc = CalendarLocation.resolveForEvent(e);
   const locAttr = loc.navigable ? '' : ` data-location-incomplete="${escapeHtml(loc.missing.join(','))}"`;
-  return `<span class="evt-cal"${locAttr}>
-    <a href="${escapeHtml(gcalHref)}" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>
+  return `<span class="evt-cal" data-cal-event="${escapeHtml(key)}"${locAttr}>
+    <a href="${escapeHtml(gcalHref)}" data-cal="google" target="_blank" rel="noopener noreferrer">Google Cal</a><a href="${escapeHtml(icsHref)}" data-cal="ics" download="${escapeHtml(icsFilenameFor(e))}">Apple/Outlook</a>
   </span>`;
 }
+
+// Held click: only active while calLocReady is false (afterwards the links
+// carry real hrefs and the browser handles them normally).
+function handleCalendarClick(ev){
+  const a = ev.target && ev.target.closest ? ev.target.closest('a[data-cal]') : null;
+  if(!a || calLocReady) return;
+  ev.preventDefault();
+  const host = a.closest('[data-cal-event]');
+  const key = host && host.getAttribute('data-cal-event');
+  const kind = a.getAttribute('data-cal');
+  // Open the tab inside the click so popup blockers allow it; fill it in later.
+  const popup = kind === 'google' ? window.open('about:blank', '_blank') : null;
+  Promise.race([calLocPromise, new Promise(r => setTimeout(r, 15000))]).then(() => {
+    const e = EVENTS.find(x => calEventKey(x) === key) || CAL_EVENTS.get(key);
+    if(!e){ if(popup) popup.close(); return; }
+    if(kind === 'google'){
+      const url = buildGoogleCalUrl(e);
+      if(popup) popup.location.href = url; else window.location.href = url;
+    } else {
+      const href = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
+      const dl = document.createElement('a');
+      dl.href = href; dl.download = icsFilenameFor(e);
+      document.body.appendChild(dl); dl.click(); dl.remove();
+    }
+  });
+}
+if(typeof document !== 'undefined') document.addEventListener('click', handleCalendarClick);
 
 // ---- Share ----
 // 2026-08-28: now that event.html exists, sharing hands off a real deep
@@ -7444,7 +7490,7 @@ function loadFloorISO(){
 }
 
 async function loadSupabaseEvents() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return; // not configured yet — stay on fallback data
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) { markCalendarLocationsReady(); return; } // not configured yet — stay on fallback data
   try {
     // start_date=gte floor added 2026-08-27: PostgREST defaults to capping a
     // response at 1000 rows when no `limit=` is set, and this query had
@@ -7495,7 +7541,7 @@ async function loadSupabaseEvents() {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
     }); // throws if nothing could be loaded — caught below, fallback data stays on screen
-    if (!rows.length) return;
+    if (!rows.length) { markCalendarLocationsReady(); return; }
 
     EVENTS = rows.map(mapSupabaseRow);
     byDate = {};
@@ -7508,6 +7554,8 @@ async function loadSupabaseEvents() {
     loadCalendarLocations();
   } catch (err) {
     // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
+    markCalendarLocationsReady();
+    try { render(); } catch (e2) {}
   }
 }
 loadSupabaseEvents();
@@ -7521,7 +7569,7 @@ loadSupabaseEvents();
 // falls back to whatever it already had (venue name + city) and is marked
 // data-location-incomplete -- it is never given an invented address.
 async function loadCalendarLocations(){
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) { markCalendarLocationsReady(); return; }
   const headers = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   try {
     const [venueRes, eventRes] = await Promise.all([
@@ -7543,10 +7591,14 @@ async function loadCalendarLocations(){
         e.locVenueZip = v.zip_code || undefined;
       }
     });
-    render();
   } catch (err) {
-    // Silent by design: Add to Calendar keeps its venue-name/city fallback.
+    // Silent by design: Add to Calendar falls back to the incomplete-location
+    // export (data-location-incomplete) -- it never invents an address.
   }
+  // Settled either way: release any held Add to Calendar click, and re-render
+  // so every link carries its real, final href.
+  markCalendarLocationsReady();
+  try { render(); } catch (err) {}
 }
 
 // Dedicated exact count for the Detroit Orbit widget's "events loaded"

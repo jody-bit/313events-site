@@ -14,13 +14,13 @@
 // CONTRACT: "Venue Name, Street Address, City, State ZIP".
 //   - Street/city/ZIP come only from data the event or its canonical venue
 //     actually carries. Nothing is invented: a missing ZIP stays missing.
-//   - STATE is the one derived part. The data has no state column, so a US
-//     state is added only when the city is a known city of exactly one of
-//     the states in CITIES_BY_STATE below (Michigan, Ohio -- the same closed
-//     lists as api/_lib/orbit-cities.js, enforced by test/calendar-location
-//     .test.js). An unknown city, a Canadian province, a country, or a
-//     postal code from outside the US all suppress the inference, so
-//     "Windsor, ON N9A 5P4, Canada" is never rewritten as a Michigan place.
+//   - STATE / PROVINCE is never inferred. The data has no state column, and
+//     Detroit's orbit crosses Michigan, Ohio and Ontario, so a city name is
+//     not evidence of a state. A state/province (and ZIP/postal code) appears
+//     only when the stored address text actually contains it
+//     ("..., Hazel Park, MI 48030") or the venue row carries a zip_code.
+//     Unknown stays omitted: a supported partial address beats a fabricated
+//     complete one. (Systemic gap: venues has no state column -- DEBT-013.)
 //   - Event-level data wins when it is complete (a street number and a
 //     city); the canonical venue row is the fallback. An incomplete address
 //     never replaces a complete one. Only the missing ZIP of an event-level
@@ -34,40 +34,6 @@
 (function (root) {
   "use strict";
 
-  // Same names as api/_lib/orbit-cities.js (test enforces equality).
-  var MICHIGAN = [
-    "Allen Park", "Belleville", "Brownstown", "Brownstown Township", "Canton", "Canton Township", "Dearborn",
-    "Dearborn Heights", "Detroit", "Ecorse", "Flat Rock", "Garden City", "Gibraltar", "Grosse Ile", "Grosse Pointe",
-    "Grosse Pointe Farms", "Grosse Pointe Park", "Grosse Pointe Shores", "Grosse Pointe Woods", "Hamtramck",
-    "Harper Woods", "Highland Park", "Huron Township", "Inkster", "Lincoln Park", "Livonia", "Melvindale",
-    "Northville", "Northville Township", "Plymouth", "Plymouth Township", "Redford", "Redford Township",
-    "River Rouge", "Riverview", "Rockwood", "Romulus", "Southgate", "Taylor", "Trenton", "Van Buren Township",
-    "Wayne", "Westland", "Woodhaven", "Wyandotte",
-    "Auburn Hills", "Berkley", "Beverly Hills", "Bingham Farms", "Birmingham", "Bloomfield Hills",
-    "Bloomfield Township", "Clarkston", "Clawson", "Commerce Township", "Farmington", "Farmington Hills",
-    "Ferndale", "Franklin", "Hazel Park", "Highland", "Holly", "Huntington Woods", "Independence Township",
-    "Keego Harbor", "Lake Orion", "Lathrup Village", "Lyon Township", "Madison Heights", "Milford", "Novi",
-    "Oak Park", "Oakland Township", "Orchard Lake", "Orion Township", "Ortonville", "Oxford", "Pleasant Ridge",
-    "Pontiac", "Rochester", "Rochester Hills", "Royal Oak", "South Lyon", "Southfield", "Sylvan Lake", "Troy",
-    "Walled Lake", "Waterford", "Waterford Township", "West Bloomfield", "West Bloomfield Township", "White Lake",
-    "White Lake Township", "Wixom",
-    "Armada", "Center Line", "Chesterfield", "Chesterfield Township", "Clinton Township", "Eastpointe", "Fraser",
-    "Harrison Township", "Macomb", "Macomb Township", "Memphis", "Mount Clemens", "Mt. Clemens", "New Baltimore",
-    "New Haven", "Ray Township", "Richmond", "Romeo", "Roseville", "Shelby Township", "St. Clair Shores",
-    "Sterling Heights", "Utica", "Warren", "Washington", "Washington Township",
-    "Ann Arbor", "Chelsea", "Dexter", "Manchester", "Milan", "Pittsfield Township", "Saline", "Superior Township",
-    "Whitmore Lake", "Ypsilanti", "Brighton", "Fowlerville", "Hartland", "Howell", "Pinckney", "Bedford Township",
-    "Carleton", "Dundee", "Lambertville", "Luna Pier", "Monroe", "Temperance", "Adrian", "Blissfield", "Tecumseh",
-    "Algonac", "Fort Gratiot", "Marine City", "Marysville", "Port Huron", "St. Clair", "Almont", "Imlay City",
-    "Lapeer", "Burton", "Davison", "Fenton", "Flint", "Flushing", "Grand Blanc", "Swartz Creek", "East Lansing",
-    "Jackson", "Lansing", "Owosso"
-  ];
-  var OHIO = [
-    "Bowling Green", "Huron", "Maumee", "Northwood", "Oregon", "Perrysburg", "Port Clinton", "Rossford", "Sandusky",
-    "Sylvania", "Toledo", "Waterville"
-  ];
-  var CITIES_BY_STATE = { MI: MICHIGAN, OH: OHIO };
-
   var CA_PROVINCES = /^(?:AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)$/;
   var US_STATE = /^[A-Z]{2}$/;
   var US_ZIP = /^\d{5}(?:-\d{4})?$/;
@@ -79,23 +45,6 @@
   function clean(s) { return isBlank(s) ? "" : String(s).replace(/[\r\n\t\u00a0]+/g, " ").replace(/\s+/g, " ").trim(); }
   function normKey(s) {
     return clean(s).toLowerCase().replace(/\./g, "").replace(/\btwp$/, "township").replace(/\bhts$/, "heights").replace(/\s+/g, " ");
-  }
-
-  // normalised city name -> state code, only for names that belong to ONE state.
-  var STATE_BY_CITY = (function () {
-    var seen = {};
-    Object.keys(CITIES_BY_STATE).forEach(function (st) {
-      CITIES_BY_STATE[st].forEach(function (name) {
-        var k = normKey(name);
-        seen[k] = (seen[k] === undefined || seen[k] === st) ? st : null; // null = ambiguous
-      });
-    });
-    return seen;
-  })();
-
-  function inferState(city) {
-    var st = STATE_BY_CITY[normKey(city)];
-    return st || "";
   }
 
   // "420 W. 9 Mile Rd" -> "420 W 9 Mile Rd": drop the period after a lone
@@ -171,17 +120,15 @@
     return c;
   }
 
-  function foreign(c) {
-    return !!(c.country && c.country !== "US") || (c.state && CA_PROVINCES.test(c.state)) || (c.zip && CA_POSTAL.test(c.zip) && !US_ZIP.test(c.zip));
-  }
-
   // Compose the final text from already-chosen parts.
   function compose(name, c) {
-    var state = c.state;
-    if (!state && c.city && !foreign(c)) state = inferState(c.city);
-    var region = [state, c.zip].filter(Boolean).join(" ");
+    // Region is "ST ZIP" from stored data only. With a ZIP but no state it is
+    // written onto the city ("Hazel Park 48030"), never with a guessed state.
+    var region = [c.state, c.zip].filter(Boolean).join(" ");
     var country = c.country && c.country !== "US" ? c.country : "";
-    var parts = [clean(name), c.street, c.city, region, country].filter(Boolean);
+    var cityPart = c.city;
+    if (!c.state && c.zip) { cityPart = [c.city, c.zip].filter(Boolean).join(" "); region = ""; }
+    var parts = [clean(name), c.street, cityPart, region, country].filter(Boolean);
     // collapse an adjacent duplicate ("Detroit, Detroit")
     var dedup = [];
     parts.forEach(function (p) { if (!dedup.length || normKey(dedup[dedup.length - 1]) !== normKey(p)) dedup.push(p); });
@@ -215,7 +162,7 @@
     else if (!hasHouseNumber(base.street)) missing.push("house_number");
     if (!base.city) missing.push("city");
     var navigable = !!(base.street && hasHouseNumber(base.street) && base.city);
-    return { text: text, navigable: navigable, missing: missing, source: source, name: name, street: base.street, city: base.city, state: base.state || (base.city && !foreign(base) ? inferState(base.city) : ""), zip: base.zip };
+    return { text: text, navigable: navigable, missing: missing, source: source, name: name, street: base.street, city: base.city, state: base.state || "", zip: base.zip };
   }
 
   // An event object as the pages build it: venue (display name), locEventAddress/
@@ -266,8 +213,7 @@
     icsEscape: icsEscape,
     foldICSLine: foldICSLine,
     icsLocationLine: icsLocationLine,
-    googleLocationParam: googleLocationParam,
-    _citiesByState: CITIES_BY_STATE
+    googleLocationParam: googleLocationParam
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = { CalendarLocation: api };
