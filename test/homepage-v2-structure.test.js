@@ -115,6 +115,14 @@ console.log("PASS: neighborhood and press rails — carousels with buttons, 5 / 
   [...block.matchAll(/^\s{4}file:\s*'([^']+)'/gm)].forEach((m) => assert.ok(fs.existsSync(`${REPO_DIR}/assets/photography/neighborhoods/${m[1]}`), `local photo exists: ${m[1]}`));
   assert.ok(/attribution: \{\s*url: 'https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/b\/b2\/Detroit_May_2023_03_%28Eastern_Market%29\.jpg'/.test(block) && /attribution: \{\s*url: 'https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/e\/ea\/Mexican_Village_Detroit\.jpg'/.test(block), "attribution still names the original files");
 }
+// Every photograph is keyed by the exact production neighbourhood name, or it
+// can never match a card (Fitzgerald-Marygrove sat under "Fitzgerald" and never showed).
+{
+  const block = html.match(/const NEIGHBORHOOD_PHOTOS = \{[\s\S]*?\n\};/)[0];
+  const keys = [...block.matchAll(/^  "([^"]+)": \{/gm)].map((m) => m[1]).sort();
+  assert.deepStrictEqual(keys, ["Downtown", "Eastern Market", "Eastside Historic Cemetery District", "Fitzgerald-Marygrove", "Midtown", "Mexicantown / Southwest Detroit", "North Corktown", "Old Redford"].sort(), "photograph keys are production neighbourhood names");
+  assert.ok(!/^  "Fitzgerald": \{/m.test(block), "no photograph under the non-production name Fitzgerald");
+}
 console.log("PASS: neighbourhood photographs are sized renditions, local files exist, attribution unchanged");
 
 console.log("\nAll Homepage V2 structure tests passed.");
