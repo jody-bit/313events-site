@@ -112,8 +112,8 @@ async function open(url, opts) {
   const page = loadPage({
     url: url || "/", now: opts.now || NOW, seed: SEED, fetch: api.fetch,
     geolocation: opts.geolocation,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("discovery.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "discovery.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("discovery.js"), read("calendar-location.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "discovery.js", "calendar-location.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;

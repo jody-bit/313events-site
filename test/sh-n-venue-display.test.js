@@ -179,7 +179,7 @@ async function run() {
   console.log("PASS: 8/11. map.html embeds canonical venue data and resolves it through resolveVenueDisplay()");
 
   const eventTemplateHtml = fs.readFileSync(`${REPO_DIR}/event-template.html`, "utf8");
-  assert.ok(/venue_id,venues\(name,address,city,lat,lng\)/.test(eventTemplateHtml), "event-template.html's query is missing the venues(...) embed");
+  assert.ok(/venue_id,venues\(name,address,city,(?:zip_code,)?lat,lng\)/.test(eventTemplateHtml), "event-template.html's query is missing the venues(...) embed");
   assert.ok(/const vd = resolveVenueDisplay\(row\);/.test(eventTemplateHtml), "event-template.html's mapRow doesn't call resolveVenueDisplay");
   console.log("PASS: 10. event-template.html embeds canonical venue data and resolves it through resolveVenueDisplay()");
 
