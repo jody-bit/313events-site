@@ -101,4 +101,20 @@ console.log("PASS: palette — Design System colours only, neutral category tags
 }
 console.log("PASS: neighborhood and press rails — carousels with buttons, 5 / 3.6 / 1.5 cards in view, photo-led, quiet fallbacks, article images only");
 
+// --- 7. Neighbourhood photographs: weight ---
+// A hotlinked Commons original can be several megabytes (Eastern Market was
+// 6000x4000, ~7.8 MB) for a card about 224 px wide. Every hotlinked photo
+// must therefore be a sized /thumb/ rendition, and any local photo must be a
+// file that exists. Attribution keeps pointing at the original file.
+{
+  const block = html.match(/const NEIGHBORHOOD_PHOTOS = \{[\s\S]*?\n\};/)[0];
+  const srcs = [...block.matchAll(/^\s{4}src:\s*'([^']+)'/gm)].map((m) => m[1]);
+  assert.ok(srcs.length >= 7, "the hotlinked neighbourhood photographs are listed");
+  srcs.forEach((u) => assert.ok(/\/commons\/thumb\/[0-9a-f]\/[0-9a-f]{2}\/[^/]+\/(\d+)px-[^/]+$/.test(u) || /\/commons\/4\/4b\/MikerussellCampusmartiusParkDetroit\.jpg$/.test(u), `hotlink is a sized rendition, not a full-size original: ${u}`));
+  srcs.forEach((u) => { const m = u.match(/\/(\d+)px-/); if (m) assert.ok(+m[1] >= 500 && +m[1] <= 960, `rendition width is 500-960 px: ${u}`); });
+  [...block.matchAll(/^\s{4}file:\s*'([^']+)'/gm)].forEach((m) => assert.ok(fs.existsSync(`${REPO_DIR}/assets/photography/neighborhoods/${m[1]}`), `local photo exists: ${m[1]}`));
+  assert.ok(/attribution: \{\s*url: 'https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/b\/b2\/Detroit_May_2023_03_%28Eastern_Market%29\.jpg'/.test(block) && /attribution: \{\s*url: 'https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/e\/ea\/Mexican_Village_Detroit\.jpg'/.test(block), "attribution still names the original files");
+}
+console.log("PASS: neighbourhood photographs are sized renditions, local files exist, attribution unchanged");
+
 console.log("\nAll Homepage V2 structure tests passed.");
