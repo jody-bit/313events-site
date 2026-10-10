@@ -4152,25 +4152,69 @@
   }
   .es-action:hover{border-color:var(--ink);}
 
-  /* ---- Don't Miss: only when an editor placed something ---- */
-  .dont-miss{background:var(--bg);border:1px solid var(--line);border-radius:0;padding:14px 18px 18px;margin-bottom:12px;}
-  .dm-head{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--ink);margin-bottom:14px;}
+  /* ---- DON'T MISS: a compact editorial rail. Three image cards of one
+     geometry; today the three seasonal guides, otherwise canonical events an
+     editor placed (DEC-025). The artwork is the card; the scrim exists only
+     so the words stay legible over it. ---- */
+  .dont-miss{margin:0 0 24px;min-width:0;}
+  .dm-head{display:flex;align-items:baseline;gap:4px 14px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--ink);margin-bottom:12px;}
   .dm-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;
-    color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;
+    color:var(--ink);text-transform:uppercase;letter-spacing:0;margin:0;white-space:nowrap;
   }
-  .dm-title::before{content:'\25cf  ';color:var(--accent);font-size:16px;vertical-align:middle;}
-  .dm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;border:1px solid var(--line);}
-  .dm-card{display:block;min-width:0;background:var(--panel-alt);border-right:1px solid var(--line);color:inherit;text-decoration:none;}
-  .dm-card:last-child{border-right:none;}
-  a.dm-card:hover .dm-name{text-decoration:underline;}
-  .dm-art{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid var(--line);}
-  .dm-body{padding:12px 14px 14px;}
-  .dm-when{font-family:var(--font-data);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:6px;}
-  .dm-name{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:24px;line-height:.95;text-transform:uppercase;color:var(--ink);margin-bottom:5px;}
-  .dm-venue{font-size:13px;color:var(--ink-soft);line-height:1.4;}
-  .dm-reason{font-size:13px;color:var(--ink);line-height:1.45;margin-top:8px;border-left:2px solid var(--accent);padding-left:10px;}
-  @media (max-width:640px){.dont-miss{padding:12px 14px 14px;}}
+  /* The signal dot is part of the title: "DON'T MISS ●" is one lockup, a
+     fixed pixel gap after the S (7 / 6 / 5px by width), at every width. */
+  .dm-sig{display:inline-block;width:.3em;height:.3em;border-radius:50%;background:var(--accent);margin-left:6.25px;vertical-align:.12em;}
+  .dm-sub{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.3;}
+  .dm-rail{position:relative;min-width:0;}
+  .dm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+  .dm-card{position:relative;display:block;min-width:0;aspect-ratio:4/3;overflow:hidden;background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);text-decoration:none;}
+  .dm-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
+  a.dm-card:hover .dm-art{transform:scale(1.03);}
+  a.dm-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .dm-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,.94) 0%,rgba(10,10,10,.7) 42%,rgba(10,10,10,0) 72%);}
+  .dm-eyebrow{
+    position:absolute;top:10px;left:10px;max-width:calc(100% - 20px);background:var(--accent);color:var(--bg);
+    font-family:var(--font-data);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;
+  }
+  .dm-body{position:absolute;left:0;right:0;bottom:0;padding:12px 48px 12px 12px;display:flex;gap:12px;align-items:flex-end;}
+  .dm-feature .dm-body{padding-right:12px;}
+  .dm-date{flex:none;font-family:var(--font-data);text-transform:uppercase;line-height:1.1;color:var(--ink);text-align:left;}
+  .dm-date-m{display:block;font-size:11px;letter-spacing:.08em;}
+  .dm-date-d{display:block;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:30px;line-height:.95;}
+  .dm-date-range{display:block;font-size:11px;letter-spacing:.06em;line-height:1.35;}
+  .dm-text{min-width:0;}
+  .dm-name{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:21px;line-height:.98;text-transform:uppercase;color:var(--ink);margin-bottom:4px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .dm-venue{font-size:12px;color:var(--ink-soft);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dm-reason{font-size:12px;color:var(--ink);line-height:1.4;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .dm-feature .dm-reason{-webkit-line-clamp:3;}
+  .dm-cta{display:inline-block;margin-top:8px;font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);padding-bottom:2px;border-bottom:1px solid var(--ink-soft);}
+  .dm-go{position:absolute;right:12px;bottom:12px;width:28px;height:28px;border:1px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink);}
+  a.dm-card:hover .dm-go, a.dm-card:focus-visible .dm-go{border-color:var(--accent);color:var(--accent);}
+  .dm-dots{display:none;justify-content:center;gap:6px;margin-top:10px;}
+  .dm-dot{width:6px;height:6px;border-radius:50%;background:var(--ink-dim);}
+  .dm-dot.on{background:var(--accent);}
+  /* Tablet and mobile: a swipeable rail, the next card peeking in. */
+  @media (max-width:900px){
+    .dm-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:10px;}
+    .dm-grid::-webkit-scrollbar{display:none;}
+    .dm-card{flex:0 0 44%;scroll-snap-align:start;}
+    .dm-dots{display:flex;}
+    .dm-sig{margin-left:5.25px;}
+  }
+  @media (max-width:640px){
+    .dont-miss{margin-bottom:18px;}
+    .dm-head{gap:2px 10px;padding-bottom:6px;margin-bottom:10px;}
+    .dm-title{font-size:22px;}
+    .dm-sig{margin-left:5px;}
+    .dm-sub{font-size:12px;}
+    .dm-card{flex-basis:70%;}
+    .dm-name{font-size:19px;}
+  }
+  @media (max-width:360px){
+    .dm-card{flex-basis:80%;}
+  }
+  @media (prefers-reduced-motion:reduce){.dm-art{transition:none;}a.dm-card:hover .dm-art{transform:none;}}
 
   /* ---- footer ---- */
   footer.site{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.6;}
@@ -4491,8 +4535,8 @@
   <div class="home-body">
     <div class="home-main">
       <!-- Don't Miss: a temporary, human-curated editorial placement
-           (DEC-025). Nothing is selected in this file and there is no
-           placement data source yet, so this stays hidden — see
+           (DEC-025). Placements come from data/dont-miss.json; with none
+           in their period the section stays hidden — see
            renderDontMiss(). -->
       <section class="dont-miss" id="dontMissSection" style="display:none;" aria-label="Don't Miss"></section>
 
@@ -6140,30 +6184,103 @@ function viewToday(){
 
 // ---- Don't Miss (DEC-025) ----
 // A temporary editorial placement: a person points at an event, for a
-// period, with a reason. It is not a property of the event, and nothing in
-// this file chooses one. There is no placement data source yet — no table,
-// no request — so the list below is empty and the section stays hidden.
-// When a source exists it fills this list; the rest of the page is
-// unaffected either way. Do not put selections in this file.
-//   placement: {eventId, reason, from, to}  (from/to: ISO dates, inclusive,
-//   either may be left out)
+// period, with a reason. It is not a property of the event; being featured
+// is a dated editorial decision. Selection is human and is never bought
+// (DEC-020): nothing sponsored belongs in this rail, and a future promoted
+// placement must be a separate, plainly labelled thing.
+//
+// The placements are data, not code: data/dont-miss.json, read once on load.
+// To feature an event add an entry (the event's id is the `id=` in its
+// event.html?id=… link); to remove one delete it or set `to`; the order of
+// the file is the order of the rail. Do not put selections in this file.
+//   placement: {eventId, eyebrow, reason, from, to}
+//   eyebrow  short callout on the card (e.g. "Detroit debut") — optional
+//   reason   one short line of editorial context — optional
+//   from/to  ISO dates, inclusive, either may be left out
 // A placement shows only while it is in its period AND its event is in the
-// current + upcoming inventory (loaded, not over, not blocked).
+// current + upcoming inventory (loaded, not over, not blocked). With none
+// showing, the section is hidden.
 let dontMissPlacements = [];
 const DONT_MISS_LIMIT = 3;
+
+// A Don't Miss card is an image card: an event with no usable image is skipped
+// and the next configured placement takes its slot (no generic stand-in art).
+const dmBadImages = new Set();
+function dmHasImage(e){
+  const u = e.imageUrl && safeUrl(e.imageUrl);
+  return !!u && !dmBadImages.has(u);
+}
+function dmImageFailed(img){
+  dmBadImages.add(img.getAttribute('src'));
+  renderDontMiss();
+}
 
 function activeDontMiss(){
   const today = getTodayISO(), ctx = inventoryCtx();
   const out = [];
   dontMissPlacements.forEach(p=>{
-    if(!p || p.eventId == null) return;
+    if(!p) return;
     if((p.from && today < p.from) || (p.to && today > p.to)) return;
-    const event = EVENTS.find(e => String(e.id) === String(p.eventId));
-    if(!event || !Discovery.matches(event, Discovery.defaults(), ctx)) return;
-    if(out.some(o => o.event === event)) return;
-    out.push({event, reason: p.reason || ''});
+    if(p.eventId != null){
+      const event = EVENTS.find(e => String(e.id) === String(p.eventId));
+      if(!event || !Discovery.matches(event, Discovery.defaults(), ctx)) return;
+      if(!dmHasImage(event)) return;
+      if(out.some(o => o.event === event)) return;
+      out.push({event, reason: p.reason || '', eyebrow: p.eyebrow || ''});
+    } else if(p.title && dmHasImage({imageUrl: p.image})){
+      // A static editorial card (today: the seasonal guides). Same rail,
+      // same geometry; it just isn't one canonical event.
+      out.push({feature: p});
+    }
   });
   return out.slice(0, DONT_MISS_LIMIT);
+}
+
+const DM_MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function dmMonthDay(iso){
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+  return m ? {mon: DM_MONTHS[Number(m[2]) - 1], day: String(Number(m[3]))} : null;
+}
+
+function dontMissFeatureHtml(f){
+  const src = safeUrl(f.image), src2x = f.image2x ? safeUrl(f.image2x) : '';
+  // Optional crop focus so the artwork's subject survives the card's 4:3 cut.
+  const focus = ['left','right','top','bottom'].includes(f.focus) ? ` style="object-position:${f.focus}"` : '';
+  return `<div class="dm-card dm-feature">
+    <img class="dm-art"${focus} src="${escapeHtml(src)}"${src2x ? ` srcset="${escapeHtml(src)} 800w, ${escapeHtml(src2x)} 1600w" sizes="(max-width:900px) 72vw, 300px"` : ''} alt="${escapeHtml(f.alt || '')}" loading="lazy" onerror="dmImageFailed(this)">
+    <span class="dm-scrim" aria-hidden="true"></span>
+    <div class="dm-body">
+      <div class="dm-text">
+        <div class="dm-name">${escapeHtml(f.title)}</div>
+        ${f.copy ? `<div class="dm-reason">${escapeHtml(f.copy)}</div>` : ''}
+        ${f.cta ? `<span class="dm-cta">${escapeHtml(f.cta)} &rarr;</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function dontMissCardHtml(pick){
+  if(pick.feature) return dontMissFeatureHtml(pick.feature);
+  const {event: e, reason, eyebrow} = pick;
+  const start = dmMonthDay(e.date), end = e.endDate && e.endDate > e.date ? dmMonthDay(e.endDate) : null;
+  const dateHtml = !start ? '' : end
+    ? `<span class="dm-date"><span class="dm-date-range">${start.mon} ${start.day}<br>&ndash; ${end.mon} ${end.day}</span></span>`
+    : `<span class="dm-date"><span class="dm-date-m">${start.mon}</span><span class="dm-date-d">${start.day}</span></span>`;
+  const where = [e.venue, e.neighborhood || e.city].filter(Boolean).join(' · ');
+  const body = `
+    ${e.imageUrl && safeUrl(e.imageUrl) ? `<img class="dm-art" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="dmImageFailed(this)">` : ''}
+    <span class="dm-scrim" aria-hidden="true"></span>
+    ${eyebrow ? `<span class="dm-eyebrow">${escapeHtml(eyebrow)}</span>` : ''}
+    <div class="dm-body">
+      ${dateHtml}
+      <div class="dm-text">
+        <div class="dm-name">${escapeHtml(e.title)}</div>
+        <div class="dm-venue">${escapeHtml(where)}</div>
+        ${reason ? `<div class="dm-reason">${escapeHtml(reason)}</div>` : ''}
+      </div>
+    </div>
+    <span class="dm-go" aria-hidden="true">&rarr;</span>`;
+  return eventUrl(e) ? `<a class="dm-card" href="${escapeHtml(eventUrl(e))}">${body}</a>` : `<div class="dm-card">${body}</div>`;
 }
 
 function renderDontMiss(){
@@ -6173,22 +6290,36 @@ function renderDontMiss(){
   if(!picks.length){ section.style.display = 'none'; section.innerHTML = ''; return; }
   section.style.display = '';
   section.innerHTML = `
-    <div class="dm-head"><h2 class="dm-title">Don't Miss</h2></div>
-    <div class="dm-grid">
-      ${picks.map(({event: e, reason})=>{
-        const when = [formatDateLabel(e.date) + (e.endDate && e.endDate > e.date ? '–' + formatDateLabel(e.endDate) : ''), e.time].filter(Boolean).join(' · ');
-        const body = `
-          ${e.imageUrl && safeUrl(e.imageUrl) ? `<img class="dm-art" src="${escapeHtml(safeUrl(e.imageUrl))}" alt="" loading="lazy" onerror="this.remove()">` : ''}
-          <div class="dm-body">
-            <div class="dm-when">${escapeHtml(when)}</div>
-            <div class="dm-name">${escapeHtml(e.title)}</div>
-            <div class="dm-venue">${escapeHtml(e.venue)}${e.city ? ` — ${escapeHtml(e.city)}` : ''}</div>
-            ${reason ? `<div class="dm-reason">${escapeHtml(reason)}</div>` : ''}
-          </div>`;
-        return eventUrl(e) ? `<a class="dm-card" href="${escapeHtml(eventUrl(e))}">${body}</a>` : `<div class="dm-card">${body}</div>`;
-      }).join('')}
+    <div class="dm-head"><h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"></span></h2><p class="dm-sub">Extraordinary events. Handpicked for this moment.</p></div>
+    <div class="dm-rail">
+      <div class="dm-grid" id="dmGrid">${picks.map(dontMissCardHtml).join('')}</div>
+      <div class="dm-dots" id="dmDots" aria-hidden="true">${picks.map((_, i) => `<span class="dm-dot${i ? '' : ' on'}"></span>`).join('')}</div>
     </div>
   `;
+  const grid = document.getElementById('dmGrid');
+  if(grid && picks.length > 1){
+    grid.addEventListener('scroll', ()=>{
+      const cards = [...grid.children];
+      const x = grid.scrollLeft;
+      let best = 0;
+      cards.forEach((c, i)=>{ if(Math.abs(c.offsetLeft - grid.offsetLeft - x) < Math.abs(cards[best].offsetLeft - grid.offsetLeft - x)) best = i; });
+      document.querySelectorAll('#dmDots .dm-dot').forEach((d, i)=> d.classList.toggle('on', i === best));
+    }, {passive: true});
+  }
+}
+
+// The placements file. Failure to load it (or an empty file) means no
+// rail — never an error on the homepage.
+async function loadDontMissPlacements(){
+  try{
+    const resp = await fetch('/data/dont-miss.json', {cache: 'no-cache'});
+    if(!resp.ok) return;
+    const data = await resp.json();
+    if(data && Array.isArray(data.placements)){
+      dontMissPlacements = data.placements;
+      renderDontMiss();
+    }
+  }catch(err){ /* no placements */ }
 }
 
 // ---- Homepage sidebar: View Calendar / Near You / Free Today ----
@@ -7559,6 +7690,7 @@ async function loadSupabaseEvents() {
   }
 }
 loadSupabaseEvents();
+loadDontMissPlacements();
 
 // Street addresses for Add to Calendar (calendar-location.js). events_public
 // carries only venue_name/venue_city, so the address the calendar LOCATION
