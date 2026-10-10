@@ -138,8 +138,8 @@ function view(page) {
     days,
     titles: days.flatMap((d) => d.titles),
     rows: days.flatMap((d) => d.titles.map((t) => d.day + " | " + t)),
-    allEvents: /<h2 class="stream-title">All events<\/h2>/.test(html),
-    heading: (/<div class="list-count-heading">([^<]*)<\/div>/.exec(html) || [])[1] || null,
+    allEvents: /<h2 class="sec-title">What's Happening<\/h2><p class="sec-sub">[\d,]+ current \+ upcoming events?, in date order\.<\/p>/.test(html),
+    heading: (/<p class="list-count-heading">([^<]*)<\/p>/.exec(html) || [])[1] || null,
     empty: /class="empty-state"/.test(html) ? { text: (/<div class="empty-state">([^<]*)/.exec(html) || [])[1], actions: [...html.matchAll(/class="es-action"[^>]*>([^<]*)</g)].map((m) => m[1]) } : null,
     tray: tray.style.display === "none" ? [] : tray.children.filter((c) => c.classList.contains("af-chip")).map((c) => c.children[0].textContent),
     url: page.url(),
@@ -198,7 +198,7 @@ async function run() {
     assert.deepStrictEqual(v.days[0].titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
     assert.deepStrictEqual(v.days.slice(1).map((d) => d.titles), [["Out There", "Sunday Show"], ["No Category"], ["Wednesday Social"], ["Fall Festival"], ["Big Game"]]);
     assert.strictEqual(v.titles.length, 12, "twelve events, twelve rows: the two exhibitions and the three-day festival are listed once each");
-    assert.strictEqual(v.allEvents, true, 'headed "All events"');
+    assert.strictEqual(v.allEvents, true, 'headed What\'s Happening, as every current + upcoming event in date order');
     assert.ok(!/Showing today/.test(v.html), 'the old "Showing today — see everything" note is gone');
     assert.strictEqual(v.heading, null, "no count heading on the plain default view");
     assert.deepStrictEqual(v.tray, [], "the Showing: tray is hidden");
@@ -226,21 +226,21 @@ async function run() {
     assert.strictEqual(page.el("heroStatToday").textContent, "6");
     assert.strictEqual(page.el("heroStatNext7").textContent, "11");
     assert.strictEqual(page.el("heroStatNeighborhoods").textContent, "3");
-    // Week strip: every day of the week counted as that day, past days included.
-    const strip = [...page.el("viewCalendarCard").innerHTML.matchAll(/calendar\.html\?date=(\d{4}-\d{2}-\d{2})"[^>]*aria-label="[^"]*, (\d+) events?"/g)].map((m) => [m[1], +m[2]]);
-    assert.deepStrictEqual(strip, [[day(-5), 1], [day(-4), 1], [day(-3), 2], [day(-2), 3], [day(-1), 4], [day(0), 8], [day(1), 4]],
-      "the week strip counts each day as that day — completed events included, blocked excluded, the long-running exhibition on every day");
+    // The date strip heads the stream: seven days from today, Today and
+    // Tomorrow named, each a real button that picks that day.
+    const strip = [...page.el("listView").innerHTML.matchAll(/class="ds-day[^"]*" data-day="(\d{4}-\d{2}-\d{2})"/g)].map((m) => m[1]);
+    assert.deepStrictEqual(strip, [0, 1, 2, 3, 4, 5, 6].map(day), "the date strip: today and the six days after it");
+    assert.ok(/ds-day[^>]*data-day="[^"]*"[^>]*>[\s\S]*?Today/.test(page.el("listView").innerHTML) && /Tomorrow/.test(page.el("listView").innerHTML));
+    // Homepage V2 has no sidebar: its mini Calendar, Map and Free Today
+    // cards are gone, not moved (the full Calendar and Map stay in the nav).
+    for (const gone of ["viewCalendarCard", "mapCard", "freeTodayCard", "venuesCard", "homeSidebar"]) assert.strictEqual(read("index.html").includes(`id="${gone}"`), false, gone + " is not on the page");
     // Map + Near You teasers: the database's own current + upcoming count
     // (starts today or later, OR still running) — includes Running Exhibit,
     // Finished Fair's last day, and Season Exhibition.
     const countRequest = page.requests.find((r) => r.table === "events");
     assert.ok(countRequest.url.includes("or=(start_date.gte." + day(0) + ",end_date.gte." + day(0) + ")") || decodeURIComponent(countRequest.url).includes("or=(start_date.gte." + day(0) + ",end_date.gte." + day(0) + ")"), "the site total asks for Discovery.inventoryFilter()");
     assert.ok(/status=eq\.approved/.test(countRequest.url), "…of approved events only");
-    assert.ok(/<div class="side-card-number">15<\/div>/.test(page.el("mapCard").innerHTML), "map card: 15 current + upcoming approved events");
-    assert.ok(/<div class="side-card-number">15<\/div>/.test(page.el("nearYouCard").innerHTML));
-    // Free Today: free, still on or still to come today (Discovery's Today), in the Orbit —
-    // Matinee Somewhere and Running Exhibit. Not Morning Market (free, but over since 2 PM); not the blocked one.
-    assert.ok(/<div class="side-card-number">2<\/div>/.test(page.el("freeTodayCard").innerHTML), "free today: 2");
+    assert.strictEqual((/<span class="orbit-number">([\d,]+)<\/span>/.exec(page.el("nearYouCard").innerHTML) || [])[1], "15", "the Orbit's number: 15 current + upcoming approved events");
     // Neighborhoods: distinct current + upcoming events, most first, ties A–Z.
     const rail = [...page.el("neighborhoodsRail").innerHTML.matchAll(/data-neighborhood="([^"]+)"[\s\S]*?neigh-count">(\d+)</g)].map((m) => m[1] + "=" + m[2]);
     assert.deepStrictEqual(rail, ["Corktown=2", "Midtown=2", "Downtown=1"], "one per event (Fall Festival runs three days and counts once; Season Exhibition counts for Midtown); the blocked Corktown event is not counted");
@@ -575,11 +575,9 @@ async function run() {
     assert.deepStrictEqual(v.titles, ["Matinee Somewhere"], "10 miles from Ann Arbor's centre");
     assert.strictEqual(v.url, "/?when=all&loc=Ann+Arbor&radius=10");
     assert.deepStrictEqual(v.tray, ["All Upcoming", "10 mi · Ann Arbor"]);
-    // Map card: events within 10 mi of the chosen point, vs the whole Orbit.
-    assert.ok(/<div class="side-card-number">1<\/div>/.test(page.el("mapCard").innerHTML) && /within 10 mi of you/.test(page.el("mapCard").innerHTML));
     // Near You: within 75 mi of that point (the card's own arithmetic — see DEBT-009): everything placeable is that close to Ann Arbor.
     assert.ok(/Within 75 mi of Ann Arbor/.test(page.el("nearYouCard").innerHTML));
-    assert.strictEqual((/<div class="side-card-number">(\d+)<\/div>/.exec(page.el("nearYouCard").innerHTML) || [])[1], "11", "11 current + upcoming events in cities the page can place (not Richmond; not the over or blocked ones), each counted once");
+    assert.strictEqual((/<span class="orbit-number">(\d+)<\/span>/.exec(page.el("nearYouCard").innerHTML) || [])[1], "11", "11 current + upcoming events in cities the page can place (not Richmond; not the over or blocked ones), each counted once");
 
     // Expand radius walks Discovery's tiers.
     page.run("expandRadius()"); assert.strictEqual(view(page).state.where.radius, 25);
@@ -639,8 +637,12 @@ async function run() {
     page.run("viewNeighborhood('Midtown')"); trayRemove(page, "Midtown");
     assert.strictEqual(view(page).state.where.neighborhood, null);
 
-    // Free Today = the canonical Today + Free (2026-10-03 correction).
-    page.run("viewFreeToday()");
+    // Free Today = the canonical Today + Free (2026-10-03 correction). The
+    // sidebar's Free Today card is gone in Homepage V2; the same view is
+    // Today and the Free only chip, both still on the page.
+    page.run("clearAllFilters()");
+    page.run("activateWhen('today')");
+    chip(page, "#freeChip").click();
     v = view(page);
     assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "today", free: true })), "when.mode = 'today' and free — no date");
     assert.strictEqual(v.url, "/?when=today&free=1", "a link that means free-today on whatever day it is opened");
@@ -650,19 +652,17 @@ async function run() {
     assert.strictEqual(v.heading, "Showing 2 events today");
     assert.deepStrictEqual(sorted(v.titles), ["Matinee Somewhere", "Running Exhibit"], "the same two the card counted — not Morning Market, which is free but ended at 2 PM");
     // It adds to whatever else is filtered.
-    page.el("browseBtn").click();
     page.fire("search", "input", { value: "matinee" });
-    page.run("viewFreeToday()");
     v = view(page);
-    assert.deepStrictEqual([v.state.what.free, v.state.when.mode, v.state.q], [true, "today", "matinee"], "Free Today keeps the other filters");
+    assert.deepStrictEqual([v.state.what.free, v.state.when.mode, v.state.q], [true, "today", "matinee"], "Today + Free keeps the search");
     assert.deepStrictEqual(v.titles, ["Matinee Somewhere"]);
 
-    page.el("browseBtn").click();
+    page.run("clearAllFilters()"); // the old header Browse link is gone in V2; Reset filters / the tray run the same function
     v = view(page);
-    assert.deepStrictEqual(v.state, plain(D.defaults()), "Browse clears everything");
+    assert.deepStrictEqual(v.state, plain(D.defaults()), "clearing everything returns the plain default view");
     assert.strictEqual(page.el("search").value, ""); assert.strictEqual(page.el("whenDateInput").value, day(0));
   }
-  console.log("PASS: H. neighborhood cards (count = list), Free Today (canonical Today + free; count = list), Browse");
+  console.log("PASS: H. neighborhood cards (count = list), Today + Free only (canonical Today + free), clear all");
 
   // =====================================================================
   // I. Old links still open the same view; the address bar is rewritten in the shared form
