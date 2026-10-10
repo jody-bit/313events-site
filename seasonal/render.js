@@ -90,7 +90,7 @@
     return '<section class="sc-bottom">' +
       '<div class="sc-bottom-map"><h2 class="sc-h2 sc-h2-sm">' + esc(col.mapTitle) + '</h2>' +
       '<div class="sc-map-card"><p class="sc-map-copy"><strong>' + esc(col.mapBlurb) + '</strong></p>' +
-      '<a class="sc-btn" href="/map.html">View on map <span aria-hidden="true">&rarr;</span></a></div></div>' +
+      '<a class="sc-btn" href="/map.html">Open events map <span aria-hidden="true">&rarr;</span></a></div></div>' +
       '<div class="sc-bottom-more"><h2 class="sc-h2 sc-h2-sm">More seasonal collections</h2><ul class="sc-more">' +
       DATA.ORDER.filter(function (s) { return s !== col.slug; }).map(function (s) {
         var c = DATA.CROSS[s];
@@ -131,7 +131,7 @@
     return '<section class="sc-section" aria-labelledby="scExplore"><div class="sc-section-head"><h2 class="sc-h2" id="scExplore">' + esc(col.exploreTitle) + '</h2>' +
       '<div class="sc-views" role="group" aria-label="View"><button type="button" class="sc-view" data-view="grid" aria-pressed="' + (state.view !== "list") + '">Grid</button>' +
       '<button type="button" class="sc-view" data-view="list" aria-pressed="' + (state.view === "list") + '">List</button>' +
-      '<a class="sc-view" href="/map.html">Map</a></div></div>' +
+      '<a class="sc-view" href="/map.html" title="General events map, not filtered to this collection">Events map</a></div></div>' +
       '<p class="sc-count" id="scCount" aria-live="polite">' + visible(col, state).length + ' of ' + DATA.published(col).length + ' destinations</p>' +
       '<div id="scResults">' + results(col, state) + '</div></section>';
   }

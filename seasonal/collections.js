@@ -53,7 +53,7 @@
       exploreTitle: "Explore fall in the Orbit",
       discoverTitle: "Discover by experience",
       mapTitle: "Explore more of the Orbit",
-      mapBlurb: "Fall experiences beyond Detroit",
+      mapBlurb: "The events map shows all 313.events listings, not only this collection.",
       hero: { desktop: "/assets/seasonal/fall-hero-1600.webp", mobile: "/assets/seasonal/fall-hero-800.webp",
         alt: "", illustrative: true, objectPosition: "50% 40%" },
       categories: [
@@ -98,7 +98,7 @@
       exploreTitle: "Explore the Dark Orbit",
       discoverTitle: "How dark do you want to go?",
       mapTitle: "Explore more of the Orbit",
-      mapBlurb: "Halloween beyond Detroit",
+      mapBlurb: "The events map shows all 313.events listings, not only this collection.",
       hero: { desktop: "/assets/seasonal/halloween-hero-1600.webp", mobile: "/assets/seasonal/halloween-hero-800.webp",
         alt: "", illustrative: true, objectPosition: "50% 50%" },
       categories: [
@@ -133,12 +133,12 @@
         { id: "glenlore-carnevil-2", name: "Glenlore Trails: CarnEvil 2", city: "Commerce Township", region: "MI",
           categories: ["strange-unusual", "haunted-attractions"], featured: false, status: "published",
           summary: "Illuminated forest walk with a carnival-horror theme in Commerce Township.",
-          website: "https://glenloretrails.com", image: img("halloween", 1),
+          website: "https://glenloretrails.com", image: img("halloween", 5),
           evidence: [ev("Inventory #32. Michigan.org / Michigan Public 2026 listings; glenloretrails.com named for tickets.", "https://glenloretrails.com")] },
         { id: "crossroads-ghosts-goodies", name: "Halloween Ghosts & Goodies at Crossroads Village", city: "Flint area", region: "MI",
           categories: ["family-friendly"], featured: false, status: "published",
           summary: "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
-          image: img("halloween", 4),
+          image: img("halloween", 6),
           evidence: [ev("Inventory #39. A late-summer 2026 listing invites reservations for the 2026 event; specific 2026 dates not found.")] }
       ]
     },
@@ -155,8 +155,8 @@
       dontMissTitle: "Don't miss the color",
       exploreTitle: "Explore fall colors",
       discoverTitle: "How will you chase the color?",
-      mapTitle: "Explore the color across the Orbit",
-      mapBlurb: "Fall color destinations across the Detroit Orbit",
+      mapTitle: "Explore more of the Orbit",
+      mapBlurb: "The events map shows all 313.events listings, not only this collection.",
       hero: { desktop: "/assets/seasonal/fall-color-hero-1600.webp", mobile: "/assets/seasonal/fall-color-hero-800.webp",
         alt: "", illustrative: true, objectPosition: "50% 50%" },
       categories: [

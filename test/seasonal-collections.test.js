@@ -64,6 +64,26 @@ for (const slug of DATA.ORDER) {
   for (const other of DATA.ORDER.filter((s) => s !== slug)) assert.ok(html.includes('href="' + routes[other] + '"'));
 }
 
+// candidate registry: every inventory row is tracked; published ones exist
+const cand = JSON.parse(fs.readFileSync(path.join(root, "seasonal/candidates.json"), "utf8")).candidates;
+const counts = { fall: 71, halloween: 52, "fall-color": 129 };
+for (const slug of DATA.ORDER) {
+  const rows = cand.filter((c) => c.collection === slug);
+  assert.strictEqual(rows.length, counts[slug], slug + " inventory rows tracked");
+  assert.ok(rows.every((c) => c.status === "published" || (c.status === "unresolved" && c.reason)), "every candidate has a status and reason");
+  const pubIds = rows.filter((c) => c.status === "published").map((c) => c.published_id).sort();
+  assert.deepStrictEqual(pubIds, DATA.published(DATA.COLLECTIONS[slug]).map((e) => e.id).sort(), slug + " registry matches published");
+  // image diversity: no image reused across published destinations
+  const srcs = DATA.published(DATA.COLLECTIONS[slug]).map((e) => e.image.src);
+  assert.strictEqual(new Set(srcs).size, srcs.length, slug + " reuses a card image");
+}
+// the general events map is never presented as a seasonal map
+for (const slug of DATA.ORDER) {
+  const html = R.main(DATA.COLLECTIONS[slug]);
+  assert.ok(html.includes("not only this collection") && html.includes("Open events map"));
+  assert.ok(!/View on map/.test(html));
+}
+
 // built pages are in sync and routed
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
