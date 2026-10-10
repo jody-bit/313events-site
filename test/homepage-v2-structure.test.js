@@ -29,7 +29,10 @@ const at = (s) => { const i = body.indexOf(s); assert.ok(i !== -1, `the page has
   // The stream is one block: its continuation is directly beneath it, ahead of Neighborhoods.
   assert.ok(at('id="listView"') < at('id="listMore"') && at('id="listMore"') < at('id="neighborhoodsSection"'), "What's Happening is not split around the sections that follow it");
   assert.ok(!/<aside\b|homeSidebar|class="side-card"/.test(body), "no right sidebar");
-  assert.ok(/grid-template-areas:\s*"dm dm"\s*"list list"\s*"nb orbit"\s*"radar radar";/.test(css), "desktop grid: Don't Miss, stream, Neighborhoods beside Orbit, Radar");
+  assert.ok(/grid-template-areas:\s*"dm dm"\s*"list list"\s*"nb nb"\s*"orbit radar";/.test(css), "desktop grid: Don't Miss, stream, Neighborhoods across the page, then Orbit beside On the Radar");
+  assert.ok(/grid-template-columns:minmax\(0,1fr\) minmax\(0,1\.45fr\)/.test(flat), "Orbit is the narrower column, On the Radar the wider");
+  assert.ok(/@media \(min-width:981px\)\s*\{\s*\.neigh-card\{flex-basis:calc\(\(100% - 70px\) \/ 8\)/.test(flat) && /@media \(min-width:981px\) and \(max-width:1200px\)\s*\{\s*\.neigh-card\{flex-basis:calc\(\(100% - 50px\) \/ 6\)/.test(flat), "full-width Neighborhoods: eight portrait cards across (six on a narrower desktop), the rest by scrolling");
+  assert.ok(/\.radar-rail\{display:flex;/.test(flat) && !/\.radar-rail\{display:grid/.test(flat) && /\.radar-card\{flex:0 0 calc\(\(100% - 10px\) \/ 1\.8\)/.test(flat), "desktop On the Radar is the same swipe carousel, one card and most of a second, the rest by swiping");
   assert.ok(/@media \(max-width:980px\)\{\s*\.home-body\{[^}]*grid-template-areas:"dm" "list" "nb" "orbit" "radar";/.test(css), "below 981px: one column, same order");
 }
 console.log("PASS: section order, one unsplit stream, no sidebar");
@@ -53,7 +56,7 @@ console.log("PASS: hero copy and logo");
   assert.ok(phone && +phone[1] > 70 && +phone[1] < 95, "on a phone one card leads and the next peeks in (a basis between 70% and 95%)");
   assert.ok(/id="dmDots"|dm-dots/.test(html), "the carousel has position dots");
   assert.ok(/\.neighborhoods-rail\{[^}]*overflow-x:auto/.test(flat), "the neighbourhood rail scrolls horizontally");
-  assert.ok(/\.radar-rail\{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;/.test(flat), "the Radar rail swipes on tablet and phone");
+  assert.ok(/\.radar-rail\{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;/.test(flat), "the Radar rail swipes at every width");
 }
 console.log("PASS: Don't Miss, neighbourhood and Radar rails swipe, with the next card peeking on a phone");
 

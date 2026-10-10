@@ -3781,16 +3781,16 @@
   /* ---- the body grid (Homepage V2) ----
      No sidebar. .home-main is display:contents, so every section sits on
      one grid, in this order: Don't Miss, What's Happening (the whole
-     stream, #listView + #listMore), Explore Neighborhoods beside Explore
-     the Detroit Orbit, then On the Radar. Below 981px it is one
-     column in the same order. */
+     stream, #listView + #listMore), Explore Neighborhoods across the whole
+     width, then Explore the Detroit Orbit beside On the Radar. Below 981px
+     it is one column in the same order. */
   .home-body{
-    display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:0 28px;align-items:start;margin-bottom:10px;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);gap:0 28px;align-items:start;margin-bottom:10px;
     grid-template-areas:
       "dm dm"
       "list list"
-      "nb orbit"
-      "radar radar";
+      "nb nb"
+      "orbit radar";
   }
   .home-main{display:contents;}
   .dont-miss{grid-area:dm;}
@@ -3890,8 +3890,9 @@
   /* ---- On the Radar: press coverage of upcoming events. Compact editorial
      cards; each card goes to the article, and names the event it covers. ---- */
   #onRadarCard{min-width:0;margin:26px 0 8px;}
-  .radar-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
-  .radar-card{display:flex;flex-direction:column;min-width:0;background:var(--panel-alt);border:1px solid var(--line);}
+  .radar-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:10px;}
+  .radar-rail::-webkit-scrollbar{display:none;}
+  .radar-card{flex:0 0 calc((100% - 10px) / 1.8);scroll-snap-align:start;display:flex;flex-direction:column;min-width:0;background:var(--panel-alt);border:1px solid var(--line);}
   /* The card is the photograph: the source, headline and date sit on a scrim
      at its foot. With no supported image the plate is Charcoal under the
      Signal scan lines — type only, nothing drawn. */
@@ -3928,9 +3929,7 @@
   .rc-event:hover, .rc-event:focus-visible{color:var(--accent);}
   @media (max-width:980px){
     #onRadarCard{margin:22px 0 8px;}
-    .radar-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:10px;}
-    .radar-rail::-webkit-scrollbar{display:none;}
-    .radar-card{flex:0 0 38%;scroll-snap-align:start;}
+    .radar-card{flex:0 0 38%;}
   }
   @media (max-width:640px){
     .radar-card{flex-basis:80%;}
@@ -3999,18 +3998,16 @@
   .neigh-card:not(.has-photo){background:var(--panel-alt) url('/assets/atmosphere/313-events-scan-lines.svg') center/360px auto;}
   .neigh-card:not(.has-photo) .neigh-plate{background:none;padding-top:14px;}
   /* Tablet: three cards and the next one's edge. */
-  /* Desktop: the rail takes the height of the Orbit board beside it, so the
-     two sections end on one line. */
+  /* Desktop: the section spans the page, so the portrait cards run eight
+     across (six on a narrower desktop) and the rail scrolls for the rest.
+     Orbit and On the Radar share the row beneath, end to end. */
   @media (min-width:981px){
-    .neighborhoods-section, #nearYouCard{align-self:stretch;display:flex;flex-direction:column;}
-    .neighborhoods-section .rail-wrap{flex:1 1 auto;display:flex;flex-direction:column;min-height:240px;}
-    .neighborhoods-rail{flex:1 1 auto;}
-    .neigh-card{aspect-ratio:auto;}
+    .neigh-card{flex-basis:calc((100% - 70px) / 8);}
+    #nearYouCard, #onRadarCard{align-self:stretch;display:flex;flex-direction:column;}
     #nearYouCard .orbit-board{flex:1 1 auto;}
   }
-  /* A narrower desktop shows four cards, so no name is clipped. */
   @media (min-width:981px) and (max-width:1200px){
-    .neigh-card{flex-basis:calc((100% - 30px) / 4);}
+    .neigh-card{flex-basis:calc((100% - 50px) / 6);}
   }
   @media (max-width:980px){
     .neighborhoods-section{margin:22px 0 8px;}
