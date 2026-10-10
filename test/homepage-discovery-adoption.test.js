@@ -243,7 +243,7 @@ async function run() {
     assert.strictEqual((/<span class="orbit-number">([\d,]+)<\/span>/.exec(page.el("nearYouCard").innerHTML) || [])[1], "15", "the Orbit's number: 15 current + upcoming approved events");
     // Neighborhoods: distinct current + upcoming events, most first, ties A–Z.
     const rail = [...page.el("neighborhoodsRail").innerHTML.matchAll(/data-neighborhood="([^"]+)"[\s\S]*?neigh-count">(\d+)</g)].map((m) => m[1] + "=" + m[2]);
-    assert.deepStrictEqual(rail, ["Corktown=2", "Midtown=2", "Downtown=1"], "one per event (Fall Festival runs three days and counts once; Season Exhibition counts for Midtown); the blocked Corktown event is not counted");
+    assert.deepStrictEqual(rail, ["Midtown=2", "Downtown=1", "Corktown=2"], "photographed neighborhoods lead (Midtown, Downtown), the rest follow (Corktown has no approved photo); counts are one per event (Fall Festival runs three days and counts once; Season Exhibition counts for Midtown); the blocked Corktown event is not counted");
     // On the Radar lists the covered upcoming event — not the covered event
     // that is already over today, and never the blocked one.
     const radar = page.el("onRadarCard").innerHTML;

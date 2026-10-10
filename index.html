@@ -3892,26 +3892,36 @@
   #onRadarCard{min-width:0;margin:26px 0 8px;}
   .radar-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
   .radar-card{display:flex;flex-direction:column;min-width:0;background:var(--panel-alt);border:1px solid var(--line);}
-  .rc-link{display:flex;flex-direction:column;min-width:0;flex:1 1 auto;color:inherit;text-decoration:none;}
-  .rc-media{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--panel);border-bottom:1px solid var(--line);}
-  .rc-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+  /* The card is the photograph: the source, headline and date sit on a scrim
+     at its foot. With no supported image the plate is Charcoal under the
+     Signal scan lines — type only, nothing drawn. */
+  .rc-link{position:relative;display:block;min-width:0;aspect-ratio:3/2;overflow:hidden;color:inherit;text-decoration:none;background:var(--panel-alt);}
+  .rc-media{position:absolute;inset:0;display:block;overflow:hidden;}
+  .rc-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
+  .rc-link:hover .rc-media img{transform:scale(1.03);}
   .rc-media-fallback{
-    position:absolute;inset:0;display:flex;align-items:flex-end;padding:10px 12px;
-    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:26px;line-height:.9;
-    text-transform:uppercase;color:var(--ink-dim);
-    background-image:radial-gradient(circle at 100% 0, transparent 40px, var(--line) 40px, var(--line) 41px, transparent 41px),
-                     radial-gradient(circle at 100% 0, transparent 80px, var(--line-soft) 80px, var(--line-soft) 81px, transparent 81px);
+    position:absolute;inset:0;display:block;font-size:0;
+    background:var(--panel-alt) url('/assets/atmosphere/313-events-scan-lines.svg') center/360px auto;
   }
-  .rc-body{display:flex;flex-direction:column;gap:5px;padding:10px 12px 8px;min-width:0;}
-  .rc-src{font-family:var(--font-data);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+  .rc-body{
+    position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;
+    padding:38px 12px 11px;background:linear-gradient(to top,rgba(10,10,10,.96) 0%,rgba(10,10,10,.82) 55%,rgba(10,10,10,0) 100%);
+  }
+  .rc-src{
+    display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 7px 3px 6px;background:rgba(10,10,10,.72);
+    font-family:var(--font-data);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .rc-src::before{content:'';flex:none;width:3px;height:10px;background:var(--ink);}
   .rc-title{
-    font-size:14px;font-weight:600;line-height:1.3;color:var(--ink);
+    font-size:14.5px;font-weight:600;line-height:1.28;color:var(--ink);
     display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;
   }
   .rc-link:hover .rc-title, .rc-link:focus-visible .rc-title{text-decoration:underline;text-underline-offset:3px;}
-  .rc-date{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);}
+  .rc-link:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
+  .rc-date{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   .rc-event{
-    display:block;padding:8px 12px 10px;border-top:1px solid var(--line);margin-top:auto;
+    display:block;padding:8px 12px 9px;border-top:1px solid var(--line);
     font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
@@ -3920,10 +3930,33 @@
     #onRadarCard{margin:22px 0 8px;}
     .radar-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:10px;}
     .radar-rail::-webkit-scrollbar{display:none;}
-    .radar-card{flex:0 0 30%;scroll-snap-align:start;}
+    .radar-card{flex:0 0 38%;scroll-snap-align:start;}
   }
   @media (max-width:640px){
-    .radar-card{flex-basis:78%;}
+    .radar-card{flex-basis:80%;}
+    .rc-title{font-size:15px;}
+  }
+
+  /* ---- shared horizontal rails: the neighborhood and press carousels ----
+     A rail scrolls by touch, wheel, keyboard (arrow keys between its cards,
+     Tab through them) and by the two round buttons, which appear only while
+     there is more to reach in that direction. */
+  .rail-wrap{position:relative;min-width:0;}
+  .rail-btn{
+    position:absolute;top:44%;z-index:3;width:38px;height:38px;margin-top:-19px;padding:0;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    background:rgba(10,10,10,.86);border:1px solid var(--ink);color:var(--ink);
+    font-family:var(--font-data);font-size:16px;line-height:1;
+  }
+  .rail-btn[hidden]{display:none;}
+  .rail-btn:hover{background:var(--ink);color:var(--bg);}
+  .rail-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .rail-prev{left:8px;}
+  .rail-next{right:8px;}
+  @media (max-width:640px){
+    .rail-btn{width:32px;height:32px;margin-top:-16px;font-size:14px;}
+    .rail-prev{left:6px;}
+    .rail-next{right:6px;}
   }
 
   /* ---- Explore neighborhoods: image-led plates (Homepage V2) ----
@@ -3933,51 +3966,61 @@
      photography always wins, and no count is ever invented. */
   .neighborhoods-section{margin:26px 0 8px;min-width:0;}
   .neighborhoods-rail{
-    display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;
-    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    display:flex;gap:10px;overflow-x:auto;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
   }
   .neighborhoods-rail::-webkit-scrollbar{display:none;}
   .neigh-card{
-    flex:0 0 auto;scroll-snap-align:start;width:150px;height:200px;position:relative;overflow:hidden;min-width:0;
+    flex:0 0 calc((100% - 40px) / 5);scroll-snap-align:start;aspect-ratio:13/24;position:relative;overflow:hidden;min-width:0;
     background:var(--panel-alt);border:1px solid var(--line);border-radius:0;
     padding:0;text-align:left;cursor:pointer;font-family:inherit;color:var(--ink);
     display:flex;flex-direction:column;justify-content:flex-end;
   }
   .neigh-card:hover{border-color:var(--ink-soft);}
+  .neigh-card:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
   .neigh-card.active{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);}
-  .neigh-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;margin:0;}
+  .neigh-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;margin:0;transition:transform .5s ease;}
+  .neigh-card:hover .neigh-photo{transform:scale(1.03);}
   .neigh-plate{
-    position:relative;padding:34px 10px 10px;display:flex;flex-direction:column;gap:4px;
-    background:linear-gradient(to top,rgba(10,10,10,.96) 0%,rgba(10,10,10,.78) 52%,rgba(10,10,10,0) 100%);
+    position:relative;padding:44px 10px 11px;display:flex;flex-direction:column;gap:5px;
+    background:linear-gradient(to top,rgba(10,10,10,.96) 0%,rgba(10,10,10,.8) 55%,rgba(10,10,10,0) 100%);
   }
   .neigh-name{
-    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:.95;
-    text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;overflow-wrap:break-word;hyphens:auto;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:.98;
+    text-transform:uppercase;letter-spacing:0;color:var(--ink);margin:0;overflow-wrap:break-word;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
   }
   .neigh-count{font-family:var(--font-data);font-size:11px;font-weight:700;color:var(--ink);}
   .neigh-count-label{font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
   .neigh-count-row{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;}
   .neigh-bearing{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
-  .neigh-card:not(.has-photo) .neigh-plate{background:none;min-height:0;height:100%;justify-content:space-between;padding:12px 10px 10px;}
-  .neigh-card:not(.has-photo) .neigh-name{font-size:19px;}
-  .neigh-card:not(.has-photo) .neigh-count{font-size:22px;display:block;}
-  .neigh-card:not(.has-photo) .neigh-count-row{flex-direction:column;gap:2px;align-items:flex-start;}
-  /* Desktop: the five busiest neighborhoods as one strip beside the Orbit;
-     the rest are a click away ("View all"). The full rail scrolls on
-     narrower screens. */
+  /* No approved photograph: a quiet Charcoal plate under the scan lines,
+     the same type as a photographed card — it never out-shouts one. */
+  .neigh-card:not(.has-photo){background:var(--panel-alt) url('/assets/atmosphere/313-events-scan-lines.svg') center/360px auto;}
+  .neigh-card:not(.has-photo) .neigh-plate{background:none;padding-top:14px;}
+  /* Tablet: three cards and the next one's edge. */
+  /* Desktop: the rail takes the height of the Orbit board beside it, so the
+     two sections end on one line. */
   @media (min-width:981px){
-    .neighborhoods-rail{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible;padding-bottom:0;}
-    .neighborhoods-rail .neigh-card{width:auto;height:288px;}
-    .neighborhoods-rail .neigh-card:nth-child(n+6){display:none;}
+    .neighborhoods-section, #nearYouCard{align-self:stretch;display:flex;flex-direction:column;}
+    .neighborhoods-section .rail-wrap{flex:1 1 auto;display:flex;flex-direction:column;min-height:240px;}
+    .neighborhoods-rail{flex:1 1 auto;}
+    .neigh-card{aspect-ratio:auto;}
+    #nearYouCard .orbit-board{flex:1 1 auto;}
+  }
+  /* A narrower desktop shows four cards, so no name is clipped. */
+  @media (min-width:981px) and (max-width:1200px){
+    .neigh-card{flex-basis:calc((100% - 30px) / 4);}
   }
   @media (max-width:980px){
     .neighborhoods-section{margin:22px 0 8px;}
-    .neigh-card{width:140px;height:190px;}
+    .neigh-card{flex-basis:calc((100% - 30px) / 3.6);aspect-ratio:4/5;}
   }
+  /* Phone: one primary card and the edge of the next. */
   @media (max-width:640px){
-    .neigh-card{width:128px;height:168px;}
-    .neigh-name{font-size:17px;}
-    .neigh-card:not(.has-photo) .neigh-name{font-size:21px;}
+    .neigh-card{flex-basis:64%;aspect-ratio:5/4;}
+    .neigh-plate{padding-top:36px;}
+    .neigh-name{font-size:19px;}
   }
 
   /* calendar page leftovers (month grid classes shared with calendar.html) */
@@ -4597,7 +4640,11 @@
           <p class="sec-sub">Distinct places. Different scenes. Always something going on.</p>
           <a class="sec-link" href="neighborhoods.html">View all &rarr;</a>
         </div>
-        <div class="neighborhoods-rail" id="neighborhoodsRail"></div>
+        <div class="rail-wrap">
+          <div class="neighborhoods-rail rail" id="neighborhoodsRail" role="group" aria-roledescription="carousel" aria-label="Neighborhoods"></div>
+          <button type="button" class="rail-btn rail-prev" aria-label="Previous neighborhoods" hidden>&larr;</button>
+          <button type="button" class="rail-btn rail-next" aria-label="More neighborhoods" hidden>&rarr;</button>
+        </div>
       </section>
 
       <!-- EXPLORE THE DETROIT ORBIT: the geographic entry point
@@ -6523,7 +6570,7 @@ function countEventsWithinMilesOf(origin, miles){
 // Discovery.places), each with its live count. Nothing here is a map tile
 // or a pin carpet; a city is drawn only where the inventory has it.
 function orbitFieldHtml(width){
-  const height = window.matchMedia && window.matchMedia('(max-width:640px)').matches ? 178 : 232;
+  const height = window.matchMedia && window.matchMedia('(max-width:640px)').matches ? 178 : 180;
   const ctx = inventoryCtx();
   const facets = Discovery.facets(EVENTS, Discovery.defaults(), ctx, 'city');
   const cities = new Map(Discovery.places.filter(p => p.type === 'city').map(p => [p.name.toLowerCase(), p]));
@@ -6844,8 +6891,12 @@ function renderNeighborhoodsRail(){
   const section = document.getElementById('neighborhoodsSection');
   const rail = document.getElementById('neighborhoodsRail');
   if(!section || !rail) return;
-  const counts = computeNeighborhoodCounts().slice(0, NEIGHBORHOOD_RAIL_LIMIT);
-  if(!counts.length){ section.style.display = 'none'; rail.innerHTML = ''; return; }
+  // Photographed neighborhoods lead (each in its own busiest-first order),
+  // then the ones without an approved photograph. Presentation only: no
+  // count changes, nothing is hidden, and the rail scrolls to all of them.
+  const ranked = computeNeighborhoodCounts();
+  const counts = ranked.filter(([n]) => NEIGHBORHOOD_PHOTOS[n]).concat(ranked.filter(([n]) => !NEIGHBORHOOD_PHOTOS[n])).slice(0, NEIGHBORHOOD_RAIL_LIMIT);
+  if(!counts.length){ section.style.display = 'none'; rail.innerHTML = ''; updateRails(); return; }
   section.style.display = '';
   rail.innerHTML = counts.map(([name, count])=>{
     const rawPhoto = NEIGHBORHOOD_PHOTOS[name];
@@ -6871,9 +6922,9 @@ function renderNeighborhoodsRail(){
     // 2026-10-04), with the neighborhood's real distance and bearing from
     // downtown printed where Discovery knows its coordinates.
     const vec = neighborhoodVector(name);
-    const bearingHtml = vec ? `<span class="neigh-bearing">${vec.miles < 0.3 ? 'Center' : `${vec.miles < 10 ? vec.miles.toFixed(1) : Math.round(vec.miles)} mi ${compassPoint(vec.bearing)}`}</span>` : '';
+    const bearingHtml = vec && !photo ? `<span class="neigh-bearing">${vec.miles < 0.3 ? 'Center' : `${vec.miles < 10 ? vec.miles.toFixed(1) : Math.round(vec.miles)} mi ${compassPoint(vec.bearing)}`}</span>` : '';
     return `
-    <button type="button" class="neigh-card${photo?' has-photo':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}">
+    <button type="button" class="neigh-card rail-item${photo?' has-photo':''}${state.where.neighborhood===name?' active':''}" data-neighborhood="${escapeHtml(name)}" aria-pressed="${state.where.neighborhood===name}">
       ${photoHtml}
       <span class="neigh-plate">
       <span class="neigh-name">${escapeHtml(name)}</span>
@@ -6885,7 +6936,61 @@ function renderNeighborhoodsRail(){
   rail.querySelectorAll('.neigh-card').forEach(btn=>{
     btn.addEventListener('click', ()=> viewNeighborhood(btn.dataset.neighborhood));
   });
+  updateRails();
 }
+
+// ---- Rails (neighborhoods, On the Radar): the round buttons, arrow keys and
+// the "more this way" state. Cards stay ordinary buttons and links, so Tab,
+// Enter and touch scrolling work with no script at all; this adds the
+// buttons (shown only while there is more to reach) and ←/→ between cards.
+function railState(wrap){
+  const rail = wrap && wrap.querySelector ? wrap.querySelector('.rail') : null;
+  if(!rail) return;
+  const max = (rail.scrollWidth || 0) - (rail.clientWidth || 0);
+  const x = rail.scrollLeft || 0;
+  const prev = wrap.querySelector('.rail-prev'), next = wrap.querySelector('.rail-next');
+  if(prev) prev.hidden = !(max > 4 && x > 4);
+  if(next) next.hidden = !(max > 4 && x < max - 4);
+}
+function updateRails(){
+  if(!document.querySelectorAll) return;
+  document.querySelectorAll('.rail-wrap').forEach(railState);
+}
+function railScroll(wrap, dir){
+  const rail = wrap.querySelector('.rail');
+  if(!rail) return;
+  const item = rail.querySelector('.rail-item, .radar-card');
+  const cardW = item ? item.getBoundingClientRect().width + 10 : rail.clientWidth * .8;
+  // Several cards in view: move by a page, keeping one card in sight; one
+  // card (or two) in view, as on a phone: move by one.
+  const visible = Math.max(1, Math.floor(rail.clientWidth / cardW));
+  const step = Math.max(120, Math.round(cardW * (visible >= 3 ? visible - 1 : 1)));
+  const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  rail.scrollBy({left: dir * step, behavior: calm ? 'auto' : 'smooth'});
+}
+document.addEventListener('click', (e)=>{
+  const b = e.target && e.target.closest ? e.target.closest('.rail-btn') : null;
+  if(!b) return;
+  railScroll(b.closest('.rail-wrap'), b.classList.contains('rail-prev') ? -1 : 1);
+});
+document.addEventListener('scroll', (e)=>{
+  const t = e.target;
+  if(t && t.classList && t.classList.contains('rail')) railState(t.parentElement);
+}, true);
+document.addEventListener('keydown', (e)=>{
+  if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  const t = e.target;
+  const rail = t && t.closest ? t.closest('.rail') : null;
+  if(!rail || !(t.classList.contains('rail-item') || t.classList.contains('rc-link'))) return;
+  const items = [...rail.querySelectorAll('.rail-item, .rc-link')];
+  const next = items[items.indexOf(t) + (e.key === 'ArrowRight' ? 1 : -1)];
+  if(!next) return;
+  e.preventDefault();
+  next.focus();
+  next.scrollIntoView({block:'nearest', inline:'nearest'});
+});
+window.addEventListener('resize', updateRails);
+window.addEventListener('load', updateRails);
 
 // Downtown Detroit, the Orbit's centre of gravity (Discovery.places'
 // "Detroit" city centre). Neighborhood centres come from the same list.
@@ -7935,7 +8040,8 @@ function renderOnRadarCard(){
       <p class="sec-sub">Upcoming events the local press is already covering.</p>
       <a class="sec-link" href="radar.html">View all &rarr;</a>
     </div>
-    <div class="radar-rail">
+    <div class="rail-wrap">
+    <div class="radar-rail rail" role="group" aria-roledescription="carousel" aria-label="On the Radar">
       ${candidates.map(({event, article}) => {
         const src = article.source || 'Local press';
         const articleHref = safeUrl(article.url);
@@ -7944,8 +8050,8 @@ function renderOnRadarCard(){
         const dateLabel = published && !isNaN(published) ? published.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'}) : '';
         const eventDate = new Date(event.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'});
         const media = article.thumbnailUrl && safeUrl(article.thumbnailUrl)
-          ? `<img src="${escapeHtml(safeUrl(article.thumbnailUrl))}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;rc-media-fallback&quot;>${escapeHtml(src)}</span>';">`
-          : `<span class="rc-media-fallback">${escapeHtml(src)}</span>`;
+          ? `<img src="${escapeHtml(safeUrl(article.thumbnailUrl))}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;rc-media-fallback&quot;></span>';">`
+          : `<span class="rc-media-fallback"></span>`;
         const inner = `
           <span class="rc-media">${media}</span>
           <span class="rc-body">
@@ -7962,7 +8068,11 @@ function renderOnRadarCard(){
         return `<article class="radar-card">${main}${evLine}</article>`;
       }).join('')}
     </div>
+    <button type="button" class="rail-btn rail-prev" aria-label="Previous articles" hidden>&larr;</button>
+    <button type="button" class="rail-btn rail-next" aria-label="More articles" hidden>&rarr;</button>
+    </div>
   `;
+  updateRails();
 }
 </script>
 </body>

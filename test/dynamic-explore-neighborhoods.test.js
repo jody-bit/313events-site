@@ -230,7 +230,10 @@ console.log("PASS (11): the rail is ordered by event count, ties by name");
 //     interpolation of the `count` destructured straight from
 //     computeNeighborhoodCounts()'s own [name, count] tuples. ---
 assert.ok(/\$\{count\}/.test(SRC_RENDER_RAIL), "the card's event count must be a dynamic template interpolation of the real computed count, not hardcoded");
-assert.ok(/computeNeighborhoodCounts\(\)\.slice\(0,\s*NEIGHBORHOOD_RAIL_LIMIT\)/.test(SRC_RENDER_RAIL), "renderNeighborhoodsRail must derive its visible cards from computeNeighborhoodCounts(), not a separately maintained list");
+assert.ok(/ranked = computeNeighborhoodCounts\(\)/.test(SRC_RENDER_RAIL) && /\.slice\(0,\s*NEIGHBORHOOD_RAIL_LIMIT\)/.test(SRC_RENDER_RAIL), "renderNeighborhoodsRail must derive its visible cards from computeNeighborhoodCounts(), not a separately maintained list");
+// Homepage V2 presentation rule: photographed neighborhoods lead, the rest
+// follow — a partition of the same computed list, never a different list.
+assert.ok(/ranked\.filter\(\(\[n\]\) => NEIGHBORHOOD_PHOTOS\[n\]\)\.concat\(ranked\.filter\(\(\[n\]\) => !NEIGHBORHOOD_PHOTOS\[n\]\)\)/.test(SRC_RENDER_RAIL), "the rail is the computed list partitioned photographed-first, nothing added or removed");
 console.log("PASS: the rendered event count is a live interpolation of the real computed count, never hardcoded");
 
 // --- Zero qualifying neighborhoods -> the whole section hides itself

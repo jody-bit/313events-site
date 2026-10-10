@@ -76,4 +76,29 @@ console.log("PASS: On the Radar cards link to their articles");
 }
 console.log("PASS: palette — Design System colours only, neutral category tags");
 
+// --- 6. Fidelity pass 2: the neighborhood and press rails ---
+{
+  const nav = body.slice(at('id="neighborhoodsSection"'), at('id="nearYouCard"'));
+  assert.ok(/<div class="neighborhoods-rail rail" id="neighborhoodsRail" role="group" aria-roledescription="carousel" aria-label="Neighborhoods">/.test(nav), "the neighborhood rail is a labelled carousel");
+  assert.ok(/class="rail-btn rail-prev" aria-label="Previous neighborhoods"/.test(nav) && /class="rail-btn rail-next" aria-label="More neighborhoods"/.test(nav), "with real previous / next buttons");
+  const fn = html.slice(html.indexOf("function renderNeighborhoodsRail"), html.indexOf("function renderNeighborhoodsRail") + 5000);
+  assert.ok(/NEIGHBORHOOD_RAIL_LIMIT = 20/.test(html) && !/nth-child\(n\+6\)/.test(css), "every neighborhood (up to the limit) is on the rail; none is hidden on desktop");
+  assert.ok(/neigh-card rail-item/.test(fn) && /aria-pressed=/.test(fn), "each card is a focusable button that says whether it is selected");
+  assert.ok(/\.neigh-card\{[^}]*flex:0 0 calc\(\(100% - 40px\) \/ 5\)/.test(flat), "desktop: five cards in view, the rest by scrolling");
+  assert.ok(/@media \(max-width:980px\)\s*\{\s*\.neighborhoods-section\{[^}]*\}\s*\.neigh-card\{flex-basis:calc\(\(100% - 30px\) \/ 3\.6\)/.test(flat), "tablet: three cards and the next one's edge");
+  assert.ok(/\.neigh-card\{flex-basis:64%/.test(flat), "phone: one card and the edge of the next");
+  assert.ok(/\.neigh-card:not\(\.has-photo\)\{background:var\(--panel-alt\) url\('\/assets\/atmosphere\/313-events-scan-lines\.svg'\)/.test(flat) && fs.existsSync(`${REPO_DIR}/assets/atmosphere/313-events-scan-lines.svg`), "no approved photo: a quiet Charcoal plate under the existing scan-line asset");
+
+  const radar = html.slice(html.indexOf("function renderOnRadarCard"), html.indexOf("function renderOnRadarCard") + 7000);
+  assert.ok(/<div class="radar-rail rail" role="group" aria-roledescription="carousel" aria-label="On the Radar">/.test(radar) && /class="rail-btn rail-next" aria-label="More articles"/.test(radar), "the press rail is a labelled carousel with buttons");
+  assert.ok(/\.rc-link\{position:relative;[^}]*aspect-ratio:3\/2/.test(flat) && /\.rc-body\{[^}]*position:absolute;[^}]*bottom:0/.test(flat), "image-led: the card is the photograph, the source, headline and date sit on a scrim");
+  assert.ok(/<span class="rc-media-fallback"><\/span>/.test(radar) && !/radial-gradient\(circle at 100% 0/.test(css), "an article with no supported image gets the quiet scan-line plate, no drawn graphic");
+  assert.ok(/article\.thumbnailUrl && safeUrl\(article\.thumbnailUrl\)/.test(radar) && !/event\.image/.test(radar), "only the article's own thumbnail is ever used — never the covered event's picture");
+
+  // Rail behaviour (buttons, arrow keys, "more this way" state).
+  assert.ok(/function railState\(wrap\)/.test(html) && /document\.addEventListener\('keydown'/.test(html) && /e\.key !== 'ArrowRight' && e\.key !== 'ArrowLeft'/.test(html), "buttons and arrow keys are wired");
+  assert.ok(/\.rail-btn\[hidden\]\{display:none;\}/.test(flat), "a button is out of the way when there is nothing in that direction");
+}
+console.log("PASS: neighborhood and press rails — carousels with buttons, 5 / 3.6 / 1.5 cards in view, photo-led, quiet fallbacks, article images only");
+
 console.log("\nAll Homepage V2 structure tests passed.");
