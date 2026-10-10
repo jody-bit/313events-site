@@ -837,6 +837,17 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Acceptance Criteria (proposed):** a bounded, approved schema addition for state/province (e.g. `venues.state`, plus the matching event-level raw field), exposed through the SZ-01 public boundary (grants checked), then a backfill from first-party sources. Needs Product Owner approval; not part of PR #54.
 - **Not tracked here:** individual missing ZIPs or addresses (e.g. Glenn Barr) are ordinary data corrections through the existing Needs Follow-up / venue-knowledge flow.
 
+### DEBT-014 — On the Radar article images: ingestion keeps the smallest image the feed offers
+
+- **Type:** DEBT (editorial ingestion) · **Status:** BACKLOG (recorded 2026-10-10) · **Priority:** P2
+- **Source:** Homepage V2 final verification against production data (2026-10-10). On the Radar's image-led cards showed two soft, awkwardly cropped thumbnails: a Grosse Pointe News article and a C&G Newspapers article, both stored as 150x150 WordPress renditions (`...-150x150.jpg`) and stretched across a 3:2 card.
+- **Cause:** `extractThumbnail()` in `api/cron-editorial.js` takes `media:thumbnail` first, then `media:content`, then an image `enclosure`, and stores the first it finds. WordPress feeds publish a 150px `media:thumbnail`, so the smallest rendition wins even when the same item carries a larger one. Production on 2026-10-10: 65 of 131 articles have any thumbnail; the WDET ones (450x450) look right, two of the 150px ones did not.
+- **Verified for the two examples:** each article page's own lead image (`og:image` / `twitter:image`) is a larger version of the same image file as its stored thumbnail (Grosse Pointe News 800x600; C&G original 1500x1374). So a larger image exists and is the article's own.
+- **Acceptance Criteria (proposed):** at ingestion, choose the best available image for the article by an explicit rule (for example: prefer the largest declared `media:content`, then the article page's `og:image`, then `media:thumbnail`; reject anything under a minimum width; cap the width so a card never loads a multi-megabyte original), and keep the verified relationship to the article (same publisher host and the article's own lead image). Records stay source-attributed; nothing is hand-listed per article. Decide separately whether existing rows are re-read (a one-time backfill) or only new articles benefit. Tests cover each feed shape (`media:thumbnail` only, `media:content` present, no image).
+- **Explicitly not this item:** per-article overrides or allow-lists in the page (rejected 2026-10-10 as temporary), and any change to the On the Radar card design.
+- **Implementation Notes:** none yet. Touches ingestion, so it needs its own approval before work starts.
+- **Product Decisions Required:** the minimum acceptable image width, and whether to backfill existing articles.
+
 ---
 
 ## Discovery / decisions needed
