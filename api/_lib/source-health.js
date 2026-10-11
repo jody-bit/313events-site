@@ -75,6 +75,7 @@ const ATTRIBUTION = Object.freeze([
   { slug: "lagerhouse", prefix: "lagerhouse-" },
   { slug: "dossin", prefix: "dossin-" },
   { slug: "bagleycommunity", prefix: "bagleycc-" },
+  { slug: "antonartcenter", prefix: "aac-" },
   { slug: "oldmiami", prefix: "oldmiami-" },
   { slug: "wdet", prefix: "wdet-" },
   { slug: "playgrounddetroit", prefix: "playgrounddetroit-" },

@@ -109,6 +109,11 @@ const SOURCE_SLUGS = Object.freeze([
   // ruled out after direct verification (three: UMich, MSU, UToledo) or
   // left unconfirmed (one: Wayne State).
   { slug: "localist", file: "cron-localist.js", label: "Localist (multi-tenant campus/institutional adapter)" },
+  // Added 2026-10-11 -- Anton Art Center (theartcenter.org), Mount Clemens.
+  // A normal ingestion connector, born with source_runs instrumentation.
+  // Two public sources behind one slug: the /exhibits blog posts and the
+  // Events Calendar widget's public JSON -- see api/cron-antonartcenter.js.
+  { slug: "antonartcenter", file: "cron-antonartcenter.js", label: "Anton Art Center" },
 ]);
 
 // Throws at load time (not silently, since this is a static list a human

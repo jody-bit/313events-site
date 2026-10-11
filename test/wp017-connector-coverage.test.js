@@ -35,6 +35,7 @@ const API_DIR = path.join(REPO_DIR, "api");
 // (no `on_conflict=external_id` events upsert; cron-enrichment.js PATCHes
 // existing rows, it never upserts new ones).
 const EXPECTED_CONNECTORS = [
+  "cron-antonartcenter.js",
   "cron-bagleycommunity.js",
   "cron-belle-isle-nature-center.js",
   "cron-bigtimebingo.js",

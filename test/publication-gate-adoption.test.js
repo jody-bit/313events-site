@@ -28,7 +28,7 @@ const KNOWN_UNGATED = [
   "cron-redford-theatre.js", "cron-ticketmaster.js", "cron-trinosophes.js", "cron-visitdetroit.js", "cron-wdet.js",
 ];
 // Gated so far (informational; asserted below so it is not just the complement).
-const GATED = ["cron-dossin.js"];
+const GATED = ["cron-antonartcenter.js", "cron-dossin.js"];
 
 const writers = fs.readdirSync(path.join(root, "api")).filter((f) => /^cron-.*\.js$/.test(f))
   .filter((f) => /upsertEventRows|event-upsert/.test(strip(read("api/" + f))));
