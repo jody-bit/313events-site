@@ -145,20 +145,44 @@
   },
   {
    "id": "wiards-orchards",
-   "name": "Wiard's Orchards",
+   "name": "Wiard’s Orchards",
    "city": "Ypsilanti",
    "region": "MI",
    "categories": [
-    "farm-experiences",
-    "fall-festivals"
+    "cider-donuts",
+    "farm-experiences"
    ],
-   "featured": true,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "Orchard in Ypsilanti known for its fall Country Fair.",
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard, cider mill and country store in Ypsilanti selling apples, cider, pumpkins and donuts.",
    "website": "https://www.wiards.com",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #41. Axios (Aug 31 2026) and Ann Arbor-area listings describe the Country Fair at 5565 Merritt Rd. 2026 schedule not confirmed.",
+     "url": "https://www.wiards.com",
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 5565 Merritt Rd, Ypsilanti, Michigan 48197. The home page says \"Apples, cider, pumpkins, donuts and so much more!\" and \"Cider mill season is here!\". The Country Fair attractions (corn maze, slide, wagon rides, petting farm) each read Temporarily Closed on the fetched page, so no Country Fair attraction is claimed. A countdown banner shows a September 8, 2026 date that has passed.",
+     "url": "https://www.wiards.com",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes an orchard, cider mill and country store selling apples, cider, pumpkins and donuts, with 2026 content.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
    "image": {
-    "src": "/assets/seasonal/fall-card-4.webp",
+    "src": "/assets/seasonal/fall-card-8.webp",
     "alternates": [
+     "/assets/seasonal/fall-card-2.webp",
      "/assets/seasonal/fall-card-5.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
@@ -166,30 +190,677 @@
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
-    "remote": {
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-8.webp",
+     "bytes": 22172,
+     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "remoteParked": {
      "src": "https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg",
      "sourcePage": "https://www.wiards.com/orchard-info/wiards-history",
      "credit": "Wiard's Orchards",
      "acceptedBy": "Jody Tyree (owner)",
      "acceptedAt": "2026-10-11",
      "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
-     "note": "Official site photo, 602x452 (small): cider-mill cart with fall flowers."
+     "note": "Official site photo, 602x452 (small): cider-mill cart with fall flowers.",
+     "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
     }
    },
-   "evidence": [
-    {
-     "level": "inventory+search",
-     "note": "Inventory #41. Axios (Aug 31 2026) and Ann Arbor-area listings describe the Country Fair at 5565 Merritt Rd. 2026 schedule not confirmed.",
-     "url": "https://www.wiards.com",
-     "websiteChecked": false
-    }
-   ],
    "migration": {
     "legacyStatus": "published",
     "legacyBranch": "feature/halloween-completion",
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "big-red-orchard",
+   "name": "Big Red Orchard",
+   "city": "Washington",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Family-owned cider mill and u-pick orchard offering fresh apples, cider and donuts.",
+   "website": "https://www.bigredorchard.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #6 (Both, Washington Township, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 4900 32 Mile Road, Washington, MI 48095. Describes a family-owned cider mill offering fresh apples, cider and donuts; the page title includes U-Pick. A banner reads \"Orchard Season 2026!\". The footer and meta description still carry 2023 text.",
+     "url": "https://www.bigredorchard.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a cider mill and u-pick orchard (apples, cider, donuts) with a 2026 season banner.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-6.webp",
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-1.webp",
+     "bytes": 35358,
+     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "diehls-orchard-and-cider-mill",
+   "name": "Diehl’s Orchard & Cider Mill",
+   "city": "Holly",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze. The site says there is no u-pick apple picking.",
+   "website": "https://www.diehlsorchard.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #13 (Both, Holly, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 1479 Ranch Rd., Holly, MI 48442. Page shows \"CIDERFEST 2026\" and describes hot, cold and slushy cider and hot donuts, a pumpkin patch and a corn maze. It states there is no U-Pick for apples.",
+     "url": "https://www.diehlsorchard.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a cider mill with donuts, a pumpkin patch and a corn maze, with a 2026 event on the page.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+    "source": "313.events owner photo archive, captured 2026-10-09",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+     "bytes": 347036,
+     "sha256": "58653958c88d94f306870ba602e17255fe26381c0b23f5b6305ece52b34651f9",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-b111acba",
+     "reviewRef": "R2-D2832",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
+    "alternates": [
+     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
+   }
+  },
+  {
+   "id": "forever-acres-farm",
+   "name": "Forever Acres Farm & Orchard",
+   "city": "Britton",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Farm and orchard in Britton with u-pick apples and an apple cider slushy.",
+   "website": "https://www.foreveracresfarm.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #15 (Orchard, Britton, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 278 W. Chicago Blvd., Britton, Michigan. Page states a fall season of September 5 through October 31 and weekend hours (not shown on the card). Some varieties are listed out of stock or limited; the page advises checking before visiting. No donuts, pumpkins or hayrides are mentioned.",
+     "url": "https://www.foreveracresfarm.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a u-pick apple orchard with a 2026 fall season.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-8.webp",
+     "/assets/seasonal/fall-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "franklin-cider-mill",
+   "name": "Franklin Cider Mill",
+   "city": "Bloomfield Hills",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
+   "website": "https://www.franklincidermill.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #16 (Cider/orchard, Bloomfield Hills, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 7450 Franklin Rd, Bloomfield Hills, MI 48301. Page title reads \"Historic Cider Mill in Michigan Since 1837\"; it lists fresh cider, warm donuts and a historic water wheel, an opening of Saturday, September 5, 2026 and an end of season of Sunday, November 29, 2026 (dates not shown on the card).",
+     "url": "https://www.franklincidermill.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a historic cider mill selling cider and donuts, with 2026 season dates.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-6.webp",
+     "/assets/seasonal/fall-card-1.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-3.webp",
+     "bytes": 30910,
+     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "long-family-orchard-and-farm",
+   "name": "Long Family Orchard & Farm",
+   "city": "Commerce Township",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and farm in Commerce Township with fresh-pressed cider, hot donuts, u-pick pumpkins and a corn maze.",
+   "website": "https://www.longsorchard.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #22 (Both, Commerce Township, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 1540 E Commerce Rd, Commerce Township. Page lists fresh-pressed cider, hot donuts daily, u-pick pumpkins and a corn maze, and shows \"1876-2026 150 Years\".",
+     "url": "https://www.longsorchard.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a cider mill, pumpkin patch and corn maze, with a 2026 anniversary banner.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-4.webp",
+     "/assets/seasonal/fall-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-7.webp",
+     "bytes": 38066,
+     "sha256": "1b07ab5449cbf9029bdfb97b8620b21f58fb5bbab1210b891d23d246e484ce77",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "plymouth-orchards-and-cider-mill",
+   "name": "Plymouth Orchards & Cider Mill",
+   "city": "Plymouth",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill in Plymouth with award-winning apple cider, fresh donuts, wagon rides and pumpkins.",
+   "website": "https://www.plymouthorchards.com",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #30 (Both, Plymouth, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Cider mill address given as 10685 Warren Rd, Plymouth, MI 48170. Page lists award-winning apple cider, fresh donuts, wagon rides and pick-a-pumpkin, and shows the cider mill open 9/5/2026 to 11/8/26 (dates not shown on the card). A separate Red Shed Market at 10260 Ann Arbor Road is listed on the same site and is not part of this record.",
+     "url": "https://www.plymouthorchards.com",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a cider mill with donuts, wagon rides and pumpkins, with 2026 cider-mill dates.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-4.webp",
+     "/assets/seasonal/fall-card-1.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "porters-orchard",
+   "name": "Porter’s Orchard Farm Market & Cider Mill",
+   "city": "Goodrich",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts.",
+   "website": "https://portersorchard.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #31 (Both, Goodrich, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 12060 Hegel Road, Goodrich, MI 48438. Page reads \"We are OPEN for the Season\" and lists fresh-picked apples, cider and donuts and an October 31, 2026 event. The site also mentions a separate market stall in Flint, which is not part of this record.",
+     "url": "https://portersorchard.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes an orchard and cider mill with cider and donuts, open for the 2026 season.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-8.webp",
+     "bytes": 22172,
+     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "rochester-cider-mill",
+   "name": "Rochester Cider Mill",
+   "city": "Rochester",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Cider mill in Rochester selling fresh-pressed cider, donuts, pies, apples, honey and maple syrup.",
+   "website": "https://rochestercidermill.com",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #33 (Cider/orchard, Rochester, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 5125 N. Rochester Rd., Rochester, MI 48306. Page lists fresh-pressed cider, donuts, pies, apples, honey and maple syrup, and states the last day of the season is December 31, 2026 (not shown on the card).",
+     "url": "https://rochestercidermill.com",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a cider mill selling cider and donuts, with a 2026 end-of-season date.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-6.webp",
+     "bytes": 37500,
+     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "spicer-orchards",
+   "name": "Spicer Orchards",
+   "city": "Fenton",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard in Fenton with a corn maze.",
+   "website": "https://www.spicerorchards.com",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #35 (Both, Fenton, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 10411 Clyde Rd., Fenton, MI 48430. Page announces \"Corn Maze Now Open!\" and \"New in 2026!!\". The same property also advertises a winery, which is not part of this record.",
+     "url": "https://www.spicerorchards.com",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page advertises a corn maze at the orchard with 2026 content.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-8.webp",
+     "/assets/seasonal/fall-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-2.webp",
+     "bytes": 27886,
+     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "wasem-fruit-farm",
+   "name": "Wasem Fruit Farm",
+   "city": "Milan",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Fruit farm in Milan with pick-your-own apples, pumpkins and tart cherries.",
+   "website": "https://www.wasemfruitfarm.com",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #39 (Both, Milan, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 6580 Judd Road, Milan, Michigan 48160. Page lists pick-your-own apples, pumpkins and tart cherries and carries a \"Fall 2026 Hours\" section (hours not shown on the card).",
+     "url": "https://www.wasemfruitfarm.com",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes pick-your-own apples and pumpkins, with 2026 fall hours.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-5.webp",
+     "/assets/seasonal/fall-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-4.webp",
+     "bytes": 32410,
+     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
    }
   }
  ],
@@ -2199,41 +2870,72 @@
    "city": "Shelby Township",
    "region": "MI",
    "categories": [
-    "waterfronts",
     "trails-woods"
    ],
-   "featured": true,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "Huron-Clinton Metropark with lake views and wooded trails.",
-   "website": "https://www.metroparks.com",
-   "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
-    "alternates": [
-     "/assets/seasonal/fall-color-card-3.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "remote": {
-     "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1",
-     "sourcePage": "https://www.tripadvisor.com/Attraction_Review-g42695-d560594-Reviews-or10-Stony_Creek_Metropark-Shelby_Township_Michigan.html",
-     "credit": "Tripadvisor traveler photo",
-     "acceptedBy": "Jody Tyree (owner)",
-     "acceptedAt": "2026-10-11",
-     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
-     "note": "Traveler-uploaded photo from the park's Tripadvisor page."
-    }
-   },
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark in Shelby Township with wooded trails, forest edge, broad fields and small wetlands. Its trail description mentions spectacular fall views.",
+   "website": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
    "evidence": [
     {
      "level": "inventory+search",
      "note": "Fall-color inventory. Metro Parent and Macomb Now quote Metroparks marketing calling it a popular fall-color destination.",
      "url": "https://www.metroparks.com",
      "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 4300 Main Park Road, Shelby Township, MI 48316. The page describes a panorama of forest edge, broad fields, dense woods and small wetlands, and trails with \"spectacular fall views\". It does not use the words autumn, foliage, fall color or leaves. A $10 daily vehicle pass and closure notices are shown (not displayed on the card).",
+     "url": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
     }
    ],
+   "relevance": {
+    "confirmed": true,
+    "note": "Weaker basis: the official trail description mentions \"spectacular fall views\" but nothing about leaf color. The page otherwise describes woods and trails.",
+    "basis": "indirect-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-3.webp",
+     "bytes": 42168,
+     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "remoteParked": {
+     "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1",
+     "sourcePage": "https://www.tripadvisor.com/Attraction_Review-g42695-d560594-Reviews-or10-Stony_Creek_Metropark-Shelby_Township_Michigan.html",
+     "credit": "Tripadvisor traveler photo",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Traveler-uploaded photo from the park's Tripadvisor page.",
+     "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
+    }
+   },
    "migration": {
     "legacyStatus": "published",
     "legacyBranch": "feature/halloween-completion",
@@ -2348,6 +3050,265 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "indian-springs-metropark",
+   "name": "Indian Springs Metropark",
+   "city": "White Lake",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "parks-gardens"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark in White Lake with trails through prairies, woodlands, wetlands and meadows. Its official page mentions red, orange and yellow leaves in the fall.",
+   "website": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #— (Woodland Trail / swamp forest, White Lake, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 5200 Indian Trail, White Lake, MI 48386. The page describes trails through prairies, woodlands, wetlands and meadows and mentions \"beautiful red, orange and yellow leaves in the fall\". A daily or annual vehicle pass and a conditions-and-closures notice are shown (not displayed on the card).",
+     "url": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page itself mentions red, orange and yellow leaves in the fall.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-3.webp",
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-4.webp",
+     "bytes": 46450,
+     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "cranbrook-gardens-and-grounds",
+   "name": "Cranbrook House and Gardens",
+   "city": "Bloomfield Hills",
+   "region": "MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Gardens in Bloomfield Hills with more than 15 gardens around Cranbrook House. Its official page lists fall colors among the seasonal highlights.",
+   "website": "https://housegardens.cranbrook.edu/explore/gardens",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #— (Historic landscape; access check, Bloomfield Hills, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Cranbrook House and Gardens page read 2026-10-11 (two reads). Street address given as 380 Lone Pine Road, Bloomfield Hills, MI 48304 (a PO Box with a different ZIP is also shown). The page says \"From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover\" and notes over 15 gardens around Cranbrook House. Fall hours and a give-as-you-wish admission are shown (not displayed on the card). The site's own name is Cranbrook House and Gardens; the inventory called this row Cranbrook Gardens & grounds.",
+     "url": "https://housegardens.cranbrook.edu/explore/gardens",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page itself names fall colors among the gardens' seasonal highlights.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-8.webp",
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "highland-state-recreation-area",
+   "name": "Highland Recreation Area",
+   "city": "White Lake",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "State recreation area whose official page says it holds all of southern Michigan's principal forest types in one small area.",
+   "website": "https://www.michigan.gov/recsearch/parks/highland",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #— (Rolling woodland / hiking, Highland, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Michigan DNR page read 2026-10-11 (two reads). Address given as 5200 Highland Road, White Lake, Michigan 48383 (the inventory listed this row as Highland, MI). The site calls it Highland Recreation Area and says the park has all of southern Michigan's principal forest types within one small area. A Recreation Passport is required for vehicle entry (not displayed on the card).",
+     "url": "https://www.michigan.gov/recsearch/parks/highland",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "Weaker basis: the official page does not discuss fall color in prose. Only a photo caption mentions fall leaves. The owner's own photo of 2026-10-09 shows early fall color on a trail there, which is not official evidence.",
+    "basis": "caption-only",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
+    "source": "313.events owner photo archive, captured 2026-10-09",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
+     "bytes": 250460,
+     "sha256": "8282c2511e4faedea0949a5cb8da4a47bb7ecfb1449ab9b76ce4873826cf84f6",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-7ad1f6a5",
+     "reviewRef": "R2-D2840",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
+    "alternates": [
+     "/assets/seasonal/fall-color-card-3.webp",
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
+   }
+  },
+  {
+   "id": "holly-state-recreation-area",
+   "name": "Holly State Recreation Area",
+   "city": "Holly",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "waterfronts"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "State recreation area in Holly with more than 8,000 acres of rolling woodlands and open fields.",
+   "website": "https://www.michigan.gov/recsearch/parks/holly",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #— (Woodland lakes / trails, Holly, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Michigan DNR page read 2026-10-11 (two reads). Address given as 8100 Grange Hall Road, Holly, Michigan 48442. The page describes more than 8,000 acres of rolling woodlands and open fields. It notes a boating access parking lot and part of a park road closed for paving and that the floating water park is closed for the 2026 season (neither shown on the card). A Recreation Passport is required.",
+     "url": "https://www.michigan.gov/recsearch/parks/holly",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "Weaker basis: the official page does not discuss fall color in prose. Only photo captions mention changing leaf color.",
+    "basis": "caption-only",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-6.webp",
+     "bytes": 59288,
+     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
    }
   }
  ]

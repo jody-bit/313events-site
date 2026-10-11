@@ -20,6 +20,10 @@
  *        b. owner photo: the same `image.acquired` record (sha256 computed from the actual file) plus `image.ownerPhoto`
  *           (see 4b);
  *        c. linked image: a complete `image.remote` (owner decision 2026-10-11; NOT a licensed file);
+ *        d. labelled illustration: `illustrative: true`, `image.acquired` (hashed local card file, `image.src ===
+ *           image.acquired.file`), `image.illustration` {statement, suppliedBy, recordedBy, recordedAt}, and NO
+ *           `image.remote` and NO `image.ownerPhoto`. Shown with the persistent "Illustrative image" badge; it is never
+ *           documentary photography of the destination;
  *   4. image rights, by exactly one of these routes:
  *        a. third-party license: `image.license`, `image.licenseUrl` (https), `image.credit`, `image.rightsVerifiedAt`.
  *           This is for Creative Commons and similar licenses. A license URL is never invented;
@@ -28,6 +32,8 @@
  *           license and carries no license URL. The original photo identifiers (file name, Apple Photos id) stay in the
  *           private photo library and are looked up by photoId; scripts/build-seasonal.js and the tests verify that;
  *        c. linked image: recorded owner acceptance of the copyright risk. That is NOT confirmed usage rights.
+ *        d. owner-supplied illustration: the recorded `image.illustration` statement (the card was supplied by the
+ *           owner; the generation tool and its terms are not recorded). It says nothing about any real photograph.
  *   5. explicit publication approval: `approval` {by, at}. Only the approving person adds this; nothing in this repo
  *      writes it. The owner-photo route never satisfies item 5.
  * `status` is the ledger state the editor declares. The five states, derived by readiness():
@@ -163,11 +169,19 @@
     var rm = img.remote;
     var remote = !!(rm && HTTPS.test(rm.src || "") && HTTPS.test(rm.sourcePage || "") && has(rm.credit) && has(rm.acceptedBy) && DATE.test(rm.acceptedAt || "") && has(rm.riskNote) &&
       has(img.src) && /^\/assets\//.test(img.src));
-    var imageRoute = remote && !file ? "linked" : (file && owner ? "owner-photo" : (file ? "acquired-file" : null));
-    var rightsRoute = licensed ? "third-party-license" : (owner ? "owner-authorization" : (remote ? "linked-risk-acceptance" : null));
-    var acquired = file || remote;
-    var rights = licensed || owner || remote;
-    var imageStarted = !!rm || !!op || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
+    // Labelled illustration route (owner strategy 2026-10-11): a supplied generated card shown as an editorial
+    // illustration, never as documentary photography. It needs a hashed local file, a recorded statement of who supplied it
+    // and under what label, and NO linked image and NO owner-photo claim. The renderer always shows the persistent
+    // "Illustrative image" badge for it. It establishes items 3 and 4 only; it never approves publication.
+    var il = img.illustration;
+    var illus = !!(img.illustrative === true && !rm && !op && il && has(il.statement) && has(il.suppliedBy) && has(il.recordedBy) && DATE.test(il.recordedAt || "") &&
+      acq && has(acq.file) && img.src === acq.file && /^\/assets\/seasonal\/[a-z-]+-card-\d+\.webp$/.test(img.src) && acq.bytes > 0 &&
+      SHA.test(acq.sha256 || "") && acq.width > 0 && acq.height > 0 && DATE.test(acq.acquiredAt || ""));
+    var imageRoute = remote && !file ? "linked" : (file && owner ? "owner-photo" : (file ? "acquired-file" : (illus ? "illustration" : null)));
+    var rightsRoute = illus ? "owner-supplied-illustration" : (licensed ? "third-party-license" : (owner ? "owner-authorization" : (remote ? "linked-risk-acceptance" : null)));
+    var acquired = file || remote || illus;
+    var rights = illus || licensed || owner || remote;
+    var imageStarted = !!rm || !!op || !!il || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
     var approval = !!(ap && has(ap.by) && DATE.test(ap.at || ""));
     return { official: official, relevance: relevance, identity: identity, acquired: acquired, rights: rights,
       imageStarted: imageStarted, approval: approval, imageRoute: imageRoute, rightsRoute: rightsRoute };

@@ -1,7 +1,11 @@
 {
  "generated": "2026-10-11",
  "collection": "fall-color",
- "count": 4,
+ "count": 8,
+ "launch": {
+  "batch": "launch-1",
+  "proposed": 5
+ },
  "note": "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Defaults follow the record (owner photo, then linked image, then generated card). A linked image's recorded risk acceptance is not confirmed usage rights.",
  "inventory_rows": 129,
  "inventory_without_record": [
@@ -126,13 +130,6 @@
   },
   {
    "no": "",
-   "name": "Cranbrook Gardens & grounds",
-   "location": "Bloomfield Hills, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 2
-  },
-  {
-   "no": "",
    "name": "Lakeshore Park",
    "location": "Novi, MI",
    "status": "HOLD_UNVERIFIED",
@@ -156,13 +153,6 @@
    "no": "",
    "name": "Red Oaks Nature Center",
    "location": "Madison Heights, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "",
-   "name": "Indian Springs Metropark",
-   "location": "White Lake, MI",
    "status": "HOLD_UNVERIFIED",
    "owner_photos": 0
   },
@@ -233,20 +223,6 @@
    "no": "",
    "name": "Proud Lake State Recreation Area",
    "location": "Commerce Township, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "",
-   "name": "Highland State Recreation Area",
-   "location": "Highland, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 4
-  },
-  {
-   "no": "",
-   "name": "Holly State Recreation Area",
-   "location": "Holly, MI",
    "status": "HOLD_UNVERIFIED",
    "owner_photos": 0
   },
@@ -888,6 +864,7 @@
    "name": "Kensington Metropark",
    "city": "Milford",
    "region": "MI",
+   "inventory_location": "Milford, MI",
    "categories": [
     "trails-woods",
     "parks-gardens"
@@ -933,6 +910,7 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": null,
    "manifest": {
     "destination_id": "kensington-metropark",
     "destination_name": "Kensington Metropark",
@@ -1003,43 +981,40 @@
    "name": "Stony Creek Metropark",
    "city": "Shelby Township",
    "region": "MI",
+   "inventory_location": "Shelby Township, MI",
    "categories": [
-    "waterfronts",
     "trails-woods"
    ],
-   "summary": "Huron-Clinton Metropark with lake views and wooded trails.",
+   "summary": "Huron-Clinton Metropark in Shelby Township with wooded trails, forest edge, broad fields and small wetlands. Its trail description mentions spectacular fall views.",
    "summary_source": "published",
-   "website": "https://www.metroparks.com",
-   "official_site": "https://www.metroparks.com",
+   "website": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
+   "official_site": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
    "dates_hours": null,
    "verification": {
     "status": "partial",
-    "official_site_checked": false,
-    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
      "approval": false
     },
-    "image_route": "linked",
-    "rights_route": "linked-risk-acceptance",
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
-     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
-     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -1048,20 +1023,64 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
    "manifest": {
     "destination_id": "stony-creek-metropark",
     "destination_name": "Stony Creek Metropark",
-    "primary_image": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1",
-    "primary_image_type": "linked_third_party",
-    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
     "alternative_images": [
-     "gen-fall-color-2",
-     "gen-fall-color-3"
+     "gen-fall-color-1",
+     "gen-fall-color-4",
+     "link-stony-creek-metropark"
     ],
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
     {
      "id": "link-stony-creek-metropark",
      "type": "linked_third_party",
@@ -1072,6 +1091,7 @@
      "illustrative": false,
      "depicts_actual_destination": false,
      "warnings": [
+      "Parked: the launch record does not use this linked image. Kept for reference only; no rights-holder permission is on file.",
       "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
       "Not from the destination's own site",
       "Traveler-uploaded photo from the park's Tripadvisor page."
@@ -1085,31 +1105,8 @@
       "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
      },
      "load_check": null,
-     "catalogue_note": null
-    },
-    {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
-     "source": "313.events supplied collection graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
-     "warnings": [],
-     "image_kind": "generated-artwork"
-    },
-    {
-     "id": "gen-fall-color-3",
-     "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
-     "source": "313.events supplied collection graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
-     "warnings": [],
-     "image_kind": "generated-artwork"
+     "catalogue_note": null,
+     "parked": true
     }
    ]
   },
@@ -1119,6 +1116,7 @@
    "name": "Hudson Mills Metropark",
    "city": "Dexter",
    "region": "MI",
+   "inventory_location": "Dexter, MI",
    "categories": [
     "trails-woods",
     "waterfronts"
@@ -1164,6 +1162,7 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": null,
    "manifest": {
     "destination_id": "hudson-mills-metropark",
     "destination_name": "Hudson Mills Metropark",
@@ -1235,6 +1234,7 @@
    "name": "Nichols Arboretum",
    "city": "Ann Arbor",
    "region": "MI",
+   "inventory_location": "Ann Arbor, MI",
    "categories": [
     "parks-gardens",
     "trails-woods"
@@ -1279,6 +1279,7 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": null,
    "manifest": {
     "destination_id": "nichols-arboretum",
     "destination_name": "Nichols Arboretum",
@@ -1311,6 +1312,507 @@
      "id": "gen-fall-color-4",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "indian-springs-metropark",
+   "inventory_no": "—",
+   "name": "Indian Springs Metropark",
+   "city": "White Lake",
+   "region": "MI",
+   "inventory_location": "White Lake, MI",
+   "categories": [
+    "trails-woods",
+    "parks-gardens"
+   ],
+   "summary": "Huron-Clinton Metropark in White Lake with trails through prairies, woodlands, wetlands and meadows. Its official page mentions red, orange and yellow leaves in the fall.",
+   "summary_source": "inventory_note",
+   "website": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
+   "official_site": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": true,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "indian-springs-metropark",
+    "destination_name": "Indian Springs Metropark",
+    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "alternative_images": [
+     "gen-fall-color-3",
+     "gen-fall-color-6"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "cranbrook-gardens-and-grounds",
+   "inventory_no": "—",
+   "name": "Cranbrook House and Gardens",
+   "city": "Bloomfield Hills",
+   "region": "MI",
+   "inventory_location": "Bloomfield Hills, MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "summary": "Gardens in Bloomfield Hills with more than 15 gardens around Cranbrook House. Its official page lists fall colors among the seasonal highlights.",
+   "summary_source": "inventory_note",
+   "website": "https://housegardens.cranbrook.edu/explore/gardens",
+   "official_site": "https://housegardens.cranbrook.edu/explore/gardens",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": [
+     "public access rules to confirm"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": true,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "cranbrook-gardens-and-grounds",
+    "destination_name": "Cranbrook House and Gardens",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "alternative_images": [
+     "gen-fall-color-8",
+     "gen-fall-color-6",
+     "313p-c9b53a38",
+     "313p-be8eafbe"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c9b53a38",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi__mine-01__card.webp",
+     "source": "313.events owner photo archive, captured 2023-08-24",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "August; sculptures are artworks",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-be8eafbe",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi__mine-02__card.webp",
+     "source": "313.events owner photo archive, captured 2026-02-19",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Blue hour, February",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "highland-state-recreation-area",
+   "inventory_no": "—",
+   "name": "Highland Recreation Area",
+   "city": "White Lake",
+   "region": "MI",
+   "inventory_location": "Highland, MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "summary": "State recreation area whose official page says it holds all of southern Michigan's principal forest types in one small area.",
+   "summary_source": "inventory_note",
+   "website": "https://www.michigan.gov/recsearch/parks/highland",
+   "official_site": "https://www.michigan.gov/recsearch/parks/highland",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "owner-photo",
+    "image_note": "Image: your own photo of this place (owner-authorized), 313p-7ad1f6a5",
+    "image_depicts_destination": true
+   },
+   "manifest": {
+    "destination_id": "highland-state-recreation-area",
+    "destination_name": "Highland Recreation Area",
+    "primary_image": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
+    "primary_image_type": "owner_photo_destination",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "alternative_images": [
+     "gen-fall-color-3",
+     "gen-fall-color-6",
+     "313p-3c387ae2",
+     "313p-9e980d02",
+     "313p-aa2f414c"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "313p-7ad1f6a5",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Gravel trail beside a park road, with a wooden bridge railing and a guardrail in frame, leading toward early fall-colored trees, blue sky",
+     "warnings": [
+      "road, guardrail and railing in frame; early color only (corrected 2026-10-11 after viewing; the earlier subject said boardwalk)"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-3c387ae2",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-01__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Trail beside the road with autumn colour; guardrail in frame",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-9e980d02",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-02__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Boardwalk with autumn colour",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-aa2f414c",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-03__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Woodland floor, early autumn",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "holly-state-recreation-area",
+   "inventory_no": "—",
+   "name": "Holly State Recreation Area",
+   "city": "Holly",
+   "region": "MI",
+   "inventory_location": "Holly, MI",
+   "categories": [
+    "trails-woods",
+    "waterfronts"
+   ],
+   "summary": "State recreation area in Holly with more than 8,000 acres of rolling woodlands and open fields.",
+   "summary_source": "inventory_note",
+   "website": "https://www.michigan.gov/recsearch/parks/holly",
+   "official_site": "https://www.michigan.gov/recsearch/parks/holly",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "holly-state-recreation-area",
+    "destination_name": "Holly State Recreation Area",
+    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "alternative_images": [
+     "gen-fall-color-1",
+     "gen-fall-color-8"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied collection graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

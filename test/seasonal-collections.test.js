@@ -129,6 +129,47 @@ assert.ok(!DATA.isPublic(complete({ status: "READY_FOR_REVIEW" })), "only declar
   assert.strictEqual(derive((e) => { delete e.image.licenseUrl; }), "IMAGE_PENDING");
 }
 
+// ---- 1c. labelled-illustration route: fills items 3 and 4 only; never item 5; never combined with a linked image or an owner-photo claim
+{
+  const ill = (mut) => {
+    const e = complete();
+    e.image = ED.illustrationImage("/assets/seasonal/fall-card-3.webp", { acquiredAt: "2026-10-11", recordedAt: "2026-10-11", recordedBy: "test", alternates: ["/assets/seasonal/fall-card-4.webp"] });
+    if (mut) mut(e);
+    return e;
+  };
+  const e0 = ill();
+  assert.strictEqual(DATA.gate(e0).imageRoute, "illustration");
+  assert.strictEqual(DATA.gate(e0).rightsRoute, "owner-supplied-illustration");
+  assert.strictEqual(DATA.readiness(e0).state, "PUBLISHED", "illustration + official + relevance + approval is complete");
+  assert.strictEqual(DATA.readiness(ill((e) => { delete e.approval; })).state, "READY_FOR_REVIEW", "the illustration route never supplies approval");
+  assert.strictEqual(DATA.readiness(ill((e) => { e.evidence = []; })).state, "HOLD_UNVERIFIED", "an illustration never replaces official verification");
+  assert.strictEqual(DATA.readiness(ill((e) => { e.relevance.confirmed = false; })).state, "HOLD_UNVERIFIED");
+  for (const [label, mut] of [
+    ["not marked illustrative", (e) => { e.image.illustrative = false; }],
+    ["no illustration block", (e) => { delete e.image.illustration; }],
+    ["no statement", (e) => { delete e.image.illustration.statement; }],
+    ["no supplier", (e) => { delete e.image.illustration.suppliedBy; }],
+    ["no recorded-by", (e) => { delete e.image.illustration.recordedBy; }],
+    ["no recorded-at", (e) => { delete e.image.illustration.recordedAt; }],
+    ["no acquired record", (e) => { delete e.image.acquired; }],
+    ["bad sha256", (e) => { e.image.acquired.sha256 = "bad"; }],
+    ["src differs from the acquired file", (e) => { e.image.src = "/assets/seasonal/fall-card-4.webp"; }],
+    ["not a collection card", (e) => { e.image.src = "/assets/placeholders/event-800.webp"; e.image.acquired.file = e.image.src; }]
+  ]) assert.notStrictEqual(DATA.gate(ill(mut)).imageRoute, "illustration", "illustration route incomplete: " + label);
+  const linked = ill((e) => { e.image.remote = { src: "https://example.org/a.jpg", sourcePage: "https://example.org/", credit: "x", acceptedBy: "y", acceptedAt: "2026-10-11", riskNote: "z" }; });
+  assert.strictEqual(DATA.gate(linked).imageRoute, "linked", "a linked image takes the linked route, never the illustration route");
+  const incompleteLinked = ill((e) => { e.image.remote = { src: "https://example.org/a.jpg" }; });
+  assert.notStrictEqual(DATA.gate(incompleteLinked).imageRoute, "illustration", "an incomplete linked image does not fall through to the illustration route");
+  const withOwner = ill((e) => { e.image.ownerPhoto = { photoId: "313p-73cbabcb" }; });
+  assert.notStrictEqual(DATA.gate(withOwner).imageRoute, "illustration", "an illustration is never also an owner photo");
+  assert.deepStrictEqual(BUILD.validateAssets({ fall: [ill()] }), [], "a correct illustration record validates");
+  const tampered = ill((e) => { e.image.acquired.bytes = 1; });
+  assert.ok(BUILD.validateAssets({ fall: [tampered] }).some((p) => /size/.test(p)));
+  const col = clone(DATA.COLLECTIONS.fall); col.entries = [e0];
+  const html = R.main(col);
+  assert.ok(html.includes("Test Cider Mill") && html.includes("Illustrative image"), "a public illustration record always carries the Illustrative image badge");
+}
+
 // file half of item 3: size + sha256 of the acquired file are validated at build time
 {
   const good = complete({ id: "tmp-good" }), bad = complete({ id: "tmp-bad" });
@@ -163,7 +204,7 @@ for (const slug of DATA.ORDER) {
   }
   assert.deepStrictEqual(DATA.published(col).map((e) => e.id), col.entries.filter((e) => e.status === "PUBLISHED").map((e) => e.id));
 }
-assert.strictEqual(allEntries, 60, "4 fall + 52 halloween + 4 fall-color records");
+assert.strictEqual(allEntries, 74, "14 fall + 52 halloween + 8 fall-color records");
 // Release-candidate state: no destination has the explicit approval, so none is public.
 for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, 0, slug + " has no public destinations yet");
 

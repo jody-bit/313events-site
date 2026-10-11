@@ -58,7 +58,7 @@ for (const slug of ["fall", "fall-color"]) {
     assert.strictEqual(r.statusCode, 200, slug + " " + env);
     const d = JSON.parse(r.body);
     assert.strictEqual(d.collection, slug);
-    assert.strictEqual(d.records.length, 4, slug + " has four records");
+    assert.strictEqual(d.records.length, { fall: 14, "fall-color": 8 }[slug], slug + " record count");
     assert.ok(d.records.every((x) => x.public === false), slug + ": nothing is public");
     assert.ok(!/Hush|Slay Nights/.test(r.body));
   }
@@ -84,7 +84,7 @@ for (const env of ["production", "preview", undefined, "development"]) {
 const tracked = execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
 const served = tracked.filter((f) => !f.startsWith("api/") && fs.existsSync(path.join(root, f)));
 const PRIVATE = ["candidates.json", "candidate-images.json", "photo-library.json", "linked-images.json", "halloween-qa.json", "fall-qa.json", "fall-color-qa.json", "entries.json", "defaults.json", "qa-client.js", "editorial.js",
-  "COVERAGE.md", "APPROVAL_BATCH_1.md", "EDITORIAL_HANDOFF.md", "MIGRATION_REVIEW.md"];
+  "COVERAGE.md", "APPROVAL_BATCH_1.md", "LAUNCH_PROPOSAL_1.md", "launch-1.json", "verification-2026-10-11.json", "EDITORIAL_HANDOFF.md", "MIGRATION_REVIEW.md"];
 for (const f of served) assert.ok(!PRIVATE.includes(path.basename(f)), "private seasonal file is statically served: " + f);
 for (const f of PRIVATE) assert.ok(tracked.includes("api/_lib/seasonal-editorial/" + f), f + " lives in api/_lib/seasonal-editorial");
 assert.ok(!served.some((f) => /^seasonal\/.*(qa|candidate|linked|library|coverage|manifest|fixture|handoff|review)/i.test(f)), "no registry-like, manifest, fixture or review file left in seasonal/");

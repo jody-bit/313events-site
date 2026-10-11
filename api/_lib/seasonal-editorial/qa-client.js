@@ -50,7 +50,7 @@
   }
   function typeLabel(o) {
     var base = { owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)" }[o.type] || o.type;
-    return (o.image_kind === "promo-art" ? base + " · promotional artwork" : base) + (o.proposal ? " · PROPOSED, not adopted" + (o.proposal.recommended ? " (recommended)" : "") : "");
+    return (o.image_kind === "promo-art" ? base + " · promotional artwork" : base) + (o.proposal ? " · PROPOSED, not adopted" + (o.proposal.recommended ? " (recommended)" : "") : "") + (o.parked ? " · PARKED, not used by the launch record" : "");
   }
   // Rights and provenance for one option. Recorded risk acceptance is shown as exactly that, never as usage rights.
   function rights(o) {
@@ -94,6 +94,25 @@
     var seen = {}; records.forEach(function (r) { r.categories.forEach(function (c) { seen[c] = 1; }); });
     return col.categories.filter(function (c) { return seen[c.id]; });
   }
+  // Launch preview (QA only): the proposed launch records drawn with the public card, exactly as the public page would draw
+  // them, plus one QA line under each card. Nothing here is published and nothing here records an approval.
+  function launchRecords(records) { return records.filter(function (r) { return r.launch; }); }
+  function launchCard(col, rec, view) {
+    var e = toEntry(rec, undefined);
+    var note = '<p class="sc-qa-line sc-qa-flag">PROPOSED, not approved · ' + esc(rec.publication.state.replace(/_/g, " ")) + ' · ' + esc(rec.launch.image_note) + '</p>';
+    return R.card(col, e, { list: view === "list", extra: note, attrs: ' data-launch="1"' });
+  }
+  function launchRail(col, records) {
+    var feat = launchRecords(records).filter(function (r) { return r.launch.featured; });
+    if (!feat.length) return "";
+    return '<section class="sc-section" id="scQaLaunchRail" aria-labelledby="scQaDontMiss"><div class="sc-section-head"><h2 class="sc-h2" id="scQaDontMiss">' + esc(col.dontMissTitle) + '</h2></div>' +
+      '<ul class="sc-grid sc-rail">' + feat.map(function (r) { return launchCard(col, r, "grid"); }).join("") + '</ul></section>';
+  }
+  function launchResults(col, records, state) {
+    var v = visible(launchRecords(records), state);
+    if (!v.length) return '<p class="sc-empty" role="status">No destinations match.</p>';
+    return '<ul class="sc-grid' + (state.view === "list" ? " sc-list" : "") + '">' + v.map(function (r) { return launchCard(col, r, state.view); }).join("") + '</ul>';
+  }
   function exportJson(records, choices, slug) {
     return JSON.stringify({ generated: new Date().toISOString(), collection: slug || "halloween", selections: records.map(function (r) {
       var o = option(r, choices[r.id]);
@@ -122,27 +141,42 @@
       if (!data || !data.records) return false;
       var records = data.records, choices = loadChoices(key), state = { category: "all", query: "", view: "grid" };
       var counts = { partial: 0, unver: 0 };
+      var launchRecs = launchRecords(records), mode = launchRecs.length && /(^|[?&])launch=1(&|$)/.test(loc.search || "") ? "launch" : "qa";
       records.forEach(function (r) { r.verification.status === "partial" ? counts.partial++ : counts.unver++; });
       var chips = doc.querySelector(".sc-chips");
-      chips.innerHTML = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="true">All</button>' + usedCats(col, records).map(function (c) {
+      chips.innerHTML = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="true">All</button>' + usedCats(col, mode === "launch" ? launchRecs : records).map(function (c) {
         return '<button type="button" class="sc-chip" data-cat="' + esc(c.id) + '" aria-pressed="false">' + esc(c.label) + '</button>'; }).join("");
       var bar = doc.createElement("div");
       bar.className = "sc-qa-bar"; bar.setAttribute("role", "status");
       bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
-        '<button type="button" class="sc-chip" id="scQaExport">Download image selections (JSON)</button> <button type="button" class="sc-chip" id="scQaReset">Reset choices</button>';
+        '<button type="button" class="sc-chip" id="scQaExport">Download image selections (JSON)</button> <button type="button" class="sc-chip" id="scQaReset">Reset choices</button>' +
+        (launchRecs.length ? ' <button type="button" class="sc-chip" id="scQaModeQa" aria-pressed="true">QA review (all records)</button> <button type="button" class="sc-chip" id="scQaModeLaunch" aria-pressed="false">Launch preview (' + launchRecs.length + ' proposed)</button>' : "");
       doc.querySelector(".sc-filters").insertAdjacentElement("beforebegin", bar);
       if (backlog(data)) { var bl = doc.createElement("div"); bl.innerHTML = backlog(data); bar.insertAdjacentElement("afterend", bl.firstChild); }
       var host = doc.getElementById("scResults"), count = doc.getElementById("scCount");
       function render() {
-        host.innerHTML = results(col, records, state, choices);
-        count.textContent = visible(records, state).length + " of " + records.length + " destinations (QA: every record)";
+        var old = doc.getElementById("scQaLaunchRail"); if (old) old.remove();
+        if (mode === "launch") {
+          var ex = doc.getElementById("scExplore"), sec = ex && ex.closest("section");
+          if (sec && !state.query && state.category === "all") sec.insertAdjacentHTML("beforebegin", launchRail(col, records));
+          host.innerHTML = launchResults(col, records, state);
+          count.textContent = visible(launchRecs, state).length + " of " + launchRecs.length + " proposed destinations (LAUNCH PREVIEW: nothing is published, nothing is approved)";
+          bar.querySelector("strong").textContent = "LAUNCH PREVIEW";
+        } else {
+          host.innerHTML = results(col, records, state, choices);
+          count.textContent = visible(records, state).length + " of " + records.length + " destinations (QA: every record)";
+          bar.querySelector("strong").textContent = "QA MODE";
+        }
+        var mq = doc.getElementById("scQaModeQa"), ml = doc.getElementById("scQaModeLaunch");
+        if (mq) { mq.setAttribute("aria-pressed", String(mode === "qa")); ml.setAttribute("aria-pressed", String(mode === "launch")); }
         [].forEach.call(doc.querySelectorAll(".sc-chip[data-cat]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-cat") === state.category)); });
         [].forEach.call(doc.querySelectorAll("button.sc-view"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === state.view)); });
         if (FB) FB.scan(host);
       }
       doc.addEventListener("click", function (e) {
-        var b = e.target.closest && e.target.closest("[data-cat],[data-view],#scQaExport,#scQaReset");
+        var b = e.target.closest && e.target.closest("[data-cat],[data-view],#scQaExport,#scQaReset,#scQaModeQa,#scQaModeLaunch");
         if (!b) return;
+        if (b.id === "scQaModeQa" || b.id === "scQaModeLaunch") { mode = b.id === "scQaModeLaunch" ? "launch" : "qa"; state.category = "all"; state.query = ""; var si = doc.getElementById("scSearch"); if (si) si.value = ""; chips.innerHTML = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="true">All</button>' + usedCats(col, mode === "launch" ? launchRecs : records).map(function (c) { return '<button type="button" class="sc-chip" data-cat="' + esc(c.id) + '" aria-pressed="false">' + esc(c.label) + '</button>'; }).join(""); render(); return; }
         if (b.id === "scQaExport") {
           var blob = new Blob([exportJson(records, choices, slug)], { type: "application/json" });
           var a = doc.createElement("a"); a.href = URL.createObjectURL(blob); a.download = slug + "-image-selections.json"; doc.body.appendChild(a); a.click(); a.remove(); return;
@@ -165,5 +199,5 @@
       return true;
     }).catch(function () { return false; });
   }
-  return { isProductionHost: isProductionHost, keyFor: keyFor, toEntry: toEntry, results: results, visible: visible, exportJson: exportJson, cardHtml: cardHtml, option: option, mount: mount, KEY: KEY };
+  return { isProductionHost: isProductionHost, keyFor: keyFor, toEntry: toEntry, results: results, visible: visible, exportJson: exportJson, cardHtml: cardHtml, launchRecords: launchRecords, launchCard: launchCard, launchRail: launchRail, launchResults: launchResults, option: option, mount: mount, KEY: KEY };
 });

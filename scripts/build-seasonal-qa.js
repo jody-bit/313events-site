@@ -21,6 +21,7 @@ const lib = readJson("photo-library.json");
 const photos = Object.fromEntries(lib.destination_specific.concat(lib.editorial_atmospheric).map((p) => [p.id, p]));
 const cands = readJson("candidates.json").candidates;
 const all = ED.entries();
+const launch = readJson("launch-1.json");
 
 const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, "").toLowerCase(); } catch (e) { return ""; } };
 const NUM = (src) => (/-card-(\d+)\.webp$/.exec(src || "") || [])[1];
@@ -41,10 +42,29 @@ function linkedOpt(e) {
     image_kind: "unclassified", source_type: official ? "official" : "third-party", permission_on_file: false,
     risk_acceptance: r.acceptedBy ? { accepted_by: r.acceptedBy, accepted_at: r.acceptedAt, note: r.riskNote } : null, load_check: null, catalogue_note: null };
 }
+function parkedOpt(e) {
+  const o = linkedOpt(Object.assign({}, e, { image: Object.assign({}, e.image, { remote: e.image.remoteParked }) }));
+  o.parked = true;
+  o.warnings = ["Parked: the launch record does not use this linked image. Kept for reference only; no rights-holder permission is on file."].concat(o.warnings);
+  return o;
+}
 function ownerOpt(p, type, extra) {
   return { id: p.id, type, src: p.files.card, source: "313.events owner photo archive" + (p.capture_date ? ", captured " + p.capture_date : ""), credit: p.credit,
     rights_status: p.license, illustrative: false, depicts_actual_destination: type === "owner_photo_destination", subject: p.subject,
     warnings: (extra || []).concat(p.editorial_flags || [], p.quality_flags || []), image_kind: "photo", rights_basis: "owner-authorization", license_url: null };
+}
+
+// The launch proposal flag. Membership comes from launch-1.json; the gate's own answer decides everything else, and a launch
+// record that is approved, public or not READY_FOR_REVIEW is a build error (the proposal is for records awaiting approval).
+function launchFor(slug, e, g, def) {
+  const ids = launch.collections[slug] || [];
+  if (ids.indexOf(e.id) < 0) return null;
+  if (e.status !== "READY_FOR_REVIEW" || g.approval || ED.COLLECTIONS.isPublic(e)) throw new Error(slug + "/" + e.id + ": a launch-1 record must be READY_FOR_REVIEW with no approval");
+  const route = g.imageRoute;
+  const note = route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + def.id
+    : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)"
+    : "Image: " + route;
+  return { batch: launch.batch, featured: !!e.featured, image_route: route, image_note: note, image_depicts_destination: !!def.depicts_actual_destination };
 }
 
 function build(slug) {
@@ -62,12 +82,13 @@ function build(slug) {
     if (im.ownerPhoto && photos[im.ownerPhoto.photoId]) add(ownerOpt(photos[im.ownerPhoto.photoId], "owner_photo_destination"));
     if (im.remote && im.remote.src) add(linkedOpt(e));
     [im.src].concat(im.alternates || []).filter((s) => /-card-\d+\.webp$/.test(s)).forEach((s) => add(generatedOpt(slug, s)));
+    if (im.remoteParked && im.remoteParked.src) add(parkedOpt(e));
     (c.photos || []).forEach((pid) => { if (photos[pid]) add(ownerOpt(photos[pid], "owner_photo_destination")); });
     const gens = options.filter((o) => o.illustrative);
     const def = options[0];
     const official = (e.evidence || []).filter((x) => x.level === "official");
     return {
-      id: e.id, inventory_no: c.inventory_no || "—", name: e.name, city: m ? m[1] : c.location, region: m ? m[2] : "", categories: e.categories,
+      id: e.id, inventory_no: c.inventory_no || "—", name: e.name, city: e.city || (m ? m[1] : c.location), region: e.region || (m ? m[2] : ""), inventory_location: c.location, categories: e.categories,
       summary: e.summary, summary_source: e.migration ? "published" : "inventory_note", website: e.website || null, official_site: e.website || null, dates_hours: null,
       verification: { status: (e.migration || g.official) ? "partial" : "unverified", official_site_checked: g.official,
         detail: g.official ? "Official site read " + official[0].checkedAt + " (" + official[0].checkedBy + "). " + (g.relevance ? "Relevance confirmed. " : "Relevance to the collection not confirmed. ") + "Dates and hours not verified."
@@ -78,13 +99,16 @@ function build(slug) {
         image_route: g.imageRoute, rights_route: g.rightsRoute, outstanding: rv.outstanding, caveats: rv.caveats,
         legacy: e.migration ? { was_published_on: e.migration.legacyBranch + " " + e.migration.legacyCommit, basis: e.migration.legacyBasis } : null },
       recorded_alternatives: [],
+      launch: launchFor(slug, e, g, def),
       manifest: { destination_id: e.id, destination_name: e.name, primary_image: def.src, primary_image_type: def.type, fallback_image: (gens[0] || def).src,
         secondary_fallback_image: (gens[1] || gens[0] || def).src, alternative_images: options.slice(1).map((o) => o.id), editorial_approval_status: "not_approved" },
       image_options: options
     };
   });
   const without = rows.filter((c) => !c.entry_id).map((c) => ({ no: c.inventory_no || "", name: c.name, location: c.location, status: c.status, owner_photos: (c.photos || []).length }));
-  return { generated: "2026-10-11", collection: slug, count: records.length,
+  const missing = (launch.collections[slug] || []).filter((id) => !all[slug].some((e) => e.id === id));
+  if (missing.length) throw new Error(slug + ": launch-1 lists records that do not exist: " + missing.join(", "));
+  return { generated: "2026-10-11", collection: slug, count: records.length, launch: { batch: launch.batch, proposed: (launch.collections[slug] || []).length },
     note: "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Defaults follow the record (owner photo, then linked image, then generated card). A linked image's recorded risk acceptance is not confirmed usage rights.",
     inventory_rows: rows.length, inventory_without_record: without, records };
 }

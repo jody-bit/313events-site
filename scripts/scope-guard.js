@@ -26,6 +26,7 @@ const ALLOWED = [
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
+  "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
   "api/_lib/seasonal-editorial/COVERAGE.md",
   "api/_lib/seasonal-editorial/EDITORIAL_HANDOFF.md",
   "api/_lib/seasonal-editorial/MIGRATION_REVIEW.md",
@@ -37,9 +38,11 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/fall-color-qa.json",
   "api/_lib/seasonal-editorial/fall-qa.json",
   "api/_lib/seasonal-editorial/halloween-qa.json",
+  "api/_lib/seasonal-editorial/launch-1.json",
   "api/_lib/seasonal-editorial/linked-images.json",
   "api/_lib/seasonal-editorial/photo-library.json",
-  "api/_lib/seasonal-editorial/qa-client.js"
+  "api/_lib/seasonal-editorial/qa-client.js",
+  "api/_lib/seasonal-editorial/verification-2026-10-11.json"
 ];
 
 class ScopeGuardError extends Error {}

@@ -19,7 +19,7 @@ const byId = Object.fromEntries(entries.halloween.map((e) => [e.id, e]));
 const run = (script, ...a) => execFileSync(process.execPath, [path.join(root, "scripts", script), ...a], { cwd: root, stdio: "pipe" });
 
 // ---- generated files are in sync (public projection, pages, QA data, migration review, asset hashes)
-run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); run("build-seasonal-qa.js", "--check"); run("build-approval-batch.js", "--check"); run("build-publication-review.js", "--check");
+run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); run("build-seasonal-qa.js", "--check"); run("build-approval-batch.js", "--check"); run("build-launch-proposal.js", "--check"); run("build-publication-review.js", "--check");
 assert.deepStrictEqual(require(path.join(root, "scripts/build-seasonal.js")).validateAssets(), []);
 
 // ---- the six existing public entries are preserved (B1)

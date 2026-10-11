@@ -11,12 +11,13 @@ tests fail if a record's declared `status` disagrees with what its fields prove.
 
 | What | Where | Public? |
 |---|---|---|
-| Every destination record (all 60: 4 fall, 52 Halloween, 4 fall color), with evidence, relevance, image, rights, approval, migration history | `entries.json` | No |
+| Every destination record (all 74: 14 fall, 52 Halloween, 8 fall color), with evidence, relevance, image, rights, approval, migration history | `entries.json` | No |
 | The 252-row inventory ledger (one row per research-inventory destination; `entry_id` links a row to its record) | `candidates.json` | No |
 | Image candidates for places without a record yet | `candidate-images.json` | No |
 | Owner photo library (originals' file names and Apple Photos ids, authorization wording) | `photo-library.json` | No |
 | Linked images (catalogue + official-site reads), load tests, risk acceptance, unchosen alternatives | `linked-images.json` | No |
 | Pinned default image per Halloween destination | `defaults.json` | No |
+| Launch proposal 1: the 16 proposed fall / fall-color records (`launch-1.json`), the two-pass official-site read log (`verification-2026-10-11.json`) and the decision packets (`LAUNCH_PROPOSAL_1.md`, generated) | `launch-1.json`, `verification-2026-10-11.json`, `LAUNCH_PROPOSAL_1.md` | No |
 | QA dataset served by `/api/seasonal-qa` outside production | `halloween-qa.json` (generated) | No |
 | QA reviewer client (`/halloween?qa=1`) | `qa-client.js` | No (API only) |
 | Publication migration review (the 14 entries that were public on `feature/halloween-completion`) | `MIGRATION_REVIEW.md` (generated) | No |
@@ -55,6 +56,12 @@ Official verification -> Image rights -> Image file or linked image -> Publicati
        license URL and `validateAssets` rejects one. The original photo identifiers (file name, Apple Photos id) stay in
        `photo-library.json` and are looked up by `photoId`; the build checks they exist and match. The route fills items 3
        and 4 only. It never approves a destination or publication.
+     - **Labelled illustration** (owner strategy 2026-10-11, temporary): build the image block with `illustrationImage(src, opts)` in
+       `editorial.js`. It computes `bytes`, `sha256` and size from the card file and records `image.illustration { statement,
+       suppliedBy, recordedBy, recordedAt }`. The record must carry NO `image.remote` and NO `image.ownerPhoto`. The public
+       renderer always shows the "Illustrative image" badge. It fills items 3 and 4 only, is never documentary photography of the
+       destination, and never approves a destination. Replace it with an authentic or licensed photograph when one exists; only the
+       record's `image` block changes, not its verified facts.
      - **Linked image** (owner decision 2026-10-11): `image.remote { src, sourcePage, credit, acceptedBy, acceptedAt,
        riskNote }`, with `image.src` the local generated card as the fallback. The owner's recorded acceptance of the
        copyright risk is **not** confirmed usage rights; no rights-holder permission is on file for any linked image.
@@ -67,6 +74,13 @@ Official verification -> Image rights -> Image file or linked image -> Publicati
 
 Only a record that is declared and derived `PUBLISHED` is copied into `seasonal/published-entries.js`. Publishing needs
 no edit to `index.html`, `data/dont-miss.json`, the renderer, the CSS or the rewrites.
+
+## Launch preview: `/fall?qa=1&launch=1`, `/fall-color?qa=1&launch=1`
+
+On a Preview, the QA bar has a **Launch preview** button when a collection has proposed records (`launch-1.json`). It draws only the
+proposed records with the public card (the page's hero, filters and card layout are unchanged), the Don't-miss rail from the
+`featured` records, and one QA line per card: "PROPOSED, not approved", the gate state and the image route. Nothing in it is
+published or approved. A record that is not `READY_FOR_REVIEW` with no approval cannot be in `launch-1.json` (the QA build fails).
 
 ## Reviewing images: `/halloween?qa=1`
 

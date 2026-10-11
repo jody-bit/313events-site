@@ -68,6 +68,33 @@ function ownerPhotoImage(photoId, opts) {
   };
 }
 
+// The image block for a labelled editorial illustration (gate items 3 and 4, illustration route). The file is one of the
+// owner-supplied generated collection cards; bytes, sha256 and pixel size are computed from the real file. The block
+// carries NO linked image and NO owner-photo claim, and the public renderer always labels it "Illustrative image". It is
+// never documentary photography of the destination, and it never grants publication approval (gate item 5).
+//   opts.acquiredAt / recordedAt  YYYY-MM-DD    opts.recordedBy  who recorded the owner's strategy in the repo
+//   opts.alternates               other generated cards for the fallback chain
+function illustrationImage(src, opts) {
+  const f = fileFacts(src.replace(/^\//, ""));
+  return {
+    src,
+    alternates: opts.alternates || [],
+    placeholder: "/assets/placeholders/event-800.webp",
+    source: "313.events supplied collection graphic (AI-generated), cropped",
+    credit: "313.events",
+    license: "Supplied by 313.events; generation tool and terms not recorded",
+    illustrative: true,
+    acquired: { file: src, bytes: f.bytes, sha256: f.sha256, width: f.width, height: f.height, acquiredAt: opts.acquiredAt },
+    illustration: {
+      statement: "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+      suppliedBy: "313.events owner",
+      recordedBy: opts.recordedBy,
+      recordedAt: opts.recordedAt,
+      note: "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+  };
+}
+
 // Every record, as authored (a fresh deep copy each call).
 function entries() { return JSON.parse(JSON.stringify(read("entries.json"))); }
 
@@ -93,16 +120,17 @@ function review(e) {
   if (!g.official) outstanding.push("Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).");
   if (!g.relevance) outstanding.push("Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).");
   if (!g.acquired || !g.rights) {
-    if (im.illustrative === true && !im.remote) outstanding.push("Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).");
+    if (im.illustrative === true && !im.remote) outstanding.push("Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).");
     else if (!g.acquired) outstanding.push("Gate 3, image: no complete acquired file or linked-image record.");
     else outstanding.push("Gate 4, image rights: not complete for the chosen image route.");
   }
   if (!g.approval) outstanding.push("Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}.");
   if (g.rightsRoute === "linked-risk-acceptance") caveats.push("Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.");
   if (g.rightsRoute === "owner-authorization") caveats.push("Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.");
+  if (g.rightsRoute === "owner-supplied-illustration") caveats.push("Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.");
   if (im.remote && im.remote.src) caveats.push("A linked image depends on the source site continuing to serve it; the generated card is the fallback.");
   if (e.migration) caveats.push("Was status \"published\" on " + e.migration.legacyBranch + " (" + e.migration.legacyCommit + ") on " + e.migration.legacyBasis + ". Not grandfathered.");
   return { id: e.id, name: e.name, declared: e.status, state: r.state, gate: g, outstanding, caveats, imageRoute: g.imageRoute, rightsRoute: g.rightsRoute };
 }
 
-module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };
+module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };

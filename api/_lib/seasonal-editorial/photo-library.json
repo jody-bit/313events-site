@@ -3910,7 +3910,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -4076,11 +4076,11 @@
    "id": "313p-7ad1f6a5",
    "review_ref": "R2-D2840",
    "classification": "DESTINATION_SPECIFIC",
-   "subject": "Wooden boardwalk trail leading toward early fall-colored trees, blue sky",
+   "subject": "Gravel trail beside a park road, with a wooden bridge railing and a guardrail in frame, leading toward early fall-colored trees, blue sky",
    "capture_date": "2026-10-09",
    "people_visible": "none or incidental",
    "editorial_flags": [],
-   "quality_flags": [],
+   "quality_flags": ["road, guardrail and railing in frame; early color only (corrected 2026-10-11 after viewing; the earlier subject said boardwalk)"],
    "files": {
     "card": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
     "card_px": [
@@ -4110,7 +4110,7 @@
     "name": "Highland State Recreation Area",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "highland-state-recreation-area",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },

@@ -41,7 +41,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
@@ -1149,7 +1149,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -1350,7 +1350,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -1560,7 +1560,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -1762,7 +1762,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -1978,7 +1978,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -2150,7 +2150,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -2352,7 +2352,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -2525,7 +2525,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -2700,7 +2700,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -2873,7 +2873,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -3047,7 +3047,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -3247,7 +3247,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -3427,7 +3427,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -3614,7 +3614,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -3786,7 +3786,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -3968,7 +3968,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -4141,7 +4141,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -4344,7 +4344,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -4516,7 +4516,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -4719,7 +4719,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -4894,7 +4894,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -5069,7 +5069,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -5243,7 +5243,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -5404,7 +5404,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -5564,7 +5564,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -5753,7 +5753,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -6159,7 +6159,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -6796,7 +6796,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -7005,7 +7005,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -7415,7 +7415,7 @@
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
@@ -7682,7 +7682,7 @@
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -7883,7 +7883,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -8055,7 +8055,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -8230,7 +8230,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -8402,7 +8402,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -8603,7 +8603,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -8775,7 +8775,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -8949,7 +8949,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -9123,7 +9123,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -9297,7 +9297,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -9469,7 +9469,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -9630,7 +9630,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -9791,7 +9791,7 @@
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],

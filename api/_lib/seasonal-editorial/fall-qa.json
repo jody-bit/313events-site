@@ -1,7 +1,11 @@
 {
  "generated": "2026-10-11",
  "collection": "fall",
- "count": 4,
+ "count": 14,
+ "launch": {
+  "batch": "launch-1",
+  "proposed": 11
+ },
  "note": "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Defaults follow the record (owner photo, then linked image, then generated card). A linked image's recorded risk acceptance is not confirmed usage rights.",
  "inventory_rows": 71,
  "inventory_without_record": [
@@ -41,13 +45,6 @@
    "owner_photos": 0
   },
   {
-   "no": "6",
-   "name": "Big Red Orchard",
-   "location": "Washington Township, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
    "no": "8",
    "name": "Blake’s Big Apple",
    "location": "Armada, MI",
@@ -83,30 +80,9 @@
    "owner_photos": 0
   },
   {
-   "no": "13",
-   "name": "Diehl’s Orchard & Cider Mill",
-   "location": "Holly, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 25
-  },
-  {
    "no": "14",
    "name": "Erie Orchards & Cider Mill",
    "location": "Erie, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "15",
-   "name": "Forever Acres Farm",
-   "location": "Britton, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "16",
-   "name": "Franklin Cider Mill",
-   "location": "Bloomfield Hills, MI",
    "status": "HOLD_UNVERIFIED",
    "owner_photos": 0
   },
@@ -144,13 +120,6 @@
    "location": "La Salle, MI",
    "status": "HOLD_UNVERIFIED",
    "owner_photos": 0
-  },
-  {
-   "no": "22",
-   "name": "Long Family Orchard & Farm",
-   "location": "Commerce Township, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 4
   },
   {
    "no": "23",
@@ -195,20 +164,6 @@
    "owner_photos": 0
   },
   {
-   "no": "30",
-   "name": "Plymouth Orchards & Cider Mill",
-   "location": "Plymouth, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "31",
-   "name": "Porter’s Orchard",
-   "location": "Goodrich, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
    "no": "32",
    "name": "Price’s Orchard",
    "location": "Newport, MI",
@@ -216,23 +171,9 @@
    "owner_photos": 0
   },
   {
-   "no": "33",
-   "name": "Rochester Cider Mill",
-   "location": "Rochester, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
    "no": "34",
    "name": "Schell Family Farm",
    "location": "Pinckney, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "35",
-   "name": "Spicer Orchards",
-   "location": "Fenton, MI",
    "status": "HOLD_UNVERIFIED",
    "owner_photos": 0
   },
@@ -254,13 +195,6 @@
    "no": "38",
    "name": "Verellen Orchards & Cider",
    "location": "Washington Township, MI",
-   "status": "HOLD_UNVERIFIED",
-   "owner_photos": 0
-  },
-  {
-   "no": "39",
-   "name": "Wasem Fruit Farm",
-   "location": "Milan, MI",
    "status": "HOLD_UNVERIFIED",
    "owner_photos": 0
   },
@@ -482,6 +416,7 @@
    "name": "Yates Cider Mill",
    "city": "Rochester Hills",
    "region": "MI",
+   "inventory_location": "Rochester Hills, MI",
    "categories": [
     "cider-donuts"
    ],
@@ -526,6 +461,7 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": null,
    "manifest": {
     "destination_id": "yates-cider-mill",
     "destination_name": "Yates Cider Mill",
@@ -597,6 +533,7 @@
    "name": "Parmenter's Northville Cider Mill",
    "city": "Northville",
    "region": "MI",
+   "inventory_location": "Northville, MI",
    "categories": [
     "cider-donuts"
    ],
@@ -641,6 +578,7 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": null,
    "manifest": {
     "destination_id": "parmenters-northville-cider-mill",
     "destination_name": "Parmenter's Northville Cider Mill",
@@ -712,6 +650,7 @@
    "name": "Blake's Orchard & Cider Mill",
    "city": "Armada",
    "region": "MI",
+   "inventory_location": "Armada, MI",
    "categories": [
     "cider-donuts",
     "farm-experiences"
@@ -759,6 +698,7 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": null,
    "manifest": {
     "destination_id": "blakes-orchard-cider-mill",
     "destination_name": "Blake's Orchard & Cider Mill",
@@ -826,46 +766,44 @@
   {
    "id": "wiards-orchards",
    "inventory_no": "41",
-   "name": "Wiard's Orchards",
+   "name": "Wiard’s Orchards",
    "city": "Ypsilanti",
    "region": "MI",
+   "inventory_location": "Ypsilanti, MI",
    "categories": [
-    "farm-experiences",
-    "fall-festivals"
+    "cider-donuts",
+    "farm-experiences"
    ],
-   "summary": "Orchard in Ypsilanti known for its fall Country Fair.",
+   "summary": "Orchard, cider mill and country store in Ypsilanti selling apples, cider, pumpkins and donuts.",
    "summary_source": "published",
    "website": "https://www.wiards.com",
    "official_site": "https://www.wiards.com",
    "dates_hours": null,
    "verification": {
     "status": "partial",
-    "official_site_checked": false,
-    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
      "approval": false
     },
-    "image_route": "linked",
-    "rights_route": "linked-risk-acceptance",
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
-     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
-     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -874,20 +812,64 @@
     }
    },
    "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
    "manifest": {
     "destination_id": "wiards-orchards",
-    "destination_name": "Wiard's Orchards",
-    "primary_image": "https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg",
-    "primary_image_type": "linked_official",
-    "fallback_image": "/assets/seasonal/fall-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "destination_name": "Wiard’s Orchards",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-4",
-     "gen-fall-5"
+     "gen-fall-2",
+     "gen-fall-5",
+     "link-wiards-orchards"
     ],
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
     {
      "id": "link-wiards-orchards",
      "type": "linked_official",
@@ -898,6 +880,7 @@
      "illustrative": false,
      "depicts_actual_destination": true,
      "warnings": [
+      "Parked: the launch record does not use this linked image. Kept for reference only; no rights-holder permission is on file.",
       "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
       "Official site photo, 602x452 (small): cider-mill cart with fall flowers."
      ],
@@ -910,7 +893,913 @@
       "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
      },
      "load_check": null,
-     "catalogue_note": null
+     "catalogue_note": null,
+     "parked": true
+    }
+   ]
+  },
+  {
+   "id": "big-red-orchard",
+   "inventory_no": "6",
+   "name": "Big Red Orchard",
+   "city": "Washington",
+   "region": "MI",
+   "inventory_location": "Washington Township, MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "summary": "Family-owned cider mill and u-pick orchard offering fresh apples, cider and donuts.",
+   "summary_source": "inventory_note",
+   "website": "https://www.bigredorchard.com/",
+   "official_site": "https://www.bigredorchard.com/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "big-red-orchard",
+    "destination_name": "Big Red Orchard",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "alternative_images": [
+     "gen-fall-6",
+     "gen-fall-3"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "diehls-orchard-and-cider-mill",
+   "inventory_no": "13",
+   "name": "Diehl’s Orchard & Cider Mill",
+   "city": "Holly",
+   "region": "MI",
+   "inventory_location": "Holly, MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze. The site says there is no u-pick apple picking.",
+   "summary_source": "inventory_note",
+   "website": "https://www.diehlsorchard.com/",
+   "official_site": "https://www.diehlsorchard.com/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": true,
+    "image_route": "owner-photo",
+    "image_note": "Image: your own photo of this place (owner-authorized), 313p-b111acba",
+    "image_depicts_destination": true
+   },
+   "manifest": {
+    "destination_id": "diehls-orchard-and-cider-mill",
+    "destination_name": "Diehl’s Orchard & Cider Mill",
+    "primary_image": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+    "primary_image_type": "owner_photo_destination",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "alternative_images": [
+     "gen-fall-2",
+     "gen-fall-7",
+     "313p-dd285926",
+     "313p-0880886f",
+     "313p-f0b87faf",
+     "313p-00044f11",
+     "313p-186f0a9b",
+     "313p-1a10c2a7",
+     "313p-84e1e241",
+     "313p-e86d2e6b",
+     "313p-b25e72a8",
+     "313p-313cc403-f019",
+     "313p-089e318b-f043",
+     "313p-a1c54c34",
+     "313p-dedd6aa5-f008",
+     "313p-afc86e08",
+     "313p-9909f688",
+     "313p-7367eff2-f231",
+     "313p-ee564315",
+     "313p-35343a33-f032",
+     "313p-b717bfa1-f155",
+     "313p-b717bfa1-f224",
+     "313p-98887783-f009",
+     "313p-945fa1fe-f057",
+     "313p-cfa446cd",
+     "313p-8d1c0afc-f112"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "313p-b111acba",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Pumpkin patch field with scattered pumpkins under dramatic cloudy sky, trees beyond",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-dd285926",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-01__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Pie-pumpkin crate",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-0880886f",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-02__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Cider-mill counter",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-f0b87faf",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-03__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Vintage delivery truck",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-00044f11",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-04__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Belted cow in the farm yard",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-186f0a9b",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-07__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Autumn tree line and hayride trail",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-1a10c2a7",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-08__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Field and autumn tree line",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-84e1e241",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-09__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Pumpkin field",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-e86d2e6b",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-10__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Large pumpkin, field behind",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-b25e72a8",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-11__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Corn path; one walker from behind",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-313cc403-f019",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2806-f019__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Weathered white barn with goats in straw pen, autumn trees",
+     "warnings": [
+      "video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-089e318b-f043",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2807-f043__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Cider mill / donut production room with fryer equipment in operation",
+     "warnings": [
+      "video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a1c54c34",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2808__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Worker frying cider donuts at a cider mill donut station",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-dedd6aa5-f008",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2809-f008__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Cider donuts being made, worker at donut machine",
+     "warnings": [
+      "video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-afc86e08",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2819__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Belted Galloway and Highland cattle at a farm pen with rustic wooden gate",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-9909f688",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2820__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Hayride wagon view behind red tractor crossing open farm field, cloudy autumn sky",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-7367eff2-f231",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2822-f231__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Farm field edge with turning trees and pumpkins, hayride footage",
+     "warnings": [
+      "upscaled from video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ee564315",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2823__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Red tractor pulling hayride along dirt farm path lined with fall-colored trees",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-35343a33-f032",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2824-f032__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Hayride behind red tractor on farm trail, fall foliage",
+     "warnings": [
+      "video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-b717bfa1-f155",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2825-f155__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Bright orange and red maples over a hay wagon edge, blue sky",
+     "warnings": [
+      "upscaled from video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-b717bfa1-f224",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2825-f224__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Bright orange and red maples over a hay wagon edge, blue sky",
+     "warnings": [
+      "upscaled from video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-98887783-f009",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2829-f009__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Vivid red/orange maple foliage seen from hay wagon, person in cowboy hat seated",
+     "warnings": [
+      "upscaled from video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-945fa1fe-f057",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2833-f057__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Corn maze dirt path between tall drying corn stalks",
+     "warnings": [
+      "upscaled from video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-cfa446cd",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2835__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Corn maze stalks with chickens roaming at the edge, autumn trees",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-8d1c0afc-f112",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2836-f112__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Walking a corn maze path with fall trees ahead",
+     "warnings": [
+      "upscaled from video frame"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "forever-acres-farm",
+   "inventory_no": "15",
+   "name": "Forever Acres Farm & Orchard",
+   "city": "Britton",
+   "region": "MI",
+   "inventory_location": "Britton, MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "summary": "Farm and orchard in Britton with u-pick apples and an apple cider slushy.",
+   "summary_source": "inventory_note",
+   "website": "https://www.foreveracresfarm.com/",
+   "official_site": "https://www.foreveracresfarm.com/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "forever-acres-farm",
+    "destination_name": "Forever Acres Farm & Orchard",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "alternative_images": [
+     "gen-fall-8",
+     "gen-fall-2"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "franklin-cider-mill",
+   "inventory_no": "16",
+   "name": "Franklin Cider Mill",
+   "city": "Bloomfield Hills",
+   "region": "MI",
+   "inventory_location": "Bloomfield Hills, MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
+   "summary_source": "inventory_note",
+   "website": "https://www.franklincidermill.com/",
+   "official_site": "https://www.franklincidermill.com/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": true,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "franklin-cider-mill",
+    "destination_name": "Franklin Cider Mill",
+    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "alternative_images": [
+     "gen-fall-6",
+     "gen-fall-1"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "long-family-orchard-and-farm",
+   "inventory_no": "22",
+   "name": "Long Family Orchard & Farm",
+   "city": "Commerce Township",
+   "region": "MI",
+   "inventory_location": "Commerce Township, MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "summary": "Orchard and farm in Commerce Township with fresh-pressed cider, hot donuts, u-pick pumpkins and a corn maze.",
+   "summary_source": "inventory_note",
+   "website": "https://www.longsorchard.com/",
+   "official_site": "https://www.longsorchard.com/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": true,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "long-family-orchard-and-farm",
+    "destination_name": "Long Family Orchard & Farm",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "alternative_images": [
+     "gen-fall-4",
+     "gen-fall-5",
+     "313p-0e2f0df4",
+     "313p-dcf4b4fe",
+     "313p-ca4003ac",
+     "313p-5f33b47e"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
     },
     {
      "id": "gen-fall-4",
@@ -928,6 +1817,586 @@
      "id": "gen-fall-5",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-0e2f0df4",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-01__card.webp",
+     "source": "313.events owner photo archive, captured 2023-10-27",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Red barn and pumpkins under dramatic sky",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-dcf4b4fe",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-02__card.webp",
+     "source": "313.events owner photo archive, captured 2023-10-27",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "One person posing in a giant chair",
+     "warnings": [
+      "identifiable person is the main subject"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ca4003ac",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-03__card.webp",
+     "source": "313.events owner photo archive, captured 2023-10-27",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Person among pumpkins",
+     "warnings": [
+      "identifiable person is the main subject"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-5f33b47e",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__r2-d1424__card.webp",
+     "source": "313.events owner photo archive, captured 2023-10-27",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Red barn with large pumpkin pile, visitor standing nearby",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "plymouth-orchards-and-cider-mill",
+   "inventory_no": "30",
+   "name": "Plymouth Orchards & Cider Mill",
+   "city": "Plymouth",
+   "region": "MI",
+   "inventory_location": "Plymouth, MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "summary": "Orchard and cider mill in Plymouth with award-winning apple cider, fresh donuts, wagon rides and pumpkins.",
+   "summary_source": "inventory_note",
+   "website": "https://www.plymouthorchards.com",
+   "official_site": "https://www.plymouthorchards.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": true,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "plymouth-orchards-and-cider-mill",
+    "destination_name": "Plymouth Orchards & Cider Mill",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "alternative_images": [
+     "gen-fall-4",
+     "gen-fall-1"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "porters-orchard",
+   "inventory_no": "31",
+   "name": "Porter’s Orchard Farm Market & Cider Mill",
+   "city": "Goodrich",
+   "region": "MI",
+   "inventory_location": "Goodrich, MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts.",
+   "summary_source": "inventory_note",
+   "website": "https://portersorchard.com/",
+   "official_site": "https://portersorchard.com/",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "porters-orchard",
+    "destination_name": "Porter’s Orchard Farm Market & Cider Mill",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "alternative_images": [
+     "gen-fall-2",
+     "gen-fall-7"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "rochester-cider-mill",
+   "inventory_no": "33",
+   "name": "Rochester Cider Mill",
+   "city": "Rochester",
+   "region": "MI",
+   "inventory_location": "Rochester, MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "summary": "Cider mill in Rochester selling fresh-pressed cider, donuts, pies, apples, honey and maple syrup.",
+   "summary_source": "inventory_note",
+   "website": "https://rochestercidermill.com",
+   "official_site": "https://rochestercidermill.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "rochester-cider-mill",
+    "destination_name": "Rochester Cider Mill",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "alternative_images": [
+     "gen-fall-1",
+     "gen-fall-3"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "spicer-orchards",
+   "inventory_no": "35",
+   "name": "Spicer Orchards",
+   "city": "Fenton",
+   "region": "MI",
+   "inventory_location": "Fenton, MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "summary": "Orchard in Fenton with a corn maze.",
+   "summary_source": "inventory_note",
+   "website": "https://www.spicerorchards.com",
+   "official_site": "https://www.spicerorchards.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "spicer-orchards",
+    "destination_name": "Spicer Orchards",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "alternative_images": [
+     "gen-fall-8",
+     "gen-fall-5"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "wasem-fruit-farm",
+   "inventory_no": "39",
+   "name": "Wasem Fruit Farm",
+   "city": "Milan",
+   "region": "MI",
+   "inventory_location": "Milan, MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "summary": "Fruit farm in Milan with pick-your-own apples, pumpkins and tart cherries.",
+   "summary_source": "inventory_note",
+   "website": "https://www.wasemfruitfarm.com",
+   "official_site": "https://www.wasemfruitfarm.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person). Relevance confirmed. Dates and hours not verified.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
+    "gate": {
+     "official": true,
+     "relevance": true,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "launch": {
+    "batch": "launch-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)",
+    "image_depicts_destination": false
+   },
+   "manifest": {
+    "destination_id": "wasem-fruit-farm",
+    "destination_name": "Wasem Fruit Farm",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "alternative_images": [
+     "gen-fall-5",
+     "gen-fall-7"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied collection graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

@@ -84,10 +84,11 @@
    "name": "Big Red Orchard",
    "location": "Washington Township, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "big-red-orchard"
   },
   {
    "collection": "fall",
@@ -177,9 +178,9 @@
    "name": "Diehl’s Orchard & Cider Mill",
    "location": "Holly, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
    "flags": [],
    "photos": [
     "313p-dd285926",
@@ -207,7 +208,8 @@
     "313p-945fa1fe-f057",
     "313p-cfa446cd",
     "313p-8d1c0afc-f112"
-   ]
+   ],
+   "entry_id": "diehls-orchard-and-cider-mill"
   },
   {
    "collection": "fall",
@@ -228,10 +230,11 @@
    "name": "Forever Acres Farm",
    "location": "Britton, MI",
    "inventory_note": "Orchard",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "forever-acres-farm"
   },
   {
    "collection": "fall",
@@ -240,10 +243,11 @@
    "name": "Franklin Cider Mill",
    "location": "Bloomfield Hills, MI",
    "inventory_note": "Cider/orchard",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "franklin-cider-mill"
   },
   {
    "collection": "fall",
@@ -314,16 +318,17 @@
    "name": "Long Family Orchard & Farm",
    "location": "Commerce Township, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
    "flags": [],
    "photos": [
     "313p-0e2f0df4",
     "313p-dcf4b4fe",
     "313p-ca4003ac",
     "313p-5f33b47e"
-   ]
+   ],
+   "entry_id": "long-family-orchard-and-farm"
   },
   {
    "collection": "fall",
@@ -417,10 +422,11 @@
    "name": "Plymouth Orchards & Cider Mill",
    "location": "Plymouth, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "plymouth-orchards-and-cider-mill"
   },
   {
    "collection": "fall",
@@ -429,10 +435,11 @@
    "name": "Porter’s Orchard",
    "location": "Goodrich, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "porters-orchard"
   },
   {
    "collection": "fall",
@@ -453,10 +460,11 @@
    "name": "Rochester Cider Mill",
    "location": "Rochester, MI",
    "inventory_note": "Cider/orchard",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "rochester-cider-mill"
   },
   {
    "collection": "fall",
@@ -477,10 +485,11 @@
    "name": "Spicer Orchards",
    "location": "Fenton, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "spicer-orchards"
   },
   {
    "collection": "fall",
@@ -525,10 +534,11 @@
    "name": "Wasem Fruit Farm",
    "location": "Milan, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "wasem-fruit-farm"
   },
   {
    "collection": "fall",
@@ -549,9 +559,9 @@
    "name": "Wiard’s Orchards",
    "location": "Ypsilanti, MI",
    "inventory_note": "Both",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": "wiards-orchards",
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "entry_id": "wiards-orchards"
   },
@@ -3265,16 +3275,17 @@
    "name": "Cranbrook Gardens & grounds",
    "location": "Bloomfield Hills, MI",
    "inventory_note": "Historic landscape; access check",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
    "flags": [
     "public access rules to confirm"
    ],
    "photos": [
     "313p-c9b53a38",
     "313p-be8eafbe"
-   ]
+   ],
+   "entry_id": "cranbrook-gardens-and-grounds"
   },
   {
    "collection": "fall-color",
@@ -3344,9 +3355,9 @@
    "name": "Stony Creek Metropark",
    "location": "Shelby Township, MI",
    "inventory_note": "Lake / trails / drive",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": "stony-creek-metropark",
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "entry_id": "stony-creek-metropark"
   },
@@ -3357,10 +3368,11 @@
    "name": "Indian Springs Metropark",
    "location": "White Lake, MI",
    "inventory_note": "Woodland Trail / swamp forest",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "indian-springs-metropark"
   },
   {
    "collection": "fall-color",
@@ -3502,16 +3514,17 @@
    "name": "Highland State Recreation Area",
    "location": "Highland, MI",
    "inventory_note": "Rolling woodland / hiking",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
    "flags": [],
    "photos": [
     "313p-3c387ae2",
     "313p-9e980d02",
     "313p-aa2f414c",
     "313p-7ad1f6a5"
-   ]
+   ],
+   "entry_id": "highland-state-recreation-area"
   },
   {
    "collection": "fall-color",
@@ -3520,10 +3533,11 @@
    "name": "Holly State Recreation Area",
    "location": "Holly, MI",
    "inventory_note": "Woodland lakes / trails",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "flags": [],
+   "entry_id": "holly-state-recreation-area"
   },
   {
    "collection": "fall-color",
