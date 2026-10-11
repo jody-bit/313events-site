@@ -62,6 +62,17 @@
   function img(collection, n) {
     return Object.assign({ src: "/assets/seasonal/" + collection + "-card-" + n + ".webp" }, ILLUSTRATIVE);
   }
+  // An image linked from the destination's own site, shown from there, with the generated card as the
+  // fallback if the link breaks (seasonal/render.js swaps it in). Recorded owner decision: see
+  // seasonal/EDITORIAL_HANDOFF.md "Linked images". NOT a licensed or acquired file.
+  function linked(collection, n, r) {
+    var base = img(collection, n);
+    base.remote = { src: r.src, sourcePage: r.sourcePage, credit: r.credit, acceptedBy: "Jody Tyree (owner)", acceptedAt: "2026-10-11",
+      riskNote: "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+      note: r.note || null };
+    return base;
+  }
+  function official(note, url) { return { level: "official", note: note, url: url, websiteChecked: true, checkedAt: "2026-10-11", checkedBy: "Claude (Cowork session), read in Chrome" }; }
   function ev(note, url) { return { level: "inventory+search", note: note, url: url || null, websiteChecked: false }; }
 
   var COLLECTIONS = {
@@ -145,26 +156,37 @@
           image: img("halloween", 2),
           evidence: [ev("Inventory #2. WXYZ 2026 report: sixth season, opens Sept 25. Ticket prices not displayed.")] },
         { id: "halloween-greenfield-village", name: "Hallowe'en in Greenfield Village", city: "Dearborn", region: "MI",
-          categories: ["family-friendly", "ghosts-history"], featured: true, status: "HOLD_UNVERIFIED",
+          categories: ["family-friendly", "ghosts-history"], featured: true, status: "READY_FOR_REVIEW",
           summary: "The Henry Ford's evening Halloween event in Greenfield Village.",
           website: "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
-          image: img("halloween", 3),
-          evidence: [ev("Inventory #35. thehenryford.org 2026 news: 46th season; the event page reports general admission sold out. Availability not displayed.", "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village")] },
+          image: linked("halloween", 3, { src: "https://www.thehenryford.org/images/thehenryfordlibraries/event-card-1064x798/halloween_pumpkins_1064x798.png", sourcePage: "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village", credit: "The Henry Ford",
+            note: "The event's own card image: lit pumpkins before a historic house at dusk. It may be generated or heavily edited art rather than a photograph; not verified as a photo of the event." }),
+          evidence: [ev("Inventory #35. thehenryford.org 2026 news: 46th season; the event page reports general admission sold out. Availability not displayed.", "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village"),
+            official("Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card.", "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village")],
+          relevance: { confirmed: true, note: "Official page describes Hallowe'en in Greenfield Village, October 2026.", checkedAt: "2026-10-11", checkedBy: "Claude (Cowork session), read in Chrome" } },
         { id: "zoo-boo", name: "Zoo Boo at the Detroit Zoo", city: "Royal Oak", region: "MI",
-          categories: ["family-friendly"], featured: true, status: "HOLD_UNVERIFIED",
+          categories: ["family-friendly"], featured: true, status: "READY_FOR_REVIEW",
           summary: "Halloween trick-or-treating event at the Detroit Zoo.",
-          image: img("halloween", 4),
-          evidence: [ev("Inventory #38. WXYZ 2026: returns on select October weekends. One date listed as a typo in the source, so no dates shown.")] },
+          website: "https://detroitzoo.org/events/zoo-boo/",
+          image: linked("halloween", 4, { src: "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp", sourcePage: "https://detroitzoo.org/events/zoo-boo/", credit: "Detroit Zoo",
+            note: "Official Zoo Boo hero photo: pumpkin scarecrow display in front of the zoo's Wildlife Interpretive Gallery." }),
+          evidence: [ev("Inventory #38. WXYZ 2026: returns on select October weekends. One date listed as a typo in the source, so no dates shown."),
+            official("Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card.", "https://detroitzoo.org/events/zoo-boo/")],
+          relevance: { confirmed: true, note: "Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026.", checkedAt: "2026-10-11", checkedBy: "Claude (Cowork session), read in Chrome" } },
         { id: "glenlore-carnevil-2", name: "Glenlore Trails: CarnEvil 2", city: "Commerce Township", region: "MI",
           categories: ["strange-unusual", "haunted-attractions"], featured: false, status: "HOLD_UNVERIFIED",
           summary: "Illuminated forest walk with a carnival-horror theme in Commerce Township.",
           website: "https://glenloretrails.com", image: img("halloween", 5),
           evidence: [ev("Inventory #32. Michigan.org / Michigan Public 2026 listings; glenloretrails.com named for tickets.", "https://glenloretrails.com")] },
         { id: "crossroads-ghosts-goodies", name: "Halloween Ghosts & Goodies at Crossroads Village", city: "Flint area", region: "MI",
-          categories: ["family-friendly"], featured: false, status: "HOLD_UNVERIFIED",
+          categories: ["family-friendly"], featured: false, status: "READY_FOR_REVIEW",
           summary: "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
-          image: img("halloween", 6),
-          evidence: [ev("Inventory #39. A late-summer 2026 listing invites reservations for the 2026 event; specific 2026 dates not found.")] }
+          website: "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+          image: linked("halloween", 6, { src: "https://geneseecountyparks.org/wp-content/uploads/2023/10/209A9950-scaled.jpg", sourcePage: "https://geneseecountyparks.org/halloween-ghosts-goodies/", credit: "Genesee County Parks",
+            note: "Header photo of the official Halloween Ghosts & Goodies page: carved pumpkins and cobwebs on a porch. Generic Halloween scene; may not show Crossroads Village itself." }),
+          evidence: [ev("Inventory #39. A late-summer 2026 listing invites reservations for the 2026 event; specific 2026 dates not found."),
+            official("Official Genesee County Parks page read 2026-10-11: Halloween Ghosts & Goodies at Crossroads Village, October 2026 (3-4, 9-11, 16-18, 22-25, 29-30). Dates are not shown on the card.", "https://geneseecountyparks.org/halloween-ghosts-goodies/")],
+          relevance: { confirmed: true, note: "Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026.", checkedAt: "2026-10-11", checkedBy: "Claude (Cowork session), read in Chrome" } }
       ]
     },
 
@@ -236,7 +258,14 @@
     var acquired = !!(acq && img.illustrative !== true && has(acq.file) && img.src === acq.file && acq.bytes > 0 &&
       SHA.test(acq.sha256 || "") && acq.width > 0 && acq.height > 0 && DATE.test(acq.acquiredAt || ""));
     var rights = has(img.license) && HTTPS.test(img.licenseUrl || "") && has(img.credit) && DATE.test(img.rightsVerifiedAt || "");
-    var imageStarted = img.illustrative !== true && (has(img.sourcePage) || has(img.license));
+    // Linked image (owner decision 2026-10-11): shown from the destination's own site with the generated card as the
+    // fallback. Needs the link, its source page, a credit and the recorded owner acceptance. Replaces items 3 and 4 only.
+    var rm = img.remote;
+    var remote = !!(rm && HTTPS.test(rm.src || "") && HTTPS.test(rm.sourcePage || "") && has(rm.credit) && has(rm.acceptedBy) && DATE.test(rm.acceptedAt || "") && has(rm.riskNote) &&
+      has(img.src) && /^\/assets\//.test(img.src));
+    acquired = acquired || remote;
+    rights = rights || remote;
+    var imageStarted = !!rm || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
     var approval = !!(ap && has(ap.by) && DATE.test(ap.at || ""));
     return { official: official, relevance: relevance, identity: identity, acquired: acquired, rights: rights,
       imageStarted: imageStarted, approval: approval };

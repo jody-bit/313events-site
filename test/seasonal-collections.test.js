@@ -99,7 +99,7 @@ for (const slug of DATA.ORDER) {
     assert.ok(!FORBIDDEN.test(e.summary), e.id + " summary states an unverified operating fact: " + e.summary);
     assert.ok(!("hours" in e) && !("admission" in e) && !("dates" in e), e.id + " carries unverified fields");
     if (e.status === "PUBLISHED") {
-      assert.ok(e.image.acquired && !e.image.illustrative && e.approval, e.id + " published without an acquired image or approval");
+      assert.ok(((e.image.acquired && !e.image.illustrative) || e.image.remote) && e.approval, e.id + " published without an acquired or linked image, or approval");
       assert.ok(fs.existsSync(path.join(root, e.image.src)), e.id + " image file missing");
     }
   }
@@ -133,6 +133,40 @@ assert.strictEqual(R.esc('<a href="x">&\'</a>'), "&lt;a href=&quot;x&quot;&gt;&a
   assert.ok(!/<img(?![^>]*\balt=)/.test(html), "every img has alt");
   for (const m of html.matchAll(/<a [^>]*target="_blank"[^>]*>/g)) assert.ok(/rel="noopener noreferrer"/.test(m[0]));
   assert.ok(!/Illustrative image<\/span><\/div>/.test(html), "acquired images are not labelled illustrative");
+}
+
+// ---- 3b. linked images (owner decision 2026-10-11): the link is shown, the generated card is the fallback
+{
+  const linked = (over) => complete(Object.assign({ status: "PUBLISHED" }, over || {}, { image: Object.assign({ src: ASSET, illustrative: true, source: "313.events supplied collection graphic (AI-generated), cropped", credit: "313.events", license: "Supplied by 313.events" }, {
+    remote: Object.assign({ src: "https://example.org/photo.jpg", sourcePage: "https://example.org/page", credit: "Example Org", acceptedBy: "Owner", acceptedAt: "2026-10-11", riskNote: "Owner accepted the risk." }, (over && over.remote) || {}) }) }));
+  const state = (e) => DATA.readiness(e).state;
+  const noApproval = (e) => { delete e.approval; return e; };
+  assert.strictEqual(state(noApproval(linked())), "READY_FOR_REVIEW", "a linked image satisfies the image items, not approval");
+  assert.strictEqual(state(linked()), "PUBLISHED");
+  for (const [what, fix] of [["no link", (r) => { delete r.src; }], ["link not https", (r) => { r.src = "http://example.org/p.jpg"; }], ["no source page", (r) => { delete r.sourcePage; }],
+    ["no credit", (r) => { delete r.credit; }], ["no recorded acceptance", (r) => { delete r.acceptedBy; }], ["no acceptance date", (r) => { delete r.acceptedAt; }], ["no risk note", (r) => { delete r.riskNote; }]]) {
+    const e = linked(); fix(e.image.remote);
+    assert.strictEqual(state(e), "IMAGE_PENDING", "linked image incomplete: " + what);
+  }
+  const noFallback = linked(); noFallback.image.src = "https://example.org/x.webp";
+  assert.notStrictEqual(state(noFallback), "PUBLISHED", "the fallback must be a local generated card");
+  const noOfficial = linked(); noOfficial.evidence = [];
+  assert.strictEqual(state(noOfficial), "HOLD_UNVERIFIED", "a linked image never replaces official verification");
+  // rendering: link first, fallback in the handler, credit linked, badge only after a failure
+  const col = clone(DATA.COLLECTIONS.fall); col.entries = [linked({ id: "l1", name: "Linked Mill", categories: ["cider-donuts"] })];
+  const html = R.main(col);
+  assert.ok(html.includes('src="https://example.org/photo.jpg"') && html.includes('referrerpolicy="no-referrer"'));
+  assert.ok(html.includes('data-fallback="' + ASSET + '"') && html.includes("onerror="), "the generated card is the fallback");
+  assert.ok(html.includes('href="https://example.org/page"') && html.includes("Photo: Example Org"), "credit links to the source page");
+  assert.ok(html.includes("sc-illus-fb") && /\.sc-fell-back \.sc-illus-fb\{display:block\}/.test(fs.readFileSync(path.join(root, "seasonal/seasonal.css"), "utf8")), "the illustrative badge appears only after a fallback");
+  // the handler itself, run against a stand-in image element
+  const attr = /onerror="([^"]*)"/.exec(html)[1].replace(/&#39;/g, "'");
+  const classes = new Set();
+  const img = { onerror: () => {}, src: "https://example.org/photo.jpg", parentNode: { classList: { add: (c) => classes.add(c) } }, getAttribute: (n) => (n === "data-fallback" ? ASSET : null) };
+  new Function("this_", "with (this_) {" + attr.replace(/this/g, "this_") + "}")(img);
+  assert.strictEqual(img.src, ASSET, "a broken link swaps in the generated card");
+  assert.ok(classes.has("sc-fell-back") && img.onerror === null, "and marks the card, once");
+  assert.ok(BUILD.validateAssets, "build validates fallbacks");
 }
 
 // ---- 4. the pages as built: empty states, no unpublished content

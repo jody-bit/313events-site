@@ -38,6 +38,20 @@
       return '<li>' + esc(catLabel(col, c)) + '</li>';
     }).join("") + '</ul>';
   }
+  // A linked image (image.remote) is shown from the destination's site with the generated card as the fallback:
+  // if the link fails, the inline handler swaps the generated card in, hides the credit and shows the "Illustrative
+  // image" badge. referrerpolicy="no-referrer" keeps hotlink protection that checks the referrer from blocking it.
+  function cardMedia(e) {
+    var r = e.image.remote;
+    if (r && /^https:\/\//.test(r.src || "") && !e.fixture) {
+      return '<div class="sc-card-media"><img src="' + esc(r.src) + '" alt="" loading="lazy" width="640" height="427" referrerpolicy="no-referrer"' +
+        ' data-fallback="' + esc(e.image.src) + '" onerror="this.onerror=null;this.parentNode.classList.add(\'sc-fell-back\');this.src=this.getAttribute(\'data-fallback\')">' +
+        '<span class="sc-illus sc-illus-fb">Illustrative image</span>' +
+        '<a class="sc-credit" href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a>';
+    }
+    return '<div class="sc-card-media"><img src="' + esc(e.image.src) + '" alt="" loading="lazy" width="640" height="427">' +
+      (e.fixture ? '<span class="sc-illus sc-fixture">Test fixture</span>' : e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "");
+  }
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
@@ -45,8 +59,7 @@
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
       : esc(e.name);
     return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '">' +
-      '<div class="sc-card-media"><img src="' + esc(e.image.src) + '" alt="" loading="lazy" width="640" height="427">' +
-      (e.fixture ? '<span class="sc-illus sc-fixture">Test fixture</span>' : e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>' +
+      cardMedia(e) + '</div>' +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title">' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +

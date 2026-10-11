@@ -1315,9 +1315,9 @@
    "name": "Hallowe'en in Greenfield Village",
    "location": "Dearborn, MI",
    "inventory_note": "Historic immersive Halloween experience",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": "halloween-greenfield-village",
-   "reason": "Entry exists in seasonal/collections.js, but the official source has not been verified (evidence level inventory+search), its image is an illustrative graphic and no approval is recorded, so it is not public. Prior note: Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "reason": "Official page read 2026-10-11 and relevance confirmed; image is a link to the destination's own site with the generated card as fallback (owner accepted the rights risk 2026-10-11, no permission on file). Awaiting explicit publication approval.",
    "flags": []
   },
   {
@@ -1356,9 +1356,9 @@
    "name": "Zoo Boo at Detroit Zoo",
    "location": "Royal Oak, MI",
    "inventory_note": "Trick-or-treating and animal encounters",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": "zoo-boo",
-   "reason": "Entry exists in seasonal/collections.js, but the official source has not been verified (evidence level inventory+search), its image is an illustrative graphic and no approval is recorded, so it is not public. Prior note: Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "reason": "Official page read 2026-10-11 and relevance confirmed; image is a link to the destination's own site with the generated card as fallback (owner accepted the rights risk 2026-10-11, no permission on file). Awaiting explicit publication approval.",
    "flags": []
   },
   {
@@ -1368,9 +1368,9 @@
    "name": "Halloween Ghosts & Goodies at Crossroads Village",
    "location": "Flint area, MI",
    "inventory_note": "Historic village Halloween",
-   "status": "HOLD_UNVERIFIED",
+   "status": "READY_FOR_REVIEW",
    "published_id": "crossroads-ghosts-goodies",
-   "reason": "Entry exists in seasonal/collections.js, but the official source has not been verified (evidence level inventory+search), its image is an illustrative graphic and no approval is recorded, so it is not public. Prior note: Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "reason": "Official page read 2026-10-11 and relevance confirmed; image is a link to the destination's own site with the generated card as fallback (owner accepted the rights risk 2026-10-11, no permission on file). Awaiting explicit publication approval.",
    "flags": []
   },
   {

@@ -65,3 +65,24 @@ Open `/fall?fixtures=1` (or `/halloween`, `/fall-color`) on a **Preview**: `seas
 `/config.js` reports a non-production environment, and shows a "TEST FIXTURES" banner and a "Test fixture" badge on each
 card. In production, or if config is unavailable, the flag is ignored. Fixtures are never in the built HTML, in
 `collections.js` or in `candidates.json`.
+
+
+## Linked images (owner decision, 2026-10-11)
+
+Jody accepted the copyright risk of showing a destination's own image by link, credited and linked to its page, with the
+generated card as the fallback if the link breaks. This is recorded per image in `image.remote`
+(`src`, `sourcePage`, `credit`, `acceptedBy`, `acceptedAt`, `riskNote`); `image.src` stays the local generated card.
+
+- Gate: a complete `image.remote` satisfies items 3 and 4 only (the image and its rights record). Official-source
+  verification, relevance and explicit publication approval are still required, so a linked image alone never makes an
+  entry public.
+- Rendering: the card shows the linked image with `referrerpolicy="no-referrer"`, a "Photo: <credit>" link to the source
+  page, and an inline `onerror` that swaps in the generated card, hides the credit and shows the "Illustrative image" badge.
+- No permission from any rights holder is on file. If an owner objects, delete that entry's `image.remote`; the card
+  returns to the generated image with no other change.
+- Entries using it (2026-10-11): zoo-boo (Detroit Zoo hero photo), crossroads-ghosts-goodies (Genesee County Parks page
+  header, a generic Halloween scene), halloween-greenfield-village (The Henry Ford event card; may be generated art, not
+  verified as a photo). All three are READY_FOR_REVIEW, not public, awaiting approval.
+- Looked at and not used: Wiard's (logo only), Blake Farms (a summer strawberry field), Metroparks' Kensington, Stony
+  Creek and Hudson Mills pages (adaptive-recreation photos, not fall color), Yates and Parmenter's (no photo found),
+  Erebus (site not reached). These stay on the generated card.

@@ -65,6 +65,11 @@ function validateAssets() {
     for (const e of DATA.COLLECTIONS[slug].entries) {
       if (e.status !== "PUBLISHED") continue;
       const a = e.image && e.image.acquired;
+      if (!a && e.image && e.image.remote) {
+        // Linked image: the generated fallback it swaps to must exist.
+        if (!fs.existsSync(path.join(root, e.image.src))) problems.push(slug + "/" + e.id + ": fallback image missing " + e.image.src);
+        continue;
+      }
       if (!a) { problems.push(slug + "/" + e.id + ": PUBLISHED without image.acquired"); continue; }
       const f = path.join(root, a.file);
       if (!fs.existsSync(f)) { problems.push(slug + "/" + e.id + ": image file missing " + a.file); continue; }
