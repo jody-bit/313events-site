@@ -848,6 +848,15 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Implementation Notes:** none yet. Touches ingestion, so it needs its own approval before work starts.
 - **Product Decisions Required:** the minimum acceptable image width, and whether to backfill existing articles.
 
+### OPS-001 — Unexplained production-derived data appeared in the staging database
+
+- **Type:** OPS (operational follow-up) · **Status:** BACKLOG, **not investigated** (recorded 2026-10-11) · **Priority:** P2
+- **Observed (2026-10-10, UTC):** while preparing Preview reference data, the staging Supabase project (`efxjdlogohcggpuftivm`) was found to already contain production-derived rows that this work did not write: about 72 current events, 17 editorial articles, 19 article-event links and additional venues, appearing between roughly 22:00 and 22:13 UTC, with no active database session visible when queried afterwards. Only the writer's identity and mechanism are unknown.
+- **What is documented:** `supabase/staging/REFERENCE_DATA_2026-10-10.md` records what was found, the verification queries, the net-zero writes made by the Homepage V2 verification work, known differences from production, and the rollback (`supabase/staging/rollback_reference_data_2026-10-10.sql`, staging only).
+- **Why it matters:** `ENVIRONMENTS.md` says Previews read staging only, with production strictly read-only for development work. A data path that copies production rows into staging is either an undocumented sync or an unintended write, and Preview counts (for example the Orbit total of 88) are only meaningful if it is understood.
+- **Explicitly not this item:** investigating it as part of Homepage V2 or the seasonal release candidate; copying any further production records into staging.
+- **Acceptance Criteria (proposed):** identify the writer (job, person or integration) from Supabase and Vercel logs; decide whether it is intended; if intended, document it in `ENVIRONMENTS.md` with its scope and any PII handling; if not, stop it. Production counts are unaffected: they are computed from production data (see `loadOrbitEventTotal()` and the `events_public` loader in `index.html`).
+
 ---
 
 ## Discovery / decisions needed
