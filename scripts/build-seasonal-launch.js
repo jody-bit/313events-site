@@ -58,14 +58,32 @@ const ART = (col, n) => "/assets/seasonal/" + (col === "fall" ? "fall" : "fall-c
 const stateOf = (e) => ED.COLLECTIONS.readiness(e).state;
 
 function city(loc) { const m = /^(.*), ([A-Z]{2})$/.exec(loc); return m ? { city: m[1], region: m[2] } : { city: loc, region: "" }; }
-function sentence(items) { return items.slice(0, 4).join(", "); }
+// Card summaries name only the kinds of things a page lists: no parentheticals, numbers, prices, hours or dates.
+function sentence(items) {
+  return items.map((a) => String(a).replace(/\([^)]*\)/g, "").replace(/\s+/g, " ").trim()).filter((a) => a && !/\d|\$|\bfree\b|\badmission\b|\bopen\b|\bhours?\b|\bdaily\b|\bweekends?\b/i.test(a)).slice(0, 4).join(", ");
+}
 
+const MILES = (a, b, c, d) => { const R = 3958.8, r = Math.PI / 180, dl = (c - a) * r, dn = (d - b) * r;
+  const h = Math.sin(dl / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+const DETROIT = [42.3314, -83.0458];
+function listOf(v) { return (v.activities && v.activities.length ? v.activities : v.features) || []; }
+function distanceFlag(v) {
+  if (typeof v.lat !== "number" || typeof v.lon !== "number") return null;
+  const mi = MILES(DETROIT[0], DETROIT[1], v.lat, v.lon);
+  return { miles: Math.round(mi), outside: mi > 75 };
+}
+
+const RISKY = /\b(hours?|admission|\$\d|tickets?|open now|open today|peak|wheelchair|accessible|\d{1,2}(am|pm|:\d\d)|oct(ober)?\.? \d)/i;
+function safeNote(note, name, where) {
+  const n = String(note || "").replace(/\s+/g, " ").trim();
+  return n && !RISKY.test(n) ? n + "." : name.replace(/’/g, "'") + " in " + where.city + ", inventory candidate.";
+}
 function buildEntry(col, item, existing, n) {
   const row = reg.candidates.find((c) => c.collection === col && c.name === item.ledger_name && c.location === item.ledger_location);
   const id = existing ? existing.id : keyFor(row);
   const v = item.verification, read_ok = v.read_ok === true;
   const where = city(row.location);
-  const e = existing ? JSON.parse(JSON.stringify(existing)) : { id, name: row.name.replace(/’/g, "'"), city: where.city, region: where.region, categories: item.categories, featured: false, status: "HOLD_UNVERIFIED", summary: row.inventory_note, image: null };
+  const e = existing ? JSON.parse(JSON.stringify(existing)) : { id, name: row.name.replace(/’/g, "'"), city: where.city, region: where.region, categories: item.categories, featured: false, status: "HOLD_UNVERIFIED", summary: safeNote(row.inventory_note, row.name, where), image: null };
   if (!existing) {
     const art = ART(col, 1 + (n % ART_COUNT));
     e.image = { src: art, alternates: [ART(col, 1 + ((n + 3) % ART_COUNT))], placeholder: "/assets/placeholders/event-800.webp", source: "313.events supplied collection graphic (AI-generated), cropped",
@@ -82,19 +100,31 @@ function buildEntry(col, item, existing, n) {
         (v.flags && v.flags.length ? "Flags: " + v.flags.join("; ") + "." : "") });
     if (col === "fall" || item.relevance_confirmed) {
       // summary is built only from what the official page lists
-      e.summary = (col === "fall" ? "" : "") + e.name + " in " + e.city + ". Official page lists " + sentence(v.activities.length ? v.activities : ["its programs"]) + ".";
+      e.summary = e.name + " in " + e.city + ". " + (col === "fall" ? "Official page lists " : "Listed features: ") + (sentence(listOf(v)) || "its seasonal programs") + ".";
     }
   } else {
     e.evidence.push({ level: "inventory+search", websiteChecked: false, url: v.official_url || null, checkedAt: DATE,
       note: "Official page could not be read on " + DATE + ": " + (v.flags || []).join("; ") + ". Not verified." });
   }
-  if (read_ok) {
+  const rd = item.relevance || null;
+  if (read_ok || (rd && rd.evidence && rd.evidence.length)) {
     e.relevance = { confirmed: item.relevance_confirmed === true, checkedAt: DATE, checkedBy: CHECKED_BY,
-      note: item.relevance_confirmed ? (v.relevance || "Official page lists seasonal activities for the collection.") : "Not confirmed: " + (v.relevance || "the official page does not describe seasonal activity for this collection") + " Awaiting editorial judgment." };
-  } else delete e.relevance;
+      note: item.relevance_confirmed ? ((rd && rd.rationale) || v.relevance || "Official page lists seasonal activities for the collection.") : "Not confirmed: " + ((rd && rd.rationale) || v.relevance || "no credible source found that describes seasonal activity for this collection") + ((v.flags || []).some((f) => /Outside the 75-mile/.test(f)) ? " " + (v.flags || []).find((f) => /Outside the 75-mile/.test(f)) : "") + " Awaiting editorial judgment." };
+    if (rd) { e.relevance.confidence = rd.confidence; e.relevance.evidence = rd.evidence; e.relevance.unresolved = rd.unresolved || []; }
+  }
+  {
+    const dist = distanceFlag(v);
+    if (dist) e.distance = { miles: dist.miles, outside75: dist.outside, note: "Straight-line miles from Detroit centre; coordinates approximate (" + (v.coord_source || "source not stated") + ")" };
+  }
+  if (!(read_ok || (rd && rd.evidence && rd.evidence.length))) delete e.relevance;
   // Photography: the owner's own photograph (priority 1) when a clean one exists, otherwise the generated card stays.
+  if (e.image && e.image.remote) {
+    // Owner direction 2026-10-11: a publicly accessible third-party photo is not licensed. It stays a QA candidate only.
+    e.image.linkedCandidates = (e.image.linkedCandidates || []).concat([e.image.remote]);
+    delete e.image.remote;
+  }
   const pick = chooseDefault(col, destPhotos(col, row));
-  if (pick && !(e.image && e.image.remote)) {
+  if (pick) {
     const oi = ED.ownerPhotoImage(pick.id, { acquiredAt: DATE, verifiedAt: DATE, verifiedBy: "Claude Code: size, dimensions and sha256 computed from the repository file",
       recordedBy: "Jody Tyree (owner photo recorded in photo-library.json, " + (pick.review_ref || pick.id) + ")", recordedAt: DATE });
     e.image = Object.assign({ alternates: e.image.alternates, placeholder: e.image.placeholder }, oi);
@@ -113,7 +143,7 @@ for (const col of ["fall", "fall-color"]) {
     const row = reg.candidates.find((c) => c.collection === col && c.name === item.ledger_name && c.location === item.ledger_location);
     if (!row) throw new Error("no ledger row for " + col + " " + item.ledger_name);
     const key = keyFor(row);
-    const existing = out[col].find((e) => e.id === key || norm(e.name) === norm(item.ledger_name));
+    const existing = out[col].find((e) => e.id === key) || (KEY_OVERRIDE[col + "|" + row.name + "|" + row.location] ? null : out[col].find((e) => norm(e.name) === norm(item.ledger_name)));
     const b = buildEntry(col, item, existing, n++);
     if (existing) out[col][out[col].indexOf(existing)] = b.entry; else out[col].push(b.entry);
     built[col].push(b);
@@ -171,12 +201,11 @@ for (const col of ["fall", "fall-color"]) {
     let primary;
     const art1 = genOpt(col, e && e.image && !e.image.ownerPhoto ? e.image.src : ART(col, 1 + (artN++ % ART_COUNT)), (e && e.image && e.image.src.match(/-(\d)\.webp$/) || [0, 1 + artN % ART_COUNT])[1]);
     const art2 = genOpt(col, ART(col, 1 + (artN + 3) % ART_COUNT), 1 + (artN + 3) % ART_COUNT);
-    if (e && e.image && e.image.remote) {
-      const r = e.image.remote;
-      opts.push({ id: "link-" + e.id, type: "linked_third_party", src: r.src, source: "Third-party page: " + r.sourcePage, credit: r.credit, rights_status: "not cleared: linked image; permission not confirmed",
-        illustrative: false, depicts_actual_destination: true, warnings: ["Linked image: not verified to load or rights-cleared"], image_kind: "photo", source_type: "third-party", permission_on_file: false,
-        risk_acceptance: { accepted_by: r.acceptedBy, accepted_at: r.acceptedAt, note: r.riskNote }, load_check: null });
-    }
+    ((e && e.image && e.image.linkedCandidates) || []).forEach((r, i) => {
+      opts.push({ id: "link-" + e.id + (i ? "-" + i : ""), type: "linked_third_party", src: r.src, source: "Third-party page: " + r.sourcePage, credit: r.credit, rights_status: "not cleared: linked image; permission not confirmed; NOT licensed and not eligible for publication",
+        illustrative: false, depicts_actual_destination: true, warnings: ["Linked third-party image: rights unresolved. Replaced by illustration or held until a licensed or owner photo exists."], image_kind: "photo", source_type: "third-party", permission_on_file: false,
+        risk_acceptance: null, load_check: null });
+    });
     opts.push(art1, art2);
     atm(col).forEach((p) => opts.push(photoOpt(p, "owner_photo_atmospheric")));
     primary = defaultPick || art1.id;

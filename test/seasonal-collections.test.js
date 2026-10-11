@@ -163,7 +163,7 @@ for (const slug of DATA.ORDER) {
   }
   assert.deepStrictEqual(DATA.published(col).map((e) => e.id), col.entries.filter((e) => e.status === "PUBLISHED").map((e) => e.id));
 }
-assert.strictEqual(allEntries, 102, "24 fall + 52 halloween + 26 fall-color records");
+assert.strictEqual(allEntries, 252, "71 fall + 52 halloween + 129 fall-color records: one private record per inventory row");
 // Release-candidate state: no destination has the explicit approval, so none is public.
 for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, 0, slug + " has no public destinations yet");
 
