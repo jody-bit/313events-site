@@ -1,0 +1,3178 @@
+{
+ "generated": "2026-10-10",
+ "note": "Research candidates from the three working inventories. Only status=published entries render; everything else is preserved for verification. Not for public display.",
+ "candidates": [
+  {
+   "collection": "fall",
+   "inventory_no": "1",
+   "section": null,
+   "name": "Alber Orchard & Cider Mill",
+   "location": "Manchester, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "2",
+   "section": null,
+   "name": "Almar Orchards",
+   "location": "Flushing, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "3",
+   "section": null,
+   "name": "Apple Charlie’s Orchard & Cider Mill",
+   "location": "New Boston, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "4",
+   "section": null,
+   "name": "Apple Lane Orchard",
+   "location": "Flint, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "5",
+   "section": null,
+   "name": "Ashton Orchards & Cider Mill",
+   "location": "Ortonville, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "6",
+   "section": null,
+   "name": "Big Red Orchard",
+   "location": "Washington Township, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "7",
+   "section": null,
+   "name": "Blake’s Orchard & Cider Mill",
+   "location": "Armada, MI",
+   "inventory_note": "Both",
+   "status": "published",
+   "published_id": "blakes-orchard-cider-mill",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": [
+    "multiple Blake's sites: verify each separately"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "8",
+   "section": null,
+   "name": "Blake’s Big Apple",
+   "location": "Armada, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "multiple Blake's sites: verify each separately"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "9",
+   "section": null,
+   "name": "Blake’s Backyard",
+   "location": "Almont, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "multiple Blake's sites: verify each separately"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "10",
+   "section": null,
+   "name": "Blake’s Lyon Township",
+   "location": "South Lyon, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "multiple Blake's sites: verify each separately"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "11",
+   "section": null,
+   "name": "Damouni Orchards",
+   "location": "Flint, MI",
+   "inventory_note": "Orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "12",
+   "section": null,
+   "name": "Dexter Cider Mill",
+   "location": "Dexter, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "13",
+   "section": null,
+   "name": "Diehl’s Orchard & Cider Mill",
+   "location": "Holly, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "14",
+   "section": null,
+   "name": "Erie Orchards & Cider Mill",
+   "location": "Erie, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "15",
+   "section": null,
+   "name": "Forever Acres Farm",
+   "location": "Britton, MI",
+   "inventory_note": "Orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "16",
+   "section": null,
+   "name": "Franklin Cider Mill",
+   "location": "Bloomfield Hills, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "17",
+   "section": null,
+   "name": "Goodison Cider Mill",
+   "location": "Rochester, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "18",
+   "section": null,
+   "name": "Hy’s Cider Mill",
+   "location": "Bruce Township, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "19",
+   "section": null,
+   "name": "Jenny’s Farm Stand & Cider Mill",
+   "location": "Dexter, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "20",
+   "section": null,
+   "name": "JK’s Farmhouse Ciders / Almar Orchards",
+   "location": "Flushing, MI",
+   "inventory_note": "Same destination as Almar",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "duplicate of another entry; merge before publishing"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "21",
+   "section": null,
+   "name": "Kreps Apple Barn & Cider Mill",
+   "location": "La Salle, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "22",
+   "section": null,
+   "name": "Long Family Orchard & Farm",
+   "location": "Commerce Township, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "23",
+   "section": null,
+   "name": "Middleton Farms Cider Mill",
+   "location": "Shelby Township, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "24",
+   "section": null,
+   "name": "Montrose Orchards",
+   "location": "Montrose, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "25",
+   "section": null,
+   "name": "Mueller’s Orchard & Cider Mill",
+   "location": "Linden, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "26",
+   "section": null,
+   "name": "Obstbaum Orchards",
+   "location": "Northville, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "27",
+   "section": null,
+   "name": "Pankiewicz Cider Mill",
+   "location": "Casco, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "28",
+   "section": null,
+   "name": "Parmenter’s Northville Cider Mill",
+   "location": "Northville, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "published",
+   "published_id": "parmenters-northville-cider-mill",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "29",
+   "section": null,
+   "name": "Parshallville Cider Mill",
+   "location": "Fenton, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "30",
+   "section": null,
+   "name": "Plymouth Orchards & Cider Mill",
+   "location": "Plymouth, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "31",
+   "section": null,
+   "name": "Porter’s Orchard",
+   "location": "Goodrich, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "32",
+   "section": null,
+   "name": "Price’s Orchard",
+   "location": "Newport, MI",
+   "inventory_note": "Orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "33",
+   "section": null,
+   "name": "Rochester Cider Mill",
+   "location": "Rochester, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "34",
+   "section": null,
+   "name": "Schell Family Farm",
+   "location": "Pinckney, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "35",
+   "section": null,
+   "name": "Spicer Orchards",
+   "location": "Fenton, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "36",
+   "section": null,
+   "name": "Stony Creek Orchard & Cider Mill",
+   "location": "Romeo, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "37",
+   "section": null,
+   "name": "Three Cedars Farm",
+   "location": "Northville, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "38",
+   "section": null,
+   "name": "Verellen Orchards & Cider",
+   "location": "Washington Township, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "39",
+   "section": null,
+   "name": "Wasem Fruit Farm",
+   "location": "Milan, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "40",
+   "section": null,
+   "name": "Westview Orchards & Winery",
+   "location": "Washington Township, MI",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "41",
+   "section": null,
+   "name": "Wiard’s Orchards",
+   "location": "Ypsilanti, MI",
+   "inventory_note": "Both",
+   "status": "published",
+   "published_id": "wiards-orchards",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "42",
+   "section": null,
+   "name": "Yates Cider Mill",
+   "location": "Rochester Hills, MI",
+   "inventory_note": "Cider/orchard",
+   "status": "published",
+   "published_id": "yates-cider-mill",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "43",
+   "section": null,
+   "name": "Altermatt Farms",
+   "location": "Macomb, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "44",
+   "section": null,
+   "name": "Bird’s Big Pumpkins",
+   "location": "Romulus, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "45",
+   "section": null,
+   "name": "Bonadeo Farms",
+   "location": "Highland, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "46",
+   "section": null,
+   "name": "Chambers Family Farm",
+   "location": "Pinckney, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "47",
+   "section": null,
+   "name": "Coleman’s Farm Market",
+   "location": "Ypsilanti / Saline, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "48",
+   "section": null,
+   "name": "Cook’s Farm Dairy",
+   "location": "Ortonville, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "49",
+   "section": null,
+   "name": "Corn Fun",
+   "location": "Casco, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "50",
+   "section": null,
+   "name": "DeBuck’s Family Farm",
+   "location": "Belleville, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "51",
+   "section": null,
+   "name": "Fawcett Farms",
+   "location": "Howell, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "52",
+   "section": null,
+   "name": "Fick Farms",
+   "location": "Lapeer, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "53",
+   "section": null,
+   "name": "Flushing Farms",
+   "location": "Flushing, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "54",
+   "section": null,
+   "name": "Harnica Kids’ Pumpkin Farm",
+   "location": "Dundee, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "55",
+   "section": null,
+   "name": "Kackleberry Farms",
+   "location": "Monroe, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "56",
+   "section": null,
+   "name": "Little Pumpkin Patch",
+   "location": "Grand Blanc, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "57",
+   "section": null,
+   "name": "Mitchell Farm",
+   "location": "Holly, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "58",
+   "section": null,
+   "name": "Munsell Farms",
+   "location": "Fowlerville, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "59",
+   "section": null,
+   "name": "Nixon Farms / Blast Corn Maze",
+   "location": "Dexter, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "60",
+   "section": null,
+   "name": "Puma’s Pumpkin Patch",
+   "location": "Macomb, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "61",
+   "section": null,
+   "name": "Starrs Lakeview Farms",
+   "location": "Linden, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "62",
+   "section": null,
+   "name": "Thread Creek Farm",
+   "location": "Grand Blanc, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "63",
+   "section": null,
+   "name": "Trabbic Family Pumpkin Farm",
+   "location": "Erie, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "64",
+   "section": null,
+   "name": "Wells Pumpkin Farm",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "65",
+   "section": null,
+   "name": "Wing Farms",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "66",
+   "section": null,
+   "name": "Fleitz Pumpkin Farm",
+   "location": "Oregon, OH",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "67",
+   "section": null,
+   "name": "MacQueen Orchards",
+   "location": "Holland, OH",
+   "inventory_note": "Both",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "68",
+   "section": null,
+   "name": "Gust Brother’s Pumpkin Farm",
+   "location": "Ottawa Lake, MI",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "69",
+   "section": null,
+   "name": "Jason’s Pumpkin Patch",
+   "location": "Oak Harbor, OH",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "70",
+   "section": null,
+   "name": "Leaders Farms",
+   "location": "Napoleon, OH",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall",
+   "inventory_no": "71",
+   "section": null,
+   "name": "Wheeler Farms Corn Maze",
+   "location": "Whitehouse, OH",
+   "inventory_note": "Pumpkins",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "1",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Erebus Haunted Attraction",
+   "location": "Pontiac, MI",
+   "inventory_note": "Four-story haunted house",
+   "status": "published",
+   "published_id": "erebus",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "2",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Eloise Asylum",
+   "location": "Westland, MI",
+   "inventory_note": "Immersive asylum horror",
+   "status": "published",
+   "published_id": "eloise-asylum",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "3",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Hush Haunted Attraction",
+   "location": "Westland, MI",
+   "inventory_note": "Multiple haunted houses",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "4",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Azra Chamber of Horrors",
+   "location": "Madison Heights, MI",
+   "inventory_note": "Multilevel haunted maze",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "5",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Rotten Manor",
+   "location": "Holly, MI",
+   "inventory_note": "Haunted manor, forest and asylum",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "6",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Wiard's Night Terrors",
+   "location": "Ypsilanti, MI",
+   "inventory_note": "Haunted thrill park",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "7",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Slay Nights",
+   "location": "Howell, MI",
+   "inventory_note": "Story-driven haunted house",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "8",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Scarefest Scream Park",
+   "location": "Lenox Township, MI",
+   "inventory_note": "Haunted hayride, maze and forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "9",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Blake's Haunted Attractions",
+   "location": "Armada, MI",
+   "inventory_note": "Haunted barn and hayride",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "10",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "The Scream Machine",
+   "location": "Taylor, MI",
+   "inventory_note": "Haunted asylum experience",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "11",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Deranged Haunt",
+   "location": "Romulus, MI",
+   "inventory_note": "Haunted woods",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "12",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Slaughterhouse Adventure",
+   "location": "Fowlerville, MI",
+   "inventory_note": "Haunted house and corn maze",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "13",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Full Moon Manor at Bonadeo Farms",
+   "location": "Highland, MI",
+   "inventory_note": "Haunted farm",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "14",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Exit 13 Haunted House",
+   "location": "Mount Morris, MI",
+   "inventory_note": "Extreme interactive haunt; operating status needs verification",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "operating status/2026 occurrence flagged in inventory"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "15",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Nightmare Fields at The Pumpkin Factory",
+   "location": "Belleville, MI",
+   "inventory_note": "Haunted field attraction",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "16",
+   "section": "Haunted Houses, Scream Parks & Horror Attractions",
+   "name": "Scarehouse Windsor",
+   "location": "Windsor, ON",
+   "inventory_note": "Indoor haunted attractions and immersive horror",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "17",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "The Howling Haunted Trail & Party",
+   "location": "Fenton, MI",
+   "inventory_note": "Haunted woodland trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "18",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Terrorfied Forest",
+   "location": "Pinckney, MI",
+   "inventory_note": "Outdoor haunted forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "19",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Past Tense After Dark",
+   "location": "Lapeer, MI",
+   "inventory_note": "Haunted hayride, corn maze and house",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "20",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Spooky Trails",
+   "location": "Swartz Creek, MI",
+   "inventory_note": "Haunted maze, cornfield and hayride",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "21",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Panic in the Pines",
+   "location": "Genoa, OH",
+   "inventory_note": "Haunted hayride and woods",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "22",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Field of Fear",
+   "location": "Monclova, OH",
+   "inventory_note": "Haunted cornfield attractions",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "23",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Bates Haunted Sawmill",
+   "location": "Millington, MI",
+   "inventory_note": "Rustic haunted sawmill and maze; radius check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "24",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Dearborn Haunted Trail",
+   "location": "Dearborn, MI",
+   "inventory_note": "Haunted woodland trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "25",
+   "section": "Haunted Trails, Woods, Hayrides & Corn Mazes",
+   "name": "Sanilac Museum's Haunted Village",
+   "location": "Port Sanilac, MI",
+   "inventory_note": "Haunted historic village; radius check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "26",
+   "section": "Toledo & Northwest Ohio Halloween Attractions",
+   "name": "Distracted Haunted House",
+   "location": "Bowling Green, OH",
+   "inventory_note": "Indoor haunted house; radius check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "27",
+   "section": "Toledo & Northwest Ohio Halloween Attractions",
+   "name": "Haunted Hydro",
+   "location": "Fremont, OH",
+   "inventory_note": "Industrial haunted attraction; radius check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "28",
+   "section": "Toledo & Northwest Ohio Halloween Attractions",
+   "name": "Mortuary Manor Funeral Museum",
+   "location": "Toledo, OH",
+   "inventory_note": "Funeral history and paranormal tours",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "29",
+   "section": "Toledo & Northwest Ohio Halloween Attractions",
+   "name": "Wildwood Manor House",
+   "location": "Toledo, OH",
+   "inventory_note": "Seasonal eerie manor tours",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "30",
+   "section": "Toledo & Northwest Ohio Halloween Attractions",
+   "name": "Fort Meigs Garrison Ghost Walk",
+   "location": "Perrysburg, OH",
+   "inventory_note": "Historical ghost walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "31",
+   "section": "Toledo & Northwest Ohio Halloween Attractions",
+   "name": "Haunted Waterville Tours",
+   "location": "Waterville, OH",
+   "inventory_note": "Historical ghost tours",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "32",
+   "section": "Immersive Halloween Experiences & Illuminated Trails",
+   "name": "Glenlore Trails: CarnEvil 2",
+   "location": "Commerce Township, MI",
+   "inventory_note": "Immersive illuminated forest",
+   "status": "published",
+   "published_id": "glenlore-carnevil-2",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "33",
+   "section": "Immersive Halloween Experiences & Illuminated Trails",
+   "name": "Halloween Stroll at Canterbury Village",
+   "location": "Lake Orion, MI",
+   "inventory_note": "Halloween light displays and characters",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "34",
+   "section": "Immersive Halloween Experiences & Illuminated Trails",
+   "name": "HallowGlow at TreeRunner",
+   "location": "West Bloomfield, MI",
+   "inventory_note": "Halloween-themed aerial adventure",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "35",
+   "section": "Immersive Halloween Experiences & Illuminated Trails",
+   "name": "Hallowe'en in Greenfield Village",
+   "location": "Dearborn, MI",
+   "inventory_note": "Historic immersive Halloween experience",
+   "status": "published",
+   "published_id": "halloween-greenfield-village",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "36",
+   "section": "Immersive Halloween Experiences & Illuminated Trails",
+   "name": "Theatre Bizarre",
+   "location": "Detroit, MI",
+   "inventory_note": "Adults-only immersive masquerade; 2026 occurrence must be verified",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "operating status/2026 occurrence flagged in inventory",
+    "adults-only: age guidance to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "37",
+   "section": "Immersive Halloween Experiences & Illuminated Trails",
+   "name": "Scarehouse Windsor Immersive Dinner",
+   "location": "Windsor, ON",
+   "inventory_note": "Theatrical horror dining",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "38",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Zoo Boo at Detroit Zoo",
+   "location": "Royal Oak, MI",
+   "inventory_note": "Trick-or-treating and animal encounters",
+   "status": "published",
+   "published_id": "zoo-boo",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "39",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Halloween Ghosts & Goodies at Crossroads Village",
+   "location": "Flint area, MI",
+   "inventory_note": "Historic village Halloween",
+   "status": "published",
+   "published_id": "crossroads-ghosts-goodies",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "40",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Brick-or-Treat at LEGOLAND Discovery Center",
+   "location": "Auburn Hills, MI",
+   "inventory_note": "LEGO-themed Halloween activities",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "41",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Ooky Spooky Light Show",
+   "location": "Flint, MI",
+   "inventory_note": "Planetarium Halloween show",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "42",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Laser Halloween",
+   "location": "Flint, MI",
+   "inventory_note": "Halloween-themed laser show",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "43",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Thiessen Orchards Scaredy Cat Barn",
+   "location": "Leamington, ON",
+   "inventory_note": "Gentle haunted barn; radius check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "44",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Jack-O-Lanterns Among the Trees",
+   "location": "Troy, MI",
+   "inventory_note": "Illuminated woodland walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "45",
+   "section": "Family-Friendly Halloween Attractions",
+   "name": "Halloween Stroll",
+   "location": "Port Huron, MI",
+   "inventory_note": "Family Halloween trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "46",
+   "section": "Independent Home Haunts & Community Attractions",
+   "name": "Agony on Alcott",
+   "location": "Flint, MI",
+   "inventory_note": "Independent residential haunt",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "47",
+   "section": "Independent Home Haunts & Community Attractions",
+   "name": "Reapers Gate Home Haunt",
+   "location": "Windsor, ON",
+   "inventory_note": "Free home haunt with actors and animatronics",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "48",
+   "section": "Independent Home Haunts & Community Attractions",
+   "name": "Windsor–Essex Yard Haunt Map",
+   "location": "Windsor–Essex, ON",
+   "inventory_note": "Community Halloween display discovery",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "49",
+   "section": "Independent Home Haunts & Community Attractions",
+   "name": "Halloween Hunt the Haunts",
+   "location": "Windsor–Essex, ON",
+   "inventory_note": "Regional haunt-discovery experience",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "50",
+   "section": "Ghost Tours & Haunted History",
+   "name": "Motor City Ghosts",
+   "location": "Detroit, MI",
+   "inventory_note": "Guided ghost walks",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "51",
+   "section": "Ghost Tours & Haunted History",
+   "name": "Spooky Jane's Walk",
+   "location": "Windsor–Essex, ON",
+   "inventory_note": "Haunted-history walking tours",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "halloween",
+   "inventory_no": "52",
+   "section": "Ghost Tours & Haunted History",
+   "name": "Sandwich Town Ghost Tour",
+   "location": "Windsor, ON",
+   "inventory_note": "Historical ghost walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Belle Isle Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Island park / drive / waterfront",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Palmer Park & Witherell Woods",
+   "location": "Detroit, MI",
+   "inventory_note": "Urban forest / walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Rouge Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Woodland / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Eliza Howell Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Rouge River woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Rogell Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Woodland / wetland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "O’Hair Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Neighborhood woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Chandler Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Urban park",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Historic Fort Wayne grounds",
+   "location": "Detroit, MI",
+   "inventory_note": "Historic grounds; access check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Elmwood Cemetery",
+   "location": "Detroit, MI",
+   "inventory_note": "Historic landscape; respect cemetery rules",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Woodlawn Cemetery",
+   "location": "Detroit, MI",
+   "inventory_note": "Historic arboretum-like grounds; respect cemetery rules",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Detroit Riverwalk & Milliken State Park",
+   "location": "Detroit, MI",
+   "inventory_note": "Waterfront / urban trees",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Dequindre Cut Greenway",
+   "location": "Detroit, MI",
+   "inventory_note": "Urban trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Hines Drive / Edward N. Hines Parkway",
+   "location": "Wayne County, MI",
+   "inventory_note": "Scenic drive / Rouge River",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Bennett Arboretum",
+   "location": "Northville, MI",
+   "inventory_note": "Historic tree collection / walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Maybury State Park",
+   "location": "Northville, MI",
+   "inventory_note": "Woodland trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Heritage Park",
+   "location": "Farmington Hills, MI",
+   "inventory_note": "Wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Douglas Evans Nature Preserve",
+   "location": "Beverly Hills, MI",
+   "inventory_note": "Rouge River walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Cranbrook Gardens & grounds",
+   "location": "Bloomfield Hills, MI",
+   "inventory_note": "Historic landscape; access check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Lakeshore Park",
+   "location": "Novi, MI",
+   "inventory_note": "Woodland / lake",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Tenhave Woods / Quickstad Park",
+   "location": "Royal Oak, MI",
+   "inventory_note": "Urban woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Stage Nature Center",
+   "location": "Troy, MI",
+   "inventory_note": "Woodland trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Detroit & inner-ring urban color",
+   "name": "Red Oaks Nature Center",
+   "location": "Madison Heights, MI",
+   "inventory_note": "Wooded nature walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Kensington Metropark",
+   "location": "Milford, MI",
+   "inventory_note": "Lake / forest / drive",
+   "status": "published",
+   "published_id": "kensington-metropark",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Stony Creek Metropark",
+   "location": "Shelby Township, MI",
+   "inventory_note": "Lake / trails / drive",
+   "status": "published",
+   "published_id": "stony-creek-metropark",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Indian Springs Metropark",
+   "location": "White Lake, MI",
+   "inventory_note": "Woodland Trail / swamp forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Huron Meadows Metropark",
+   "location": "Brighton, MI",
+   "inventory_note": "Woodland / rolling trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Hudson Mills Metropark",
+   "location": "Dexter, MI",
+   "inventory_note": "Huron River / trails",
+   "status": "published",
+   "published_id": "hudson-mills-metropark",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Dexter-Huron Metropark",
+   "location": "Dexter, MI",
+   "inventory_note": "Huron River / easy walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Delhi Metropark",
+   "location": "Scio Township, MI",
+   "inventory_note": "Huron River / picnic",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Lower Huron Metropark",
+   "location": "Belleville, MI",
+   "inventory_note": "River corridor / cycling",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Willow Metropark",
+   "location": "New Boston, MI",
+   "inventory_note": "Woodland / river",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Oakwoods Metropark",
+   "location": "Flat Rock, MI",
+   "inventory_note": "Nature trails / forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Lake Erie Metropark",
+   "location": "Brownstown Township, MI",
+   "inventory_note": "Wetlands / lakeshore",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Lake St. Clair Metropark",
+   "location": "Harrison Township, MI",
+   "inventory_note": "Lakeshore / nature trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Huron-Clinton Metroparks (13)",
+   "name": "Wolcott Mill Metropark",
+   "location": "Ray Township, MI",
+   "inventory_note": "Historic mill / rural woods",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Proud Lake State Recreation Area",
+   "location": "Commerce Township, MI",
+   "inventory_note": "Huron River / forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Highland State Recreation Area",
+   "location": "Highland, MI",
+   "inventory_note": "Rolling woodland / hiking",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Holly State Recreation Area",
+   "location": "Holly, MI",
+   "inventory_note": "Woodland lakes / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Ortonville Recreation Area",
+   "location": "Ortonville, MI",
+   "inventory_note": "Wooded hills / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Bald Mountain State Recreation Area",
+   "location": "Lake Orion, MI",
+   "inventory_note": "Lakes / hardwood forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Pontiac Lake State Recreation Area",
+   "location": "Waterford, MI",
+   "inventory_note": "Lake / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Seven Lakes State Park",
+   "location": "Holly, MI",
+   "inventory_note": "Lakes / woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Independence Oaks County Park",
+   "location": "Clarkston, MI",
+   "inventory_note": "Lake / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Addison Oaks County Park",
+   "location": "Leonard, MI",
+   "inventory_note": "Woodland / lake",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Rose Oaks County Park",
+   "location": "Holly area, MI",
+   "inventory_note": "Wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Holly Oaks ORV Park",
+   "location": "Holly, MI",
+   "inventory_note": "Ridge views; specialized access",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Paint Creek Trail",
+   "location": "Rochester–Lake Orion, MI",
+   "inventory_note": "Tree-lined rail trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Clinton River Trail",
+   "location": "Rochester–Pontiac, MI",
+   "inventory_note": "River / rail trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Dinosaur Hill Nature Preserve",
+   "location": "Rochester, MI",
+   "inventory_note": "Woodland / creek",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Bloomer Park",
+   "location": "Rochester Hills, MI",
+   "inventory_note": "Wooded river bluffs",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "River Bends Park",
+   "location": "Shelby Township, MI",
+   "inventory_note": "Clinton River woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Oakland County & northern orbit",
+   "name": "Macomb Orchard Trail",
+   "location": "Macomb County, MI",
+   "inventory_note": "Cycling / tree-lined corridor",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Nichols Arboretum",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Arboretum / valley walks",
+   "status": "published",
+   "published_id": "nichols-arboretum",
+   "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Matthaei Botanical Gardens trails",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Gardens / woodland trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Bird Hills Nature Area",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Wooded hills",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Barton Nature Area",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Huron River / wooded walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Argo Nature Area / Argo Cascades",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "River / fall reflections",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Gallup Park",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Easy riverfront walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "County Farm Park",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Wooded paths",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Eberwhite Woods",
+   "location": "Ann Arbor, MI",
+   "inventory_note": "Urban woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Huron River Drive",
+   "location": "Ann Arbor–Dexter, MI",
+   "inventory_note": "Scenic drive",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Old US-12 corridor",
+   "location": "Chelsea–Ann Arbor–Ypsilanti, MI",
+   "inventory_note": "Scenic drive",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Waterloo State Recreation Area",
+   "location": "Chelsea, MI",
+   "inventory_note": "Lakes / extensive forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Pinckney State Recreation Area",
+   "location": "Pinckney, MI",
+   "inventory_note": "Rolling forest / lakes",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Gerald E. Eddy Discovery Center trails",
+   "location": "Chelsea, MI",
+   "inventory_note": "Woodland trails; within Waterloo",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Independence Lake County Park",
+   "location": "Whitmore Lake, MI",
+   "inventory_note": "Lake / forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Rolling Hills County Park",
+   "location": "Ypsilanti, MI",
+   "inventory_note": "Woodland / park",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ann Arbor, Chelsea & Huron River",
+   "name": "Sharon Mills County Park",
+   "location": "Manchester area, MI",
+   "inventory_note": "Historic mill / river; radius check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Brighton State Recreation Area",
+   "location": "Brighton, MI",
+   "inventory_note": "Lake / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Island Lake State Recreation Area",
+   "location": "Brighton, MI",
+   "inventory_note": "River / lakes / woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Howell Nature Center",
+   "location": "Howell, MI",
+   "inventory_note": "Wooded trails; admission/access check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "For-Mar Nature Preserve & Arboretum",
+   "location": "Burton, MI",
+   "inventory_note": "Arboretum / forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Flint River Trail",
+   "location": "Flint, MI",
+   "inventory_note": "River corridor / biking",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Stepping Stone Falls",
+   "location": "Flint, MI",
+   "inventory_note": "Water / parkland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Mott Lake / Bluebell Beach",
+   "location": "Flint area, MI",
+   "inventory_note": "Lakeshore / wooded edges",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Holloway Reservoir Regional Park",
+   "location": "Richfield Township, MI",
+   "inventory_note": "Reservoir / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Lapeer State Game Area",
+   "location": "Lapeer County, MI",
+   "inventory_note": "Woodland / hunting-season precautions",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Seven Ponds Nature Center",
+   "location": "Dryden, MI",
+   "inventory_note": "Woodland / ponds",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Metamora-Hadley State Recreation Area",
+   "location": "Metamora, MI",
+   "inventory_note": "Wooded lake",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Livingston, Genesee & Lapeer",
+   "name": "Genesee County Parks: Richfield County Park",
+   "location": "Richfield Township, MI",
+   "inventory_note": "Forest / river",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Algonac State Park",
+   "location": "Marine City area, MI",
+   "inventory_note": "Riverfront / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "St. Clair River Road / M-29",
+   "location": "Algonac–Port Huron, MI",
+   "inventory_note": "Scenic river drive",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Pine River Nature Center",
+   "location": "Goodells, MI",
+   "inventory_note": "Woodland / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Goodells County Park",
+   "location": "Goodells, MI",
+   "inventory_note": "Park / mature trees",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Columbus County Park",
+   "location": "Columbus Township, MI",
+   "inventory_note": "Wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Wadhams to Avoca Trail",
+   "location": "St. Clair County, MI",
+   "inventory_note": "Tree-lined rail trail",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Bridge to Bay Trail",
+   "location": "St. Clair County, MI",
+   "inventory_note": "River / cycling corridor",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Lakeport State Park",
+   "location": "Lakeport, MI",
+   "inventory_note": "Lakeshore woods; boundary check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "Fort Gratiot County Park",
+   "location": "Fort Gratiot, MI",
+   "inventory_note": "Lakeshore / park",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Eastern orbit: St. Clair River & Lake Huron",
+   "name": "St. Clair River waterfront parks",
+   "location": "St. Clair, MI",
+   "inventory_note": "River walk / town trees",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "Sterling State Park",
+   "location": "Monroe, MI",
+   "inventory_note": "Lake Erie / wetlands",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "River Raisin National Battlefield Park",
+   "location": "Monroe, MI",
+   "inventory_note": "Historic landscape",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "Munson Park",
+   "location": "Monroe, MI",
+   "inventory_note": "Woodland / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "Crosswinds Marsh Preserve",
+   "location": "New Boston, MI",
+   "inventory_note": "Wetlands / boardwalk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "Heritage Park",
+   "location": "Taylor, MI",
+   "inventory_note": "Historic-style park / easy walk",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "Elizabeth Park",
+   "location": "Trenton, MI",
+   "inventory_note": "Riverfront / mature trees",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Southern Michigan & Monroe",
+   "name": "Grosse Ile Nature & Land Conservancy preserves",
+   "location": "Grosse Ile, MI",
+   "inventory_note": "Preserve access varies",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": []
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Wildwood Preserve Metropark",
+   "location": "Toledo, OH",
+   "inventory_note": "Manor / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Oak Openings Preserve Metropark",
+   "location": "Swanton, OH",
+   "inventory_note": "Oak savanna / fall color",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Secor Metropark",
+   "location": "Berkey, OH",
+   "inventory_note": "Woodland / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Pearson Metropark",
+   "location": "Oregon, OH",
+   "inventory_note": "Woodland / ponds",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Side Cut Metropark",
+   "location": "Maumee, OH",
+   "inventory_note": "Maumee River / wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Farnsworth Metropark",
+   "location": "Waterville, OH",
+   "inventory_note": "Maumee River / towpath",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Providence Metropark",
+   "location": "Grand Rapids, OH",
+   "inventory_note": "Canal / river; boundary check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Swan Creek Preserve Metropark",
+   "location": "Toledo, OH",
+   "inventory_note": "Woodland / stream",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Ottawa Park",
+   "location": "Toledo, OH",
+   "inventory_note": "Urban woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Toledo Botanical Garden",
+   "location": "Toledo, OH",
+   "inventory_note": "Garden / tree collections",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Middlegrounds Metropark",
+   "location": "Toledo, OH",
+   "inventory_note": "Riverfront / urban color",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Howard Marsh Metropark",
+   "location": "Curtice, OH",
+   "inventory_note": "Wetland / birding",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Maumee Bay State Park",
+   "location": "Oregon, OH",
+   "inventory_note": "Lakeshore / woods",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Irwin Prairie State Nature Preserve",
+   "location": "Holland, OH",
+   "inventory_note": "Prairie / autumn grasses; access check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Northwest Ohio / Toledo orbit",
+   "name": "Blue Creek Metropark",
+   "location": "Whitehouse, OH",
+   "inventory_note": "Prairie / woodland",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Ojibway Park & Nature Centre",
+   "location": "Windsor, ON",
+   "inventory_note": "Oak woodland / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Black Oak Heritage Park",
+   "location": "Windsor, ON",
+   "inventory_note": "Oak savanna / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Malden Park",
+   "location": "Windsor, ON",
+   "inventory_note": "Hilltop views / urban forest",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Jackson Park",
+   "location": "Windsor, ON",
+   "inventory_note": "Formal gardens / tree-lined walks",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Little River Corridor",
+   "location": "Windsor, ON",
+   "inventory_note": "Greenway / riparian color",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Ganatchio Trail",
+   "location": "Windsor–Tecumseh, ON",
+   "inventory_note": "Cycling / waterfront corridor",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Brunet Park",
+   "location": "LaSalle, ON",
+   "inventory_note": "Wooded trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Vollmer Culture and Recreation Complex trails",
+   "location": "LaSalle, ON",
+   "inventory_note": "Trails / natural areas",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Holiday Beach Conservation Area",
+   "location": "Amherstburg, ON",
+   "inventory_note": "Wetlands / migratory birds",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Big Creek Conservation Area",
+   "location": "Amherstburg area, ON",
+   "inventory_note": "Wetland / access check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "public access rules to confirm",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Hillman Marsh Conservation Area",
+   "location": "Leamington, ON",
+   "inventory_note": "Wetlands / seasonal access",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Kopegaron Woods Conservation Area",
+   "location": "Leamington area, ON",
+   "inventory_note": "Forest / trails",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Chrysler Canada Greenway",
+   "location": "Essex County, ON",
+   "inventory_note": "Rail trail / autumn cycling",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "John R. Park Homestead",
+   "location": "Essex, ON",
+   "inventory_note": "Historic farm / lakeshore",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Point Pelee National Park",
+   "location": "Leamington, ON",
+   "inventory_note": "Forest / marsh / lakeshore; boundary check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Wheatley Provincial Park",
+   "location": "Wheatley, ON",
+   "inventory_note": "Woodland / creek; boundary check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  },
+  {
+   "collection": "fall-color",
+   "inventory_no": null,
+   "section": "Ontario: Windsor–Essex / Canadian orbit",
+   "name": "Two Creeks Conservation Area",
+   "location": "Wheatley, ON",
+   "inventory_note": "Woodland / creek; boundary check",
+   "status": "unresolved",
+   "published_id": null,
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "flags": [
+    "radius check needed",
+    "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ]
+  }
+ ]
+}
