@@ -15,7 +15,6 @@ process.env.TICKETMASTER_API_KEY = "test-key";
 const connector = require("../api/cron-ticketmaster.js");
 const { buildReport } = require("../api/_lib/ticketmaster-report.js");
 const { planConsolidation } = require("../scripts/duplicate-consolidation.js");
-const { readExistingFromSupabase } = require("../scripts/ticketmaster-report.js");
 
 const TODAY = "2026-10-12";
 const ev = (id, name, extra = {}) => ({
@@ -113,19 +112,11 @@ const fetchedOf = (events, info) => ({ events, info: { complete: true, pagesFetc
 
 // ---- 4. nothing can write ---------------------------------------------------
 {
-  const calls = [];
-  const stub = async (url, init) => { calls.push({ url, method: init && init.method }); return { ok: true, status: 200, json: async () => [] }; };
-  process.env.SUPABASE_SERVICE_ROLE_KEY = "k";
-  readExistingFromSupabase(TODAY, stub).then((rows) => {
-    assert.deepStrictEqual(rows, []);
-    assert.ok(calls.length >= 2 && calls.every((c) => c.method === "GET" && c.url.includes("/rest/v1/events?")), "only GETs of the events table");
-    console.log("PASS: the Supabase reader issues GET requests only");
-  }).catch((e) => { console.error(e); process.exit(1); });
-
   const src = fs.readFileSync(path.join(__dirname, "..", "scripts", "ticketmaster-report.js"), "utf8") + fs.readFileSync(path.join(__dirname, "..", "api", "_lib", "ticketmaster-report.js"), "utf8");
   assert.ok(!/method:\s*["'](POST|PATCH|PUT|DELETE)/i.test(src), "no write verb appears in the report code");
   assert.ok(!/upsertEventRows|startRun|finishRun|source_runs/.test(src), "the report neither upserts nor logs a run");
-  console.log("PASS: the report code contains no write path");
+  assert.ok(!/SERVICE_ROLE|\/rest\/v1|supabase\.co/i.test(src), "the report holds no database credential and no database client");
+  console.log("PASS: the report code contains no write path, database client or database credential");
 }
 
 // ---- 5. the CLI works offline, and refuses a live run without a key ---------
