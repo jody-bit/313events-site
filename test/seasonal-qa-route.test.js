@@ -47,7 +47,10 @@ for (const env of ["preview", "development"]) {
 }
 // 3. non-GET and unknown collection/asset stay 404 even when allowed
 assert.strictEqual(call("preview", { c: "halloween" }, "POST").statusCode, 404);
-assert.strictEqual(data("preview", { c: "fall" }).statusCode, 404);
+assert.strictEqual(data("preview", { c: "fall" }).statusCode, 200);
+assert.strictEqual(data("preview", { c: "fall-color" }).statusCode, 200);
+assert.strictEqual(data("production", { c: "fall" }).statusCode, 404);
+assert.strictEqual(data("preview", { c: "unknown" }).statusCode, 404);
 assert.strictEqual(data("preview", { asset: "../../package.json" }).statusCode, 404);
 // 4. every response (404 included) is no-store + noindex
 for (const env of ["production", "preview", undefined, "development"]) {

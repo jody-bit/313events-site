@@ -1,5 +1,5 @@
 /* seasonal/page.js — progressive enhancement: filters, search, grid/list.
-   The HTML is already complete without this script. On /halloween only,
+   The HTML is already complete without this script. On the seasonal pages,
    ?qa=1 loads the QA review client from /api/seasonal-qa?asset=client, which
    answers 404 (so nothing loads) anywhere except preview/development. */
 (function () {
@@ -51,7 +51,7 @@
       document.head.appendChild(sc);
     });
   }
-  var wantsQa = slug === "halloween" && new URLSearchParams(location.search).get("qa") === "1";
+  var wantsQa = new URLSearchParams(location.search).get("qa") === "1";
   if (wantsQa) {
     loadQa().then(function (ok) {
       if (!ok) return false;

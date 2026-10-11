@@ -1,5 +1,5 @@
 /* api/_lib/seasonal-editorial/qa-client.js — served only by /api/seasonal-qa?asset=client (404 outside preview/development).
- * QA-only review mode for THE DARK ORBIT (/halloween?qa=1).
+ * QA-only review mode for the seasonal collections (/halloween?qa=1, /fall?qa=1, /fall-color?qa=1).
  *
  * Shows all 52 inventory records with their verification state and a
  * lightweight per-card image selector. The dataset is NOT in this file or in
@@ -14,6 +14,8 @@
 })(typeof self !== "undefined" ? self : this, function (R) {
   "use strict";
   var KEY = "313-halloween-qa-image-choices-v1";
+  function keyFor(slug) { return slug && slug !== "halloween" ? "313-" + slug + "-qa-image-choices-v1" : KEY; }
+  var SLUG = "halloween";
   var PROD_HOSTS = ["313.events", "www.313.events"];
   function isProductionHost(h) { return PROD_HOSTS.indexOf(String(h || "").toLowerCase()) >= 0; }
   var esc = R.esc;
@@ -29,8 +31,8 @@
       image: { src: o.src, illustrative: o.illustrative, fallbacks: fb } };
   }
   function badge(rec) {
-    var p = rec.verification.status === "partial", st = rec.publication ? rec.publication.state : "";
-    return '<span class="sc-qa-badge ' + (p ? "sc-qa-partial" : "sc-qa-unver") + '">' + (p ? "Partly verified" : "Unverified") + (rec.public ? " · public" : " · QA only") + '</span>' +
+    var vs = rec.verification.status, p = vs === "partial" || vs === "verified", st = rec.publication ? rec.publication.state : "";
+    return '<span class="sc-qa-badge ' + (p ? "sc-qa-partial" : "sc-qa-unver") + '">' + (vs === "verified" ? "Official source read" : p ? "Partly verified" : "Unverified") + (rec.public ? " · public" : " · QA only") + '</span>' +
       (st ? ' <span class="sc-qa-badge sc-qa-state">' + esc(st.replace(/_/g, " ")) + '</span>' : "");
   }
   function publication(rec) {
@@ -93,31 +95,32 @@
     return col.categories.filter(function (c) { return seen[c.id]; });
   }
   function exportJson(records, choices) {
-    return JSON.stringify({ generated: new Date().toISOString(), collection: "halloween", selections: records.map(function (r) {
+    return JSON.stringify({ generated: new Date().toISOString(), collection: SLUG, selections: records.map(function (r) {
       var o = option(r, choices[r.id]);
       return { destination_id: r.id, destination_name: r.name, selected_image_id: o.id, selected_image: o.src, selected_type: o.type, is_default: o.id === r.manifest_primary_id || o === r.image_options[0] };
     }) }, null, 2);
   }
-  function loadChoices() { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveChoices(c) { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} }
+  function loadChoices() { try { return JSON.parse(localStorage.getItem(keyFor(SLUG)) || "{}") || {}; } catch (e) { return {}; } }
+  function saveChoices(c) { try { localStorage.setItem(keyFor(SLUG), JSON.stringify(c)); } catch (e) {} }
 
   // Browser entry. Resolves true when QA mode is active, false when unavailable.
   function mount(doc, loc, fetchFn, col, FB) {
     if (isProductionHost(loc.hostname)) return Promise.resolve(false);
-    return fetchFn("/api/seasonal-qa?c=halloween", { headers: { accept: "application/json" } }).then(function (res) {
+    SLUG = (doc.body && doc.body.getAttribute("data-collection")) || "halloween";
+    return fetchFn("/api/seasonal-qa?c=" + encodeURIComponent(SLUG), { headers: { accept: "application/json" } }).then(function (res) {
       if (!res.ok) return false;
       return res.json();
     }).then(function (data) {
       if (!data || !data.records) return false;
       var records = data.records, choices = loadChoices(), state = { category: "all", query: "", view: "grid" };
-      var counts = { partial: 0, unver: 0 };
-      records.forEach(function (r) { r.verification.status === "partial" ? counts.partial++ : counts.unver++; });
+      var counts = { partial: 0, unver: 0, verified: 0 };
+      records.forEach(function (r) { var vs = r.verification.status; vs === "verified" ? counts.verified++ : vs === "partial" ? counts.partial++ : counts.unver++; });
       var chips = doc.querySelector(".sc-chips");
       chips.innerHTML = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="true">All</button>' + usedCats(col, records).map(function (c) {
         return '<button type="button" class="sc-chip" data-cat="' + esc(c.id) + '" aria-pressed="false">' + esc(c.label) + '</button>'; }).join("");
       var bar = doc.createElement("div");
       bar.className = "sc-qa-bar"; bar.setAttribute("role", "status");
-      bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
+      bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + (counts.verified ? counts.verified + ' official source read · ' : '') + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
         '<button type="button" class="sc-chip" id="scQaExport">Download image selections (JSON)</button> <button type="button" class="sc-chip" id="scQaReset">Reset choices</button>';
       doc.querySelector(".sc-filters").insertAdjacentElement("beforebegin", bar);
       var host = doc.getElementById("scResults"), count = doc.getElementById("scCount");
@@ -133,7 +136,7 @@
         if (!b) return;
         if (b.id === "scQaExport") {
           var blob = new Blob([exportJson(records, choices)], { type: "application/json" });
-          var a = doc.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "halloween-image-selections.json"; doc.body.appendChild(a); a.click(); a.remove(); return;
+          var a = doc.createElement("a"); a.href = URL.createObjectURL(blob); a.download = SLUG + "-image-selections.json"; doc.body.appendChild(a); a.click(); a.remove(); return;
         }
         if (b.id === "scQaReset") { choices = {}; saveChoices(choices); render(); return; }
         if (b.hasAttribute("data-view")) { state.view = b.getAttribute("data-view"); render(); return; }

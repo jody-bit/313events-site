@@ -49,7 +49,7 @@ for (const slug of DATA.ORDER) for (const e of entries[slug]) {
   assert.strictEqual(p.destination.published_id, e.id, e.id + " uses a photo of another destination");
   assert.strictEqual(e.image.src, p.files.card);
 }
-assert.strictEqual(owned, 4, "Eloise, Greenfield, Glenlore and Nichols Arboretum carry an owner photo");
+assert.strictEqual(owned, 10, "Eloise, Greenfield, Glenlore and Nichols Arboretum, plus the six Fall / Fall Colors launch destinations with a clean owner photo");
 // no originals in the repo
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((x) => x.isDirectory() ? walk(path.join(d, x.name)) : [path.join(d, x.name)]);
 assert.ok(!walk(path.join(root, "assets/seasonal")).some((f) => /\.(heic|heif|dng|mov)$/i.test(f)), "original files committed");

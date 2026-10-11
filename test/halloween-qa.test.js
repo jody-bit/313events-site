@@ -110,7 +110,10 @@ function call(env, query) {
 assert.strictEqual(call("production").statusCode, 404);
 assert.ok(!call("production").body.includes("Hush"));
 for (const env of ["preview", "development"]) { const r = call(env); assert.strictEqual(r.statusCode, 200); assert.strictEqual(JSON.parse(r.body).records.length, 52); assert.strictEqual(r.headers["X-Robots-Tag"], "noindex, nofollow"); }
-assert.strictEqual(call("preview", { c: "fall" }).statusCode, 404);
+assert.strictEqual(call("production", { c: "fall" }).statusCode, 404);
+for (const c of ["fall", "fall-color"]) { const r = call("preview", { c }); assert.strictEqual(r.statusCode, 200); assert.strictEqual(JSON.parse(r.body).collection, c); }
+assert.strictEqual(call("preview", { c: "nope" }).statusCode, 404);
+assert.strictEqual(call("preview", { c: "__proto__" }).statusCode, 404);
 assert.ok(QA.isProductionHost("313.events") && QA.isProductionHost("WWW.313.events") && !QA.isProductionHost("x.vercel.app"));
 
 // 6. QA rendering: all 52 present, status inspectable, selector shows required facts

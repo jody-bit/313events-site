@@ -1,0 +1,1414 @@
+{
+ "generated": "2026-10-11",
+ "note": "Official-source reads for the Fall Is On. and Fall Colors launch candidates. Private editorial data. Read by an automated web read on 2026-10-11; owner review pending. relevance_confirmed is true only where the official page itself names trees, foliage, a fall activity or an arboretum; it is a proposal, not an approval.",
+ "collections": {
+  "fall": [
+   {
+    "ledger_name": "Yates Cider Mill",
+    "ledger_location": "Rochester Hills, MI",
+    "inventory_no": "42",
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Yates Cider Mill",
+     "official_url": "https://www.yatescidermill.com/",
+     "read_ok": true,
+     "address": "1950 E. Avon Rd., Rochester Hills, MI 48307 (second location: Canterbury Village, Lake Orion)",
+     "status": "Now Open (historic mill 7am-7pm); no explicit 2026 dates",
+     "activities": [
+      "cider",
+      "donuts",
+      "apple tent",
+      "pony rides",
+      "petting zoo",
+      "roasted corn (weekends)"
+     ],
+     "flags": [
+      "second location listed on same site"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Parmenter’s Northville Cider Mill",
+    "ledger_location": "Northville, MI",
+    "inventory_no": "28",
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Parmenter's Northville Cider Mill",
+     "official_url": "https://www.northvillecider.com/",
+     "read_ok": true,
+     "address": "714 Baseline Rd., Northville, MI 48167",
+     "status": "'now open', daily 10am-8pm; no 2026 season dates",
+     "activities": [
+      "cider and products",
+      "large call-ahead orders"
+     ],
+     "flags": [
+      "sparse page; activities not enumerated"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Franklin Cider Mill",
+    "ledger_location": "Bloomfield Hills, MI",
+    "inventory_no": "16",
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Franklin Cider Mill",
+     "official_url": "https://www.franklincidermill.com/",
+     "read_ok": true,
+     "address": "7450 Franklin Rd, Bloomfield Hills, MI 48301",
+     "status": "2026 season Sep 5 - Nov 29, 2026; mill 8am-6pm daily",
+     "activities": [
+      "cider pressing viewing",
+      "donut baking viewing",
+      "cider",
+      "donuts",
+      "caramel apples",
+      "live jazz weekends",
+      "water wheel",
+      "roasted corn"
+     ],
+     "flags": [],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Goodison Cider Mill",
+    "ledger_location": "Rochester, MI",
+    "inventory_no": "17",
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Goodison Cider Mill",
+     "official_url": "https://www.goodisoncidermill.com/",
+     "read_ok": true,
+     "address": "4295 Orion Road, Rochester, MI 48306",
+     "status": "Labor Day weekend to Christmas Eve; Sep-Oct daily 9am-6pm; page copyright 2024, no 2026 mention",
+     "activities": [
+      "fresh-pressed cider",
+      "donuts",
+      "pistachio nut bread",
+      "pies",
+      "apples",
+      "caramel apples"
+     ],
+     "flags": [
+      "page possibly stale (copyright 2024)",
+      "official URL inferred by direct fetch, not by listing link"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Dexter Cider Mill",
+    "ledger_location": "Dexter, MI",
+    "inventory_no": "12",
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Dexter Cider Mill",
+     "official_url": "https://www.dextercidermill.com/",
+     "read_ok": true,
+     "address": "3685 Central St., Dexter, MI 48130",
+     "status": "Open now Wed-Sun 8am-5pm; no season dates",
+     "activities": [
+      "cinnamon doughnuts",
+      "cider",
+      "caramel apples",
+      "hard cider tasting room (weekends)",
+      "riverside seating"
+     ],
+     "flags": [
+      "cash or check only"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Rochester Cider Mill",
+    "ledger_location": "Rochester, MI",
+    "inventory_no": "33",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Rochester Cider Mill",
+     "official_url": "https://www.rochestercidermill.com/",
+     "read_ok": true,
+     "address": "5125 N. Rochester Rd., Rochester, MI 48306",
+     "status": "Open daily 9am-6pm, Labor Day weekend through Dec 31, 2026",
+     "activities": [
+      "cider",
+      "donuts",
+      "pies",
+      "caramel apples",
+      "free petting farm (through early Nov)",
+      "straw pyramid",
+      "pumpkins"
+     ],
+     "flags": [
+      "cash or check only"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Blake’s Orchard & Cider Mill",
+    "ledger_location": "Armada, MI",
+    "inventory_no": "7",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Blake's Orchard & Cider Mill",
+     "official_url": "https://blakefarms.com/",
+     "read_ok": true,
+     "address": "17985 Armada Center Road, Armada, MI 48005",
+     "status": "Cider mill open daily 8am-6pm; U-pick open now",
+     "activities": [
+      "cider mill",
+      "tasting room",
+      "U-pick",
+      "Funland",
+      "store and bakery",
+      "fall events"
+     ],
+     "flags": [
+      "site now branded Blake Farms; one of four locations"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Blake’s Big Apple",
+    "ledger_location": "Armada, MI",
+    "inventory_no": "8",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Blake's Big Apple",
+     "official_url": "https://blakefarms.com/big-apple/",
+     "read_ok": true,
+     "address": "71485 North Avenue, Armada, MI 48005",
+     "status": "Haunted attractions Sep 12 - Nov 1; Honeycrisp U-pick from Sep 5 (year not stated; footer 2026)",
+     "activities": [
+      "U-pick",
+      "haunted hayrides",
+      "Funland",
+      "corn maze",
+      "animal farm",
+      "cider mill donuts"
+     ],
+     "flags": [
+      "separate location from Blake's Orchard & Cider Mill; same brand"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Hy’s Cider Mill",
+    "ledger_location": "Bruce Township, MI",
+    "inventory_no": "18",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Hy's Cider Mill",
+     "official_url": "http://www.hyscidermill.com/",
+     "read_ok": true,
+     "address": "6350 37 Mile Rd, Romeo/Bruce Township, MI 48065",
+     "status": "Sat-Sun only, Sep 12 - Nov 1, 11am-6pm (year not stated)",
+     "activities": [
+      "cider mill store",
+      "wagon rides to U-pick apples",
+      "caramel apples",
+      "donuts"
+     ],
+     "flags": [
+      "page says Romeo and Bruce for same address"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Middleton Farms Cider Mill",
+    "ledger_location": "Shelby Township, MI",
+    "inventory_no": "23",
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Middleton Farms Cider Mill",
+     "official_url": null,
+     "read_ok": false,
+     "address": null,
+     "status": null,
+     "activities": [],
+     "flags": [
+      "no official website or Facebook found; third-party only"
+     ],
+     "confidence": "low"
+    }
+   },
+   {
+    "ledger_name": "Stony Creek Orchard & Cider Mill",
+    "ledger_location": "Romeo, MI",
+    "inventory_no": "36",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Stony Creek Orchard & Cider Mill",
+     "official_url": "https://www.stonycreekorchard.com/",
+     "read_ok": true,
+     "address": "2961 W. 32 Mile, Romeo, MI 48065",
+     "status": "Opening Friday Sept 11, 10am; open 7 days 10am-6pm (year not stated)",
+     "activities": [
+      "U-pick apples (weekends)",
+      "U-pick raspberries",
+      "moonlight hayrides",
+      "farm stand",
+      "cider and donuts"
+     ],
+     "flags": [
+      "official URL inferred by direct fetch",
+      "year not explicit"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Wiard’s Orchards",
+    "ledger_location": "Ypsilanti, MI",
+    "inventory_no": "41",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Wiard's Orchards",
+     "official_url": "https://www.wiards.com/",
+     "read_ok": true,
+     "address": "5565 Merritt Rd, Ypsilanti, MI 48197",
+     "status": "Fall underway; Country Fair Wed-Sun, Country Store Tue-Sun; hours on separate page not read",
+     "activities": [
+      "u-pick apples",
+      "u-pick pumpkins",
+      "cider mill",
+      "country store and bakery",
+      "cider",
+      "donuts",
+      "pies",
+      "caramel apples",
+      "field trips"
+     ],
+     "flags": [
+      "corn maze, slide, wagon rides, petting farm marked Temporarily Closed on page"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Diehl’s Orchard & Cider Mill",
+    "ledger_location": "Holly, MI",
+    "inventory_no": "13",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Diehl's Orchard & Cider Mill",
+     "official_url": "https://www.diehlsorchard.com/",
+     "read_ok": true,
+     "address": "1479 Ranch Rd., Holly, MI 48442",
+     "status": "Aug 15-Oct 31 daily 9am-6pm; Nov 1-22 Sat/Sun 12-5pm; weekend hayrides Sep 12-Oct 18; pony rides Sep 26-Oct 17",
+     "activities": [
+      "pumpkin patch",
+      "corn maze",
+      "hay maze",
+      "hayrides",
+      "pony rides",
+      "playground",
+      "farm animals",
+      "food trucks"
+     ],
+     "flags": [
+      "page says no U-pick apples"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Apple Charlie’s Orchard & Cider Mill",
+    "ledger_location": "New Boston, MI",
+    "inventory_no": "3",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Apple Charlie's Orchard & Cider Mill",
+     "official_url": "https://applecharlie.com",
+     "read_ok": false,
+     "address": null,
+     "status": null,
+     "activities": [],
+     "flags": [
+      "official site refused connection on every attempt; unverified; third-party only"
+     ],
+     "confidence": "low"
+    }
+   },
+   {
+    "ledger_name": "Long Family Orchard & Farm",
+    "ledger_location": "Commerce Township, MI",
+    "inventory_no": "22",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Long Family Orchard & Farm",
+     "official_url": "https://www.longsorchard.com/",
+     "read_ok": true,
+     "address": "1540 E Commerce Rd, Commerce Township, MI",
+     "status": "Cider Mill and Farm Market daily 9-7 through Thanksgiving Eve; Fun Farm and Corn Maze Sep 12-Nov 1; pumpkin patch Sept to early Nov",
+     "activities": [
+      "cider",
+      "donuts",
+      "apples",
+      "corn maze",
+      "hayrides",
+      "petting farm",
+      "u-pick pumpkins via hayride"
+     ],
+     "flags": [
+      "farm is cashless",
+      "brand shown as Long's Orchard"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Plymouth Orchards & Cider Mill",
+    "ledger_location": "Plymouth, MI",
+    "inventory_no": "30",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Plymouth Orchards & Cider Mill",
+     "official_url": "https://www.plymouthorchards.com/",
+     "read_ok": true,
+     "address": "10685 Warren Rd, Plymouth, MI 48170 (Red Shed Market: 10260 Ann Arbor Rd)",
+     "status": "Cider Mill open Sept 5-Nov 8, 2026, 9am-7pm daily; Red Shed Market Sept 5-Nov 25, 2026, 10am-6pm",
+     "activities": [
+      "wagon rides",
+      "farm animals",
+      "pumpkin patch",
+      "live music",
+      "watch cider pressing and donut making",
+      "group tours"
+     ],
+     "flags": [
+      "two locations on one site"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Obstbaum Orchards",
+    "ledger_location": "Northville, MI",
+    "inventory_no": "26",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Obstbaum Orchards",
+     "official_url": "https://www.obstbaum.com/",
+     "read_ok": true,
+     "address": "9252 Currie Road, Northville, MI 48167",
+     "status": "no 2026 dates; fall weekends Sat-Sun 10am-6pm when crop ready",
+     "activities": [
+      "u-pick apples (when ripe)",
+      "cider",
+      "donuts",
+      "hayrides",
+      "bakery"
+     ],
+     "flags": [
+      "no explicit 2026 season statement",
+      "Salem vs Northville wording"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Wasem Fruit Farm",
+    "ledger_location": "Milan, MI",
+    "inventory_no": "39",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Wasem Fruit Farm",
+     "official_url": "https://www.wasemfruitfarm.com/",
+     "read_ok": true,
+     "address": "6580 Judd Road, Milan, MI 48160",
+     "status": "2026 opening day Thu Sept 10; open Wed-Sun 9am-6pm (home page)",
+     "activities": [
+      "pick-your-own apples",
+      "pick-your-own pumpkins",
+      "tart cherries",
+      "cider",
+      "fresh donuts daily in autumn"
+     ],
+     "flags": [
+      "hours conflict on official site: home page Wed-Sun vs /info Fridays only"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Westview Orchards & Winery",
+    "ledger_location": "Washington Township, MI",
+    "inventory_no": "40",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Westview Orchards & Winery",
+     "official_url": "https://www.westvieworchards.com/",
+     "read_ok": true,
+     "address": "65075 Van Dyke, Washington, MI 48095",
+     "status": "market daily 8-6; U-pick and Fall Family Fun daily 10-5 weather permitting; no season dates",
+     "activities": [
+      "u-pick and pre-picked pumpkins",
+      "cider",
+      "donuts",
+      "baked goods",
+      "outdoor winery",
+      "Fall Family Fun"
+     ],
+     "flags": [
+      "indoor winery loft closed this fall"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Spicer Orchards",
+    "ledger_location": "Fenton, MI",
+    "inventory_no": "35",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Spicer Orchards",
+     "official_url": "https://www.spicerorchards.com/",
+     "read_ok": true,
+     "address": "10411 Clyde Rd., Fenton, MI 48430",
+     "status": "open daily; market 9am-7pm; corn maze open; no season dates",
+     "activities": [
+      "pick-your-own apples and fruit",
+      "corn maze",
+      "pumpkin patch",
+      "playground",
+      "cider",
+      "donuts",
+      "caramel apples",
+      "winery tastings"
+     ],
+     "flags": [
+      "some third parties say Hartland; official says Fenton"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Three Cedars Farm",
+    "ledger_location": "Northville, MI",
+    "inventory_no": "37",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Three Cedars Farm",
+     "official_url": "https://www.threecedarsfarm.org/",
+     "read_ok": true,
+     "address": "7897 Six Mile Road, Northville, MI 48168",
+     "status": "fall 2026 hours Sun-Thu 10-8, Fri/Sat 10-10; closed Nov 2-5 and Nov 9-26",
+     "activities": [
+      "Cider Donut Hut",
+      "Country Store",
+      "Country Christmas"
+     ],
+     "flags": [
+      "banner and hours section disagree on bonus weekend dates",
+      "activity list not itemised on page read"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Kackleberry Farms",
+    "ledger_location": "Monroe, MI",
+    "inventory_no": "55",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Kackleberry Farms",
+     "official_url": "https://www.kackleberryfarms.com/",
+     "read_ok": true,
+     "address": "6421 N Stony Creek Rd, Monroe, MI 48162",
+     "status": "Fall Festival Sept 12-Nov 1 (year not stated); Sat/Sun 11am-7pm",
+     "activities": [
+      "30+ attractions",
+      "corn maze",
+      "slides",
+      "photo spots",
+      "cider donuts"
+     ],
+     "flags": [
+      "year not stated; logos reference 2025"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Bonadeo Farms",
+    "ledger_location": "Highland, MI",
+    "inventory_no": "45",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Bonadeo Farms",
+     "official_url": "https://bonadeofarms.com/",
+     "read_ok": true,
+     "address": "1215 White Lake Rd, Highland Township, MI 48356",
+     "status": "opening day Fri Sept 25, 2026; Fri/Sat evenings; Sat/Sun 10am-6pm",
+     "activities": [
+      "haunted house",
+      "hayrides",
+      "cider",
+      "donuts",
+      "caramel apples",
+      "corn maze",
+      "pumpkin patch"
+     ],
+     "flags": [
+      "weekend-only"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Cook’s Farm Dairy",
+    "ledger_location": "Ortonville, MI",
+    "inventory_no": "48",
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Cook's Farm Dairy",
+     "official_url": "https://www.cooksfarmdairy.com/",
+     "read_ok": true,
+     "address": "2950 E Seymour Lake Road, Ortonville, MI 48462",
+     "status": "Mon-Sat 7am-9pm, Sun 12-9pm; no 2026 fall dates on page read",
+     "activities": [
+      "meet the cows",
+      "guided tours",
+      "farm shop",
+      "ice cream",
+      "Fall at the Farm program"
+     ],
+     "flags": [
+      "working dairy, weaker fit; fall details not on page read"
+     ],
+     "confidence": "medium"
+    }
+   }
+  ],
+  "fall-color": [
+   {
+    "ledger_name": "Belle Isle Park",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens",
+     "waterfronts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Belle Isle Park",
+     "official_url": "https://www.michigan.gov/recsearch/parks/belleisle",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "99 Pleasure Drive, Detroit, MI 48207",
+     "access": "Recreation Passport required for vehicle entry; Oudolf Garden and lighthouse 5am-10pm; no park-wide hours or fees stated",
+     "activities": [
+      "hiking",
+      "biking",
+      "fishing",
+      "paddling",
+      "conservatory",
+      "Oudolf Garden",
+      "aquarium",
+      "lighthouse",
+      "Iron Belle Trail"
+     ],
+     "relevance": "foliage not mentioned; park character only",
+     "flags": [
+      "Scott Fountain not operating until spring 2027",
+      "Casino restrooms closed"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Palmer Park & Witherell Woods",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Palmer Park & Witherell Woods",
+     "official_url": null,
+     "read_ok": false,
+     "flags": [
+      "detroitmi.gov blocked (403); unverified"
+     ],
+     "confidence": "low"
+    }
+   },
+   {
+    "ledger_name": "Rouge Park",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Rouge Park",
+     "official_url": "https://www.rougepark.org/",
+     "read_ok": true,
+     "url_kind": "third-party",
+     "address": "Detroit, along 4.7 miles of the Rouge River",
+     "access": null,
+     "activities": [
+      "3.5 miles nature trails",
+      "7 miles paved paths",
+      "golf",
+      "archery",
+      "horses",
+      "butterfly garden"
+     ],
+     "relevance": "habitat and trails; foliage not mentioned; park character only",
+     "flags": [
+      "page read is Friends of Rouge Park steward site, not the City; city page blocked"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Hines Drive / Edward N. Hines Parkway",
+    "ledger_location": "Wayne County, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Hines Drive / Edward N. Hines Parkway",
+     "official_url": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "33275 Edward Hines Drive, Westland, MI 48185",
+     "access": "hours/fees not stated; flooding closes parts of road/park some of the year",
+     "activities": [
+      "bike paths",
+      "walking trails",
+      "fishing",
+      "disc golf",
+      "picnic areas",
+      "visitor center"
+     ],
+     "relevance": "scenic route per Wayne County history page; park page does not mention foliage",
+     "flags": [
+      "2026 closure PDF unread"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Bennett Arboretum",
+    "ledger_location": "Northville, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Bennett Arboretum",
+     "official_url": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "4990 Edward N Hines Dr., Northville, MI 48168",
+     "access": "dawn to dusk; no fees mentioned; no restrooms; park at Cass Benton Park across street",
+     "activities": [
+      "two-mile unpaved walking trail",
+      "arboretum",
+      "autumn cross-country running"
+     ],
+     "relevance": "maple, oak and beech collections and rare trees; no color timing claim",
+     "flags": [
+      "managed by Wayne County, Northville is mailing city"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Maybury State Park",
+    "ledger_location": "Northville, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Maybury State Park",
+     "official_url": "https://www.michigan.gov/recsearch/parks/maybury",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "49601 Eight Mile Road, Northville, MI 48167",
+     "access": "Recreation Passport required for vehicle entry; hours/fees not stated",
+     "activities": [
+      "hiking",
+      "mountain biking",
+      "equestrian trails",
+      "fishing pond",
+      "picnic",
+      "nature programs"
+     ],
+     "relevance": "rolling hills, meadows, trails; foliage not mentioned",
+     "flags": [
+      "mountain bike trail closed for renovation through fall 2026"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Heritage Park",
+    "ledger_location": "Farmington Hills, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Heritage Park (Farmington Hills)",
+     "official_url": "https://www.fhgov.com/facilities/heritage-park",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "24915 Farmington Rd., Farmington Hills, MI 48336; 211 acres",
+     "access": "no dogs; shelter reservable; hours not stated",
+     "activities": [
+      "4.5 miles of trails",
+      "nature center",
+      "splash pad",
+      "playground",
+      "archery range"
+     ],
+     "relevance": "trails and nature study; foliage not mentioned",
+     "flags": [
+      "confirmed Farmington Hills, not Heritage Park in Taylor"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Cranbrook Gardens & grounds",
+    "ledger_location": "Bloomfield Hills, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Cranbrook Gardens & grounds",
+     "official_url": "https://www.housegardens.cranbrook.edu/contact/hours-admission",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "380 Lone Pine Road, Bloomfield Hills, MI",
+     "access": "self-guided give-as-you-wish; Oct 1-Mar 13 8am-5pm weather permitting; restrooms typically closed and beds pulled by mid-October; guided tour $15",
+     "activities": [
+      "self-guided garden walks",
+      "Sunken Garden",
+      "Japanese Garden",
+      "tree-covered trails",
+      "guided tours"
+     ],
+     "relevance": "page mentions fall colors and conifers among seasonal draws",
+     "flags": [
+      "reduced amenities by mid-October"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Elmwood Cemetery",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Elmwood Cemetery",
+     "official_url": "https://www.elmwoodhistoriccemetery.org/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "1200 Elmwood Avenue, Detroit, MI 48207; 86 acres",
+     "access": "fall gates open daily 8:30am-4pm Oct 1-May 15; leash dogs only; no alcohol; 15 mph",
+     "activities": [
+      "self-guided tree tours",
+      "guided tours",
+      "certified arboretum (ArbNet Level I)",
+      "birding"
+     ],
+     "relevance": "about 1,300 trees of 91 species; certified arboretum with self-guided tree tour maps",
+     "flags": [
+      "rules page gate dates differ from home page",
+      "operating cemetery"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Woodlawn Cemetery",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Woodlawn Cemetery (Detroit)",
+     "official_url": "https://www.woodlawncemeterydetroit.com/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "19975 Woodward Avenue, Detroit",
+     "access": "no visiting hours on home page; tour groups call ahead",
+     "activities": [
+      "self-led or guided tour (open house)",
+      "notable burials map",
+      "Rosa Parks Chapel"
+     ],
+     "relevance": "trees/foliage not mentioned",
+     "flags": [
+      "no visitor rules read; operator marketing site"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Dequindre Cut Greenway",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Dequindre Cut Greenway",
+     "official_url": "https://www.detroitriverfront.org/plan-your-visit/parks-greenways/dequindre-cut",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "below-grade path, Eastern Market to Detroit Riverfront",
+     "access": "hours/fees not stated; 20-foot paved path",
+     "activities": [
+      "walking",
+      "biking",
+      "murals",
+      "seasonal beer garden"
+     ],
+     "relevance": "urban greenway; foliage not mentioned",
+     "flags": [],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Detroit Riverwalk & Milliken State Park",
+    "ledger_location": "Detroit, MI",
+    "inventory_no": null,
+    "categories": [
+     "waterfronts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Detroit Riverwalk & Milliken State Park",
+     "official_url": "https://www.michigan.gov/recsearch/parks/williammilliken",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "1900 Atwater St., Detroit, MI 48207",
+     "access": "no hours stated; non-motorized Riverwalk",
+     "activities": [
+      "walking",
+      "biking",
+      "fishing",
+      "picnic shelters",
+      "wildlife viewing",
+      "lighthouse",
+      "birding"
+     ],
+     "relevance": "new trees/shrubs on berm; no foliage mention",
+     "flags": [
+      "two managers: DNR (Milliken) and RiverFront Conservancy (Riverwalk)"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Nichols Arboretum",
+    "ledger_location": "Ann Arbor, MI",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Nichols Arboretum",
+     "official_url": "https://mbgna.umich.edu/nichols-arboretum",
+     "read_ok": false,
+     "flags": [
+      "official page returned 403; unverified"
+     ],
+     "confidence": "low"
+    }
+   },
+   {
+    "ledger_name": "Kensington Metropark",
+    "ledger_location": "Milford, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Kensington Metropark",
+     "official_url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+     "read_ok": true,
+     "address": "4570 Huron River Parkway, Milford, MI 48381",
+     "access": "park 6am-10pm; $10 daily vehicle pass or annual pass",
+     "activities": [
+      "hiking",
+      "biking",
+      "horseback riding",
+      "golf",
+      "boating",
+      "fishing",
+      "beach",
+      "nature center",
+      "Farm Center",
+      "hayrides"
+     ],
+     "relevance": "fall color/foliage not mentioned; park character only",
+     "flags": [
+      "page has stale-season text"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Stony Creek Metropark",
+    "ledger_location": "Shelby Township, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Stony Creek Metropark",
+     "official_url": "https://www.metroparks.com/parks-and-trails/stony-creek-metropark/",
+     "read_ok": true,
+     "address": "4300 Main Park Road, Shelby Township, MI 48316",
+     "access": "park 6am-10pm; $10 daily vehicle pass or annual pass",
+     "activities": [
+      "hiking",
+      "biking",
+      "boating",
+      "fishing",
+      "golf",
+      "disc golf",
+      "beach",
+      "camping",
+      "nature center"
+     ],
+     "relevance": "page says the Trolley Trails 'offer spectacular fall views'; no foliage timing",
+     "flags": [
+      "seasonal text may be out of date"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Indian Springs Metropark",
+    "ledger_location": "White Lake, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Indian Springs Metropark (Woodland Trail)",
+     "official_url": "https://www.metroparks.com/parks-and-trails/indian-springs-metropark/",
+     "read_ok": true,
+     "address": "5200 Indian Trail, White Lake, MI 48386",
+     "access": "park 7am-10pm; $10 daily or annual vehicle pass",
+     "activities": [
+      "hiking",
+      "biking",
+      "bird watching",
+      "Environmental Discovery Center",
+      "golf",
+      "horseback riding"
+     ],
+     "relevance": "page says the ~3.25-mile Woodland Trail has red, orange and yellow leaves in the fall; no current-conditions claim",
+     "flags": [],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Hudson Mills Metropark",
+    "ledger_location": "Dexter, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Hudson Mills Metropark",
+     "official_url": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
+     "read_ok": true,
+     "address": "8801 N. Territorial Road, Dexter, MI 48130",
+     "access": "park 7am-10pm; $10 daily or annual vehicle pass",
+     "activities": [
+      "hiking",
+      "biking",
+      "canoeing/kayaking",
+      "fishing",
+      "disc golf",
+      "golf",
+      "camping"
+     ],
+     "relevance": "fall color not mentioned; park character only",
+     "flags": [],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Highland State Recreation Area",
+    "ledger_location": "Highland, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Highland State Recreation Area",
+     "official_url": "https://www.michigan.gov/recsearch/parks/highland",
+     "read_ok": true,
+     "address": "5200 Highland Road, White Lake, MI 48383 (official page)",
+     "access": "Recreation Passport required for vehicle entry; no hours stated",
+     "activities": [
+      "44 miles of trails",
+      "mountain biking",
+      "horseback riding",
+      "fishing",
+      "paddling",
+      "camping",
+      "EnChroma color-blind viewers"
+     ],
+     "relevance": "foliage not mentioned; all principal southern Michigan forest types per page",
+     "flags": [
+      "official mailing city is White Lake, inventory says Highland"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Seven Lakes State Park",
+    "ledger_location": "Holly, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Seven Lakes State Park",
+     "official_url": "https://www.michigan.gov/recsearch/parks/sevenlakes",
+     "read_ok": true,
+     "address": "14390 Fish Lake Road, Holly, MI 48442",
+     "access": "Recreation Passport required for vehicle entry; no hours stated",
+     "activities": [
+      "hiking",
+      "biking",
+      "paddling",
+      "fishing",
+      "swimming",
+      "camping"
+     ],
+     "relevance": "foliage not mentioned; scenic trails and rolling hills around six lakes",
+     "flags": [],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Proud Lake State Recreation Area",
+    "ledger_location": "Commerce Township, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Proud Lake State Recreation Area",
+     "official_url": "https://www.michigan.gov/recsearch/parks/proudlake",
+     "read_ok": true,
+     "address": "3500 N. Wixom Road, Commerce Twp., MI 48382",
+     "access": "Recreation Passport required for vehicle entry; no hours stated",
+     "activities": [
+      "hiking",
+      "mountain biking",
+      "horseback riding",
+      "fishing",
+      "paddling",
+      "camping",
+      "Marsh Trail platform"
+     ],
+     "relevance": "foliage not mentioned; scenic Huron River setting",
+     "flags": [
+      "PFAS advisories for Huron River on page"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Waterloo State Recreation Area",
+    "ledger_location": "Chelsea, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Waterloo State Recreation Area",
+     "official_url": "https://www.michigan.gov/recsearch/parks/waterloo",
+     "read_ok": true,
+     "address": "coordinates only on page; Gerald E. Eddy Discovery Center, 17030 Bush Road, Chelsea",
+     "access": "Recreation Passport required for vehicle entry; no hours stated",
+     "activities": [
+      "hiking",
+      "mountain biking",
+      "horseback riding",
+      "disc golf",
+      "fishing",
+      "paddling",
+      "camping",
+      "Discovery Center"
+     ],
+     "relevance": "foliage not mentioned; largest state park in the Lower Peninsula per page",
+     "flags": [
+      "no street address for park itself"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Huron River Drive",
+    "ledger_location": "Ann Arbor–Dexter, MI",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Huron River Drive",
+     "official_url": "https://www.wcroads.org/natural-beauty-roads/",
+     "read_ok": true,
+     "address": null,
+     "access": null,
+     "activities": [],
+     "relevance": "no official page found that designates or promotes it as a scenic or fall-color drive",
+     "flags": [
+      "NOT a designated Natural Beauty Road per WCRC list",
+      "scenic claim rests only on non-official sources"
+     ],
+     "confidence": "medium"
+    }
+   },
+   {
+    "ledger_name": "Oak Openings Preserve Metropark",
+    "ledger_location": "Swanton, OH",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Oak Openings Preserve Metropark",
+     "official_url": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
+     "read_ok": true,
+     "address": "5402 Wilkins Rd, Whitehouse, OH 43571",
+     "access": "open 7am until dark daily; no fees stated",
+     "activities": [
+      "70+ miles of trail",
+      "camping",
+      "cabins",
+      "birding",
+      "horse trails",
+      "Windows on Wildlife"
+     ],
+     "relevance": "fall color not mentioned; oak savanna and planted pine/spruce stands",
+     "flags": [
+      "official city Whitehouse OH, inventory says Swanton"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Wildwood Preserve Metropark",
+    "ledger_location": "Toledo, OH",
+    "inventory_no": null,
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Wildwood Preserve Metropark",
+     "official_url": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
+     "read_ok": true,
+     "address": "5100 W Central Ave, Toledo, OH 43615",
+     "access": "open 7am until dark daily; no fees stated; free Manor House tours",
+     "activities": [
+      "hiking",
+      "Manor House tours",
+      "gardens",
+      "playground",
+      "prairie viewing"
+     ],
+     "relevance": "fall color not mentioned; park character only",
+     "flags": [],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Ojibway Park & Nature Centre",
+    "ledger_location": "Windsor, ON",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "name": "Ojibway Park & Nature Centre",
+     "official_url": "https://www.citywindsor.ca/residents/parks-and-forestry/ojibway-prairie-complex/ojibway-nature-centre",
+     "read_ok": true,
+     "address": "5200 Matchett Road, Windsor, ON N9C 4E8",
+     "access": "dawn to dusk; free admission and trail access",
+     "activities": [
+      "walking",
+      "birding",
+      "photography",
+      "interpretive programs",
+      "eco-trails"
+     ],
+     "relevance": "no foliage information; prairie complex has few trees (weak tree-color fit)",
+     "flags": [
+      "cross-border"
+     ],
+     "confidence": "high"
+    }
+   },
+   {
+    "ledger_name": "Black Oak Heritage Park",
+    "ledger_location": "Windsor, ON",
+    "inventory_no": null,
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "name": "Black Oak Heritage Park",
+     "official_url": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
+     "read_ok": true,
+     "address": "599 Broadway Street, Windsor, ON",
+     "access": "dawn to dusk; one ~2 km trail; south section closed; possible temporary closures",
+     "activities": [
+      "hiking",
+      "bird-watching",
+      "photography",
+      "leisure cycling"
+     ],
+     "relevance": "old-growth trees 150-200 years old, black oak savanna; foliage not mentioned",
+     "flags": [
+      "cross-border",
+      "temporary closures possible (bridge construction)"
+     ],
+     "confidence": "high"
+    }
+   }
+  ]
+ }
+}

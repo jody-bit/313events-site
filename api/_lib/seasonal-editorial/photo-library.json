@@ -15,7 +15,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -60,7 +60,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -105,7 +105,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -150,7 +150,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -195,7 +195,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -240,7 +240,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -287,7 +287,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -334,7 +334,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -379,7 +379,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -424,7 +424,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -469,7 +469,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -514,7 +514,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -559,7 +559,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -604,7 +604,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -649,7 +649,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -694,7 +694,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -739,7 +739,7 @@
     "name": "Long Family Orchard & Farm",
     "collection": "fall",
     "inventory_no": "22",
-    "published_id": null,
+    "published_id": "long-family-orchard-and-farm",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -784,7 +784,7 @@
     "name": "Long Family Orchard & Farm",
     "collection": "fall",
     "inventory_no": "22",
-    "published_id": null,
+    "published_id": "long-family-orchard-and-farm",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -831,7 +831,7 @@
     "name": "Long Family Orchard & Farm",
     "collection": "fall",
     "inventory_no": "22",
-    "published_id": null,
+    "published_id": "long-family-orchard-and-farm",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1156,7 +1156,7 @@
     "name": "Belle Isle Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "belle-isle-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1201,7 +1201,7 @@
     "name": "Belle Isle Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "belle-isle-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1248,7 +1248,7 @@
     "name": "Cranbrook Gardens & grounds",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "cranbrook-gardens-and-grounds",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1293,7 +1293,7 @@
     "name": "Cranbrook Gardens & grounds",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "cranbrook-gardens-and-grounds",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1338,7 +1338,7 @@
     "name": "Dequindre Cut Greenway",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "dequindre-cut-greenway",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1383,7 +1383,7 @@
     "name": "Dequindre Cut Greenway",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "dequindre-cut-greenway",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1428,7 +1428,7 @@
     "name": "Dequindre Cut Greenway",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "dequindre-cut-greenway",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1475,7 +1475,7 @@
     "name": "Detroit Riverwalk & Milliken State Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "detroit-riverwalk-and-milliken-state-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1520,7 +1520,7 @@
     "name": "Detroit Riverwalk & Milliken State Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "detroit-riverwalk-and-milliken-state-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1567,7 +1567,7 @@
     "name": "Detroit Riverwalk & Milliken State Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "detroit-riverwalk-and-milliken-state-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1612,7 +1612,7 @@
     "name": "Elmwood Cemetery",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "elmwood-cemetery",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -1657,7 +1657,7 @@
     "name": "Elmwood Cemetery",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "elmwood-cemetery",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -1702,7 +1702,7 @@
     "name": "Heritage Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "heritage-park-farmington-hills",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1747,7 +1747,7 @@
     "name": "Heritage Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "heritage-park-farmington-hills",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1792,7 +1792,7 @@
     "name": "Highland State Recreation Area",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "highland-state-recreation-area",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -1837,7 +1837,7 @@
     "name": "Highland State Recreation Area",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "highland-state-recreation-area",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -1882,7 +1882,7 @@
     "name": "Highland State Recreation Area",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "highland-state-recreation-area",
     "identity": "confirmed_by_owner",
     "match_confidence": "MEDIUM"
    },
@@ -1927,7 +1927,7 @@
     "name": "Maybury State Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "maybury-state-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -1972,7 +1972,7 @@
     "name": "Maybury State Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "maybury-state-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2062,7 +2062,7 @@
     "name": "Oak Openings Preserve Metropark",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "oak-openings-preserve-metropark",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2107,7 +2107,7 @@
     "name": "Oak Openings Preserve Metropark",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "oak-openings-preserve-metropark",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2152,7 +2152,7 @@
     "name": "Oak Openings Preserve Metropark",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "oak-openings-preserve-metropark",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2242,7 +2242,7 @@
     "name": "Palmer Park & Witherell Woods",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "palmer-park-and-witherell-woods",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2287,7 +2287,7 @@
     "name": "Palmer Park & Witherell Woods",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "palmer-park-and-witherell-woods",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2332,7 +2332,7 @@
     "name": "Palmer Park & Witherell Woods",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "palmer-park-and-witherell-woods",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2377,7 +2377,7 @@
     "name": "Woodlawn Cemetery",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "woodlawn-cemetery",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },
@@ -2506,7 +2506,7 @@
     "name": "Oak Openings Preserve Metropark",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "oak-openings-preserve-metropark",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2561,7 +2561,7 @@
     "name": "Oak Openings Preserve Metropark",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "oak-openings-preserve-metropark",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2606,7 +2606,7 @@
     "name": "Oak Openings Preserve Metropark",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "oak-openings-preserve-metropark",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2651,7 +2651,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2706,7 +2706,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2751,7 +2751,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2796,7 +2796,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2841,7 +2841,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -2886,7 +2886,7 @@
     "name": "Apple Charlie’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "3",
-    "published_id": null,
+    "published_id": "apple-charlies-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3131,7 +3131,7 @@
     "name": "Long Family Orchard & Farm",
     "collection": "fall",
     "inventory_no": "22",
-    "published_id": null,
+    "published_id": "long-family-orchard-and-farm",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3300,7 +3300,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3355,7 +3355,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3400,7 +3400,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3455,7 +3455,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3500,7 +3500,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3545,7 +3545,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3600,7 +3600,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3645,7 +3645,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3700,7 +3700,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3755,7 +3755,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3810,7 +3810,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3865,7 +3865,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3910,7 +3910,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -3965,7 +3965,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -4010,7 +4010,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -4065,7 +4065,7 @@
     "name": "Diehl’s Orchard & Cider Mill",
     "collection": "fall",
     "inventory_no": "13",
-    "published_id": null,
+    "published_id": "diehls-orchard-and-cider-mill",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
@@ -4110,7 +4110,7 @@
     "name": "Highland State Recreation Area",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "highland-state-recreation-area",
     "identity": "confirmed_by_owner",
     "match_confidence": "OWNER_CONFIRMED"
    },
