@@ -33,7 +33,10 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/defaults.json",
   "api/_lib/seasonal-editorial/editorial.js",
   "api/_lib/seasonal-editorial/entries.json",
+  "api/_lib/seasonal-editorial/fall-color-qa.json",
+  "api/_lib/seasonal-editorial/fall-qa.json",
   "api/_lib/seasonal-editorial/halloween-qa.json",
+  "api/_lib/seasonal-editorial/launch-verification.json",
   "api/_lib/seasonal-editorial/linked-images.json",
   "api/_lib/seasonal-editorial/photo-library.json",
   "api/_lib/seasonal-editorial/qa-client.js"
