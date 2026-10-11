@@ -1,0 +1,160 @@
+{
+ "source": "image-catalogue-2026-10-11 (supplied by Jody), halloween rows only",
+ "note": "Links are NOT verified to load or cleared for rights; this session cannot reach external hosts. Runtime fallback covers failures.",
+ "images": [
+  {
+   "destination_id": "zoo-boo",
+   "kind": "official",
+   "image_link": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+   "source_page": "https://detroitzoo.org/events/zoo-boo/",
+   "credit": "Detroit Zoo",
+   "found_on": "2026-10-11",
+   "found_via": "Official site",
+   "catalogue_status": "LINKED, ready for review (commit 93eaee6)",
+   "catalogue_note": "Official hero photo",
+   "warnings": []
+  },
+  {
+   "destination_id": "halloween-greenfield-village",
+   "kind": "official",
+   "image_link": "https://www.thehenryford.org/images/thehenryfordlibraries/event-card-1064x798/halloween_pumpkins_1064x798.png",
+   "source_page": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+   "credit": "The Henry Ford",
+   "found_on": "2026-10-11",
+   "found_via": "Official site",
+   "catalogue_status": "LINKED, ready for review (commit 93eaee6)",
+   "catalogue_note": "Event card image; may be generated art",
+   "warnings": [
+    "Event card image; may be generated art, not a photo of the place"
+   ]
+  },
+  {
+   "destination_id": "crossroads-ghosts-goodies",
+   "kind": "official",
+   "image_link": "https://geneseecountyparks.org/wp-content/uploads/2023/10/209A9950-scaled.jpg",
+   "source_page": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+   "credit": "Genesee County Parks",
+   "found_on": "2026-10-11",
+   "found_via": "Official site",
+   "catalogue_status": "LINKED, ready for review (commit 93eaee6)",
+   "catalogue_note": "Generic pumpkin porch scene",
+   "warnings": [
+    "Generic pumpkin porch scene; does not show this place"
+   ]
+  },
+  {
+   "destination_id": "erebus",
+   "kind": "unconfirmed",
+   "image_link": "https://hauntedpontiac.com/wp-content/uploads/2018/07/11.jpg",
+   "source_page": "https://hauntedpontiac.com/contact/",
+   "credit": "Erebus Haunted Attraction",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images",
+   "catalogue_status": "LINKED, entry on HOLD (not public)",
+   "catalogue_note": "Night photo of the Erebus building with its searchlight beam. Source site hauntedpontiac.com appears to be Erebus's own site; not independently confirmed.",
+   "warnings": [
+    "Found via Google Images; source site appears to be Erebus's own but is not independently confirmed"
+   ]
+  },
+  {
+   "destination_id": "hush-haunted-attraction",
+   "kind": "official",
+   "image_link": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+   "source_page": "https://hushhauntedattractions.com/",
+   "credit": "Hush Haunted Attractions (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1440x902",
+   "warnings": []
+  },
+  {
+   "destination_id": "azra-chamber-of-horrors",
+   "kind": "official",
+   "image_link": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+   "source_page": "https://azrahaunt.com/",
+   "credit": "Azra Haunted House (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1000x667",
+   "warnings": []
+  },
+  {
+   "destination_id": "rotten-manor",
+   "kind": "official",
+   "image_link": "https://rottenmanor.com/wp-content/uploads/2019/06/iOS-Slider-1.jpg",
+   "source_page": "https://rottenmanor.com/attractions-rotten-manor/",
+   "credit": "Rotten Manor (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1920x758",
+   "warnings": []
+  },
+  {
+   "destination_id": "wiards-night-terrors",
+   "kind": "third_party",
+   "image_link": "https://cloudfront-us-east-1.images.arcpublishing.com/advancelocal/AP2MN6MKXBAZLFD2OKU65J3DRA.JPG",
+   "source_page": "https://www.mlive.com/galleries/A3ERGWG7PZDWFJXBWXU6JO6QZE/",
+   "credit": "MLive",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1300x886",
+   "warnings": []
+  },
+  {
+   "destination_id": "scarefest-scream-park",
+   "kind": "third_party",
+   "image_link": "https://eu-central-1-shared-euc1-02.graphassets.com/AGYewIelvQiOhmtc8ww7Yz/cmg7vavfq5g0a07w4nt7fz90r",
+   "source_page": "https://waitwhile.com/case-studies/scarefest-scream-park/",
+   "credit": "Waitwhile case study (third-party)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 2160x1215",
+   "warnings": [
+    "Third-party case study page, not the attraction's own site"
+   ]
+  },
+  {
+   "destination_id": "dearborn-haunted-trail",
+   "kind": "official",
+   "image_link": "https://dearborn.gov/sites/default/files/inline-images/Haunted%20Trail%20Web%203_0.png",
+   "source_page": "https://dearborn.gov/government/news-communication/Dearborns-Haunted-Trail-returns-to-Ford-Field-Park-Oct-16-18",
+   "credit": "City of Dearborn",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 600x600",
+   "warnings": [
+    "Small (600x600) square image"
+   ]
+  },
+  {
+   "destination_id": "jack-o-lanterns-among-the-trees",
+   "kind": "third_party",
+   "image_link": "https://littleguidedetroit.com/wp-content/uploads/2024/09/LittleGuide-Detroit-Trick-or-treat-among-the-trees-Stage-Nature-Center-1.jpg",
+   "source_page": "https://littleguidedetroit.com/event/jack-o-lanterns-among-the-trees/",
+   "credit": "LittleGuide Detroit",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1200x800",
+   "warnings": []
+  },
+  {
+   "destination_id": "hallowglow-at-treerunner",
+   "kind": "official",
+   "image_link": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+   "source_page": "https://treerunnerparks.com/westbloomfield/glow-nights/",
+   "credit": "TreeRunner Parks (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1801x1200",
+   "warnings": []
+  }
+ ]
+}

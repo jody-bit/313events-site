@@ -46,7 +46,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-card-body{padding:10px 40px 12px 12px}
 .sc-tags{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-wrap:wrap;gap:4px}
 .sc-tags li{font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid #444;padding:2px 5px}
-.sc-card-title{margin:0;font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;font-size:21px;line-height:.95}
+.sc-card-title{margin:0;font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;font-size:21px;line-height:.95;overflow-wrap:anywhere}
 .sc-card-link{text-decoration:none}.sc-card-link::after{content:"";position:absolute;inset:0}
 .sc-card:hover{border-color:#555}
 .sc-card-where{margin:6px 0 0;font-size:13px;color:var(--ink-soft)}

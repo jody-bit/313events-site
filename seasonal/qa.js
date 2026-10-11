@@ -32,7 +32,7 @@
     return '<span class="sc-qa-badge ' + (p ? "sc-qa-partial" : "sc-qa-unver") + '">' + (p ? "Partly verified" : "Unverified") + (rec.public ? " · public" : " · QA only") + '</span>';
   }
   function typeLabel(o) {
-    return { owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image" }[o.type] || o.type;
+    return { owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)" }[o.type] || o.type;
   }
   function selector(rec, selId) {
     var cur = option(rec, selId);

@@ -42,7 +42,7 @@ for (const r of qa.records) {
   assert.strictEqual(r.dates_hours, null, "no unverified dates/hours");
   assert.ok(r.image_options.length >= 3 && r.image_options[0].src === r.manifest.primary_image);
   for (const o of r.image_options) {
-    assert.ok(fs.existsSync(path.join(root, o.src)), r.id + " missing file " + o.src);
+    if (!/^https:\/\//.test(o.src)) assert.ok(fs.existsSync(path.join(root, o.src)), r.id + " missing file " + o.src);
     assert.strictEqual(typeof o.depicts_actual_destination, "boolean");
     assert.strictEqual(typeof o.illustrative, "boolean");
     assert.ok(o.credit && o.source && o.rights_status);
@@ -73,7 +73,8 @@ assert.ok(!/sc-qa|Unverified|Hush Haunted/.test(pub));
 assert.strictEqual((pub.match(/data-fb=/g) || []).length > 0, true);
 for (const e of DATA.published(col)) {
   const rec = qa.records.find((r) => r.id === e.id);
-  assert.strictEqual(e.image.src, rec.manifest.primary_image, e.id + " public image == manifest primary");
+  // the public page keeps its approved image; QA may default to a linked official image (unverified) instead
+  if (rec.manifest.primary_image_type !== "linked_official") assert.strictEqual(e.image.src, rec.manifest.primary_image, e.id + " public image == manifest primary");
   assert.deepStrictEqual(e.image.fallbacks, [rec.manifest.fallback_image, rec.manifest.secondary_fallback_image]);
 }
 const pageHtml = fs.readFileSync(path.join(root, "halloween.html"), "utf8");
@@ -139,3 +140,32 @@ try {
   }
 } catch (e) { if (e.code === "ERR_ASSERTION") throw e; /* branch unavailable (shallow checkout): skip */ }
 console.log("halloween-qa: ok");
+
+// ---- linked images from the supplied catalogue ----
+{
+  const linkedFile = require("../seasonal/linked-images.json");
+  const recs = require("../api/_lib/seasonal-halloween-qa.json").records;
+  const byId = Object.fromEntries(recs.map((r) => [r.id, r]));
+  {
+    assert.strictEqual(linkedFile.images.length, 12);
+    linkedFile.images.forEach((l) => {
+      assert.ok(byId[l.destination_id], l.destination_id);
+      assert.ok(byId[l.destination_id].image_options.some((o) => o.src === l.image_link));
+      assert.ok(/^https:\/\//.test(l.image_link));
+    });
+  }
+  {
+    recs.forEach((r) => {
+      if (r.manifest.primary_image_type === "linked_official") {
+        const o = r.image_options[0];
+        assert.strictEqual(o.warnings.length, 1);
+        assert.strictEqual(o.depicts_actual_destination, true);
+        assert.strictEqual(r.manifest.image_status, "linked_unverified");
+        assert.ok(/generated|halloween-card/.test(r.manifest.fallback_image));
+      }
+    });
+    ["erebus", "wiards-night-terrors", "scarefest-scream-park", "jack-o-lanterns-among-the-trees", "crossroads-ghosts-goodies", "dearborn-haunted-trail"].forEach((id) =>
+      assert.notStrictEqual(byId[id].manifest.primary_image_type.indexOf("linked"), 0, id));
+    assert.strictEqual(byId["halloween-greenfield-village"].manifest.primary_image_type, "owner_photo_destination");
+  }
+}

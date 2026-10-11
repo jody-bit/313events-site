@@ -39,6 +39,17 @@ const ART = {
   "family-friendly": [3, 6], "strange-unusual": [5, 7, 6]
 };
 const ATMOS = ["313p-4e36da88", "313p-9f336786", "313p-cf666d14", "313p-98ab90f5"]; // clean, no prominent people, no foreign-city flag
+const linkedFile = JSON.parse(fs.readFileSync(path.join(root, "seasonal/linked-images.json"), "utf8"));
+const linked = {};
+linkedFile.images.forEach((l) => { (linked[l.destination_id] = linked[l.destination_id] || []).push(l); });
+function linkedOpt(l, n) {
+  const official = l.kind === "official";
+  const warnings = ["Linked image: not verified to load or rights-cleared"].concat(l.warnings, official ? [] : ["Not from the destination's own site"]);
+  return { id: "link-" + l.destination_id + (n ? "-" + n : ""), type: official ? "linked_official" : "linked_third_party", src: l.image_link,
+    source: (official ? "Official page: " : "Third-party page: ") + l.source_page, credit: l.credit,
+    rights_status: "not cleared: linked from " + l.found_via + " on " + l.found_on + "; permission not confirmed",
+    illustrative: false, depicts_actual_destination: official && !l.warnings.some((w) => /generic|generated|not independently/i.test(w)), warnings };
+}
 const photos = Object.fromEntries(lib.destination_specific.concat(lib.editorial_atmospheric).map((p) => [p.id, p]));
 const art = (n) => ({ id: "gen-halloween-" + n, type: "generated_illustrative", src: "/assets/seasonal/halloween-card-" + n + ".webp",
   source: "313.events supplied Halloween graphic (AI-generated), cropped", credit: "313.events", rights_status: "supplied by 313.events; generation tool and terms not recorded",
@@ -72,7 +83,8 @@ for (const c of rows) {
   const gens = [first, pool[(pool.indexOf(first) + 1) % pool.length], 8].filter((v, i, a) => a.indexOf(v) === i).slice(0, 3).map(art);
   const atm = ATMOS.map((pid) => Object.assign(photoOpt(photos[pid], "owner_photo_atmospheric"), { warnings: ["Atmospheric Halloween photo: does NOT depict this destination"] }));
   // Existing public choice is preserved: a published entry keeps the photo/art it already uses.
-  let options = dest.concat(gens, atm);
+  const links = (linked[id] || []).map((l, i) => linkedOpt(l, i));
+  let options = dest.concat(links, gens, atm);
   let primary;
   const clean = dest.find((o) => o.warnings.length === 0);
   if (e && e.image.photoId) primary = e.image.photoId;
@@ -83,7 +95,9 @@ for (const c of rows) {
     const usable = dest.find((o) => !o.warnings.some((w) => /person|very dark|may be a different/i.test(w)));
     primary = usable ? usable.id : null;
   }
-  if (e && !e.image.photoId && !dest.length) { const m2 = /halloween-card-(\d)/.exec(e.image.src); if (m2) { const g = art(+m2[1]); if (!options.some((o) => o.id === g.id)) options.unshift(g); primary = g.id; } }
+  // Priority 2: a linked image from the destination's own site, only when it is not flagged as generic/generated/unconfirmed.
+  if (!primary) { const l = links.find((o) => o.type === "linked_official" && o.depicts_actual_destination && o.warnings.length === 1); if (l) primary = l.id; }
+  if (!primary && e && !e.image.photoId && !dest.length) { const m2 = /halloween-card-(\d)/.exec(e.image.src); if (m2) { const g = art(+m2[1]); if (!options.some((o) => o.id === g.id)) options.unshift(g); primary = g.id; } }
   if (!primary) primary = gens[0].id;
   const primaryOpt = options.find((o) => o.id === primary);
   options = [primaryOpt].concat(options.filter((o) => o.id !== primary));
@@ -97,7 +111,7 @@ for (const c of rows) {
     primary_image_credit: primaryOpt.credit, primary_image_rights_status: primaryOpt.rights_status,
     fallback_image: fallback.src, secondary_fallback_image: (gens.find((g) => g.src !== fallback.src && g.src !== primaryOpt.src) || gens[1]).src,
     alternative_images: alt,
-    image_status: primaryOpt.illustrative ? "generated_default" : (primaryOpt.warnings.length ? "owner_photo_with_flags" : "owner_photo"),
+    image_status: primaryOpt.illustrative ? "generated_default" : primaryOpt.type.startsWith("linked") ? "linked_unverified" : (primaryOpt.warnings.length ? "owner_photo_with_flags" : "owner_photo"),
     editorial_approval_status: "not_approved"
   };
   c.image_manifest = manifest;

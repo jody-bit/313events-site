@@ -35,6 +35,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "link-erebus",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -56,6 +57,21 @@
      "illustrative": true,
      "depicts_actual_destination": false,
      "warnings": []
+    },
+    {
+     "id": "link-erebus",
+     "type": "linked_third_party",
+     "src": "https://hauntedpontiac.com/wp-content/uploads/2018/07/11.jpg",
+     "source": "Third-party page: https://hauntedpontiac.com/contact/",
+     "credit": "Erebus Haunted Attraction",
+     "rights_status": "not cleared: linked from Google Images on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Found via Google Images; source site appears to be Erebus's own but is not independently confirmed",
+      "Not from the destination's own site"
+     ]
     },
     {
      "id": "gen-halloween-7",
@@ -381,14 +397,15 @@
    "manifest": {
     "destination_id": "hush-haunted-attraction",
     "destination_name": "Hush Haunted Attraction",
-    "primary_image": "/assets/seasonal/halloween-card-4.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+    "primary_image_type": "linked_official",
+    "primary_image_source": "Official page: https://hushhauntedattractions.com/",
+    "primary_image_credit": "Hush Haunted Attractions (official site)",
+    "primary_image_rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "alternative_images": [
+     "gen-halloween-4",
      "gen-halloween-5",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -396,10 +413,23 @@
      "313p-cf666d14",
      "313p-98ab90f5"
     ],
-    "image_status": "generated_default",
+    "image_status": "linked_unverified",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "link-hush-haunted-attraction",
+     "type": "linked_official",
+     "src": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+     "source": "Official page: https://hushhauntedattractions.com/",
+     "credit": "Hush Haunted Attractions (official site)",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared"
+     ]
+    },
     {
      "id": "gen-halloween-4",
      "type": "generated_illustrative",
@@ -515,14 +545,15 @@
    "manifest": {
     "destination_id": "azra-chamber-of-horrors",
     "destination_name": "Azra Chamber of Horrors",
-    "primary_image": "/assets/seasonal/halloween-card-5.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+    "primary_image_type": "linked_official",
+    "primary_image_source": "Official page: https://azrahaunt.com/",
+    "primary_image_credit": "Azra Haunted House (official site)",
+    "primary_image_rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "gen-halloween-5",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -530,10 +561,23 @@
      "313p-cf666d14",
      "313p-98ab90f5"
     ],
-    "image_status": "generated_default",
+    "image_status": "linked_unverified",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "link-azra-chamber-of-horrors",
+     "type": "linked_official",
+     "src": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+     "source": "Official page: https://azrahaunt.com/",
+     "credit": "Azra Haunted House (official site)",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared"
+     ]
+    },
     {
      "id": "gen-halloween-5",
      "type": "generated_illustrative",
@@ -649,14 +693,15 @@
    "manifest": {
     "destination_id": "rotten-manor",
     "destination_name": "Rotten Manor",
-    "primary_image": "/assets/seasonal/halloween-card-7.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image": "https://rottenmanor.com/wp-content/uploads/2019/06/iOS-Slider-1.jpg",
+    "primary_image_type": "linked_official",
+    "primary_image_source": "Official page: https://rottenmanor.com/attractions-rotten-manor/",
+    "primary_image_credit": "Rotten Manor (official site)",
+    "primary_image_rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-1.webp",
     "alternative_images": [
+     "gen-halloween-7",
      "gen-halloween-1",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -664,10 +709,23 @@
      "313p-cf666d14",
      "313p-98ab90f5"
     ],
-    "image_status": "generated_default",
+    "image_status": "linked_unverified",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "link-rotten-manor",
+     "type": "linked_official",
+     "src": "https://rottenmanor.com/wp-content/uploads/2019/06/iOS-Slider-1.jpg",
+     "source": "Official page: https://rottenmanor.com/attractions-rotten-manor/",
+     "credit": "Rotten Manor (official site)",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared"
+     ]
+    },
     {
      "id": "gen-halloween-7",
      "type": "generated_illustrative",
@@ -791,6 +849,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "link-wiards-night-terrors",
      "gen-halloween-4",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -812,6 +871,20 @@
      "illustrative": true,
      "depicts_actual_destination": false,
      "warnings": []
+    },
+    {
+     "id": "link-wiards-night-terrors",
+     "type": "linked_third_party",
+     "src": "https://cloudfront-us-east-1.images.arcpublishing.com/advancelocal/AP2MN6MKXBAZLFD2OKU65J3DRA.JPG",
+     "source": "Third-party page: https://www.mlive.com/galleries/A3ERGWG7PZDWFJXBWXU6JO6QZE/",
+     "credit": "MLive",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Not from the destination's own site"
+     ]
     },
     {
      "id": "gen-halloween-4",
@@ -1059,6 +1132,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "link-scarefest-scream-park",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -1080,6 +1154,21 @@
      "illustrative": true,
      "depicts_actual_destination": false,
      "warnings": []
+    },
+    {
+     "id": "link-scarefest-scream-park",
+     "type": "linked_third_party",
+     "src": "https://eu-central-1-shared-euc1-02.graphassets.com/AGYewIelvQiOhmtc8ww7Yz/cmg7vavfq5g0a07w4nt7fz90r",
+     "source": "Third-party page: https://waitwhile.com/case-studies/scarefest-scream-park/",
+     "credit": "Waitwhile case study (third-party)",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Third-party case study page, not the attraction's own site",
+      "Not from the destination's own site"
+     ]
     },
     {
      "id": "gen-halloween-7",
@@ -3205,6 +3294,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "link-dearborn-haunted-trail",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -3226,6 +3316,20 @@
      "illustrative": true,
      "depicts_actual_destination": false,
      "warnings": []
+    },
+    {
+     "id": "link-dearborn-haunted-trail",
+     "type": "linked_official",
+     "src": "https://dearborn.gov/sites/default/files/inline-images/Haunted%20Trail%20Web%203_0.png",
+     "source": "Official page: https://dearborn.gov/government/news-communication/Dearborns-Haunted-Trail-returns-to-Ford-Field-Park-Oct-16-18",
+     "credit": "City of Dearborn",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Small (600x600) square image"
+     ]
     },
     {
      "id": "gen-halloween-7",
@@ -4554,14 +4658,15 @@
    "manifest": {
     "destination_id": "hallowglow-at-treerunner",
     "destination_name": "HallowGlow at TreeRunner",
-    "primary_image": "/assets/seasonal/halloween-card-7.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+    "primary_image_type": "linked_official",
+    "primary_image_source": "Official page: https://treerunnerparks.com/westbloomfield/glow-nights/",
+    "primary_image_credit": "TreeRunner Parks (official site)",
+    "primary_image_rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
+     "gen-halloween-7",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -4569,10 +4674,23 @@
      "313p-cf666d14",
      "313p-98ab90f5"
     ],
-    "image_status": "generated_default",
+    "image_status": "linked_unverified",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "link-hallowglow-at-treerunner",
+     "type": "linked_official",
+     "src": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+     "source": "Official page: https://treerunnerparks.com/westbloomfield/glow-nights/",
+     "credit": "TreeRunner Parks (official site)",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared"
+     ]
+    },
     {
      "id": "gen-halloween-7",
      "type": "generated_illustrative",
@@ -4696,6 +4814,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "alternative_images": [
+     "link-halloween-greenfield-village",
      "gen-halloween-6",
      "gen-halloween-3",
      "gen-halloween-8",
@@ -4720,6 +4839,20 @@
      "subject": "41s video of an antique carousel on Halloween with autumn trees in background",
      "warnings": [
       "upscaled from video frame"
+     ]
+    },
+    {
+     "id": "link-halloween-greenfield-village",
+     "type": "linked_official",
+     "src": "https://www.thehenryford.org/images/thehenryfordlibraries/event-card-1064x798/halloween_pumpkins_1064x798.png",
+     "source": "Official page: https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+     "credit": "The Henry Ford",
+     "rights_status": "not cleared: linked from Official site on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Event card image; may be generated art, not a photo of the place"
      ]
     },
     {
@@ -5137,11 +5270,11 @@
    "manifest": {
     "destination_id": "zoo-boo",
     "destination_name": "Zoo Boo at Detroit Zoo",
-    "primary_image": "/assets/seasonal/halloween-card-4.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "primary_image": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+    "primary_image_type": "linked_official",
+    "primary_image_source": "Official page: https://detroitzoo.org/events/zoo-boo/",
+    "primary_image_credit": "Detroit Zoo",
+    "primary_image_rights_status": "not cleared: linked from Official site on 2026-10-11; permission not confirmed",
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
@@ -5153,20 +5286,22 @@
      "313p-cf666d14",
      "313p-98ab90f5"
     ],
-    "image_status": "generated_default",
+    "image_status": "linked_unverified",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-halloween-4",
-     "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-4.webp",
-     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
-     "warnings": []
+     "id": "link-zoo-boo",
+     "type": "linked_official",
+     "src": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+     "source": "Official page: https://detroitzoo.org/events/zoo-boo/",
+     "credit": "Detroit Zoo",
+     "rights_status": "not cleared: linked from Official site on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared"
+     ]
     },
     {
      "id": "gen-halloween-3",
@@ -5290,6 +5425,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "link-crossroads-ghosts-goodies",
      "gen-halloween-3",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -5311,6 +5447,20 @@
      "illustrative": true,
      "depicts_actual_destination": false,
      "warnings": []
+    },
+    {
+     "id": "link-crossroads-ghosts-goodies",
+     "type": "linked_official",
+     "src": "https://geneseecountyparks.org/wp-content/uploads/2023/10/209A9950-scaled.jpg",
+     "source": "Official page: https://geneseecountyparks.org/halloween-ghosts-goodies/",
+     "credit": "Genesee County Parks",
+     "rights_status": "not cleared: linked from Official site on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Generic pumpkin porch scene; does not show this place"
+     ]
     },
     {
      "id": "gen-halloween-3",
@@ -5958,6 +6108,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "link-jack-o-lanterns-among-the-trees",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -5979,6 +6130,20 @@
      "illustrative": true,
      "depicts_actual_destination": false,
      "warnings": []
+    },
+    {
+     "id": "link-jack-o-lanterns-among-the-trees",
+     "type": "linked_third_party",
+     "src": "https://littleguidedetroit.com/wp-content/uploads/2024/09/LittleGuide-Detroit-Trick-or-treat-among-the-trees-Stage-Nature-Center-1.jpg",
+     "source": "Third-party page: https://littleguidedetroit.com/event/jack-o-lanterns-among-the-trees/",
+     "credit": "LittleGuide Detroit",
+     "rights_status": "not cleared: linked from Google Images (Chrome) on 2026-10-11; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not verified to load or rights-cleared",
+      "Not from the destination's own site"
+     ]
     },
     {
      "id": "gen-halloween-6",
