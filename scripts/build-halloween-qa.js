@@ -56,6 +56,17 @@ function linkedOpt(l, n) {
     load_check: l.load_check ? { checked_at: lc.checkedAt, method: lc.method, result: lc.result } : null,
     catalogue_note: l.catalogue_note || null };
 }
+// Proposed images: candidates awaiting an owner decision. Selectable in QA, no risk acceptance, never a default, never copied to a record.
+function proposedOpt(l) {
+  const lc = l.load_check, loaded = lc && /^loaded /.test(lc.result);
+  return { id: "link-" + l.destination_id + "-" + l.proposal_id, type: "linked_official", src: l.image_link, source: "Official page: " + l.source_page, credit: l.credit,
+    rights_status: "not cleared: proposal only; no rights decision recorded; permission not confirmed",
+    illustrative: false, depicts_actual_destination: true,
+    warnings: [loaded ? "Linked image: loaded in Chrome " + lc.checkedAt + " (" + lc.result.replace(/^loaded /, "") + "); rights not cleared, no permission on file" : "Linked image: not verified to load"].concat(l.warnings),
+    image_kind: l.photo_kind || "photo", source_type: "official", permission_on_file: false, risk_acceptance: null,
+    load_check: lc ? { checked_at: lc.checkedAt, method: lc.method, result: lc.result } : null, catalogue_note: l.catalogue_note || null,
+    proposal: { status: "proposed, not adopted", recommended: !!l.recommended } };
+}
 const photos = Object.fromEntries(lib.destination_specific.concat(lib.editorial_atmospheric).map((p) => [p.id, p]));
 const art = (n) => ({ id: "gen-halloween-" + n, type: "generated_illustrative", src: "/assets/seasonal/halloween-card-" + n + ".webp",
   source: "313.events supplied Halloween graphic (AI-generated), cropped", credit: "313.events", rights_status: "supplied by 313.events; generation tool and terms not recorded",
@@ -106,7 +117,8 @@ for (const c of rows) {
   const atm = ATMOS.map((pid) => Object.assign(photoOpt(photos[pid], "owner_photo_atmospheric"), { warnings: ["Atmospheric Halloween photo: does NOT depict this destination"] }));
   // Links (the supplied catalogue plus the official-site images read on 2026-10-11) are selectable, never defaulted here.
   const links = (linked[id] || []).map((l, i) => linkedOpt(l, i));
-  let options = dest.concat(links, gens, atm);
+  const props = (linkedFile.proposed_images || []).filter((l) => l.destination_id === id).map(proposedOpt);
+  let options = dest.concat(links, props, gens, atm);
   // The default is PINNED (defaults.json, frozen from 7e094df). Nothing below may change it.
   const primary = pins[id];
   if (!primary) throw new Error("no pinned default for " + id);

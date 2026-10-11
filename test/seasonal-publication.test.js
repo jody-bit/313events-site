@@ -19,7 +19,7 @@ const byId = Object.fromEntries(entries.halloween.map((e) => [e.id, e]));
 const run = (script, ...a) => execFileSync(process.execPath, [path.join(root, "scripts", script), ...a], { cwd: root, stdio: "pipe" });
 
 // ---- generated files are in sync (public projection, pages, QA data, migration review, asset hashes)
-run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); run("build-seasonal-qa.js", "--check"); run("build-publication-review.js", "--check");
+run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); run("build-seasonal-qa.js", "--check"); run("build-approval-batch.js", "--check"); run("build-publication-review.js", "--check");
 assert.deepStrictEqual(require(path.join(root, "scripts/build-seasonal.js")).validateAssets(), []);
 
 // ---- the six existing public entries are preserved (B1)
@@ -100,10 +100,10 @@ assert.ok(entries.halloween.filter((e) => !e.migration).every((e) => !DATA.isPub
   assert.strictEqual(exp.selections.length, 52);
   for (const s of exp.selections) assert.strictEqual(s.selected_image_id, saved[s.destination_id]);
   assert.strictEqual(QA.KEY, "313-halloween-qa-image-choices-v1", "the storage key is unchanged");
-  // exactly the nine new options were added, and they are not defaults
+  // exactly the nine new options and the two Crossroads proposals (owner decision pending) were added, and none is a default
   const added = [];
   for (const r of qa.records) for (const o of r.image_options) if (!frozen.destinations[r.id].options.includes(o.id)) added.push(o.id);
-  assert.deepStrictEqual(added.sort(), ["slay-nights", "blakes-haunted-attractions", "deranged-haunt", "scarehouse-windsor", "scarehouse-windsor-immersive-dinner", "field-of-fear", "fort-meigs-garrison-ghost-walk", "halloween-stroll-at-canterbury-village", "brick-or-treat-at-legoland-discovery-center"].map((i) => "link-" + i).sort());
+  assert.deepStrictEqual(added.sort(), ["slay-nights", "blakes-haunted-attractions", "deranged-haunt", "scarehouse-windsor", "scarehouse-windsor-immersive-dinner", "field-of-fear", "fort-meigs-garrison-ghost-walk", "halloween-stroll-at-canterbury-village", "brick-or-treat-at-legoland-discovery-center"].map((i) => "link-" + i).concat(["link-crossroads-ghosts-goodies-p1", "link-crossroads-ghosts-goodies-p2"]).sort());
   const pinned = JSON.parse(fs.readFileSync(path.join(ED.DIR, "defaults.json"), "utf8")).defaults;
   for (const [id, d] of Object.entries(frozen.destinations)) assert.strictEqual(pinned[id], d.default, id + " pinned default == branch default");
   // default type distribution is exactly the branch's: 44 generated, 5 linked official, 3 owner photos

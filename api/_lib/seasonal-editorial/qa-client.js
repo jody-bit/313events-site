@@ -50,13 +50,13 @@
   }
   function typeLabel(o) {
     var base = { owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)" }[o.type] || o.type;
-    return o.image_kind === "promo-art" ? base + " · promotional artwork" : base;
+    return (o.image_kind === "promo-art" ? base + " · promotional artwork" : base) + (o.proposal ? " · PROPOSED, not adopted" + (o.proposal.recommended ? " (recommended)" : "") : "");
   }
   // Rights and provenance for one option. Recorded risk acceptance is shown as exactly that, never as usage rights.
   function rights(o) {
     var out = '<span>Rights: ' + esc(o.rights_status) + '</span>';
     if (o.type.indexOf("linked") === 0) {
-      out += '<span>Permission on file: ' + (o.permission_on_file ? "yes" : "NO") + (o.risk_acceptance ? ' · owner accepted the risk ' + esc(o.risk_acceptance.accepted_at) + ' (not usage rights)' : "") + '</span>';
+      out += '<span>Permission on file: ' + (o.permission_on_file ? "yes" : "NO") + (o.risk_acceptance ? ' · owner accepted the risk ' + esc(o.risk_acceptance.accepted_at) + ' (not usage rights)' : (o.proposal ? ' · NO risk acceptance recorded for this image' : "")) + '</span>';
       if (o.load_check) out += '<span>Load test: ' + esc(o.load_check.result) + ' · ' + esc(o.load_check.checked_at) + '</span>';
     }
     return out;

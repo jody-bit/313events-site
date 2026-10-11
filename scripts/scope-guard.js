@@ -25,6 +25,7 @@ const ALLOWED = [
   "assets/guides/halloween-guide-1600.webp", "assets/guides/halloween-guide-800.webp",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
+  "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/COVERAGE.md",
   "api/_lib/seasonal-editorial/EDITORIAL_HANDOFF.md",
   "api/_lib/seasonal-editorial/MIGRATION_REVIEW.md",

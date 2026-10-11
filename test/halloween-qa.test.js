@@ -203,3 +203,36 @@ console.log("halloween-qa: ok");
   const html = QA.results(col, recs, { category: "all", query: "", view: "grid" }, {});
   assert.ok(html.includes("Permission on file: NO") && html.includes("(not usage rights)") && html.includes("promotional artwork") && html.includes("Load test: loaded"));
 }
+
+// ---- proposed images (owner decision pending): selectable in QA, never adopted, never approved ----
+{
+  const linkedFile = require("../api/_lib/seasonal-editorial/linked-images.json");
+  const ED = require("../api/_lib/seasonal-editorial/editorial.js");
+  const recs = Object.fromEntries(qa.records.map((r) => [r.id, r]));
+  const props = linkedFile.proposed_images;
+  assert.ok(props.length >= 2);
+  props.forEach((l) => {
+    assert.ok(/^https:\/\//.test(l.image_link) && l.proposal_id && l.permission_on_file === false, l.destination_id);
+    assert.ok(!l.accepted_by && !l.accepted_at, l.destination_id + ": no risk acceptance may be recorded for a proposal");
+    assert.ok(l.load_check && /^loaded \d+x\d+$/.test(l.load_check.result), l.destination_id + ": load test recorded");
+    const r = recs[l.destination_id], o = r.image_options.find((x) => x.id === "link-" + l.destination_id + "-" + l.proposal_id);
+    assert.ok(o && o.proposal && o.risk_acceptance === null && o.permission_on_file === false, "proposal is an option with no risk acceptance");
+    assert.notStrictEqual(r.image_options[0].id, o.id, "a proposal is never the default");
+    assert.ok(o.warnings.some((w) => /PROPOSED, not adopted/.test(w)));
+    // the record itself is untouched: no remote image copied, no approval, no state change
+    const e = ED.entries().halloween.find((x) => x.id === l.destination_id);
+    assert.ok(!e.image.remote || e.image.remote.src !== l.image_link, "a proposal is not copied onto the record");
+    assert.ok(!e.approval, "no approval on " + e.id);
+  });
+  const cx = recs["crossroads-ghosts-goodies"];
+  assert.strictEqual(cx.publication.state, "CONTENT_VERIFIED", "Crossroads state unchanged by the proposals");
+  assert.strictEqual(cx.manifest.primary_image, "/assets/seasonal/halloween-card-6.webp", "Crossroads default unchanged");
+  assert.ok(QA.results(col, qa.records, { category: "all", query: "", view: "grid" }, {}).includes("PROPOSED, not adopted"));
+  // nothing in the batch is approved
+  const all = ED.entries();
+  Object.keys(all).forEach((k) => all[k].forEach((e) => assert.ok(!e.approval, e.id + " has no approval")));
+  const md = fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md"), "utf8");
+  assert.ok(/Nothing is approved/.test(md) && /Rotten Manor/.test(md) && /promo-art/.test(md));
+  assert.ok(!/"approval": \{"by": "(?!<name>)/.test(md), "the batch pre-fills no approval");
+  console.log("halloween-qa proposals: ok");
+}

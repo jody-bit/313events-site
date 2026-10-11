@@ -7439,6 +7439,8 @@
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
      "link-crossroads-ghosts-goodies",
+     "link-crossroads-ghosts-goodies-p1",
+     "link-crossroads-ghosts-goodies-p2",
      "gen-halloween-3",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -7489,6 +7491,66 @@
       "result": "loaded 2400x1600"
      },
      "catalogue_note": "Generic pumpkin porch scene"
+    },
+    {
+     "id": "link-crossroads-ghosts-goodies-p1",
+     "type": "linked_official",
+     "src": "https://geneseeparkprd.wpengine.com/wp-content/uploads/2022/12/pumpkin-glow.jpg",
+     "source": "Official page: https://geneseecountyparks.org/halloween-ghosts-goodies/",
+     "credit": "Genesee County Parks",
+     "rights_status": "not cleared: proposal only; no rights decision recorded; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: loaded in Chrome 2026-10-11 (480x640); rights not cleared, no permission on file",
+      "PROPOSED, not adopted: awaiting an owner decision; no risk acceptance recorded for this image",
+      "Small source image (480x640, portrait); will be cropped and shown small",
+      "Hosted on the park system's staging host (geneseeparkprd.wpengine.com), which may not be a durable address"
+     ],
+     "image_kind": "photo",
+     "source_type": "official",
+     "permission_on_file": false,
+     "risk_acceptance": null,
+     "load_check": {
+      "checked_at": "2026-10-11",
+      "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+      "result": "loaded 480x640"
+     },
+     "catalogue_note": "Main event image on the official page (alt \"glowing pumpkin\", title \"pumpkin glow\"). Viewed in Chrome 2026-10-11: a lit jack-o'-lantern on a wooden bench, a village street and a period building with string lights behind it. No people.",
+     "proposal": {
+      "status": "proposed, not adopted",
+      "recommended": true
+     }
+    },
+    {
+     "id": "link-crossroads-ghosts-goodies-p2",
+     "type": "linked_official",
+     "src": "https://geneseeparkprd.wpengine.com/wp-content/uploads/2022/08/IMG_7645.jpeg",
+     "source": "Official page: https://geneseecountyparks.org/halloween-ghosts-goodies/",
+     "credit": "Genesee County Parks",
+     "rights_status": "not cleared: proposal only; no rights decision recorded; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: loaded in Chrome 2026-10-11 (1600x1600); rights not cleared, no permission on file",
+      "PROPOSED, not adopted: awaiting an owner decision; no risk acceptance recorded for this image",
+      "Shows identifiable people, including children; consider whether to use it",
+      "Hosted on the park system's staging host (geneseeparkprd.wpengine.com), which may not be a durable address"
+     ],
+     "image_kind": "photo",
+     "source_type": "official",
+     "permission_on_file": false,
+     "risk_acceptance": null,
+     "load_check": {
+      "checked_at": "2026-10-11",
+      "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+      "result": "loaded 1600x1600"
+     },
+     "catalogue_note": "Tile image for Halloween Ghosts & Goodies on the official Crossroads Village page (alt \"Halloween\"). Viewed in Chrome 2026-10-11: a costumed staff member handing treats to a child on a porch with spider decorations.",
+     "proposal": {
+      "status": "proposed, not adopted",
+      "recommended": false
+     }
     },
     {
      "id": "gen-halloween-3",
