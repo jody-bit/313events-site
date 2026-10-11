@@ -105,19 +105,22 @@ console.log("PASS: palette — Design System colours only, neutral category tags
 }
 console.log("PASS: neighborhood and press rails — carousels with buttons, 5 / 3.6 / 1.5 cards in view, photo-led, quiet fallbacks, article images only");
 
-// --- 7. Neighbourhood photographs: weight ---
-// A hotlinked Commons original can be several megabytes (Eastern Market was
-// 6000x4000, ~7.8 MB) for a card about 224 px wide. Every hotlinked photo
-// must therefore be a sized /thumb/ rendition, and any local photo must be a
-// file that exists. Attribution keeps pointing at the original file.
+// --- 7. Neighbourhood photographs: self-hosted ---
+// No neighbourhood photograph is hotlinked: every entry is a local WebP that
+// exists. The seven Wikimedia Commons photographs keep full attribution
+// (creator, Commons file page, license) and name the original file.
 {
   const block = html.match(/const NEIGHBORHOOD_PHOTOS = \{[\s\S]*?\n\};/)[0];
-  const srcs = [...block.matchAll(/^\s{4}src:\s*'([^']+)'/gm)].map((m) => m[1]);
-  assert.ok(srcs.length >= 7, "the hotlinked neighbourhood photographs are listed");
-  srcs.forEach((u) => assert.ok(/\/commons\/thumb\/[0-9a-f]\/[0-9a-f]{2}\/[^/]+\/(\d+)px-[^/]+$/.test(u) || /\/commons\/4\/4b\/MikerussellCampusmartiusParkDetroit\.jpg$/.test(u), `hotlink is a sized rendition, not a full-size original: ${u}`));
-  srcs.forEach((u) => { const m = u.match(/\/(\d+)px-/); if (m) assert.ok(+m[1] >= 500 && +m[1] <= 960, `rendition width is 500-960 px: ${u}`); });
-  [...block.matchAll(/^\s{4}file:\s*'([^']+)'/gm)].forEach((m) => assert.ok(fs.existsSync(`${REPO_DIR}/assets/photography/neighborhoods/${m[1]}`), `local photo exists: ${m[1]}`));
-  assert.ok(/attribution: \{\s*url: 'https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/b\/b2\/Detroit_May_2023_03_%28Eastern_Market%29\.jpg'/.test(block) && /attribution: \{\s*url: 'https:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/e\/ea\/Mexican_Village_Detroit\.jpg'/.test(block), "attribution still names the original files");
+  assert.strictEqual([...block.matchAll(/^\s{4}src:\s*'/gm)].length, 0, "no hotlinked (src:) neighbourhood photographs");
+  const files = [...block.matchAll(/^\s{4}file:\s*'([^']+)'/gm)].map((m) => m[1]);
+  assert.ok(files.length >= 8, "all neighbourhood photographs are local files");
+  files.forEach((f) => assert.ok(fs.existsSync(`${REPO_DIR}/assets/photography/neighborhoods/${f}`), `local photo exists: ${f}`));
+  const attrs = [...block.matchAll(/attribution: \{([\s\S]*?)\n    \}/g)].map((m) => m[1]);
+  assert.strictEqual(attrs.length, 7, "seven Commons photographs carry attribution");
+  attrs.forEach((a) => ["url: 'https://upload.wikimedia.org/wikipedia/commons/", "creator: '", "sourceUrl: 'https://commons.wikimedia.org/wiki/File:", "license: '", "modified: '"].forEach((k) => assert.ok(a.includes(k), `attribution has ${k}`)));
+  const copyright = fs.readFileSync(`${REPO_DIR}/copyright.html`, "utf8");
+  assert.ok(copyright.includes('id="photo-credits"'), "photo credits are published on copyright.html");
+  attrs.forEach((a) => { const u = a.match(/sourceUrl: '([^']+)'/)[1]; assert.ok(copyright.includes(u), `credit page links ${u}`); });
 }
 // Every photograph is keyed by the exact production neighbourhood name, or it
 // can never match a card (Fitzgerald-Marygrove sat under "Fitzgerald" and never showed).

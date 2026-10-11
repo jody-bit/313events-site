@@ -3825,6 +3825,9 @@
     .sec-sub{display:none;}
     .sec-head{gap:2px 12px;padding-bottom:6px;margin-bottom:10px;}
   }
+  @media (max-width:379px){
+    .sec-title{white-space:normal;}
+  }
 
   /* ---- Explore the Detroit Orbit: the radial range field. Detroit at the
      centre, rings at 10 / 25 / 50 / 75 miles, real cities placed by bearing
@@ -6831,64 +6834,94 @@ function computeNeighborhoodCounts(){
 // as a plain typographic card like every other neighborhood without one.
 const NEIGHBORHOOD_PHOTOS = {
   "Downtown": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/MikerussellCampusmartiusParkDetroit.jpg',
-    alt: 'Campus Martius Park in downtown Detroit.',
+    file: '313-events-neighborhood-downtown.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
+    alt: 'Campus Martius Park in downtown Detroit, with its ice rink and the Renaissance Center in the background.',
     credit: 'Photo: Mikerussell / Wikimedia Commons, CC BY-SA 3.0',
     attribution: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/MikerussellCampusmartiusParkDetroit.jpg',
       creator: 'Mikerussell',
       sourceUrl: 'https://commons.wikimedia.org/wiki/File:MikerussellCampusmartiusParkDetroit.jpg',
       license: 'CC BY-SA 3.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/'
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+      modified: 'Resized and converted to WebP'
     }
   },
   "Eastern Market": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Detroit_May_2023_03_%28Eastern_Market%29.jpg/960px-Detroit_May_2023_03_%28Eastern_Market%29.jpg', // 960px rendition (~180 KB); the original is 6000x4000 (~7.8 MB) and stays as attribution.url
-    alt: 'A street scene in Detroit\'s Eastern Market neighborhood.',
+    file: '313-events-neighborhood-eastern-market.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
+    alt: "Shoppers inside a shed at Detroit's Eastern Market.",
     credit: 'Photo: Michael Barera / Wikimedia Commons, CC BY-SA 4.0',
     attribution: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Detroit_May_2023_03_%28Eastern_Market%29.jpg',
       creator: 'Michael Barera',
       sourceUrl: 'https://commons.wikimedia.org/wiki/File:Detroit_May_2023_03_%28Eastern_Market%29.jpg',
       license: 'CC BY-SA 4.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/'
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+      modified: 'Resized and converted to WebP'
     }
   },
   "Midtown": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Detroit_institute_of_arts%2C_esterno_01.jpg/500px-Detroit_institute_of_arts%2C_esterno_01.jpg',
+    file: '313-events-neighborhood-midtown.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
     alt: 'The exterior facade of the Detroit Institute of Arts in Midtown Detroit.',
-    credit: 'Photo: Wikimedia Commons, CC BY 3.0'
+    credit: 'Photo: Sailko / Wikimedia Commons, CC BY 3.0',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Detroit_institute_of_arts%2C_esterno_01.jpg',
+      creator: 'Sailko',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Detroit_institute_of_arts%2C_esterno_01.jpg',
+      license: 'CC BY 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+      modified: 'Resized and converted to WebP'
+    }
   },
   "North Corktown": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/North_Corktown%2C_Detroit_neighborhood.jpg/500px-North_Corktown%2C_Detroit_neighborhood.jpg',
-    alt: 'A street view of the North Corktown neighborhood in Detroit.',
-    credit: 'Photo: Wikimedia Commons, public domain'
+    file: '313-events-neighborhood-north-corktown.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
+    alt: 'Houses on a street in the North Corktown neighborhood of Detroit.',
+    credit: 'Photo: Polishdill86 / Wikimedia Commons, Public domain',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/8/85/North_Corktown%2C_Detroit_neighborhood.jpg',
+      creator: 'Polishdill86',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:North_Corktown%2C_Detroit_neighborhood.jpg',
+      license: 'Public domain',
+      modified: 'Resized and converted to WebP'
+    }
   },
   "Mexicantown / Southwest Detroit": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Mexican_Village_Detroit.jpg/960px-Mexican_Village_Detroit.jpg', // 960px rendition (~97 KB); the original is 3456x2304 (~2.3 MB) and stays as attribution.url
-    alt: 'Mexican Village Restaurant in the Mexicantown / Southwest Detroit neighborhood.',
+    file: '313-events-neighborhood-mexicantown-southwest-detroit.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
+    alt: 'The Mexican Village Restaurant sign in the Mexicantown / Southwest Detroit neighborhood.',
     credit: 'Photo: Lian Chang / Wikimedia Commons, CC BY 2.0',
     attribution: {
       url: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Mexican_Village_Detroit.jpg',
       creator: 'Lian Chang',
       sourceUrl: 'https://commons.wikimedia.org/wiki/File:Mexican_Village_Detroit.jpg',
       license: 'CC BY 2.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by/2.0/'
+      licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
+      modified: 'Resized and converted to WebP'
     }
   },
   "Old Redford": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/RedfordTheatreMarquee.jpg/500px-RedfordTheatreMarquee.jpg',
+    file: '313-events-neighborhood-old-redford.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
     alt: 'The marquee of the Redford Theatre in the Old Redford neighborhood.',
-    credit: 'Photo: Wikimedia Commons, CC BY 3.0'
+    credit: 'Photo: Dave Parker / Wikimedia Commons, CC BY 3.0',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/8/8b/RedfordTheatreMarquee.jpg',
+      creator: 'Dave Parker',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:RedfordTheatreMarquee.jpg',
+      license: 'CC BY 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+      modified: 'Resized and converted to WebP'
+    }
   },
-  // Keyed by the production neighborhood name. This entry was keyed
-  // "Fitzgerald" (the label in this file's old static list) from 2026-09-22,
-  // which never matches the live name, so the photograph below never showed;
-  // corrected 2026-10-10 at Product Owner direction. Same verified photograph.
   "Fitzgerald-Marygrove": {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG/500px-Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG',
+    file: '313-events-neighborhood-fitzgerald-marygrove.webp', // self-hosted: resized to 960px max side and converted to WebP from the Commons original
     alt: 'Madame Cadillac Hall at Marygrove College in the Fitzgerald-Marygrove neighborhood.',
-    credit: 'Photo: Wikimedia Commons'
+    credit: 'Photo: Dwight Burdette / Wikimedia Commons, CC BY 3.0',
+    attribution: {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/3/32/Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG',
+      creator: 'Dwight Burdette',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Marygrove_College_Madame_Cadillac_Hall_Detroit.JPG',
+      license: 'CC BY 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+      modified: 'Resized and converted to WebP'
+    }
   },
   "Eastside Historic Cemetery District": {
     file: '313-events-neighborhood-eastside-historic-cemetery-district.webp',
