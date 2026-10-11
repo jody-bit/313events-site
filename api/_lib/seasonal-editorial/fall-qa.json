@@ -5,6 +5,7 @@
  "records": [
   {
    "id": "alber-orchard-and-cider-mill",
+   "discovered": false,
    "inventory_no": "1",
    "name": "Alber Orchard & Cider Mill",
    "city": "Manchester",
@@ -146,6 +147,7 @@
   },
   {
    "id": "almar-orchards",
+   "discovered": false,
    "inventory_no": "2",
    "name": "Almar Orchards",
    "city": "Flushing",
@@ -287,6 +289,7 @@
   },
   {
    "id": "apple-charlies-orchard-and-cider-mill",
+   "discovered": false,
    "inventory_no": "3",
    "name": "Apple Charlie's Orchard & Cider Mill",
    "city": "New Boston",
@@ -644,6 +647,7 @@
   },
   {
    "id": "apple-lane-orchard",
+   "discovered": false,
    "inventory_no": "4",
    "name": "Apple Lane Orchard",
    "city": "Flint",
@@ -787,6 +791,7 @@
   },
   {
    "id": "ashton-orchards-and-cider-mill",
+   "discovered": false,
    "inventory_no": "5",
    "name": "Ashton Orchards & Cider Mill",
    "city": "Ortonville",
@@ -931,6 +936,7 @@
   },
   {
    "id": "big-red-orchard",
+   "discovered": false,
    "inventory_no": "6",
    "name": "Big Red Orchard",
    "city": "Washington Township",
@@ -1071,6 +1077,7 @@
   },
   {
    "id": "blakes-orchard-cider-mill",
+   "discovered": false,
    "inventory_no": "7",
    "name": "Blake's Orchard & Cider Mill",
    "city": "Armada",
@@ -1236,6 +1243,7 @@
   },
   {
    "id": "blakes-big-apple",
+   "discovered": false,
    "inventory_no": "8",
    "name": "Blake's Big Apple",
    "city": "Armada",
@@ -1376,6 +1384,7 @@
   },
   {
    "id": "blakes-backyard",
+   "discovered": false,
    "inventory_no": "9",
    "name": "Blake's Backyard",
    "city": "Almont",
@@ -1517,6 +1526,7 @@
   },
   {
    "id": "blakes-lyon-township",
+   "discovered": false,
    "inventory_no": "10",
    "name": "Blake's Lyon Township",
    "city": "South Lyon",
@@ -1659,6 +1669,7 @@
   },
   {
    "id": "damouni-orchards",
+   "discovered": false,
    "inventory_no": "11",
    "name": "Damouni Orchards",
    "city": "Flint",
@@ -1800,6 +1811,7 @@
   },
   {
    "id": "dexter-cider-mill",
+   "discovered": false,
    "inventory_no": "12",
    "name": "Dexter Cider Mill",
    "city": "Dexter",
@@ -1939,6 +1951,7 @@
   },
   {
    "id": "diehls-orchard-and-cider-mill",
+   "discovered": false,
    "inventory_no": "13",
    "name": "Diehl's Orchard & Cider Mill",
    "city": "Holly",
@@ -2500,6 +2513,7 @@
   },
   {
    "id": "erie-orchards-and-cider-mill",
+   "discovered": false,
    "inventory_no": "14",
    "name": "Erie Orchards & Cider Mill",
    "city": "Erie",
@@ -2641,6 +2655,7 @@
   },
   {
    "id": "forever-acres-farm",
+   "discovered": false,
    "inventory_no": "15",
    "name": "Forever Acres Farm",
    "city": "Britton",
@@ -2785,6 +2800,7 @@
   },
   {
    "id": "franklin-cider-mill",
+   "discovered": false,
    "inventory_no": "16",
    "name": "Franklin Cider Mill",
    "city": "Bloomfield Hills",
@@ -2922,6 +2938,7 @@
   },
   {
    "id": "goodison-cider-mill",
+   "discovered": false,
    "inventory_no": "17",
    "name": "Goodison Cider Mill",
    "city": "Rochester",
@@ -3062,6 +3079,7 @@
   },
   {
    "id": "hys-cider-mill",
+   "discovered": false,
    "inventory_no": "18",
    "name": "Hy's Cider Mill",
    "city": "Bruce Township",
@@ -3203,6 +3221,7 @@
   },
   {
    "id": "jennys-farm-stand-and-cider-mill",
+   "discovered": false,
    "inventory_no": "19",
    "name": "Jenny's Farm Stand & Cider Mill",
    "city": "Dexter",
@@ -3347,6 +3366,7 @@
   },
   {
    "id": "jks-farmhouse-ciders-almar-orchards",
+   "discovered": false,
    "inventory_no": "20",
    "name": "JK's Farmhouse Ciders / Almar Orchards",
    "city": "Flushing",
@@ -3492,6 +3512,7 @@
   },
   {
    "id": "kreps-apple-barn-and-cider-mill",
+   "discovered": false,
    "inventory_no": "21",
    "name": "Kreps Apple Barn & Cider Mill",
    "city": "La Salle",
@@ -3632,6 +3653,7 @@
   },
   {
    "id": "long-family-orchard-and-farm",
+   "discovered": false,
    "inventory_no": "22",
    "name": "Long Family Orchard & Farm",
    "city": "Commerce Township",
@@ -3842,6 +3864,7 @@
   },
   {
    "id": "middleton-farms-cider-mill",
+   "discovered": false,
    "inventory_no": "23",
    "name": "Middleton Farms Cider Mill",
    "city": "Shelby Township",
@@ -3983,6 +4006,7 @@
   },
   {
    "id": "montrose-orchards",
+   "discovered": false,
    "inventory_no": "24",
    "name": "Montrose Orchards",
    "city": "Montrose",
@@ -4126,6 +4150,7 @@
   },
   {
    "id": "muellers-orchard-and-cider-mill",
+   "discovered": false,
    "inventory_no": "25",
    "name": "Mueller's Orchard & Cider Mill",
    "city": "Linden",
@@ -4270,6 +4295,7 @@
   },
   {
    "id": "obstbaum-orchards",
+   "discovered": false,
    "inventory_no": "26",
    "name": "Obstbaum Orchards",
    "city": "Northville",
@@ -4410,6 +4436,7 @@
   },
   {
    "id": "pankiewicz-cider-mill",
+   "discovered": false,
    "inventory_no": "27",
    "name": "Pankiewicz Cider Mill",
    "city": "Casco",
@@ -4553,6 +4580,7 @@
   },
   {
    "id": "parmenters-northville-cider-mill",
+   "discovered": false,
    "inventory_no": "28",
    "name": "Parmenter's Northville Cider Mill",
    "city": "Northville",
@@ -4716,6 +4744,7 @@
   },
   {
    "id": "parshallville-cider-mill",
+   "discovered": false,
    "inventory_no": "29",
    "name": "Parshallville Cider Mill",
    "city": "Fenton",
@@ -4856,6 +4885,7 @@
   },
   {
    "id": "plymouth-orchards-and-cider-mill",
+   "discovered": false,
    "inventory_no": "30",
    "name": "Plymouth Orchards & Cider Mill",
    "city": "Plymouth",
@@ -4996,6 +5026,7 @@
   },
   {
    "id": "porters-orchard",
+   "discovered": false,
    "inventory_no": "31",
    "name": "Porter's Orchard",
    "city": "Goodrich",
@@ -5136,6 +5167,7 @@
   },
   {
    "id": "prices-orchard",
+   "discovered": false,
    "inventory_no": "32",
    "name": "Price's Orchard",
    "city": "Newport",
@@ -5279,6 +5311,7 @@
   },
   {
    "id": "rochester-cider-mill",
+   "discovered": false,
    "inventory_no": "33",
    "name": "Rochester Cider Mill",
    "city": "Rochester",
@@ -5419,6 +5452,7 @@
   },
   {
    "id": "schell-family-farm",
+   "discovered": false,
    "inventory_no": "34",
    "name": "Schell Family Farm",
    "city": "Pinckney",
@@ -5559,6 +5593,7 @@
   },
   {
    "id": "spicer-orchards",
+   "discovered": false,
    "inventory_no": "35",
    "name": "Spicer Orchards",
    "city": "Fenton",
@@ -5698,6 +5733,7 @@
   },
   {
    "id": "stony-creek-orchard-and-cider-mill",
+   "discovered": false,
    "inventory_no": "36",
    "name": "Stony Creek Orchard & Cider Mill",
    "city": "Romeo",
@@ -5839,6 +5875,7 @@
   },
   {
    "id": "three-cedars-farm",
+   "discovered": false,
    "inventory_no": "37",
    "name": "Three Cedars Farm",
    "city": "Northville",
@@ -5979,6 +6016,7 @@
   },
   {
    "id": "verellen-orchards-and-cider",
+   "discovered": false,
    "inventory_no": "38",
    "name": "Verellen Orchards & Cider",
    "city": "Washington Township",
@@ -6121,6 +6159,7 @@
   },
   {
    "id": "wasem-fruit-farm",
+   "discovered": false,
    "inventory_no": "39",
    "name": "Wasem Fruit Farm",
    "city": "Milan",
@@ -6260,6 +6299,7 @@
   },
   {
    "id": "westview-orchards-and-winery",
+   "discovered": false,
    "inventory_no": "40",
    "name": "Westview Orchards & Winery",
    "city": "Washington Township",
@@ -6399,6 +6439,7 @@
   },
   {
    "id": "wiards-orchards",
+   "discovered": false,
    "inventory_no": "41",
    "name": "Wiard's Orchards",
    "city": "Ypsilanti",
@@ -6563,6 +6604,7 @@
   },
   {
    "id": "yates-cider-mill",
+   "discovered": false,
    "inventory_no": "42",
    "name": "Yates Cider Mill",
    "city": "Rochester Hills",
@@ -6726,6 +6768,7 @@
   },
   {
    "id": "altermatt-farms",
+   "discovered": false,
    "inventory_no": "43",
    "name": "Altermatt Farms",
    "city": "Macomb",
@@ -6867,6 +6910,7 @@
   },
   {
    "id": "birds-big-pumpkins",
+   "discovered": false,
    "inventory_no": "44",
    "name": "Bird's Big Pumpkins",
    "city": "Romulus",
@@ -7012,6 +7056,7 @@
   },
   {
    "id": "bonadeo-farms",
+   "discovered": false,
    "inventory_no": "45",
    "name": "Bonadeo Farms",
    "city": "Highland",
@@ -7151,6 +7196,7 @@
   },
   {
    "id": "chambers-family-farm",
+   "discovered": false,
    "inventory_no": "46",
    "name": "Chambers Family Farm",
    "city": "Pinckney",
@@ -7294,6 +7340,7 @@
   },
   {
    "id": "colemans-farm-market",
+   "discovered": false,
    "inventory_no": "47",
    "name": "Coleman's Farm Market",
    "city": "Ypsilanti / Saline",
@@ -7440,6 +7487,7 @@
   },
   {
    "id": "cooks-farm-dairy",
+   "discovered": false,
    "inventory_no": "48",
    "name": "Cook's Farm Dairy",
    "city": "Ortonville",
@@ -7580,6 +7628,7 @@
   },
   {
    "id": "corn-fun",
+   "discovered": false,
    "inventory_no": "49",
    "name": "Corn Fun",
    "city": "Casco",
@@ -7720,6 +7769,7 @@
   },
   {
    "id": "debucks-family-farm",
+   "discovered": false,
    "inventory_no": "50",
    "name": "DeBuck's Family Farm",
    "city": "Belleville",
@@ -7861,6 +7911,7 @@
   },
   {
    "id": "fawcett-farms",
+   "discovered": false,
    "inventory_no": "51",
    "name": "Fawcett Farms",
    "city": "Howell",
@@ -8006,6 +8057,7 @@
   },
   {
    "id": "fick-farms",
+   "discovered": false,
    "inventory_no": "52",
    "name": "Fick Farms",
    "city": "Lapeer",
@@ -8151,6 +8203,7 @@
   },
   {
    "id": "flushing-farms",
+   "discovered": false,
    "inventory_no": "53",
    "name": "Flushing Farms",
    "city": "Flushing",
@@ -8289,6 +8342,7 @@
   },
   {
    "id": "harnica-kids-pumpkin-farm",
+   "discovered": false,
    "inventory_no": "54",
    "name": "Harnica Kids' Pumpkin Farm",
    "city": "Dundee",
@@ -8433,6 +8487,7 @@
   },
   {
    "id": "kackleberry-farms",
+   "discovered": false,
    "inventory_no": "55",
    "name": "Kackleberry Farms",
    "city": "Monroe",
@@ -8572,6 +8627,7 @@
   },
   {
    "id": "little-pumpkin-patch",
+   "discovered": false,
    "inventory_no": "56",
    "name": "Little Pumpkin Patch",
    "city": "Grand Blanc",
@@ -8716,6 +8772,7 @@
   },
   {
    "id": "mitchell-farm",
+   "discovered": false,
    "inventory_no": "57",
    "name": "Mitchell Farm",
    "city": "Holly",
@@ -8861,6 +8918,7 @@
   },
   {
    "id": "munsell-farms",
+   "discovered": false,
    "inventory_no": "58",
    "name": "Munsell Farms",
    "city": "Fowlerville",
@@ -9006,6 +9064,7 @@
   },
   {
    "id": "nixon-farms-blast-corn-maze",
+   "discovered": false,
    "inventory_no": "59",
    "name": "Nixon Farms / Blast Corn Maze",
    "city": "Dexter",
@@ -9147,6 +9206,7 @@
   },
   {
    "id": "pumas-pumpkin-patch",
+   "discovered": false,
    "inventory_no": "60",
    "name": "Puma's Pumpkin Patch",
    "city": "Macomb",
@@ -9291,6 +9351,7 @@
   },
   {
    "id": "starrs-lakeview-farms",
+   "discovered": false,
    "inventory_no": "61",
    "name": "Starrs Lakeview Farms",
    "city": "Linden",
@@ -9435,6 +9496,7 @@
   },
   {
    "id": "thread-creek-farm",
+   "discovered": false,
    "inventory_no": "62",
    "name": "Thread Creek Farm",
    "city": "Grand Blanc",
@@ -9579,6 +9641,7 @@
   },
   {
    "id": "trabbic-family-pumpkin-farm",
+   "discovered": false,
    "inventory_no": "63",
    "name": "Trabbic Family Pumpkin Farm",
    "city": "Erie",
@@ -9720,6 +9783,7 @@
   },
   {
    "id": "wells-pumpkin-farm",
+   "discovered": false,
    "inventory_no": "64",
    "name": "Wells Pumpkin Farm",
    "city": "Ann Arbor",
@@ -9863,6 +9927,7 @@
   },
   {
    "id": "wing-farms",
+   "discovered": false,
    "inventory_no": "65",
    "name": "Wing Farms",
    "city": "Ann Arbor",
@@ -10003,6 +10068,7 @@
   },
   {
    "id": "fleitz-pumpkin-farm",
+   "discovered": false,
    "inventory_no": "66",
    "name": "Fleitz Pumpkin Farm",
    "city": "Oregon",
@@ -10147,6 +10213,7 @@
   },
   {
    "id": "macqueen-orchards",
+   "discovered": false,
    "inventory_no": "67",
    "name": "MacQueen Orchards",
    "city": "Holland",
@@ -10289,6 +10356,7 @@
   },
   {
    "id": "gust-brothers-pumpkin-farm",
+   "discovered": false,
    "inventory_no": "68",
    "name": "Gust Brother's Pumpkin Farm",
    "city": "Ottawa Lake",
@@ -10430,6 +10498,7 @@
   },
   {
    "id": "jasons-pumpkin-patch",
+   "discovered": false,
    "inventory_no": "69",
    "name": "Jason's Pumpkin Patch",
    "city": "Oak Harbor",
@@ -10570,6 +10639,7 @@
   },
   {
    "id": "leaders-farms",
+   "discovered": false,
    "inventory_no": "70",
    "name": "Leaders Farms",
    "city": "Napoleon",
@@ -10714,6 +10784,7 @@
   },
   {
    "id": "wheeler-farms-corn-maze",
+   "discovered": false,
    "inventory_no": "71",
    "name": "Wheeler Farms Corn Maze",
    "city": "Whitehouse",
@@ -10791,6 +10862,2176 @@
      "id": "gen-fall-7",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-thiessen-orchards",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Thiessen Orchards",
+   "city": "Leamington",
+   "region": "ON",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Thiessen Orchards in Leamington. Listed features: U-pick apples and pumpkins, corn maze, giant slides, playgrounds.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://thiessenorchards.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "admission prices on a separate page, not read",
+     "cross-border"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "thiessen-orchards",
+    "destination_name": "Thiessen Orchards",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "alternative_images": [
+     "gen-fall-8",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-melegs-lakeview-orchard-and-cider-mill",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Meleg's Lakeview Orchard & Cider Mill",
+   "city": "Kingsville",
+   "region": "ON",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Meleg's Lakeview Orchard & Cider Mill in Kingsville. Listed features: U-pick fruit, apple cider, cider donuts, pies.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://melegsorchard.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "address differs between own page (166) and tourism guide (158)",
+     "footer says copyright 2025 but content is 2026",
+     "pumpkins not mentioned",
+     "$1 per person over 5 stated on page"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "melegs-lakeview-orchard-and-cider-mill",
+    "destination_name": "Meleg's Lakeview Orchard & Cider Mill",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "alternative_images": [
+     "gen-fall-1",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-colasantis-tropical-gardens",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Colasanti's Tropical Gardens",
+   "city": "Kingsville",
+   "region": "ON",
+   "categories": [
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Colasanti's Tropical Gardens in Kingsville. Listed features: Garden centre, indoor and outdoor animal areas, mini golf, arcade.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://colasanti.com). Relevance to the collection NOT confirmed: low-medium - family attraction with fall programming, no pumpkin patch or maze stated Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "not a farm in the cider or patch sense",
+     "editor judgement needed on fit"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "colasantis-tropical-gardens",
+    "destination_name": "Colasanti's Tropical Gardens",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "alternative_images": [
+     "gen-fall-2",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-past-tense-cider-mill-past-tense-country-store-and-cider-mill",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Past Tense Cider Mill (Past Tense Country Store & Cider Mill)",
+   "city": "Lapeer",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Past Tense Cider Mill (Past Tense Country Store & Cider Mill) in Lapeer. Listed features: Cider, donuts, pies, fudge.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://pasttensecountry.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "season range not stated on page",
+     "address from contact page"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "past-tense-cider-mill-past-tense-country-store-and-cider-mill",
+    "destination_name": "Past Tense Cider Mill (Past Tense Country Store & Cider Mill)",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "alternative_images": [
+     "gen-fall-3",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-yates-cider-mill-at-canterbury-village",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Yates Cider Mill at Canterbury Village",
+   "city": "Lake Orion",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Yates Cider Mill at Canterbury Village in Lake Orion. Listed features: Cider, donuts, pastries, gift shop.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.yatescidermill.com/lake-orion-cider-mill-canterbury-village/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "separate physical site from inventory #42",
+     "cider appears to be made at the Rochester Hills mill; whether pressed at Lake Orion not stated",
+     "2026 operation inferred from footer only"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "yates-cider-mill-at-canterbury-village",
+    "destination_name": "Yates Cider Mill at Canterbury Village",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "alternative_images": [
+     "gen-fall-4",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-the-property-farms-and-mccallums-orchard-and-cider-mill",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "The Property Farms and McCallum's Orchard & Cider Mill",
+   "city": "Jeddo (St. Clair County)",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "The Property Farms and McCallum's Orchard & Cider Mill in Jeddo (St. Clair County). Listed features: U-pick apples, peaches, strawberries, grapes.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://mccallumsorchard.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "fall 2026 dates not stated"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "the-property-farms-and-mccallums-orchard-and-cider-mill",
+    "destination_name": "The Property Farms and McCallum's Orchard & Cider Mill",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "alternative_images": [
+     "gen-fall-5",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-kapnick-orchards",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Kapnick Orchards",
+   "city": "Britton",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Kapnick Orchards in Britton. Listed features: cider pressed on site, caramel apples, old-fashioned store, Winter CSA.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://kapnickorchards.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "distinct from Forever Acres Farm (also Britton, inventory #15)",
+     "Apple Festival Oct 10-11 is already past or ending as of check date"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "kapnick-orchards",
+    "destination_name": "Kapnick Orchards",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "alternative_images": [
+     "gen-fall-6",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-bowlander-farm-also-country-lane-tree-farm-panic-in-the-pines-haunted-hayride",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Bowlander Farm (also Country Lane Tree Farm; Panic in the Pines haunted hayride)",
+   "city": "Genoa",
+   "region": "OH",
+   "categories": [
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Bowlander Farm (also Country Lane Tree Farm; Panic in the Pines haunted hayride) in Genoa. Listed features: Large U-pick pumpkin patch via hayride, fall family festival, farm animal tours, field trips.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.bowlanderfarm.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "dates and hours not on pages read; Days and Hours page text did not state any",
+     "2026 evidence is copyright footer and Visit Toledo guide"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "bowlander-farm-also-country-lane-tree-farm-panic-in-the-pines-haunted-hayride",
+    "destination_name": "Bowlander Farm (also Country Lane Tree Farm; Panic in the Pines haunted hayride)",
+    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "alternative_images": [
+     "gen-fall-7",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-maybury-farm",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Maybury Farm",
+   "city": "Northville",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Maybury Farm in Northville. Listed features: farm animals, goat yoga.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.mayburyfarm.org/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "admission charged",
+     "pumpkin patch, hayrides and fall festival not mentioned on pages read"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "maybury-farm",
+    "destination_name": "Maybury Farm",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "alternative_images": [
+     "gen-fall-8",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-kensington-metropark-farm-center",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Kensington Metropark Farm Center",
+   "city": "Milford",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Kensington Metropark Farm Center in Milford. Listed features: Pick Your Pumpkin hayrides, public hayrides, farm animals, historic barn.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.metroparks.com/facilities-education/kensington-farm-center/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "pumpkin hayride dates not stated",
+     "park vehicle entry fee applies (not on page read)"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "kensington-metropark-farm-center",
+    "destination_name": "Kensington Metropark Farm Center",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "alternative_images": [
+     "gen-fall-1",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-the-petting-farm-dominos-farms-petting-farm-autumn-days-at-the-farm",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "The Petting Farm (Domino's Farms Petting Farm) - Autumn Days at the Farm",
+   "city": "Ann Arbor",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "The Petting Farm (Domino's Farms Petting Farm) - Autumn Days at the Farm in Ann Arbor. Listed features: Petting farm, Autumn Days at the Farm.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.pettingfarm.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "year not stated for Autumn Days",
+     "Autumn Days details page not read"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "the-petting-farm-dominos-farms-petting-farm-autumn-days-at-the-farm",
+    "destination_name": "The Petting Farm (Domino's Farms Petting Farm) - Autumn Days at the Farm",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "alternative_images": [
+     "gen-fall-2",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-brookwood-fruit-farm",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Brookwood Fruit Farm",
+   "city": "Almont",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Brookwood Fruit Farm in Almont. Listed features: Farm market, apples, pumpkins, weekly-pressed cider; only u-pick listed is tart cherries.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.brookwoodfruitfarm.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "year not stated for crop timing",
+     "distinct from Blake's Backyard (also Almont, inventory #9)"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "brookwood-fruit-farm",
+    "destination_name": "Brookwood Fruit Farm",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "alternative_images": [
+     "gen-fall-3",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-hoens-garden-center-and-landscaping-pumpkin-patch",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Hoen's Garden Center & Landscaping (pumpkin patch)",
+   "city": "Holland",
+   "region": "OH",
+   "categories": [
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Hoen's Garden Center & Landscaping (pumpkin patch) in Holland. Listed features: specialty pumpkins and gourds.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.hoensgardencenter.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "year not stated; Oct 3 falls on a Saturday in 2026, consistent with 2026 but not confirmed"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "hoens-garden-center-and-landscaping-pumpkin-patch",
+    "destination_name": "Hoen's Garden Center & Landscaping (pumpkin patch)",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "alternative_images": [
+     "gen-fall-4",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-lesser-farms-and-orchard",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Lesser Farms & Orchard",
+   "city": "Dexter",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Lesser Farms & Orchard in Dexter. Listed features: Farm-stand sales of apples, plums, pears, beef; sign lists cider.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.lesserfarmsdexter.com/). Relevance to the collection NOT confirmed: low - farm stand Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "no u-pick",
+     "year not stated"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "lesser-farms-and-orchard",
+    "destination_name": "Lesser Farms & Orchard",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "alternative_images": [
+     "gen-fall-5",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-be0183cc",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-04",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-805e745a",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-a89627e6",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
+     "source": "313.events owner photo archive, captured 2020-09-10",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Box of assorted glazed and frosted donuts",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-meckleys-flavor-fruit-farm-and-cidery",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Meckley's Flavor Fruit Farm & Cidery",
+   "city": "Somerset Center",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Meckley's Flavor Fruit Farm & Cidery in Somerset Center. Listed features: Fall festivals, cider mill and cidery, brewery, bakery.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.flavorfruitfarm.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "radius borderline",
+     "street address not on page",
+     "u-pick and pumpkins not mentioned"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "meckleys-flavor-fruit-farm-and-cidery",
+    "destination_name": "Meckley's Flavor Fruit Farm & Cidery",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "alternative_images": [
+     "gen-fall-6",
+     "313p-be0183cc",
+     "313p-805e745a",
+     "313p-a89627e6"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

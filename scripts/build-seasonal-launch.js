@@ -187,12 +187,14 @@ function deriveCats(col, note) {
 const datasets = {};
 for (const col of ["fall", "fall-color"]) {
   const entriesById = Object.fromEntries(out[col].map((e) => [e.id, e]));
-  const rows = regOut.candidates.filter((c) => c.collection === col);
+  const discoveredFile = (() => { try { return read("discovered-destinations.json"); } catch (e) { return { collections: {} }; } })();
+  const discovered = (discoveredFile.collections[col] || []).map((d) => ({ collection: col, name: d.ledger_name, location: d.ledger_location, inventory_no: null, inventory_note: "", section: null, flags: ["Discovered during research: not in the research inventory; owner decision to add"], discovered: true, _item: d }));
+  const rows = regOut.candidates.filter((c) => c.collection === col).concat(discovered);
   const records = [];
   let artN = 0;
   for (const c of rows) {
     const key = c.entry_key || c.published_id || slug(c.name);
-    const e = entriesById[key] || null;
+    const e = c.discovered ? null : (entriesById[key] || null);
     const wh = city(c.location);
     const opts = [];
     const dest = destPhotos(col, c);
@@ -213,7 +215,7 @@ for (const col of ["fall", "fall-color"]) {
     const options = [prim].concat(opts.filter((o) => o !== prim));
     const fallbacks = options.filter((o) => o.illustrative);
     let v = null;
-    const item = launch.collections[col].find((x) => x.ledger_name === c.name && x.ledger_location === c.location);
+    const item = c._item || launch.collections[col].find((x) => x.ledger_name === c.name && x.ledger_location === c.location);
     if (item) v = item.verification;
     const rv = e ? ED.review(e) : null;
     const status = !v ? "unverified" : v.read_ok ? (item.relevance_confirmed ? "verified" : "partial") : "unverified";
@@ -223,9 +225,9 @@ for (const col of ["fall", "fall-color"]) {
     const flags = (c.flags || []).slice();
     if (v) (v.flags || []).forEach((f) => flags.push(f));
     records.push({
-      id: e ? e.id : key, inventory_no: c.inventory_no || null, name: c.name.replace(/’/g, "'"), city: e ? e.city : wh.city, region: e ? e.region : wh.region,
-      categories: e ? e.categories : deriveCats(col, c.inventory_note || c.section || ""), category_source: e ? "record" : "derived from the inventory note (QA only)",
-      summary: e ? e.summary : (c.inventory_note || "") + ".", official_site: e && e.website || null, website: e && e.website || null, dates_hours: null,
+      id: e ? e.id : (c.discovered ? "discovered-" + key : key), discovered: !!c.discovered, inventory_no: c.inventory_no || null, name: c.name.replace(/’/g, "'"), city: e ? e.city : wh.city, region: e ? e.region : wh.region,
+      categories: e ? e.categories : (item && item.categories) || deriveCats(col, c.inventory_note || c.section || ""), category_source: e ? "record" : "derived for QA only",
+      summary: e ? e.summary : c.discovered ? c.name.replace(/’/g, "'") + " in " + wh.city + ". Listed features: " + (sentence(listOf(v || {})) || "its seasonal programs") + "." : (c.inventory_note || "") + ".", official_site: e && e.website || null, website: e && e.website || null, dates_hours: null,
       verification: { status, official_site_checked: !!(v && v.read_ok), detail, flags },
       public: e ? ED.COLLECTIONS.isPublic(e) : false,
       publication: rv ? { declared_status: e.status, state: rv.state, gate: { official: rv.gate.official, relevance: rv.gate.relevance, image: rv.gate.acquired, rights: rv.gate.rights, approval: rv.gate.approval },

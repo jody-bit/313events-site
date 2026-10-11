@@ -5,6 +5,7 @@
  "records": [
   {
    "id": "belle-isle-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Belle Isle Park",
    "city": "Detroit",
@@ -185,6 +186,7 @@
   },
   {
    "id": "palmer-park-and-witherell-woods",
+   "discovered": false,
    "inventory_no": null,
    "name": "Palmer Park & Witherell Woods",
    "city": "Detroit",
@@ -380,6 +382,7 @@
   },
   {
    "id": "rouge-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Rouge Park",
    "city": "Detroit",
@@ -520,6 +523,7 @@
   },
   {
    "id": "eliza-howell-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Eliza Howell Park",
    "city": "Detroit",
@@ -663,6 +667,7 @@
   },
   {
    "id": "rogell-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Rogell Park",
    "city": "Detroit",
@@ -809,6 +814,7 @@
   },
   {
    "id": "ohair-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "O'Hair Park",
    "city": "Detroit",
@@ -953,6 +959,7 @@
   },
   {
    "id": "chandler-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Chandler Park",
    "city": "Detroit",
@@ -1097,6 +1104,7 @@
   },
   {
    "id": "historic-fort-wayne-grounds",
+   "discovered": false,
    "inventory_no": null,
    "name": "Historic Fort Wayne grounds",
    "city": "Detroit",
@@ -1240,6 +1248,7 @@
   },
   {
    "id": "elmwood-cemetery",
+   "discovered": false,
    "inventory_no": null,
    "name": "Elmwood Cemetery",
    "city": "Detroit",
@@ -1417,6 +1426,7 @@
   },
   {
    "id": "woodlawn-cemetery",
+   "discovered": false,
    "inventory_no": null,
    "name": "Woodlawn Cemetery",
    "city": "Detroit",
@@ -1578,6 +1588,7 @@
   },
   {
    "id": "detroit-riverwalk-and-milliken-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Detroit Riverwalk & Milliken State Park",
    "city": "Detroit",
@@ -1775,6 +1786,7 @@
   },
   {
    "id": "dequindre-cut-greenway",
+   "discovered": false,
    "inventory_no": null,
    "name": "Dequindre Cut Greenway",
    "city": "Detroit",
@@ -1966,6 +1978,7 @@
   },
   {
    "id": "hines-drive-edward-n-hines-parkway",
+   "discovered": false,
    "inventory_no": null,
    "name": "Hines Drive / Edward N. Hines Parkway",
    "city": "Wayne County",
@@ -2108,6 +2121,7 @@
   },
   {
    "id": "bennett-arboretum",
+   "discovered": false,
    "inventory_no": null,
    "name": "Bennett Arboretum",
    "city": "Northville",
@@ -2247,6 +2261,7 @@
   },
   {
    "id": "maybury-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Maybury State Park",
    "city": "Northville",
@@ -2425,6 +2440,7 @@
   },
   {
    "id": "heritage-park-farmington-hills",
+   "discovered": false,
    "inventory_no": null,
    "name": "Heritage Park",
    "city": "Farmington Hills",
@@ -2603,6 +2619,7 @@
   },
   {
    "id": "douglas-evans-nature-preserve",
+   "discovered": false,
    "inventory_no": null,
    "name": "Douglas Evans Nature Preserve",
    "city": "Beverly Hills",
@@ -2745,6 +2762,7 @@
   },
   {
    "id": "cranbrook-gardens-and-grounds",
+   "discovered": false,
    "inventory_no": null,
    "name": "Cranbrook Gardens & grounds",
    "city": "Bloomfield Hills",
@@ -2921,6 +2939,7 @@
   },
   {
    "id": "lakeshore-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Lakeshore Park",
    "city": "Novi",
@@ -3064,6 +3083,7 @@
   },
   {
    "id": "tenhave-woods-quickstad-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Tenhave Woods / Quickstad Park",
    "city": "Royal Oak",
@@ -3209,6 +3229,7 @@
   },
   {
    "id": "stage-nature-center",
+   "discovered": false,
    "inventory_no": null,
    "name": "Stage Nature Center",
    "city": "Troy",
@@ -3351,6 +3372,7 @@
   },
   {
    "id": "red-oaks-nature-center",
+   "discovered": false,
    "inventory_no": null,
    "name": "Red Oaks Nature Center",
    "city": "Madison Heights",
@@ -3493,6 +3515,7 @@
   },
   {
    "id": "kensington-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Kensington Metropark",
    "city": "Milford",
@@ -3660,6 +3683,7 @@
   },
   {
    "id": "stony-creek-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Stony Creek Metropark",
    "city": "Shelby Township",
@@ -3824,6 +3848,7 @@
   },
   {
    "id": "indian-springs-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Indian Springs Metropark",
    "city": "White Lake",
@@ -3961,6 +3986,7 @@
   },
   {
    "id": "huron-meadows-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Huron Meadows Metropark",
    "city": "Brighton",
@@ -4104,6 +4130,7 @@
   },
   {
    "id": "hudson-mills-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Hudson Mills Metropark",
    "city": "Dexter",
@@ -4268,6 +4295,7 @@
   },
   {
    "id": "dexter-huron-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Dexter-Huron Metropark",
    "city": "Dexter",
@@ -4409,6 +4437,7 @@
   },
   {
    "id": "delhi-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Delhi Metropark",
    "city": "Scio Township",
@@ -4552,6 +4581,7 @@
   },
   {
    "id": "lower-huron-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Lower Huron Metropark",
    "city": "Belleville",
@@ -4692,6 +4722,7 @@
   },
   {
    "id": "willow-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Willow Metropark",
    "city": "New Boston",
@@ -4832,6 +4863,7 @@
   },
   {
    "id": "oakwoods-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Oakwoods Metropark",
    "city": "Flat Rock",
@@ -4973,6 +5005,7 @@
   },
   {
    "id": "lake-erie-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Lake Erie Metropark",
    "city": "Brownstown Township",
@@ -5115,6 +5148,7 @@
   },
   {
    "id": "lake-st-clair-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Lake St. Clair Metropark",
    "city": "Harrison Township",
@@ -5257,6 +5291,7 @@
   },
   {
    "id": "wolcott-mill-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Wolcott Mill Metropark",
    "city": "Ray Township",
@@ -5397,6 +5432,7 @@
   },
   {
    "id": "proud-lake-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Proud Lake State Recreation Area",
    "city": "Commerce Township",
@@ -5540,6 +5576,7 @@
   },
   {
    "id": "highland-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Highland State Recreation Area",
    "city": "Highland",
@@ -5744,6 +5781,7 @@
   },
   {
    "id": "holly-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Holly State Recreation Area",
    "city": "Holly",
@@ -5888,6 +5926,7 @@
   },
   {
    "id": "ortonville-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Ortonville Recreation Area",
    "city": "Ortonville",
@@ -6031,6 +6070,7 @@
   },
   {
    "id": "bald-mountain-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Bald Mountain State Recreation Area",
    "city": "Lake Orion",
@@ -6174,6 +6214,7 @@
   },
   {
    "id": "pontiac-lake-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Pontiac Lake State Recreation Area",
    "city": "Waterford",
@@ -6317,6 +6358,7 @@
   },
   {
    "id": "seven-lakes-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Seven Lakes State Park",
    "city": "Holly",
@@ -6458,6 +6500,7 @@
   },
   {
    "id": "independence-oaks-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Independence Oaks County Park",
    "city": "Clarkston",
@@ -6599,6 +6642,7 @@
   },
   {
    "id": "addison-oaks-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Addison Oaks County Park",
    "city": "Leonard",
@@ -6740,6 +6784,7 @@
   },
   {
    "id": "rose-oaks-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Rose Oaks County Park",
    "city": "Holly area",
@@ -6882,6 +6927,7 @@
   },
   {
    "id": "holly-oaks-orv-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Holly Oaks ORV Park",
    "city": "Holly",
@@ -7025,6 +7071,7 @@
   },
   {
    "id": "paint-creek-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Paint Creek Trail",
    "city": "Rochester–Lake Orion",
@@ -7165,6 +7212,7 @@
   },
   {
    "id": "clinton-river-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Clinton River Trail",
    "city": "Rochester–Pontiac",
@@ -7307,6 +7355,7 @@
   },
   {
    "id": "dinosaur-hill-nature-preserve",
+   "discovered": false,
    "inventory_no": null,
    "name": "Dinosaur Hill Nature Preserve",
    "city": "Rochester",
@@ -7449,6 +7498,7 @@
   },
   {
    "id": "bloomer-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Bloomer Park",
    "city": "Rochester Hills",
@@ -7592,6 +7642,7 @@
   },
   {
    "id": "river-bends-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "River Bends Park",
    "city": "Shelby Township",
@@ -7735,6 +7786,7 @@
   },
   {
    "id": "macomb-orchard-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Macomb Orchard Trail",
    "city": "Macomb County",
@@ -7875,6 +7927,7 @@
   },
   {
    "id": "nichols-arboretum",
+   "discovered": false,
    "inventory_no": null,
    "name": "Nichols Arboretum",
    "city": "Ann Arbor",
@@ -8040,6 +8093,7 @@
   },
   {
    "id": "matthaei-botanical-gardens-trails",
+   "discovered": false,
    "inventory_no": null,
    "name": "Matthaei Botanical Gardens trails",
    "city": "Ann Arbor",
@@ -8182,6 +8236,7 @@
   },
   {
    "id": "bird-hills-nature-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Bird Hills Nature Area",
    "city": "Ann Arbor",
@@ -8323,6 +8378,7 @@
   },
   {
    "id": "barton-nature-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Barton Nature Area",
    "city": "Ann Arbor",
@@ -8464,6 +8520,7 @@
   },
   {
    "id": "argo-nature-area-argo-cascades",
+   "discovered": false,
    "inventory_no": null,
    "name": "Argo Nature Area / Argo Cascades",
    "city": "Ann Arbor",
@@ -8606,6 +8663,7 @@
   },
   {
    "id": "gallup-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Gallup Park",
    "city": "Ann Arbor",
@@ -8749,6 +8807,7 @@
   },
   {
    "id": "county-farm-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "County Farm Park",
    "city": "Ann Arbor",
@@ -8891,6 +8950,7 @@
   },
   {
    "id": "eberwhite-woods",
+   "discovered": false,
    "inventory_no": null,
    "name": "Eberwhite Woods",
    "city": "Ann Arbor",
@@ -9031,6 +9091,7 @@
   },
   {
    "id": "huron-river-drive",
+   "discovered": false,
    "inventory_no": null,
    "name": "Huron River Drive",
    "city": "Ann Arbor–Dexter",
@@ -9174,6 +9235,7 @@
   },
   {
    "id": "old-us-12-corridor",
+   "discovered": false,
    "inventory_no": null,
    "name": "Old US-12 corridor",
    "city": "Chelsea–Ann Arbor–Ypsilanti",
@@ -9314,6 +9376,7 @@
   },
   {
    "id": "waterloo-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Waterloo State Recreation Area",
    "city": "Chelsea",
@@ -9455,6 +9518,7 @@
   },
   {
    "id": "pinckney-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Pinckney State Recreation Area",
    "city": "Pinckney",
@@ -9599,6 +9663,7 @@
   },
   {
    "id": "gerald-e-eddy-discovery-center-trails",
+   "discovered": false,
    "inventory_no": null,
    "name": "Gerald E. Eddy Discovery Center trails",
    "city": "Chelsea",
@@ -9741,6 +9806,7 @@
   },
   {
    "id": "independence-lake-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Independence Lake County Park",
    "city": "Whitmore Lake",
@@ -9883,6 +9949,7 @@
   },
   {
    "id": "rolling-hills-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Rolling Hills County Park",
    "city": "Ypsilanti",
@@ -10025,6 +10092,7 @@
   },
   {
    "id": "sharon-mills-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Sharon Mills County Park",
    "city": "Manchester area",
@@ -10171,6 +10239,7 @@
   },
   {
    "id": "brighton-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Brighton State Recreation Area",
    "city": "Brighton",
@@ -10315,6 +10384,7 @@
   },
   {
    "id": "island-lake-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Island Lake State Recreation Area",
    "city": "Brighton",
@@ -10458,6 +10528,7 @@
   },
   {
    "id": "howell-nature-center",
+   "discovered": false,
    "inventory_no": null,
    "name": "Howell Nature Center",
    "city": "Howell",
@@ -10600,6 +10671,7 @@
   },
   {
    "id": "for-mar-nature-preserve-and-arboretum",
+   "discovered": false,
    "inventory_no": null,
    "name": "For-Mar Nature Preserve & Arboretum",
    "city": "Burton",
@@ -10741,6 +10813,7 @@
   },
   {
    "id": "flint-river-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Flint River Trail",
    "city": "Flint",
@@ -10883,6 +10956,7 @@
   },
   {
    "id": "stepping-stone-falls",
+   "discovered": false,
    "inventory_no": null,
    "name": "Stepping Stone Falls",
    "city": "Flint",
@@ -11024,6 +11098,7 @@
   },
   {
    "id": "mott-lake-bluebell-beach",
+   "discovered": false,
    "inventory_no": null,
    "name": "Mott Lake / Bluebell Beach",
    "city": "Flint area",
@@ -11165,6 +11240,7 @@
   },
   {
    "id": "holloway-reservoir-regional-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Holloway Reservoir Regional Park",
    "city": "Richfield Township",
@@ -11307,6 +11383,7 @@
   },
   {
    "id": "lapeer-state-game-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Lapeer State Game Area",
    "city": "Lapeer County",
@@ -11451,6 +11528,7 @@
   },
   {
    "id": "seven-ponds-nature-center",
+   "discovered": false,
    "inventory_no": null,
    "name": "Seven Ponds Nature Center",
    "city": "Dryden",
@@ -11593,6 +11671,7 @@
   },
   {
    "id": "metamora-hadley-state-recreation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Metamora-Hadley State Recreation Area",
    "city": "Metamora",
@@ -11738,6 +11817,7 @@
   },
   {
    "id": "genesee-county-parks-richfield-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Genesee County Parks: Richfield County Park",
    "city": "Richfield Township",
@@ -11879,6 +11959,7 @@
   },
   {
    "id": "algonac-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Algonac State Park",
    "city": "Marine City area",
@@ -12023,6 +12104,7 @@
   },
   {
    "id": "st-clair-river-road-m-29",
+   "discovered": false,
    "inventory_no": null,
    "name": "St. Clair River Road / M-29",
    "city": "Algonac–Port Huron",
@@ -12164,6 +12246,7 @@
   },
   {
    "id": "pine-river-nature-center",
+   "discovered": false,
    "inventory_no": null,
    "name": "Pine River Nature Center",
    "city": "Goodells",
@@ -12307,6 +12390,7 @@
   },
   {
    "id": "goodells-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Goodells County Park",
    "city": "Goodells",
@@ -12450,6 +12534,7 @@
   },
   {
    "id": "columbus-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Columbus County Park",
    "city": "Columbus Township",
@@ -12591,6 +12676,7 @@
   },
   {
    "id": "wadhams-to-avoca-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Wadhams to Avoca Trail",
    "city": "St. Clair County",
@@ -12731,6 +12817,7 @@
   },
   {
    "id": "bridge-to-bay-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Bridge to Bay Trail",
    "city": "St. Clair County",
@@ -12873,6 +12960,7 @@
   },
   {
    "id": "lakeport-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Lakeport State Park",
    "city": "Lakeport",
@@ -13019,6 +13107,7 @@
   },
   {
    "id": "fort-gratiot-county-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Fort Gratiot County Park",
    "city": "Fort Gratiot",
@@ -13162,6 +13251,7 @@
   },
   {
    "id": "st-clair-river-waterfront-parks",
+   "discovered": false,
    "inventory_no": null,
    "name": "St. Clair River waterfront parks",
    "city": "St. Clair",
@@ -13308,6 +13398,7 @@
   },
   {
    "id": "sterling-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Sterling State Park",
    "city": "Monroe",
@@ -13454,6 +13545,7 @@
   },
   {
    "id": "river-raisin-national-battlefield-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "River Raisin National Battlefield Park",
    "city": "Monroe",
@@ -13596,6 +13688,7 @@
   },
   {
    "id": "munson-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Munson Park",
    "city": "Monroe",
@@ -13741,6 +13834,7 @@
   },
   {
    "id": "crosswinds-marsh-preserve",
+   "discovered": false,
    "inventory_no": null,
    "name": "Crosswinds Marsh Preserve",
    "city": "New Boston",
@@ -13884,6 +13978,7 @@
   },
   {
    "id": "heritage-park-taylor",
+   "discovered": false,
    "inventory_no": null,
    "name": "Heritage Park",
    "city": "Taylor",
@@ -14025,6 +14120,7 @@
   },
   {
    "id": "elizabeth-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Elizabeth Park",
    "city": "Trenton",
@@ -14168,6 +14264,7 @@
   },
   {
    "id": "grosse-ile-nature-and-land-conservancy-preserves",
+   "discovered": false,
    "inventory_no": null,
    "name": "Grosse Ile Nature & Land Conservancy preserves",
    "city": "Grosse Ile",
@@ -14310,6 +14407,7 @@
   },
   {
    "id": "wildwood-preserve-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Wildwood Preserve Metropark",
    "city": "Toledo",
@@ -14451,6 +14549,7 @@
   },
   {
    "id": "oak-openings-preserve-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Oak Openings Preserve Metropark",
    "city": "Swanton",
@@ -14692,6 +14791,7 @@
   },
   {
    "id": "secor-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Secor Metropark",
    "city": "Berkey",
@@ -14834,6 +14934,7 @@
   },
   {
    "id": "pearson-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Pearson Metropark",
    "city": "Oregon",
@@ -14975,6 +15076,7 @@
   },
   {
    "id": "side-cut-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Side Cut Metropark",
    "city": "Maumee",
@@ -15116,6 +15218,7 @@
   },
   {
    "id": "farnsworth-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Farnsworth Metropark",
    "city": "Waterville",
@@ -15257,6 +15360,7 @@
   },
   {
    "id": "providence-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Providence Metropark",
    "city": "Grand Rapids",
@@ -15402,6 +15506,7 @@
   },
   {
    "id": "swan-creek-preserve-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Swan Creek Preserve Metropark",
    "city": "Toledo",
@@ -15544,6 +15649,7 @@
   },
   {
    "id": "ottawa-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Ottawa Park",
    "city": "Toledo",
@@ -15703,6 +15809,7 @@
   },
   {
    "id": "toledo-botanical-garden",
+   "discovered": false,
    "inventory_no": null,
    "name": "Toledo Botanical Garden",
    "city": "Toledo",
@@ -15843,6 +15950,7 @@
   },
   {
    "id": "middlegrounds-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Middlegrounds Metropark",
    "city": "Toledo",
@@ -15984,6 +16092,7 @@
   },
   {
    "id": "howard-marsh-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Howard Marsh Metropark",
    "city": "Curtice",
@@ -16126,6 +16235,7 @@
   },
   {
    "id": "maumee-bay-state-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Maumee Bay State Park",
    "city": "Oregon",
@@ -16271,6 +16381,7 @@
   },
   {
    "id": "irwin-prairie-state-nature-preserve",
+   "discovered": false,
    "inventory_no": null,
    "name": "Irwin Prairie State Nature Preserve",
    "city": "Holland",
@@ -16415,6 +16526,7 @@
   },
   {
    "id": "blue-creek-metropark",
+   "discovered": false,
    "inventory_no": null,
    "name": "Blue Creek Metropark",
    "city": "Whitehouse",
@@ -16557,6 +16669,7 @@
   },
   {
    "id": "ojibway-park-and-nature-centre",
+   "discovered": false,
    "inventory_no": null,
    "name": "Ojibway Park & Nature Centre",
    "city": "Windsor",
@@ -16701,6 +16814,7 @@
   },
   {
    "id": "black-oak-heritage-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Black Oak Heritage Park",
    "city": "Windsor",
@@ -16842,6 +16956,7 @@
   },
   {
    "id": "malden-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Malden Park",
    "city": "Windsor",
@@ -16984,6 +17099,7 @@
   },
   {
    "id": "jackson-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Jackson Park",
    "city": "Windsor",
@@ -17125,6 +17241,7 @@
   },
   {
    "id": "little-river-corridor",
+   "discovered": false,
    "inventory_no": null,
    "name": "Little River Corridor",
    "city": "Windsor",
@@ -17267,6 +17384,7 @@
   },
   {
    "id": "ganatchio-trail",
+   "discovered": false,
    "inventory_no": null,
    "name": "Ganatchio Trail",
    "city": "Windsor–Tecumseh",
@@ -17410,6 +17528,7 @@
   },
   {
    "id": "brunet-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Brunet Park",
    "city": "LaSalle",
@@ -17551,6 +17670,7 @@
   },
   {
    "id": "vollmer-culture-and-recreation-complex-trails",
+   "discovered": false,
    "inventory_no": null,
    "name": "Vollmer Culture and Recreation Complex trails",
    "city": "LaSalle",
@@ -17693,6 +17813,7 @@
   },
   {
    "id": "holiday-beach-conservation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Holiday Beach Conservation Area",
    "city": "Amherstburg",
@@ -17836,6 +17957,7 @@
   },
   {
    "id": "big-creek-conservation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Big Creek Conservation Area",
    "city": "Amherstburg area",
@@ -17980,6 +18102,7 @@
   },
   {
    "id": "hillman-marsh-conservation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Hillman Marsh Conservation Area",
    "city": "Leamington",
@@ -18124,6 +18247,7 @@
   },
   {
    "id": "kopegaron-woods-conservation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Kopegaron Woods Conservation Area",
    "city": "Leamington area",
@@ -18266,6 +18390,7 @@
   },
   {
    "id": "chrysler-canada-greenway",
+   "discovered": false,
    "inventory_no": null,
    "name": "Chrysler Canada Greenway",
    "city": "Essex County",
@@ -18410,6 +18535,7 @@
   },
   {
    "id": "john-r-park-homestead",
+   "discovered": false,
    "inventory_no": null,
    "name": "John R. Park Homestead",
    "city": "Essex",
@@ -18554,6 +18680,7 @@
   },
   {
    "id": "point-pelee-national-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Point Pelee National Park",
    "city": "Leamington",
@@ -18697,6 +18824,7 @@
   },
   {
    "id": "wheatley-provincial-park",
+   "discovered": false,
    "inventory_no": null,
    "name": "Wheatley Provincial Park",
    "city": "Wheatley",
@@ -18842,6 +18970,7 @@
   },
   {
    "id": "two-creeks-conservation-area",
+   "discovered": false,
    "inventory_no": null,
    "name": "Two Creeks Conservation Area",
    "city": "Wheatley",
@@ -18924,6 +19053,3167 @@
      "id": "gen-fall-color-8",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-bend-view-metropark",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Bend View Metropark",
+   "city": "Waterville",
+   "region": "OH",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Bend View Metropark in Waterville. Listed features: Historic Bend View shelter, Towpath Trail, Maumee River Water Trail access, enclosed camping platforms.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.metroparkstoledo.com/explore-your-parks/bend-view-metropark/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "camping platforms seasonal",
+     "Near the 75-mile boundary: computed 73 mi (approximate coordinates)."
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "bend-view-metropark",
+    "destination_name": "Bend View Metropark",
+    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "alternative_images": [
+     "gen-fall-color-1",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-lyon-oaks-county-park",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Lyon Oaks County Park",
+   "city": "Wixom",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Lyon Oaks County Park in Wixom. Listed features: picnic shelter and playground.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/lyon-oaks). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "archery deer hunting permitted",
+     "preregistration for guided hike"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "lyon-oaks-county-park",
+    "destination_name": "Lyon Oaks County Park",
+    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "alternative_images": [
+     "gen-fall-color-2",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-orion-oaks-county-park",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Orion Oaks County Park",
+   "city": "Orion Township",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Orion Oaks County Park in Orion Township. Listed features: Lake Sixteen fishing pier, dog park, geocaching, non-motorized boat launch.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/orion-oaks). Relevance to the collection NOT confirmed: Wooded multi-use trail park on the county system; page does not mention fall. Included only on woodland-trail grounds. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "archery hunting"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "orion-oaks-county-park",
+    "destination_name": "Orion Oaks County Park",
+    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "alternative_images": [
+     "gen-fall-color-3",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-highland-oaks-county-park",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Highland Oaks County Park",
+   "city": "Highland",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Highland Oaks County Park in Highland. Listed features: Shiawassee River headwaters, accessible floating fishing dock.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/highland-oaks). Relevance to the collection NOT confirmed: Rolling-hills county park with trails; no fall statement. Distinct from Highland State Recreation Area (inventoried). Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "archery hunting"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "highland-oaks-county-park",
+    "destination_name": "Highland Oaks County Park",
+    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "alternative_images": [
+     "gen-fall-color-4",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-clinton-river-oaks-park",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Clinton River Oaks Park",
+   "city": "Rochester Hills",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Clinton River Oaks Park in Rochester Hills. Listed features: connects trails and waterways, includes portion of Rochester Hills' Bloomer Park.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/clinton-river-oaks). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "overlaps with inventoried Bloomer Park"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "clinton-river-oaks-park",
+    "destination_name": "Clinton River Oaks Park",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "alternative_images": [
+     "gen-fall-color-5",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-johnson-nature-center-bloomfield-oaks",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Johnson Nature Center (Bloomfield Oaks)",
+   "city": "Bloomfield Township",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Johnson Nature Center (Bloomfield Oaks) in Bloomfield Township. Listed features: visitor center.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/bloomfield-oaks-johnson-nature-center). Relevance to the collection NOT confirmed: Small hardwood/pine woodland with trails; page has no fall mention. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "management transition"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "johnson-nature-center-bloomfield-oaks",
+    "destination_name": "Johnson Nature Center (Bloomfield Oaks)",
+    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "alternative_images": [
+     "gen-fall-color-6",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-woodsong-county-park",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Woodsong County Park",
+   "city": "Clyde Township",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Woodsong County Park in Clyde Township. Listed features: rustic trails along steep slopes, mountain bike trails with Black River valley views, fishing access.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.stclaircounty.org/Offices/180). Relevance to the collection NOT confirmed: Wooded river-valley county park; page has no fall mention. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "woodsong-county-park",
+    "destination_name": "Woodsong County Park",
+    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "alternative_images": [
+     "gen-fall-color-7",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-kidder-mckeachie-scio-woods-preserve",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Kidder-McKeachie Scio Woods Preserve",
+   "city": "Scio Township",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Kidder-McKeachie Scio Woods Preserve in Scio Township. Listed features: among the largest remaining beech forests nearby.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.washtenaw.org/kidder-mckeachie-scio-woods-preserve). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "kidder-mckeachie-scio-woods-preserve",
+    "destination_name": "Kidder-McKeachie Scio Woods Preserve",
+    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "alternative_images": [
+     "gen-fall-color-8",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-park-lyndon",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Park Lyndon",
+   "city": "Lyndon Township (Chelsea area)",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Park Lyndon in Lyndon Township (Chelsea area). Listed features: hilly glacially shaped terrain, high-quality natural communities, hiking.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.washtenaw.org/park-lyndon-0). Relevance to the collection NOT confirmed: Hilly natural-area woodland; no explicit fall statement. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "park-lyndon",
+    "destination_name": "Park Lyndon",
+    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "alternative_images": [
+     "gen-fall-color-1",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-bluffs-nature-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Bluffs Nature Area",
+   "city": "Ann Arbor",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Bluffs Nature Area in Ann Arbor. Listed features: oak-hickory forest, wooded ravines, meadow, unpaved rugged footpaths.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.a2gov.org/parks-and-recreation/parks-and-places/bluffs-nature-area/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "steep, rugged terrain"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "bluffs-nature-area",
+    "destination_name": "Bluffs Nature Area",
+    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "alternative_images": [
+     "gen-fall-color-2",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-marshall-nature-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Marshall Nature Area",
+   "city": "Ann Arbor",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Marshall Nature Area in Ann Arbor. Listed features: oak grove, mixed hardwoods, loop trail connecting to county Freeman Preserve, paved Dixboro Road Pathway to Matthaei.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.a2gov.org/parks-and-recreation/parks-and-places/marshall-nature-area/). Relevance to the collection NOT confirmed: Large mixed-hardwood woodland with trails; page mentions only spring color. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "prescribed burns possible"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "marshall-nature-area",
+    "destination_name": "Marshall Nature Area",
+    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "alternative_images": [
+     "gen-fall-color-3",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-black-pond-woods-nature-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Black Pond Woods Nature Area",
+   "city": "Ann Arbor",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Black Pond Woods Nature Area in Ann Arbor. Listed features: mature oak-hickory forest with maple and dogwood, floating boardwalk on seasonal pond, unpaved trails linking to Leslie Park.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.a2gov.org/parks-and-recreation/parks-and-places/black-pond-woods-nature-area/). Relevance to the collection NOT confirmed: Mature mixed hardwood woodland with trails; page highlights spring, not fall. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "black-pond-woods-nature-area",
+    "destination_name": "Black Pond Woods Nature Area",
+    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "alternative_images": [
+     "gen-fall-color-4",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-washtenaw-county-natural-beauty-roads",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Washtenaw County Natural Beauty Roads",
+   "city": "Washtenaw County",
+   "region": "MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Washtenaw County Natural Beauty Roads in Washtenaw County. Listed features: designated for unusual or outstanding natural beauty.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.wcroads.org/natural-beauty-roads). Relevance to the collection NOT confirmed: Official natural beauty road designation; not a fall-specific claim. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "route/guide not venue",
+     "Distance from Detroit not computed (no coordinates)."
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "washtenaw-county-natural-beauty-roads",
+    "destination_name": "Washtenaw County Natural Beauty Roads",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "alternative_images": [
+     "gen-fall-color-5",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-william-p-holliday-forest-and-wildlife-preserve",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "William P. Holliday Forest & Wildlife Preserve",
+   "city": "Westland",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "William P. Holliday Forest & Wildlife Preserve in Westland. Listed features: Tonquish Creek streambed trails, upland woods, wetlands, meadows, naturalist programs.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.waynecountymi.gov/Parks-Recreation/Explore/William-P.-Holliday-Forest-Wildlife-Preserve). Relevance to the collection NOT confirmed: Large Wayne County woodland preserve with long trail network; no fall mention on page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "william-p-holliday-forest-and-wildlife-preserve",
+    "destination_name": "William P. Holliday Forest & Wildlife Preserve",
+    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "alternative_images": [
+     "gen-fall-color-6",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-devonwood-conservation-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Devonwood Conservation Area",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Devonwood Conservation Area in Windsor. Listed features: eight oak species.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.essexregionconservation.ca/conservation-areas/). Relevance to the collection NOT confirmed: Oak-dominated urban forest with trails per the Essex Region Conservation Authority (ERCA); no fall statement. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "devonwood-conservation-area",
+    "destination_name": "Devonwood Conservation Area",
+    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "alternative_images": [
+     "gen-fall-color-7",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-maidstone-woods-conservation-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Maidstone Woods Conservation Area",
+   "city": "Lakeshore",
+   "region": "ON",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Maidstone Woods Conservation Area in Lakeshore. Listed features: boardwalk, picnicking.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.essexregionconservation.ca/conservation-areas/). Relevance to the collection NOT confirmed: Oak-hickory woodland trail per ERCA; no fall statement. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "maidstone-woods-conservation-area",
+    "destination_name": "Maidstone Woods Conservation Area",
+    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "alternative_images": [
+     "gen-fall-color-8",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-andrew-murray-oneil-woods-conservation-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Andrew Murray O'Neil Woods Conservation Area",
+   "city": "Staples (Lakeshore)",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Andrew Murray O'Neil Woods Conservation Area in Staples (Lakeshore). Listed features: mixed Carolinian forest with oaks, hickories, walnut, trail, birding and photography.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.essexregionconservation.ca/conservation-areas/). Relevance to the collection NOT confirmed: Carolinian forest trail per ERCA; no fall statement. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "andrew-murray-oneil-woods-conservation-area",
+    "destination_name": "Andrew Murray O'Neil Woods Conservation Area",
+    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "alternative_images": [
+     "gen-fall-color-1",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-mcauliffe-woods-conservation-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "McAuliffe Woods Conservation Area",
+   "city": "Tecumseh",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "McAuliffe Woods Conservation Area in Tecumseh. Listed features: its seasonal programs.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.essexregionconservation.ca/conservation-areas/). Relevance to the collection NOT confirmed: Small accessible woodland walk; no fall statement. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "mcauliffe-woods-conservation-area",
+    "destination_name": "McAuliffe Woods Conservation Area",
+    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "alternative_images": [
+     "gen-fall-color-2",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-cedar-creek-conservation-area",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Cedar Creek Conservation Area",
+   "city": "Essex",
+   "region": "ON",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Cedar Creek Conservation Area in Essex. Listed features: Carolinian woodlands, creeks, wetlands, trail, canoe/kayak access.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.essexregionconservation.ca/conservation-areas/). Relevance to the collection NOT confirmed: Woodland and creek trail per ERCA; no fall statement. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border",
+     "waterfowl hunting"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "cedar-creek-conservation-area",
+    "destination_name": "Cedar Creek Conservation Area",
+    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "alternative_images": [
+     "gen-fall-color-3",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-ojibway-prairie-provincial-nature-reserve",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Ojibway Prairie Provincial Nature Reserve",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Ojibway Prairie Provincial Nature Reserve in Windsor. Listed features: its seasonal programs.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.ontarioparks.ca/park/ojibwayprairie). Relevance to the collection NOT confirmed: Prairie and savanna remnant; page has no fall content. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border",
+     "adjacent to inventoried Ojibway Park"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "ojibway-prairie-provincial-nature-reserve",
+    "destination_name": "Ojibway Prairie Provincial Nature Reserve",
+    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "alternative_images": [
+     "gen-fall-color-4",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-fish-point-provincial-nature-reserve-pelee-island",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Fish Point Provincial Nature Reserve (Pelee Island)",
+   "city": "Pelee Island",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Fish Point Provincial Nature Reserve (Pelee Island) in Pelee Island. Listed features: near-virgin southern deciduous forest, sandspit and dunes, migratory bird stopover.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.ontarioparks.ca/park/fishpoint). Relevance to the collection NOT confirmed: Deciduous forest nature reserve; no fall content on page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border",
+     "ferry"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "fish-point-provincial-nature-reserve-pelee-island",
+    "destination_name": "Fish Point Provincial Nature Reserve (Pelee Island)",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "alternative_images": [
+     "gen-fall-color-5",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-c1b73974",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0131__card.webp",
+     "source": "313.events owner photo archive, captured 2019-11-05",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Downtown plaza lawn with turning yellow and orange trees under overcast sky",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-ff285b59",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0357__card.webp",
+     "source": "313.events owner photo archive, captured 2020-10-23",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Close-up of bracket fungus on a branch over fallen autumn leaves",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-13ba9e81",
+     "type": "owner_photo_atmospheric",
+     "src": "/assets/seasonal/editorial/fall-color/atmospheric__fall-color__d0383__card.webp",
+     "source": "313.events owner photo archive, captured 2020-11-07",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "subject": "Lawn blanketed in fallen brown oak leaves, residential setting",
+     "warnings": [
+      "Atmospheric photo: does NOT depict this destination"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    }
+   ]
+  },
+  {
+   "id": "discovered-lighthouse-point-provincial-nature-reserve-pelee-island",
+   "discovered": true,
+   "inventory_no": null,
+   "name": "Lighthouse Point Provincial Nature Reserve (Pelee Island)",
+   "city": "Pelee Island",
+   "region": "ON",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "category_source": "derived for QA only",
+   "summary": "Lighthouse Point Provincial Nature Reserve (Pelee Island) in Pelee Island. Listed features: remnant deciduous forests and wetlands.",
+   "official_site": null,
+   "website": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.ontarioparks.ca/park/lighthousepoint). Relevance to the collection NOT confirmed: Remnant deciduous forest reserve; no fall content on page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "flags": [
+     "Discovered during research: not in the research inventory; owner decision to add",
+     "cross-border",
+     "ferry"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "image": false,
+     "rights": false,
+     "approval": false
+    },
+    "image_route": null,
+    "rights_route": null,
+    "outstanding": [
+     "Gate 1, official-source verification: not yet read.",
+     "Gate 2, relevance: not confirmed.",
+     "Gate 3/4, image and rights: not complete.",
+     "Gate 5, explicit publication approval: not recorded."
+    ],
+    "caveats": [],
+    "legacy": null
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "lighthouse-point-provincial-nature-reserve-pelee-island",
+    "destination_name": "Lighthouse Point Provincial Nature Reserve (Pelee Island)",
+    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "alternative_images": [
+     "gen-fall-color-6",
+     "313p-c1b73974",
+     "313p-ff285b59",
+     "313p-13ba9e81"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

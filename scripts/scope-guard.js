@@ -31,6 +31,7 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/candidate-images.json",
   "api/_lib/seasonal-editorial/candidates.json",
   "api/_lib/seasonal-editorial/defaults.json",
+  "api/_lib/seasonal-editorial/discovered-destinations.json",
   "api/_lib/seasonal-editorial/editorial.js",
   "api/_lib/seasonal-editorial/entries.json",
   "api/_lib/seasonal-editorial/fall-color-qa.json",
