@@ -2,6 +2,8 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls MotorCity Wine (Corktown, Detroit) events from
 // their own public Google Calendar. Added 2026-09-18 after Jody asked "do
 // we have a motor city wine cron?" (answer at the time: no, just one
@@ -102,6 +104,7 @@ const VENUE_NAME = "MotorCity Wine"; // matches the existing venues row exactly 
 const VENUE_ADDRESS = "1949 Michigan Ave";
 const VENUE_CITY = "Detroit";
 const DEFAULT_STATUS = "approved";
+const SOURCE_SLUG = SLUGS.motorcitywine; // see api/_lib/source-slugs.js
 const FETCH_HEADERS = { "User-Agent": "Mozilla/5.0 (313.events event calendar)" };
 const WINDOW_DAYS = 60; // how far forward to expand recurring series each run
 const MAX_EVENTS_PER_RUN = 150; // safety cap — this calendar typically has ~25-35 occurrences in a 60-day window
@@ -360,16 +363,33 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Run logging (source reliability PR 1, 2026-10-11): logging only, no
+  // change to what is fetched, parsed, published or written.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   let icsText;
+  let httpStatus = null;
   try {
     const r = await fetch(ICS_URL, { headers: FETCH_HEADERS });
+    httpStatus = r.status;
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, { outcome: blocked ? "blocked" : "failed", http_status: r.status, error_sample: `ICS fetch failed: HTTP ${r.status}` });
       res.status(200).json({ upserted: 0, error: `ICS fetch failed: HTTP ${r.status}` });
       return;
     }
     icsText = await r.text();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "ICS fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "ICS fetch failed: " + err.message });
+    return;
+  }
+
+  // A 200 that is not an iCalendar document (an HTML error or consent page)
+  // is a failed retrieval, not an empty calendar.
+  if (!/BEGIN:VCALENDAR/i.test(String(icsText))) {
+    await finishRun(runHandle, { outcome: "failed", http_status: httpStatus, error_sample: "Response was not an iCalendar document (no BEGIN:VCALENDAR)" });
+    res.status(200).json({ upserted: 0, error: "Response was not an iCalendar document" });
     return;
   }
 
@@ -426,10 +446,11 @@ module.exports = async (req, res) => {
   }
 
   // Filter to the window, sort, cap.
-  const inWindow = occurrences
+  const windowed = occurrences
     .filter((o) => o.dateNaive >= todayNaive && o.dateNaive <= windowEndNaive)
-    .sort((a, b) => a.dateNaive - b.dateNaive)
-    .slice(0, MAX_EVENTS_PER_RUN);
+    .sort((a, b) => a.dateNaive - b.dateNaive);
+  const inWindow = windowed.slice(0, MAX_EVENTS_PER_RUN);
+  const capTruncated = windowed.length > inWindow.length; // logged as "partial"
 
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const venueId = resolveVenueId(venueMap, VENUE_NAME);
@@ -466,7 +487,16 @@ module.exports = async (req, res) => {
   }
   const rows = Array.from(seen.values());
 
+  const runStats = { vevents: vevents.length, occurrences_in_window: windowed.length, capped: capTruncated };
+  const finish = (fields) => finishRun(runHandle, {
+    http_status: httpStatus,
+    records_fetched: vevents.length,
+    records_parsed: rows.length,
+    session_data: runStats,
+    ...fields,
+  });
   if (!rows.length) {
+    await finish({ outcome: "success", records_written: 0 });
     res.status(200).json({ upserted: 0, note: "No occurrences parsed in the current window — layout/feed may have changed.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -487,6 +517,7 @@ module.exports = async (req, res) => {
         rows.map((r) => r.external_id)
       );
     } catch (lookupErr) {
+      await finish({ outcome: "failed", records_written: 0, error_sample: "Status lookup failed: " + lookupErr.message });
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
@@ -499,11 +530,23 @@ module.exports = async (req, res) => {
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
       const errText = await resp.text();
+      await finish({
+        outcome: "failed",
+        http_status: resp.status,
+        records_written: resp.written,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finish({
+      outcome: capTruncated ? "partial" : "success",
+      records_written: rowsWithStatus.length,
+      error_sample: capTruncated ? `Window had ${windowed.length} occurrences; only the first ${MAX_EVENTS_PER_RUN} were written` : undefined,
+    });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finish({ outcome: "failed", error_sample: err.message });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
