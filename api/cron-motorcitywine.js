@@ -4,6 +4,7 @@ const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
+const { stableExternalId, planIdentity } = require("./_lib/mcw-identity");
 // Vercel Cron job — pulls MotorCity Wine (Corktown, Detroit) events from
 // their own public Google Calendar. Added 2026-09-18 after Jody asked "do
 // we have a motor city wine cron?" (answer at the time: no, just one
@@ -413,6 +414,18 @@ function collectOccurrences(vevents, windowEndNaive) {
   return { occurrences, cancelled };
 }
 
+const todayStr = (d) => d.toISOString().slice(0, 10);
+
+// SELECT-only: stored rows of this connector at or after `fromDate`, for the migration guard.
+async function fetchStoredMcwRows(fromDate) {
+  const url = `${SUPABASE_URL}/rest/v1/events?select=external_id,start_date,title,status&external_id=like.mcw-*&start_date=gte.${fromDate}&limit=1000`;
+  const r = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const rows = await r.json();
+  if (!Array.isArray(rows)) throw new Error("unusable response body");
+  return rows;
+}
+
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
@@ -466,7 +479,7 @@ module.exports = async (req, res) => {
   const todayNaive = naiveDate({ ...todayParts, h: 0, mi: 0 });
   const windowEndNaive = new Date(todayNaive.getTime() + WINDOW_DAYS * 24 * 3600 * 1000);
 
-  const { occurrences } = collectOccurrences(vevents, windowEndNaive);
+  const { occurrences, cancelled } = collectOccurrences(vevents, windowEndNaive);
 
   // Filter to the window, sort, cap.
   const windowed = occurrences
@@ -487,7 +500,9 @@ module.exports = async (req, res) => {
     const dateISO = `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const title = o.summary || "MotorCity Wine event";
     return {
-      external_id: `mcw-ical-${dateISO}-${crypto.createHash("md5").update(title).digest("hex").slice(0, 10)}`,
+      // Stable identity (PR #69): the calendar's own series UID + the instance's original date,
+      // so a rename or a move never strands a row and two series sharing a title stay distinct.
+      external_id: stableExternalId(o.uid, o.originalDateISO),
       title,
       description: o.description || undefined,
       category: categoryForTitle(title),
@@ -521,6 +536,24 @@ module.exports = async (req, res) => {
   if (!rows.length) {
     await finish({ outcome: "success", records_written: 0 });
     res.status(200).json({ upserted: 0, note: "No occurrences parsed in the current window — layout/feed may have changed.", fetchedAt: new Date().toISOString() });
+    return;
+  }
+
+  // Migration guard: rows stored under the old title-based ids are the SAME instances this run would
+  // now write under stable ids. Writing first would duplicate them, so stop until the reviewed id
+  // migration (supabase/proposed/2026-10-11_mcw_stable_identity.sql) has been applied. Fail closed:
+  // an unreadable lookup also stops the run. Nothing is written, hidden or cancelled.
+  try {
+    const stored = await fetchStoredMcwRows(todayStr(todayNaive));
+    const pending = planIdentity(inWindow, cancelled, stored).rows.filter((r) => r.action === "adopt" || r.action === "adopt-by-date");
+    if (pending.length) {
+      await finish({ outcome: "blocked", records_written: 0, error_sample: `Id migration pending: ${pending.length} stored rows still use legacy ids` });
+      res.status(409).json({ upserted: 0, error: `Id migration pending: ${pending.length} stored MotorCity Wine rows still use legacy ids; apply the reviewed migration first.` });
+      return;
+    }
+  } catch (guardErr) {
+    await finish({ outcome: "failed", records_written: 0, error_sample: "Identity guard lookup failed: " + guardErr.message });
+    res.status(502).json({ upserted: 0, error: "Identity guard lookup failed, aborting to avoid duplicates: " + guardErr.message });
     return;
   }
 
