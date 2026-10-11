@@ -1,9 +1,14 @@
 # Seasonal collections: coverage, verification and gaps
 
-Source of truth: `seasonal/collections.js` (published entries) and `seasonal/candidates.json` (all 252 inventory rows).
+Source of truth: `seasonal/collections.js` (entries and the publication gate) and `seasonal/candidates.json` (all 252 inventory rows).
+
+> **Release-candidate update.** The publication gate is now five-state (see `seasonal/EDITORIAL_HANDOFF.md`). The 14
+> entries listed below were "published" on inventory+search evidence with illustrative artwork; under the gate they are
+> `HOLD_UNVERIFIED` and **not public**. All 252 rows are preserved and none is public, so each page shows its existing empty
+> state until editorial review completes. The counts below describe the entries that exist in the data, not public cards.
 
 ## Counts
-| Collection | Inventory | Published | Unresolved |
+| Collection | Inventory | Entries held (not public) | No entry yet |
 |---|---|---|---|
 | /fall | 71 | 4 | 67 |
 | /halloween | 52 | 6 | 46 |

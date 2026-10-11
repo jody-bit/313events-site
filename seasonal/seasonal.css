@@ -79,3 +79,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding-bottom:6px}.sc-rail .sc-card{flex:0 0 72%;scroll-snap-align:start}
 .sc-card-row .sc-card-media{width:110px}.sc-tiles{grid-template-columns:repeat(2,1fr)}.sc-map-card{flex-direction:column;align-items:flex-start}
 }
+/* Test-fixture labelling (Preview/test only; never rendered in production HTML) */
+.sc-fixture-banner{margin:10px 0 0;padding:10px 14px;border:1px dashed var(--accent);background:rgba(215,255,0,.08);color:var(--ink);font-family:var(--font-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.sc-fixture{border-color:var(--accent);color:var(--accent)}

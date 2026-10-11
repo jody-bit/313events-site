@@ -46,7 +46,7 @@
       : esc(e.name);
     return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '">' +
       '<div class="sc-card-media"><img src="' + esc(e.image.src) + '" alt="" loading="lazy" width="640" height="427">' +
-      (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>' +
+      (e.fixture ? '<span class="sc-illus sc-fixture">Test fixture</span>' : e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>' +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title">' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
@@ -136,10 +136,15 @@
       '<div id="scResults">' + results(col, state) + '</div></section>';
   }
 
-  function main(col, state) {
-    state = state || { category: "all", query: "", view: "grid" };
-    return hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
+  // Shown only when fixtures are merged in (Preview/test, never production).
+  function fixtureBanner() {
+    return '<p class="sc-fixture-banner" role="note">TEST FIXTURES &mdash; the destinations marked &ldquo;Test fixture&rdquo; are invented test data for checking this layout. They are not real places and are not published content.</p>';
   }
 
-  return { esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  function main(col, state) {
+    state = state || { category: "all", query: "", view: "grid" };
+    return (col.includeFixtures ? fixtureBanner() : "") + hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
+  }
+
+  return { esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card, fixtureBanner: fixtureBanner, discover: discover, dontMiss: dontMiss };
 });

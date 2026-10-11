@@ -55,13 +55,38 @@ ${R.footer()}
 `;
 }
 
+// Gate item 3, file half: a PUBLISHED entry's image must exist on disk and match
+// the size and sha256 recorded in image.acquired. A URL or a recorded license
+// without a downloaded, validated file does not pass.
+function validateAssets() {
+  const crypto = require("crypto");
+  const problems = [];
+  for (const slug of DATA.ORDER) {
+    for (const e of DATA.COLLECTIONS[slug].entries) {
+      if (e.status !== "PUBLISHED") continue;
+      const a = e.image && e.image.acquired;
+      if (!a) { problems.push(slug + "/" + e.id + ": PUBLISHED without image.acquired"); continue; }
+      const f = path.join(root, a.file);
+      if (!fs.existsSync(f)) { problems.push(slug + "/" + e.id + ": image file missing " + a.file); continue; }
+      const buf = fs.readFileSync(f);
+      if (buf.length !== a.bytes) problems.push(slug + "/" + e.id + ": size " + buf.length + " != recorded " + a.bytes);
+      if (crypto.createHash("sha256").update(buf).digest("hex") !== a.sha256) problems.push(slug + "/" + e.id + ": sha256 mismatch");
+    }
+  }
+  return problems;
+}
+
 const check = process.argv.includes("--check");
+if (require.main === module) {
+  const problems = validateAssets();
+  if (problems.length) { console.error("asset validation failed:\n" + problems.join("\n")); process.exit(1); }
+}
 let stale = [];
-for (const slug of DATA.ORDER) {
+for (const slug of require.main === module ? DATA.ORDER : []) {
   const out = path.join(root, FILES[slug]);
   const html = page(DATA.COLLECTIONS[slug]);
   if (check) { if (!fs.existsSync(out) || fs.readFileSync(out, "utf8") !== html) stale.push(FILES[slug]); }
   else fs.writeFileSync(out, html);
 }
-if (check && stale.length) { console.error("stale: " + stale.join(", ")); process.exit(1); }
-module.exports = { page, FILES };
+if (require.main === module && check && stale.length) { console.error("stale: " + stale.join(", ")); process.exit(1); }
+module.exports = { page, FILES, validateAssets };
