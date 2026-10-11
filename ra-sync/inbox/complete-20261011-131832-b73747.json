@@ -1,0 +1,43 @@
+{
+  "runToken": "20261011-131832-b73747",
+  "action": "complete",
+  "runId": "0f9d2d4a-0e61-4118-a477-a221829ddbfb",
+  "events": [
+    {
+      "id": "ra-2558029",
+      "title": "LEATHER NIGHT at EL TROMBONE",
+      "description": "come see the drama, maybe win a contest, maybe theres no winner, who knows\nleather night , Friday , October 16th ",
+      "startDate": "2026-10-16T20:00:00.000",
+      "endDate": "2026-10-17T00:00:00.000",
+      "venueName": "TBA - El Trombone 4654 Vernor Hwy, Detroit, MI 48209",
+      "address": null,
+      "image": "https://images.ra.co/edc32a99859fa130a64081d93e9b9c968ac101fe.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2558061",
+      "title": "Juke Joint",
+      "description": "Join angela baskets & Zoe Talley for the 2nd installment of Juke Joint wsg/ jamea.",
+      "startDate": "2026-10-16T21:00:00.000",
+      "endDate": "2026-10-17T02:00:00.000",
+      "venueName": "The High Dive",
+      "address": "11474 Joseph Campau Ave, Hamtramck, MI 48212, USA",
+      "image": "https://images.ra.co/172e2ad2764a80131695d71269d0ae521182f48e.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2558364",
+      "title": "DIE SYSTEMS SHOWCASE (DEEP GLENS, OTO DOJO, SEAN AND DIEGO)",
+      "description": "DIE SYSTEMS SHOWCASE Rev. 5 \n\n11/6/26\nMOONDOG CAFE\nDETROIT\n\nDEEP GLENS (LIVE)\nOTODOJO (LIVE)\nSEAN AND DIEGO (LIVE)\n\nCHECK OUT OUR GEAR - 7PM\nSHOW  - 8PM",
+      "startDate": "2026-11-06T19:00:00.000",
+      "endDate": "2026-11-07T00:00:00.000",
+      "venueName": "Moondog Cafe",
+      "address": "8045 Linwood St #2, Detroit, MI 48206",
+      "image": "https://images.ra.co/721c3863810148b4eac034ab35f8ef384df28623.png",
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}
