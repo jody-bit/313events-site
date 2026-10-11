@@ -238,8 +238,20 @@ function parseIcsDate(raw, params) {
 // RFC 5545 makes a date-only DTEND exclusive, so the last day is DTEND minus one day;
 // a DTEND that is not after DTSTART+1 (same day, earlier, missing) means one day.
 // A DTEND that carries a time (mixed value types) names a real day, so it is kept.
-function allDayLastDay(startDate, end) {
+//
+// SOURCE-SPECIFIC (2026-10-11): CivicPlus calendars (/common/modules/iCalendar/) are NOT
+// yet proven to follow RFC 5545 here -- stored production data suggests their single-day
+// all-day events carry no DTEND while multi-day ones may be inclusive. Until raw CivicPlus
+// ICS evidence settles it, those feeds keep the previous behaviour (DTEND stored as given,
+// null when it equals DTSTART) so no valid multi-day span is shortened.
+const UNVERIFIED_DTEND_FEED = /\/common\/modules\/icalendar\//i;
+function allDayEndIsExclusive(feedSource) {
+  return !UNVERIFIED_DTEND_FEED.test((feedSource && feedSource.feed_url) || "");
+}
+
+function allDayLastDay(startDate, end, exclusive = true) {
   if (!end || !end.date) return null;
+  if (!exclusive) return end.date !== startDate ? end.date : null; // legacy: DTEND as given
   let last = end.date;
   if (end.hour === null) {
     const d = new Date(`${end.date}T00:00:00Z`);
@@ -531,7 +543,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // RFC 5545 s3.6.1: for a VALUE=DATE DTEND the end is EXCLUSIVE (a one-day
       // event is DTSTART=Oct 12, DTEND=Oct 13), so the span's last day is the day
       // BEFORE it. See allDayLastDay().
-      end_date: start.hour === null ? allDayLastDay(start.date, end) : null,
+      end_date: start.hour === null ? allDayLastDay(start.date, end, allDayEndIsExclusive(feedSource)) : null,
       // 2026-10-01 bug fix (Needs Follow-up start-time investigation): this
       // row never set is_all_day at all, so every event ever ingested
       // through this generic ICS pipeline silently kept the column's own

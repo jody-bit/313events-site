@@ -22,9 +22,9 @@ function freshHandler() {
 }
 const makeRes = () => ({ _status: null, _body: null, status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } });
 
-const FEED = { id: "fs-dtend", venue_name: "City of Test", default_category: "community", feed_url: "https://feed.example/cal.ics", feed_format: "ics", status: "approved", location_per_event: false };
+const DEFAULT_FEED = { id: "fs-dtend", venue_name: "City of Test", default_category: "community", feed_url: "https://feed.example/cal.ics", feed_format: "ics", status: "approved", location_per_event: false };
 
-async function rowFor(lines) {
+async function rowFor(lines, FEED = DEFAULT_FEED) {
   const icsText = ["BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT", "UID:u1", ...lines, "SUMMARY:Test", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
   let captured = null;
   global.fetch = async (url, opts = {}) => {
@@ -66,6 +66,14 @@ async function run() {
     ["timed event ending after midnight: no end_date", ["DTSTART;TZID=America/New_York:20261031T220000", "DTEND;TZID=America/New_York:20261101T020000"], { start: "2026-10-31", end: null, allDay: false, time: "10:00 PM" }],
     ["date-only start with a timed DTEND keeps that day", ["DTSTART;VALUE=DATE:20261012", "DTEND:20261014T120000"], { start: "2026-10-12", end: "2026-10-14", allDay: true }],
   ];
+  // CivicPlus feeds are excluded until their DTEND convention is proven from raw ICS:
+  // stored behaviour is preserved, including a multi-day span that may be inclusive.
+  const CIVICPLUS = { ...DEFAULT_FEED, id: "fs-civic", feed_url: "https://www.romi.gov/common/modules/iCalendar/iCalendar.aspx?catID=49&feed=calendar" };
+  const civic = await rowFor(["DTSTART;VALUE=DATE:20261126", "DTEND;VALUE=DATE:20261127"], CIVICPLUS);
+  assert.strictEqual(civic.end_date, "2026-11-27", "CivicPlus: DTEND stored as given (not shortened)");
+  const civicOne = await rowFor(["DTSTART;VALUE=DATE:20261126"], CIVICPLUS);
+  assert.strictEqual(civicOne.end_date, null, "CivicPlus: no DTEND stays a one-day event");
+  console.log("PASS: CivicPlus excluded from exclusive-DTEND handling");
   for (const [name, lines, want] of cases) {
     const r = await rowFor(lines);
     assert.strictEqual(r.start_date, want.start, `${name}: start_date`);
