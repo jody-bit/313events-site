@@ -123,6 +123,7 @@ module.exports = async (req, res) => {
   }
 
   let data;
+  let httpStatus = null;
   try {
     const r = await fetch(API_URL, { headers: { "User-Agent": "313.events event calendar" } });
     if (!r.ok) {
@@ -135,12 +136,31 @@ module.exports = async (req, res) => {
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
+    httpStatus = r.status;
     data = await r.json();
   } catch (err) {
-    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
+    await finishRun(runHandle, { outcome: "failed", http_status: httpStatus, error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
+  // Response-shape check (source reliability PR 1, 2026-10-11): a 200 whose
+  // body has no `events` array is not "no events" -- it is a response this
+  // parser does not understand (changed endpoint, an error object, a WAF page
+  // served as JSON). A real quiet week is `{"events": []}` and stays success.
+  // Only logging changes; nothing is published or written differently.
+  if (!data || typeof data !== "object" || !Array.isArray(data.events)) {
+    const shape = data && typeof data === "object" ? "keys: " + Object.keys(data).slice(0, 8).join(",") : typeof data;
+    await finishRun(runHandle, {
+      outcome: "failed",
+      http_status: httpStatus,
+      error_sample: `Unexpected response shape (no events array; ${shape})`,
+    });
+    res.status(200).json({ upserted: 0, error: "Unexpected response shape (no events array)" });
+    return;
+  }
+  const apiTotal = typeof data.total === "number" ? data.total : null;
+  const apiTotalPages = typeof data.total_pages === "number" ? data.total_pages : null;
+  const runStats = { api_total: apiTotal, api_total_pages: apiTotalPages };
 
   // records_fetched (WP 0.5): the raw event array from the Tribe Events
   // API, before the start_date filter below -- see api/_lib/source-slugs.js.
@@ -178,9 +198,11 @@ module.exports = async (req, res) => {
   if (!rows.length) {
     await finishRun(runHandle, {
       outcome: "success",
+      http_status: httpStatus,
       records_fetched: events.length,
       records_parsed: rows.length,
       records_written: 0,
+      session_data: runStats,
     });
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;
@@ -242,6 +264,7 @@ module.exports = async (req, res) => {
       records_fetched: events.length,
       records_parsed: rows.length,
       records_written: rowsWithStatus.length,
+      session_data: runStats,
     });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {

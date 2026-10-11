@@ -4,6 +4,8 @@ const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
 // Discovery API and upserts them straight into Supabase as status='approved'
@@ -170,14 +172,22 @@ function formatTime(dateObj) {
   return `${hour}:${m} ${ap}`;
 }
 
+// Returns { events, complete, reason, httpStatus, totalElements, pagesFetched }.
+// `events` is exactly what the loop below has always returned. The extra
+// fields exist only so the run can be logged honestly (source reliability
+// PR 1): a page that fails, or a result set larger than the 5-page cap, makes
+// the run "partial" instead of a silent success. Publication is unchanged: a
+// partial result is still written, as before.
 async function fetchTicketmasterEvents() {
   const today = new Date();
   const endWindow = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days out
   const startDateTime = today.toISOString().slice(0, 19) + "Z";
   const endDateTime = endWindow.toISOString().slice(0, 19) + "Z";
 
+  const MAX_PAGES = 5;
   const allEvents = [];
-  for (let page = 0; page < 5; page++) {
+  const info = { complete: true, reason: null, httpStatus: null, totalElements: null, pagesFetched: 0 };
+  for (let page = 0; page < MAX_PAGES; page++) {
     const url = new URL("https://app.ticketmaster.com/discovery/v2/events.json");
     url.searchParams.set("apikey", TICKETMASTER_API_KEY);
     url.searchParams.set("latlong", `${CENTER_LAT},${CENTER_LON}`);
@@ -189,14 +199,26 @@ async function fetchTicketmasterEvents() {
     url.searchParams.set("page", String(page));
 
     const r = await fetch(url.toString());
-    if (!r.ok) break;
+    if (!r.ok) {
+      info.complete = false;
+      info.httpStatus = r.status;
+      info.reason = `page ${page} failed: HTTP ${r.status}`;
+      break;
+    }
     const data = await r.json();
+    info.pagesFetched += 1;
+    info.httpStatus = r.status;
     const events = (data._embedded && data._embedded.events) || [];
     allEvents.push(...events);
     const totalPages = (data.page && data.page.totalPages) || 1;
+    if (data.page && typeof data.page.totalElements === "number") info.totalElements = data.page.totalElements;
     if (page + 1 >= totalPages) break;
+    if (page + 1 >= MAX_PAGES) {
+      info.complete = false;
+      info.reason = `result set has ${totalPages} pages; only the first ${MAX_PAGES} were fetched`;
+    }
   }
-  return allEvents;
+  return { events: allEvents, ...info };
 }
 
 function shapeForDb(e, venueMap) {
@@ -303,6 +325,7 @@ function shapeForDb(e, venueMap) {
 }
 
 const DEFAULT_STATUS = "approved";
+const SOURCE_SLUG = SLUGS.ticketmaster; // see api/_lib/source-slugs.js
 
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
@@ -313,7 +336,13 @@ module.exports = async (req, res) => {
     }
   }
 
+  // Run logging (source reliability PR 1, 2026-10-11): this connector wrote
+  // no source_runs row before, so "ran and wrote nothing", "blocked" and
+  // "never ran" were indistinguishable. Logging only; no publication change.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   if (!TICKETMASTER_API_KEY) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "TICKETMASTER_API_KEY not configured" });
     res.status(200).json({ upserted: 0, error: "TICKETMASTER_API_KEY not configured" });
     return;
   }
@@ -323,12 +352,34 @@ module.exports = async (req, res) => {
   }
 
   let raw;
+  let fetchInfo;
   try {
-    raw = await fetchTicketmasterEvents();
+    ({ events: raw, ...fetchInfo } = await fetchTicketmasterEvents());
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Ticketmaster fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Ticketmaster fetch failed: " + err.message });
     return;
   }
+  // A complete fetch is "success"; a short one (a failed page, or more pages
+  // than the cap) is "partial", or "blocked" when the very first page was
+  // refused with 401/403 (bad key / quota / WAF).
+  const blocked = !fetchInfo.complete && fetchInfo.pagesFetched === 0 && (fetchInfo.httpStatus === 401 || fetchInfo.httpStatus === 403 || fetchInfo.httpStatus === 429);
+  const baseOutcome = fetchInfo.complete ? "success" : blocked ? "blocked" : (fetchInfo.pagesFetched === 0 ? "failed" : "partial");
+  const runStats = {
+    api_total_elements: fetchInfo.totalElements,
+    pages_fetched: fetchInfo.pagesFetched,
+    complete: fetchInfo.complete,
+    incomplete_reason: fetchInfo.reason,
+  };
+  const logFinish = (extra) => finishRun(runHandle, {
+    outcome: extra.outcome || baseOutcome,
+    http_status: extra.http_status ?? fetchInfo.httpStatus,
+    records_fetched: raw.length,
+    records_parsed: extra.records_parsed,
+    records_written: extra.records_written,
+    error_sample: extra.error_sample ?? fetchInfo.reason ?? undefined,
+    session_data: runStats,
+  });
 
   const venueMap = await buildVenueNameToIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const rawRows = raw.map((e) => shapeForDb(e, venueMap)).filter(Boolean);
@@ -353,6 +404,7 @@ module.exports = async (req, res) => {
   const rows = Array.from(seen.values());
 
   if (!rows.length) {
+    await logFinish({ records_parsed: 0, records_written: 0 });
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
     return;
   }
@@ -378,6 +430,7 @@ module.exports = async (req, res) => {
         rows.map((r) => r.external_id)
       );
     } catch (lookupErr) {
+      await logFinish({ outcome: "failed", records_parsed: rows.length, records_written: 0, error_sample: "Status lookup failed: " + lookupErr.message });
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
@@ -423,12 +476,21 @@ module.exports = async (req, res) => {
 
     if (!resp.ok) {
       const errText = await resp.text();
+      await logFinish({
+        outcome: "failed",
+        http_status: resp.status,
+        records_parsed: rows.length,
+        records_written: resp.written,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
 
+    await logFinish({ records_parsed: rows.length, records_written: rowsWithStatus.length });
     res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await logFinish({ outcome: "failed", records_parsed: rows.length, error_sample: err.message });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
