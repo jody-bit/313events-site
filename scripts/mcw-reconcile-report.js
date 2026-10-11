@@ -95,6 +95,7 @@ function buildReconciliation({ icsText, existing, today }) {
     potential_duplicates: duplicates, flagged: plan.flagged,
     review_decisions_preserved: { rows_with_non_default_status_that_would_be_adopted: decisions, fields_changed_on_adopted_rows: ["external_id"] },
     rollback: { mapping, note: "Reverse by setting external_id back to `from` for each `to`. Only external_id changes, so no other column needs restoring. Take the export in scripts/sql/mcw-reconcile-export.sql first and keep it." },
+    publication_impact: { rows_changing_external_id_only: plan.rows.filter((r) => r.from).length, new_rows_that_would_be_created_as_approved: plan.rows.filter((r) => r.action === "new").length, rows_unpublished_or_cancelled: 0 },
     never: ["no row is created, updated, deleted, cancelled or hidden by this report", "stale or missing instances are flagged for verification, not cancelled"],
   };
 }
