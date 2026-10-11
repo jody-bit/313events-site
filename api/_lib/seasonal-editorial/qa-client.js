@@ -1,14 +1,15 @@
-/* seasonal/qa.js — QA-only review mode for THE DARK ORBIT (/halloween?qa=1).
+/* api/_lib/seasonal-editorial/qa-client.js — served only by /api/seasonal-qa?asset=client (404 outside preview/development).
+ * QA-only review mode for THE DARK ORBIT (/halloween?qa=1).
  *
  * Shows all 52 inventory records with their verification state and a
  * lightweight per-card image selector. The dataset is NOT in this file or in
- * any static path: it comes from /api/seasonal-qa, which answers 404 in
+ * any static path; neither is this script: it comes from /api/seasonal-qa, which answers 404 in
  * production. This script also refuses to run on the production hostnames.
  * Selections persist in this browser (localStorage) and export as JSON so
  * they can be folded into the manifest.
  */
 (function (root, factory) {
-  if (typeof module === "object" && module.exports) module.exports = factory(require("./render.js"));
+  if (typeof module === "object" && module.exports) module.exports = factory(require("../../../seasonal/render.js"));
   else root.SeasonalQA = factory(root.SeasonalRender);
 })(typeof self !== "undefined" ? self : this, function (R) {
   "use strict";

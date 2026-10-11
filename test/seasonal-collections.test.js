@@ -65,7 +65,7 @@ for (const slug of DATA.ORDER) {
 }
 
 // candidate registry: every inventory row is tracked; published ones exist
-const cand = JSON.parse(fs.readFileSync(path.join(root, "seasonal/candidates.json"), "utf8")).candidates;
+const cand = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates;
 const counts = { fall: 71, halloween: 52, "fall-color": 129 };
 for (const slug of DATA.ORDER) {
   const rows = cand.filter((c) => c.collection === slug);
@@ -95,11 +95,21 @@ for (const [slug, route] of Object.entries(routes)) {
   assert.ok(page.includes('data-collection="' + slug + '"'));
 }
 
-// scope guard: Homepage V2 / ingestion / admin untouched by this change
-let changed = "";
-try { changed = execFileSync("git", ["diff", "--name-only", "origin/main...HEAD"], { cwd: root, encoding: "utf8" }); } catch (e) { changed = ""; }
-for (const f of changed.split("\n").filter(Boolean)) {
-  if (f === "api/seasonal-qa.js" || f === "api/_lib/seasonal-halloween-qa.json") continue; // QA-only endpoint + data (404 in production)
+// scope guard: Homepage V2 / ingestion / admin untouched by this change.
+// It must never pass silently: without a real origin/main the diff is unknowable, so fail loudly.
+// (CI checks out with fetch-depth: 0; locally run `git fetch origin main` first.)
+let changed;
+try {
+  execFileSync("git", ["rev-parse", "--verify", "--quiet", "refs/remotes/origin/main"], { cwd: root, stdio: "ignore" });
+  changed = execFileSync("git", ["diff", "--name-only", "origin/main...HEAD"], { cwd: root, encoding: "utf8" });
+} catch (e) {
+  assert.fail("scope guard cannot run: origin/main is unavailable or has no merge base with HEAD (shallow checkout?). Fetch it: git fetch origin main --unshallow");
+}
+const changedFiles = changed.split("\n").filter(Boolean);
+assert.ok(changedFiles.length > 0, "scope guard saw an empty diff against origin/main; refusing to pass on no evidence");
+const QA_ALLOWED = /^api\/(seasonal-qa\.js|_lib\/seasonal-editorial\/[^/]+)$/; // QA-only route + its private data (fail-closed outside preview/development)
+for (const f of changedFiles) {
+  if (QA_ALLOWED.test(f)) continue;
   assert.ok(!/^(index\.html|admin\.html|api\/|assets\/guides\/)/.test(f), "out-of-scope file changed: " + f);
 }
 console.log("seasonal-collections: ok");

@@ -11,7 +11,7 @@
  * what was checked. test/seasonal-collections.test.js enforces this.
  *
  * OWNER PHOTOGRAPHY. Entries whose image has `illustrative: false` use a
- * photo from the 313.events owner archive (seasonal/photo-library.json),
+ * photo from the 313.events owner archive (api/_lib/seasonal-editorial/photo-library.json),
  * matched to the destination by GPS and visual evidence or confirmed by the
  * owner. No GPS/EXIF is carried in the web files.
  *

@@ -9,11 +9,11 @@ const { execFileSync } = require("child_process");
 const root = path.join(__dirname, "..");
 const DATA = require(path.join(root, "seasonal/collections.js"));
 const R = require(path.join(root, "seasonal/render.js"));
-const QA = require(path.join(root, "seasonal/qa.js"));
+const QA = require(path.join(root, "api/_lib/seasonal-editorial/qa-client.js"));
 const FB = require(path.join(root, "seasonal/image-fallback.js"));
-const lib = JSON.parse(fs.readFileSync(path.join(root, "seasonal/photo-library.json"), "utf8"));
-const qa = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-halloween-qa.json"), "utf8"));
-const reg = JSON.parse(fs.readFileSync(path.join(root, "seasonal/candidates.json"), "utf8")).candidates.filter((c) => c.collection === "halloween");
+const lib = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/photo-library.json"), "utf8"));
+const qa = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/halloween-qa.json"), "utf8"));
+const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates.filter((c) => c.collection === "halloween");
 const col = DATA.COLLECTIONS.halloween;
 
 // generated files are in sync
@@ -79,12 +79,12 @@ for (const e of DATA.published(col)) {
 }
 const pageHtml = fs.readFileSync(path.join(root, "halloween.html"), "utf8");
 assert.ok(!pageHtml.includes("Hush Haunted") && !pageHtml.includes("Slay Nights"), "unverified names not in public HTML");
-assert.ok(!fs.existsSync(path.join(root, "seasonal/halloween-qa.json")), "QA dataset must not sit in a static path");
-for (const f of ["seasonal/collections.js", "seasonal/qa.js", "seasonal/page.js", "seasonal/render.js"]) {
+for (const f of ["seasonal/collections.js", "seasonal/page.js", "seasonal/render.js", "seasonal/image-fallback.js", "halloween.html"]) {
   assert.ok(!fs.readFileSync(path.join(root, f), "utf8").includes("Slay Nights"), f + " leaks QA records");
 }
+assert.ok(!pageHtml.includes("qa.js") && !pageHtml.includes("seasonal-qa"), "public HTML carries no QA script tag");
 
-// 5. QA API: 404 in production, data elsewhere
+// 5. QA API (full matrix lives in seasonal-qa-route.test.js): production 404, preview/development serve
 const handler = require(path.join(root, "api/seasonal-qa.js"));
 function call(env, query) {
   const saved = process.env.VERCEL_ENV; if (env === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = env;
@@ -94,7 +94,7 @@ function call(env, query) {
 }
 assert.strictEqual(call("production").statusCode, 404);
 assert.ok(!call("production").body.includes("Hush"));
-for (const env of ["preview", "development", undefined]) { const r = call(env); assert.strictEqual(r.statusCode, 200); assert.strictEqual(JSON.parse(r.body).records.length, 52); assert.strictEqual(r.headers["X-Robots-Tag"], "noindex, nofollow"); }
+for (const env of ["preview", "development"]) { const r = call(env); assert.strictEqual(r.statusCode, 200); assert.strictEqual(JSON.parse(r.body).records.length, 52); assert.strictEqual(r.headers["X-Robots-Tag"], "noindex, nofollow"); }
 assert.strictEqual(call("preview", { c: "fall" }).statusCode, 404);
 assert.ok(QA.isProductionHost("313.events") && QA.isProductionHost("WWW.313.events") && !QA.isProductionHost("x.vercel.app"));
 
@@ -143,8 +143,8 @@ console.log("halloween-qa: ok");
 
 // ---- linked images from the supplied catalogue ----
 {
-  const linkedFile = require("../seasonal/linked-images.json");
-  const recs = require("../api/_lib/seasonal-halloween-qa.json").records;
+  const linkedFile = require("../api/_lib/seasonal-editorial/linked-images.json");
+  const recs = require("../api/_lib/seasonal-editorial/halloween-qa.json").records;
   const byId = Object.fromEntries(recs.map((r) => [r.id, r]));
   {
     assert.strictEqual(linkedFile.images.length, 12);

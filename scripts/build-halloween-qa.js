@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // scripts/build-halloween-qa.js
 //
-// Extends the EXISTING seasonal registry (seasonal/candidates.json) with an
+// Extends the EXISTING seasonal registry (api/_lib/seasonal-editorial/candidates.json) with an
 // `image_manifest` + QA fields on every Halloween row, and derives the
-// QA-only dataset api/_lib/seasonal-halloween-qa.json that /api/seasonal-qa
+// QA-only dataset api/_lib/seasonal-editorial/halloween-qa.json that /api/seasonal-qa
 // serves outside production. Idempotent. No network.
 //   node scripts/build-halloween-qa.js          write
 //   node scripts/build-halloween-qa.js --check  exit 1 if stale
@@ -12,9 +12,11 @@ const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
 const DATA = require("../seasonal/collections.js");
-const candPath = path.join(root, "seasonal/candidates.json");
-const outPath = path.join(root, "api/_lib/seasonal-halloween-qa.json");
-const lib = JSON.parse(fs.readFileSync(path.join(root, "seasonal/photo-library.json"), "utf8"));
+// Unpublished editorial data lives in api/_lib (never a static path, never routable).
+const E_DIR = "api/_lib/seasonal-editorial";
+const candPath = path.join(root, E_DIR, "candidates.json");
+const outPath = path.join(root, E_DIR, "halloween-qa.json");
+const lib = JSON.parse(fs.readFileSync(path.join(root, E_DIR, "photo-library.json"), "utf8"));
 const reg = JSON.parse(fs.readFileSync(candPath, "utf8"));
 const pub = Object.fromEntries(DATA.published(DATA.COLLECTIONS.halloween).map((e) => [e.id, e]));
 
@@ -39,7 +41,7 @@ const ART = {
   "family-friendly": [3, 6], "strange-unusual": [5, 7, 6]
 };
 const ATMOS = ["313p-4e36da88", "313p-9f336786", "313p-cf666d14", "313p-98ab90f5"]; // clean, no prominent people, no foreign-city flag
-const linkedFile = JSON.parse(fs.readFileSync(path.join(root, "seasonal/linked-images.json"), "utf8"));
+const linkedFile = JSON.parse(fs.readFileSync(path.join(root, E_DIR, "linked-images.json"), "utf8"));
 const linked = {};
 linkedFile.images.forEach((l) => { (linked[l.destination_id] = linked[l.destination_id] || []).push(l); });
 function linkedOpt(l, n) {
@@ -133,7 +135,7 @@ const out = { generated: "2026-10-11", note: "QA-only dataset. Served by /api/se
 const regText = JSON.stringify(reg, null, 1) + "\n", outText = JSON.stringify(out, null, 1) + "\n";
 if (process.argv.includes("--check")) {
   const stale = [];
-  if (fs.readFileSync(candPath, "utf8") !== regText) stale.push("seasonal/candidates.json");
-  if (!fs.existsSync(outPath) || fs.readFileSync(outPath, "utf8") !== outText) stale.push("api/_lib/seasonal-halloween-qa.json");
+  if (fs.readFileSync(candPath, "utf8") !== regText) stale.push(E_DIR + "/candidates.json");
+  if (!fs.existsSync(outPath) || fs.readFileSync(outPath, "utf8") !== outText) stale.push(E_DIR + "/halloween-qa.json");
   if (stale.length) { console.error("stale: " + stale.join(", ")); process.exit(1); }
 } else { fs.writeFileSync(candPath, regText); fs.writeFileSync(outPath, outText); }

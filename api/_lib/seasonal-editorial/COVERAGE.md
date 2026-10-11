@@ -1,6 +1,6 @@
 # Seasonal collections: coverage, verification and gaps
 
-Source of truth: `seasonal/collections.js` (published entries) and `seasonal/candidates.json` (all 252 inventory rows).
+Source of truth: `seasonal/collections.js` (published entries) and `api/_lib/seasonal-editorial/candidates.json` (all 252 inventory rows).
 
 ## Counts
 | Collection | Inventory | Published | Unresolved |

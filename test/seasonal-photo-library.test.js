@@ -5,8 +5,8 @@ const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
 const DATA = require(path.join(root, "seasonal/collections.js"));
-const lib = JSON.parse(fs.readFileSync(path.join(root, "seasonal/photo-library.json"), "utf8"));
-const cand = JSON.parse(fs.readFileSync(path.join(root, "seasonal/candidates.json"), "utf8")).candidates;
+const lib = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/photo-library.json"), "utf8"));
+const cand = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates;
 
 const all = lib.destination_specific.concat(lib.editorial_atmospheric);
 const ids = new Set();

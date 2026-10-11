@@ -27,6 +27,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: test/seasonal-collections.test.js diffs against origin/main and
+          # fails (never passes silently) when that ref is unavailable.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'

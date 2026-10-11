@@ -1,6 +1,7 @@
 /* seasonal/page.js — progressive enhancement: filters, search, grid/list.
    The HTML is already complete without this script. On /halloween only,
-   ?qa=1 opens the QA review mode (seasonal/qa.js) when the QA API answers. */
+   ?qa=1 loads the QA review client from /api/seasonal-qa?asset=client, which
+   answers 404 (so nothing loads) anywhere except preview/development. */
 (function () {
   "use strict";
   var slug = document.body.getAttribute("data-collection");
@@ -41,8 +42,20 @@
     sync(false);
   }
 
-  var wantsQa = slug === "halloween" && new URLSearchParams(location.search).get("qa") === "1" && window.SeasonalQA;
+  function loadQa() {
+    return new Promise(function (resolve) {
+      var sc = document.createElement("script");
+      sc.src = "/api/seasonal-qa?asset=client";
+      sc.onload = function () { resolve(!!window.SeasonalQA); };
+      sc.onerror = function () { resolve(false); };
+      document.head.appendChild(sc);
+    });
+  }
+  var wantsQa = slug === "halloween" && new URLSearchParams(location.search).get("qa") === "1";
   if (wantsQa) {
-    window.SeasonalQA.mount(document, location, function (u, o) { return fetch(u, o); }, col, FB).then(function (ok) { if (!ok) initPublic(); });
+    loadQa().then(function (ok) {
+      if (!ok) return false;
+      return window.SeasonalQA.mount(document, location, function (u, o) { return fetch(u, o); }, col, FB);
+    }).then(function (ok) { if (!ok) initPublic(); }, function () { initPublic(); });
   } else initPublic();
 })();
