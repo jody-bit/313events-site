@@ -98,3 +98,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-qa-meta{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--ink-soft);min-width:0;overflow-wrap:anywhere}.sc-qa-meta b{color:var(--ink)}
 .sc-qa-warn{color:#FFC400}
 .sc-qa-state{color:var(--ink-soft);border-color:var(--line)}
+/* ---- narrow phones (<=359px): the Explore header wraps instead of overflowing; 360px and wider are unchanged ---- */
+@media (max-width:359px){.sc-section-head{flex-wrap:wrap}.sc-views{flex-wrap:wrap;max-width:100%}}
+/* ---- QA mode: long URLs and rights lines wrap inside the card at every width ---- */
+.sc-card-body{min-width:0}.sc-qa-line,.sc-qa-bar,.sc-qa-opt{overflow-wrap:anywhere;min-width:0}
+.sc-qa-opt .sc-ph{width:96px;height:64px;flex:none}

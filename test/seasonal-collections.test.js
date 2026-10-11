@@ -261,6 +261,14 @@ for (const slug of DATA.ORDER) {
   for (const slug of DATA.ORDER) assert.ok(!/Review only|REVIEW PREVIEW|TEST FIXTURES/.test(R.main(DATA.COLLECTIONS[slug])));
 }
 
+// ---- 5b. mobile: the narrow-phone rules that removed the 320px overflow stay in the stylesheet
+{
+  const css = fs.readFileSync(path.join(root, "seasonal/seasonal.css"), "utf8");
+  assert.ok(/@media \(max-width:359px\)\{\.sc-section-head\{flex-wrap:wrap\}\.sc-views\{flex-wrap:wrap;max-width:100%\}\}/.test(css), "320px: the Explore header wraps");
+  assert.ok(/\.sc-card-title\{[^}]*overflow-wrap:anywhere/.test(css) && /\.sc-grid\.sc-list\{grid-template-columns:1fr\}/.test(css), "long titles wrap; list view is one column");
+  assert.ok(/\.sc-qa-line[^{]*\{[^}]*overflow-wrap:anywhere/.test(css), "QA lines wrap long URLs");
+}
+
 // ---- 6. candidate registry (private): all 252 rows preserved, ledger = five-state vocabulary, none public
 const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates;
 const counts = { fall: 71, halloween: 52, "fall-color": 129 };

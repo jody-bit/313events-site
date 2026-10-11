@@ -63,7 +63,7 @@
     var cur = option(rec, selId);
     var items = rec.image_options.map(function (o) {
       return '<label class="sc-qa-opt"><input type="radio" name="img-' + esc(rec.id) + '" value="' + esc(o.id) + '"' + (o.id === cur.id ? " checked" : "") + ' data-qa-pick="' + esc(rec.id) + '">' +
-        '<img src="' + esc(o.src) + '" alt="" loading="lazy" width="96" height="64">' +
+        '<img src="' + esc(o.src) + '" alt="" loading="lazy" width="96" height="64" data-fb="[]">' +
         '<span class="sc-qa-meta"><b>' + esc(typeLabel(o)) + '</b>' +
         '<span>Source: ' + esc(o.source) + '</span><span>Credit: ' + esc(o.credit) + '</span>' + rights(o) +
         '<span>Depicts actual destination: ' + (o.depicts_actual_destination ? "yes" : "no") + ' · Illustrative/generated: ' + (o.illustrative ? "yes" : "no") + '</span>' +
