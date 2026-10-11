@@ -43,6 +43,7 @@ const list = (dir) => fs.readdirSync(path.join(REPO_DIR, dir)).filter((f) => f.e
 //              25 go through the helper rather than only the first two
 //              groups.
 const CONNECTORS = [
+  ["cron-antonartcenter.js", "no-undefined"],
   ["cron-bagleycommunity.js", "no-undefined"],
   ["cron-belle-isle-nature-center.js", "no-undefined"],
   ["cron-bigtimebingo.js", "no-undefined"],
