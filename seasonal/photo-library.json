@@ -1,0 +1,2418 @@
+{
+ "generated": "2026-10-11",
+ "note": "313.events owner photo library for the seasonal collections. DESTINATION_SPECIFIC photos show a confirmed destination. EDITORIAL_ATMOSPHERIC photos illustrate a seasonal experience and must never be labelled as a specific destination. No GPS or EXIF is stored here or in the image files; originals stay outside the repo.",
+ "classifications": {
+  "DESTINATION_SPECIFIC": "Depicts a confirmed destination; may be used on that destination card and elsewhere with accurate attribution.",
+  "EDITORIAL_ATMOSPHERIC": "Illustrates a seasonal experience without claiming a specific destination; reusable across editorial contexts."
+ },
+ "destination_specific": [
+  {
+   "id": "313p-d776493e",
+   "review_ref": "S01-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "U-pick orchard rows under blue sky",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5194.HEIC",
+    "apple_photos_uuid": "D776493E-FB22-49F1-9D06-32CDC2EC0AE6",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-9db5a6d7",
+   "review_ref": "S01-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Signage",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5212.HEIC",
+    "apple_photos_uuid": "9DB5A6D7-23FD-4D41-8F0C-4EB8471DA8F4",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-e9e79106",
+   "review_ref": "S01-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Detail",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5209.HEIC",
+    "apple_photos_uuid": "E9E79106-4C14-4170-AC43-9BF09002E527",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-ecc610fe",
+   "review_ref": "S01-04",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Vintage Ford tractor",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-04__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-04__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5225.HEIC",
+    "apple_photos_uuid": "ECC610FE-6040-4D36-8A83-F0FDE331398E",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-bc1fd00a",
+   "review_ref": "S01-05",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Autumn sunflowers",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-05__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-05__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5237.HEIC",
+    "apple_photos_uuid": "BC1FD00A-3F49-46D8-9A0A-57F0F67B62A1",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-0356f22a",
+   "review_ref": "S01-06",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "One person posing",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-06__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-06__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5213.HEIC",
+    "apple_photos_uuid": "0356F22A-DF3F-475B-A05E-3878CE4130E1",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-64fbaec9",
+   "review_ref": "S01-07",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi",
+    "name": "Apple Charlie’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "3",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "One person on tractor",
+   "capture_date": "2023-09-23",
+   "capture_place": "Apple Charlie’s Orchard & Cider Mill",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-07__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-07__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5226.HEIC",
+    "apple_photos_uuid": "64FBAEC9-1C3C-49B8-85CB-E4CB64B64690",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-dd285926",
+   "review_ref": "S02-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Pie-pumpkin crate",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3240.HEIC",
+    "apple_photos_uuid": "DD285926-3364-4687-B55F-D531899F5C7C",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-0880886f",
+   "review_ref": "S02-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Cider-mill counter",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "photo-5965_singular_display_fullPicture.jpg",
+    "apple_photos_uuid": "0880886F-AE53-4812-A54B-D618A4A667CA",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-f0b87faf",
+   "review_ref": "S02-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Vintage delivery truck",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3231.HEIC",
+    "apple_photos_uuid": "F0B87FAF-67EE-463D-A9E5-31AA839A4DA3",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-00044f11",
+   "review_ref": "S02-04",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Belted cow in the farm yard",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-04__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-04__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3247.HEIC",
+    "apple_photos_uuid": "00044F11-4DA7-47CC-AA32-0417217182D0",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-186f0a9b",
+   "review_ref": "S02-07",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Autumn tree line and hayride trail",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-07__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-07__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3265.HEIC",
+    "apple_photos_uuid": "186F0A9B-F2F0-499D-A14C-060CF91A75A4",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-1a10c2a7",
+   "review_ref": "S02-08",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Field and autumn tree line",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-08__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-08__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3260.HEIC",
+    "apple_photos_uuid": "1A10C2A7-0A2E-466F-9E20-7873473F5792",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-84e1e241",
+   "review_ref": "S02-09",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Pumpkin field",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-09__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-09__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3273.HEIC",
+    "apple_photos_uuid": "84E1E241-EBA8-4E3A-BD61-7A60A05702BD",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-e86d2e6b",
+   "review_ref": "S02-10",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Large pumpkin, field behind",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-10__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-10__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_0956.heic",
+    "apple_photos_uuid": "E86D2E6B-1450-4C12-8EDD-9FC511C39641",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-b25e72a8",
+   "review_ref": "S02-11",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Corn path; one walker from behind",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-11__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__mine-11__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3275.HEIC",
+    "apple_photos_uuid": "B25E72A8-6D97-455B-A097-567C498BCC3D",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-0e2f0df4",
+   "review_ref": "S03-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__long-family-orchard-farm__commerce-township-mi",
+    "name": "Long Family Orchard & Farm",
+    "collection": "fall",
+    "inventory_no": "22",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Red barn and pumpkins under dramatic sky",
+   "capture_date": "2023-10-27",
+   "capture_place": "Long Family Orchard & Farm",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5579.HEIC",
+    "apple_photos_uuid": "0E2F0DF4-1DC8-4AF7-8081-4A995AAD9AC4",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-dcf4b4fe",
+   "review_ref": "S03-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__long-family-orchard-farm__commerce-township-mi",
+    "name": "Long Family Orchard & Farm",
+    "collection": "fall",
+    "inventory_no": "22",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "One person posing in a giant chair",
+   "capture_date": "2023-10-27",
+   "capture_place": "Long Family Orchard & Farm",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5591.HEIC",
+    "apple_photos_uuid": "DCF4B4FE-9AAC-438B-B84F-380B8F76CFF5",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-ca4003ac",
+   "review_ref": "S03-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__long-family-orchard-farm__commerce-township-mi",
+    "name": "Long Family Orchard & Farm",
+    "collection": "fall",
+    "inventory_no": "22",
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Person among pumpkins",
+   "capture_date": "2023-10-27",
+   "capture_place": "Long Family Orchard & Farm",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__long-family-orchard-farm__commerce-township-mi__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5584.HEIC",
+    "apple_photos_uuid": "CA4003AC-E2E8-4CF8-B6ED-132FD4306C7A",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-73cbabcb",
+   "review_ref": "S04-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "halloween__eloise-asylum__westland-mi",
+    "name": "Eloise Asylum",
+    "collection": "halloween",
+    "inventory_no": "2",
+    "published_id": "eloise-asylum",
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Jack-o'-lantern sign at night",
+   "capture_date": "2023-10-14",
+   "capture_place": "Eloise Asylum",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [
+    "very dark"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5509.HEIC",
+    "apple_photos_uuid": "73CBABCB-A917-4CFF-8566-A307F9FBFAC5",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-69c45aee",
+   "review_ref": "S04-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "halloween__eloise-asylum__westland-mi",
+    "name": "Eloise Asylum",
+    "collection": "halloween",
+    "inventory_no": "2",
+    "published_id": "eloise-asylum",
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Giant witch figure; one person posing in front",
+   "capture_date": "2023-10-14",
+   "capture_place": "Eloise Asylum",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5503.HEIC",
+    "apple_photos_uuid": "69C45AEE-1554-408E-91C7-7D552C8E24DF",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-cc8f40e5",
+   "review_ref": "S05-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "halloween__glenlore-trails-carnevil-2__commerce-township-mi",
+    "name": "Glenlore Trails: CarnEvil 2",
+    "collection": "halloween",
+    "inventory_no": "32",
+    "published_id": "glenlore-carnevil-2",
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Shows the 2024 show, not CarnEvil 2",
+   "capture_date": "2024-09-22",
+   "capture_place": "Glenlore Trails: CarnEvil 2",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_8971.HEIC",
+    "apple_photos_uuid": "CC8F40E5-5FA0-4904-8ECA-F9FA15B4362E",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-8dda6dde",
+   "review_ref": "S05-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "halloween__glenlore-trails-carnevil-2__commerce-township-mi",
+    "name": "Glenlore Trails: CarnEvil 2",
+    "collection": "halloween",
+    "inventory_no": "32",
+    "published_id": "glenlore-carnevil-2",
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Lit foliage at night",
+   "capture_date": "2024-09-22",
+   "capture_place": "Glenlore Trails: CarnEvil 2",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_8973.HEIC",
+    "apple_photos_uuid": "8DDA6DDE-9EC6-4943-9373-20E7FD308E25",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-97d678d8",
+   "review_ref": "S06-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "halloween__theatre-bizarre__detroit-mi",
+    "name": "Theatre Bizarre",
+    "collection": "halloween",
+    "inventory_no": "36",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Guests in costume are the subject",
+   "capture_date": "2022-10-22",
+   "capture_place": "Theatre Bizarre",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__theatre-bizarre__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__theatre-bizarre__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_1767.HEIC",
+    "apple_photos_uuid": "97D678D8-0380-46C2-8A8F-CDD7123166CF",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-222947d7",
+   "review_ref": "S06-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "halloween__theatre-bizarre__detroit-mi",
+    "name": "Theatre Bizarre",
+    "collection": "halloween",
+    "inventory_no": "36",
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Costumed guest is the subject",
+   "capture_date": "2022-10-22",
+   "capture_place": "Theatre Bizarre",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__theatre-bizarre__detroit-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__theatre-bizarre__detroit-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_1763.HEIC",
+    "apple_photos_uuid": "222947D7-2585-4A6A-951F-1E3DE0206263",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-1c50e85e",
+   "review_ref": "S07-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__belle-isle-park__detroit-mi",
+    "name": "Belle Isle Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Shot in May, not autumn foliage",
+   "capture_date": "2024-05-30",
+   "capture_place": "Belle Isle Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__belle-isle-park__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__belle-isle-park__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_7465.HEIC",
+    "apple_photos_uuid": "1C50E85E-6B9D-4360-92A3-3E7364E8C20F",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-68a0653e",
+   "review_ref": "S07-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__belle-isle-park__detroit-mi",
+    "name": "Belle Isle Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "June beach scene, not autumn; distant bathers",
+   "capture_date": "2022-06-25",
+   "capture_place": "Belle Isle Park",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [
+    "soft or noisy at full size"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__belle-isle-park__detroit-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__belle-isle-park__detroit-mi__mine-02__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_0516.HEIC",
+    "apple_photos_uuid": "68A0653E-79C5-41C2-A949-915D25088914",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-c9b53a38",
+   "review_ref": "S08-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi",
+    "name": "Cranbrook Gardens & grounds",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "August; sculptures are artworks",
+   "capture_date": "2023-08-24",
+   "capture_place": "Cranbrook Gardens & grounds",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_4727.HEIC",
+    "apple_photos_uuid": "C9B53A38-FAD5-4771-B1A3-8CDD0411483A",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-be8eafbe",
+   "review_ref": "S08-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi",
+    "name": "Cranbrook Gardens & grounds",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Blue hour, February",
+   "capture_date": "2026-02-19",
+   "capture_place": "Cranbrook Gardens & grounds",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__cranbrook-gardens-grounds__bloomfield-hills-mi__mine-02__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5971.HEIC",
+    "apple_photos_uuid": "BE8EAFBE-B7AE-427C-8597-5F10383B8772",
+    "pixels": [
+     5712,
+     4284
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-b2a3e9c0",
+   "review_ref": "S09-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__dequindre-cut-greenway__detroit-mi",
+    "name": "Dequindre Cut Greenway",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Night, Sept 2023; walkers from behind",
+   "capture_date": "2023-09-21",
+   "capture_place": "Dequindre Cut Greenway",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__dequindre-cut-greenway__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__dequindre-cut-greenway__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5152.HEIC",
+    "apple_photos_uuid": "B2A3E9C0-BAA8-468C-B5C7-F25C67CBB815",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-969acf2f",
+   "review_ref": "S09-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__dequindre-cut-greenway__detroit-mi",
+    "name": "Dequindre Cut Greenway",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Night",
+   "capture_date": "2023-09-21",
+   "capture_place": "Dequindre Cut Greenway",
+   "people_visible": "incidental",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__dequindre-cut-greenway__detroit-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__dequindre-cut-greenway__detroit-mi__mine-02__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5153.HEIC",
+    "apple_photos_uuid": "969ACF2F-2890-4950-B47B-A98ABDCA94C2",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-1131ba56",
+   "review_ref": "S09-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__dequindre-cut-greenway__detroit-mi",
+    "name": "Dequindre Cut Greenway",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "One person posing",
+   "capture_date": "2023-09-21",
+   "capture_place": "Dequindre Cut Greenway",
+   "people_visible": "primary",
+   "editorial_flags": [
+    "identifiable person is the main subject"
+   ],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__dequindre-cut-greenway__detroit-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__dequindre-cut-greenway__detroit-mi__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5155.HEIC",
+    "apple_photos_uuid": "1131BA56-2524-43D1-B429-9CABFFE0A176",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-8d9c81f3",
+   "review_ref": "S10-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi",
+    "name": "Detroit Riverwalk & Milliken State Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "May, overcast",
+   "capture_date": "2022-05-26",
+   "capture_place": "Detroit Riverwalk & Milliken State Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_0034.HEIC",
+    "apple_photos_uuid": "8D9C81F3-B3A6-491B-BA63-659B623C506F",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-83ed766c",
+   "review_ref": "S10-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi",
+    "name": "Detroit Riverwalk & Milliken State Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "June",
+   "capture_date": "2025-06-07",
+   "capture_place": "Detroit Riverwalk & Milliken State Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [
+    "soft or noisy at full size"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_1788.HEIC",
+    "apple_photos_uuid": "83ED766C-7140-40CB-BFAA-6E58B63DFA0B",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-c6def390",
+   "review_ref": "S10-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi",
+    "name": "Detroit Riverwalk & Milliken State Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Winter blue hour",
+   "capture_date": "2021-02-06",
+   "capture_place": "Detroit Riverwalk & Milliken State Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__detroit-riverwalk-milliken-state-park__detroit-mi__mine-03__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_3014.HEIC",
+    "apple_photos_uuid": "C6DEF390-14FA-4AB8-BFCB-DD1FD0D32127",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-9f3fa1eb",
+   "review_ref": "S11-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__elmwood-cemetery__detroit-mi",
+    "name": "Elmwood Cemetery",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Late-summer green, no autumn colour",
+   "capture_date": "2026-09-13",
+   "capture_place": "Elmwood Cemetery",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__elmwood-cemetery__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__elmwood-cemetery__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_1640.HEIC",
+    "apple_photos_uuid": "9F3FA1EB-6098-41EB-8FD4-D972986EF61A",
+    "pixels": [
+     8064,
+     6048
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-e0b9856d",
+   "review_ref": "S11-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__elmwood-cemetery__detroit-mi",
+    "name": "Elmwood Cemetery",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Late-summer green",
+   "capture_date": "2026-09-13",
+   "capture_place": "Elmwood Cemetery",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__elmwood-cemetery__detroit-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__elmwood-cemetery__detroit-mi__mine-02__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_1641.HEIC",
+    "apple_photos_uuid": "E0B9856D-F8FA-4A3F-8B73-808D5503908B",
+    "pixels": [
+     8064,
+     6048
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-d30d9be1",
+   "review_ref": "S12-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__heritage-park__farmington-hills-mi",
+    "name": "Heritage Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Deer in a meadow, April",
+   "capture_date": "2022-04-18",
+   "capture_place": "Heritage Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__heritage-park__farmington-hills-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__heritage-park__farmington-hills-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_6762.HEIC",
+    "apple_photos_uuid": "D30D9BE1-134E-4F5A-B76A-6F29D6F84824",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-5dce1a00",
+   "review_ref": "S12-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__heritage-park__farmington-hills-mi",
+    "name": "Heritage Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Creek with ice, January",
+   "capture_date": "2023-01-16",
+   "capture_place": "Heritage Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__heritage-park__farmington-hills-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__heritage-park__farmington-hills-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2709.HEIC",
+    "apple_photos_uuid": "5DCE1A00-4F04-496D-AAAB-C958EE8E3D1D",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-3c387ae2",
+   "review_ref": "S13-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__highland-state-recreation-area__highland-mi",
+    "name": "Highland State Recreation Area",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Trail beside the road with autumn colour; guardrail in frame",
+   "capture_date": "2026-10-09",
+   "capture_place": "Highland State Recreation Area",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2028.HEIC",
+    "apple_photos_uuid": "3C387AE2-D5A9-4F21-A8A6-5CA3B9CE9787",
+    "pixels": [
+     6048,
+     8064
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-9e980d02",
+   "review_ref": "S13-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__highland-state-recreation-area__highland-mi",
+    "name": "Highland State Recreation Area",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Boardwalk with autumn colour",
+   "capture_date": "2026-10-09",
+   "capture_place": "Highland State Recreation Area",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2026.HEIC",
+    "apple_photos_uuid": "9E980D02-89B9-4A05-A3AA-DA4AA1010CB9",
+    "pixels": [
+     6048,
+     8064
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-aa2f414c",
+   "review_ref": "S13-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__highland-state-recreation-area__highland-mi",
+    "name": "Highland State Recreation Area",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "confirmed_by_owner",
+    "match_confidence": "MEDIUM"
+   },
+   "subject": "Woodland floor, early autumn",
+   "capture_date": "2026-10-09",
+   "capture_place": "Highland State Recreation Area",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2023.HEIC",
+    "apple_photos_uuid": "AA2F414C-1902-43C9-B1AE-ADBF7296FAFF",
+    "pixels": [
+     6048,
+     8064
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-cc0f7263",
+   "review_ref": "S14-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__maybury-state-park__northville-mi",
+    "name": "Maybury State Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Detail only: mushroom on a log, May",
+   "capture_date": "2023-05-07",
+   "capture_place": "Maybury State Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__maybury-state-park__northville-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__maybury-state-park__northville-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3835.HEIC",
+    "apple_photos_uuid": "CC0F7263-539B-4BB2-BB1D-6D6ED1FA033C",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-50832f1e",
+   "review_ref": "S14-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__maybury-state-park__northville-mi",
+    "name": "Maybury State Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Detail only: shelf fungi in leaf litter, May",
+   "capture_date": "2023-05-07",
+   "capture_place": "Maybury State Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__maybury-state-park__northville-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__maybury-state-park__northville-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3827.HEIC",
+    "apple_photos_uuid": "50832F1E-CC43-4DAA-8BA7-E3E980B75A72",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-00994712",
+   "review_ref": "S15-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__nichols-arboretum__ann-arbor-mi",
+    "name": "Nichols Arboretum",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": "nichols-arboretum",
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "July; Canada goose on the river, shot from the water",
+   "capture_date": "2026-07-31",
+   "capture_place": "Nichols Arboretum",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_0542.HEIC",
+    "apple_photos_uuid": "00994712-2FD8-4764-ABC6-ADFA084A7AA1",
+    "pixels": [
+     4284,
+     5712
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-8e40d7fc",
+   "review_ref": "S16-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__oak-openings-preserve-metropark__swanton-oh",
+    "name": "Oak Openings Preserve Metropark",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Sandy trail through bare oaks, Nov 2022",
+   "capture_date": "2022-11-06",
+   "capture_place": "Oak Openings Preserve Metropark",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2053.HEIC",
+    "apple_photos_uuid": "8E40D7FC-F161-497B-84F7-0D7B516D8C2F",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-7264a257",
+   "review_ref": "S16-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__oak-openings-preserve-metropark__swanton-oh",
+    "name": "Oak Openings Preserve Metropark",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Tall oak trunk in late-autumn woods",
+   "capture_date": "2022-11-06",
+   "capture_place": "Oak Openings Preserve Metropark",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2044.HEIC",
+    "apple_photos_uuid": "7264A257-91AE-4B3C-8041-DA71D2F78B9A",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-a65a192d",
+   "review_ref": "S16-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__oak-openings-preserve-metropark__swanton-oh",
+    "name": "Oak Openings Preserve Metropark",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Detail: turkey-tail fungi in oak leaves, Nov",
+   "capture_date": "2022-11-06",
+   "capture_place": "Oak Openings Preserve Metropark",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_2042.HEIC",
+    "apple_photos_uuid": "A65A192D-54EE-4873-944D-EBEBADBDC35C",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-7077cf1e",
+   "review_ref": "S17-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__ottawa-park__toledo-oh",
+    "name": "Ottawa Park",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Wooded pond, April",
+   "capture_date": "2021-04-30",
+   "capture_place": "Ottawa Park",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__ottawa-park__toledo-oh__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__ottawa-park__toledo-oh__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_3556.HEIC",
+    "apple_photos_uuid": "7077CF1E-84FC-447C-AA61-6F2844A9EC34",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-377b51e9",
+   "review_ref": "S18-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__palmer-park-witherell-woods__detroit-mi",
+    "name": "Palmer Park & Witherell Woods",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Autumn meadow with mushrooms and a parked bike; editorial feel",
+   "capture_date": "2021-10-08",
+   "capture_place": "Palmer Park & Witherell Woods",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1600,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "IMG_5071.HEIC",
+    "apple_photos_uuid": "377B51E9-0EAC-495E-996F-685215F23CD5",
+    "pixels": [
+     4032,
+     3024
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-4bc562cc",
+   "review_ref": "S18-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__palmer-park-witherell-woods__detroit-mi",
+    "name": "Palmer Park & Witherell Woods",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Detail: fungi on a log in fallen leaves",
+   "capture_date": "2021-10-08",
+   "capture_place": "Palmer Park & Witherell Woods",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-02__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-02__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_5062.HEIC",
+    "apple_photos_uuid": "4BC562CC-0737-42FB-98E8-6C13D7EEDE49",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-f2cc1bec",
+   "review_ref": "S18-03",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__palmer-park-witherell-woods__detroit-mi",
+    "name": "Palmer Park & Witherell Woods",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Spring detail of the fountain",
+   "capture_date": "2023-04-14",
+   "capture_place": "Palmer Park & Witherell Woods",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-03__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-03__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3531.HEIC",
+    "apple_photos_uuid": "F2CC1BEC-E424-4C7F-B749-B9B965D08013",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-4db7614f",
+   "review_ref": "S19-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-colors__woodlawn-cemetery__detroit-mi",
+    "name": "Woodlawn Cemetery",
+    "collection": "fall-color",
+    "inventory_no": null,
+    "published_id": null,
+    "identity": "gps_and_visual",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Detail only: stained-glass mausoleum window; August",
+   "capture_date": "2023-08-28",
+   "capture_place": "Woodlawn Cemetery",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall-color/fall-colors__woodlawn-cemetery__detroit-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall-color/fall-colors__woodlawn-cemetery__detroit-mi__mine-01__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_4788.HEIC",
+    "apple_photos_uuid": "4DB7614F-59B6-4A88-A914-1144C0F3D6A8",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/313events-photo-archive"
+   },
+   "credit": "313.events archive",
+   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  }
+ ],
+ "editorial_atmospheric": []
+}

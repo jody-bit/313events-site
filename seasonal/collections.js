@@ -10,6 +10,11 @@
  * (source / credit / license / illustrative), and an `evidence` list naming
  * what was checked. test/seasonal-collections.test.js enforces this.
  *
+ * OWNER PHOTOGRAPHY. Entries whose image has `illustrative: false` use a
+ * photo from the 313.events owner archive (seasonal/photo-library.json),
+ * matched to the destination by GPS and visual evidence or confirmed by the
+ * owner. No GPS/EXIF is carried in the web files.
+ *
  * WHAT IS NOT HERE ON PURPOSE: operating hours, admission, event dates,
  * accessibility, coordinates, distance. None was verified from an official
  * source, so none is shown. Dates found in news coverage are kept in
@@ -117,7 +122,7 @@
         { id: "eloise-asylum", name: "Eloise Asylum", city: "Westland", region: "MI",
           categories: ["haunted-attractions", "serious-scares"], featured: true, status: "published",
           summary: "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
-          image: img("halloween", 2),
+          image: { src: "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp", source: "313.events owner photo archive, captured 2023-10-14", credit: "313.events archive", license: "Owner-authorized for 313.events", illustrative: false, photoId: "313p-73cbabcb" },
           evidence: [ev("Inventory #2. WXYZ 2026 report: sixth season, opens Sept 25. Ticket prices not displayed.")] },
         { id: "halloween-greenfield-village", name: "Hallowe'en in Greenfield Village", city: "Dearborn", region: "MI",
           categories: ["family-friendly", "ghosts-history"], featured: true, status: "published",
@@ -133,7 +138,7 @@
         { id: "glenlore-carnevil-2", name: "Glenlore Trails: CarnEvil 2", city: "Commerce Township", region: "MI",
           categories: ["strange-unusual", "haunted-attractions"], featured: false, status: "published",
           summary: "Illuminated forest walk with a carnival-horror theme in Commerce Township.",
-          website: "https://glenloretrails.com", image: img("halloween", 5),
+          website: "https://glenloretrails.com", image: { src: "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp", source: "313.events owner photo archive, captured 2024-09-22", credit: "313.events archive", license: "Owner-authorized for 313.events", illustrative: false, photoId: "313p-8dda6dde" },
           evidence: [ev("Inventory #32. Michigan.org / Michigan Public 2026 listings; glenloretrails.com named for tickets.", "https://glenloretrails.com")] },
         { id: "crossroads-ghosts-goodies", name: "Halloween Ghosts & Goodies at Crossroads Village", city: "Flint area", region: "MI",
           categories: ["family-friendly"], featured: false, status: "published",
@@ -183,7 +188,7 @@
         { id: "nichols-arboretum", name: "Nichols Arboretum", city: "Ann Arbor", region: "MI",
           categories: ["parks-gardens", "trails-woods"], featured: true, status: "published",
           summary: "University of Michigan arboretum in Ann Arbor.",
-          image: img("fall-color", 4),
+          image: { src: "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__card.webp", source: "313.events owner photo archive, captured 2026-07-31", credit: "313.events archive", license: "Owner-authorized for 313.events", illustrative: false, photoId: "313p-00994712" },
           evidence: [ev("Fall-color inventory. U-M news (older release) and local guides describe fall color; current rules and hours not confirmed so none are shown.")] }
       ]
     }

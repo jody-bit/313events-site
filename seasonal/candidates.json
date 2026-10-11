@@ -36,7 +36,16 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-d776493e",
+    "313p-9db5a6d7",
+    "313p-e9e79106",
+    "313p-ecc610fe",
+    "313p-bc1fd00a",
+    "313p-0356f22a",
+    "313p-64fbaec9"
+   ]
   },
   {
    "collection": "fall",
@@ -164,7 +173,18 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-dd285926",
+    "313p-0880886f",
+    "313p-f0b87faf",
+    "313p-00044f11",
+    "313p-186f0a9b",
+    "313p-1a10c2a7",
+    "313p-84e1e241",
+    "313p-e86d2e6b",
+    "313p-b25e72a8"
+   ]
   },
   {
    "collection": "fall",
@@ -274,7 +294,12 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-0e2f0df4",
+    "313p-dcf4b4fe",
+    "313p-ca4003ac"
+   ]
   },
   {
    "collection": "fall",
@@ -896,7 +921,11 @@
    "status": "published",
    "published_id": "eloise-asylum",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-73cbabcb",
+    "313p-69c45aee"
+   ]
   },
   {
    "collection": "halloween",
@@ -1282,7 +1311,11 @@
    "status": "published",
    "published_id": "glenlore-carnevil-2",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-cc8f40e5",
+    "313p-8dda6dde"
+   ]
   },
   {
    "collection": "halloween",
@@ -1333,6 +1366,10 @@
    "flags": [
     "operating status/2026 occurrence flagged in inventory",
     "adults-only: age guidance to confirm"
+   ],
+   "photos": [
+    "313p-97d678d8",
+    "313p-222947d7"
    ]
   },
   {
@@ -1552,7 +1589,11 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-1c50e85e",
+    "313p-68a0653e"
+   ]
   },
   {
    "collection": "fall-color",
@@ -1564,7 +1605,12 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-377b51e9",
+    "313p-4bc562cc",
+    "313p-f2cc1bec"
+   ]
   },
   {
    "collection": "fall-color",
@@ -1652,6 +1698,10 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "public access rules to confirm"
+   ],
+   "photos": [
+    "313p-9f3fa1eb",
+    "313p-e0b9856d"
    ]
   },
   {
@@ -1666,6 +1716,9 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "public access rules to confirm"
+   ],
+   "photos": [
+    "313p-4db7614f"
    ]
   },
   {
@@ -1678,7 +1731,12 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-8d9c81f3",
+    "313p-83ed766c",
+    "313p-c6def390"
+   ]
   },
   {
    "collection": "fall-color",
@@ -1690,7 +1748,12 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-b2a3e9c0",
+    "313p-969acf2f",
+    "313p-1131ba56"
+   ]
   },
   {
    "collection": "fall-color",
@@ -1726,7 +1789,11 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-cc0f7263",
+    "313p-50832f1e"
+   ]
   },
   {
    "collection": "fall-color",
@@ -1738,7 +1805,11 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-d30d9be1",
+    "313p-5dce1a00"
+   ]
   },
   {
    "collection": "fall-color",
@@ -1764,6 +1835,10 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "public access rules to confirm"
+   ],
+   "photos": [
+    "313p-c9b53a38",
+    "313p-be8eafbe"
    ]
   },
   {
@@ -1992,7 +2067,12 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-3c387ae2",
+    "313p-9e980d02",
+    "313p-aa2f414c"
+   ]
   },
   {
    "collection": "fall-color",
@@ -2184,7 +2264,10 @@
    "status": "published",
    "published_id": "nichols-arboretum",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-00994712"
+   ]
   },
   {
    "collection": "fall-color",
@@ -2746,6 +2829,11 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ],
+   "photos": [
+    "313p-8e40d7fc",
+    "313p-7264a257",
+    "313p-a65a192d"
    ]
   },
   {
@@ -2845,6 +2933,9 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
+   ],
+   "photos": [
+    "313p-7077cf1e"
    ]
   },
   {
