@@ -4,7 +4,11 @@
    Test fixtures (Preview only): adding ?fixtures=1 merges the invented records
    from seasonal/fixtures.js into the page, but only after /config.js reports a
    non-production environment. If config cannot be read, says "production", or
-   anything fails, nothing is merged and the page is exactly the real page. */
+   anything fails, nothing is merged and the page is exactly the real page.
+
+   Review mode (Preview only): ?review=1 lists EVERY entry of the collection, each labelled "Review only" with its
+   real gate state, so the page can be judged visually before anything is approved. Same non-production check as
+   fixtures: if /config.js cannot be read or says "production", the page is exactly the real page. */
 (function () {
   "use strict";
   var slug = document.body.getAttribute("data-collection");
@@ -27,11 +31,20 @@
     });
   }
 
+  function reviewAllowed(done) {
+    if (p.get("review") !== "1") { done(false); return; }
+    loadScript("/config.js", function () {
+      var cfg = window.__313_CONFIG;
+      done(!!(cfg && NON_PROD.indexOf(cfg.environment) >= 0));
+    });
+  }
+
   function start(col, fixturesOn) {
     var state = { category: p.get("cat") || "all", query: p.get("q") || "", view: p.get("view") === "list" ? "list" : "grid" };
     var known = R.usedCategories(col).map(function (c) { return c.id; });
     if (state.category !== "all" && known.indexOf(state.category) < 0) state.category = "all";
-    if (fixturesOn) document.getElementById("scMain").innerHTML = R.main(col, state);
+    var extraOn = fixturesOn || !!col.includeReview;
+    if (extraOn) document.getElementById("scMain").innerHTML = R.main(col, state);
 
     function sync(scroll) {
       document.getElementById("scResults").innerHTML = R.results(col, state);
@@ -44,6 +57,7 @@
       if (state.query) q.set("q", state.query);
       if (state.view === "list") q.set("view", "list");
       if (fixturesOn) q.set("fixtures", "1");
+      if (col.includeReview) q.set("review", "1");
       try { history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); } catch (e) {}
       if (scroll) document.getElementById("scExplore").scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -60,8 +74,11 @@
   }
 
   fixturesAllowed(function (fx) {
-    var col = DATA.COLLECTIONS[slug];
-    if (fx) col = DATA.withFixtures(col, fx.forCollection(slug));
-    start(col, !!fx);
+    reviewAllowed(function (rev) {
+      var col = DATA.COLLECTIONS[slug];
+      if (fx) col = DATA.withFixtures(col, fx.forCollection(slug));
+      if (rev) col = DATA.withReview(col);
+      start(col, !!fx);
+    });
   });
 })();

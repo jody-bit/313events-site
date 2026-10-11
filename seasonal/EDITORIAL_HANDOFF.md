@@ -86,3 +86,22 @@ generated card as the fallback if the link breaks. This is recorded per image in
 - Looked at and not used: Wiard's (logo only), Blake Farms (a summer strawberry field), Metroparks' Kensington, Stony
   Creek and Hudson Mills pages (adaptive-recreation photos, not fall color), Yates and Parmenter's (no photo found),
   Erebus (site not reached). These stay on the generated card.
+
+## THE DARK ORBIT: image strategy and review preview (2026-10-11)
+
+All 52 Halloween destinations from the inventory are now entries in `seasonal/collections.js`, every one still
+`HOLD_UNVERIFIED` (or the existing `READY_FOR_REVIEW` for three) and none public. The per-destination image strategy is in
+`seasonal/halloween-image-manifest.json` (regenerate with `node scripts/halloween-image-manifest.js`; a test fails if it is stale).
+
+- Priority used: (1) the owner's approved photo of the place, (2) an image from the destination's own site, (3) another
+  source's photo, (4) the existing generated Halloween card, (5) an alternate generated card. Approved personal photos of
+  Eloise Asylum and Glenlore are on branch `feature/seasonal-photography-archive`, not in this branch.
+- Runtime chain (no broken-image icons): linked image, then the generated card (`image.src`), then an alternate generated
+  card (`image.alternates[0]`), then `/assets/placeholders/event-800.webp`, then the image is hidden and the dark card block remains.
+- No reuse permission is on file for any linked image; each rests on the owner's recorded acceptance of the risk.
+  Linked images were load-tested in Chrome on 2026-10-11 (the manifest records the size each returned).
+- Real images that were found but not chosen (logos, near-black heroes) are kept in the manifest as `alternativeImageOptions`.
+- **Review preview:** `/halloween?review=1` on a Preview (never production; same `/config.js` check as `?fixtures=1`,
+  fails closed) lists all 52 entries, each labelled "Review only" with its real gate state, under a banner. It changes no
+  entry and does not touch the gate: the live page still shows nothing until entries are approved.
+

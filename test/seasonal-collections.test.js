@@ -137,7 +137,7 @@ assert.strictEqual(R.esc('<a href="x">&\'</a>'), "&lt;a href=&quot;x&quot;&gt;&a
 
 // ---- 3b. linked images (owner decision 2026-10-11): the link is shown, the generated card is the fallback
 {
-  const linked = (over) => complete(Object.assign({ status: "PUBLISHED" }, over || {}, { image: Object.assign({ src: ASSET, illustrative: true, source: "313.events supplied collection graphic (AI-generated), cropped", credit: "313.events", license: "Supplied by 313.events" }, {
+  const linked = (over) => complete(Object.assign({ status: "PUBLISHED" }, over || {}, { image: Object.assign({ src: ASSET, alternates: ["/assets/seasonal/fall-card-2.webp"], illustrative: true, source: "313.events supplied collection graphic (AI-generated), cropped", credit: "313.events", license: "Supplied by 313.events" }, {
     remote: Object.assign({ src: "https://example.org/photo.jpg", sourcePage: "https://example.org/page", credit: "Example Org", acceptedBy: "Owner", acceptedAt: "2026-10-11", riskNote: "Owner accepted the risk." }, (over && over.remote) || {}) }) }));
   const state = (e) => DATA.readiness(e).state;
   const noApproval = (e) => { delete e.approval; return e; };
@@ -156,16 +156,24 @@ assert.strictEqual(R.esc('<a href="x">&\'</a>'), "&lt;a href=&quot;x&quot;&gt;&a
   const col = clone(DATA.COLLECTIONS.fall); col.entries = [linked({ id: "l1", name: "Linked Mill", categories: ["cider-donuts"] })];
   const html = R.main(col);
   assert.ok(html.includes('src="https://example.org/photo.jpg"') && html.includes('referrerpolicy="no-referrer"'));
-  assert.ok(html.includes('data-fallback="' + ASSET + '"') && html.includes("onerror="), "the generated card is the fallback");
+  assert.ok(/data-fb="[^"]*fall-card-1\.webp[^"]*placeholders\/event-800\.webp"/.test(html) && html.includes("onerror="), "the generated card then the placeholder are the fallbacks");
   assert.ok(html.includes('href="https://example.org/page"') && html.includes("Photo: Example Org"), "credit links to the source page");
   assert.ok(html.includes("sc-illus-fb") && /\.sc-fell-back \.sc-illus-fb\{display:block\}/.test(fs.readFileSync(path.join(root, "seasonal/seasonal.css"), "utf8")), "the illustrative badge appears only after a fallback");
-  // the handler itself, run against a stand-in image element
+  // the handler itself, run against a stand-in image element: each failure moves one step down the chain, and the
+  // last failure hides the image instead of leaving a broken-image icon
   const attr = /onerror="([^"]*)"/.exec(html)[1].replace(/&#39;/g, "'");
-  const classes = new Set();
-  const img = { onerror: () => {}, src: "https://example.org/photo.jpg", parentNode: { classList: { add: (c) => classes.add(c) } }, getAttribute: (n) => (n === "data-fallback" ? ASSET : null) };
-  new Function("this_", "with (this_) {" + attr.replace(/this/g, "this_") + "}")(img);
-  assert.strictEqual(img.src, ASSET, "a broken link swaps in the generated card");
-  assert.ok(classes.has("sc-fell-back") && img.onerror === null, "and marks the card, once");
+  const fb = /data-fb="([^"]*)"/.exec(html)[1];
+  const classes = new Set(), attrs = { "data-fb": fb };
+  const img = { onerror: () => {}, src: "https://example.org/photo.jpg", style: {}, parentNode: { classList: { add: (c) => classes.add(c) } },
+    getAttribute: (n) => (n in attrs ? attrs[n] : null), setAttribute: (n, v) => { attrs[n] = String(v); } };
+  const fire = () => new Function("this_", "with (this_) {" + attr.replace(/this/g, "this_") + "}")(img);
+  const steps = fb.split("|");
+  assert.deepStrictEqual(steps, [ASSET, "/assets/seasonal/fall-card-2.webp", "/assets/placeholders/event-800.webp"], "chain: card, alternate card, placeholder");
+  for (const want of steps) { fire(); assert.strictEqual(img.src, want, "a broken link moves down the chain"); }
+  assert.ok(classes.has("sc-fell-back") && img.onerror !== null && img.style.visibility === undefined);
+  fire();
+  assert.strictEqual(img.onerror, null, "after the last step the handler detaches");
+  assert.strictEqual(img.style.visibility, "hidden", "and the image is hidden, never a broken icon");
   assert.ok(BUILD.validateAssets, "build validates fallbacks");
 }
 

@@ -906,8 +906,8 @@
    "location": "Westland, MI",
    "inventory_note": "Multiple haunted houses",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "hush-haunted-attraction",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -918,8 +918,8 @@
    "location": "Madison Heights, MI",
    "inventory_note": "Multilevel haunted maze",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "azra-chamber-of-horrors",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -930,8 +930,8 @@
    "location": "Holly, MI",
    "inventory_note": "Haunted manor, forest and asylum",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "rotten-manor",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -942,8 +942,8 @@
    "location": "Ypsilanti, MI",
    "inventory_note": "Haunted thrill park",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "wiards-night-terrors",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -954,8 +954,8 @@
    "location": "Howell, MI",
    "inventory_note": "Story-driven haunted house",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "slay-nights",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -966,8 +966,8 @@
    "location": "Lenox Township, MI",
    "inventory_note": "Haunted hayride, maze and forest",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "scarefest-scream-park",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -978,8 +978,8 @@
    "location": "Armada, MI",
    "inventory_note": "Haunted barn and hayride",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "blakes-haunted-attractions",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -990,8 +990,8 @@
    "location": "Taylor, MI",
    "inventory_note": "Haunted asylum experience",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "the-scream-machine",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1002,8 +1002,8 @@
    "location": "Romulus, MI",
    "inventory_note": "Haunted woods",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "deranged-haunt",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1014,8 +1014,8 @@
    "location": "Fowlerville, MI",
    "inventory_note": "Haunted house and corn maze",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "slaughterhouse-adventure",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1026,8 +1026,8 @@
    "location": "Highland, MI",
    "inventory_note": "Haunted farm",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "full-moon-manor-at-bonadeo-farms",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1038,8 +1038,8 @@
    "location": "Mount Morris, MI",
    "inventory_note": "Extreme interactive haunt; operating status needs verification",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "exit-13-haunted-house",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "operating status/2026 occurrence flagged in inventory"
    ]
@@ -1052,8 +1052,8 @@
    "location": "Belleville, MI",
    "inventory_note": "Haunted field attraction",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "nightmare-fields-at-the-pumpkin-factory",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1064,8 +1064,8 @@
    "location": "Windsor, ON",
    "inventory_note": "Indoor haunted attractions and immersive horror",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "scarehouse-windsor",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1078,8 +1078,8 @@
    "location": "Fenton, MI",
    "inventory_note": "Haunted woodland trail",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "the-howling-haunted-trail-and-party",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1090,8 +1090,8 @@
    "location": "Pinckney, MI",
    "inventory_note": "Outdoor haunted forest",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "terrorfied-forest",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1102,8 +1102,8 @@
    "location": "Lapeer, MI",
    "inventory_note": "Haunted hayride, corn maze and house",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "past-tense-after-dark",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1114,8 +1114,8 @@
    "location": "Swartz Creek, MI",
    "inventory_note": "Haunted maze, cornfield and hayride",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "spooky-trails",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1126,8 +1126,8 @@
    "location": "Genoa, OH",
    "inventory_note": "Haunted hayride and woods",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "panic-in-the-pines",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1140,8 +1140,8 @@
    "location": "Monclova, OH",
    "inventory_note": "Haunted cornfield attractions",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "field-of-fear",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1154,8 +1154,8 @@
    "location": "Millington, MI",
    "inventory_note": "Rustic haunted sawmill and maze; radius check",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "bates-haunted-sawmill",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "radius check needed"
    ]
@@ -1168,8 +1168,8 @@
    "location": "Dearborn, MI",
    "inventory_note": "Haunted woodland trail",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "dearborn-haunted-trail",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1180,8 +1180,8 @@
    "location": "Port Sanilac, MI",
    "inventory_note": "Haunted historic village; radius check",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "sanilac-museums-haunted-village",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "radius check needed"
    ]
@@ -1194,8 +1194,8 @@
    "location": "Bowling Green, OH",
    "inventory_note": "Indoor haunted house; radius check",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "distracted-haunted-house",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -1209,8 +1209,8 @@
    "location": "Fremont, OH",
    "inventory_note": "Industrial haunted attraction; radius check",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "haunted-hydro",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -1224,8 +1224,8 @@
    "location": "Toledo, OH",
    "inventory_note": "Funeral history and paranormal tours",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "mortuary-manor-funeral-museum",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1238,8 +1238,8 @@
    "location": "Toledo, OH",
    "inventory_note": "Seasonal eerie manor tours",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "wildwood-manor-house",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1252,8 +1252,8 @@
    "location": "Perrysburg, OH",
    "inventory_note": "Historical ghost walk",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "fort-meigs-garrison-ghost-walk",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1266,8 +1266,8 @@
    "location": "Waterville, OH",
    "inventory_note": "Historical ghost tours",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "haunted-waterville-tours",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1292,8 +1292,8 @@
    "location": "Lake Orion, MI",
    "inventory_note": "Halloween light displays and characters",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "halloween-stroll-at-canterbury-village",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1304,8 +1304,8 @@
    "location": "West Bloomfield, MI",
    "inventory_note": "Halloween-themed aerial adventure",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "hallowglow-at-treerunner",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1328,8 +1328,8 @@
    "location": "Detroit, MI",
    "inventory_note": "Adults-only immersive masquerade; 2026 occurrence must be verified",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "theatre-bizarre",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "operating status/2026 occurrence flagged in inventory",
     "adults-only: age guidance to confirm"
@@ -1343,8 +1343,8 @@
    "location": "Windsor, ON",
    "inventory_note": "Theatrical horror dining",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "scarehouse-windsor-immersive-dinner",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1381,8 +1381,8 @@
    "location": "Auburn Hills, MI",
    "inventory_note": "LEGO-themed Halloween activities",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "brick-or-treat-at-legoland-discovery-center",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1393,8 +1393,8 @@
    "location": "Flint, MI",
    "inventory_note": "Planetarium Halloween show",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "ooky-spooky-light-show",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1405,8 +1405,8 @@
    "location": "Flint, MI",
    "inventory_note": "Halloween-themed laser show",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "laser-halloween",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1417,8 +1417,8 @@
    "location": "Leamington, ON",
    "inventory_note": "Gentle haunted barn; radius check",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "thiessen-orchards-scaredy-cat-barn",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -1432,8 +1432,8 @@
    "location": "Troy, MI",
    "inventory_note": "Illuminated woodland walk",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "jack-o-lanterns-among-the-trees",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1444,8 +1444,8 @@
    "location": "Port Huron, MI",
    "inventory_note": "Family Halloween trail",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "halloween-stroll",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1456,8 +1456,8 @@
    "location": "Flint, MI",
    "inventory_note": "Independent residential haunt",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "agony-on-alcott",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1468,8 +1468,8 @@
    "location": "Windsor, ON",
    "inventory_note": "Free home haunt with actors and animatronics",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "reapers-gate-home-haunt",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1482,8 +1482,8 @@
    "location": "Windsor–Essex, ON",
    "inventory_note": "Community Halloween display discovery",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "windsor-essex-yard-haunt-map",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1496,8 +1496,8 @@
    "location": "Windsor–Essex, ON",
    "inventory_note": "Regional haunt-discovery experience",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "halloween-hunt-the-haunts",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1510,8 +1510,8 @@
    "location": "Detroit, MI",
    "inventory_note": "Guided ghost walks",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "motor-city-ghosts",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": []
   },
   {
@@ -1522,8 +1522,8 @@
    "location": "Windsor–Essex, ON",
    "inventory_note": "Haunted-history walking tours",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "spooky-janes-walk",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]
@@ -1536,8 +1536,8 @@
    "location": "Windsor, ON",
    "inventory_note": "Historical ghost walk",
    "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
+   "published_id": "sandwich-town-ghost-tour",
+   "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification. | 2026-10-11: entry added to seasonal/collections.js for visual review only. Image strategy is recorded in seasonal/halloween-image-manifest.json. Official source, relevance and approval are still outstanding, so it is not public.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ]

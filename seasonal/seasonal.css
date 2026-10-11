@@ -87,3 +87,4 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 /* Test-fixture labelling (Preview/test only; never rendered in production HTML) */
 .sc-fixture-banner{margin:10px 0 0;padding:10px 14px;border:1px dashed var(--accent);background:rgba(215,255,0,.08);color:var(--ink);font-family:var(--font-data);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
 .sc-fixture{border-color:var(--accent);color:var(--accent)}
+.sc-review{top:6px;bottom:auto;left:6px;border-color:var(--accent);color:var(--accent)}

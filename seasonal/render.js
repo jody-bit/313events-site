@@ -38,19 +38,36 @@
       return '<li>' + esc(catLabel(col, c)) + '</li>';
     }).join("") + '</ul>';
   }
-  // A linked image (image.remote) is shown from the destination's site with the generated card as the fallback:
-  // if the link fails, the inline handler swaps the generated card in, hides the credit and shows the "Illustrative
-  // image" badge. referrerpolicy="no-referrer" keeps hotlink protection that checks the referrer from blocking it.
+  // Image fallback chain (runtime, no broken-image icons):
+  //   linked image (image.remote) -> generated card (image.src) -> alternate generated card (image.alternates)
+  //   -> branded placeholder (image.placeholder) -> img hidden (the card keeps its dark media block).
+  // The chain is a pipe-separated list in data-fb; the inline handler is self-contained so it still works if it
+  // fires before any script has loaded. referrerpolicy="no-referrer" keeps referrer-based hotlink protection
+  // from blocking a linked image. After the first failure the card shows the "Illustrative image" badge and the
+  // photo credit is hidden.
+  var PLACEHOLDER = "/assets/placeholders/event-800.webp";
+  var ONERR = "var f=(this.getAttribute('data-fb')||'').split('|').filter(Boolean),n=+(this.getAttribute('data-n')||0);" +
+    "if(n<f.length){this.setAttribute('data-n',n+1);this.parentNode.classList.add('sc-fell-back');this.src=f[n]}" +
+    "else{this.onerror=null;this.style.visibility='hidden'}";
+  function chain(e, linked) {
+    var list = [];
+    if (linked) list.push(e.image.src);
+    (e.image.alternates || []).forEach(function (a) { list.push(a); });
+    list.push(e.image.placeholder || PLACEHOLDER);
+    return list.filter(function (v, i, a) { return v && a.indexOf(v) === i; });
+  }
   function cardMedia(e) {
     var r = e.image.remote;
-    if (r && /^https:\/\//.test(r.src || "") && !e.fixture) {
-      return '<div class="sc-card-media"><img src="' + esc(r.src) + '" alt="" loading="lazy" width="640" height="427" referrerpolicy="no-referrer"' +
-        ' data-fallback="' + esc(e.image.src) + '" onerror="this.onerror=null;this.parentNode.classList.add(\'sc-fell-back\');this.src=this.getAttribute(\'data-fallback\')">' +
-        '<span class="sc-illus sc-illus-fb">Illustrative image</span>' +
+    var linked = !!(r && /^https:\/\//.test(r.src || "") && !e.fixture);
+    var src = linked ? r.src : e.image.src;
+    var html = '<div class="sc-card-media"><img src="' + esc(src) + '" alt="" loading="lazy" width="640" height="427"' +
+      (linked ? ' referrerpolicy="no-referrer"' : "") +
+      ' data-fb="' + esc(chain(e, linked).join("|")) + '" onerror="' + ONERR + '">';
+    if (linked) {
+      return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span>' +
         '<a class="sc-credit" href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a>';
     }
-    return '<div class="sc-card-media"><img src="' + esc(e.image.src) + '" alt="" loading="lazy" width="640" height="427">' +
-      (e.fixture ? '<span class="sc-illus sc-fixture">Test fixture</span>' : e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "");
+    return html + (e.fixture ? '<span class="sc-illus sc-fixture">Test fixture</span>' : e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "");
   }
   function card(col, e, opts) {
     opts = opts || {};
@@ -59,7 +76,7 @@
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
       : esc(e.name);
     return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '">' +
-      cardMedia(e) + '</div>' +
+      cardMedia(e) + (col.includeReview && !DATA.isPublic(e) ? '<span class="sc-illus sc-review">Review only &middot; ' + esc(e.status) + '</span>' : "") + '</div>' +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title">' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
@@ -154,10 +171,18 @@
     return '<p class="sc-fixture-banner" role="note">TEST FIXTURES &mdash; the destinations marked &ldquo;Test fixture&rdquo; are invented test data for checking this layout. They are not real places and are not published content.</p>';
   }
 
-  function main(col, state) {
-    state = state || { category: "all", query: "", view: "grid" };
-    return (col.includeFixtures ? fixtureBanner() : "") + hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
+  // Shown only in the Preview-only review mode (?review=1): every entry is listed so the page can be judged
+  // visually, but none of them has passed the publication gate.
+  function reviewBanner(col) {
+    var n = col.entries.length, pub = DATA.entriesPublic(col);
+    return '<p class="sc-fixture-banner sc-review-banner" role="note">REVIEW PREVIEW &mdash; all ' + n + ' destinations in this collection are shown so the layout and images can be judged. ' +
+      'Only ' + pub + ' of them have passed the publication gate; the rest are marked &ldquo;Review only&rdquo;. Nothing here is published, and the live page does not show these.</p>';
   }
 
-  return { esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card, fixtureBanner: fixtureBanner, discover: discover, dontMiss: dontMiss };
+  function main(col, state) {
+    state = state || { category: "all", query: "", view: "grid" };
+    return (col.includeFixtures ? fixtureBanner() : "") + (col.includeReview ? reviewBanner(col) : "") + hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
+  }
+
+  return { esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card, fixtureBanner: fixtureBanner, reviewBanner: reviewBanner, PLACEHOLDER: PLACEHOLDER, discover: discover, dontMiss: dontMiss };
 });
