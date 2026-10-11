@@ -350,6 +350,69 @@ function formatTime(h, mi) {
   return `${h12}:${String(mi).padStart(2, "0")} ${period}`;
 }
 
+// Turns parsed VEVENTs into concrete occurrences. Extracted unchanged from the
+// handler (identity proposal, 2026-10-11) so the identity logic in
+// api/_lib/mcw-identity.js can be tested against the real expansion. Each
+// occurrence additionally carries `uid` and `originalDateISO` -- the date the
+// iCalendar itself uses to name the instance (RECURRENCE-ID for an override,
+// the generated date for a series member, DTSTART for a single event) -- which
+// do not change when an instance is renamed or moved. `cancelled` lists the
+// instances the calendar has removed (override STATUS:CANCELLED, EXDATE, a
+// cancelled single). Nothing here is read by the handler except `occurrences`.
+function isoOfParts(parts) {
+  return `${parts.y}-${String(parts.mo).padStart(2, "0")}-${String(parts.d).padStart(2, "0")}`;
+}
+
+function collectOccurrences(vevents, windowEndNaive) {
+  const byUid = new Map();
+  for (const e of vevents) {
+    if (!e.uid) continue;
+    if (!byUid.has(e.uid)) byUid.set(e.uid, []);
+    byUid.get(e.uid).push(e);
+  }
+
+  const occurrences = []; // { dateNaive, summary, description, uid, originalDateISO }
+  const cancelled = []; // { uid, originalDateISO, reason }
+
+  for (const [uid, group] of byUid) {
+    const master = group.find((e) => !e.recurrenceId);
+    const overrides = group.filter((e) => e.recurrenceId);
+
+    // Every override is itself a concrete, already-dated occurrence.
+    for (const ov of overrides) {
+      if (!ov.dtstart) continue;
+      const originalDateISO = isoOfParts(ov.recurrenceId);
+      if (ov.status === "CANCELLED") { cancelled.push({ uid, originalDateISO, reason: "override-cancelled" }); continue; }
+      occurrences.push({ dateNaive: naiveDate(ov.dtstart), summary: ov.summary, description: ov.description, uid, originalDateISO });
+    }
+
+    if (!master || !master.dtstart) continue;
+    if (master.status === "CANCELLED" && !master.rrule) { cancelled.push({ uid, originalDateISO: isoOfParts(master.dtstart), reason: "master-cancelled" }); continue; }
+
+    const excludeKeys = new Set(master.exdates || []);
+    for (const ov of overrides) {
+      if (ov.recurrenceId) excludeKeys.add(dateKey(ov.recurrenceId));
+    }
+
+    if (master.rrule) {
+      const occs = expandRRule(master.dtstart, master.rrule, windowEndNaive);
+      for (const occ of occs) {
+        const parts = { y: occ.getUTCFullYear(), mo: occ.getUTCMonth() + 1, d: occ.getUTCDate(), h: occ.getUTCHours(), mi: occ.getUTCMinutes() };
+        const key = dateKey(parts);
+        if (excludeKeys.has(key)) {
+          if ((master.exdates || []).includes(key)) cancelled.push({ uid, originalDateISO: isoOfParts(parts), reason: "exdate" });
+          continue;
+        }
+        occurrences.push({ dateNaive: occ, summary: master.summary, description: master.description, uid, originalDateISO: isoOfParts(parts) });
+      }
+    } else {
+      // Plain single (non-recurring) event.
+      occurrences.push({ dateNaive: naiveDate(master.dtstart), summary: master.summary, description: master.description, uid, originalDateISO: isoOfParts(master.dtstart) });
+    }
+  }
+  return { occurrences, cancelled };
+}
+
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
@@ -403,47 +466,7 @@ module.exports = async (req, res) => {
   const todayNaive = naiveDate({ ...todayParts, h: 0, mi: 0 });
   const windowEndNaive = new Date(todayNaive.getTime() + WINDOW_DAYS * 24 * 3600 * 1000);
 
-  // Group by UID.
-  const byUid = new Map();
-  for (const e of vevents) {
-    if (!e.uid) continue;
-    if (!byUid.has(e.uid)) byUid.set(e.uid, []);
-    byUid.get(e.uid).push(e);
-  }
-
-  const occurrences = []; // { dateNaive, summary, description }
-
-  for (const [, group] of byUid) {
-    const master = group.find((e) => !e.recurrenceId);
-    const overrides = group.filter((e) => e.recurrenceId);
-
-    // Every override is itself a concrete, already-dated occurrence.
-    for (const ov of overrides) {
-      if (!ov.dtstart) continue;
-      if (ov.status === "CANCELLED") continue;
-      occurrences.push({ dateNaive: naiveDate(ov.dtstart), summary: ov.summary, description: ov.description });
-    }
-
-    if (!master || !master.dtstart) continue;
-    if (master.status === "CANCELLED" && !master.rrule) continue;
-
-    const excludeKeys = new Set(master.exdates || []);
-    for (const ov of overrides) {
-      if (ov.recurrenceId) excludeKeys.add(dateKey(ov.recurrenceId));
-    }
-
-    if (master.rrule) {
-      const occs = expandRRule(master.dtstart, master.rrule, windowEndNaive);
-      for (const occ of occs) {
-        const key = dateKey({ y: occ.getUTCFullYear(), mo: occ.getUTCMonth() + 1, d: occ.getUTCDate(), h: occ.getUTCHours(), mi: occ.getUTCMinutes() });
-        if (excludeKeys.has(key)) continue;
-        occurrences.push({ dateNaive: occ, summary: master.summary, description: master.description });
-      }
-    } else {
-      // Plain single (non-recurring) event.
-      occurrences.push({ dateNaive: naiveDate(master.dtstart), summary: master.summary, description: master.description });
-    }
-  }
+  const { occurrences } = collectOccurrences(vevents, windowEndNaive);
 
   // Filter to the window, sort, cap.
   const windowed = occurrences
@@ -550,3 +573,7 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+// Exposed for tests (identity proposal): the pure parsing/expansion steps.
+module.exports.parseICS = parseICS;
+module.exports.collectOccurrences = collectOccurrences;
