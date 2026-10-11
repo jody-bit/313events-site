@@ -932,7 +932,33 @@
    "status": "published",
    "published_id": "erebus",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "erebus",
+    "destination_name": "Erebus Haunted Attraction",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "erebus"
   },
   {
    "collection": "halloween",
@@ -952,7 +978,39 @@
     "313p-89398e17",
     "313p-23047f66-f034",
     "313p-23047f66-f124"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "eloise-asylum",
+    "destination_name": "Eloise Asylum",
+    "primary_image": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
+    "primary_image_type": "owner_photo_destination",
+    "primary_image_source": "313.events owner photo archive, captured 2023-10-14",
+    "primary_image_credit": "313.events archive",
+    "primary_image_rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "alternative_images": [
+     "313p-6ed1a1f0",
+     "313p-89398e17",
+     "313p-69c45aee",
+     "313p-23047f66-f034",
+     "313p-23047f66-f124",
+     "gen-halloween-1",
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "owner_photo_with_flags",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "eloise-asylum"
   },
   {
    "collection": "halloween",
@@ -964,7 +1022,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "hush-haunted-attraction",
+    "destination_name": "Hush Haunted Attraction",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "hush-haunted-attraction"
   },
   {
    "collection": "halloween",
@@ -976,7 +1060,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "azra-chamber-of-horrors",
+    "destination_name": "Azra Chamber of Horrors",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "azra-chamber-of-horrors"
   },
   {
    "collection": "halloween",
@@ -988,7 +1098,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "rotten-manor",
+    "destination_name": "Rotten Manor",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "rotten-manor"
   },
   {
    "collection": "halloween",
@@ -1000,7 +1136,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "wiards-night-terrors",
+    "destination_name": "Wiard's Night Terrors",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "wiards-night-terrors"
   },
   {
    "collection": "halloween",
@@ -1012,7 +1174,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "slay-nights",
+    "destination_name": "Slay Nights",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "slay-nights"
   },
   {
    "collection": "halloween",
@@ -1024,7 +1212,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "scarefest-scream-park",
+    "destination_name": "Scarefest Scream Park",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "scarefest-scream-park"
   },
   {
    "collection": "halloween",
@@ -1036,7 +1250,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "blakes-haunted-attractions",
+    "destination_name": "Blake's Haunted Attractions",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "blakes-haunted-attractions"
   },
   {
    "collection": "halloween",
@@ -1048,7 +1288,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "the-scream-machine",
+    "destination_name": "The Scream Machine",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "the-scream-machine"
   },
   {
    "collection": "halloween",
@@ -1060,7 +1326,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "deranged-haunt",
+    "destination_name": "Deranged Haunt",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "deranged-haunt"
   },
   {
    "collection": "halloween",
@@ -1072,7 +1364,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "slaughterhouse-adventure",
+    "destination_name": "Slaughterhouse Adventure",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "slaughterhouse-adventure"
   },
   {
    "collection": "halloween",
@@ -1084,7 +1402,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "full-moon-manor-at-bonadeo-farms",
+    "destination_name": "Full Moon Manor at Bonadeo Farms",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "full-moon-manor-at-bonadeo-farms"
   },
   {
    "collection": "halloween",
@@ -1098,7 +1442,33 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "operating status/2026 occurrence flagged in inventory"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "exit-13-haunted-house",
+    "destination_name": "Exit 13 Haunted House",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "exit-13-haunted-house"
   },
   {
    "collection": "halloween",
@@ -1110,7 +1480,33 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "nightmare-fields-at-the-pumpkin-factory",
+    "destination_name": "Nightmare Fields at The Pumpkin Factory",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "nightmare-fields-at-the-pumpkin-factory"
   },
   {
    "collection": "halloween",
@@ -1124,7 +1520,33 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "scarehouse-windsor",
+    "destination_name": "Scarehouse Windsor",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "destination_id": "scarehouse-windsor"
   },
   {
    "collection": "halloween",
@@ -1136,7 +1558,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "the-howling-haunted-trail-and-party",
+    "destination_name": "The Howling Haunted Trail & Party",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "the-howling-haunted-trail-and-party"
   },
   {
    "collection": "halloween",
@@ -1148,7 +1595,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "terrorfied-forest",
+    "destination_name": "Terrorfied Forest",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "terrorfied-forest"
   },
   {
    "collection": "halloween",
@@ -1160,7 +1632,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "past-tense-after-dark",
+    "destination_name": "Past Tense After Dark",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "past-tense-after-dark"
   },
   {
    "collection": "halloween",
@@ -1172,7 +1669,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "spooky-trails",
+    "destination_name": "Spooky Trails",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "spooky-trails"
   },
   {
    "collection": "halloween",
@@ -1186,7 +1708,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "panic-in-the-pines",
+    "destination_name": "Panic in the Pines",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "panic-in-the-pines"
   },
   {
    "collection": "halloween",
@@ -1200,7 +1747,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "field-of-fear",
+    "destination_name": "Field of Fear",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "field-of-fear"
   },
   {
    "collection": "halloween",
@@ -1214,7 +1786,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "radius check needed"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "bates-haunted-sawmill",
+    "destination_name": "Bates Haunted Sawmill",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "bates-haunted-sawmill"
   },
   {
    "collection": "halloween",
@@ -1226,7 +1823,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "dearborn-haunted-trail",
+    "destination_name": "Dearborn Haunted Trail",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "dearborn-haunted-trail"
   },
   {
    "collection": "halloween",
@@ -1240,7 +1862,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "radius check needed"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "sanilac-museums-haunted-village",
+    "destination_name": "Sanilac Museum's Haunted Village",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "sanilac-museums-haunted-village"
   },
   {
    "collection": "halloween",
@@ -1255,7 +1902,32 @@
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "distracted-haunted-house",
+    "destination_name": "Distracted Haunted House",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-4",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "distracted-haunted-house"
   },
   {
    "collection": "halloween",
@@ -1270,7 +1942,32 @@
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "haunted-hydro",
+    "destination_name": "Haunted Hydro",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "haunted-hydro"
   },
   {
    "collection": "halloween",
@@ -1284,7 +1981,31 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "mortuary-manor-funeral-museum",
+    "destination_name": "Mortuary Manor Funeral Museum",
+    "primary_image": "/assets/seasonal/halloween-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "mortuary-manor-funeral-museum"
   },
   {
    "collection": "halloween",
@@ -1298,7 +2019,31 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "wildwood-manor-house",
+    "destination_name": "Wildwood Manor House",
+    "primary_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-2.webp",
+    "alternative_images": [
+     "gen-halloween-2",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "wildwood-manor-house"
   },
   {
    "collection": "halloween",
@@ -1312,7 +2057,31 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "fort-meigs-garrison-ghost-walk",
+    "destination_name": "Fort Meigs Garrison Ghost Walk",
+    "primary_image": "/assets/seasonal/halloween-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "fort-meigs-garrison-ghost-walk"
   },
   {
    "collection": "halloween",
@@ -1326,7 +2095,31 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "haunted-waterville-tours",
+    "destination_name": "Haunted Waterville Tours",
+    "primary_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-2.webp",
+    "alternative_images": [
+     "gen-halloween-2",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "haunted-waterville-tours"
   },
   {
    "collection": "halloween",
@@ -1344,7 +2137,37 @@
     "313p-8dda6dde",
     "313p-14468368-f025",
     "313p-14468368-f075"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "glenlore-carnevil-2",
+    "destination_name": "Glenlore Trails: CarnEvil 2",
+    "primary_image": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
+    "primary_image_type": "owner_photo_destination",
+    "primary_image_source": "313.events owner photo archive, captured 2024-09-22",
+    "primary_image_credit": "313.events archive",
+    "primary_image_rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "alternative_images": [
+     "313p-cc8f40e5",
+     "313p-14468368-f025",
+     "313p-14468368-f075",
+     "gen-halloween-5",
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "owner_photo",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "strange-unusual",
+    "haunted-attractions"
+   ],
+   "destination_id": "glenlore-carnevil-2"
   },
   {
    "collection": "halloween",
@@ -1356,7 +2179,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "halloween-stroll-at-canterbury-village",
+    "destination_name": "Halloween Stroll at Canterbury Village",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "halloween-stroll-at-canterbury-village"
   },
   {
    "collection": "halloween",
@@ -1368,7 +2216,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "hallowglow-at-treerunner",
+    "destination_name": "HallowGlow at TreeRunner",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "strange-unusual"
+   ],
+   "destination_id": "hallowglow-at-treerunner"
   },
   {
    "collection": "halloween",
@@ -1383,7 +2256,34 @@
    "flags": [],
    "photos": [
     "313p-522299e9-f337"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "halloween-greenfield-village",
+    "destination_name": "Hallowe'en in Greenfield Village",
+    "primary_image": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
+    "primary_image_type": "owner_photo_destination",
+    "primary_image_source": "313.events owner photo archive, captured 2020-10-31",
+    "primary_image_credit": "313.events archive",
+    "primary_image_rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-3",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "owner_photo_with_flags",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly",
+    "ghosts-history"
+   ],
+   "destination_id": "halloween-greenfield-village"
   },
   {
    "collection": "halloween",
@@ -1402,7 +2302,34 @@
    "photos": [
     "313p-97d678d8",
     "313p-222947d7"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "theatre-bizarre",
+    "destination_name": "Theatre Bizarre",
+    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "313p-97d678d8",
+     "313p-222947d7",
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "strange-unusual"
+   ],
+   "destination_id": "theatre-bizarre"
   },
   {
    "collection": "halloween",
@@ -1416,7 +2343,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "scarehouse-windsor-immersive-dinner",
+    "destination_name": "Scarehouse Windsor Immersive Dinner",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "strange-unusual"
+   ],
+   "destination_id": "scarehouse-windsor-immersive-dinner"
   },
   {
    "collection": "halloween",
@@ -1428,7 +2380,33 @@
    "status": "published",
    "published_id": "zoo-boo",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "zoo-boo",
+    "destination_name": "Zoo Boo at Detroit Zoo",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "alternative_images": [
+     "gen-halloween-3",
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "zoo-boo"
   },
   {
    "collection": "halloween",
@@ -1440,7 +2418,32 @@
    "status": "published",
    "published_id": "crossroads-ghosts-goodies",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "crossroads-ghosts-goodies",
+    "destination_name": "Halloween Ghosts & Goodies at Crossroads Village",
+    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-3",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "crossroads-ghosts-goodies"
   },
   {
    "collection": "halloween",
@@ -1452,7 +2455,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "brick-or-treat-at-legoland-discovery-center",
+    "destination_name": "Brick-or-Treat at LEGOLAND Discovery Center",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "brick-or-treat-at-legoland-discovery-center"
   },
   {
    "collection": "halloween",
@@ -1464,7 +2492,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "ooky-spooky-light-show",
+    "destination_name": "Ooky Spooky Light Show",
+    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-3",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "ooky-spooky-light-show"
   },
   {
    "collection": "halloween",
@@ -1476,7 +2529,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "laser-halloween",
+    "destination_name": "Laser Halloween",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "laser-halloween"
   },
   {
    "collection": "halloween",
@@ -1491,7 +2569,32 @@
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "thiessen-orchards-scaredy-cat-barn",
+    "destination_name": "Thiessen Orchards Scaredy Cat Barn",
+    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-3",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "thiessen-orchards-scaredy-cat-barn"
   },
   {
    "collection": "halloween",
@@ -1503,7 +2606,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "jack-o-lanterns-among-the-trees",
+    "destination_name": "Jack-O-Lanterns Among the Trees",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "jack-o-lanterns-among-the-trees"
   },
   {
    "collection": "halloween",
@@ -1515,7 +2643,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "halloween-stroll",
+    "destination_name": "Halloween Stroll",
+    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-3",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "family-friendly"
+   ],
+   "destination_id": "halloween-stroll"
   },
   {
    "collection": "halloween",
@@ -1527,7 +2680,32 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "agony-on-alcott",
+    "destination_name": "Agony on Alcott",
+    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-7",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "agony-on-alcott"
   },
   {
    "collection": "halloween",
@@ -1541,7 +2719,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "reapers-gate-home-haunt",
+    "destination_name": "Reapers Gate Home Haunt",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-1",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "haunted-attractions"
+   ],
+   "destination_id": "reapers-gate-home-haunt"
   },
   {
    "collection": "halloween",
@@ -1555,7 +2758,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "windsor-essex-yard-haunt-map",
+    "destination_name": "Windsor–Essex Yard Haunt Map",
+    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-6",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "strange-unusual"
+   ],
+   "destination_id": "windsor-essex-yard-haunt-map"
   },
   {
    "collection": "halloween",
@@ -1569,7 +2797,32 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "halloween-hunt-the-haunts",
+    "destination_name": "Halloween Hunt the Haunts",
+    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-5",
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "strange-unusual"
+   ],
+   "destination_id": "halloween-hunt-the-haunts"
   },
   {
    "collection": "halloween",
@@ -1581,7 +2834,31 @@
    "status": "unresolved",
    "published_id": null,
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
-   "flags": []
+   "flags": [],
+   "image_manifest": {
+    "destination_id": "motor-city-ghosts",
+    "destination_name": "Motor City Ghosts",
+    "primary_image": "/assets/seasonal/halloween-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "motor-city-ghosts"
   },
   {
    "collection": "halloween",
@@ -1595,7 +2872,31 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "spooky-janes-walk",
+    "destination_name": "Spooky Jane's Walk",
+    "primary_image": "/assets/seasonal/halloween-card-8.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-2.webp",
+    "alternative_images": [
+     "gen-halloween-2",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "spooky-janes-walk"
   },
   {
    "collection": "halloween",
@@ -1609,7 +2910,31 @@
    "reason": "Official website not reachable from the build environment (outbound HTTP blocked), so identity/location/season could not be verified against an official source. Preserved for verification.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
-   ]
+   ],
+   "image_manifest": {
+    "destination_id": "sandwich-town-ghost-tour",
+    "destination_name": "Sandwich Town Ghost Tour",
+    "primary_image": "/assets/seasonal/halloween-card-2.webp",
+    "primary_image_type": "generated_illustrative",
+    "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
+    "primary_image_credit": "313.events",
+    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "alternative_images": [
+     "gen-halloween-8",
+     "313p-4e36da88",
+     "313p-9f336786",
+     "313p-cf666d14",
+     "313p-98ab90f5"
+    ],
+    "image_status": "generated_default",
+    "editorial_approval_status": "not_approved"
+   },
+   "categories": [
+    "ghosts-history"
+   ],
+   "destination_id": "sandwich-town-ghost-tour"
   },
   {
    "collection": "fall-color",

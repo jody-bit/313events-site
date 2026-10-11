@@ -48,7 +48,9 @@ ${R.main(col)}
 ${R.footer()}
 </div>
 <script src="/seasonal/collections.js"></script>
-<script src="/seasonal/render.js"></script>
+<script src="/seasonal/render.js"></script>${col.slug === "halloween" ? `
+<script src="/seasonal/image-fallback.js"></script>
+<script src="/seasonal/qa.js"></script>` : ""}
 <script src="/seasonal/page.js"></script>
 </body>
 </html>

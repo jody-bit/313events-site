@@ -38,19 +38,27 @@
       return '<li>' + esc(catLabel(col, c)) + '</li>';
     }).join("") + '</ul>';
   }
+  var failedLookup = function () { return false; };
+  function setFailedLookup(fn) { failedLookup = fn || function () { return false; }; }
+  // Pick the first URL in [src, ...fallbacks] not already known to fail.
+  function pickSrc(img) {
+    var chain = [img.src].concat(img.fallbacks || []);
+    for (var i = 0; i < chain.length; i++) if (!failedLookup(chain[i])) return chain[i];
+    return chain[0];
+  }
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
     var name = e.website
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
       : esc(e.name);
-    return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '">' +
-      '<div class="sc-card-media"><img src="' + esc(e.image.src) + '" alt="" loading="lazy" width="640" height="427">' +
+    return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '"' + (opts.attrs || "") + '>' +
+      '<div class="sc-card-media"><img src="' + esc(pickSrc(e.image)) + '"' + (e.image.fallbacks && e.image.fallbacks.length ? ' data-src0="' + esc(e.image.src) + '" data-fb="' + esc(JSON.stringify(e.image.fallbacks)) + '"' : '') + ' alt="" loading="lazy" width="640" height="427">' +
       (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>' +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title">' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
-      '<p class="sc-card-sum">' + esc(e.summary) + '</p></div>' +
+      '<p class="sc-card-sum">' + esc(e.summary) + '</p>' + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }
 
@@ -141,5 +149,5 @@
     return hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
   }
 
-  return { esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { setFailedLookup: setFailedLookup, pickSrc: pickSrc, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });
