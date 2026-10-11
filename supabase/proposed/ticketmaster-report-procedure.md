@@ -17,3 +17,15 @@ holds no database credential.
    (new rows that would publish as approved, descriptions protected), and stored events not
    returned (verify, never cancel).
 5. Share only the report, not the export (it contains internal notes).
+
+## Key handling
+
+- Never paste the Ticketmaster key into chat, a PR, a commit, a report, or a shell history
+  you share. Set it for one command only: `read -s TICKETMASTER_API_KEY; export TICKETMASTER_API_KEY`,
+  run the script, then `unset TICKETMASTER_API_KEY`.
+- Safest alternative: save a Discovery response you fetched yourself and use `--tm discovery.json`;
+  then the script never sees a key.
+- The script prints only whether a key is present (true/false), redacts the key from any error
+  text, and the report contains no request URLs.
+- This replaces the earlier service-role procedure (`--existing-from-supabase`), which no longer exists.
+- Do not run the cron handler, restore the schedule, or publish catch-up events from this report.

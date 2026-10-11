@@ -95,4 +95,9 @@ function toMarkdown(r) {
 
 module.exports = { toMarkdown };
 
-if (require.main === module) main().catch((e) => { console.error(e.message); process.exit(1); });
+if (require.main === module) main().catch((e) => {
+  // Never echo the API key, even if an error message embeds a request URL.
+  const key = process.env.TICKETMASTER_API_KEY;
+  console.error(key ? String(e.message).split(key).join("[redacted]") : e.message);
+  process.exit(1);
+});
