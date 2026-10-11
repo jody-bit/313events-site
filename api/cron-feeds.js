@@ -6,6 +6,7 @@ const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
+const { policyFor, classify, holdNote } = require("./_lib/feed-publication");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
 // "Production track record") — scripts/press-coverage-linking.js's
 // extractCategory() already does keyword-based category derivation against
@@ -450,8 +451,10 @@ function applyFeedDefaultCity(rows, rowsWithNoStatedLocation) {
 function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap) {
   const rows = [];
   const rowsWithNoStatedLocation = new Set(); // BUG-012: see applyFeedDefaultCity
+  const policy = policyFor(feedSource); // api/_lib/feed-publication.js: null for almost every feed
   for (const ev of icsEvents) {
     if (!ev.dtstart) continue; // no start date at all — can't place this on the calendar
+    if (policy && policy.skipEvent && policy.skipEvent(ev)) continue; // an administrative notice, not an event
     // 2026-10-01 (Needs Follow-up remaining-gap product pass, Jody: a
     // "closed to the public" listing "should be skipped all together --
     // we don't want that listing in the site AT ALL"). Confirmed real
@@ -585,6 +588,9 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     Object.assign(row, resolveVenueAddressCityRepair(row, venueDetailsMaps, learnedVenueMap));
 
     if (feedSource.location_per_event && parseIcsLocation(ev.location).status === "blank") rowsWithNoStatedLocation.add(row);
+    // Only a feed with a publication policy gets a verdict; the marker is internal and is
+    // stripped before the write (upsertParsedRows).
+    if (policy) row._publication = classify(row, { start, end });
     rows.push(row);
   }
   // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,
@@ -786,11 +792,13 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   const rowsWithStatus = rows.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
-    const { _dateConfidence, ...cleanRow } = row;
-    return {
-      ...cleanRow,
-      status: existingStatusByExternalId.get(row.external_id) || statusForRow(row),
-    };
+    const { _dateConfidence, _publication, ...cleanRow } = row;
+    const existingStatus = existingStatusByExternalId.get(row.external_id);
+    const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
+    // A NEW row held by its feed's publication policy says why (api/_lib/feed-publication.js).
+    // An existing row keeps its status and its note: this run only writes the note key for a new row.
+    if (!existingStatus && _publication && _publication.state !== "verified") out.note = holdNote(_publication);
+    return out;
   });
 
   const upsertResp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
@@ -919,7 +927,7 @@ module.exports = async (req, res) => {
             // header comment for the full story. WP 0.17 (2026-09-22):
             // fail-closed status lookup — see upsertParsedRows() above,
             // which this now shares with the rss branch.
-            const outcome = await upsertParsedRows(rows, () => DEFAULT_STATUS, sbHeaders, res);
+            const outcome = await upsertParsedRows(rows, (row) => (row._publication && row._publication.state !== "verified" ? "pending_review" : DEFAULT_STATUS), sbHeaders, res);
             if (outcome === null) return; // upsertParsedRows already wrote the 502 response
             totalUpserted += outcome.upserted;
             pollResult = outcome.pollResult;
