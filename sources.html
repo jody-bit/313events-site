@@ -101,6 +101,9 @@
   td.src-note{color:var(--ink-soft);font-size:12.5px;}
   code{background:var(--panel-alt);color:var(--ink-soft);padding:1px 5px;border-radius:var(--radius);font-size:12px;font-family:'Space Mono',monospace;}
   a{color:var(--accent);}
+  /* Narrow screens: long file paths and nowrap source names were forcing the tables past the viewport. */
+  td.src-note,td code{overflow-wrap:anywhere;}
+  @media (max-width:600px){td.src-name{white-space:normal;}.badge{white-space:normal;}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}}
 
   footer.site{margin-top:30px;font-size:12px;color:var(--ink-soft);line-height:1.6;padding-top:16px;border-top:1px solid var(--line);}
   /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
