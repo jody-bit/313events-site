@@ -1,50 +1,21 @@
 /* seasonal/page.js — progressive enhancement: filters, search, grid/list.
-   The HTML is already complete without this script.
-
-   Test fixtures (Preview only): adding ?fixtures=1 merges the invented records
-   from seasonal/fixtures.js into the page, but only after /config.js reports a
-   non-production environment. If config cannot be read, says "production", or
-   anything fails, nothing is merged and the page is exactly the real page.
-
-   Review mode (Preview only): ?review=1 lists EVERY entry of the collection, each labelled "Review only" with its
-   real gate state, so the page can be judged visually before anything is approved. Same non-production check as
-   fixtures: if /config.js cannot be read or says "production", the page is exactly the real page. */
+   The HTML is already complete without this script. On /halloween only,
+   ?qa=1 loads the QA review client from /api/seasonal-qa?asset=client, which
+   answers 404 (so nothing loads) anywhere except preview/development. */
 (function () {
   "use strict";
   var slug = document.body.getAttribute("data-collection");
   var DATA = window.SeasonalCollections, R = window.SeasonalRender;
   if (!slug || !DATA || !R) return;
-  var p = new URLSearchParams(location.search);
-  var NON_PROD = ["preview", "development", "local"];
+  var col = DATA.COLLECTIONS[slug];
+  var FB = window.SeasonalImageFallback;
+  if (FB) { R.setFailedLookup(FB.isFailed); FB.attach(document); }
 
-  function loadScript(src, done) {
-    var s = document.createElement("script");
-    s.src = src; s.onload = function () { done(true); }; s.onerror = function () { done(false); };
-    document.head.appendChild(s);
-  }
-  function fixturesAllowed(done) {
-    if (p.get("fixtures") !== "1") { done(null); return; }
-    loadScript("/config.js", function () {
-      var cfg = window.__313_CONFIG;
-      if (!cfg || NON_PROD.indexOf(cfg.environment) < 0) { done(null); return; }
-      loadScript("/seasonal/fixtures.js", function (ok) { done(ok && window.SeasonalFixtures ? window.SeasonalFixtures : null); });
-    });
-  }
-
-  function reviewAllowed(done) {
-    if (p.get("review") !== "1") { done(false); return; }
-    loadScript("/config.js", function () {
-      var cfg = window.__313_CONFIG;
-      done(!!(cfg && NON_PROD.indexOf(cfg.environment) >= 0));
-    });
-  }
-
-  function start(col, fixturesOn) {
+  function initPublic() {
+    var p = new URLSearchParams(location.search);
     var state = { category: p.get("cat") || "all", query: p.get("q") || "", view: p.get("view") === "list" ? "list" : "grid" };
     var known = R.usedCategories(col).map(function (c) { return c.id; });
     if (state.category !== "all" && known.indexOf(state.category) < 0) state.category = "all";
-    var extraOn = fixturesOn || !!col.includeReview;
-    if (extraOn) document.getElementById("scMain").innerHTML = R.main(col, state);
 
     function sync(scroll) {
       document.getElementById("scResults").innerHTML = R.results(col, state);
@@ -56,10 +27,9 @@
       if (state.category !== "all") q.set("cat", state.category);
       if (state.query) q.set("q", state.query);
       if (state.view === "list") q.set("view", "list");
-      if (fixturesOn) q.set("fixtures", "1");
-      if (col.includeReview) q.set("review", "1");
       try { history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); } catch (e) {}
       if (scroll) document.getElementById("scExplore").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (FB) FB.scan(document.getElementById("scResults"));
     }
     document.addEventListener("click", function (e) {
       var b = e.target.closest("[data-cat],[data-view]");
@@ -67,18 +37,25 @@
       if (b.hasAttribute("data-view")) { state.view = b.getAttribute("data-view"); sync(false); return; }
       state.category = b.getAttribute("data-cat"); sync(b.classList.contains("sc-tile"));
     });
-    document.addEventListener("input", function (e) {
-      if (e.target && e.target.id === "scSearch") { state.query = e.target.value; sync(false); }
-    });
+    var s = document.getElementById("scSearch");
+    if (s) s.addEventListener("input", function () { state.query = s.value; sync(false); });
     sync(false);
   }
 
-  fixturesAllowed(function (fx) {
-    reviewAllowed(function (rev) {
-      var col = DATA.COLLECTIONS[slug];
-      if (fx) col = DATA.withFixtures(col, fx.forCollection(slug));
-      if (rev) col = DATA.withReview(col);
-      start(col, !!fx);
+  function loadQa() {
+    return new Promise(function (resolve) {
+      var sc = document.createElement("script");
+      sc.src = "/api/seasonal-qa?asset=client";
+      sc.onload = function () { resolve(!!window.SeasonalQA); };
+      sc.onerror = function () { resolve(false); };
+      document.head.appendChild(sc);
     });
-  });
+  }
+  var wantsQa = slug === "halloween" && new URLSearchParams(location.search).get("qa") === "1";
+  if (wantsQa) {
+    loadQa().then(function (ok) {
+      if (!ok) return false;
+      return window.SeasonalQA.mount(document, location, function (u, o) { return fetch(u, o); }, col, FB);
+    }).then(function (ok) { if (!ok) initPublic(); }, function () { initPublic(); });
+  } else initPublic();
 })();

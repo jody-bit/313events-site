@@ -27,6 +27,14 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: scripts/scope-guard.js diffs against origin/main and fails
+          # (never passes silently) when that ref is unavailable or shares no history.
+          fetch-depth: 0
+      - name: Make sure the scope-guard base exists (fails loudly if it cannot be fetched)
+        run: git fetch --no-tags origin main:refs/remotes/origin/main
+      - name: Scope guard
+        run: node scripts/scope-guard.js
       - uses: actions/setup-node@v4
         with:
           node-version: '20'

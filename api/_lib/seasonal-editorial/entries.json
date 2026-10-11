@@ -1,0 +1,2354 @@
+{
+ "fall": [
+  {
+   "id": "yates-cider-mill",
+   "name": "Yates Cider Mill",
+   "city": "Rochester Hills",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Cider mill in Rochester Hills.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://oaklandcounty115.com/wp-content/uploads/2018/09/20180909_yates_01.jpg",
+     "sourcePage": "https://oaklandcounty115.com/2018/09/09/explore-yates-cider-mill/",
+     "credit": "Oakland County Times",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "2018 photo of the mill and water wheel, 600x450. Original link was http; https version loads."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #42 (Cider/orchard). WXYZ 2026 cider-mill opening list shows Yates at 1950 E. Avon Rd. as open; undated otherwise. Another listing shows a second Orion Twp location; not published here.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "parmenters-northville-cider-mill",
+   "name": "Parmenter's Northville Cider Mill",
+   "city": "Northville",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Cider mill in Northville.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/f0/e0/e2/photo0jpg.jpg?w=1200&h=-1&s=1",
+     "sourcePage": "https://www.tripadvisor.com/Attraction_Review-g42532-d7149065-Reviews-Parmenter_s_Cider_Mill-Northville_Michigan.html",
+     "credit": "Tripadvisor traveler photo",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Traveler-uploaded photo of the mill's red barn. Not from the mill's own site (its own photos were too small)."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #28 (Cider/orchard). WXYZ 2026 opening list: 714 Base Line Rd., listed opening Aug 29 (not displayed).",
+     "url": null,
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "blakes-orchard-cider-mill",
+   "name": "Blake's Orchard & Cider Mill",
+   "city": "Armada",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Orchard and cider mill in Armada with fall farm activities.",
+   "website": "https://www.blakefarms.com",
+   "image": {
+    "src": "/assets/seasonal/fall-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://blakefarms.com/wp-content/uploads/2024/05/BLAKES-BIG-APPLE.jpg",
+     "sourcePage": "https://blakefarms.com/big-apple/",
+     "credit": "Blake Farms",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Official photo of the Big Apple landmark at sunset; portrait crop. Not specifically a fall-activity photo."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #7. Yahoo/Macomb County/Islands.com coverage describe wagon rides and party packages in fall; Blake's has several sites (inventory #8-10), only the Armada orchard is published.",
+     "url": "https://www.blakefarms.com",
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "wiards-orchards",
+   "name": "Wiard's Orchards",
+   "city": "Ypsilanti",
+   "region": "MI",
+   "categories": [
+    "farm-experiences",
+    "fall-festivals"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Orchard in Ypsilanti known for its fall Country Fair.",
+   "website": "https://www.wiards.com",
+   "image": {
+    "src": "/assets/seasonal/fall-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg",
+     "sourcePage": "https://www.wiards.com/orchard-info/wiards-history",
+     "credit": "Wiard's Orchards",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Official site photo, 602x452 (small): cider-mill cart with fall flowers."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #41. Axios (Aug 31 2026) and Ann Arbor-area listings describe the Country Fair at 5565 Merritt Rd. 2026 schedule not confirmed.",
+     "url": "https://www.wiards.com",
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  }
+ ],
+ "halloween": [
+  {
+   "id": "erebus",
+   "name": "Erebus Haunted Attraction",
+   "city": "Pontiac",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Multi-story haunted attraction in Pontiac.",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #1 (four-story haunted house). WXYZ 2026 haunted-house guide and Pontiac city report: 2026 season under way. Schedule not displayed.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "eloise-asylum",
+   "name": "Eloise Asylum",
+   "city": "Westland",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
+   "image": {
+    "src": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
+    "source": "313.events owner photo archive, captured 2023-10-14",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
+     "bytes": 134086,
+     "sha256": "0ada3fdb00c42347c7ff917f9959e43395c608d8a3bda90a2718d90bd27c9979",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-73cbabcb",
+     "reviewRef": "S04-01",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #2. WXYZ 2026 report: sixth season, opens Sept 25. Ticket prices not displayed.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "halloween-greenfield-village",
+   "name": "Hallowe'en in Greenfield Village",
+   "city": "Dearborn",
+   "region": "MI",
+   "categories": [
+    "family-friendly",
+    "ghosts-history"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
+   "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+   "image": {
+    "src": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
+    "source": "313.events owner photo archive, captured 2020-10-31",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
+     "bytes": 60788,
+     "sha256": "64fbdba06a587bd08409723092b84ef2ae7a195a1776369cffd86934eedacb17",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-522299e9-f337",
+     "reviewRef": "R2-D0372-F337",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp",
+     "/assets/seasonal/halloween-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #35. thehenryford.org 2026 news: 46th season; the event page reports general admission sold out. Availability not displayed.",
+     "url": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card.",
+     "url": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "Official page describes Hallowe'en in Greenfield Village, October 2026.",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session), read in Chrome"
+   },
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "zoo-boo",
+   "name": "Zoo Boo at the Detroit Zoo",
+   "city": "Royal Oak",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
+   "website": "https://detroitzoo.org/events/zoo-boo/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+     "sourcePage": "https://detroitzoo.org/events/zoo-boo/",
+     "credit": "Detroit Zoo",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Official Zoo Boo hero photo: pumpkin scarecrow display in front of the zoo's Wildlife Interpretive Gallery."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #38. WXYZ 2026: returns on select October weekends. One date listed as a typo in the source, so no dates shown.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card.",
+     "url": "https://detroitzoo.org/events/zoo-boo/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026.",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session), read in Chrome"
+   },
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "glenlore-carnevil-2",
+   "name": "Glenlore Trails: CarnEvil 2",
+   "city": "Commerce Township",
+   "region": "MI",
+   "categories": [
+    "strange-unusual",
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Illuminated forest walk with a carnival-horror theme in Commerce Township.",
+   "website": "https://glenloretrails.com",
+   "image": {
+    "src": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
+    "source": "313.events owner photo archive, captured 2024-09-22",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
+     "bytes": 200228,
+     "sha256": "9bb025beebe21fec3ecd7ebd3fb089ce2390bd39854f01682499a5ef57f134b2",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-8dda6dde",
+     "reviewRef": "S05-02",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #32. Michigan.org / Michigan Public 2026 listings; glenloretrails.com named for tickets.",
+     "url": "https://glenloretrails.com",
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "crossroads-ghosts-goodies",
+   "name": "Halloween Ghosts & Goodies at Crossroads Village",
+   "city": "Flint area",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
+   "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #39. A late-summer 2026 listing invites reservations for the 2026 event; specific 2026 dates not found.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Genesee County Parks page read 2026-10-11: Halloween Ghosts & Goodies at Crossroads Village, October 2026 (3-4, 9-11, 16-18, 22-25, 29-30). Dates are not shown on the card.",
+     "url": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026.",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session), read in Chrome"
+   },
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "hush-haunted-attraction",
+   "name": "Hush Haunted Attraction",
+   "city": "Westland",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Multiple haunted houses",
+   "website": "https://hushhauntedattractions.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+     "sourcePage": "https://hushhauntedattractions.com/",
+     "credit": "Hush Haunted Attractions (official site)",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Hush vampire hero image. Found in the catalogue pass (Google Images (Chrome)); size 1440x902."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #3. Multiple haunted houses Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "azra-chamber-of-horrors",
+   "name": "Azra Chamber of Horrors",
+   "city": "Madison Heights",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Multilevel haunted maze",
+   "website": "https://azrahaunt.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+     "sourcePage": "https://azrahaunt.com/",
+     "credit": "Azra Haunted House (official site)",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Azra guests startled in the haunt. Found in the catalogue pass (Google Images (Chrome)); size 1000x667."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #4. Multilevel haunted maze Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "rotten-manor",
+   "name": "Rotten Manor",
+   "city": "Holly",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted manor, forest and asylum",
+   "website": "https://rottenmanor.com/attractions-rotten-manor/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://rottenmanor.com/wp-content/uploads/2019/06/iOS-Slider-1.jpg",
+     "sourcePage": "https://rottenmanor.com/attractions-rotten-manor/",
+     "credit": "Rotten Manor (official site)",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Rotten Manor haunted facade at night. Found in the catalogue pass (Google Images (Chrome)); size 1920x758."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #5. Haunted manor, forest and asylum Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "wiards-night-terrors",
+   "name": "Wiard's Night Terrors",
+   "city": "Ypsilanti",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted thrill park",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #6. Haunted thrill park Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "slay-nights",
+   "name": "Slay Nights",
+   "city": "Howell",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Story-driven haunted house",
+   "website": "https://slaynights.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #7. Story-driven haunted house Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Home - Slay Nights - Haunted House - Howell, MI). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://slaynights.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "scarefest-scream-park",
+   "name": "Scarefest Scream Park",
+   "city": "Lenox Township",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted hayride, maze and forest",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #8. Haunted hayride, maze and forest Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "blakes-haunted-attractions",
+   "name": "Blake's Haunted Attractions",
+   "city": "Armada",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted barn and hayride",
+   "website": "https://blakefarms.com/haunted-attractions/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #9. Haunted barn and hayride Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Blake Farms haunted attractions page). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://blakefarms.com/haunted-attractions/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "the-scream-machine",
+   "name": "The Scream Machine",
+   "city": "Taylor",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted asylum experience",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #10. Haunted asylum experience Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "deranged-haunt",
+   "name": "Deranged Haunt",
+   "city": "Romulus",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted woods",
+   "website": "https://derangedhauntedattraction.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #11. Haunted woods Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Haunted House Near Detroit, MI | Deranged Haunted Attraction). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://derangedhauntedattraction.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "slaughterhouse-adventure",
+   "name": "Slaughterhouse Adventure",
+   "city": "Fowlerville",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted house and corn maze",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #12. Haunted house and corn maze Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "full-moon-manor-at-bonadeo-farms",
+   "name": "Full Moon Manor at Bonadeo Farms",
+   "city": "Highland",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted farm",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #13. Haunted farm Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "exit-13-haunted-house",
+   "name": "Exit 13 Haunted House",
+   "city": "Mount Morris",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Extreme interactive haunt; operating status needs verification",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #14. Extreme interactive haunt; operating status needs verification Flags: operating status/2026 occurrence flagged in inventory. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "nightmare-fields-at-the-pumpkin-factory",
+   "name": "Nightmare Fields at The Pumpkin Factory",
+   "city": "Belleville",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted field attraction",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #15. Haunted field attraction Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "scarehouse-windsor",
+   "name": "Scarehouse Windsor",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "haunted-attractions",
+    "serious-scares"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Indoor haunted attractions and immersive horror",
+   "website": "https://scarehousewindsor.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #16. Indoor haunted attractions and immersive horror Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Scarehouse Windsor — Halloween Haunted House & Dinner Experience). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://scarehousewindsor.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "the-howling-haunted-trail-and-party",
+   "name": "The Howling Haunted Trail & Party",
+   "city": "Fenton",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted woodland trail",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #17. Haunted woodland trail Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "terrorfied-forest",
+   "name": "Terrorfied Forest",
+   "city": "Pinckney",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Outdoor haunted forest",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #18. Outdoor haunted forest Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "past-tense-after-dark",
+   "name": "Past Tense After Dark",
+   "city": "Lapeer",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted hayride, corn maze and house",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #19. Haunted hayride, corn maze and house Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "spooky-trails",
+   "name": "Spooky Trails",
+   "city": "Swartz Creek",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted maze, cornfield and hayride",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #20. Haunted maze, cornfield and hayride Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "panic-in-the-pines",
+   "name": "Panic in the Pines",
+   "city": "Genoa",
+   "region": "OH",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted hayride and woods",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #21. Haunted hayride and woods Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "field-of-fear",
+   "name": "Field of Fear",
+   "city": "Monclova",
+   "region": "OH",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted cornfield attractions",
+   "website": "https://fieldoffear.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #22. Haunted cornfield attractions Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Field of Fear). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://fieldoffear.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "bates-haunted-sawmill",
+   "name": "Bates Haunted Sawmill",
+   "city": "Millington",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Rustic haunted sawmill and maze; radius check",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #23. Rustic haunted sawmill and maze; radius check Flags: radius check needed. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "dearborn-haunted-trail",
+   "name": "Dearborn Haunted Trail",
+   "city": "Dearborn",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted woodland trail",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #24. Haunted woodland trail Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "sanilac-museums-haunted-village",
+   "name": "Sanilac Museum's Haunted Village",
+   "city": "Port Sanilac",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted historic village; radius check",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #25. Haunted historic village; radius check Flags: radius check needed. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "distracted-haunted-house",
+   "name": "Distracted Haunted House",
+   "city": "Bowling Green",
+   "region": "OH",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Indoor haunted house; radius check",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #26. Indoor haunted house; radius check Flags: radius check needed; outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "haunted-hydro",
+   "name": "Haunted Hydro",
+   "city": "Fremont",
+   "region": "OH",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Industrial haunted attraction; radius check",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #27. Industrial haunted attraction; radius check Flags: radius check needed; outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "mortuary-manor-funeral-museum",
+   "name": "Mortuary Manor Funeral Museum",
+   "city": "Toledo",
+   "region": "OH",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Funeral history and paranormal tours",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #28. Funeral history and paranormal tours Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "wildwood-manor-house",
+   "name": "Wildwood Manor House",
+   "city": "Toledo",
+   "region": "OH",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Seasonal eerie manor tours",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #29. Seasonal eerie manor tours Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "fort-meigs-garrison-ghost-walk",
+   "name": "Fort Meigs Garrison Ghost Walk",
+   "city": "Perrysburg",
+   "region": "OH",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Historical ghost walk",
+   "website": "https://fortmeigs.org/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #30. Historical ghost walk Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Fort Meigs – Ohio's War of 1812 Battlefield). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://fortmeigs.org/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "haunted-waterville-tours",
+   "name": "Haunted Waterville Tours",
+   "city": "Waterville",
+   "region": "OH",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Historical ghost tours",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #31. Historical ghost tours Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "halloween-stroll-at-canterbury-village",
+   "name": "Halloween Stroll at Canterbury Village",
+   "city": "Lake Orion",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Halloween light displays and characters",
+   "website": "https://www.canterburyvillage.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #33. Halloween light displays and characters Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Canterbury Village – Lake Orion). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://www.canterburyvillage.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "hallowglow-at-treerunner",
+   "name": "HallowGlow at TreeRunner",
+   "city": "West Bloomfield",
+   "region": "MI",
+   "categories": [
+    "strange-unusual"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Halloween-themed aerial adventure",
+   "website": "https://treerunnerparks.com/westbloomfield/glow-nights/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+     "sourcePage": "https://treerunnerparks.com/westbloomfield/glow-nights/",
+     "credit": "TreeRunner Parks (official site)",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Glow Night at TreeRunner. Found in the catalogue pass (Google Images (Chrome)); size 1801x1200."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #34. Halloween-themed aerial adventure Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "theatre-bizarre",
+   "name": "Theatre Bizarre",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "strange-unusual"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Adults-only immersive masquerade; 2026 occurrence must be verified",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #36. Adults-only immersive masquerade; 2026 occurrence must be verified Flags: operating status/2026 occurrence flagged in inventory; adults-only: age guidance to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "scarehouse-windsor-immersive-dinner",
+   "name": "Scarehouse Windsor Immersive Dinner",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "strange-unusual"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Theatrical horror dining",
+   "website": "https://scarehousewindsor.com/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #37. Theatrical horror dining Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Scarehouse Windsor — Halloween Haunted House & Dinner Experience). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://scarehousewindsor.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "brick-or-treat-at-legoland-discovery-center",
+   "name": "Brick-or-Treat at LEGOLAND Discovery Center",
+   "city": "Auburn Hills",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "LEGO-themed Halloween activities",
+   "website": "https://www.legolanddiscoverycenter.com/michigan/",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #40. LEGO-themed Halloween activities Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 in Chrome (page title: Top Kids Attraction | LEGOLAND Discovery Center Michigan). Read to find the image only; relevance to the collection and 2026 dates are not reviewed.",
+     "url": "https://www.legolanddiscoverycenter.com/michigan/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session), read in Chrome"
+    }
+   ]
+  },
+  {
+   "id": "ooky-spooky-light-show",
+   "name": "Ooky Spooky Light Show",
+   "city": "Flint",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Planetarium Halloween show",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #41. Planetarium Halloween show Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "laser-halloween",
+   "name": "Laser Halloween",
+   "city": "Flint",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Halloween-themed laser show",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #42. Halloween-themed laser show Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "thiessen-orchards-scaredy-cat-barn",
+   "name": "Thiessen Orchards Scaredy Cat Barn",
+   "city": "Leamington",
+   "region": "ON",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Gentle haunted barn; radius check",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #43. Gentle haunted barn; radius check Flags: radius check needed; outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "jack-o-lanterns-among-the-trees",
+   "name": "Jack-O-Lanterns Among the Trees",
+   "city": "Troy",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Illuminated woodland walk",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #44. Illuminated woodland walk Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "halloween-stroll",
+   "name": "Halloween Stroll",
+   "city": "Port Huron",
+   "region": "MI",
+   "categories": [
+    "family-friendly"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Family Halloween trail",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #45. Family Halloween trail Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "agony-on-alcott",
+   "name": "Agony on Alcott",
+   "city": "Flint",
+   "region": "MI",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Independent residential haunt",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #46. Independent residential haunt Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "reapers-gate-home-haunt",
+   "name": "Reapers Gate Home Haunt",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "haunted-attractions"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Free home haunt with actors and animatronics",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #47. Free home haunt with actors and animatronics Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "windsor-essex-yard-haunt-map",
+   "name": "Windsor–Essex Yard Haunt Map",
+   "city": "Windsor–Essex",
+   "region": "ON",
+   "categories": [
+    "strange-unusual"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Community Halloween display discovery",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-6.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #48. Community Halloween display discovery Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "halloween-hunt-the-haunts",
+   "name": "Halloween Hunt the Haunts",
+   "city": "Windsor–Essex",
+   "region": "ON",
+   "categories": [
+    "strange-unusual"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Regional haunt-discovery experience",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #49. Regional haunt-discovery experience Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "motor-city-ghosts",
+   "name": "Motor City Ghosts",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Guided ghost walks",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #50. Guided ghost walks Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "spooky-janes-walk",
+   "name": "Spooky Jane's Walk",
+   "city": "Windsor–Essex",
+   "region": "ON",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Haunted-history walking tours",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #51. Haunted-history walking tours Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  },
+  {
+   "id": "sandwich-town-ghost-tour",
+   "name": "Sandwich Town Ghost Tour",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "ghosts-history"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Historical ghost walk",
+   "image": {
+    "src": "/assets/seasonal/halloween-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/halloween-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #52. Historical ghost walk Flags: outside Michigan: Orbit eligibility and coordinates to confirm. Not yet checked against the official source.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ]
+  }
+ ],
+ "fall-color": [
+  {
+   "id": "kensington-metropark",
+   "name": "Kensington Metropark",
+   "city": "Milford",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "parks-gardens"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Huron-Clinton Metropark with wooded trails and Kent Lake.",
+   "website": "https://www.metroparks.com",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
+     "sourcePage": "https://www.metroparks.com/kensington-metropark/",
+     "credit": "Huron-Clinton Metroparks",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Official Metroparks Kensington page image, 1920x1080. Chosen from Google Images results."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Fall-color inventory. Metro Parent and local guides cite fall foliage and trails; no official foliage report found, so no peak-color claim is made.",
+     "url": "https://www.metroparks.com",
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "stony-creek-metropark",
+   "name": "Stony Creek Metropark",
+   "city": "Shelby Township",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Huron-Clinton Metropark with lake views and wooded trails.",
+   "website": "https://www.metroparks.com",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1",
+     "sourcePage": "https://www.tripadvisor.com/Attraction_Review-g42695-d560594-Reviews-or10-Stony_Creek_Metropark-Shelby_Township_Michigan.html",
+     "credit": "Tripadvisor traveler photo",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "Traveler-uploaded photo from the park's Tripadvisor page."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Fall-color inventory. Metro Parent and Macomb Now quote Metroparks marketing calling it a popular fall-color destination.",
+     "url": "https://www.metroparks.com",
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "hudson-mills-metropark",
+   "name": "Hudson Mills Metropark",
+   "city": "Dexter",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "waterfronts"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Huron-Clinton Metropark on the Huron River with forest trails.",
+   "website": "https://www.metroparks.com",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://images.alltrails.com/eyJidWNrZXQiOiJhc3NldHMuYWxsdHJhaWxzLmNvbSIsImtleSI6InVwbG9hZHMvcGhvdG8vaW1hZ2UvNTMyODk5MTgvNGM4MzZkOGQ0OTE0NmNmZWY5M2YzNTdiMWM1NWU1Y2IuanBnIiwiZWRpdHMiOnsidG9Gb3JtYXQiOiJ3ZWJwIiwicmVzaXplIjp7IndpZHRoIjoiMTA4MCIsImhlaWdodCI6IjcwMCIsImZpdCI6ImNvdmVyIn0sInJvdGF0ZSI6bnVsbCwianBlZyI6eyJ0cmVsbGlzUXVhbnRpc2F0aW9uIjp0cnVlLCJvdmVyc2hvb3REZXJpbmdpbmciOnRydWUsIm9wdGltaXNlU2NhbnMiOnRydWUsInF1YW50aXNhdGlvblRhYmxlIjozfX19",
+     "sourcePage": "https://www.alltrails.com/parks/us/michigan/hudson-mills-metropolitan-park",
+     "credit": "AllTrails user photo",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+     "note": "User-uploaded photo on the park's AllTrails page. The link is a long CDN link and could break sooner than others."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Fall-color inventory. Metro Parent: 8801 N. Territorial Rd., paved path, Acorn Nature Trail, Huron River.",
+     "url": "https://www.metroparks.com",
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "nichols-arboretum",
+   "name": "Nichols Arboretum",
+   "city": "Ann Arbor",
+   "region": "MI",
+   "categories": [
+    "parks-gardens",
+    "trails-woods"
+   ],
+   "featured": true,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "University of Michigan arboretum in Ann Arbor.",
+   "image": {
+    "src": "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__card.webp",
+    "source": "313.events owner photo archive, captured 2026-07-31",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__card.webp",
+     "bytes": 112352,
+     "sha256": "a134b50cb38b57690287f01b9720e04d2c53167d06b06d4c1a949dcc999a009b",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-00994712",
+     "reviewRef": "S15-01",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
+    "alternates": [
+     "/assets/seasonal/fall-color-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Fall-color inventory. U-M news (older release) and local guides describe fall color; current rules and hours not confirmed so none are shown.",
+     "url": null,
+     "websiteChecked": false
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  }
+ ]
+}

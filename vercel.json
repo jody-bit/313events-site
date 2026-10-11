@@ -145,6 +145,9 @@
     },
     "api/cron-redford-theatre.js": {
       "maxDuration": 60
+    },
+    "api/seasonal-qa.js": {
+      "includeFiles": "api/_lib/seasonal-editorial/**"
     }
   },
   "rewrites": [

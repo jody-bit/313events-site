@@ -1,0 +1,571 @@
+{
+ "source": "image-catalogue-2026-10-11 (supplied by Jody), halloween rows only; extended 2026-10-11 with the official-site images read in Chrome (bundle 7abdee2)",
+ "note": "Links are shown only to reviewers in QA. Recorded risk acceptance is NOT confirmed usage rights; no rights-holder permission is on file for any row. load_check records the one-time browser load test, not a license.",
+ "images": [
+  {
+   "destination_id": "zoo-boo",
+   "kind": "official",
+   "image_link": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+   "source_page": "https://detroitzoo.org/events/zoo-boo/",
+   "credit": "Detroit Zoo",
+   "found_on": "2026-10-11",
+   "found_via": "Official site",
+   "catalogue_status": "LINKED, ready for review (commit 93eaee6)",
+   "catalogue_note": "Official hero photo",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1920x1281"
+   }
+  },
+  {
+   "destination_id": "halloween-greenfield-village",
+   "kind": "official",
+   "image_link": "https://www.thehenryford.org/images/thehenryfordlibraries/event-card-1064x798/halloween_pumpkins_1064x798.png",
+   "source_page": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+   "credit": "The Henry Ford",
+   "found_on": "2026-10-11",
+   "found_via": "Official site",
+   "catalogue_status": "LINKED, ready for review (commit 93eaee6)",
+   "catalogue_note": "Event card image; may be generated art",
+   "warnings": [
+    "Event card image; may be generated art, not a photo of the place"
+   ],
+   "photo_kind": "promo-art",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1064x798"
+   }
+  },
+  {
+   "destination_id": "crossroads-ghosts-goodies",
+   "kind": "official",
+   "image_link": "https://geneseecountyparks.org/wp-content/uploads/2023/10/209A9950-scaled.jpg",
+   "source_page": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+   "credit": "Genesee County Parks",
+   "found_on": "2026-10-11",
+   "found_via": "Official site",
+   "catalogue_status": "LINKED, ready for review (commit 93eaee6)",
+   "catalogue_note": "Generic pumpkin porch scene",
+   "warnings": [
+    "Generic pumpkin porch scene; does not show this place"
+   ],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 2400x1600"
+   }
+  },
+  {
+   "destination_id": "erebus",
+   "kind": "unconfirmed",
+   "image_link": "https://hauntedpontiac.com/wp-content/uploads/2018/07/11.jpg",
+   "source_page": "https://hauntedpontiac.com/contact/",
+   "credit": "Erebus Haunted Attraction",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images",
+   "catalogue_status": "LINKED, entry on HOLD (not public)",
+   "catalogue_note": "Night photo of the Erebus building with its searchlight beam. Source site hauntedpontiac.com appears to be Erebus's own site; not independently confirmed.",
+   "warnings": [
+    "Found via Google Images; source site appears to be Erebus's own but is not independently confirmed"
+   ],
+   "photo_kind": "photo",
+   "source_type": "official-unconfirmed",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1440x960"
+   }
+  },
+  {
+   "destination_id": "hush-haunted-attraction",
+   "kind": "official",
+   "image_link": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+   "source_page": "https://hushhauntedattractions.com/",
+   "credit": "Hush Haunted Attractions (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1440x902",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1440x902"
+   }
+  },
+  {
+   "destination_id": "azra-chamber-of-horrors",
+   "kind": "official",
+   "image_link": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+   "source_page": "https://azrahaunt.com/",
+   "credit": "Azra Haunted House (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1000x667",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1000x667"
+   }
+  },
+  {
+   "destination_id": "rotten-manor",
+   "kind": "official",
+   "image_link": "https://rottenmanor.com/wp-content/uploads/2019/06/iOS-Slider-1.jpg",
+   "source_page": "https://rottenmanor.com/attractions-rotten-manor/",
+   "credit": "Rotten Manor (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1920x758",
+   "warnings": [],
+   "photo_kind": "promo-art",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1920x758"
+   }
+  },
+  {
+   "destination_id": "wiards-night-terrors",
+   "kind": "third_party",
+   "image_link": "https://cloudfront-us-east-1.images.arcpublishing.com/advancelocal/AP2MN6MKXBAZLFD2OKU65J3DRA.JPG",
+   "source_page": "https://www.mlive.com/galleries/A3ERGWG7PZDWFJXBWXU6JO6QZE/",
+   "credit": "MLive",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1300x886",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "third-party",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1300x886"
+   }
+  },
+  {
+   "destination_id": "scarefest-scream-park",
+   "kind": "third_party",
+   "image_link": "https://eu-central-1-shared-euc1-02.graphassets.com/AGYewIelvQiOhmtc8ww7Yz/cmg7vavfq5g0a07w4nt7fz90r",
+   "source_page": "https://waitwhile.com/case-studies/scarefest-scream-park/",
+   "credit": "Waitwhile case study (third-party)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 2160x1215",
+   "warnings": [
+    "Third-party case study page, not the attraction's own site"
+   ],
+   "photo_kind": "photo",
+   "source_type": "third-party",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 2160x1215"
+   }
+  },
+  {
+   "destination_id": "dearborn-haunted-trail",
+   "kind": "official",
+   "image_link": "https://dearborn.gov/sites/default/files/inline-images/Haunted%20Trail%20Web%203_0.png",
+   "source_page": "https://dearborn.gov/government/news-communication/Dearborns-Haunted-Trail-returns-to-Ford-Field-Park-Oct-16-18",
+   "credit": "City of Dearborn",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 600x600",
+   "warnings": [
+    "Small (600x600) square image"
+   ],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 600x600"
+   }
+  },
+  {
+   "destination_id": "jack-o-lanterns-among-the-trees",
+   "kind": "third_party",
+   "image_link": "https://littleguidedetroit.com/wp-content/uploads/2024/09/LittleGuide-Detroit-Trick-or-treat-among-the-trees-Stage-Nature-Center-1.jpg",
+   "source_page": "https://littleguidedetroit.com/event/jack-o-lanterns-among-the-trees/",
+   "credit": "LittleGuide Detroit",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1200x800",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "third-party",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1200x800"
+   }
+  },
+  {
+   "destination_id": "hallowglow-at-treerunner",
+   "kind": "official",
+   "image_link": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+   "source_page": "https://treerunnerparks.com/westbloomfield/glow-nights/",
+   "credit": "TreeRunner Parks (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Google Images (Chrome)",
+   "catalogue_status": "LINKED candidate (not an entry; on hold)",
+   "catalogue_note": "Size 1801x1200",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1801x1200"
+   }
+  },
+  {
+   "destination_id": "slay-nights",
+   "kind": "official",
+   "image_link": "https://slaynights.com/wp-content/uploads/2026/07/slay-nights-reimagined-hero-1280x667.webp",
+   "source_page": "https://slaynights.com/",
+   "credit": "Slay Nights (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official site hero graphic: Slay Nights logo and title art. Promotional artwork, not a photo of the venue.",
+   "warnings": [],
+   "photo_kind": "promo-art",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1280x667"
+   }
+  },
+  {
+   "destination_id": "blakes-haunted-attractions",
+   "kind": "official",
+   "image_link": "https://blakefarms.com/wp-content/uploads/2024/08/BF_2023-Haunted-Photography-088-scaled.jpg",
+   "source_page": "https://blakefarms.com/haunted-attractions/",
+   "credit": "Blake Farms (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official page image: costumed figure in a lit corn maze at night. Photo from Blake Farms' own haunted-attractions page (2023 season).",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 2560x1707"
+   }
+  },
+  {
+   "destination_id": "deranged-haunt",
+   "kind": "official",
+   "image_link": "https://derangedhauntedattraction.com/wp-content/uploads/2026/09/deranged-featured-1024x576.png",
+   "source_page": "https://derangedhauntedattraction.com/",
+   "credit": "Deranged Haunted Attraction (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official site featured image: character artwork with the Deranged logo. Promotional artwork, not a venue photo. derangedhaunt.com redirects to this domain.",
+   "warnings": [],
+   "photo_kind": "promo-art",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1024x576"
+   }
+  },
+  {
+   "destination_id": "scarehouse-windsor",
+   "kind": "official",
+   "image_link": "https://scarehousewindsor.com/hero-centre.jpg",
+   "source_page": "https://scarehousewindsor.com/",
+   "credit": "Scarehouse Windsor (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official site hero: the lit Scarehouse building with its sign. Cropped by the card, so the sign is partly cut.",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 800x776"
+   }
+  },
+  {
+   "destination_id": "field-of-fear",
+   "kind": "official",
+   "image_link": "https://fieldoffear.com/wp-content/uploads/2026/08/stormy_stockyard_entrance.png",
+   "source_page": "https://fieldoffear.com/",
+   "credit": "Field of Fear (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official site artwork: the Stockyard entrance gate and cornfield under a stormy sky. It may be illustration or generated art, not a verified photo.",
+   "warnings": [],
+   "photo_kind": "promo-art",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1536x1024"
+   }
+  },
+  {
+   "destination_id": "fort-meigs-garrison-ghost-walk",
+   "kind": "official",
+   "image_link": "https://fortmeigs.org/wp-content/uploads/2022/10/Fort-Meigs-Historic-Site-7.jpg",
+   "source_page": "https://fortmeigs.org/",
+   "credit": "Fort Meigs Historic Site (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official site photo of the reconstructed fort with the site name overlaid. The place where the ghost walk happens, not a photo of the walk.",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1920x1080"
+   }
+  },
+  {
+   "destination_id": "halloween-stroll-at-canterbury-village",
+   "kind": "official",
+   "image_link": "https://www.canterburyvillage.com/wp-content/uploads/2024/01/header2.jpg",
+   "source_page": "https://www.canterburyvillage.com/",
+   "credit": "Canterbury Village (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official site header: the Canterbury Village storefronts with its 30th-anniversary badge. A venue photo, not Halloween-specific.",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1000x290"
+   }
+  },
+  {
+   "destination_id": "scarehouse-windsor-immersive-dinner",
+   "kind": "official",
+   "image_link": "https://scarehousewindsor.com/hero-centre.jpg",
+   "source_page": "https://scarehousewindsor.com/",
+   "credit": "Scarehouse Windsor (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Same official hero as the Scarehouse Windsor entry; the Immersive Dinner is run on the same official site. No separate dinner image found.",
+   "warnings": [],
+   "photo_kind": "photo",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 800x776"
+   }
+  },
+  {
+   "destination_id": "brick-or-treat-at-legoland-discovery-center",
+   "kind": "official",
+   "image_link": "https://www.legolanddiscoverycenter.com/michigan/media/jr1gxmg2/webtile_event_mobile_1200x1500px_p_v1_ldc_en-uk_halloween_2026.jpg",
+   "source_page": "https://www.legolanddiscoverycenter.com/michigan/",
+   "credit": "LEGOLAND Discovery Center Michigan (official site)",
+   "found_on": "2026-10-11",
+   "found_via": "Official site, read in Chrome 2026-10-11",
+   "catalogue_status": "LINKED, load-tested 2026-10-11 (bundle commit 7abdee2)",
+   "catalogue_note": "Official Halloween 2026 promo tile (children building a LEGO jack-o'-lantern). Brand promotional image; the file name says en-uk, so it may be a UK-market tile.",
+   "warnings": [],
+   "photo_kind": "promo-art",
+   "source_type": "official",
+   "accepted_by": "Jody Tyree (owner)",
+   "accepted_at": "2026-10-11",
+   "risk_note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Recorded risk acceptance is not confirmed usage rights.",
+   "permission_on_file": false,
+   "load_check": {
+    "checkedAt": "2026-10-11",
+    "method": "<img> load in Chrome, referrerpolicy=no-referrer",
+    "result": "loaded 1200x1500"
+   }
+  }
+ ],
+ "unchosen_alternatives": [
+  {
+   "destination_id": "erebus",
+   "image_link": "https://hauntedpontiac.com/wp-content/uploads/2018/10/FANGORIA-BANNER-ADJUSTED-V2.jpg",
+   "source_page": "https://www.hauntedpontiac.com/",
+   "loaded": null,
+   "why_not_chosen": "Press banner on the same site (2018); not load-tested."
+  },
+  {
+   "destination_id": "slay-nights",
+   "image_link": "https://slaynights.com/wp-content/uploads/2026/07/slay-nights-reimagined-hero.webp",
+   "source_page": "https://slaynights.com/",
+   "loaded": null,
+   "why_not_chosen": "Full-size version of the chosen hero; not load-tested."
+  },
+  {
+   "destination_id": "blakes-haunted-attractions",
+   "image_link": "https://blakefarms.com/wp-content/uploads/2024/10/BBA_2024-Haunted-WEB-hayride-scaled.jpg",
+   "source_page": "https://blakefarms.com/haunted-attractions/",
+   "loaded": null,
+   "why_not_chosen": "Haunted hayride photo on the same official page; not load-tested."
+  },
+  {
+   "destination_id": "blakes-haunted-attractions",
+   "image_link": "https://blakefarms.com/wp-content/uploads/2024/10/BBA_2024-Haunted-WEB-barn.jpg",
+   "source_page": "https://blakefarms.com/haunted-attractions/",
+   "loaded": null,
+   "why_not_chosen": "Haunted barn photo on the same official page; not load-tested."
+  },
+  {
+   "destination_id": "the-howling-haunted-trail-and-party",
+   "image_link": "https://static.wixstatic.com/media/5753ee_d9777a2271eb4f91ae3474b3c5457986~mv2.jpg",
+   "source_page": "https://www.thehowlinghauntedtrail.com/",
+   "loaded": "300x300",
+   "why_not_chosen": "Official site image, but it is the logo (The Howling wordmark) at 300x300."
+  },
+  {
+   "destination_id": "terrorfied-forest",
+   "image_link": "https://static.wixstatic.com/media/38d6b4_4a8797f42c234b58a8c1111f0ca04d02f000.jpg",
+   "source_page": "https://www.terrorfiedforest.com/",
+   "loaded": "1920x1080",
+   "why_not_chosen": "Official site hero: a moonlit tangle of branches. Atmospheric but very dark and not identifiable as the trail."
+  },
+  {
+   "destination_id": "terrorfied-forest",
+   "image_link": "https://static.wixstatic.com/media/38d6b4_f86301c5723c45a1a632c8795b10c1c7f000.jpg",
+   "source_page": "https://www.terrorfiedforest.com/",
+   "loaded": "1080x1920",
+   "why_not_chosen": "Official site mobile hero (portrait), almost black."
+  },
+  {
+   "destination_id": "spooky-trails",
+   "image_link": "https://static.wixstatic.com/media/67e0ff_34abbdb250024d12b56eb73aef9abfeb~mv2.jpg",
+   "source_page": "https://www.spookytrails.com/",
+   "loaded": "1578x940",
+   "why_not_chosen": "Official site share image, but it is the Spooky Trails logo only."
+  },
+  {
+   "destination_id": "halloween-stroll-at-canterbury-village",
+   "image_link": "https://www.canterburyvillage.com/wp-content/uploads/2024/07/363361218_669862425175007_n.jpg",
+   "source_page": "https://www.canterburyvillage.com/",
+   "loaded": null,
+   "why_not_chosen": "Other photo on the official home page; not load-tested."
+  },
+  {
+   "destination_id": "scarehouse-windsor-immersive-dinner",
+   "image_link": "https://book.scarehousewindsor.com/og-image.png",
+   "source_page": "https://scarehousewindsor.com/",
+   "loaded": null,
+   "why_not_chosen": "Official booking-site share image (1200x630 per its meta tags); not load-tested."
+  }
+ ]
+}

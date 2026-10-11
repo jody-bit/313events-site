@@ -38,36 +38,43 @@
       return '<li>' + esc(catLabel(col, c)) + '</li>';
     }).join("") + '</ul>';
   }
-  // Image fallback chain (runtime, no broken-image icons):
-  //   linked image (image.remote) -> generated card (image.src) -> alternate generated card (image.alternates)
-  //   -> branded placeholder (image.placeholder) -> img hidden (the card keeps its dark media block).
-  // The chain is a pipe-separated list in data-fb; the inline handler is self-contained so it still works if it
-  // fires before any script has loaded. referrerpolicy="no-referrer" keeps referrer-based hotlink protection
-  // from blocking a linked image. After the first failure the card shows the "Illustrative image" badge and the
-  // photo credit is hidden.
+  var failedLookup = function () { return false; };
+  function setFailedLookup(fn) { failedLookup = fn || function () { return false; }; }
   var PLACEHOLDER = "/assets/placeholders/event-800.webp";
-  var ONERR = "var f=(this.getAttribute('data-fb')||'').split('|').filter(Boolean),n=+(this.getAttribute('data-n')||0);" +
-    "if(n<f.length){this.setAttribute('data-n',n+1);this.parentNode.classList.add('sc-fell-back');this.src=f[n]}" +
-    "else{this.onerror=null;this.style.visibility='hidden'}";
-  function chain(e, linked) {
-    var list = [];
-    if (linked) list.push(e.image.src);
-    (e.image.alternates || []).forEach(function (a) { list.push(a); });
-    list.push(e.image.placeholder || PLACEHOLDER);
+  // Image fallback chain (runtime, no broken-image icons), walked by seasonal/image-fallback.js:
+  //   linked image (image.remote, if any) -> generated card (image.src) -> alternate cards (image.alternates, image.fallbacks)
+  //   -> branded placeholder (image.placeholder) -> CSS placeholder block.
+  // A linked image is shown from its source site with a credit line; the credit and the link are hidden as soon as the
+  // card falls back. A linked image is NOT a licensed file: see seasonal/collections.js gate item 3c / 4c.
+  function linkedOf(img) {
+    var r = img && img.remote;
+    return r && /^https:\/\//.test(r.src || "") && /^https:\/\//.test(r.sourcePage || "") ? r : null;
+  }
+  function chainOf(img) {
+    var r = linkedOf(img), list = [];
+    if (r) list.push(r.src);
+    list.push(img.src);
+    (img.alternates || []).forEach(function (u) { list.push(u); });
+    (img.fallbacks || []).forEach(function (u) { list.push(u); });
+    list.push(img.placeholder || PLACEHOLDER);
     return list.filter(function (v, i, a) { return v && a.indexOf(v) === i; });
   }
-  function cardMedia(e) {
-    var r = e.image.remote;
-    var linked = !!(r && /^https:\/\//.test(r.src || "") && !e.fixture);
-    var src = linked ? r.src : e.image.src;
-    var html = '<div class="sc-card-media"><img src="' + esc(src) + '" alt="" loading="lazy" width="640" height="427"' +
-      (linked ? ' referrerpolicy="no-referrer"' : "") +
-      ' data-fb="' + esc(chain(e, linked).join("|")) + '" onerror="' + ONERR + '">';
-    if (linked) {
+  // Pick the first URL in the chain not already known to fail.
+  function pickSrc(img) {
+    var chain = chainOf(img);
+    for (var i = 0; i < chain.length; i++) if (!failedLookup(chain[i])) return chain[i];
+    return chain[0];
+  }
+  function media(e) {
+    var chain = chainOf(e.image), r = linkedOf(e.image), first = pickSrc(e.image);
+    var viaLink = !!r && first === r.src;
+    var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
+    var html = '<div class="sc-card-media"><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
+    if (viaLink) {
       return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span>' +
-        '<a class="sc-credit" href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a>';
+        '<a class="sc-credit" href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></div>';
     }
-    return html + (e.fixture ? '<span class="sc-illus sc-fixture">Test fixture</span>' : e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "");
+    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>';
   }
   function card(col, e, opts) {
     opts = opts || {};
@@ -75,12 +82,12 @@
     var name = e.website
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
       : esc(e.name);
-    return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '">' +
-      cardMedia(e) + (col.includeReview && !DATA.isPublic(e) ? '<span class="sc-illus sc-review">Review only &middot; ' + esc(e.status) + '</span>' : "") + '</div>' +
+    return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '"' + (opts.attrs || "") + '>' +
+      media(e) +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title">' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
-      '<p class="sc-card-sum">' + esc(e.summary) + '</p></div>' +
+      '<p class="sc-card-sum">' + esc(e.summary) + '</p>' + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }
 
@@ -166,23 +173,10 @@
       '<div id="scResults">' + results(col, state) + '</div></section>';
   }
 
-  // Shown only when fixtures are merged in (Preview/test, never production).
-  function fixtureBanner() {
-    return '<p class="sc-fixture-banner" role="note">TEST FIXTURES &mdash; the destinations marked &ldquo;Test fixture&rdquo; are invented test data for checking this layout. They are not real places and are not published content.</p>';
-  }
-
-  // Shown only in the Preview-only review mode (?review=1): every entry is listed so the page can be judged
-  // visually, but none of them has passed the publication gate.
-  function reviewBanner(col) {
-    var n = col.entries.length, pub = DATA.entriesPublic(col);
-    return '<p class="sc-fixture-banner sc-review-banner" role="note">REVIEW PREVIEW &mdash; all ' + n + ' destinations in this collection are shown so the layout and images can be judged. ' +
-      'Only ' + pub + ' of them have passed the publication gate; the rest are marked &ldquo;Review only&rdquo;. Nothing here is published, and the live page does not show these.</p>';
-  }
-
   function main(col, state) {
     state = state || { category: "all", query: "", view: "grid" };
-    return (col.includeFixtures ? fixtureBanner() : "") + (col.includeReview ? reviewBanner(col) : "") + hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
+    return hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
   }
 
-  return { esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card, fixtureBanner: fixtureBanner, reviewBanner: reviewBanner, PLACEHOLDER: PLACEHOLDER, discover: discover, dontMiss: dontMiss };
+  return { setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });
