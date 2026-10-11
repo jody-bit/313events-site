@@ -44,7 +44,13 @@
     "313p-ecc610fe",
     "313p-bc1fd00a",
     "313p-0356f22a",
-    "313p-64fbaec9"
+    "313p-64fbaec9",
+    "313p-28e92275",
+    "313p-6dd87b34-f090",
+    "313p-d82fea8f",
+    "313p-a4e6224a",
+    "313p-67bbe3db",
+    "313p-a6d8825f"
    ]
   },
   {
@@ -183,7 +189,23 @@
     "313p-1a10c2a7",
     "313p-84e1e241",
     "313p-e86d2e6b",
-    "313p-b25e72a8"
+    "313p-b25e72a8",
+    "313p-313cc403-f019",
+    "313p-089e318b-f043",
+    "313p-a1c54c34",
+    "313p-dedd6aa5-f008",
+    "313p-afc86e08",
+    "313p-9909f688",
+    "313p-7367eff2-f231",
+    "313p-ee564315",
+    "313p-35343a33-f032",
+    "313p-b717bfa1-f155",
+    "313p-b717bfa1-f224",
+    "313p-98887783-f009",
+    "313p-b111acba",
+    "313p-945fa1fe-f057",
+    "313p-cfa446cd",
+    "313p-8d1c0afc-f112"
    ]
   },
   {
@@ -298,7 +320,8 @@
    "photos": [
     "313p-0e2f0df4",
     "313p-dcf4b4fe",
-    "313p-ca4003ac"
+    "313p-ca4003ac",
+    "313p-5f33b47e"
    ]
   },
   {
@@ -924,7 +947,11 @@
    "flags": [],
    "photos": [
     "313p-73cbabcb",
-    "313p-69c45aee"
+    "313p-69c45aee",
+    "313p-6ed1a1f0",
+    "313p-89398e17",
+    "313p-23047f66-f034",
+    "313p-23047f66-f124"
    ]
   },
   {
@@ -1314,7 +1341,9 @@
    "flags": [],
    "photos": [
     "313p-cc8f40e5",
-    "313p-8dda6dde"
+    "313p-8dda6dde",
+    "313p-14468368-f025",
+    "313p-14468368-f075"
    ]
   },
   {
@@ -1351,7 +1380,10 @@
    "status": "published",
    "published_id": "halloween-greenfield-village",
    "reason": "Identity and location from inventory plus independent web coverage; official site NOT fetched (network blocked); no dates, hours or admission shown.",
-   "flags": []
+   "flags": [],
+   "photos": [
+    "313p-522299e9-f337"
+   ]
   },
   {
    "collection": "halloween",
@@ -2071,7 +2103,8 @@
    "photos": [
     "313p-3c387ae2",
     "313p-9e980d02",
-    "313p-aa2f414c"
+    "313p-aa2f414c",
+    "313p-7ad1f6a5"
    ]
   },
   {
@@ -2833,7 +2866,10 @@
    "photos": [
     "313p-8e40d7fc",
     "313p-7264a257",
-    "313p-a65a192d"
+    "313p-a65a192d",
+    "313p-ef240824",
+    "313p-5fea9a31-f034",
+    "313p-233226e3"
    ]
   },
   {
