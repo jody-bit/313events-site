@@ -1,0 +1,1325 @@
+{
+ "generated": "2026-10-11",
+ "collection": "fall-color",
+ "count": 4,
+ "note": "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Defaults follow the record (owner photo, then linked image, then generated card). A linked image's recorded risk acceptance is not confirmed usage rights.",
+ "inventory_rows": 129,
+ "inventory_without_record": [
+  {
+   "no": "",
+   "name": "Belle Isle Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 2
+  },
+  {
+   "no": "",
+   "name": "Palmer Park & Witherell Woods",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 3
+  },
+  {
+   "no": "",
+   "name": "Rouge Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Eliza Howell Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Rogell Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "O’Hair Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Chandler Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Historic Fort Wayne grounds",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Elmwood Cemetery",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 2
+  },
+  {
+   "no": "",
+   "name": "Woodlawn Cemetery",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 1
+  },
+  {
+   "no": "",
+   "name": "Detroit Riverwalk & Milliken State Park",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 3
+  },
+  {
+   "no": "",
+   "name": "Dequindre Cut Greenway",
+   "location": "Detroit, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 3
+  },
+  {
+   "no": "",
+   "name": "Hines Drive / Edward N. Hines Parkway",
+   "location": "Wayne County, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Bennett Arboretum",
+   "location": "Northville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Maybury State Park",
+   "location": "Northville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 2
+  },
+  {
+   "no": "",
+   "name": "Heritage Park",
+   "location": "Farmington Hills, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 2
+  },
+  {
+   "no": "",
+   "name": "Douglas Evans Nature Preserve",
+   "location": "Beverly Hills, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Cranbrook Gardens & grounds",
+   "location": "Bloomfield Hills, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 2
+  },
+  {
+   "no": "",
+   "name": "Lakeshore Park",
+   "location": "Novi, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Tenhave Woods / Quickstad Park",
+   "location": "Royal Oak, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Stage Nature Center",
+   "location": "Troy, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Red Oaks Nature Center",
+   "location": "Madison Heights, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Indian Springs Metropark",
+   "location": "White Lake, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Huron Meadows Metropark",
+   "location": "Brighton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Dexter-Huron Metropark",
+   "location": "Dexter, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Delhi Metropark",
+   "location": "Scio Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Lower Huron Metropark",
+   "location": "Belleville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Willow Metropark",
+   "location": "New Boston, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Oakwoods Metropark",
+   "location": "Flat Rock, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Lake Erie Metropark",
+   "location": "Brownstown Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Lake St. Clair Metropark",
+   "location": "Harrison Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Wolcott Mill Metropark",
+   "location": "Ray Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Proud Lake State Recreation Area",
+   "location": "Commerce Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Highland State Recreation Area",
+   "location": "Highland, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 4
+  },
+  {
+   "no": "",
+   "name": "Holly State Recreation Area",
+   "location": "Holly, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Ortonville Recreation Area",
+   "location": "Ortonville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Bald Mountain State Recreation Area",
+   "location": "Lake Orion, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Pontiac Lake State Recreation Area",
+   "location": "Waterford, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Seven Lakes State Park",
+   "location": "Holly, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Independence Oaks County Park",
+   "location": "Clarkston, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Addison Oaks County Park",
+   "location": "Leonard, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Rose Oaks County Park",
+   "location": "Holly area, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Holly Oaks ORV Park",
+   "location": "Holly, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Paint Creek Trail",
+   "location": "Rochester–Lake Orion, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Clinton River Trail",
+   "location": "Rochester–Pontiac, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Dinosaur Hill Nature Preserve",
+   "location": "Rochester, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Bloomer Park",
+   "location": "Rochester Hills, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "River Bends Park",
+   "location": "Shelby Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Macomb Orchard Trail",
+   "location": "Macomb County, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Matthaei Botanical Gardens trails",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Bird Hills Nature Area",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Barton Nature Area",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Argo Nature Area / Argo Cascades",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Gallup Park",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "County Farm Park",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Eberwhite Woods",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Huron River Drive",
+   "location": "Ann Arbor–Dexter, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Old US-12 corridor",
+   "location": "Chelsea–Ann Arbor–Ypsilanti, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Waterloo State Recreation Area",
+   "location": "Chelsea, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Pinckney State Recreation Area",
+   "location": "Pinckney, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Gerald E. Eddy Discovery Center trails",
+   "location": "Chelsea, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Independence Lake County Park",
+   "location": "Whitmore Lake, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Rolling Hills County Park",
+   "location": "Ypsilanti, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Sharon Mills County Park",
+   "location": "Manchester area, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Brighton State Recreation Area",
+   "location": "Brighton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Island Lake State Recreation Area",
+   "location": "Brighton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Howell Nature Center",
+   "location": "Howell, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "For-Mar Nature Preserve & Arboretum",
+   "location": "Burton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Flint River Trail",
+   "location": "Flint, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Stepping Stone Falls",
+   "location": "Flint, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Mott Lake / Bluebell Beach",
+   "location": "Flint area, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Holloway Reservoir Regional Park",
+   "location": "Richfield Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Lapeer State Game Area",
+   "location": "Lapeer County, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Seven Ponds Nature Center",
+   "location": "Dryden, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Metamora-Hadley State Recreation Area",
+   "location": "Metamora, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Genesee County Parks: Richfield County Park",
+   "location": "Richfield Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Algonac State Park",
+   "location": "Marine City area, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "St. Clair River Road / M-29",
+   "location": "Algonac–Port Huron, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Pine River Nature Center",
+   "location": "Goodells, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Goodells County Park",
+   "location": "Goodells, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Columbus County Park",
+   "location": "Columbus Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Wadhams to Avoca Trail",
+   "location": "St. Clair County, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Bridge to Bay Trail",
+   "location": "St. Clair County, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Lakeport State Park",
+   "location": "Lakeport, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Fort Gratiot County Park",
+   "location": "Fort Gratiot, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "St. Clair River waterfront parks",
+   "location": "St. Clair, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Sterling State Park",
+   "location": "Monroe, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "River Raisin National Battlefield Park",
+   "location": "Monroe, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Munson Park",
+   "location": "Monroe, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Crosswinds Marsh Preserve",
+   "location": "New Boston, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Heritage Park",
+   "location": "Taylor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Elizabeth Park",
+   "location": "Trenton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Grosse Ile Nature & Land Conservancy preserves",
+   "location": "Grosse Ile, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Wildwood Preserve Metropark",
+   "location": "Toledo, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Oak Openings Preserve Metropark",
+   "location": "Swanton, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 6
+  },
+  {
+   "no": "",
+   "name": "Secor Metropark",
+   "location": "Berkey, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Pearson Metropark",
+   "location": "Oregon, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Side Cut Metropark",
+   "location": "Maumee, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Farnsworth Metropark",
+   "location": "Waterville, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Providence Metropark",
+   "location": "Grand Rapids, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Swan Creek Preserve Metropark",
+   "location": "Toledo, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Ottawa Park",
+   "location": "Toledo, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 1
+  },
+  {
+   "no": "",
+   "name": "Toledo Botanical Garden",
+   "location": "Toledo, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Middlegrounds Metropark",
+   "location": "Toledo, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Howard Marsh Metropark",
+   "location": "Curtice, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Maumee Bay State Park",
+   "location": "Oregon, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Irwin Prairie State Nature Preserve",
+   "location": "Holland, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Blue Creek Metropark",
+   "location": "Whitehouse, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Ojibway Park & Nature Centre",
+   "location": "Windsor, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Black Oak Heritage Park",
+   "location": "Windsor, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Malden Park",
+   "location": "Windsor, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Jackson Park",
+   "location": "Windsor, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Little River Corridor",
+   "location": "Windsor, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Ganatchio Trail",
+   "location": "Windsor–Tecumseh, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Brunet Park",
+   "location": "LaSalle, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Vollmer Culture and Recreation Complex trails",
+   "location": "LaSalle, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Holiday Beach Conservation Area",
+   "location": "Amherstburg, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Big Creek Conservation Area",
+   "location": "Amherstburg area, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Hillman Marsh Conservation Area",
+   "location": "Leamington, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Kopegaron Woods Conservation Area",
+   "location": "Leamington area, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Chrysler Canada Greenway",
+   "location": "Essex County, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "John R. Park Homestead",
+   "location": "Essex, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Point Pelee National Park",
+   "location": "Leamington, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Wheatley Provincial Park",
+   "location": "Wheatley, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "",
+   "name": "Two Creeks Conservation Area",
+   "location": "Wheatley, ON",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  }
+ ],
+ "records": [
+  {
+   "id": "kensington-metropark",
+   "inventory_no": "—",
+   "name": "Kensington Metropark",
+   "city": "Milford",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "parks-gardens"
+   ],
+   "summary": "Huron-Clinton Metropark with wooded trails and Kent Lake.",
+   "summary_source": "published",
+   "website": "https://www.metroparks.com",
+   "official_site": "https://www.metroparks.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "kensington-metropark",
+    "destination_name": "Kensington Metropark",
+    "primary_image": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
+    "primary_image_type": "linked_official",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "alternative_images": [
+     "gen-fall-color-1",
+     "gen-fall-color-2"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-kensington-metropark",
+     "type": "linked_official",
+     "src": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
+     "source": "Official page: https://www.metroparks.com/kensington-metropark/",
+     "credit": "Huron-Clinton Metroparks",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Official Metroparks Kensington page image, 1920x1080. Chosen from Google Images results."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "official",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-color-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "stony-creek-metropark",
+   "inventory_no": "—",
+   "name": "Stony Creek Metropark",
+   "city": "Shelby Township",
+   "region": "MI",
+   "categories": [
+    "waterfronts",
+    "trails-woods"
+   ],
+   "summary": "Huron-Clinton Metropark with lake views and wooded trails.",
+   "summary_source": "published",
+   "website": "https://www.metroparks.com",
+   "official_site": "https://www.metroparks.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "stony-creek-metropark",
+    "destination_name": "Stony Creek Metropark",
+    "primary_image": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1",
+    "primary_image_type": "linked_third_party",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "alternative_images": [
+     "gen-fall-color-2",
+     "gen-fall-color-3"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-stony-creek-metropark",
+     "type": "linked_third_party",
+     "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1",
+     "source": "Third-party page: https://www.tripadvisor.com/Attraction_Review-g42695-d560594-Reviews-or10-Stony_Creek_Metropark-Shelby_Township_Michigan.html",
+     "credit": "Tripadvisor traveler photo",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Not from the destination's own site",
+      "Traveler-uploaded photo from the park's Tripadvisor page."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "third-party",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "hudson-mills-metropark",
+   "inventory_no": "—",
+   "name": "Hudson Mills Metropark",
+   "city": "Dexter",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "waterfronts"
+   ],
+   "summary": "Huron-Clinton Metropark on the Huron River with forest trails.",
+   "summary_source": "published",
+   "website": "https://www.metroparks.com",
+   "official_site": "https://www.metroparks.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "hudson-mills-metropark",
+    "destination_name": "Hudson Mills Metropark",
+    "primary_image": "https://images.alltrails.com/eyJidWNrZXQiOiJhc3NldHMuYWxsdHJhaWxzLmNvbSIsImtleSI6InVwbG9hZHMvcGhvdG8vaW1hZ2UvNTMyODk5MTgvNGM4MzZkOGQ0OTE0NmNmZWY5M2YzNTdiMWM1NWU1Y2IuanBnIiwiZWRpdHMiOnsidG9Gb3JtYXQiOiJ3ZWJwIiwicmVzaXplIjp7IndpZHRoIjoiMTA4MCIsImhlaWdodCI6IjcwMCIsImZpdCI6ImNvdmVyIn0sInJvdGF0ZSI6bnVsbCwianBlZyI6eyJ0cmVsbGlzUXVhbnRpc2F0aW9uIjp0cnVlLCJvdmVyc2hvb3REZXJpbmdpbmciOnRydWUsIm9wdGltaXNlU2NhbnMiOnRydWUsInF1YW50aXNhdGlvblRhYmxlIjozfX19",
+    "primary_image_type": "linked_third_party",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "alternative_images": [
+     "gen-fall-color-3",
+     "gen-fall-color-4"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-hudson-mills-metropark",
+     "type": "linked_third_party",
+     "src": "https://images.alltrails.com/eyJidWNrZXQiOiJhc3NldHMuYWxsdHJhaWxzLmNvbSIsImtleSI6InVwbG9hZHMvcGhvdG8vaW1hZ2UvNTMyODk5MTgvNGM4MzZkOGQ0OTE0NmNmZWY5M2YzNTdiMWM1NWU1Y2IuanBnIiwiZWRpdHMiOnsidG9Gb3JtYXQiOiJ3ZWJwIiwicmVzaXplIjp7IndpZHRoIjoiMTA4MCIsImhlaWdodCI6IjcwMCIsImZpdCI6ImNvdmVyIn0sInJvdGF0ZSI6bnVsbCwianBlZyI6eyJ0cmVsbGlzUXVhbnRpc2F0aW9uIjp0cnVlLCJvdmVyc2hvb3REZXJpbmdpbmciOnRydWUsIm9wdGltaXNlU2NhbnMiOnRydWUsInF1YW50aXNhdGlvblRhYmxlIjozfX19",
+     "source": "Third-party page: https://www.alltrails.com/parks/us/michigan/hudson-mills-metropolitan-park",
+     "credit": "AllTrails user photo",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Not from the destination's own site",
+      "User-uploaded photo on the park's AllTrails page. The link is a long CDN link and could break sooner than others."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "third-party",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "nichols-arboretum",
+   "inventory_no": "—",
+   "name": "Nichols Arboretum",
+   "city": "Ann Arbor",
+   "region": "MI",
+   "categories": [
+    "parks-gardens",
+    "trails-woods"
+   ],
+   "summary": "University of Michigan arboretum in Ann Arbor.",
+   "summary_source": "published",
+   "website": null,
+   "official_site": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "nichols-arboretum",
+    "destination_name": "Nichols Arboretum",
+    "primary_image": "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__card.webp",
+    "primary_image_type": "owner_photo_destination",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "alternative_images": [
+     "gen-fall-color-4"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "313p-00994712",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__nichols-arboretum__ann-arbor-mi__mine-01__card.webp",
+     "source": "313.events owner photo archive, captured 2026-07-31",
+     "credit": "313.events archive",
+     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "July; Canada goose on the river, shot from the water",
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  }
+ ]
+}

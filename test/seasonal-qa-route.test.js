@@ -45,9 +45,32 @@ for (const env of ["preview", "development"]) {
   assert.strictEqual(js.statusCode, 200);
   assert.ok(/application\/javascript/.test(js.headers["Content-Type"]) && js.body.includes("SeasonalQA"));
 }
+// 2b. fall and fall-color: same fail-closed matrix, correct dataset, no halloween data
+for (const slug of ["fall", "fall-color"]) {
+  for (const [label, env] of [["production", "production"], ["staging", "staging"], ["missing", undefined], ["empty", ""], ["wrong case", "Preview"]]) {
+    const r = call(env, { c: slug });
+    assert.strictEqual(r.statusCode, 404, slug + " " + label);
+    assert.ok(!/records|Yates|Kensington|Nichols/.test(r.body), slug + " " + label + " leaks nothing");
+  }
+  assert.strictEqual(call("preview", { c: slug }, "GET", "production").statusCode, 404, slug + " APP_ENV=production wins");
+  for (const env of ["preview", "development"]) {
+    const r = call(env, { c: slug });
+    assert.strictEqual(r.statusCode, 200, slug + " " + env);
+    const d = JSON.parse(r.body);
+    assert.strictEqual(d.collection, slug);
+    assert.strictEqual(d.records.length, 4, slug + " has four records");
+    assert.ok(d.records.every((x) => x.public === false), slug + ": nothing is public");
+    assert.ok(!/Hush|Slay Nights/.test(r.body));
+  }
+}
 // 3. non-GET and unknown collection/asset stay 404 even when allowed
 assert.strictEqual(call("preview", { c: "halloween" }, "POST").statusCode, 404);
-assert.strictEqual(data("preview", { c: "fall" }).statusCode, 404);
+for (const bad of ["Fall", "fall ", "fall-colour", "__proto__", "constructor", "../halloween-qa", "toString", "hasOwnProperty", ""]) {
+  const r = call("preview", { c: bad });
+  assert.ok(r.statusCode === 404 || (bad === "" && r.statusCode === 200), "unknown collection " + JSON.stringify(bad) + " must 404 (empty means the default)");
+}
+assert.strictEqual(call("preview", { c: ["fall", "halloween"] }).statusCode, 404, "array query value");
+assert.strictEqual(call("preview", { c: "fall", asset: "client" }).statusCode, 200, "the client script is the same for every collection");
 assert.strictEqual(data("preview", { asset: "../../package.json" }).statusCode, 404);
 // 4. every response (404 included) is no-store + noindex
 for (const env of ["production", "preview", undefined, "development"]) {
@@ -60,7 +83,7 @@ for (const env of ["production", "preview", undefined, "development"]) {
 // Unpublished editorial data must live only under api/_lib (not routable).
 const tracked = execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
 const served = tracked.filter((f) => !f.startsWith("api/") && fs.existsSync(path.join(root, f)));
-const PRIVATE = ["candidates.json", "candidate-images.json", "photo-library.json", "linked-images.json", "halloween-qa.json", "entries.json", "defaults.json", "qa-client.js", "editorial.js",
+const PRIVATE = ["candidates.json", "candidate-images.json", "photo-library.json", "linked-images.json", "halloween-qa.json", "fall-qa.json", "fall-color-qa.json", "entries.json", "defaults.json", "qa-client.js", "editorial.js",
   "COVERAGE.md", "EDITORIAL_HANDOFF.md", "MIGRATION_REVIEW.md"];
 for (const f of served) assert.ok(!PRIVATE.includes(path.basename(f)), "private seasonal file is statically served: " + f);
 for (const f of PRIVATE) assert.ok(tracked.includes("api/_lib/seasonal-editorial/" + f), f + " lives in api/_lib/seasonal-editorial");

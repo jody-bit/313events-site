@@ -1,7 +1,7 @@
 /* api/_lib/seasonal-editorial/qa-client.js — served only by /api/seasonal-qa?asset=client (404 outside preview/development).
- * QA-only review mode for THE DARK ORBIT (/halloween?qa=1).
+ * QA-only review mode for the seasonal collections (/halloween?qa=1, /fall?qa=1, /fall-color?qa=1).
  *
- * Shows all 52 inventory records with their verification state and a
+ * Shows every destination record of the collection with their verification state and a
  * lightweight per-card image selector. The dataset is NOT in this file or in
  * any static path; neither is this script: it comes from /api/seasonal-qa, which answers 404 in
  * production. This script also refuses to run on the production hostnames.
@@ -13,7 +13,9 @@
   else root.SeasonalQA = factory(root.SeasonalRender);
 })(typeof self !== "undefined" ? self : this, function (R) {
   "use strict";
-  var KEY = "313-halloween-qa-image-choices-v1";
+  var KEY = "313-halloween-qa-image-choices-v1"; // halloween: unchanged, saved selections keep working
+  function keyFor(slug) { return !slug || slug === "halloween" ? KEY : "313-" + slug + "-qa-image-choices-v1"; }
+  var SLUGS = ["halloween", "fall", "fall-color"];
   var PROD_HOSTS = ["313.events", "www.313.events"];
   function isProductionHost(h) { return PROD_HOSTS.indexOf(String(h || "").toLowerCase()) >= 0; }
   var esc = R.esc;
@@ -92,24 +94,33 @@
     var seen = {}; records.forEach(function (r) { r.categories.forEach(function (c) { seen[c] = 1; }); });
     return col.categories.filter(function (c) { return seen[c.id]; });
   }
-  function exportJson(records, choices) {
-    return JSON.stringify({ generated: new Date().toISOString(), collection: "halloween", selections: records.map(function (r) {
+  function exportJson(records, choices, slug) {
+    return JSON.stringify({ generated: new Date().toISOString(), collection: slug || "halloween", selections: records.map(function (r) {
       var o = option(r, choices[r.id]);
       return { destination_id: r.id, destination_name: r.name, selected_image_id: o.id, selected_image: o.src, selected_type: o.type, is_default: o.id === r.manifest_primary_id || o === r.image_options[0] };
     }) }, null, 2);
   }
-  function loadChoices() { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
-  function saveChoices(c) { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} }
+  function loadChoices(key) { try { return JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch (e) { return {}; } }
+  function saveChoices(key, c) { try { localStorage.setItem(key, JSON.stringify(c)); } catch (e) {} }
+  function backlog(data) {
+    var rows = data.inventory_without_record || [];
+    if (!rows.length) return "";
+    return '<details class="sc-qa-sel"><summary>' + rows.length + ' inventory rows have no record yet (HOLD_UNVERIFIED, never public)</summary><div class="sc-qa-opts"><p class="sc-qa-line">' +
+      esc(rows.map(function (r) { return r.name + " (" + r.location + (r.owner_photos ? ", " + r.owner_photos + " owner photos" : "") + ")"; }).join(" · ")) + '</p></div></details>';
+  }
 
   // Browser entry. Resolves true when QA mode is active, false when unavailable.
   function mount(doc, loc, fetchFn, col, FB) {
     if (isProductionHost(loc.hostname)) return Promise.resolve(false);
-    return fetchFn("/api/seasonal-qa?c=halloween", { headers: { accept: "application/json" } }).then(function (res) {
+    var slug = col && col.slug;
+    if (SLUGS.indexOf(slug) < 0) return Promise.resolve(false);
+    var key = keyFor(slug);
+    return fetchFn("/api/seasonal-qa?c=" + slug, { headers: { accept: "application/json" } }).then(function (res) {
       if (!res.ok) return false;
       return res.json();
     }).then(function (data) {
       if (!data || !data.records) return false;
-      var records = data.records, choices = loadChoices(), state = { category: "all", query: "", view: "grid" };
+      var records = data.records, choices = loadChoices(key), state = { category: "all", query: "", view: "grid" };
       var counts = { partial: 0, unver: 0 };
       records.forEach(function (r) { r.verification.status === "partial" ? counts.partial++ : counts.unver++; });
       var chips = doc.querySelector(".sc-chips");
@@ -120,10 +131,11 @@
       bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
         '<button type="button" class="sc-chip" id="scQaExport">Download image selections (JSON)</button> <button type="button" class="sc-chip" id="scQaReset">Reset choices</button>';
       doc.querySelector(".sc-filters").insertAdjacentElement("beforebegin", bar);
+      if (backlog(data)) { var bl = doc.createElement("div"); bl.innerHTML = backlog(data); bar.insertAdjacentElement("afterend", bl.firstChild); }
       var host = doc.getElementById("scResults"), count = doc.getElementById("scCount");
       function render() {
         host.innerHTML = results(col, records, state, choices);
-        count.textContent = visible(records, state).length + " of " + records.length + " destinations (QA: all inventory records)";
+        count.textContent = visible(records, state).length + " of " + records.length + " destinations (QA: every record)";
         [].forEach.call(doc.querySelectorAll(".sc-chip[data-cat]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-cat") === state.category)); });
         [].forEach.call(doc.querySelectorAll("button.sc-view"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === state.view)); });
         if (FB) FB.scan(host);
@@ -132,17 +144,17 @@
         var b = e.target.closest && e.target.closest("[data-cat],[data-view],#scQaExport,#scQaReset");
         if (!b) return;
         if (b.id === "scQaExport") {
-          var blob = new Blob([exportJson(records, choices)], { type: "application/json" });
-          var a = doc.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "halloween-image-selections.json"; doc.body.appendChild(a); a.click(); a.remove(); return;
+          var blob = new Blob([exportJson(records, choices, slug)], { type: "application/json" });
+          var a = doc.createElement("a"); a.href = URL.createObjectURL(blob); a.download = slug + "-image-selections.json"; doc.body.appendChild(a); a.click(); a.remove(); return;
         }
-        if (b.id === "scQaReset") { choices = {}; saveChoices(choices); render(); return; }
+        if (b.id === "scQaReset") { choices = {}; saveChoices(key, choices); render(); return; }
         if (b.hasAttribute("data-view")) { state.view = b.getAttribute("data-view"); render(); return; }
         state.category = b.getAttribute("data-cat"); render();
       });
       doc.addEventListener("change", function (e) {
         var id = e.target.getAttribute && e.target.getAttribute("data-qa-pick");
         if (!id) return;
-        choices[id] = e.target.value; saveChoices(choices);
+        choices[id] = e.target.value; saveChoices(key, choices);
         var rec = records.filter(function (r) { return r.id === id; })[0], li = e.target.closest("li.sc-card");
         var tmp = doc.createElement("div"); tmp.innerHTML = cardHtml(col, rec, choices, state.view);
         var fresh = tmp.firstChild; fresh.querySelector("details").open = true; li.replaceWith(fresh); if (FB) FB.scan(fresh);
@@ -153,5 +165,5 @@
       return true;
     }).catch(function () { return false; });
   }
-  return { isProductionHost: isProductionHost, toEntry: toEntry, results: results, visible: visible, exportJson: exportJson, cardHtml: cardHtml, option: option, mount: mount, KEY: KEY };
+  return { isProductionHost: isProductionHost, keyFor: keyFor, toEntry: toEntry, results: results, visible: visible, exportJson: exportJson, cardHtml: cardHtml, option: option, mount: mount, KEY: KEY };
 });

@@ -1,0 +1,942 @@
+{
+ "generated": "2026-10-11",
+ "collection": "fall",
+ "count": 4,
+ "note": "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Defaults follow the record (owner photo, then linked image, then generated card). A linked image's recorded risk acceptance is not confirmed usage rights.",
+ "inventory_rows": 71,
+ "inventory_without_record": [
+  {
+   "no": "1",
+   "name": "Alber Orchard & Cider Mill",
+   "location": "Manchester, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "2",
+   "name": "Almar Orchards",
+   "location": "Flushing, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "3",
+   "name": "Apple Charlie’s Orchard & Cider Mill",
+   "location": "New Boston, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 13
+  },
+  {
+   "no": "4",
+   "name": "Apple Lane Orchard",
+   "location": "Flint, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "5",
+   "name": "Ashton Orchards & Cider Mill",
+   "location": "Ortonville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "6",
+   "name": "Big Red Orchard",
+   "location": "Washington Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "8",
+   "name": "Blake’s Big Apple",
+   "location": "Armada, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "9",
+   "name": "Blake’s Backyard",
+   "location": "Almont, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "10",
+   "name": "Blake’s Lyon Township",
+   "location": "South Lyon, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "11",
+   "name": "Damouni Orchards",
+   "location": "Flint, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "12",
+   "name": "Dexter Cider Mill",
+   "location": "Dexter, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "13",
+   "name": "Diehl’s Orchard & Cider Mill",
+   "location": "Holly, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 25
+  },
+  {
+   "no": "14",
+   "name": "Erie Orchards & Cider Mill",
+   "location": "Erie, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "15",
+   "name": "Forever Acres Farm",
+   "location": "Britton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "16",
+   "name": "Franklin Cider Mill",
+   "location": "Bloomfield Hills, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "17",
+   "name": "Goodison Cider Mill",
+   "location": "Rochester, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "18",
+   "name": "Hy’s Cider Mill",
+   "location": "Bruce Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "19",
+   "name": "Jenny’s Farm Stand & Cider Mill",
+   "location": "Dexter, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "20",
+   "name": "JK’s Farmhouse Ciders / Almar Orchards",
+   "location": "Flushing, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "21",
+   "name": "Kreps Apple Barn & Cider Mill",
+   "location": "La Salle, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "22",
+   "name": "Long Family Orchard & Farm",
+   "location": "Commerce Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 4
+  },
+  {
+   "no": "23",
+   "name": "Middleton Farms Cider Mill",
+   "location": "Shelby Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "24",
+   "name": "Montrose Orchards",
+   "location": "Montrose, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "25",
+   "name": "Mueller’s Orchard & Cider Mill",
+   "location": "Linden, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "26",
+   "name": "Obstbaum Orchards",
+   "location": "Northville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "27",
+   "name": "Pankiewicz Cider Mill",
+   "location": "Casco, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "29",
+   "name": "Parshallville Cider Mill",
+   "location": "Fenton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "30",
+   "name": "Plymouth Orchards & Cider Mill",
+   "location": "Plymouth, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "31",
+   "name": "Porter’s Orchard",
+   "location": "Goodrich, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "32",
+   "name": "Price’s Orchard",
+   "location": "Newport, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "33",
+   "name": "Rochester Cider Mill",
+   "location": "Rochester, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "34",
+   "name": "Schell Family Farm",
+   "location": "Pinckney, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "35",
+   "name": "Spicer Orchards",
+   "location": "Fenton, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "36",
+   "name": "Stony Creek Orchard & Cider Mill",
+   "location": "Romeo, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "37",
+   "name": "Three Cedars Farm",
+   "location": "Northville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "38",
+   "name": "Verellen Orchards & Cider",
+   "location": "Washington Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "39",
+   "name": "Wasem Fruit Farm",
+   "location": "Milan, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "40",
+   "name": "Westview Orchards & Winery",
+   "location": "Washington Township, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "43",
+   "name": "Altermatt Farms",
+   "location": "Macomb, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "44",
+   "name": "Bird’s Big Pumpkins",
+   "location": "Romulus, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "45",
+   "name": "Bonadeo Farms",
+   "location": "Highland, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "46",
+   "name": "Chambers Family Farm",
+   "location": "Pinckney, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "47",
+   "name": "Coleman’s Farm Market",
+   "location": "Ypsilanti / Saline, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "48",
+   "name": "Cook’s Farm Dairy",
+   "location": "Ortonville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "49",
+   "name": "Corn Fun",
+   "location": "Casco, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "50",
+   "name": "DeBuck’s Family Farm",
+   "location": "Belleville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "51",
+   "name": "Fawcett Farms",
+   "location": "Howell, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "52",
+   "name": "Fick Farms",
+   "location": "Lapeer, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "53",
+   "name": "Flushing Farms",
+   "location": "Flushing, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "54",
+   "name": "Harnica Kids’ Pumpkin Farm",
+   "location": "Dundee, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "55",
+   "name": "Kackleberry Farms",
+   "location": "Monroe, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "56",
+   "name": "Little Pumpkin Patch",
+   "location": "Grand Blanc, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "57",
+   "name": "Mitchell Farm",
+   "location": "Holly, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "58",
+   "name": "Munsell Farms",
+   "location": "Fowlerville, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "59",
+   "name": "Nixon Farms / Blast Corn Maze",
+   "location": "Dexter, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "60",
+   "name": "Puma’s Pumpkin Patch",
+   "location": "Macomb, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "61",
+   "name": "Starrs Lakeview Farms",
+   "location": "Linden, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "62",
+   "name": "Thread Creek Farm",
+   "location": "Grand Blanc, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "63",
+   "name": "Trabbic Family Pumpkin Farm",
+   "location": "Erie, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "64",
+   "name": "Wells Pumpkin Farm",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "65",
+   "name": "Wing Farms",
+   "location": "Ann Arbor, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "66",
+   "name": "Fleitz Pumpkin Farm",
+   "location": "Oregon, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "67",
+   "name": "MacQueen Orchards",
+   "location": "Holland, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "68",
+   "name": "Gust Brother’s Pumpkin Farm",
+   "location": "Ottawa Lake, MI",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "69",
+   "name": "Jason’s Pumpkin Patch",
+   "location": "Oak Harbor, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "70",
+   "name": "Leaders Farms",
+   "location": "Napoleon, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  },
+  {
+   "no": "71",
+   "name": "Wheeler Farms Corn Maze",
+   "location": "Whitehouse, OH",
+   "status": "HOLD_UNVERIFIED",
+   "owner_photos": 0
+  }
+ ],
+ "records": [
+  {
+   "id": "yates-cider-mill",
+   "inventory_no": "42",
+   "name": "Yates Cider Mill",
+   "city": "Rochester Hills",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "summary": "Cider mill in Rochester Hills.",
+   "summary_source": "published",
+   "website": null,
+   "official_site": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "yates-cider-mill",
+    "destination_name": "Yates Cider Mill",
+    "primary_image": "https://oaklandcounty115.com/wp-content/uploads/2018/09/20180909_yates_01.jpg",
+    "primary_image_type": "linked_third_party",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "alternative_images": [
+     "gen-fall-1",
+     "gen-fall-2"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-yates-cider-mill",
+     "type": "linked_third_party",
+     "src": "https://oaklandcounty115.com/wp-content/uploads/2018/09/20180909_yates_01.jpg",
+     "source": "Third-party page: https://oaklandcounty115.com/2018/09/09/explore-yates-cider-mill/",
+     "credit": "Oakland County Times",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Not from the destination's own site",
+      "2018 photo of the mill and water wheel, 600x450. Original link was http; https version loads."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "third-party",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "parmenters-northville-cider-mill",
+   "inventory_no": "28",
+   "name": "Parmenter's Northville Cider Mill",
+   "city": "Northville",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "summary": "Cider mill in Northville.",
+   "summary_source": "published",
+   "website": null,
+   "official_site": null,
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "parmenters-northville-cider-mill",
+    "destination_name": "Parmenter's Northville Cider Mill",
+    "primary_image": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/f0/e0/e2/photo0jpg.jpg?w=1200&h=-1&s=1",
+    "primary_image_type": "linked_third_party",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "alternative_images": [
+     "gen-fall-2",
+     "gen-fall-3"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-parmenters-northville-cider-mill",
+     "type": "linked_third_party",
+     "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/f0/e0/e2/photo0jpg.jpg?w=1200&h=-1&s=1",
+     "source": "Third-party page: https://www.tripadvisor.com/Attraction_Review-g42532-d7149065-Reviews-Parmenter_s_Cider_Mill-Northville_Michigan.html",
+     "credit": "Tripadvisor traveler photo",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Not from the destination's own site",
+      "Traveler-uploaded photo of the mill's red barn. Not from the mill's own site (its own photos were too small)."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "third-party",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "blakes-orchard-cider-mill",
+   "inventory_no": "7",
+   "name": "Blake's Orchard & Cider Mill",
+   "city": "Armada",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "summary": "Orchard and cider mill in Armada with fall farm activities.",
+   "summary_source": "published",
+   "website": "https://www.blakefarms.com",
+   "official_site": "https://www.blakefarms.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": [
+     "multiple Blake's sites: verify each separately"
+    ]
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "blakes-orchard-cider-mill",
+    "destination_name": "Blake's Orchard & Cider Mill",
+    "primary_image": "https://blakefarms.com/wp-content/uploads/2024/05/BLAKES-BIG-APPLE.jpg",
+    "primary_image_type": "linked_official",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "alternative_images": [
+     "gen-fall-3",
+     "gen-fall-4"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-blakes-orchard-cider-mill",
+     "type": "linked_official",
+     "src": "https://blakefarms.com/wp-content/uploads/2024/05/BLAKES-BIG-APPLE.jpg",
+     "source": "Official page: https://blakefarms.com/big-apple/",
+     "credit": "Blake Farms",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": false,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Official photo of the Big Apple landmark at sunset; portrait crop. Not specifically a fall-activity photo."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "official",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  },
+  {
+   "id": "wiards-orchards",
+   "inventory_no": "41",
+   "name": "Wiard's Orchards",
+   "city": "Ypsilanti",
+   "region": "MI",
+   "categories": [
+    "farm-experiences",
+    "fall-festivals"
+   ],
+   "summary": "Orchard in Ypsilanti known for its fall Country Fair.",
+   "summary_source": "published",
+   "website": "https://www.wiards.com",
+   "official_site": "https://www.wiards.com",
+   "dates_hours": null,
+   "verification": {
+    "status": "partial",
+    "official_site_checked": false,
+    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "flags": []
+   },
+   "public": false,
+   "publication": {
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
+    "gate": {
+     "official": false,
+     "relevance": false,
+     "identity": true,
+     "image": true,
+     "rights": true,
+     "approval": false
+    },
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [
+     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
+     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    ],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
+     "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
+    ],
+    "legacy": {
+     "was_published_on": "feature/halloween-completion 7e094df",
+     "basis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval"
+    }
+   },
+   "recorded_alternatives": [],
+   "manifest": {
+    "destination_id": "wiards-orchards",
+    "destination_name": "Wiard's Orchards",
+    "primary_image": "https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg",
+    "primary_image_type": "linked_official",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "alternative_images": [
+     "gen-fall-4",
+     "gen-fall-5"
+    ],
+    "editorial_approval_status": "not_approved"
+   },
+   "image_options": [
+    {
+     "id": "link-wiards-orchards",
+     "type": "linked_official",
+     "src": "https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg",
+     "source": "Official page: https://www.wiards.com/orchard-info/wiards-history",
+     "credit": "Wiard's Orchards",
+     "rights_status": "not cleared: linked image; permission not confirmed",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [
+      "Linked image: not load-tested in this dataset; rights not cleared, no permission on file",
+      "Official site photo, 602x452 (small): cider-mill cart with fall flowers."
+     ],
+     "image_kind": "unclassified",
+     "source_type": "official",
+     "permission_on_file": false,
+     "risk_acceptance": {
+      "accepted_by": "Jody Tyree (owner)",
+      "accepted_at": "2026-10-11",
+      "note": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks."
+     },
+     "load_check": null,
+     "catalogue_note": null
+    },
+    {
+     "id": "gen-fall-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "source": "313.events supplied collection graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    }
+   ]
+  }
+ ]
+}

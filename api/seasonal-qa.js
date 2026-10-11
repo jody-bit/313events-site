@@ -7,11 +7,15 @@
 // The data and the QA client live in api/_lib/seasonal-editorial (not routable,
 // not a static path); this handler is the only way to read them.
 //   GET /api/seasonal-qa?c=halloween           -> 52-record QA dataset (JSON)
+//   GET /api/seasonal-qa?c=fall                -> /fall QA dataset (JSON)
+//   GET /api/seasonal-qa?c=fall-color          -> /fall-color QA dataset (JSON)
 //   GET /api/seasonal-qa?asset=client          -> QA client script (JS)
 const fs = require("fs");
 const path = require("path");
 
 const ALLOWED = ["preview", "development"];
+// Collection -> dataset file. A fixed lookup: the query value is never used to build a path.
+const DATASETS = { halloween: "halloween-qa.json", fall: "fall-qa.json", "fall-color": "fall-color-qa.json" };
 
 function qaAllowed(env) {
   env = env || process.env;
@@ -35,10 +39,11 @@ function handler(req, res) {
     res.setHeader("Content-Type", "application/javascript; charset=utf-8");
     return res.end(fs.readFileSync(path.join(__dirname, "_lib", "seasonal-editorial", "qa-client.js"), "utf8"));
   }
-  if (q.asset || (q.c && q.c !== "halloween")) return notFound(res);
+  const slug = q.c || "halloween";
+  if (q.asset || typeof slug !== "string" || !Object.prototype.hasOwnProperty.call(DATASETS, slug)) return notFound(res);
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.end(JSON.stringify(require("./_lib/seasonal-editorial/halloween-qa.json")));
+  res.end(fs.readFileSync(path.join(__dirname, "_lib", "seasonal-editorial", DATASETS[slug]), "utf8"));
 }
 
 module.exports = handler;
