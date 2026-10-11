@@ -1,8 +1,9 @@
 {
-  "_readme": "Don't Miss placements (DEC-025). Order here is the order on the homepage; at most 3 show. Two kinds of entry: an EVENT placement {eventId, eyebrow?, reason?} featuring one existing canonical event (eventId is the id= in its event.html?id=... link; it shows only while that event is current and has an image), or a STATIC EDITORIAL card {title, copy, cta, image, image2x?, alt, focus?} such as the seasonal guides (non-navigating until its page exists). Optional from/to (YYYY-MM-DD) on either kind. Remove an entry to stop featuring it. Selection is editorial only and is never paid for.",
+  "_readme": "Don't Miss placements (DEC-025). Order here is the order on the homepage; at most 3 show. Two kinds of entry: an EVENT placement {eventId, eyebrow?, reason?} featuring one existing canonical event (eventId is the id= in its event.html?id=... link; it shows only while that event is current and has an image), or a STATIC EDITORIAL card {title, copy, cta, image, image2x?, alt, focus?} such as the seasonal guides (optional root-relative href makes it a link). Optional from/to (YYYY-MM-DD) on either kind. Remove an entry to stop featuring it. Selection is editorial only and is never paid for.",
   "placements": [
     {
       "title": "Detroit Orbit Fall Guide",
+      "href": "/fall",
       "copy": "Cider mills. Pumpkin patches. Orchards. Donuts. Hayrides. Find your fall.",
       "cta": "Explore fall",
       "image": "/assets/guides/fall-guide-800.webp",
@@ -11,6 +12,7 @@
     },
     {
       "title": "Halloween in the Orbit",
+      "href": "/halloween",
       "copy": "Haunts. Horror. Ghosts. Oddities. Family fun. Halloween across the Detroit Orbit.",
       "cta": "Get spooky",
       "image": "/assets/guides/halloween-guide-800.webp",
@@ -19,6 +21,7 @@
     },
     {
       "title": "Fall Colors",
+      "href": "/fall-color",
       "copy": "Trails. Parks. Scenic drives. Waterfronts. Find the Detroit Orbit at peak color.",
       "cta": "Chase color",
       "image": "/assets/guides/fall-color-guide-800.webp",

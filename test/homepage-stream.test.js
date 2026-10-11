@@ -325,7 +325,8 @@ async function run() {
     assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
     assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
     for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
-    assert.ok(seeded.placements.every((p) => !p.href && !p.url), "the cards do not navigate: the guide pages do not exist yet");
+    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/halloween", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
+    assert.ok(seeded.placements.every((p) => !p.url), "no other link field");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");
     assert.strictEqual(page.el("dontMissSection").innerHTML, "");
@@ -376,7 +377,18 @@ async function run() {
     assert.deepStrictEqual([...mixed.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Fall Guide", "Sunday 03"]);
     assert.ok(/class="dm-cta">Explore fall &rarr;</.test(mixed), "the CTA text shows");
     assert.ok(/srcset="[^"]*\/assets\/guides\/fall-guide-800\.webp 800w, [^"]*\/assets\/guides\/fall-guide-1600\.webp 1600w"/.test(mixed) && /alt="A cider press\."/.test(mixed) && /object-position:right/.test(mixed));
-    assert.strictEqual([...mixed.matchAll(/<div class="dm-card dm-feature">/g)].length, 1, "a static card is not a link");
+    assert.strictEqual([...mixed.matchAll(/<div class="dm-card dm-feature">/g)].length, 1, "a static card without an href is not a link");
+    // A static card with a root-relative href is a real link (keyboard and touch work as for any anchor);
+    // an off-site, protocol-relative or script URL is ignored and the card stays plain.
+    page.run(`dontMissPlacements = [
+      { title: "Fall", copy: "c", cta: "Go", image: "/assets/guides/fall-guide-800.webp", alt: "a", href: "/fall" },
+      { title: "Evil", copy: "c", cta: "Go", image: "/assets/guides/fall-guide-800.webp", alt: "a", href: "https://evil.example/x" },
+      { title: "Proto", copy: "c", cta: "Go", image: "/assets/guides/fall-guide-800.webp", alt: "a", href: "//evil.example/x" },
+    ]; renderDontMiss();`);
+    const linked = page.el("dontMissSection").innerHTML;
+    assert.strictEqual([...linked.matchAll(/<a class="dm-card dm-feature" href="\/fall">/g)].length, 1, "a root-relative href makes the card a link");
+    assert.strictEqual([...linked.matchAll(/<div class="dm-card dm-feature">/g)].length, 2, "off-site and protocol-relative hrefs are ignored");
+    assert.ok(!/evil\.example/.test(linked));
     assert.ok(/<h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"><\/span><\/h2>/.test(mixed), "the signal dot is inside the title: one lockup");
     // The loader reads the placements file; an unusable file changes nothing.
     page.run(`dontMissPlacements = []; globalThis.fetch = async () => ({ ok: true, json: async () => ({ placements: [{ eventId: "u03", eyebrow: "From the file" }] }) }); loadDontMissPlacements();`);

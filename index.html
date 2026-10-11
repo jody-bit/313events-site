@@ -6439,7 +6439,12 @@ function dontMissFeatureHtml(f){
   const src = safeUrl(f.image), src2x = f.image2x ? safeUrl(f.image2x) : '';
   // Optional crop focus so the artwork's subject survives the card's 4:3 cut.
   const focus = ['left','right','top','bottom'].includes(f.focus) ? ` style="object-position:${f.focus}"` : '';
-  return `<div class="dm-card dm-feature">
+  // A static card may link to a same-site page (the seasonal guides). Only a
+  // root-relative path is accepted; anything else leaves it a plain card.
+  const href = typeof f.href === 'string' && /^\/(?!\/)[A-Za-z0-9\/_-]*$/.test(f.href) ? f.href : '';
+  const open = href ? `<a class="dm-card dm-feature" href="${escapeHtml(href)}">` : '<div class="dm-card dm-feature">';
+  const close = href ? '</a>' : '</div>';
+  return `${open}
     <img class="dm-art"${focus} src="${escapeHtml(src)}"${src2x ? ` srcset="${escapeHtml(src)} 800w, ${escapeHtml(src2x)} 1600w" sizes="(max-width:640px) 84vw, (max-width:980px) 44vw, 380px"` : ''} alt="${escapeHtml(f.alt || '')}" loading="lazy" onerror="dmImageFailed(this)">
     <span class="dm-scrim" aria-hidden="true"></span>
     <div class="dm-body">
@@ -6449,7 +6454,7 @@ function dontMissFeatureHtml(f){
         ${f.cta ? `<span class="dm-cta">${escapeHtml(f.cta)} &rarr;</span>` : ''}
       </div>
     </div>
-  </div>`;
+  ${close}`;
 }
 
 function dontMissCardHtml(pick){
