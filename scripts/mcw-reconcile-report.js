@@ -23,7 +23,7 @@ const WINDOW_DAYS = 60;
 const isoOf = (d) => d.toISOString().slice(0, 10);
 
 function buildReconciliation({ icsText, existing, today }) {
-  if (!/BEGIN:VCALENDAR/i.test(String(icsText))) throw new Error("The ICS file is not an iCalendar document (no BEGIN:VCALENDAR).");
+  if (!/BEGIN:VCAL/i.test(String(icsText)) || !/END:VCAL/i.test(String(icsText))) throw new Error("The ICS file is not an iCalendar document (no calendar header).");
   const [y, m, d] = today.split("-").map(Number);
   const start = new Date(Date.UTC(y, m - 1, d));
   const end = new Date(start.getTime() + WINDOW_DAYS * 86400000);
