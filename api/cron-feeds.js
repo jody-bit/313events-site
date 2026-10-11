@@ -233,6 +233,21 @@ function parseIcsDate(raw, params) {
   return { date: `${y}-${mo}-${d}`, hour: parseInt(h, 10), minute: parseInt(mi, 10) };
 }
 
+// Last calendar day of an all-day (VALUE=DATE) event, or null for a one-day event.
+// RFC 5545 makes a date-only DTEND exclusive, so the last day is DTEND minus one day;
+// a DTEND that is not after DTSTART+1 (same day, earlier, missing) means one day.
+// A DTEND that carries a time (mixed value types) names a real day, so it is kept.
+function allDayLastDay(startDate, end) {
+  if (!end || !end.date) return null;
+  let last = end.date;
+  if (end.hour === null) {
+    const d = new Date(`${end.date}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 1);
+    last = d.toISOString().slice(0, 10);
+  }
+  return last > startDate ? last : null;
+}
+
 function formatIcsTime(hour, minute) {
   if (hour === null || hour === undefined) return null;
   const ap = hour >= 12 ? "PM" : "AM";
@@ -510,7 +525,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // All-day multi-day spans only (start.hour === null) — a timed event's
       // DTEND is just its own end time, already folded into time_display
       // above, not a separate calendar day.
-      end_date: (end && end.date && end.date !== start.date && start.hour === null) ? end.date : null,
+      // RFC 5545 s3.6.1: for a VALUE=DATE DTEND the end is EXCLUSIVE (a one-day
+      // event is DTSTART=Oct 12, DTEND=Oct 13), so the span's last day is the day
+      // BEFORE it. See allDayLastDay().
+      end_date: start.hour === null ? allDayLastDay(start.date, end) : null,
       // 2026-10-01 bug fix (Needs Follow-up start-time investigation): this
       // row never set is_all_day at all, so every event ever ingested
       // through this generic ICS pipeline silently kept the column's own
