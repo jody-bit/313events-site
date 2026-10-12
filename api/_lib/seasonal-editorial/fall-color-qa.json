@@ -436,32 +436,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "rouge-park",
     "destination_name": "Rouge Park",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__rouge-park__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__rouge-park__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: DontCallMeLateForDinner, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-3",
+     "gen-fall-color-6",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-rouge-park",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__rouge-park__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Rouge_Park_Detroit_south_entrance.jpg (taken 2024-11-16)",
+     "credit": "Photo: DontCallMeLateForDinner, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Rouge_Park_Detroit_south_entrance.jpg"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -471,9 +487,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1316,41 +1332,45 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "elmwood-cemetery",
     "destination_name": "Elmwood Cemetery",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__elmwood-cemetery__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__elmwood-cemetery__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Sarahfraser3585, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
     "alternative_images": [
      "313p-9f3fa1eb",
      "313p-e0b9856d",
-     "gen-fall-color-1",
+     "gen-fall-color-4",
+     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-elmwood-cemetery",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__elmwood-cemetery__commons-01__card.webp",
-     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:ELMWOOD_CEMETERY_4.jpg (taken 2016-10-07)",
+     "credit": "Photo: Sarahfraser3585, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
      "warnings": [],
-     "image_kind": "generated-artwork"
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:ELMWOOD_CEMETERY_4.jpg"
     },
     {
      "id": "313p-9f3fa1eb",
@@ -1387,9 +1407,21 @@
      "license_url": null
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2058,32 +2090,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "hines-drive-edward-n-hines-parkway",
     "destination_name": "Hines Drive / Edward N. Hines Parkway",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__hines-drive-edward-n-hines-parkway__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__hines-drive-edward-n-hines-parkway__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Jeffery Roberts, CC BY-SA 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-5",
+     "gen-fall-color-8",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-hines-drive-edward-n-hines-parkway",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__hines-drive-edward-n-hines-parkway__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Brilliant_Fall_Color_-_panoramio.jpg (taken Taken on 2)",
+     "credit": "Photo: Jeffery Roberts, CC BY-SA 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Brilliant_Fall_Color_-_panoramio.jpg"
+    },
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2093,9 +2141,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2201,32 +2249,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "bennett-arboretum",
     "destination_name": "Bennett Arboretum",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__bennett-arboretum__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__bennett-arboretum__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Saul Vielmetti, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
     "alternative_images": [
+     "gen-fall-color-6",
      "gen-fall-color-1",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-bennett-arboretum",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__bennett-arboretum__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Hines_Drive_at_Bennett_Arboretum.jpg (taken 2024-11-16)",
+     "credit": "Photo: Saul Vielmetti, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Hines_Drive_at_Bennett_Arboretum.jpg"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2344,41 +2408,45 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 2.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "maybury-state-park",
     "destination_name": "Maybury State Park",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__maybury-state-park__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__maybury-state-park__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: ellenm1, CC BY 2.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
     "alternative_images": [
      "313p-cc0f7263",
      "313p-50832f1e",
-     "gen-fall-color-1",
+     "gen-fall-color-7",
+     "gen-fall-color-2",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-maybury-state-park",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__maybury-state-park__commons-01__card.webp",
-     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Maybury_Sanatorium.jpg (taken 2011-10-16)",
+     "credit": "Photo: ellenm1, CC BY 2.0, via Wikimedia Commons",
+     "rights_status": "CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
      "warnings": [],
-     "image_kind": "generated-artwork"
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/2.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Maybury_Sanatorium.jpg"
     },
     {
      "id": "313p-cc0f7263",
@@ -2415,9 +2483,21 @@
      "license_url": null
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3327,32 +3407,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "stage-nature-center",
     "destination_name": "Stage Nature Center",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__stage-nature-center__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__stage-nature-center__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Traveler100, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-8",
+     "gen-fall-color-3",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-stage-nature-center",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__stage-nature-center__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:LloydAStageNatureCenter-01.jpg (taken 2014-08)",
+     "credit": "Photo: Traveler100, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:LloydAStageNatureCenter-01.jpg"
+    },
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3362,9 +3458,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4254,40 +4350,44 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "hudson-mills-metropark",
     "destination_name": "Hudson Mills Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
     "alternative_images": [
      "link-hudson-mills-metropark",
-     "gen-fall-color-3",
+     "gen-fall-color-1",
+     "gen-fall-color-4",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-hudson-mills-metropark",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp",
-     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Hudson_mills_metropark_river_grove.JPG (taken 2010-08-03)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
      "warnings": [],
-     "image_kind": "generated-artwork"
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Hudson_mills_metropark_river_grove.JPG"
     },
     {
      "id": "link-hudson-mills-metropark",
@@ -4308,9 +4408,21 @@
      "load_check": null
     },
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4417,32 +4529,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "dexter-huron-metropark",
     "destination_name": "Dexter-Huron Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-2",
+     "gen-fall-color-5",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
+     "id": "commons-dexter-huron-metropark",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Dexter-huron_metropark_huron_riverJPG.JPG (taken 2010-08-18)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Dexter-huron_metropark_huron_riverJPG.JPG"
+    },
+    {
      "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4452,9 +4580,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4707,32 +4835,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "lower-huron-metropark",
     "destination_name": "Lower Huron Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__lower-huron-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__lower-huron-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "alternative_images": [
      "gen-fall-color-3",
+     "gen-fall-color-6",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-lower-huron-metropark",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__lower-huron-metropark__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Lower_huron_metropark_huron_river_bridge.JPG (taken 2010-08-04)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Lower_huron_metropark_huron_river_bridge.JPG"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4742,9 +4886,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4851,32 +4995,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "willow-metropark",
     "destination_name": "Willow Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__willow-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__willow-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-4",
+     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-willow-metropark",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__willow-metropark__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Washago_Pond,_Willow_Metropark,_Huron_Township,_Michigan.JPG (taken 2013-07-09)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Washago_Pond,_Willow_Metropark,_Huron_Township,_Michigan.JPG"
+    },
+    {
+     "id": "gen-fall-color-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4886,9 +5046,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4995,32 +5155,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "oakwoods-metropark",
     "destination_name": "Oakwoods Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__oakwoods-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__oakwoods-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-5",
+     "gen-fall-color-8",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
-     "type": "generated_illustrative",
+     "id": "commons-oakwoods-metropark",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__oakwoods-metropark__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Huron_River_in_Oakwoods_Metropark,_New_Boston,_Michigan_-_panoramio.jpg (taken Taken on 6)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Huron_River_in_Oakwoods_Metropark,_New_Boston,_Michigan_-_panoramio.jpg"
+    },
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5030,9 +5206,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5731,14 +5907,14 @@
     "primary_image_type": "owner_photo_destination",
     "primary_image_credit": "Photography © Miriam Vukich",
     "primary_image_rights_status": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
-    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
     "alternative_images": [
      "313p-3c387ae2",
      "313p-9e980d02",
      "313p-aa2f414c",
-     "gen-fall-color-3",
      "gen-fall-color-6",
+     "gen-fall-color-1",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -5810,9 +5986,9 @@
      "license_url": null
     },
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5822,9 +5998,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-6",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6517,32 +6693,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 2.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "seven-lakes-state-park",
     "destination_name": "Seven Lakes State Park",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__seven-lakes-state-park__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__seven-lakes-state-park__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Kris Runstrom, CC BY 2.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
     "alternative_images": [
+     "gen-fall-color-7",
      "gen-fall-color-2",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-3",
-     "type": "generated_illustrative",
+     "id": "commons-seven-lakes-state-park",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__seven-lakes-state-park__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Seven_Lakes_State_Park.jpg (taken 2012-10-04)",
+     "credit": "Photo: Kris Runstrom, CC BY 2.0, via Wikimedia Commons",
+     "rights_status": "CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/2.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Seven_Lakes_State_Park.jpg"
+    },
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -7244,32 +7436,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (Public domain, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "paint-creek-trail",
     "destination_name": "Paint Creek Trail",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__paint-creek-trail__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__paint-creek-trail__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Cjunker1, Public domain, via Wikimedia Commons",
+    "primary_image_rights_status": "Public domain (https://creativecommons.org/publicdomain/mark/1.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-8",
+     "gen-fall-color-3",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-3",
-     "type": "generated_illustrative",
+     "id": "commons-paint-creek-trail",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__paint-creek-trail__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Rochester_Michigan_Paint_Creek_Trail.JPG (taken 30 June 20)",
+     "credit": "Photo: Cjunker1, Public domain, via Wikimedia Commons",
+     "rights_status": "Public domain (https://creativecommons.org/publicdomain/mark/1.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Rochester_Michigan_Paint_Creek_Trail.JPG"
+    },
+    {
+     "id": "gen-fall-color-8",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -7279,9 +7487,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8131,11 +8339,11 @@
     "primary_image_type": "owner_photo_destination",
     "primary_image_credit": "313.events archive",
     "primary_image_rights_status": "Owner-authorized: photographer granted use to 313.events owner",
-    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
     "alternative_images": [
+     "gen-fall-color-1",
      "gen-fall-color-4",
-     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -8162,9 +8370,9 @@
      "license_url": null
     },
     {
-     "id": "gen-fall-color-4",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8174,9 +8382,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-7",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8427,32 +8635,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "bird-hills-nature-area",
     "destination_name": "Bird Hills Nature Area",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__bird-hills-nature-area__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__bird-hills-nature-area__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-2",
+     "gen-fall-color-5",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
-     "type": "generated_illustrative",
+     "id": "commons-bird-hills-nature-area",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__bird-hills-nature-area__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Bird_Hills_Nature_Area_May_2025_05.jpg (taken Taken on 2)",
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Bird_Hills_Nature_Area_May_2025_05.jpg"
+    },
+    {
+     "id": "gen-fall-color-2",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8462,9 +8686,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9585,32 +9809,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "waterloo-state-recreation-area",
     "destination_name": "Waterloo State Recreation Area",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__waterloo-state-recreation-area__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__waterloo-state-recreation-area__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: cmadler, CC BY-SA 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-3",
+     "gen-fall-color-6",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
-     "type": "generated_illustrative",
+     "id": "commons-waterloo-state-recreation-area",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__waterloo-state-recreation-area__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Waterloo_565.jpg (taken 2012-03-29)",
+     "credit": "Photo: cmadler, CC BY-SA 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Waterloo_565.jpg"
+    },
+    {
+     "id": "gen-fall-color-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9620,9 +9860,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -14693,32 +14933,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "wildwood-preserve-metropark",
     "destination_name": "Wildwood Preserve Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Tim Kiser, CC BY 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-4",
+     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
+     "id": "commons-wildwood-preserve-metropark",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Ottawa_River_Wildwood_Preserve_Metropark_Ohio_July_2018.jpg (taken 2018-07-21)",
+     "credit": "Photo: Tim Kiser, CC BY 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Ottawa_River_Wildwood_Preserve_Metropark_Ohio_July_2018.jpg"
+    },
+    {
      "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -14728,9 +14984,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -15380,32 +15636,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (Public domain, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "side-cut-metropark",
     "destination_name": "Side Cut Metropark",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__side-cut-metropark__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__side-cut-metropark__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Nyttend, Public domain, via Wikimedia Commons",
+    "primary_image_rights_status": "Public domain (https://creativecommons.org/publicdomain/mark/1.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-5",
+     "gen-fall-color-8",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
-     "type": "generated_illustrative",
+     "id": "commons-side-cut-metropark",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__side-cut-metropark__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Locks_Four_and_Three,_Miami_Sidecut.jpg (taken Taken on 1)",
+     "credit": "Photo: Nyttend, Public domain, via Wikimedia Commons",
+     "rights_status": "Public domain (https://creativecommons.org/publicdomain/mark/1.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Locks_Four_and_Three,_Miami_Sidecut.jpg"
+    },
+    {
+     "id": "gen-fall-color-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -15415,9 +15687,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -17147,32 +17419,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "black-oak-heritage-park",
     "destination_name": "Black Oak Heritage Park",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__black-oak-heritage-park__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__black-oak-heritage-park__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
     "alternative_images": [
+     "gen-fall-color-6",
      "gen-fall-color-1",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
-     "type": "generated_illustrative",
+     "id": "commons-black-oak-heritage-park",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__black-oak-heritage-park__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Black_Oak_Heritage_Park,_Windsor,_Ontario,_2025-06-07_09.jpg (taken 2025-06-07)",
+     "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Black_Oak_Heritage_Park,_Windsor,_Ontario,_2025-06-07_09.jpg"
+    },
+    {
+     "id": "gen-fall-color-6",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19043,32 +19331,48 @@
     "batch": "expansion-1",
     "featured": false,
     "image_route": "acquired-file",
-    "image_depicts_destination": false,
-    "image_note": "Image: acquired-file"
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 2.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "point-pelee-national-park",
     "destination_name": "Point Pelee National Park",
     "primary_image": "/assets/seasonal/photos/fall-color/fall-color__point-pelee-national-park__commons-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/photos/fall-color/fall-color__point-pelee-national-park__commons-01__card.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Ken Lund, CC BY-SA 2.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 2.0 (https://creativecommons.org/licenses/by-sa/2.0/)",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-7",
+     "gen-fall-color-2",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
-     "type": "generated_illustrative",
+     "id": "commons-point-pelee-national-park",
+     "type": "licensed_third_party",
      "src": "/assets/seasonal/photos/fall-color/fall-color__point-pelee-national-park__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Marsh_Boardwalk,_Point_Pelee_National_Park,_Leamington,_Ontario,_Canada_(21586377780).jpg (taken 2015-09-27)",
+     "credit": "Photo: Ken Lund, CC BY-SA 2.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 2.0 (https://creativecommons.org/licenses/by-sa/2.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Marsh_Boardwalk,_Point_Pelee_National_Park,_Leamington,_Ontario,_Canada_(21586377780).jpg"
+    },
+    {
+     "id": "gen-fall-color-7",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19078,9 +19382,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19492,14 +19796,14 @@
    "manifest": {
     "destination_id": "bend-view-metropark",
     "destination_name": "Bend View Metropark",
-    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
     "alternative_images": [
-     "gen-fall-color-8",
+     "gen-fall-color-3",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -19509,9 +19813,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-5",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19521,9 +19825,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-8",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19639,14 +19943,14 @@
    "manifest": {
     "destination_id": "lyon-oaks-county-park",
     "destination_name": "Lyon Oaks County Park",
-    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-4",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -19656,9 +19960,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-6",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19668,9 +19972,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19785,14 +20089,14 @@
    "manifest": {
     "destination_id": "orion-oaks-county-park",
     "destination_name": "Orion Oaks County Park",
-    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "alternative_images": [
-     "gen-fall-color-2",
+     "gen-fall-color-5",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -19802,9 +20106,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-7",
+     "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19814,9 +20118,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-2",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19931,14 +20235,14 @@
    "manifest": {
     "destination_id": "highland-oaks-county-park",
     "destination_name": "Highland Oaks County Park",
-    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "alternative_images": [
-     "gen-fall-color-3",
+     "gen-fall-color-6",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -19948,9 +20252,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-8",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -19960,9 +20264,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20077,14 +20381,14 @@
    "manifest": {
     "destination_id": "clinton-river-oaks-park",
     "destination_name": "Clinton River Oaks Park",
-    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
     "alternative_images": [
-     "gen-fall-color-4",
+     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20094,9 +20398,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20106,9 +20410,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-4",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20223,14 +20527,14 @@
    "manifest": {
     "destination_id": "johnson-nature-center-bloomfield-oaks",
     "destination_name": "Johnson Nature Center (Bloomfield Oaks)",
-    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
     "alternative_images": [
-     "gen-fall-color-5",
+     "gen-fall-color-8",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20240,9 +20544,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20252,9 +20556,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-5",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20368,14 +20672,14 @@
    "manifest": {
     "destination_id": "woodsong-county-park",
     "destination_name": "Woodsong County Park",
-    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
     "alternative_images": [
-     "gen-fall-color-6",
+     "gen-fall-color-1",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20385,9 +20689,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20397,9 +20701,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-6",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20512,14 +20816,14 @@
    "manifest": {
     "destination_id": "kidder-mckeachie-scio-woods-preserve",
     "destination_name": "Kidder-McKeachie Scio Woods Preserve",
-    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
     "alternative_images": [
-     "gen-fall-color-7",
+     "gen-fall-color-2",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20529,9 +20833,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20541,9 +20845,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-7",
+     "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20656,14 +20960,14 @@
    "manifest": {
     "destination_id": "park-lyndon",
     "destination_name": "Park Lyndon",
-    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
     "alternative_images": [
-     "gen-fall-color-8",
+     "gen-fall-color-3",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20673,9 +20977,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-5",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20685,9 +20989,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-8",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20801,14 +21105,14 @@
    "manifest": {
     "destination_id": "bluffs-nature-area",
     "destination_name": "Bluffs Nature Area",
-    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-4",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20818,9 +21122,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-6",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20830,9 +21134,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20947,14 +21251,14 @@
    "manifest": {
     "destination_id": "marshall-nature-area",
     "destination_name": "Marshall Nature Area",
-    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "alternative_images": [
-     "gen-fall-color-2",
+     "gen-fall-color-5",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -20964,9 +21268,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-7",
+     "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -20976,9 +21280,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-2",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21092,14 +21396,14 @@
    "manifest": {
     "destination_id": "black-pond-woods-nature-area",
     "destination_name": "Black Pond Woods Nature Area",
-    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "alternative_images": [
-     "gen-fall-color-3",
+     "gen-fall-color-6",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21109,9 +21413,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-8",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21121,9 +21425,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21238,14 +21542,14 @@
    "manifest": {
     "destination_id": "washtenaw-county-natural-beauty-roads",
     "destination_name": "Washtenaw County Natural Beauty Roads",
-    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
     "alternative_images": [
-     "gen-fall-color-4",
+     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21255,9 +21559,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21267,9 +21571,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-4",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21383,14 +21687,14 @@
    "manifest": {
     "destination_id": "william-p-holliday-forest-and-wildlife-preserve",
     "destination_name": "William P. Holliday Forest & Wildlife Preserve",
-    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
     "alternative_images": [
-     "gen-fall-color-5",
+     "gen-fall-color-8",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21400,9 +21704,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21412,9 +21716,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-5",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21528,14 +21832,14 @@
    "manifest": {
     "destination_id": "devonwood-conservation-area",
     "destination_name": "Devonwood Conservation Area",
-    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
     "alternative_images": [
-     "gen-fall-color-6",
+     "gen-fall-color-1",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21545,9 +21849,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21557,9 +21861,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-6",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21674,14 +21978,14 @@
    "manifest": {
     "destination_id": "maidstone-woods-conservation-area",
     "destination_name": "Maidstone Woods Conservation Area",
-    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
     "alternative_images": [
-     "gen-fall-color-7",
+     "gen-fall-color-2",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21691,9 +21995,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-4",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21703,9 +22007,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-7",
+     "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21819,14 +22123,14 @@
    "manifest": {
     "destination_id": "andrew-murray-oneil-woods-conservation-area",
     "destination_name": "Andrew Murray O'Neil Woods Conservation Area",
-    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
     "alternative_images": [
-     "gen-fall-color-8",
+     "gen-fall-color-3",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21836,9 +22140,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-5",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21848,9 +22152,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-8",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21964,14 +22268,14 @@
    "manifest": {
     "destination_id": "mcauliffe-woods-conservation-area",
     "destination_name": "McAuliffe Woods Conservation Area",
-    "primary_image": "/assets/seasonal/fall-color-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
     "alternative_images": [
-     "gen-fall-color-1",
+     "gen-fall-color-4",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -21981,9 +22285,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-6",
+     "id": "gen-fall-color-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -21993,9 +22297,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22111,14 +22415,14 @@
    "manifest": {
     "destination_id": "cedar-creek-conservation-area",
     "destination_name": "Cedar Creek Conservation Area",
-    "primary_image": "/assets/seasonal/fall-color-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
     "alternative_images": [
-     "gen-fall-color-2",
+     "gen-fall-color-5",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -22128,9 +22432,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-7",
+     "id": "gen-fall-color-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/fall-color-card-1.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22140,9 +22444,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-2",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/fall-color-card-5.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22257,14 +22561,14 @@
    "manifest": {
     "destination_id": "ojibway-prairie-provincial-nature-reserve",
     "destination_name": "Ojibway Prairie Provincial Nature Reserve",
-    "primary_image": "/assets/seasonal/fall-color-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-6.webp",
     "alternative_images": [
-     "gen-fall-color-3",
+     "gen-fall-color-6",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -22274,9 +22578,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-8",
+     "id": "gen-fall-color-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/fall-color-card-2.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22286,9 +22590,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-3",
+     "id": "gen-fall-color-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/fall-color-card-6.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22403,14 +22707,14 @@
    "manifest": {
     "destination_id": "fish-point-provincial-nature-reserve-pelee-island",
     "destination_name": "Fish Point Provincial Nature Reserve (Pelee Island)",
-    "primary_image": "/assets/seasonal/fall-color-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-7.webp",
     "alternative_images": [
-     "gen-fall-color-4",
+     "gen-fall-color-7",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -22420,9 +22724,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-1",
+     "id": "gen-fall-color-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/fall-color-card-3.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22432,9 +22736,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-4",
+     "id": "gen-fall-color-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/fall-color-card-7.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22550,14 +22854,14 @@
    "manifest": {
     "destination_id": "lighthouse-point-provincial-nature-reserve-pelee-island",
     "destination_name": "Lighthouse Point Provincial Nature Reserve (Pelee Island)",
-    "primary_image": "/assets/seasonal/fall-color-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-color-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-color-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-color-card-5.webp",
+    "fallback_image": "/assets/seasonal/fall-color-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-color-card-8.webp",
     "alternative_images": [
-     "gen-fall-color-5",
+     "gen-fall-color-8",
      "313p-c1b73974",
      "313p-ff285b59",
      "313p-13ba9e81"
@@ -22567,9 +22871,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-color-2",
+     "id": "gen-fall-color-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/fall-color-card-4.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -22579,9 +22883,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-color-5",
+     "id": "gen-fall-color-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/fall-color-card-8.webp",
      "source": "313.events supplied Fall Colors graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

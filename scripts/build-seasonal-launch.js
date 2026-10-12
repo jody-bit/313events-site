@@ -204,7 +204,7 @@ function launchFor(col, e, rv, prim, batch) {
   if (approved ? !(e.status === "PUBLISHED" && ED.COLLECTIONS.isPublic(e)) : e.status !== "READY_FOR_REVIEW") throw new Error(col + "/" + e.id + ": a launch record must be READY_FOR_REVIEW with no approval, or PUBLISHED with a recorded approval");
   const route = rv.gate.imageRoute;
   return { batch: batch || proposal.batch, featured: !!e.featured, image_route: route, image_depicts_destination: !!prim.depicts_actual_destination,
-    image_note: route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + prim.id : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)" : "Image: " + route };
+    image_note: route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + prim.id : route === "acquired-file" && prim.type === "licensed_third_party" ? "Image: openly licensed photograph (" + prim.rights_status.split(" (")[0] + ", Wikimedia Commons)" : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)" : "Image: " + route };
 }
 const datasets = {};
 for (const col of ["fall", "fall-color"]) {
@@ -220,13 +220,17 @@ for (const col of ["fall", "fall-color"]) {
     const wh = city(c.location);
     const opts = [];
     const dest = destPhotos(col, c);
-    const defaultPick = e && e.image && e.image.ownerPhoto ? e.image.ownerPhoto.photoId : null;
+    // An openly licensed photograph (third-party license route, e.g. Wikimedia Commons) is its own option type and is the record's default.
+    const licensed = !!(e && e.image && e.image.illustrative === false && !e.image.ownerPhoto && e.image.license && /^https:\/\//.test(e.image.licenseUrl || ""));
+    const defaultPick = e && e.image && e.image.ownerPhoto ? e.image.ownerPhoto.photoId : (licensed ? "commons-" + e.id : null);
     dest.forEach((p) => opts.push(photoOpt(p, "owner_photo_destination")));
+    if (licensed) opts.unshift({ id: "commons-" + e.id, type: "licensed_third_party", src: e.image.src, source: e.image.source, credit: e.image.credit, rights_status: e.image.license + " (" + e.image.licenseUrl + ")",
+      illustrative: false, depicts_actual_destination: true, warnings: [], image_kind: "photo", rights_basis: "third-party-license", license_url: e.image.licenseUrl, source_page: e.image.commons && e.image.commons.filePage });
     let primary;
-    const art1 = genOpt(col, e && e.image && !e.image.ownerPhoto ? e.image.src : ART(col, 1 + (artN++ % ART_COUNT)), (e && e.image && e.image.src.match(/-(\d)\.webp$/) || [0, 1 + artN % ART_COUNT])[1]);
+    const art1 = genOpt(col, e && e.image && !e.image.ownerPhoto && !licensed ? e.image.src : ART(col, 1 + (artN++ % ART_COUNT)), (e && e.image && !licensed && e.image.src.match(/-(\d)\.webp$/) || [0, 1 + artN % ART_COUNT])[1]);
     // The second card is the record's own first alternate when it has one, else a different card from the first (never a duplicate option id).
     let n2 = 1 + (artN + 3) % ART_COUNT;
-    const alt0 = e && e.image && !e.image.ownerPhoto && (e.image.alternates || []).find((u) => /-card-\d\.webp$/.test(u));
+    const alt0 = e && e.image && !e.image.ownerPhoto && !licensed && (e.image.alternates || []).find((u) => /-card-\d\.webp$/.test(u));
     if (alt0) n2 = +/-(\d)\.webp$/.exec(alt0)[1];
     if (n2 === +art1.id.split("-").pop()) n2 = 1 + (n2 % ART_COUNT);
     const art2 = genOpt(col, ART(col, n2), n2);

@@ -132,11 +132,13 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
 
 // 7. the closed Fall and Fall Colors batch (76 records) is untouched by the Halloween work. The pin is the state on release/seasonal-homepage-v2-rc
 // (0a42885), i.e. including the seasonal visual corrections of 5c2e988 (neighbouring illustration repeats); it was 6981208c... on 08871c7.
+// Re-pinned 2026-10-12 with owner approval (photography batch 1, commit 5813bfec): 23 of the 76 records changed their `image` block only
+// (openly licensed Wikimedia Commons photographs; name, city, summary, website, categories, evidence, approval and status untouched). Pin before: 16627534...
 {
   const set = AUTHZ.batch76(ED), recs = [];
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "1662753417d0c526266cc59c2754e922477f4cf610974f86676a96c4a302bfa3", "the 76 approved Fall / Fall Colors records are unchanged");
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "88f69422e7cb80f2e7d819fcf93bbc4458cd256ac338038097fbaea209065329", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");
