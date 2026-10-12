@@ -2828,7 +2828,7 @@
    "recorded_alternatives": [],
    "launch": {
     "batch": "launch-1",
-    "featured": true,
+    "featured": false,
     "image_route": "illustration",
     "image_depicts_destination": false,
     "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"

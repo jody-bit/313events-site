@@ -152,7 +152,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **What the official page shows:** Official Cranbrook House and Gardens page read 2026-10-11 (two reads). Street address given as 380 Lone Pine Road, Bloomfield Hills, MI 48304 (a PO Box with a different ZIP is also shown). The page says "From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover" and notes over 15 gardens around Cranbrook House. Fall hours and a give-as-you-wish admission are shown (not displayed on the card). The site's own name is Cranbrook House and Gardens; the inventory called this row Cranbrook Gardens & grounds.
 - **Relevance (direct-prose):** The official page says “From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover”. It names fall colors in passing, not as a peak-season guide; a later read notes beds are pulled and amenities reduced by mid-October.
 - **Card text:** Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens. Its official page mentions fall colors among what there is to see.
-- **Categories:** parks-gardens · proposed for the Don't-miss rail
+- **Categories:** parks-gardens
 - **Image:** labelled illustration, `fall-color-card-1.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
 
