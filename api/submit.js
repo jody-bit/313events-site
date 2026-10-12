@@ -12,6 +12,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 require("./_lib/environment").assertDatabaseAllowed(SUPABASE_URL);
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { withOrganizerEventUrl } = require("./_lib/organizer-links");
 
 const VALID_CATEGORIES = new Set([
   "music", "theatre", "dance", "visual", "museum",
@@ -274,7 +275,9 @@ module.exports = async (req, res) => {
     // A submitter who pastes the exact same link into both boxes shouldn't
     // get it stored twice just to be de-duped again at render time, so drop
     // it here if it's identical to what's already going into ticket_url.
-    event_url: eventUrl && eventUrl !== ticketUrl ? eventUrl : null,
+    // A known organizer's own page (api/_lib/organizer-links.js) fills a blank
+    // event_url only; it never replaces a link and never touches ticket_url.
+    event_url: withOrganizerEventUrl({ title, submitter_org_name: orgName, event_url: eventUrl && eventUrl !== ticketUrl ? eventUrl : null }),
     image_url: imageUrl || null,
     source: "Venue Submission",
     status: "pending_review",

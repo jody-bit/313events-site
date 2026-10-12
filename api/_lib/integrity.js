@@ -1,5 +1,7 @@
 "use strict";
 
+const { descriptionQuality } = require("./description-quality");
+
 // api/_lib/integrity.js — Admin Hardening Slice 2, Part A: the event
 // integrity engine.
 //
@@ -320,7 +322,14 @@ function evaluateEvent(e, ctx = {}) {
   const description = text(e.description);
   if (!description) reasons.push(reason("description.missing", "advisory", "No description"));
   else if (BOILERPLATE_RE.test(description)) reasons.push(reason("description.publisher_boilerplate", "repairable", "Description contains publisher boilerplate"));
-  else if (PLACEHOLDER_DESCRIPTION_RE.test(description) || description.toLowerCase() === text(e.title).toLowerCase()) reasons.push(reason("description.placeholder", "advisory", "Description is a placeholder"));
+  else {
+    // A nonempty description is not automatically a useful one.
+    const dq = descriptionQuality(description, e.title).quality;
+    if (PLACEHOLDER_DESCRIPTION_RE.test(description) || description.toLowerCase() === text(e.title).toLowerCase() || dq === "placeholder") reasons.push(reason("description.placeholder", "advisory", "Description is a placeholder"));
+    else if (dq === "bare_url" || dq === "time_only") reasons.push(reason("description.not_descriptive", "advisory", `Description is only a ${dq === "bare_url" ? "link" : "time"}, not a description of the event`));
+    else if (dq === "truncated") reasons.push(reason("description.truncated", "advisory", "Description is cut off"));
+    else if (dq === "restates_title") reasons.push(reason("description.restates_title", "advisory", "Description adds nothing beyond the title"));
+  }
   if (e.description_source === "generated") reasons.push(reason("description.generated", "advisory", "Description was generated, not written by the source"));
   if (!text(e.source)) reasons.push(reason("provenance.no_source", "needs_decision", "No source recorded"));
   else if (!text(e.external_id)) reasons.push(reason("provenance.no_source_record_id", "advisory", "No source record id (external_id) — cannot be re-matched to its source"));
@@ -374,6 +383,9 @@ const CLASS_DESCRIPTIONS = Object.freeze({
   "description.missing": "No description",
   "description.publisher_boilerplate": "Description contains publisher boilerplate (footer, cookie notice, site menu)",
   "description.placeholder": "Description is a placeholder or repeats the title",
+  "description.not_descriptive": "Description is only a link or a time, not a description of the event",
+  "description.truncated": "Description is cut off mid-thought",
+  "description.restates_title": "Description adds nothing beyond the title",
   "description.generated": "Description was generated, not written by the source",
   "provenance.no_source": "No source recorded",
   "provenance.no_source_record_id": "No source record id — cannot be re-matched to its source",
