@@ -16,7 +16,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="On the Radar — Press Coverage — 313.events">
@@ -43,6 +43,7 @@
 -->
 <style>
   :root{
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
     --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
     --line:#2c2c2c; --line-soft:#212121;
@@ -68,18 +69,15 @@
     display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
     padding-bottom:10px;margin-bottom:24px;border-bottom:2px solid var(--ink);
   }
-  .wordmark{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:22px;
-    text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;
-  }
-  .wordmark-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .wordmark{display:flex;align-items:center;min-height:33px;text-decoration:none;}
+  .wordmark img{display:block;height:26px;width:auto;}
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
 
   .page-head{margin-bottom:24px;}
   h1.page-title{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,40px);line-height:1.05;letter-spacing:-.01em;
     text-transform:uppercase;margin:0 0 8px;
   }
@@ -116,7 +114,7 @@
   .rc-thumb-wrap img{display:block;width:100%;height:100%;object-fit:cover;}
   .rc-thumb-fallback{
     width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:34px;color:var(--accent);
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:34px;color:var(--accent);
   }
   .rc-past-badge{
     position:absolute;top:8px;left:8px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
@@ -126,7 +124,7 @@
   .rc-outlet{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);}
   .rc-event-title-link{text-decoration:none;color:inherit;display:block;}
   .rc-event-title{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:17px;line-height:1.22;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:1.22;
     text-transform:uppercase;margin:0;
   }
   .rc-event-title-link:hover .rc-event-title{color:var(--accent);}
@@ -166,7 +164,7 @@
 <body>
   <div class="wrap">
     <header class="site">
-      <a class="wordmark" href="/">313.events<span class="wordmark-dot" aria-hidden="true"></span></a>
+      <a class="wordmark" href="/"><img src="/assets/wordmark.svg" alt="313.events" height="26"></a>
       <a class="back-link" href="/">All events</a>
     </header>
 
