@@ -72,6 +72,13 @@ for (const vw of [320, 360, 390]) {
   }
 }
 
+// 5b. the measured, font-independent guard is shared too: one function in render.js, called by the one page script all three pages load
+assert.strictEqual(typeof R.fitTitles, "function", "render.js exports the shared title fit");
+const pageJs = read("seasonal/page.js");
+assert.ok(/R\.fitTitles\(document\)/.test(pageJs) && /document\.fonts\.ready\.then/.test(pageJs) && /addEventListener\("resize"/.test(pageJs), "page.js fits after every render, after the webfonts load and on resize");
+assert.ok(/Math\.max\(11,/.test(read("seasonal/render.js")), "the fit never goes below the 11px readability floor");
+assert.ok(!/halloween|fall/.test(read("seasonal/render.js").slice(read("seasonal/render.js").indexOf("function fitTitles"), read("seasonal/render.js").indexOf("return { fitTitles"))), "the fit has no collection-specific branch");
+
 // 6. neighbouring cards never repeat the same illustration, in any grid the page lays out (2 mobile columns, 4 desktop columns, as laid out at 320–1440px)
 for (const s of SLUGS) {
   const list = pub[s].map((e) => e.image.src);

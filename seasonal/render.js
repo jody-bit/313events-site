@@ -187,5 +187,18 @@
     return hero(col) + filterBar(col, state) + dontMiss(col, state) + explore(col, state) + discover(col, state) + more(col);
   }
 
-  return { setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  // Font-independent guard for the shared title rule: the CSS hint above is tuned to the Archivo display face; when the webfont has not loaded (or a
+  // device substitutes a wider fallback) a long word can still be wider than its column. This measures the real rendered widths and shrinks only a title
+  // whose longest word overflows, down to 11px, so no seasonal page ever breaks a word mid-letter. Titles that fit are left exactly as designed.
+  function fitTitles(root) {
+    if (typeof document === "undefined") return;
+    [].forEach.call((root || document).querySelectorAll(".sc-card-title"), function (t) {
+      t.style.fontSize = ""; t.style.overflowWrap = "normal";
+      var cw = t.clientWidth, sw = t.scrollWidth;
+      if (cw && sw > cw + 0.5) t.style.fontSize = Math.max(11, Math.floor(parseFloat(getComputedStyle(t).fontSize) * cw / sw * 2) / 2) + "px";
+      t.style.overflowWrap = "";
+    });
+  }
+
+  return { fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });

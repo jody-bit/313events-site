@@ -30,6 +30,7 @@
       try { history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); } catch (e) {}
       if (scroll) document.getElementById("scExplore").scrollIntoView({ behavior: "smooth", block: "start" });
       if (FB) FB.scan(document.getElementById("scResults"));
+      R.fitTitles(document);
     }
     document.addEventListener("click", function (e) {
       var b = e.target.closest("[data-cat],[data-view]");
@@ -40,6 +41,9 @@
     var s = document.getElementById("scSearch");
     if (s) s.addEventListener("input", function () { state.query = s.value; sync(false); });
     sync(false);
+    // shared title fit: again once the webfonts have loaded, and when the viewport changes
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { R.fitTitles(document); });
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { R.fitTitles(document); }, 150); });
   }
 
   function loadQa() {
