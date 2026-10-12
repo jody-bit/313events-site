@@ -1,31 +1,32 @@
 // test/cron-feeds-dearborn.test.js
 //
-// City of Dearborn publication policy (api/_lib/feed-publication.js). dearborn.gov was not
-// reachable from the build environment, so the VEVENTs below are SYNTHETIC fixtures that
-// follow RFC 5545 and the shapes of Google Calendar exports; they are not captured from the
-// live calendar. Re-run against a real export before activating the feed.
+// City of Dearborn publication policy (api/_lib/feed-publication.js), exercised on a sample of the REAL
+// public export of the city's "Website Calendar 2026" (test/fixtures/dearborn-website-calendar-sample.ics:
+// 20 of 1,061 VEVENTs, unmodified, saved from the live feed on 2026-10-12). The feed has no category field,
+// so the policy skips plain notices by title and holds every other new row for review.
 //
-// Covers: administrative entries skipped, real public events kept, Symphony Under the Stars
-// (Sept 10, 2026) as the historical coverage-gap regression, recurring occurrences kept
-// distinct, a missing time never invented, an unplaced event held, a reviewer's status
-// never overwritten, a failed source fetch writing nothing, and policy matching exactness.
+// Covers: Symphony Under the Stars (2026-09-10), the historical coverage-gap case; notices skipped; real
+// events kept (held for review, never auto-published); RRULE / RECURRENCE-ID entries not duplicated; time
+// zones; a CANCELED title still visible; a reviewer's status never overwritten; a failed fetch writing
+// nothing; policy matching exactness.
 //
 // Run: node test/cron-feeds-dearborn.test.js
 "use strict";
 const assert = require("assert");
+const fs = require("fs");
 const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const FEED_URL = "https://calendar.google.com/calendar/ical/SYNTHETIC-DEARBORN-ID/public/basic.ics";
+const FEED_URL = "https://calendar.google.com/calendar/ical/websitecalendar%40dearborn.gov/public/basic.ics";
+const SAMPLE = fs.readFileSync(`${REPO_DIR}/test/fixtures/dearborn-website-calendar-sample.ics`, "utf8");
 
 function freshHandler() {
   for (const m of ["cron-feeds.js", "_lib/venue-lookup.js", "_lib/ics-location.js", "_lib/feed-publication.js"]) delete require.cache[require.resolve(`${REPO_DIR}/api/${m}`)];
   return require(`${REPO_DIR}/api/cron-feeds.js`);
 }
 const makeRes = () => ({ _status: null, _body: null, status(c) { this._status = c; return this; }, json(b) { this._body = b; return this; } });
-const ics = (events) => ["BEGIN:VCALENDAR", "VERSION:2.0", ...events.flatMap((e) => ["BEGIN:VEVENT", ...e, "END:VEVENT"]), "END:VCALENDAR"].join("\r\n");
 
-async function poll({ feed, events, stored = [], fail = false }) {
+async function poll({ feed, stored = [], fail = false, body = SAMPLE }) {
   const written = [];
   let polled = null;
   global.fetch = async (url, opts = {}) => {
@@ -35,7 +36,7 @@ async function poll({ feed, events, stored = [], fail = false }) {
     if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && url.includes("external_id=in.")) return { ok: true, status: 200, json: async () => stored };
     if (url.includes("/rest/v1/events") && m === "GET") return { ok: true, status: 200, json: async () => [] };
-    if (url === feed.feed_url) return fail ? { ok: false, status: 503, text: async () => "" } : { ok: true, status: 200, text: async () => ics(events) };
+    if (url === feed.feed_url) return fail ? { ok: false, status: 503, text: async () => "" } : { ok: true, status: 200, text: async () => body };
     if (url.includes("/rest/v1/events") && m === "POST") { written.push(...JSON.parse(opts.body)); return strictWriteResponse(url, opts); }
     throw new Error("unmocked URL: " + url);
   };
@@ -44,7 +45,7 @@ async function poll({ feed, events, stored = [], fail = false }) {
   assert.strictEqual(res._status, 200);
   return { written, polled };
 }
-const byUid = (rows, uid) => rows.find((r) => r.external_id.endsWith(`-${uid}`));
+const byTitle = (rows, re) => rows.filter((r) => re.test(r.title));
 
 async function run() {
   process.env.SUPABASE_URL = "https://example.supabase.co";
@@ -52,66 +53,60 @@ async function run() {
   delete process.env.CRON_SECRET;
 
   const FEED = { id: "fs-dbn", venue_name: "City of Dearborn", website: "https://www.dearborn.gov/calendar", default_category: "community", feed_url: FEED_URL, feed_format: "ics", status: "approved", location_per_event: true };
-  const ADDR = "LOCATION:Ford Field Park - 1 Example St  Dearborn MI 48126";
-  const events = [
-    ["UID:stars-2026-09-10", "DTSTART:20260910T190000", "DTEND:20260910T210000", ADDR, "SUMMARY:Symphony Under the Stars"],
-    ["UID:council", "DTSTART:20261020T190000", "SUMMARY:City Council Regular Meeting", ADDR],
-    ["UID:zba", "DTSTART:20261021T190000", "SUMMARY:Zoning Board of Appeals Meeting", ADDR],
-    ["UID:tax", "DTSTART;VALUE=DATE:20261101", "DTEND;VALUE=DATE:20261102", "SUMMARY:Winter Tax Payment Due"],
-    ["UID:closed", "DTSTART;VALUE=DATE:20261126", "DTEND;VALUE=DATE:20261127", "SUMMARY:City Offices Closed - Thanksgiving"],
-    ["UID:openhouse", "DTSTART:20261014T180000", "SUMMARY:Fire Department Open House", "LOCATION:Dearborn Fire Station 1 - 13615 Michigan Ave  Dearborn MI 48126"],
-    ["UID:booksale", "DTSTART;VALUE=DATE:20261017", "DTEND;VALUE=DATE:20261018", "SUMMARY:Friends of the Library Book Sale", "LOCATION:Henry Ford Centennial Library - 16301 Michigan Ave  Dearborn MI 48126"],
-    ["UID:dance-1", "DTSTART:20261023T190000", "SUMMARY:Community Dance", ADDR],
-    ["UID:dance-2", "DTSTART:20261030T190000", "SUMMARY:Community Dance", ADDR],
-    ["UID:noloc", "DTSTART:20261105T180000", "SUMMARY:Halloween Family Night"],
-  ];
+  let { written: rows } = await poll({ feed: FEED });
 
-  let { written: rows } = await poll({ feed: FEED, events });
+  // Notices are never ingested.
+  for (const re of [/City Council Meeting/, /Early Voting/, /Civil Service Commission/, /Thanksgiving \(DISC CLOSED\)/, /LOOSE LEAF/]) assert.strictEqual(byTitle(rows, re).length, 0, `${re} is a notice`);
+  console.log("PASS: meetings, voting dates, closures and leaf-collection notices are skipped");
 
-  // Administrative entries are never ingested; real public events are.
-  for (const uid of ["council", "zba", "tax", "closed"]) assert.strictEqual(byUid(rows, uid), undefined, `${uid} is administrative`);
-  for (const uid of ["openhouse", "booksale", "dance-1", "dance-2", "stars-2026-09-10"]) assert.ok(byUid(rows, uid), `${uid} is ingested`);
-  console.log("PASS: administrative entries skipped, public events kept");
+  // Real public events are ingested but NEVER auto-published: nothing in the feed labels event vs notice.
+  for (const re of [/Fire Department Open House/, /Friends Of The Library/, /Haunted Trail/, /Nutcracker/, /Dearborn Symphony Orchestra Concert/, /Camp Dearborn Halloween Weekend/]) assert.ok(byTitle(rows, re).length >= 1, `${re} ingested`);
+  assert.ok(rows.length > 0 && rows.every((r) => r.status === "pending_review"), "every new Dearborn row waits for review");
+  assert.ok(rows.every((r) => /no event-type label/.test(r.note)), "each held row says why");
+  console.log("PASS: public events ingested and held for review");
 
-  // Regression: Symphony Under the Stars, the original coverage gap. Ingested with its
-  // official date and time, source UID preserved, and clearly in the past (not upcoming).
-  const stars = byUid(rows, "stars-2026-09-10");
-  assert.strictEqual(stars.start_date, "2026-09-10");
-  assert.match(stars.time_display, /7:00/);
-  assert.ok(stars.start_date < "2026-10-12", "a September event is historical relative to 2026-10-12");
-  console.log("PASS: Symphony Under the Stars regression");
+  // Regression: Symphony Under the Stars (2026-09-10), the original coverage gap, is in the feed.
+  const stars = byTitle(rows, /^Symphony Under the Stars$/);
+  assert.strictEqual(stars.length, 1);
+  assert.strictEqual(stars[0].start_date, "2026-09-10", "23:30Z is 7:30 PM Detroit time on the 10th");
+  assert.match(stars[0].time_display, /7:30 PM/);
+  assert.match(stars[0].venue_name_raw, /Peace Park West/);
+  assert.ok(stars[0].start_date < "2026-10-12", "historical relative to 2026-10-12, so it is not an upcoming event");
+  const jazz = byTitle(rows, /^Jazz Under the Stars$/)[0];
+  assert.strictEqual(jazz.start_date, "2026-08-28", "00:00Z on the 29th is 8:00 PM on the 28th Detroit time");
+  console.log("PASS: Symphony Under the Stars regression (and UTC-to-Detroit date handling)");
 
-  // Recurring occurrences keep their own identities (no false duplicate collapse).
-  assert.notStrictEqual(byUid(rows, "dance-1").external_id, byUid(rows, "dance-2").external_id);
-  assert.strictEqual(new Set(rows.map((r) => r.external_id)).size, rows.length, "external ids are unique");
-  console.log("PASS: recurring occurrences stay distinct");
+  // A CANCELED entry keeps its CANCELED title (visible to reviewers; nothing hides or invents it).
+  assert.ok(byTitle(rows, /^CANCELED - Jazz Under the Stars$/).length === 1);
+
+  // Source identity: unique UIDs, no duplicates from the RECURRENCE-ID override already skipped as a notice.
+  assert.strictEqual(new Set(rows.map((r) => r.external_id)).size, rows.length);
+  assert.ok(rows.every((r) => /^feed-fs-dbn-[a-z0-9]+@google\.com$/.test(r.external_id)));
+  console.log("PASS: stable Google UIDs, no duplicates");
 
   // No invented times: an all-day entry has no time_display.
-  assert.ok(!byUid(rows, "booksale").time_display, "no start time invented for an all-day entry");
+  const trail = byTitle(rows, /Haunted Trail/)[0];
+  assert.ok(!trail.time_display, "all-day entry gets no time");
 
-  // An event with no stated place is held, not published; a placed one publishes.
-  assert.strictEqual(byUid(rows, "noloc").status, "pending_review");
-  assert.match(byUid(rows, "noloc").note, /no location stated/);
-  assert.strictEqual(byUid(rows, "dance-1").status, "approved");
-  console.log("PASS: unplaced events are held for review");
+  // A reviewer's decision survives the next poll; a reviewed row's status is never overwritten.
+  const sid = stars[0].external_id;
+  ({ written: rows } = await poll({ feed: FEED, stored: [{ external_id: sid, status: "approved" }] }));
+  assert.strictEqual(rows.find((r) => r.external_id === sid).status, "approved");
+  console.log("PASS: reviewer decision is never overwritten");
 
-  // A reviewer's decision survives the next poll.
-  ({ written: rows } = await poll({ feed: FEED, events, stored: [{ external_id: "feed-fs-dbn-noloc", status: "approved" }, { external_id: "feed-fs-dbn-dance-2", status: "rejected" }] }));
-  assert.strictEqual(byUid(rows, "noloc").status, "approved");
-  assert.strictEqual(byUid(rows, "dance-2").status, "rejected");
-  console.log("PASS: existing status is never overwritten");
-
-  // Source failure: nothing is written and the failure is recorded for health monitoring.
-  const failed = await poll({ feed: FEED, events, fail: true });
+  // Source failure: nothing is written and the failure is recorded for source-health.
+  const failed = await poll({ feed: FEED, fail: true });
   assert.strictEqual(failed.written.length, 0);
-  assert.ok(failed.polled && /503|fail|error/i.test(String(failed.polled.last_poll_result)), "failure recorded in last_poll_result");
+  assert.ok(failed.polled && /503|fail|error/i.test(String(failed.polled.last_poll_result)));
   console.log("PASS: source failure writes nothing and is recorded");
 
-  // Policy matching is exact.
+  // Policy matching is exact; an unrelated feed is untouched by reviewAll.
   const { policyFor } = require(`${REPO_DIR}/api/_lib/feed-publication.js`);
   assert.ok(policyFor(FEED));
-  assert.ok(policyFor({ venue_name: "Dearborn Library", website: "https://dearborn.gov/library" }), "dearborn.gov website matches");
+  assert.ok(policyFor({ venue_name: "Dearborn Library", website: "https://dearborn.gov/library" }));
   for (const v of ["City of Dearborn Heights", "Dearborn Public Schools", "Dearborn Brewing"]) assert.strictEqual(policyFor({ venue_name: v, website: "https://example.org" }), null, v);
-  console.log("PASS: policy matching is exact");
+  ({ written: rows } = await poll({ feed: { ...FEED, id: "fs-other", venue_name: "City of Test", website: "https://example.org" } }));
+  assert.ok(rows.length > 0 && rows.every((r) => r.status === "approved"), "feeds without a policy still publish as before");
+  console.log("PASS: policy matching is exact; other feeds unchanged");
 }
 run().catch((e) => { console.error(e); process.exit(1); });

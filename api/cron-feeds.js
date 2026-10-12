@@ -602,7 +602,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     if (feedSource.location_per_event && parseIcsLocation(ev.location).status === "blank") rowsWithNoStatedLocation.add(row);
     // Only a feed with a publication policy gets a verdict; the marker is internal and is
     // stripped before the write (upsertParsedRows).
-    if (policy) row._publication = classify(row, { start, end });
+    if (policy) row._publication = classify(row, { start, end }, policy);
     rows.push(row);
   }
   // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,

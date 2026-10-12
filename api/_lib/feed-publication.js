@@ -31,22 +31,25 @@ const POLICIES = [
   },
   {
     id: "dearborn",
-    // City of Dearborn's official calendar (dearborn.gov, published as a Google Calendar).
-    // Matches the feed row's organization name or website only -- never a bare "Dearborn",
-    // which would also catch Dearborn Heights and Dearborn Public Schools. The feed URL is
-    // not matched because a Google Calendar ICS URL carries a calendar id, not a name.
+    // City of Dearborn "Website Calendar 2026" (Google Calendar public ICS, owner websitecalendar@dearborn.gov;
+    // the calendar behind dearborn.gov/calendar). Matches the feed row's organization name or website only --
+    // never a bare "Dearborn", which would also catch Dearborn Heights and Dearborn Public Schools.
     matches: (feed) => /^\s*city of dearborn\s*$/i.test(String(feed.venue_name || ""))
       || /^https?:\/\/(www\.)?dearborn\.gov(\/|$)/i.test(String(feed.website || "")),
-    // Government administration, not public activities (Jody 2026-10-12): governing-body and
-    // board meetings, hearings, and payment/collection deadlines. Title-only and deliberately
-    // narrow, like non-event-filter.js: a governing-body name followed by a meeting-type
-    // word, or a payment-deadline phrase. Anything else still ingests, and an entry with no
-    // place is held for review by classify() rather than published.
+    // Verified against the real export (1,061 VEVENTs, 2026-10-12): the feed has NO category field, so the page's
+    // "City Event" label cannot be reproduced. It mixes public events with governing-body meetings, building
+    // closures, trash and leaf-collection notices, election dates and observances. So: (1) title-only, narrow
+    // skips for entries that are plainly notices (below); (2) every other NEW row is created pending_review
+    // (reviewAll) rather than published, because nothing in the feed separates an event from an announcement.
+    reviewAll: "City of Dearborn's calendar mixes public events with notices and the feed carries no event-type label",
     skipEvent: (ev) => {
       const t = String(ev.summary || "").trim();
-      return /^(city council|council|planning commission|zoning board(?: of appeals)?|board of (?:zoning )?appeals|historic district commission|[\w&' -]{0,40}\b(?:commission|committee|board|authority))\b[^-:]*\b(meeting|session|hearing|study session)\b/i.test(t)
-        || /^(?:public hearing|council (?:meeting|study session)|regular meeting|special meeting)\b/i.test(t)
-        || /\b(?:tax(?:es)? (?:due|payment|bills?)|payment due|bills? due|deadline)\b/i.test(t);
+      return /\b(commission|committee|board of (?:zoning )?(?:appeals?|review)|business district improvement authority|downtown development authority|pension board|briefing session|hearing officer|city council)\b/i.test(t)
+        || /\b(?:closed|closes)\b/i.test(t)
+        || /\((?:disc|the center|center)\s+open\)|^\s*(?:disc|the center)\s+open\b|\bpost thanksgiving day\b/i.test(t)
+        || /\b(?:trash|yard waste|loose leaf|leaf collection|pick ?up delayed|service (?:thursday|friday))\b/i.test(t)
+        || /\b(?:early voting|general election|register to vote|mail-in ballot|receive a ballot)\b/i.test(t)
+        || /\b(?:tax(?:es)? (?:due|payment|bills?)|payment due|bills? due|deadline|tax day for)\b/i.test(t);
     },
   },
 ];
@@ -64,12 +67,14 @@ function policyFor(feedSource) {
 //                    when a known venue is linked) does not hold it.
 //   "needs_location" no place is stated, or only a generic one ("Community Room") that
 //                    names no building and no address. Held for a person to confirm.
+//   "needs_review"   the feed's policy has `reviewAll`: nothing in that feed separates an event from
+//                    a notice, so every new row waits for a person. Checked after "conflicting".
 //   "conflicting"    the feed contradicts itself or is unusable: no title, or an end
 //                    before the start. Held.
 // Nothing is invented: this only reads the row the pipeline already built.
 // `span` is the parsed {start, end} of the VEVENT ({date, hour, minute}), because a timed
 // event's end is folded into time_display on the row and is no longer visible there.
-function classify(row, span) {
+function classify(row, span, policy) {
   const reasons = [];
   const title = String(row.title || "").trim();
   if (!title || title === "Untitled event") reasons.push("no title");
@@ -77,6 +82,8 @@ function classify(row, span) {
   if (start && end && (end.date < start.date || (end.date === start.date && start.hour !== null && end.hour !== null
     && end.hour * 60 + end.minute < start.hour * 60 + start.minute))) reasons.push("end before start");
   if (reasons.length) return { state: "conflicting", reasons };
+
+  if (policy && policy.reviewAll) return { state: "needs_review", reasons: [policy.reviewAll] };
 
   const placed = !!row.venue_id || !!String(row.venue_address_raw || "").trim();
   if (!placed) {
