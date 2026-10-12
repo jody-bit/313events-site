@@ -23,6 +23,8 @@ const ALLOWED = [
   "assets/guides/fall-color-guide-1600.webp", "assets/guides/fall-color-guide-800.webp",
   "assets/guides/fall-guide-1600.webp", "assets/guides/fall-guide-800.webp",
   "assets/guides/halloween-guide-1600.webp", "assets/guides/halloween-guide-800.webp",
+  // RA link and start-time fix (PR #74): the RA link helper and the missing-time approval guard.
+  "api/_lib/ra-links.js", "api/admin-events.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
