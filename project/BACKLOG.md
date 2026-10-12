@@ -478,6 +478,14 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### TASK-010 — Nixon Farms: discover and maintain individual events from the farm's events pages
+
+- **Status:** BACKLOG (captured 2026-10-12, not designed or built) · **Priority:** not yet set · **Epic:** `EPIC-001` (ingestion platform)
+- **Source:** https://nixonfarmsdexter.com/events/ (the destination itself, "Nixon Farms / Blast Corn Maze", is in the Fall Is On. collection; owner verified it operating 2026-10-12).
+- **Problem:** The farm's website publishes events. The ingestion system should discover and maintain each individual Nixon Farms event in the 313.events calendar.
+- **Rules:** every harvested event keeps its original event-specific link in `event_url` (and `ticket_url` only for a real ticketing or registration destination). Do not substitute the events index for event-specific source URLs when individual event pages exist. Do not invent event dates or times.
+- **Explicitly not started:** no connector or source registration. This is not part of the seasonal collections workstream and needs a separate assignment.
+
 ## Bugs
 
 ### BUG-001 — Verify: does a failed status-lookup risk re-approving a previously-rejected event?
@@ -837,7 +845,37 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Acceptance Criteria (proposed):** a bounded, approved schema addition for state/province (e.g. `venues.state`, plus the matching event-level raw field), exposed through the SZ-01 public boundary (grants checked), then a backfill from first-party sources. Needs Product Owner approval; not part of PR #54.
 - **Not tracked here:** individual missing ZIPs or addresses (e.g. Glenn Barr) are ordinary data corrections through the existing Needs Follow-up / venue-knowledge flow.
 
+### DEBT-014 — On the Radar article images: ingestion keeps the smallest image the feed offers
+
+- **Type:** DEBT (editorial ingestion) · **Status:** BACKLOG (recorded 2026-10-10) · **Priority:** P2
+- **Source:** Homepage V2 final verification against production data (2026-10-10). On the Radar's image-led cards showed two soft, awkwardly cropped thumbnails: a Grosse Pointe News article and a C&G Newspapers article, both stored as 150x150 WordPress renditions (`...-150x150.jpg`) and stretched across a 3:2 card.
+- **Cause:** `extractThumbnail()` in `api/cron-editorial.js` takes `media:thumbnail` first, then `media:content`, then an image `enclosure`, and stores the first it finds. WordPress feeds publish a 150px `media:thumbnail`, so the smallest rendition wins even when the same item carries a larger one. Production on 2026-10-10: 65 of 131 articles have any thumbnail; the WDET ones (450x450) look right, two of the 150px ones did not.
+- **Verified for the two examples:** each article page's own lead image (`og:image` / `twitter:image`) is a larger version of the same image file as its stored thumbnail (Grosse Pointe News 800x600; C&G original 1500x1374). So a larger image exists and is the article's own.
+- **Acceptance Criteria (proposed):** at ingestion, choose the best available image for the article by an explicit rule (for example: prefer the largest declared `media:content`, then the article page's `og:image`, then `media:thumbnail`; reject anything under a minimum width; cap the width so a card never loads a multi-megabyte original), and keep the verified relationship to the article (same publisher host and the article's own lead image). Records stay source-attributed; nothing is hand-listed per article. Decide separately whether existing rows are re-read (a one-time backfill) or only new articles benefit. Tests cover each feed shape (`media:thumbnail` only, `media:content` present, no image).
+- **Explicitly not this item:** per-article overrides or allow-lists in the page (rejected 2026-10-10 as temporary), and any change to the On the Radar card design.
+- **Implementation Notes:** none yet. Touches ingestion, so it needs its own approval before work starts.
+- **Product Decisions Required:** the minimum acceptable image width, and whether to backfill existing articles.
+
+### OPS-001 — Unexplained production-derived data appeared in the staging database
+
+- **Type:** OPS (operational follow-up) · **Status:** BACKLOG, **not investigated** (recorded 2026-10-11) · **Priority:** P2
+- **Observed (2026-10-10, UTC):** while preparing Preview reference data, the staging Supabase project (`efxjdlogohcggpuftivm`) was found to already contain production-derived rows that this work did not write: about 72 current events, 17 editorial articles, 19 article-event links and additional venues, appearing between roughly 22:00 and 22:13 UTC, with no active database session visible when queried afterwards. Only the writer's identity and mechanism are unknown.
+- **What is documented:** `supabase/staging/REFERENCE_DATA_2026-10-10.md` records what was found, the verification queries, the net-zero writes made by the Homepage V2 verification work, known differences from production, and the rollback (`supabase/staging/rollback_reference_data_2026-10-10.sql`, staging only).
+- **Why it matters:** `ENVIRONMENTS.md` says Previews read staging only, with production strictly read-only for development work. A data path that copies production rows into staging is either an undocumented sync or an unintended write, and Preview counts (for example the Orbit total of 88) are only meaningful if it is understood.
+- **Explicitly not this item:** investigating it as part of Homepage V2 or the seasonal release candidate; copying any further production records into staging.
+- **Acceptance Criteria (proposed):** identify the writer (job, person or integration) from Supabase and Vercel logs; decide whether it is intended; if intended, document it in `ENVIRONMENTS.md` with its scope and any PII handling; if not, stop it. Production counts are unaffected: they are computed from production data (see `loadOrbitEventTotal()` and the `events_public` loader in `index.html`).
+
 ---
+
+### DEBT-015 — Verification treats missing evidence as negative evidence (14 owner-verified false negatives)
+
+- **Status:** BACKLOG (captured 2026-10-12) · **Priority:** High for seasonal and destination content · **Epic:** `EPIC-001` / shared verification
+- **Problem:** The seasonal verification pass held 14 destinations that the owner confirmed directly. Retrieval failures, stale promotional artwork and dated tourism articles were read as evidence against a destination or an activity.
+- **Permanent principle:** missing evidence is not negative evidence. Keep four questions separate: (1) does the destination exist and operate; (2) is it relevant to the collection; (3) are specific activities or amenities currently available; (4) are there temporary access restrictions.
+- **Requirements:** distinguish retrieval failure (403, timeout, blocked) from closure; distinguish stale marketing from stale facts; verify operating status separately from seasonal activities; use alternate authoritative evidence when the primary site cannot be retrieved; treat owner-provided direct verification as documented editorial evidence; preserve uncertainty at the individual claim level; do not invent missing facts; do not silently erase stronger existing data; route genuine conflicts to follow-up; maintain source provenance. Do not weaken reliability requirements: the goal is to remove false negatives without allowing unsupported claims.
+- **Owner-verified examples (2026-10-12):** Fall Is On.: Kackleberry Farms (2025 artwork still on the site), Erie Orchards & Cider Mill, Parshallville Cider Mill (Sunday live music), Nixon Farms / Blast Corn Maze, Gust Brother's Pumpkin Farm. Fall Colors: Hudson Mills Metropark (dated tourism article), Hines Drive (included, with access advisories), Maybury State Park (blocked DNR page), Seven Lakes State Park (403), Waterloo State Recreation Area, Huron River Drive, Macomb Orchard Trail (partial closure, reopening expected fall 2026), Old US-12 corridor, Grosse Ile preserves (Gibraltar Bay Natural Area, Dr. Bruce D. Jones Preserve, Sunrise Park).
+- **Where the fix belongs:** the shared verification policy in the main development and product workstream. The seasonal pages must not grow a competing verification framework; the seasonal records only carry the owner-verified evidence as `ownerVerification` and temporary closures as `accessAdvisories`.
+- **Related:** `TASK-010` (Nixon Farms event source).
 
 ## Discovery / decisions needed
 

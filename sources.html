@@ -101,6 +101,9 @@
   td.src-note{color:var(--ink-soft);font-size:12.5px;}
   code{background:var(--panel-alt);color:var(--ink-soft);padding:1px 5px;border-radius:var(--radius);font-size:12px;font-family:'Space Mono',monospace;}
   a{color:var(--accent);}
+  /* Narrow screens: long file paths and nowrap source names were forcing the tables past the viewport. */
+  td.src-note,td code{overflow-wrap:anywhere;}
+  @media (max-width:600px){td.src-name{white-space:normal;}.badge{white-space:normal;}table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}}
 
   footer.site{margin-top:30px;font-size:12px;color:var(--ink-soft);line-height:1.6;padding-top:16px;border-top:1px solid var(--line);}
   /* Legal/trust footer links (Phase 1 Legal + Trust pass, 2026-10-01) --
@@ -476,7 +479,7 @@
     <b>Scope corrections found along the way:</b> Cranbrook is in Bloomfield Hills — previously excluded when the site's scope was Detroit/Hamtramck/Highland Park only, but Bloomfield Hills is well within the current 75-mile service area (see <code>SERVICE_AREA.md</code>), so Cranbrook is back in scope and worth revisiting as a source. Populux is the same physical space as Magic Stick (renamed c. 2015–16) — not a separate venue.
     <br><br>
     Have a source we haven't tried, or think one of these statuses is wrong? <a href="submit.html">Submit an event</a> or let us know — this page is updated as new sources are investigated.
-    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
+    <p class="footer-links"><a href="about.html">About</a> &middot; <a href="submit.html">Submit an Event</a> &middot; <a href="editorial-policy.html">Editorial Policy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="copyright.html">Copyright / DMCA</a> &middot; <a href="/copyright#photo-credits">Photo Credits</a> &middot; <a href="accessibility.html">Accessibility</a> &middot; <a href="mailto:jody@sentientproductions.com">Contact</a></p>
     <p class="footer-credit">&copy; 2026 Sentient Productions LLC. All rights reserved.<br>313.events is a product of Sentient Productions LLC.<br>Detroit, Michigan</p>
   </footer>
 

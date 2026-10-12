@@ -1,0 +1,1474 @@
+{
+ "batch": "halloween-release-1",
+ "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
+ "counts": {
+  "inventory": 52,
+  "ownerApproved": 49,
+  "eligiblePublished": 29,
+  "held": 20,
+  "excluded": 3,
+  "heldByState": {
+   "HOLD_UNVERIFIED": 20
+  },
+  "heldNoOfficial2026": 20,
+  "heldNoImageRoute": 19,
+  "heldNoOfficialAndNoImage": 19,
+  "heldContentVerifiedAwaitingImage": 0,
+  "heldIndirect": 9,
+  "heldUnconfirmed": 11
+ },
+ "approval": {
+  "by": "Jody Tyree",
+  "at": "2026-10-11"
+ },
+ "records": [
+  {
+   "id": "erebus",
+   "inventoryNo": "1",
+   "name": "Erebus Haunted Attraction",
+   "city": "Pontiac",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "erebus",
+    "name": "Erebus Haunted Attraction",
+    "city": "Pontiac",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Multi-story haunted attraction in Pontiac.",
+    "website": "https://hauntedpontiac.com",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-7.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "eloise-asylum",
+   "inventoryNo": "2",
+   "name": "Eloise Asylum",
+   "city": "Westland",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "eloise-asylum",
+    "name": "Eloise Asylum",
+    "city": "Westland",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
+    "website": "https://eloiseasylum.com/",
+    "image": {
+     "src": "/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-1.webp",
+      "/assets/seasonal/halloween-card-4.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": false,
+     "credit": "313.events archive"
+    }
+   }
+  },
+  {
+   "id": "halloween-greenfield-village",
+   "inventoryNo": "35",
+   "name": "Hallowe'en in Greenfield Village",
+   "city": "Dearborn",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "halloween-greenfield-village",
+    "name": "Hallowe'en in Greenfield Village",
+    "city": "Dearborn",
+    "region": "MI",
+    "categories": [
+     "family-friendly",
+     "ghosts-history"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
+    "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+    "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates.",
+    "image": {
+     "src": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-6.webp",
+      "/assets/seasonal/halloween-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": false,
+     "credit": "313.events archive"
+    }
+   }
+  },
+  {
+   "id": "zoo-boo",
+   "inventoryNo": "38",
+   "name": "Zoo Boo at the Detroit Zoo",
+   "city": "Royal Oak",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "zoo-boo",
+    "name": "Zoo Boo at the Detroit Zoo",
+    "city": "Royal Oak",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
+    "website": "https://detroitzoo.org/events/zoo-boo/",
+    "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo.",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true,
+     "remote": {
+      "src": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
+      "sourcePage": "https://detroitzoo.org/events/zoo-boo/",
+      "credit": "Detroit Zoo"
+     }
+    }
+   }
+  },
+  {
+   "id": "glenlore-carnevil-2",
+   "inventoryNo": "32",
+   "name": "Glenlore Trails: CarnEvil 2",
+   "city": "Commerce Township",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "glenlore-carnevil-2",
+    "name": "Glenlore Trails: CarnEvil 2",
+    "city": "Commerce Township",
+    "region": "MI",
+    "categories": [
+     "strange-unusual",
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Illuminated night walk with a carnival theme in Commerce Township.",
+    "website": "https://glenloretrails.com",
+    "image": {
+     "src": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-5.webp",
+      "/assets/seasonal/halloween-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": false,
+     "credit": "313.events archive"
+    }
+   }
+  },
+  {
+   "id": "crossroads-ghosts-goodies",
+   "inventoryNo": "39",
+   "name": "Halloween Ghosts & Goodies at Crossroads Village",
+   "city": "Flint",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "crossroads-ghosts-goodies",
+    "name": "Halloween Ghosts & Goodies at Crossroads Village",
+    "city": "Flint",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
+    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-3.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "hush-haunted-attraction",
+   "inventoryNo": "3",
+   "name": "Hush Haunted Attraction",
+   "city": "Westland",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "hush-haunted-attraction",
+    "name": "Hush Haunted Attraction",
+    "city": "Westland",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Multiple haunted houses",
+    "website": "https://hushhauntedattractions.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-5.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true,
+     "remote": {
+      "src": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
+      "sourcePage": "https://hushhauntedattractions.com/",
+      "credit": "Hush Haunted Attractions (official site)"
+     }
+    }
+   }
+  },
+  {
+   "id": "azra-chamber-of-horrors",
+   "inventoryNo": "4",
+   "name": "Azra Chamber of Horrors",
+   "city": "Madison Heights",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "azra-chamber-of-horrors",
+    "name": "Azra Chamber of Horrors",
+    "city": "Madison Heights",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted house attraction in Madison Heights with intense scares, plus occasional family and holiday events.",
+    "website": "https://azrahaunt.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true,
+     "remote": {
+      "src": "https://azrahaunt.com/wp-content/uploads/2026/07/Copy-of-DSC04640-min.jpg.webp",
+      "sourcePage": "https://azrahaunt.com/",
+      "credit": "Azra Haunted House (official site)"
+     }
+    }
+   }
+  },
+  {
+   "id": "rotten-manor",
+   "inventoryNo": "5",
+   "name": "Rotten Manor",
+   "city": "Holly",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Official pages read show no 2026 season dates or ticket notice; footer reads 'Copyright 2015 - 2023' and the FAQ names no season year. A WXYZ roundup (secondary) says it opened Sept. 11 and runs select dates through Oct. 31. Read 2026-10-12 at https://rottenmanor.com/ , https://rottenmanor.com/attractions-rotten-manor/ and https://rottenmanor.com/faq/"
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "wiards-night-terrors",
+   "inventoryNo": "6",
+   "name": "Wiard's Night Terrors",
+   "city": "Ypsilanti",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Official Night Terrors site has a 'Dates of Operation' page referring to September and October 2026 calendars and links 2026 ticketing (wiardsorchardsnightterrors2026.fearticket.com). Read 2026-10-12 at https://hauntedhousemichigan.com/ and https://hauntedhousemichigan.com/visiting/dates-of-operation",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "slay-nights",
+   "inventoryNo": "7",
+   "name": "Slay Nights",
+   "city": "Howell",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Home page shows undated season text (Friday Oct 4 start, final night Saturday Nov 2, closed Halloween); in 2026 Oct 4 is a Sunday and Nov 2 a Monday, so these are stale prior-year dates (Oct 4/Nov 2 match 2024 or 2019 weekdays). No 2026 statement found. Read 2026-10-12 at https://slaynights.com/",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "scarefest-scream-park",
+   "inventoryNo": "8",
+   "name": "Scarefest Scream Park",
+   "city": "Lenox Township",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "scarefest-scream-park",
+    "name": "Scarefest Scream Park",
+    "city": "Lenox Township",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted hayride, maze and forest",
+    "website": "https://scarefestscreampark.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-5.webp",
+      "/assets/seasonal/halloween-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "blakes-haunted-attractions",
+   "inventoryNo": "9",
+   "name": "Blake's Haunted Attractions",
+   "city": "Armada",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "blakes-haunted-attractions",
+    "name": "Blake's Haunted Attractions",
+    "city": "Armada",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted barn and hayride",
+    "website": "https://blakefarms.com/haunted-attractions/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-1.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "the-scream-machine",
+   "inventoryNo": "10",
+   "name": "The Scream Machine",
+   "city": "Taylor",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Official home page shows an empty events calendar ('No Events') and no 2026 season statement; meta text still says 'coming Fall 2023', footer 2025 on one read. The hauntpay ticket venue page (app.hauntpay.com/venues/508) lists no upcoming events. A 2026 flyer image exists on the home page but could not be read. Read 2026-10-12 at https://thescreammachine.com/",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "deranged-haunt",
+   "inventoryNo": "11",
+   "name": "Deranged Haunt",
+   "city": "Romulus",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "deranged-haunt",
+    "name": "Deranged Haunt",
+    "city": "Romulus",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted woods",
+    "website": "https://derangedhauntedattraction.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-4.webp",
+      "/assets/seasonal/halloween-card-5.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "slaughterhouse-adventure",
+   "inventoryNo": "12",
+   "name": "Slaughterhouse Adventure",
+   "city": "Fowlerville",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "slaughterhouse-adventure",
+    "name": "Slaughterhouse Adventure",
+    "city": "Fowlerville",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted house and corn maze",
+    "website": "https://slaughterhouseadventure.net/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-5.webp",
+      "/assets/seasonal/halloween-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "full-moon-manor-at-bonadeo-farms",
+   "inventoryNo": "13",
+   "name": "Full Moon Haunted House at Bonadeo Farms",
+   "city": "Highland",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "full-moon-manor-at-bonadeo-farms",
+    "name": "Full Moon Haunted House at Bonadeo Farms",
+    "city": "Highland",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions",
+     "serious-scares"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
+    "website": "https://fullmoonhauntedhouse.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-7.webp",
+      "/assets/seasonal/halloween-card-1.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "exit-13-haunted-house",
+   "inventoryNo": "14",
+   "name": "Exit 13 Haunted House",
+   "city": "Mount Morris",
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "EXCLUDED, CLOSED: Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record."
+   ],
+   "disposition": {
+    "type": "closed",
+    "reason": "Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record.",
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12"
+   },
+   "publicCard": null
+  },
+  {
+   "id": "nightmare-fields-at-the-pumpkin-factory",
+   "inventoryNo": "15",
+   "name": "Nightmare Fields at The Pumpkin Factory",
+   "city": "Belleville",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Official site references a \"Haunt Schedule 2026\" (image title), 50th-anniversary branding, and weekly haunt hours Fri-Sat 7-11 PM for the House and Hayride; the schedule image itself was not readable. https://www.thepumpkinfactory.org/ read 2026-10-12.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "scarehouse-windsor",
+   "inventoryNo": "16",
+   "name": "Scarehouse Windsor",
+   "city": "Windsor",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Home page and /tickets page show no dates or year in visible text. The US ticket-routing link on /tickets contains the path /events/scarehouse-windsor/2026/tickets, which suggests 2026 ticketing but is indirect. https://scarehousewindsor.com/ and https://scarehousewindsor.com/tickets read 2026-10-12.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "the-howling-haunted-trail-and-party",
+   "inventoryNo": "17",
+   "name": "The Howling Haunted Trail & Party",
+   "city": "Fenton",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "the-howling-haunted-trail-and-party",
+    "name": "The Howling Haunted Trail & Party",
+    "city": "Fenton",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted woodland trail",
+    "website": "https://www.thehowlinghauntedtrail.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-7.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "terrorfied-forest",
+   "inventoryNo": "18",
+   "name": "Terrorfied Forest",
+   "city": "Pinckney",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Could not locate the attraction's own website. Its hauntpay ticketing page (https://app.hauntpay.com/events/terrorfied-forest-haunted-attraction-new, read 2026-10-12) describes the 2025 season and lists no upcoming dates. Only third-party (The Scare Factor 2026 list, created 8/31/2026) mentions an October 2 opening night.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "past-tense-after-dark",
+   "inventoryNo": "19",
+   "name": "Past Tense After Dark",
+   "city": "Lapeer",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Organizer 'Past Tense Country Store' lists 'Past Tense After Dark Haunted Attractions - 2026' with Friday and Saturday nights from September 25 to October 31, 2026. https://www.eventbrite.com/e/past-tense-after-dark-haunted-attractions-2026-tickets-2000273139807 read 2026-10-12. The venue's own website could not be retrieved.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "spooky-trails",
+   "inventoryNo": "20",
+   "name": "Spooky Trails",
+   "city": "Swartz Creek",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "spooky-trails",
+    "name": "Spooky Trails",
+    "city": "Swartz Creek",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Farm haunt with a haunted hayride, a zombie-themed family hayride and a haunted cornfield walk.",
+    "website": "https://www.spookytrails.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-7.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "panic-in-the-pines",
+   "inventoryNo": "21",
+   "name": "Panic in the Pines",
+   "city": "Genoa",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Official home page loads and links a Pricing & Tickets page (panicinthepines.fearticket.com) but shows no year or dates; the Days & Hours subpage and the ticketing page did not render. Visit Toledo listing is for 2024. https://www.panicinthepines.com/ read 2026-10-12.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "field-of-fear",
+   "inventoryNo": "22",
+   "name": "Field of Fear",
+   "city": "Monclova",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "field-of-fear",
+    "name": "Field of Fear",
+    "city": "Monclova",
+    "region": "OH",
+    "categories": [
+     "haunted-attractions"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted cornfield attractions",
+    "website": "https://fieldoffear.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-1.webp",
+      "/assets/seasonal/halloween-card-4.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "bates-haunted-sawmill",
+   "inventoryNo": "23",
+   "name": "Bates Haunted Sawmill",
+   "city": "Millington",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED (official page unreachable)). The attraction's only official presence found is a Facebook page (https://www.facebook.com/bateshauntedsawmill/), which could not be fetched (robots-blocked). Third-party Morty listing (last verified 8/31/2026) says 'Reopening for 2026' with no dates; this is not official evidence. Read 2026-10-12.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "dearborn-haunted-trail",
+   "inventoryNo": "24",
+   "name": "Dearborn Haunted Trail",
+   "city": "Dearborn",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "dearborn-haunted-trail",
+    "name": "Dearborn Haunted Trail",
+    "city": "Dearborn",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Haunted woodland trail",
+    "website": "https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-5.webp",
+      "/assets/seasonal/halloween-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "sanilac-museums-haunted-village",
+   "inventoryNo": "25",
+   "name": "Sanilac Museum's Haunted Village",
+   "city": "Port Sanilac",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "sanilac-museums-haunted-village",
+    "name": "Sanilac Museum's Haunted Village",
+    "city": "Port Sanilac",
+    "region": "MI",
+    "categories": [
+     "haunted-attractions"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Evening trick-or-treating and spooky trails (family-friendly and scarier) at the Sanilac County Historical Museum village in Port Sanilac.",
+    "website": "https://sanilaccountymuseum.org/calendar-of-events/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-1.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "distracted-haunted-house",
+   "inventoryNo": "26",
+   "name": "Distracted Haunted House",
+   "city": "Bowling Green",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "distracted-haunted-house",
+    "name": "Distracted Haunted House",
+    "city": "Bowling Green",
+    "region": "OH",
+    "categories": [
+     "haunted-attractions"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Indoor haunted house.",
+    "website": "https://feardistracted.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-4.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "haunted-hydro",
+   "inventoryNo": "27",
+   "name": "Haunted Hydro",
+   "city": "Fremont",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Official home page says 'Tickets Now Available' for the 2026 season, describes the 2026 path and links to a 2026 calendar (read 2026-10-12, https://www.thehauntedhydro.com/). The 2026 calendar is an image, so exact dates could not be read.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "mortuary-manor-funeral-museum",
+   "inventoryNo": "28",
+   "name": "Mortuary Manor Funeral Museum",
+   "city": "Toledo",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). No website of its own was found; Toledo City Paper (March 20, 2026, secondary) lists only Facebook, Instagram and TikTok. Organizer pages show 2026 events that are already past: an Eerie Excursions flashlight tour on July 17, 2026 (https://www.eventbrite.com/e/1992819215920, 'Event ended', read 2026-10-12) and a BOOkfest ghost hunt on Aug 1, 2026 (https://www.eerieexcursions.com/events/mmbookfest, 'Tickets are not on sale', read 2026-10-12). No Halloween-season 2026 event or tour found.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "wildwood-manor-house",
+   "inventoryNo": "29",
+   "name": "Eerie Manor Tours at Wildwood Preserve",
+   "city": "Toledo",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "wildwood-manor-house",
+    "name": "Eerie Manor Tours at Wildwood Preserve",
+    "city": "Toledo",
+    "region": "OH",
+    "categories": [
+     "ghosts-history"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Seasonal eerie manor tours",
+    "website": "https://metroparkstoledo.com/eeriemanor",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "fort-meigs-garrison-ghost-walk",
+   "inventoryNo": "30",
+   "name": "Fort Meigs Garrison Ghost Walk",
+   "city": "Perrysburg",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "fort-meigs-garrison-ghost-walk",
+    "name": "Fort Meigs Garrison Ghost Walk",
+    "city": "Perrysburg",
+    "region": "OH",
+    "categories": [
+     "ghosts-history"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historical ghost walk",
+    "website": "https://fortmeigs.org/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "haunted-waterville-tours",
+   "inventoryNo": "31",
+   "name": "Haunted Waterville Tours",
+   "city": "Waterville",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Official Waterville Historical Society page shows a '2026 Haunted Waterville Tours' graphic and 2026 booking policies, but no dates in readable text (read 2026-10-12, https://watervillehistory.org/haunted-waterville-tours). Dates and price below are from a third-party listing only.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "halloween-stroll-at-canterbury-village",
+   "inventoryNo": "33",
+   "name": "Halloween Stroll at Canterbury Village",
+   "city": "Lake Orion",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "halloween-stroll-at-canterbury-village",
+    "name": "Halloween Stroll at Canterbury Village",
+    "city": "Lake Orion",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Halloween light displays and characters",
+    "website": "https://www.canterburyvillage.com/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-6.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "hallowglow-at-treerunner",
+   "inventoryNo": "34",
+   "name": "HallowGlow at TreeRunner",
+   "city": "West Bloomfield",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "linked",
+   "rightsRoute": "linked-risk-acceptance",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "hallowglow-at-treerunner",
+    "name": "HallowGlow at TreeRunner",
+    "city": "West Bloomfield",
+    "region": "MI",
+    "categories": [
+     "strange-unusual",
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "After-dark treetop climbing and ziplining among glowing lights with a festive Halloween-season atmosphere at TreeRunner West Bloomfield.",
+    "website": "https://treerunnerparks.com/westbloomfield/fall-festivities/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true,
+     "remote": {
+      "src": "https://treerunnerparks.com/westbloomfield/wp-content/uploads/sites/10/2020/03/Glow-Night-4-scaled.jpg",
+      "sourcePage": "https://treerunnerparks.com/westbloomfield/glow-nights/",
+      "credit": "TreeRunner Parks (official site)"
+     }
+    }
+   }
+  },
+  {
+   "id": "theatre-bizarre",
+   "inventoryNo": "36",
+   "name": "Theatre Bizarre",
+   "city": "Detroit",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Official site (read 2026-10-12, https://theatrebizarre.com/) shows only sold-out buttons for Oct 14, 15, 21 and 22 with no year (these match 2022 dates), a post titled about the cancelled 2023 season, and an empty Events page. About page metadata appears last modified in 2022. No 2026 dates or ticketing found. A Detroit News headline dated 2026-08-28 (https://www.detroitnews.com/story/entertainment/2026/08/28/theatre-bizarre-art-show-sparks-hope-for-return/91456106007/) suggests only an art show with 'hope for return'; the article itself could not be read (robots blocked), so treat as unverified.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "scarehouse-windsor-immersive-dinner",
+   "inventoryNo": "37",
+   "name": "Scarehouse Windsor Immersive Dinner",
+   "city": "Windsor",
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "EXCLUDED, DUPLICATE of scarehouse-windsor: Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record."
+   ],
+   "disposition": {
+    "type": "duplicate",
+    "of": "scarehouse-windsor",
+    "reason": "Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record.",
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12"
+   },
+   "publicCard": null
+  },
+  {
+   "id": "brick-or-treat-at-legoland-discovery-center",
+   "inventoryNo": "40",
+   "name": "Brick-or-Treat at LEGOLAND Discovery Center",
+   "city": "Auburn Hills",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "brick-or-treat-at-legoland-discovery-center",
+    "name": "Brick-or-Treat at LEGOLAND Discovery Center",
+    "city": "Auburn Hills",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "LEGO-themed Halloween activities",
+    "website": "https://www.legolanddiscoverycenter.com/michigan/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-3.webp",
+      "/assets/seasonal/halloween-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "ooky-spooky-light-show",
+   "inventoryNo": "41",
+   "name": "Ooky Spooky Light Show",
+   "city": "Flint",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "ooky-spooky-light-show",
+    "name": "Ooky Spooky Light Show",
+    "city": "Flint",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Planetarium Halloween show",
+    "website": "https://sloanlongway.org/halloween/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-3.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "laser-halloween",
+   "inventoryNo": "42",
+   "name": "Laser Halloween",
+   "city": "Flint",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "laser-halloween",
+    "name": "Laser Halloween",
+    "city": "Flint",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Halloween-themed laser show",
+    "website": "https://www.sloanlongway.org/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-3.webp",
+      "/assets/seasonal/halloween-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "thiessen-orchards-scaredy-cat-barn",
+   "inventoryNo": "43",
+   "name": "Thiessen Orchards Scaredy Cat Barn",
+   "city": "Leamington",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Site footer reads 2026 / '50 Years 1976-2026' and Halloween Extravaganza is dated Oct 24, 2026; the family-fun page says the Scaredy Cat Barn opens 'on our first weekend' and the night haunt stays closed 'this season'. The barn text itself carries no explicit year. https://www.thiessenorchards.com/family-fun and https://www.thiessenorchards.com (read 2026-10-12).",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "jack-o-lanterns-among-the-trees",
+   "inventoryNo": "44",
+   "name": "Jack-O-Lanterns Among the Trees",
+   "city": "Troy",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Official programs page lists the event Saturday Oct 24, 4-6pm or 7-9pm with pre-registration and ticket tiers; no year is printed in the text, but the flyer file is named '2026-Fall-Fliers-Jack-O-Lanterns' and Oct 24 is a Saturday in 2026. Page footer says copyright 2025 (not updated). https://troynaturesociety.org/programs/programs-all-ages/ (read 2026-10-12).",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "halloween-stroll",
+   "inventoryNo": "45",
+   "name": "Halloween Stroll",
+   "city": "Port Huron",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "halloween-stroll",
+    "name": "Halloween Stroll",
+    "city": "Port Huron",
+    "region": "MI",
+    "categories": [
+     "family-friendly"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
+    "website": "https://porthuronrec.com/halloweenstroll",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-6.webp",
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "agony-on-alcott",
+   "inventoryNo": "46",
+   "name": "Agony on Alcott",
+   "city": "Flint",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). Official site shows a '2026' copyright footer and says 'this year' will be bigger, and its Tickets & Hours page says every Friday and Saturday in October, 8-11 PM, but no page prints a 2026 season or specific 2026 dates. https://www.agonyonalcotthauntedhouse.com/ and https://www.agonyonalcotthauntedhouse.com/tickets-hours (read 2026-10-12).",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "reapers-gate-home-haunt",
+   "inventoryNo": "47",
+   "name": "Reapers Gate Home Haunt",
+   "city": "Windsor",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "No official 2026 evidence found (NOT CONFIRMED). No official site or social page could be retrieved. Only a third-party listing title ('Reaper's Gate Haunted Backyard Maze', eyesonwindsor.com, blocked to fetch by robots rules) surfaced in search; no 2026 evidence found. W.E. Have Fun's 2026 Hunt the Haunts site (wehavefun.ca) does not mention Reapers Gate on its home page. Facebook page not retrievable. Read 2026-10-12.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "windsor-essex-yard-haunt-map",
+   "inventoryNo": "48",
+   "name": "Windsor–Essex Yard Haunt Map",
+   "city": "Windsor–Essex",
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "EXCLUDED, DUPLICATE of halloween-hunt-the-haunts: Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record."
+   ],
+   "disposition": {
+    "type": "duplicate",
+    "of": "halloween-hunt-the-haunts",
+    "reason": "Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record.",
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12"
+   },
+   "publicCard": null
+  },
+  {
+   "id": "halloween-hunt-the-haunts",
+   "inventoryNo": "49",
+   "name": "Halloween Hunt the Haunts",
+   "city": "Windsor–Essex",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. wehavefun.ca has a 'Hunt the Haunts 2026' section: interactive map plus Catch 'Em All Hunt app and a 2026 registration form; says registration is required every year. No 2026 dates printed. https://wehavefun.ca/ (read 2026-10-12).",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "motor-city-ghosts",
+   "inventoryNo": "50",
+   "name": "Motor City Ghosts",
+   "city": "Detroit",
+   "state": "HOLD_UNVERIFIED",
+   "category": "held",
+   "ownerApproved": true,
+   "imageRoute": null,
+   "rightsRoute": null,
+   "reasons": [
+    "Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Operator's Detroit page (last modified Oct 8, 2026 per the page) says tours run daily year-round, 8 PM start, bookable online; no season-specific dates. https://usghostadventures.com/ghost-tours/detroit/ (read 2026-10-12). Medium: 'daily, 365 days' rather than dated 2026 events.",
+    "No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet."
+   ],
+   "disposition": null,
+   "publicCard": null
+  },
+  {
+   "id": "spooky-janes-walk",
+   "inventoryNo": "51",
+   "name": "Spooky Jane's Walk",
+   "city": "Windsor–Essex",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "spooky-janes-walk",
+    "name": "Spooky Jane's Walk",
+    "city": "Windsor–Essex",
+    "region": "ON",
+    "categories": [
+     "ghosts-history"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
+    "website": "https://www.windsorjaneswalk.ca/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "id": "sandwich-town-ghost-tour",
+   "inventoryNo": "52",
+   "name": "Sandwich Town Ghost Tour",
+   "city": "Windsor",
+   "state": "PUBLISHED",
+   "category": "published",
+   "ownerApproved": true,
+   "imageRoute": "illustration",
+   "rightsRoute": "owner-supplied-illustration",
+   "reasons": [],
+   "disposition": null,
+   "publicCard": {
+    "id": "sandwich-town-ghost-tour",
+    "name": "Sandwich Town Ghost Tour",
+    "city": "Windsor",
+    "region": "ON",
+    "categories": [
+     "ghosts-history"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historical ghost walk",
+    "website": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
+    "image": {
+     "src": "/assets/seasonal/halloween-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/halloween-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  }
+ ]
+}

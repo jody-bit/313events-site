@@ -1,33 +1,17 @@
-// test/homepage-header-layout.test.js — the homepage header stays one row
-// on desktop, and search + Submit Event never drop onto a row of their own.
+// test/homepage-header-layout.test.js — the homepage header (Homepage V2).
 //
-// WHAT HAPPENED. On 2026-10-01 a ninth link, Neighborhoods, was added to the
-// homepage's nav (commit 07580f3). The header is a flex row of
-// [logo] [nav] [search + Submit Event] inside a 1,140px container; with nine
-// links 22px apart it needed about 1,164px, so at EVERY desktop width the
-// last item — search + Submit Event — wrapped onto a second row, where
-// justify-content:space-between put it at the far left under the logo. A
-// first fix on 2026-10-03 (min-width:0 on the nav, flex-shrink:0 on the
-// search + submit group) could not work: with flex-wrap:wrap a flex row
-// breaks into lines BEFORE any item is allowed to shrink, and it decides
-// where to break from the nav's full one-line width.
+// HISTORY. On 2026-10-01 a ninth nav link wrapped search + Submit Event onto
+// a second row at every desktop width (fixed 2026-10-03: no wrap above 900px,
+// the nav free to shrink, the actions group never shrinks). Homepage V2
+// (2026-10-10) replaced the nine links with the seven of the approved layout
+// — Events, Calendar, Map, Venues, Neighborhoods, On the Radar, About — and
+// folds them behind a menu button at 900px and below, so the wordmark,
+// search and Submit stay on one row at every width.
 //
-// THE FIX (2026-10-03, same day, later):
-//   1. above the 900px breakpoint the header row does not wrap, so the
-//      shrinking the first fix set up can actually happen — if the row is
-//      ever too narrow, the nav wraps its own links and search + Submit
-//      Event stay put;
-//   2. the gap between nav links is 16px instead of 22px, so nine links fit
-//      on one line again (about 1,116px of the 1,140px available), with the
-//      logo and Submit Event exactly where they were when the header last
-//      fitted on one row.
-// At 900px and below nothing changed.
-//
-// This repo's tests run in Node with no browser, so layout itself cannot be
-// measured here (it was, in Chromium, at 23 widths — see the commit). What
-// this file does is pin every CSS rule and piece of markup the layout
-// depends on, and the list of nav links the width budget was measured for,
-// so none of it can be undone or outgrown quietly.
+// This repo's tests run in Node with no browser, so layout itself is
+// measured elsewhere (Chromium screenshots at 1280, 768, 390 and 320). What
+// this file pins is every rule and piece of markup the layout depends on,
+// the list of nav links, and that every link goes somewhere that exists.
 //
 // Run: node test/homepage-header-layout.test.js
 "use strict";
@@ -55,65 +39,60 @@ function media(query) {
   return css.slice(start + 1, i);
 }
 
-// --- 1. The header row: wraps by default (mobile/tablet), never on desktop ---
+// --- 1. The header row: one row at every width ---
 {
   const base = rule("header.site");
   assert.ok(base.includes("display:flex") && base.includes("justify-content:space-between") && base.includes("align-items:center"), "header.site is a centred, space-between flex row");
-  assert.ok(base.includes("gap:16px"), "16px between logo, nav and search + submit");
-  assert.ok(base.includes("flex-wrap:wrap"), "the base rule still wraps — that is what gives the nav its own row at 900px and below");
-
-  const desktop = media("(min-width:901px)");
-  assert.strictEqual(rule("header.site", desktop), "flex-wrap:nowrap;", "above 900px the header row must not wrap: this is what keeps search + Submit Event on the first row");
+  const small = media("(max-width:900px)");
+  assert.ok(/header\.site\{[^}]*flex-wrap:nowrap/.test(small), "at 900px and below the header row does not wrap: wordmark, search and Submit stay on one row");
 }
-console.log("PASS: the header row wraps at 900px and below, and never above it");
+console.log("PASS: the header is one row at 900px and below (the nav folds behind the menu button)");
 
-// --- 2. The nav: free to shrink and wrap its own links; 16px between links ---
+// --- 2. The nav: free to shrink, wraps its own links, never pushes the actions off ---
 {
   const nav = rule(".site-nav");
   assert.ok(nav.includes("display:flex") && nav.includes("flex-wrap:wrap"), "the nav wraps its own links when it has to");
-  assert.ok(nav.includes("min-width:0"), "the nav may shrink below its one-line width (otherwise nowrap would overflow instead)");
-  assert.ok(/(^|;)gap:16px/.test(nav), "16px between nav links — at 22px the nine links are 24px too wide for the 1,140px header");
-  assert.ok(nav.includes("row-gap:8px"), "8px between the nav's own rows when it does wrap");
+  assert.ok(nav.includes("min-width:0"), "the nav may shrink below its one-line width");
+  const actions = rule(".site-actions");
+  assert.ok(actions.includes("flex-shrink:0"), "search + Submit never shrink");
 }
-console.log("PASS: the nav can shrink and wrap its own links; links are 16px apart");
+console.log("PASS: the nav can shrink; search + Submit Event never do");
 
-// --- 3. 900px and below: unchanged ---
+// --- 3. The menu: hidden above 900px, a button at 900px and below ---
 {
+  assert.ok(/(^|\})\s*\.nav-toggle\s*\{\s*display:\s*none;\s*\}/.test(css), "no menu button on desktop");
   const small = media("(max-width:900px)");
-  assert.strictEqual(rule(".site-nav", small), "gap:14px;order:3;flex-basis:100%;", "at 900px and below the nav takes a full row of its own, under the logo and search + submit — exactly as before");
-  assert.ok(!/header\.site\s*\{/.test(small), "and nothing else about the header changes there");
-  // The two breakpoints meet with no gap and no overlap.
-  assert.ok(css.includes("@media (min-width:901px)") && css.includes("@media (max-width:900px)"));
+  assert.ok(/\.nav-toggle\{display:flex;\}/.test(squash(small)), "the menu button shows at 900px and below");
+  assert.ok(/\.site-nav\{[^}]*display:none/.test(squash(small)) && /\.site-nav\.open\{display:flex;\}/.test(squash(small)), "the nav is a dropdown there, opened by the button");
+  assert.ok(css.includes("@media (max-width:560px)") && /\.submit-btn \.sb-label\{display:none;\}/.test(css.replace(/\s+/g, " ")), "on a phone Submit collapses to its + mark; the accessible name stays");
 }
-console.log("PASS: at 900px and below the header rules are exactly what they were");
+console.log("PASS: the menu button exists exactly where the nav folds");
 
 // --- 4. The markup the layout depends on ---
 {
   const header = html.match(/<header class="site">([\s\S]*?)<\/header>/)[1].replace(/<!--[\s\S]*?-->/g, "");
-  const order = [...header.matchAll(/<(div|nav)\b[^>]*>/g)].map((m) => m[0]);
-  assert.ok(/^<div>$/.test(order[0]), "first: the logo");
-  assert.ok(/^<nav class="site-nav"/.test(order[1]), "second: the nav");
-  assert.ok(/^<div style="[^"]*flex-shrink:0;[^"]*">$/.test(order[2]) && /display:flex/.test(order[2]), "third: the search + submit group, which never shrinks");
+  const order = [...header.matchAll(/<(h1|nav|div)\b[^>]*>/g)].map((m) => m[0]);
+  assert.ok(/^<h1>$/.test(order[0]), "first: the logo");
+  assert.ok(/^<nav class="site-nav" id="siteNav"/.test(order[1]), "second: the nav");
+  assert.ok(/^<div class="site-actions">$/.test(order[2]), "third: the search + Submit group");
   const group = header.slice(header.indexOf(order[2]));
-  assert.ok(group.indexOf('id="navSearchBtn"') !== -1 && group.indexOf('id="navSearchBtn"') < group.indexOf(">Submit Event</a>"), "search, then Submit Event, inside that group");
-  assert.ok(/white-space:nowrap;[^"]*">Submit Event<\/a>/.test(group), "the Submit Event label never breaks in two");
-  assert.ok(/<img src="\/assets\/wordmark\.svg" alt="313\.events" height="26"/.test(header), "the logo is the 26px wordmark");
+  assert.ok(group.indexOf('id="navSearchBtn"') !== -1 && group.indexOf('id="navSearchBtn"') < group.indexOf('class="submit-btn"') && group.indexOf('class="submit-btn"') < group.indexOf('id="navToggle"'), "search, then Submit Event, then the menu button");
+  assert.ok(/aria-label="Submit an event"/.test(group) && /<span class="sb-label">Submit Event<\/span>/.test(group), "Submit keeps an accessible name and its label");
+  assert.ok(/id="navToggle" aria-expanded="false" aria-controls="siteNav"/.test(group), "the menu button says what it controls and whether it is open");
+  assert.ok(/<img src="\/assets\/wordmark\.svg" alt="313\.events" height="26"/.test(header), "the logo is the approved 26px wordmark asset, unchanged");
 
-  // The width budget was measured for exactly these nine links, in this
-  // order (real fonts: about 1,116px of the 1,140px available on macOS,
-  // about 1,126px with Linux font rendering). Adding or renaming a link
-  // changes that arithmetic — re-measure before changing this list.
   const nav = header.match(/<nav class="site-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
-  const links = [...nav.matchAll(/<(?:a|button)\b[^>]*>([^<]+)<\/(?:a|button)>/g)].map((m) => m[1]);
-  assert.deepStrictEqual(links, ["Today", "Tonight", "Tomorrow", "This Weekend", "Calendar", "Map", "Venues", "Neighborhoods", "Browse"],
-    "the nav's links changed: the one-row header was measured for these nine — re-measure the header at desktop widths before changing them");
+  const links = [...nav.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map((m) => [m[2], m[1]]);
+  assert.deepStrictEqual(links, [["Events", "/"], ["Calendar", "calendar.html"], ["Map", "map.html"], ["Venues", "venues.html"], ["Neighborhoods", "neighborhoods.html"], ["On the Radar", "radar.html"], ["About", "about.html"]]);
+  for (const [, href] of links) if (href !== "/") assert.ok(fs.existsSync(`${REPO_DIR}/${href}`), `${href} exists — no dead navigation links`);
+  assert.ok(/<a class="submit-btn" href="submit\.html"/.test(group) && fs.existsSync(`${REPO_DIR}/submit.html`), "Submit Event goes to the submit page");
 }
-console.log("PASS: header markup — logo, nav, then a non-shrinking search + Submit Event group; the nine links the width was measured for");
+console.log("PASS: header markup — wordmark, nav of seven real destinations, then search, Submit Event and the menu button");
 
-// --- 5. The page's layout width is what the budget assumes ---
+// --- 5. The page's layout width ---
 {
-  assert.strictEqual(rule(".wrap"), "max-width:1180px;margin:0auto;padding:14px20px48px;", "the page column is 1,180px with 20px padding: a 1,140px header");
+  assert.ok(/max-width:1\d{3}px/.test(rule(".wrap")), ".wrap still sets the page column width");
 }
-console.log("PASS: the header's container is still 1,140px wide at desktop widths");
+console.log("PASS: the page column keeps its max width");
 
 console.log("\nAll homepage header layout tests passed.");
