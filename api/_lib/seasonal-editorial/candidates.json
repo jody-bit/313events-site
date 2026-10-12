@@ -3620,9 +3620,9 @@
    "name": "Holly State Recreation Area",
    "location": "Holly, MI",
    "inventory_note": "Woodland lakes / trails",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval.",
    "flags": [],
    "entry_id": "holly-state-recreation-area"
   },

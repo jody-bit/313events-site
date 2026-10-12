@@ -5790,28 +5790,28 @@
     "parks-gardens"
    ],
    "category_source": "record",
-   "summary": "Woodland lakes / trails.",
-   "official_site": null,
-   "website": null,
+   "summary": "Holly State Recreation Area in Holly. Listed features: hiking, mountain biking, camping, boating, fishing, disc golf.",
+   "official_site": "https://www.michigan.gov/recsearch/parks/holly",
+   "website": "https://www.michigan.gov/recsearch/parks/holly",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Official page could not be read 2026-10-11. blocked (HTTP 403); Michigan Recreation Passport likely required (not verified); Hunting seasons possible (not verified); Official page not read as the managing source; verification pending.",
+    "status": "verified",
+    "official_site_checked": true,
+    "detail": "Official page read 2026-10-11 (https://www.michigan.gov/recsearch/parks/holly). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
     "flags": [
-     "blocked (HTTP 403)",
-     "Michigan Recreation Passport likely required (not verified)",
-     "Hunting seasons possible (not verified)",
-     "Official page not read as the managing source; verification pending."
+     "WhoaZone water park closed for 2026 (page)",
+     "boat launch lot paving noted on page (reopening week of Sept 28)",
+     "hunting is a listed activity",
+     "Page read 2026-10-11 via michigan.gov/recsearch (the dnr/places URL returns 403)"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "image": false,
      "rights": false,
      "approval": false
@@ -5819,8 +5819,6 @@
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],

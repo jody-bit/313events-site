@@ -5628,36 +5628,44 @@
     "categories": [
      "parks-gardens"
     ],
-    "relevance_confirmed": false,
+    "relevance_confirmed": true,
     "relevance": {
      "evidence": [
       {
-       "source_url": "https://www.michigan.photography/blog/holly-state-recreation-area-wildwood-valley-lake-loop/",
-       "source_kind": "third-party",
-       "statement_paraphrase": "Blog describes a trail loop with strong color during peak fall in southeast Michigan; undated, seen only in search summary."
+       "source_url": "https://www.michigan.gov/recsearch/parks/holly",
+       "source_kind": "official-park-page",
+       "statement_paraphrase": "Official DNR page: more than 8,000 acres of rolling woodlands and open fields for hiking and mountain biking; header image captioned lake with changing leaf colour."
       }
      ],
-     "rationale": "Only a third-party blog summary; official page blocked.",
-     "confidence": "low",
+     "rationale": "Large forested state recreation area with documented trails and an official fall-colour header image; no explicit fall-colour statement.",
+     "confidence": "medium",
      "unresolved": [
-      "Official page returned 403; hours, Recreation Passport, trails unverified",
-      "Park official name unconfirmed"
+      "No DNR or tourism page names Holly specifically for fall colour",
+      "Recreation Passport rule not stated in the page text read"
      ]
     },
     "verification": {
-     "official_url": "https://www.michigan.gov/dnr/places/state-parks/holly-recreation-area",
-     "read_ok": false,
+     "official_url": "https://www.michigan.gov/recsearch/parks/holly",
+     "read_ok": true,
      "url_kind": "agency-page",
-     "address": "Holly, MI (not read from official page)",
-     "access": null,
-     "features": [],
+     "address": "8100 Grange Hall Road, Holly, MI 48442",
+     "access": "Page lists no hours or fees; state park vehicle entry rules not stated on the page text read",
+     "features": [
+      "more than 8,000 acres of rolling woodlands and open fields",
+      "hiking",
+      "mountain biking",
+      "camping, boating, fishing",
+      "disc golf",
+      "nature programs",
+      "Heron Lake beach and fishing pier"
+     ],
      "activities": [],
-     "relevance": "Only a third-party blog summary; official page blocked.",
+     "relevance": "The DNR page describes more than 8,000 acres of rolling woodlands and open fields with hiking and mountain biking; its header image is captioned as a lake with changing leaf colour. It makes no explicit fall-colour statement.",
      "flags": [
-      "blocked (HTTP 403)",
-      "Michigan Recreation Passport likely required (not verified)",
-      "Hunting seasons possible (not verified)",
-      "Official page not read as the managing source; verification pending."
+      "WhoaZone water park closed for 2026 (page)",
+      "boat launch lot paving noted on page (reopening week of Sept 28)",
+      "hunting is a listed activity",
+      "Page read 2026-10-11 via michigan.gov/recsearch (the dnr/places URL returns 403)"
      ],
      "confidence": "low",
      "lat": 42.8,

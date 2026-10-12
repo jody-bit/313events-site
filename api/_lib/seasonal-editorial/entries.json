@@ -8258,8 +8258,8 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "Woodland lakes / trails.",
+   "status": "CONTENT_VERIFIED",
+   "summary": "Holly State Recreation Area in Holly. Listed features: hiking, mountain biking, camping, boating, fishing, disc golf.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
     "alternates": [
@@ -8273,36 +8273,38 @@
    },
    "evidence": [
     {
-     "level": "inventory+search",
-     "websiteChecked": false,
-     "url": "https://www.michigan.gov/dnr/places/state-parks/holly-recreation-area",
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/holly",
      "checkedAt": "2026-10-11",
-     "note": "Official page could not be read on 2026-10-11: blocked (HTTP 403); Michigan Recreation Passport likely required (not verified); Hunting seasons possible (not verified); Official page not read as the managing source; verification pending.. Not verified."
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 8100 Grange Hall Road, Holly, MI 48442. Season/hours as stated: Page lists no hours or fees; state park vehicle entry rules not stated on the page text read. Flags: WhoaZone water park closed for 2026 (page); boat launch lot paving noted on page (reopening week of Sept 28); hunting is a listed activity; Page read 2026-10-11 via michigan.gov/recsearch (the dnr/places URL returns 403)."
     }
    ],
    "relevance": {
-    "confirmed": false,
+    "confirmed": true,
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-    "note": "Not confirmed: Only a third-party blog summary; official page blocked. Awaiting editorial judgment.",
-    "confidence": "low",
+    "note": "Large forested state recreation area with documented trails and an official fall-colour header image; no explicit fall-colour statement.",
+    "confidence": "medium",
     "evidence": [
      {
-      "source_url": "https://www.michigan.photography/blog/holly-state-recreation-area-wildwood-valley-lake-loop/",
-      "source_kind": "third-party",
-      "statement_paraphrase": "Blog describes a trail loop with strong color during peak fall in southeast Michigan; undated, seen only in search summary."
+      "source_url": "https://www.michigan.gov/recsearch/parks/holly",
+      "source_kind": "official-park-page",
+      "statement_paraphrase": "Official DNR page: more than 8,000 acres of rolling woodlands and open fields for hiking and mountain biking; header image captioned lake with changing leaf colour."
      }
     ],
     "unresolved": [
-     "Official page returned 403; hours, Recreation Passport, trails unverified",
-     "Park official name unconfirmed"
+     "No DNR or tourism page names Holly specifically for fall colour",
+     "Recreation Passport rule not stated in the page text read"
     ]
    },
    "distance": {
     "miles": 43,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; Holly area, general geographic knowledge, not from a page read)"
-   }
+   },
+   "website": "https://www.michigan.gov/recsearch/parks/holly"
   },
   {
    "id": "ortonville-recreation-area",
