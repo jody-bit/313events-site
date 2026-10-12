@@ -56,7 +56,7 @@ const BUCKETS = {
 
 p("# Launch proposal 1: /fall and /fall-color");
 p();
-p("Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entries.json`, `launch-1.json` and `verification-2026-10-11.json`. The consolidated integration branch keeps `launch-verification.json` and its records; these 16 are the curated records for the launch.");
+p("Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entries.json`, `launch-1.json` and `verification-2026-10-11.json`. The consolidated integration branch keeps `launch-verification.json` and its records; these 15 are the curated records for the launch. Forever Acres Farm was held out by the owner on 2026-10-12 pending 2026 verification (`launch-1.json` `held`).");
 p();
 p("**Status: PROPOSED. Nothing here is approved and nothing is published.** Every record below is declared and derived `READY_FOR_REVIEW`: gate items 1 to 4 are recorded, gate item 5 (`approval {by, at}`) is empty. Only the approving person writes it. Halloween is on its own verification track and is not part of this batch.");
 p();
@@ -156,7 +156,9 @@ p("5. **Linked images** (Wiard's and Stony Creek had one; no launch record uses 
 p("6. **Season currency.** Several fall rows need a second read of the season before they can be proposed (see Not proposed yet).");
 p("7. **Highland's address.** The official Michigan DNR page gives White Lake (48383); your inventory said Highland. The card says White Lake.");
 p("8. **Wiard's.** The Country Fair attractions read \"Temporarily Closed\" on the page read, so the card no longer mentions the Country Fair.");
-p("9. **Verification method.** Official pages were read through a page-summarising fetch tool, twice for each proposed record. That tool returns a model's summary, not a page capture. Re-confirm against the live page at approval.");
+p("9. **Card text corrected 2026-10-12.** Claims the recorded reads do not support were removed. Wiard's: the card names only what the home page lists (apples, cider, pumpkins, donuts); the \"Farm Experiences\" category is dropped because the Country Fair attractions read Temporarily Closed and u-pick appeared in only one read. Wasem: tart cherries removed (not a fall offering); no hours shown because the site's pages disagree. Big Red: \"family-owned\" and donuts removed (they appear only in description text the page still dates 2023), and the Cider + Donuts category is dropped with them. Cranbrook: the card says the official page mentions fall colors, not that it lists them among seasonal highlights; a later read notes beds are pulled and amenities reduced by mid-October.");
+p("10. **Forever Acres Farm (held).** Excluded from this proposal by the owner pending 2026 verification. The record is kept as HOLD_UNVERIFIED, is not in the launch preview, and has no approval.");
+p("11. **Verification method.** Official pages were read through a page-summarising fetch tool, twice for each proposed record. That tool returns a model's summary, not a page capture. Re-confirm against the live page at approval.");
 p();
 const text = L.join("\n") + "\n";
 if (process.argv.includes("--check")) {

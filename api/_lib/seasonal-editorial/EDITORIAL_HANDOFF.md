@@ -17,7 +17,7 @@ tests fail if a record's declared `status` disagrees with what its fields prove.
 | Owner photo library (originals' file names and Apple Photos ids, authorization wording) | `photo-library.json` | No |
 | Linked images (catalogue + official-site reads), load tests, risk acceptance, unchosen alternatives | `linked-images.json` | No |
 | Pinned default image per Halloween destination | `defaults.json` | No |
-| Launch proposal 1: the 16 proposed fall / fall-color records (`launch-1.json`), the two-pass official-site read log (`verification-2026-10-11.json`) and the decision packets (`LAUNCH_PROPOSAL_1.md`, generated) | `launch-1.json`, `verification-2026-10-11.json`, `LAUNCH_PROPOSAL_1.md`; the branch's own reads are in `launch-verification.json` | No |
+| Launch proposal 1: the 15 proposed fall / fall-color records (`launch-1.json`), the two-pass official-site read log (`verification-2026-10-11.json`) and the decision packets (`LAUNCH_PROPOSAL_1.md`, generated) | `launch-1.json`, `verification-2026-10-11.json`, `LAUNCH_PROPOSAL_1.md`; the branch's own reads are in `launch-verification.json` | No |
 | QA dataset served by `/api/seasonal-qa` outside production | `halloween-qa.json` (generated) | No |
 | QA reviewer client (`/halloween?qa=1`) | `qa-client.js` | No (API only) |
 | Publication migration review (the 14 entries that were public on `feature/halloween-completion`) | `MIGRATION_REVIEW.md` (generated) | No |

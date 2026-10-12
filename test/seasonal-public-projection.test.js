@@ -21,7 +21,7 @@ function load(projection) {
   return { DATA: m1.exports, R: m2.exports };
 }
 
-// approve copies of the 16 launch records and Greenfield (in memory only)
+// approve copies of the 15 launch records and Greenfield (in memory only)
 const approved = { fall: [], halloween: [], "fall-color": [] };
 const APPROVER = "Test Approver Zed";
 for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[slug]) {
@@ -38,7 +38,7 @@ linked.id = "linked-copy"; linked.approval = { by: APPROVER, at: "2026-10-12" };
 
 const projection = {};
 for (const slug of C.ORDER) projection[slug] = approved[slug].filter(C.isPublic).map(ED.publicEntry);
-assert.strictEqual(projection.fall.length, 11); assert.strictEqual(projection["fall-color"].length, 5); assert.strictEqual(projection.halloween.length, 2);
+assert.strictEqual(projection.fall.length, 10); assert.strictEqual(projection["fall-color"].length, 5); assert.strictEqual(projection.halloween.length, 2);
 
 // 1. display fields only
 const ALLOWED_TOP = ["id", "name", "city", "region", "categories", "featured", "status", "summary", "website", "image"];
@@ -98,7 +98,7 @@ for (const slug of ["fall", "fall-color", "halloween"]) {
   for (const slug of C.ORDER) for (const e of pe[slug]) assert.deepStrictEqual(e, ED.publicEntry(all[slug].find((x) => x.id === e.id)), "shipped entry is the public form of its private record");
   assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 0, "nothing is published");
 }
-// 6. none of the 16 launch records is approved or public in the real data
+// 6. none of the 15 launch records is approved or public in the real data
 for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[slug]) {
   const e = all[slug].find((x) => x.id === id);
   assert.ok(!e.approval && e.status === "READY_FOR_REVIEW" && !C.isPublic(e), id + " is unapproved and unpublished");

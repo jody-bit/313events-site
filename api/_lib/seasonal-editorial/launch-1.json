@@ -1,13 +1,12 @@
 {
  "batch": "launch-1",
- "generated": "2026-10-11",
+ "generated": "2026-10-12",
  "status": "PROPOSED. Nothing here is approved or published. Publication needs an explicit approval {by, at} written by the approving person (gate item 5).",
  "note": "The records proposed for the first incremental launch of /fall and /fall-color. Membership is a proposal only; the gate decides what is public. The QA datasets flag these records so ?qa=1&launch=1 can show them in the public card layout.",
  "collections": {
   "fall": [
    "big-red-orchard",
    "diehls-orchard-and-cider-mill",
-   "forever-acres-farm",
    "franklin-cider-mill",
    "long-family-orchard-and-farm",
    "plymouth-orchards-and-cider-mill",
@@ -24,5 +23,10 @@
    "highland-state-recreation-area",
    "holly-state-recreation-area"
   ]
+ },
+ "held": {
+  "fall": {
+   "forever-acres-farm": "Held by owner decision 2026-10-12: excluded from launch proposal 1 pending 2026 verification. The record is kept, not published, and no longer READY_FOR_REVIEW."
+  }
  }
 }

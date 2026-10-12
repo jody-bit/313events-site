@@ -28,6 +28,9 @@ const slug = (s) => s.toLowerCase().replace(/[’']/g, "").replace(/&/g, "and").
 const launch = read("launch-verification.json");
 const proposal = read("launch-1.json");
 const curatedIds = (col) => new Set(proposal.collections[col] || []);
+// Records the owner has held out of the proposal (launch-1.json "held") stay hand-curated: never rebuilt from launch-verification.json, never flagged as proposed.
+const heldIds = (col) => new Set(Object.keys((proposal.held || {})[col] || {}));
+const handIds = (col) => new Set([...curatedIds(col), ...heldIds(col)]);
 const lib = read("photo-library.json");
 const reg = read("candidates.json");
 const entriesFile = read("entries.json");
@@ -149,7 +152,7 @@ for (const col of ["fall", "fall-color"]) {
     if (!row) throw new Error("no ledger row for " + col + " " + item.ledger_name);
     const key = keyFor(row);
     const existing = out[col].find((e) => e.id === key) || (KEY_OVERRIDE[col + "|" + row.name + "|" + row.location] ? null : out[col].find((e) => norm(e.name) === norm(item.ledger_name)));
-    if (existing && curatedIds(col).has(existing.id)) { n++; built[col].push({ entry: existing, row, pick: null }); continue; }
+    if (existing && handIds(col).has(existing.id)) { n++; built[col].push({ entry: existing, row, pick: null }); continue; }
     const b = buildEntry(col, item, existing, n++);
     if (existing) out[col][out[col].indexOf(existing)] = b.entry; else out[col].push(b.entry);
     built[col].push(b);
@@ -243,7 +246,7 @@ for (const col of ["fall", "fall-color"]) {
     const item = c._item || launch.collections[col].find((x) => x.ledger_name === c.name && x.ledger_location === c.location);
     if (item) v = item.verification;
     const rv = e ? ED.review(e) : null;
-    const curated = !!(e && curatedIds(col).has(e.id));
+    const curated = !!(e && handIds(col).has(e.id)), proposed = !!(e && curatedIds(col).has(e.id));
     const status = curated ? (rv.gate.official && rv.gate.relevance ? "verified" : "partial") : !v ? "unverified" : v.read_ok ? (item.relevance_confirmed ? "verified" : "partial") : "unverified";
     const offEv = curated ? e.evidence.find((x) => x.level === "official") : null;
     const detail = curated ? "Official page read " + offEv.checkedAt + " (" + offEv.url + "), two independent reads. Relevance (" + (e.relevance.basis || "recorded") + "): " + e.relevance.note + " Season and hours are not shown on the card."
@@ -264,14 +267,14 @@ for (const col of ["fall", "fall-color"]) {
         : { declared_status: "HOLD_UNVERIFIED", state: "HOLD_UNVERIFIED", gate: { official: false, relevance: false, image: false, rights: false, approval: false }, image_route: null, rights_route: null,
           outstanding: ["Gate 1, official-source verification: not yet read.", "Gate 2, relevance: not confirmed.", "Gate 3/4, image and rights: not complete.", "Gate 5, explicit publication approval: not recorded."], caveats: [], legacy: null },
       recorded_alternatives: [],
-      launch: curated ? launchFor(col, e, rv, prim) : null,
+      launch: proposed ? launchFor(col, e, rv, prim) : null,
       manifest: { destination_id: e ? e.id : key, destination_name: c.name, primary_image: prim.src, primary_image_type: prim.type, primary_image_credit: prim.credit,
         primary_image_rights_status: prim.rights_status, fallback_image: (fallbacks[0] || art1).src, secondary_fallback_image: (fallbacks[1] || art2).src,
         alternative_images: options.slice(1).map((o) => o.id), image_status: prim.illustrative ? "generated_default" : "owner_photo", editorial_approval_status: "not_approved" },
       image_options: options
     });
   }
-  const missing = [...curatedIds(col)].filter((id) => !out[col].some((e) => e.id === id));
+  const missing = [...handIds(col)].filter((id) => !out[col].some((e) => e.id === id));
   if (missing.length) throw new Error(col + ": launch-1.json lists records that do not exist: " + missing.join(", "));
   datasets[col] = { generated: DATE, collection: col, launch: { batch: proposal.batch, proposed: curatedIds(col).size }, note: "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Nothing here is approved; the publication gate decides, and no approval is recorded.", records };
 }

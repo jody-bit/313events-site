@@ -2792,14 +2792,14 @@
     "parks-gardens"
    ],
    "category_source": "record",
-   "summary": "Gardens in Bloomfield Hills with more than 15 gardens around Cranbrook House. Its official page lists fall colors among the seasonal highlights.",
+   "summary": "Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens. Its official page mentions fall colors among what there is to see.",
    "official_site": "https://housegardens.cranbrook.edu/explore/gardens",
    "website": "https://housegardens.cranbrook.edu/explore/gardens",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://housegardens.cranbrook.edu/explore/gardens), two independent reads. Relevance (direct-prose): The official page itself names fall colors among the gardens' seasonal highlights. Season and hours are not shown on the card.",
+    "detail": "Official page read 2026-10-11 (https://housegardens.cranbrook.edu/explore/gardens), two independent reads. Relevance (direct-prose): The official page says “From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover”. It names fall colors in passing, not as a peak-season guide; a later read notes beds are pulled and amenities reduced by mid-October. Season and hours are not shown on the card.",
     "flags": [
      "public access rules to confirm"
     ]
@@ -5866,7 +5866,7 @@
    "dates_hours": null,
    "verification": {
     "status": "verified",
-    "official_site_checked": false,
+    "official_site_checked": true,
     "detail": "Official page read 2026-10-11 (https://www.michigan.gov/recsearch/parks/holly), two independent reads. Relevance (caption-only): Weaker basis: the official page does not discuss fall color in prose. Only photo captions mention changing leaf color. Season and hours are not shown on the card.",
     "flags": [
      "Weaker relevance basis (caption-only)"

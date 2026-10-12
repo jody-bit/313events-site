@@ -3,7 +3,7 @@
  "collection": "fall",
  "launch": {
   "batch": "launch-1",
-  "proposed": 11
+  "proposed": 10
  },
  "note": "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Nothing here is approved; the publication gate decides, and no approval is recorded.",
  "records": [
@@ -951,18 +951,17 @@
    "city": "Washington",
    "region": "MI",
    "categories": [
-    "cider-donuts",
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Family-owned cider mill and u-pick orchard offering fresh apples, cider and donuts.",
+   "summary": "Cider mill and u-pick orchard. Its official page carries an Orchard Season 2026 notice.",
    "official_site": "https://www.bigredorchard.com/",
    "website": "https://www.bigredorchard.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.bigredorchard.com/), two independent reads. Relevance (direct-prose): The official page describes a cider mill and u-pick orchard (apples, cider, donuts) with a 2026 season banner. Season and hours are not shown on the card.",
+    "detail": "Official page read 2026-10-11 (https://www.bigredorchard.com/), two independent reads. Relevance (direct-prose): The official page describes a cider mill and u-pick orchard under an Orchard Season 2026 heading. Donuts and “family-owned” are not claimed: they appear only in description text the page itself leaves dated 2023. Season and hours are not shown on the card.",
     "flags": []
    },
    "public": false,
@@ -2696,18 +2695,18 @@
    "website": "https://www.foreveracresfarm.com/",
    "dates_hours": null,
    "verification": {
-    "status": "verified",
+    "status": "partial",
     "official_site_checked": false,
-    "detail": "Official page read 2026-10-11 (https://www.foreveracresfarm.com/), two independent reads. Relevance (direct-prose): The official page describes a u-pick apple orchard with a 2026 fall season. Season and hours are not shown on the card.",
+    "detail": "Official page read 2026-10-11 (https://www.foreveracresfarm.com/), two independent reads. Relevance (direct-prose): Held by owner decision 2026-10-12: 2026 season not verified. Earlier note: The official page describes a u-pick apple orchard with a 2026 fall season. Season and hours are not shown on the card.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "HOLD_UNVERIFIED",
+    "state": "HOLD_UNVERIFIED",
     "gate": {
      "official": true,
-     "relevance": true,
+     "relevance": false,
      "image": true,
      "rights": true,
      "approval": false
@@ -2715,6 +2714,7 @@
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
     "outstanding": [
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
@@ -2723,13 +2723,7 @@
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": {
-    "batch": "launch-1",
-    "featured": false,
-    "image_route": "illustration",
-    "image_depicts_destination": false,
-    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
-   },
+   "launch": null,
    "manifest": {
     "destination_id": "forever-acres-farm",
     "destination_name": "Forever Acres Farm",
@@ -6247,14 +6241,14 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Fruit farm in Milan with pick-your-own apples, pumpkins and tart cherries.",
+   "summary": "Fruit farm in Milan. Its official page lists pick-your-own apples and pumpkins.",
    "official_site": "https://www.wasemfruitfarm.com",
    "website": "https://www.wasemfruitfarm.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.wasemfruitfarm.com), two independent reads. Relevance (direct-prose): The official page describes pick-your-own apples and pumpkins, with 2026 fall hours. Season and hours are not shown on the card.",
+    "detail": "Official page read 2026-10-11 (https://www.wasemfruitfarm.com), two independent reads. Relevance (direct-prose): The official page lists pick-your-own apples and pumpkins and has a Fall 2026 hours section (the site’s own pages disagree on the hours, so none are shown). Tart cherries are not claimed: they are not a fall offering. Season and hours are not shown on the card.",
     "flags": []
    },
    "public": false,
@@ -6531,18 +6525,17 @@
    "city": "Ypsilanti",
    "region": "MI",
    "categories": [
-    "cider-donuts",
-    "farm-experiences"
+    "cider-donuts"
    ],
    "category_source": "record",
-   "summary": "Orchard, cider mill and country store in Ypsilanti selling apples, cider, pumpkins and donuts.",
+   "summary": "Orchard, cider mill and country store in Ypsilanti. Its home page lists apples, cider, pumpkins and donuts.",
    "official_site": "https://www.wiards.com",
    "website": "https://www.wiards.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.wiards.com), two independent reads. Relevance (direct-prose): The official page describes an orchard, cider mill and country store selling apples, cider, pumpkins and donuts, with 2026 content. Season and hours are not shown on the card.",
+    "detail": "Official page read 2026-10-11 (https://www.wiards.com), two independent reads. Relevance (direct-prose): The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card. Season and hours are not shown on the card.",
     "flags": []
    },
    "public": false,

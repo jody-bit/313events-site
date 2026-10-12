@@ -66,7 +66,7 @@ for (const slug of ["fall", "fall-color"]) {
 {
   const launch = JSON.parse(fs.readFileSync(path.join(E, "launch-1.json"), "utf8"));
   const log = JSON.parse(fs.readFileSync(path.join(E, "verification-2026-10-11.json"), "utf8")).collections;
-  assert.strictEqual(launch.collections.fall.length, 11);
+  assert.strictEqual(launch.collections.fall.length, 10);
   assert.strictEqual(launch.collections["fall-color"].length, 5);
   assert.ok(/PROPOSED/.test(launch.status) && /Nothing/.test(launch.status));
   for (const slug of ["fall", "fall-color"]) {

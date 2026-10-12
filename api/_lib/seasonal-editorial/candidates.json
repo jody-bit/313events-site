@@ -241,9 +241,9 @@
    "name": "Forever Acres Farm",
    "location": "Britton, MI",
    "inventory_note": "Orchard",
-   "status": "READY_FOR_REVIEW",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 5 explicit approval.",
    "flags": [],
    "entry_id": "forever-acres-farm"
   },

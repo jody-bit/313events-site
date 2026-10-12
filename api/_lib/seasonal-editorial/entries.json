@@ -226,12 +226,11 @@
    "city": "Ypsilanti",
    "region": "MI",
    "categories": [
-    "cider-donuts",
-    "farm-experiences"
+    "cider-donuts"
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Orchard, cider mill and country store in Ypsilanti selling apples, cider, pumpkins and donuts.",
+   "summary": "Orchard, cider mill and country store in Ypsilanti. Its home page lists apples, cider, pumpkins and donuts.",
    "website": "https://www.wiards.com",
    "evidence": [
     {
@@ -259,7 +258,7 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page describes an orchard, cider mill and country store selling apples, cider, pumpkins and donuts, with 2026 content.",
+    "note": "The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person",
@@ -1117,7 +1116,7 @@
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Fruit farm in Milan with pick-your-own apples, pumpkins and tart cherries.",
+   "summary": "Fruit farm in Milan. Its official page lists pick-your-own apples and pumpkins.",
    "website": "https://www.wasemfruitfarm.com",
    "evidence": [
     {
@@ -1145,7 +1144,7 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page describes pick-your-own apples and pumpkins, with 2026 fall hours.",
+    "note": "The official page lists pick-your-own apples and pumpkins and has a Fall 2026 hours section (the site’s own pages disagree on the hours, so none are shown). Tart cherries are not claimed: they are not a fall offering.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person",
@@ -1693,12 +1692,11 @@
    "city": "Washington",
    "region": "MI",
    "categories": [
-    "cider-donuts",
     "farm-experiences"
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Family-owned cider mill and u-pick orchard offering fresh apples, cider and donuts.",
+   "summary": "Cider mill and u-pick orchard. Its official page carries an Orchard Season 2026 notice.",
    "website": "https://www.bigredorchard.com/",
    "evidence": [
     {
@@ -1726,7 +1724,7 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page describes a cider mill and u-pick orchard (apples, cider, donuts) with a 2026 season banner.",
+    "note": "The official page describes a cider mill and u-pick orchard under an Orchard Season 2026 heading. Donuts and “family-owned” are not claimed: they appear only in description text the page itself leaves dated 2023.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person",
@@ -2001,7 +1999,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Farm and orchard in Britton with u-pick apples and an apple cider slushy.",
    "website": "https://www.foreveracresfarm.com/",
    "evidence": [
@@ -2028,8 +2026,8 @@
     }
    ],
    "relevance": {
-    "confirmed": true,
-    "note": "The official page describes a u-pick apple orchard with a 2026 fall season.",
+    "confirmed": false,
+    "note": "Held by owner decision 2026-10-12: 2026 season not verified. Earlier note: The official page describes a u-pick apple orchard with a 2026 fall season.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
@@ -6644,7 +6642,7 @@
    ],
    "featured": true,
    "status": "READY_FOR_REVIEW",
-   "summary": "Gardens in Bloomfield Hills with more than 15 gardens around Cranbrook House. Its official page lists fall colors among the seasonal highlights.",
+   "summary": "Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens. Its official page mentions fall colors among what there is to see.",
    "website": "https://housegardens.cranbrook.edu/explore/gardens",
    "evidence": [
     {
@@ -6672,7 +6670,7 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page itself names fall colors among the gardens' seasonal highlights.",
+    "note": "The official page says “From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover”. It names fall colors in passing, not as a peak-season guide; a later read notes beds are pulled and amenities reduced by mid-October.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person",
@@ -8684,11 +8682,12 @@
      "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
     },
     {
-     "level": "inventory+search",
-     "websiteChecked": false,
-     "url": "https://www.michigan.gov/dnr/places/state-parks/holly-recreation-area",
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/holly",
      "checkedAt": "2026-10-11",
-     "note": "Official page could not be read on 2026-10-11: blocked (HTTP 403); Michigan Recreation Passport likely required (not verified); Hunting seasons possible (not verified); Official page not read as the managing source; verification pending.. Not verified."
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 8100 Grange Hall Road, Holly, MI 48442. Season/hours as stated: Page lists no hours or fees; state park vehicle entry rules not stated on the page text read. Flags: WhoaZone water park closed for 2026 (page); boat launch lot paving noted on page (reopening week of Sept 28); hunting is a listed activity; Page read 2026-10-11 via michigan.gov/recsearch (the dnr/places URL returns 403)."
     }
    ],
    "relevance": {
@@ -8697,17 +8696,17 @@
     "basis": "caption-only",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person",
-    "confidence": "low",
+    "confidence": "medium",
     "evidence": [
      {
-      "source_url": "https://www.michigan.photography/blog/holly-state-recreation-area-wildwood-valley-lake-loop/",
-      "source_kind": "third-party",
-      "statement_paraphrase": "Blog describes a trail loop with strong color during peak fall in southeast Michigan; undated, seen only in search summary."
+      "source_url": "https://www.michigan.gov/recsearch/parks/holly",
+      "source_kind": "official-park-page",
+      "statement_paraphrase": "Official DNR page: more than 8,000 acres of rolling woodlands and open fields for hiking and mountain biking; header image captioned lake with changing leaf colour."
      }
     ],
     "unresolved": [
-     "Official page returned 403; hours, Recreation Passport, trails unverified",
-     "Park official name unconfirmed"
+     "No DNR or tourism page names Holly specifically for fall colour",
+     "Recreation Passport rule not stated in the page text read"
     ]
    },
    "image": {
