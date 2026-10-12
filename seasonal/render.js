@@ -162,7 +162,7 @@
     var feat = DATA.published(col).filter(function (e) { return e.featured; });
     if (!feat.length) return "";
     return '<section class="sc-section" aria-labelledby="scDontMiss"><div class="sc-section-head"><h2 class="sc-h2" id="scDontMiss">' + esc(col.dontMissTitle) + '</h2></div>' +
-      '<ul class="sc-grid sc-rail">' + feat.map(function (e) { return card(col, e); }).join("") + '</ul></section>';
+      '<ul class="sc-grid sc-rail' + (feat.length === 1 ? " sc-rail-solo" : "") + '">' + feat.map(function (e) { return card(col, e, { list: feat.length === 1 }); }).join("") + '</ul></section>';
   }
 
   function explore(col, state) {

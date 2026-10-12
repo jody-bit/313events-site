@@ -1,7 +1,7 @@
 /* seasonal/seasonal.css — Detroit Signal V2.1 tokens, shared by the three
    seasonal collection pages. Tokens mirror index.html :root. */
 :root{--bg:#0A0A0A;--panel:#202020;--panel-alt:#161616;--ink:#F2F0E8;--ink-soft:#A9AAA3;--line:#2a2a2a;--accent:#D7FF00;--on-accent:#0A0A0A;
---font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;--font-ui:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--font-data:'Space Mono',monospace}
+--font-display:'Archivo','Archivo Narrow','Arial Narrow','Liberation Sans Narrow','Helvetica Neue Condensed',-apple-system,sans-serif;--font-ui:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--font-data:'Space Mono',monospace}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:var(--font-ui);background:var(--bg);color:var(--ink);line-height:1.4;-webkit-font-smoothing:antialiased}
@@ -41,7 +41,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .sc-h2{margin:0;font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;line-height:.9;font-size:clamp(28px,4vw,38px)}
 .sc-h2-sm{font-size:clamp(20px,2.4vw,26px);margin-bottom:12px}
-.sc-views{display:flex;gap:0}.sc-views .sc-view{min-height:36px;border:0;border-bottom:2px solid transparent;color:var(--ink-soft);padding:6px 10px}
+.sc-views{display:flex;gap:0}.sc-views .sc-view{white-space:nowrap}.sc-views .sc-view{min-height:36px;border:0;border-bottom:2px solid transparent;color:var(--ink-soft);padding:6px 10px}
 .sc-views .sc-view[aria-pressed="true"]{color:var(--accent);border-bottom-color:var(--accent)}
 .sc-count{margin:0 0 10px;font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
 .sc-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
@@ -80,10 +80,19 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-footer p{margin:0}.sc-footer-tag{font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .sc-footer-note{flex-basis:100%}
 @media (max-width:900px){.sc-grid{grid-template-columns:repeat(2,1fr)}.sc-bottom{grid-template-columns:1fr}.sc-filters{grid-template-columns:1fr}.sc-nav{display:none}.sc-header{justify-content:space-between}.sc-cta{margin-left:auto}}
+/* ---- Don't Miss with a single featured destination: the existing row card (image left, text right) fills the section instead of leaving a 4-column gap ---- */
+.sc-rail-solo{grid-template-columns:1fr}
+.sc-rail-solo .sc-card-row .sc-card-media{width:min(36%,420px)}
+.sc-rail-solo .sc-card-row .sc-card-body{padding:18px 56px 18px 24px}
+.sc-rail-solo .sc-card-title{font-size:30px}.sc-rail-solo .sc-card-where{font-size:14px}.sc-rail-solo .sc-card-sum{font-size:15px;max-width:44em}
 @media (max-width:640px){
 .sc-page{padding:0 16px 20px}.sc-hero{min-height:360px}.sc-title span{display:block}
 .sc-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding-bottom:6px}.sc-rail .sc-card{flex:0 0 72%;scroll-snap-align:start}
-.sc-card-row .sc-card-media{width:110px}.sc-tiles{grid-template-columns:repeat(2,1fr)}.sc-map-card{flex-direction:column;align-items:flex-start}
+.sc-card-row .sc-card-media{width:110px}.sc-tiles{grid-template-columns:repeat(2,1fr)}
+/* mobile readability (visual acceptance 2026-10-12): the text column no longer loses 40px to the arrow, and secondary text is larger; the 2-column grid is unchanged */
+.sc-card-body{padding:10px 12px 38px 12px}.sc-card-where,.sc-card-sum{font-size:14px;line-height:1.4}.sc-tags li{font-size:11px;padding:2px 6px}
+.sc-card-row .sc-card-body{padding:10px 12px 38px 12px}
+.sc-rail-solo .sc-card{flex-basis:100%}.sc-rail-solo .sc-card-row{flex-direction:column}.sc-rail-solo .sc-card-row .sc-card-media{width:auto;aspect-ratio:3/2}.sc-rail-solo .sc-card-row .sc-card-body{padding:10px 12px 38px 12px}.sc-rail-solo .sc-card-title{font-size:21px}.sc-rail-solo .sc-card-sum{font-size:14px}.sc-map-card{flex-direction:column;align-items:flex-start}
 }
 /* ---- image fallback + QA mode (Halloween). Public layout above is unchanged. ---- */
 .sc-ph{display:block;width:100%;height:100%;background:#111 url(/assets/313-events-signal.svg) center/28% no-repeat;background-color:#111}

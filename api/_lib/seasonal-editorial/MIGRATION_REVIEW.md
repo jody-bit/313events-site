@@ -65,7 +65,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #7. Yahoo/Macomb County/Islands.com coverage describe wagon rides and party packages in fall; Blake's has several sites (inventory #8-10), only the Armada orchard is published. <https://www.blakefarms.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 17985 Armada Center Road, Armada, MI 48005. Season/hours as stated: Cider mill open daily 8am-6pm; U-pick open now. Flags: site now branded Blake Farms; one of four locations. <https://blakefarms.com/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Official page lists fall farm activities: cider mill, tasting room, U-pick, Funland.
-- Image: `/assets/seasonal/fall-card-3.webp` (generated illustrative card).
+- Image: `/assets/seasonal/fall-card-4.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:

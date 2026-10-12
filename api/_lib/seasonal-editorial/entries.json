@@ -236,7 +236,7 @@
    "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery.",
    "website": "https://blakefarms.com/",
    "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
+    "src": "/assets/seasonal/fall-card-4.webp",
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
@@ -247,9 +247,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-3.webp",
-     "bytes": 30910,
-     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
+     "file": "/assets/seasonal/fall-card-4.webp",
+     "bytes": 32410,
+     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
@@ -793,7 +793,7 @@
    "status": "PUBLISHED",
    "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions.",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
@@ -804,9 +804,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-5.webp",
-     "bytes": 30844,
-     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "file": "/assets/seasonal/fall-card-3.webp",
+     "bytes": 30910,
+     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
@@ -963,7 +963,7 @@
    "status": "PUBLISHED",
    "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts.",
    "image": {
-    "src": "/assets/seasonal/fall-card-6.webp",
+    "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
@@ -974,9 +974,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-6.webp",
-     "bytes": 37500,
-     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
@@ -1406,7 +1406,7 @@
    "status": "PUBLISHED",
    "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides.",
    "image": {
-    "src": "/assets/seasonal/fall-card-7.webp",
+    "src": "/assets/seasonal/fall-card-6.webp",
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
@@ -1417,9 +1417,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-7.webp",
-     "bytes": 38066,
-     "sha256": "1b07ab5449cbf9029bdfb97b8620b21f58fb5bbab1210b891d23d246e484ce77",
+     "file": "/assets/seasonal/fall-card-6.webp",
+     "bytes": 37500,
+     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
@@ -1776,9 +1776,9 @@
    "status": "PUBLISHED",
    "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
@@ -1787,9 +1787,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-1.webp",
-     "bytes": 35358,
-     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "file": "/assets/seasonal/fall-card-2.webp",
+     "bytes": 27886,
+     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
@@ -1863,10 +1863,10 @@
    "status": "PUBLISHED",
    "summary": "Fall festival farm with a corn maze, slides, photo spots and cider donuts.",
    "image": {
-    "src": "/assets/seasonal/fall-card-2.webp",
+    "src": "/assets/seasonal/fall-card-7.webp",
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
-     "/assets/seasonal/fall-card-3.webp"
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
@@ -1874,9 +1874,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-2.webp",
-     "bytes": 27886,
-     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
+     "file": "/assets/seasonal/fall-card-7.webp",
+     "bytes": 38066,
+     "sha256": "1b07ab5449cbf9029bdfb97b8620b21f58fb5bbab1210b891d23d246e484ce77",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
@@ -3114,7 +3114,7 @@
    "status": "PUBLISHED",
    "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
    "image": {
-    "src": "/assets/seasonal/fall-card-8.webp",
+    "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
@@ -3125,9 +3125,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-8.webp",
-     "bytes": 22172,
-     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"

@@ -234,7 +234,9 @@ assert.strictEqual(R.esc('<a href="x">&\'</a>'), "&lt;a href=&quot;x&quot;&gt;&a
 {
   const html = R.main(fall);
   assert.ok(!html.includes("<script>") && html.includes("Delta &lt;script&gt;"), "names are escaped");
-  assert.strictEqual((html.match(/class="sc-card"/g) || []).length, 4 + 1, "four explore cards plus one featured in Don't Miss");
+  assert.strictEqual((html.match(/class="sc-card"/g) || []).length, 4, "four explore cards");
+  assert.strictEqual((html.match(/class="sc-card sc-card-row"/g) || []).length, 1, "one featured destination renders in the existing row card (sc-rail-solo), filling the Don't Miss section");
+  assert.ok(/class="sc-grid sc-rail sc-rail-solo"/.test(html), "a single featured destination uses the solo rail");
   assert.ok(/class="sc-card sc-card-row"/.test(R.results(fall, { view: "list" })), "list view");
   for (const c of fall.categories) assert.strictEqual(html.includes('data-cat="' + c.id + '" aria-pressed'), fall.entries.some((e) => e.categories.includes(c.id)));
   assert.ok(!/<img(?![^>]*\balt=)/.test(html), "every img has alt");

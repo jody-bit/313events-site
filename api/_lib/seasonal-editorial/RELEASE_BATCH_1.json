@@ -434,7 +434,7 @@
     "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery.",
     "website": "https://blakefarms.com/",
     "image": {
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-2.webp"
@@ -498,7 +498,7 @@
     "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions.",
     "website": "https://blakefarms.com/big-apple/",
     "image": {
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-2.webp"
@@ -531,7 +531,7 @@
     "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts.",
     "website": "https://www.stonycreekorchard.com/",
     "image": {
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-2.webp"
@@ -563,7 +563,7 @@
     "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides.",
     "website": "https://www.obstbaum.com/",
     "image": {
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-2.webp"
@@ -627,9 +627,9 @@
     "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
     "website": "https://www.threecedarsfarm.org/",
     "image": {
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "alternates": [
-      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
@@ -659,10 +659,10 @@
     "summary": "Fall festival farm with a corn maze, slides, photo spots and cider donuts.",
     "website": "https://www.kackleberryfarms.com/",
     "image": {
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
-      "/assets/seasonal/fall-card-3.webp"
+      "/assets/seasonal/fall-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
      "illustrative": true
@@ -854,7 +854,7 @@
     "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
     "website": "https://parshallvillecidermill.com",
     "image": {
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-2.webp"

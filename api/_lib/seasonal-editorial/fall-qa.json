@@ -1158,11 +1158,11 @@
    "manifest": {
     "destination_id": "blakes-orchard-cider-mill",
     "destination_name": "Blake’s Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "link-blakes-orchard-cider-mill",
@@ -1176,9 +1176,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1324,11 +1324,11 @@
    "manifest": {
     "destination_id": "blakes-big-apple",
     "destination_name": "Blake’s Big Apple",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -1341,9 +1341,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4427,11 +4427,11 @@
    "manifest": {
     "destination_id": "obstbaum-orchards",
     "destination_name": "Obstbaum Orchards",
-    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -4444,9 +4444,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4887,11 +4887,11 @@
    "manifest": {
     "destination_id": "parshallville-cider-mill",
     "destination_name": "Parshallville Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -4904,9 +4904,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5905,11 +5905,11 @@
    "manifest": {
     "destination_id": "stony-creek-orchard-and-cider-mill",
     "destination_name": "Stony Creek Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -5922,9 +5922,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6050,14 +6050,14 @@
    "manifest": {
     "destination_id": "three-cedars-farm",
     "destination_name": "Three Cedars Farm",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-2",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -6067,9 +6067,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6079,9 +6079,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8721,11 +8721,11 @@
    "manifest": {
     "destination_id": "kackleberry-farms",
     "destination_name": "Kackleberry Farms",
-    "primary_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -8738,9 +8738,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

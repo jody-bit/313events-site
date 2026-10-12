@@ -111,6 +111,9 @@ function reason(col, e, rv, v) {
 
 // ---- illustrations: existing temporary artwork only, rotated per collection so neighbouring cards differ
 const ART = { fall: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => "/assets/seasonal/fall-card-" + n + ".webp"), "fall-color": [1, 2, 3, 4, 5, 6, 7, 8].map((n) => "/assets/seasonal/fall-color-card-" + n + ".webp") };
+// Visual-acceptance correction (2026-10-12): neighbouring cards must not show the same illustration in the 4-column or the 2-column grid. The rotation below is
+// unchanged (so no other record moves); these seven expansion records take another of the same eight approved illustrations. Original-15 records are never overridden.
+const IMAGE_OVERRIDES = { fall: { "blakes-orchard-cider-mill": 4, "stony-creek-orchard-and-cider-mill": 5, "blakes-big-apple": 3, "obstbaum-orchards": 6, "kackleberry-farms": 7, "three-cedars-farm": 2, "parshallville-cider-mill": 5 }, "fall-color": {} };
 const EXCEPTION_NOTE = "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.";
 
 const out = JSON.parse(JSON.stringify(entries));
@@ -134,7 +137,7 @@ for (const col of ["fall", "fall-color"]) {
       delete e.image.acquired;
     }
     if (!e.image.ownerPhoto) {
-      const src = ART[col][n++ % ART[col].length];
+      const rot = ART[col][n++ % ART[col].length], ov = IMAGE_OVERRIDES[col][e.id], src = ov ? ART[col][ov - 1] : rot;
       const f = ED.illustrationImage(src, { alternates: ART[col].filter((a) => a !== src).slice(0, 2), acquiredAt: DATE, recordedBy: "Claude Code, recording the owner's image direction of 2026-10-12", recordedAt: DATE });
       e.image = Object.assign({}, f, e.image.photoCandidate ? { photoCandidate: e.image.photoCandidate } : {}, e.image.linkedCandidates ? { linkedCandidates: e.image.linkedCandidates } : {});
       e.image.provenance = { status: "OWNER_ACCEPTED", resolvedAt: DATE, resolvedBy: "Jody Tyree (owner direction in the project thread)", unresolved: [], label: "Illustrative image", ownerAcceptance: EXCEPTION_NOTE,
