@@ -10,7 +10,7 @@
 const fs = require("fs");
 const path = require("path");
 const ED = require("../api/_lib/seasonal-editorial/editorial.js");
-const R = require("../seasonal/render.js");
+const RENDER = require("../seasonal/render.js");
 const root = path.join(__dirname, "..");
 const PUBLISHED_FILE = "seasonal/published-entries.js";
 
@@ -34,7 +34,8 @@ function publishedSource() {
 }
 const FILES = { fall: "fall.html", halloween: "halloween.html", "fall-color": "fall-color.html" };
 
-function page(col) {
+function page(col, RR) {
+  const R = RR || RENDER;
   const url = "https://313.events" + col.route;
   const t = col.title + " — 313.events";
   return `<!DOCTYPE html>
@@ -130,9 +131,18 @@ if (require.main === module) {
   if (check) { if (!fs.existsSync(pub) || fs.readFileSync(pub, "utf8") !== src) stale.push(PUBLISHED_FILE); }
   else fs.writeFileSync(pub, src);
   const projection = ED.publishedProjection();
+  // The pages are rendered against the projection computed now, not whatever published-entries.js was loaded when this
+  // process started: load the renderer fresh with the projection injected, so a first build after an approval is complete.
+  const fresh = (() => {
+    const pubPath = require.resolve("../seasonal/published-entries.js");
+    ["collections.js", "render.js", "published-entries.js"].forEach((f) => { delete require.cache[require.resolve("../seasonal/" + f)]; });
+    require.cache[pubPath] = { id: pubPath, filename: pubPath, loaded: true, exports: projection, children: [], paths: [] };
+    const r = require("../seasonal/render.js");
+    return r;
+  })();
   for (const slug of ED.COLLECTIONS.ORDER) {
     const out = path.join(root, FILES[slug]);
-    const html = page(Object.assign({}, ED.COLLECTIONS.COLLECTIONS[slug], { entries: projection[slug] }));
+    const html = page(Object.assign({}, ED.COLLECTIONS.COLLECTIONS[slug], { entries: projection[slug] }), fresh);
     if (check) { if (!fs.existsSync(out) || fs.readFileSync(out, "utf8") !== html) stale.push(FILES[slug]); }
     else fs.writeFileSync(out, html);
   }

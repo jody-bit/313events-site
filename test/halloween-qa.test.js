@@ -153,7 +153,16 @@ assert.notStrictEqual(R.pickSrc({ src: "/x.webp", fallbacks: ["/q.webp"] }), "/x
 R.setFailedLookup(null);
 
 // 8. the other seasonal pages carry no unpublished destination either
-for (const f of ["fall.html", "fall-color.html"]) assert.ok(!/class="sc-card/.test(fs.readFileSync(path.join(root, f), "utf8")), f + " renders no unpublished card");
+// (the built pages now render the 76 authorized records; every card on them must be one of those, and nothing else)
+{
+  const authSet = AUTHZ.authorized(ED);
+  for (const [f, slug] of [["fall.html", "fall"], ["fall-color.html", "fall-color"], ["halloween.html", "halloween"]]) {
+    const html = fs.readFileSync(path.join(root, f), "utf8");
+    const ids = [...html.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]);
+    for (const id of ids) assert.ok(authSet.has(slug + "/" + id), f + " renders only authorized records: " + id);
+    if (slug === "halloween") assert.strictEqual(ids.length, 0, "Halloween renders no card");
+  }
+}
 console.log("halloween-qa: ok");
 
 // ---- linked images: the supplied catalogue (12) plus the official-site images read on 2026-10-11 (9) ----

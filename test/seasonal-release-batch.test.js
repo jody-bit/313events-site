@@ -51,4 +51,22 @@ for (const e of [E["fall-color"].find((x) => x.id === hines.id), E["fall-color"]
   assert.ok(e.accessAdvisories.verification && e.accessAdvisories.verification.sources.length && e.accessAdvisories.verification.limits, e.id + ": advisory verification recorded");
   assert.ok(e.accessAdvisories.publicTextApproved && e.accessAdvisories.publicTextApproved.at === "2026-10-12", e.id + ": advisory wording owner-approved");
 }
+// ---- the built public pages carry exactly the authorized records, the Don't Miss rail and no QA data (no query parameters needed)
+{
+  const fs = require("fs");
+  const FEATURED = { fall: ["diehls-orchard-and-cider-mill", "franklin-cider-mill", "long-family-orchard-and-farm", "plymouth-orchards-and-cider-mill"], "fall-color": ["indian-springs-metropark"] };
+  for (const [f, slug] of [["fall.html", "fall"], ["fall-color.html", "fall-color"]]) {
+    const html = fs.readFileSync(path.join(root, f), "utf8");
+    const cards = [...html.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]);
+    const unique = [...new Set(cards)].sort();
+    const want = B.records.filter((r) => r.collection === slug).map((r) => r.id).sort();
+    assert.deepStrictEqual(unique, want, f + ": built page shows exactly the authorized records");
+    assert.strictEqual(cards.length, want.length + FEATURED[slug].length, f + ": plus the Don't Miss rail");
+    const rail = html.slice(html.indexOf('id="scDontMiss"'), html.indexOf('id="scExplore"'));
+    const railIds = [...rail.matchAll(/data-entry="([^"]+)"/g)].map((m) => m[1]).sort();
+    assert.deepStrictEqual(railIds, FEATURED[slug].slice().sort(), f + ": Don't Miss is the approved selection");
+    assert.ok(new RegExp(want.length + " of " + want.length + " destinations").test(html), f + ": count");
+    for (const bad of ["QA MODE", "PROPOSED", "READY_FOR_REVIEW", "313p-", "editorialAccepted", "approval", "evidence", "checkedBy"]) assert.ok(!html.includes(bad), f + ": no internal text " + bad);
+  }
+}
 console.log("seasonal release batch: ok");
