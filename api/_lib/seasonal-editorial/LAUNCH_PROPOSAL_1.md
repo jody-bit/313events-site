@@ -27,7 +27,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.bigredorchard.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 4900 32 Mile Road, Washington, MI 48095. Describes a family-owned cider mill offering fresh apples, cider and donuts; the page title includes U-Pick. A banner reads "Orchard Season 2026!". The footer and meta description still carry 2023 text.
 - **Relevance (direct-prose):** The official page describes a cider mill and u-pick orchard under an Orchard Season 2026 heading. Donuts and “family-owned” are not claimed: they appear only in description text the page itself leaves dated 2023.
-- **Card text:** Cider mill and u-pick orchard. Its official page carries an Orchard Season 2026 notice.
+- **Card text:** U-pick orchard and cider mill in Washington Township, announcing its 2026 orchard season.
 - **Categories:** farm-experiences
 - **Image:** labelled illustration, `fall-card-1.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
@@ -104,7 +104,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.spicerorchards.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 10411 Clyde Rd., Fenton, MI 48430. Page announces "Corn Maze Now Open!" and "New in 2026!!". The same property also advertises a winery, which is not part of this record.
 - **Relevance (direct-prose):** The official page advertises a corn maze at the orchard with 2026 content.
-- **Card text:** Orchard in Fenton with a corn maze.
+- **Card text:** Orchard in Fenton with pick-your-own apples and fruit, a corn maze, a pumpkin patch, cider and donuts.
 - **Categories:** farm-experiences
 - **Image:** labelled illustration, `fall-card-2.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
@@ -115,7 +115,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.wasemfruitfarm.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 6580 Judd Road, Milan, Michigan 48160. Page lists pick-your-own apples, pumpkins and tart cherries and carries a "Fall 2026 Hours" section (hours not shown on the card).
 - **Relevance (direct-prose):** The official page lists pick-your-own apples and pumpkins and has a Fall 2026 hours section (the site’s own pages disagree on the hours, so none are shown). Tart cherries are not claimed: they are not a fall offering.
-- **Card text:** Fruit farm in Milan. Its official page lists pick-your-own apples and pumpkins.
+- **Card text:** Fruit farm in Milan with pick-your-own apples and pumpkins.
 - **Categories:** farm-experiences
 - **Image:** labelled illustration, `fall-card-4.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
@@ -126,7 +126,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.wiards.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 5565 Merritt Rd, Ypsilanti, Michigan 48197. The home page says "Apples, cider, pumpkins, donuts and so much more!" and "Cider mill season is here!". The Country Fair attractions (corn maze, slide, wagon rides, petting farm) each read Temporarily Closed on the fetched page, so no Country Fair attraction is claimed. A countdown banner shows a September 8, 2026 date that has passed.
 - **Relevance (direct-prose):** The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card.
-- **Card text:** Orchard, cider mill and country store in Ypsilanti. Its home page lists apples, cider, pumpkins and donuts.
+- **Card text:** Orchard, cider mill and country store in Ypsilanti, with apples, cider, pumpkins and donuts.
 - **Categories:** cider-donuts
 - **Image:** labelled illustration, `fall-card-8.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Parked linked image:** https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg (Wiard's Orchards). Not used by this record; kept in the QA view as an unadopted alternative.
@@ -140,7 +140,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 5200 Indian Trail, White Lake, MI 48386. The page describes trails through prairies, woodlands, wetlands and meadows and mentions "beautiful red, orange and yellow leaves in the fall". A daily or annual vehicle pass and a conditions-and-closures notice are shown (not displayed on the card).
 - **Relevance (direct-prose):** The official page itself mentions red, orange and yellow leaves in the fall.
-- **Card text:** Huron-Clinton Metropark in White Lake with trails through prairies, woodlands, wetlands and meadows. Its official page mentions red, orange and yellow leaves in the fall.
+- **Card text:** Huron-Clinton Metropark in White Lake with trails through prairies, woodlands, wetlands and meadows. The Metroparks describe red, orange and yellow leaves in the fall.
 - **Categories:** trails-woods, parks-gardens · proposed for the Don't-miss rail
 - **Image:** labelled illustration, `fall-color-card-4.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
@@ -151,7 +151,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://housegardens.cranbrook.edu/explore/gardens (read 2026-10-11, two reads).
 - **What the official page shows:** Official Cranbrook House and Gardens page read 2026-10-11 (two reads). Street address given as 380 Lone Pine Road, Bloomfield Hills, MI 48304 (a PO Box with a different ZIP is also shown). The page says "From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover" and notes over 15 gardens around Cranbrook House. Fall hours and a give-as-you-wish admission are shown (not displayed on the card). The site's own name is Cranbrook House and Gardens; the inventory called this row Cranbrook Gardens & grounds.
 - **Relevance (direct-prose):** The official page says “From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover”. It names fall colors in passing, not as a peak-season guide; a later read notes beds are pulled and amenities reduced by mid-October.
-- **Card text:** Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens. Its official page mentions fall colors among what there is to see.
+- **Card text:** Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens to explore, from daffodils and roses to fall colors and conifers.
 - **Categories:** parks-gardens
 - **Image:** labelled illustration, `fall-color-card-1.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
@@ -162,7 +162,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 4300 Main Park Road, Shelby Township, MI 48316. The page describes a panorama of forest edge, broad fields, dense woods and small wetlands, and trails with "spectacular fall views". It does not use the words autumn, foliage, fall color or leaves. A $10 daily vehicle pass and closure notices are shown (not displayed on the card).
 - **Relevance (indirect-prose):** Weaker basis: the official trail description mentions "spectacular fall views" but nothing about leaf color. The page otherwise describes woods and trails.
-- **Card text:** Huron-Clinton Metropark in Shelby Township with wooded trails, forest edge, broad fields and small wetlands. Its trail description mentions spectacular fall views.
+- **Card text:** Huron-Clinton Metropark in Shelby Township with forest edge, broad fields, dense woods and small wetlands, and trails the Metroparks describe as offering spectacular fall views.
 - **Categories:** trails-woods
 - **Image:** labelled illustration, `fall-color-card-3.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 - **Parked linked image:** https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/1d/82/c6/stony-creek-metropark.jpg?w=1200&h=-1&s=1 (Tripadvisor traveler photo). Not used by this record; kept in the QA view as an unadopted alternative.
