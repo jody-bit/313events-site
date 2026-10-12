@@ -29,6 +29,26 @@ const POLICIES = [
     // (api/_lib/non-event-filter.js does not match a dash between the building and "closed".)
     skipEvent: (ev) => /^\s*city hall\s*[-–—:]\s*closed\b/i.test(String(ev.summary || "")),
   },
+  {
+    id: "dearborn",
+    // City of Dearborn's official calendar (dearborn.gov, published as a Google Calendar).
+    // Matches the feed row's organization name or website only -- never a bare "Dearborn",
+    // which would also catch Dearborn Heights and Dearborn Public Schools. The feed URL is
+    // not matched because a Google Calendar ICS URL carries a calendar id, not a name.
+    matches: (feed) => /^\s*city of dearborn\s*$/i.test(String(feed.venue_name || ""))
+      || /^https?:\/\/(www\.)?dearborn\.gov(\/|$)/i.test(String(feed.website || "")),
+    // Government administration, not public activities (Jody 2026-10-12): governing-body and
+    // board meetings, hearings, and payment/collection deadlines. Title-only and deliberately
+    // narrow, like non-event-filter.js: a governing-body name followed by a meeting-type
+    // word, or a payment-deadline phrase. Anything else still ingests, and an entry with no
+    // place is held for review by classify() rather than published.
+    skipEvent: (ev) => {
+      const t = String(ev.summary || "").trim();
+      return /^(city council|council|planning commission|zoning board(?: of appeals)?|board of (?:zoning )?appeals|historic district commission|[\w&' -]{0,40}\b(?:commission|committee|board|authority))\b[^-:]*\b(meeting|session|hearing|study session)\b/i.test(t)
+        || /^(?:public hearing|council (?:meeting|study session)|regular meeting|special meeting)\b/i.test(t)
+        || /\b(?:tax(?:es)? (?:due|payment|bills?)|payment due|bills? due|deadline)\b/i.test(t);
+    },
+  },
 ];
 
 function policyFor(feedSource) {
