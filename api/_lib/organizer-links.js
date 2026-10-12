@@ -18,6 +18,7 @@ const ORGANIZER_LINKS = Object.freeze([
     key: "shake-some-action-wfmu",
     // Title ("Shake Some Action WFMU Presents: ..."), organizer name, or the
     // organizer's handle in the notes/description.
+    titlePattern: "shake some action wfmu",
     match: /shake\s+some\s+action\s+wfmu|@?shakesomeactionwfmu/i,
     event_url: "https://www.instagram.com/shakesomeactionwfmu/",
   },
@@ -41,4 +42,39 @@ function withOrganizerEventUrl(row) {
   return hit ? hit.event_url : (row && row.event_url) || null;
 }
 
-module.exports = { ORGANIZER_LINKS, organizerLinkFor, withOrganizerEventUrl };
+// Blank-only back-fill for rows an ingestion path has just written. One
+// PATCH per organizer, filtered in the database to rows whose event_url is
+// NULL or empty, so a verified event-specific URL is structurally
+// impossible to overwrite and ticket_url is not in the payload. Failure is
+// swallowed: the link is an enhancement and must never fail an ingestion
+// run. Called only when a written row actually matches an organizer.
+async function fillBlankOrganizerEventUrls(supabaseUrl, serviceRoleKey, rows, fetchImpl) {
+  const doFetch = fetchImpl || fetch;
+  const matched = new Map();
+  for (const row of rows || []) {
+    const hit = row && typeof row === "object" ? organizerLinkFor(row) : null;
+    if (hit) matched.set(hit.key, hit);
+  }
+  let patched = 0;
+  for (const [key, hit] of matched) {
+    const o = ORGANIZER_LINKS.find((x) => x.key === key);
+    // ilike pattern from the organizer's name words: "shake some action wfmu"
+    const pattern = encodeURIComponent(`*${o.titlePattern}*`);
+    try {
+      const resp = await doFetch(
+        `${supabaseUrl}/rest/v1/events?title=ilike.${pattern}&or=(event_url.is.null,event_url.eq.)`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, Prefer: "return=minimal" },
+          body: JSON.stringify({ event_url: hit.event_url }),
+        }
+      );
+      if (resp && resp.ok) patched += 1;
+    } catch {
+      /* never fail an ingestion run for a link back-fill */
+    }
+  }
+  return patched;
+}
+
+module.exports = { ORGANIZER_LINKS, organizerLinkFor, withOrganizerEventUrl, fillBlankOrganizerEventUrls };

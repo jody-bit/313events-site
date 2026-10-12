@@ -10,7 +10,8 @@ const vm = require("vm");
 process.env.CRON_SECRET = "";
 const gg = require("../api/cron-gottagacha");
 const { descriptionQuality } = require("../api/_lib/description-quality");
-const { organizerLinkFor, withOrganizerEventUrl } = require("../api/_lib/organizer-links");
+const { organizerLinkFor, withOrganizerEventUrl, fillBlankOrganizerEventUrls } = require("../api/_lib/organizer-links");
+const { upsertEventRows } = require("../api/_lib/event-upsert");
 const { evaluateEvent } = require("../api/_lib/integrity");
 
 const SERIES = "678f7ab6-010c-4430-a823-ad9c7d0c6f49";
@@ -61,6 +62,7 @@ const IG = "https://www.instagram.com/shakesomeactionwfmu/";
     ["10PM-2AM", "Alex Tourney", "time_only"],
     ["Shake Some Action WFMU presents a punk show featuring H8 Mile (Detroit no wave punk), Diet Smiles (Toledo surf punk), Belly Ache (Toledo hardcore punk), Squzz (", "Shake Some Action WFMU Presents: H8 Mile + Diet Smiles", "truncated"],
     ["", "x", "missing"],
+    ["Mario Kart Monthly", "Hi-Fight Circuit #15", "unrelated_to_title"],
     ["Casual Magic The Gathering!", "Friday Night Magic", "ok"],
     ["Open play for Mario Kart with a monthly bracket.", "Hi-Fight Circuit #15", "ok"],
   ];
@@ -80,9 +82,44 @@ const IG = "https://www.instagram.com/shakesomeactionwfmu/";
   vm.runInNewContext(gm + "; this.getMissingFields = getMissingFields;", ctx);
   const full = { title: "Show", description: "x", venue_address_raw: "910 N. Summit St", time_display: "8 PM", ticket_url: null, event_url: IG, is_free: true };
   const gaps = (d, t) => Array.from(ctx.getMissingFields({ ...full, title: t, description: d }));
-  const samples = [["GG Gundam TCG Event", "Gundam TCG"], ["Link coming soon", "x"], ["10PM-2AM", "x"], ["https://a.b/c", "x"], ["A real band plays all night.", "Show"], ["foo (bar", "x"], ["deets coming soon | time is a placeholder", "x"], ["ALL DAY :: List Coming Soon", "x"], ["Casual Magic The Gathering!", "Friday Night Magic"], ["A long time ago...", "x"]];
+  const samples = [["GG Gundam TCG Event", "Gundam TCG"], ["Link coming soon", "x"], ["10PM-2AM", "x"], ["https://a.b/c", "x"], ["A real band plays all night.", "Show"], ["foo (bar", "x"], ["deets coming soon | time is a placeholder", "x"], ["ALL DAY :: List Coming Soon", "x"], ["Casual Magic The Gathering!", "Friday Night Magic"], ["A long time ago...", "x"], ["Mario Kart Monthly", "Hi-Fight Circuit #15"], ["Open play for Mario Kart with a monthly bracket.", "Hi-Fight Circuit #15"], ["A long time ago...", "Return of the Jedi 1983"]];
   for (const [d, t] of samples) assert.strictEqual(gaps(d, t).length === 0, descriptionQuality(d, t).ok, d);
   assert.deepStrictEqual(gaps("A punk show with four bands.", "Show"), [], "organizer link, no ticket: not a follow-up");
   assert.deepStrictEqual(gaps("Squzz (", "Show"), ["description"], "truncated description is a follow-up");
+  // the four original Needs Follow Up events, each flagged for a real reason
+  assert.deepStrictEqual(gaps("Mario Kart Monthly", "Hi-Fight Circuit #15"), ["description"], "Hi-Fight Circuit #15");
+  assert.deepStrictEqual(gaps("Link coming soon", "GFE Tourney"), ["description"], "GFE Tourney");
+  assert.deepStrictEqual(gaps("coming soon", "PART 2"), ["description"], "PART 2");
+  assert.deepStrictEqual(gaps("Shake Some Action WFMU presents a punk show featuring Squzz (", "Shake Some Action WFMU Presents: H8 Mile + Diet Smiles"), ["description"], "Shake Some Action WFMU");
   console.log("PASS: admin.html Needs Follow-up agrees with the module and does not require a ticket link");
 }
+
+// 6. All ingestion paths: blank-only back-fill, never ticket_url, never a set link.
+(async () => {
+  const calls = [];
+  const fakeFetch = async (url, init) => { calls.push({ url, init }); return { ok: true, status: 204, text: async () => "" }; };
+  const wfmu = { title: "Shake Some Action WFMU Presents: X", external_id: "e1", event_url: "https://example.org/verified" };
+  const n = await fillBlankOrganizerEventUrls("https://db.test", "k", [wfmu, { title: "Other", external_id: "e2" }], fakeFetch);
+  assert.strictEqual(n, 1, "one PATCH, for the matched organizer only");
+  const c = calls[0];
+  assert.strictEqual(c.init.method, "PATCH");
+  assert.ok(c.url.includes("or=(event_url.is.null,event_url.eq.)"), "database-side blank-only filter");
+  assert.ok(decodeURIComponent(c.url).includes("title=ilike.*shake some action wfmu*"));
+  assert.deepStrictEqual(JSON.parse(c.init.body), { event_url: IG }, "payload is event_url alone: ticket_url never sent");
+  assert.strictEqual((await fillBlankOrganizerEventUrls("https://db.test", "k", [{ title: "Nope" }], fakeFetch)), 0);
+  assert.strictEqual(calls.length, 1, "no organizer match -> no request");
+  assert.strictEqual(await fillBlankOrganizerEventUrls("https://db.test", "k", [wfmu], async () => { throw new Error("down"); }), 0, "failure never fails ingestion");
+
+  // wired into the shared upsert used by every connector
+  const seen = [];
+  const realFetch = global.fetch;
+  global.fetch = async (url, init) => { seen.push({ url, method: init && init.method }); return { ok: true, status: 201, text: async () => "" }; };
+  try {
+    await upsertEventRows("https://db.test", "k", [{ external_id: "e1", title: "Shake Some Action WFMU Presents: Y", source: "Eventbrite", ticket_url: "https://tix.example/y" }]);
+    assert.ok(seen.some((x) => x.method === "PATCH" && x.url.includes("event_url.is.null")), "shared upsert back-fills blank organizer links");
+    seen.length = 0;
+    await upsertEventRows("https://db.test", "k", [{ external_id: "e2", title: "Ordinary show" }]);
+    assert.ok(!seen.some((x) => x.method === "PATCH"), "other events: no extra request");
+  } finally { global.fetch = realFetch; }
+  console.log("PASS: organizer link back-fills blank event_url on every ingestion path; ticket_url and set links untouched");
+})().catch((e) => { console.error("FAIL:", e); process.exit(1); });

@@ -7,6 +7,7 @@
 //   bare_url      nothing but a link (a link is a source, not a description)
 //   time_only     nothing but a time or time range ("10PM-2AM")
 //   restates_title  adds nothing to the title ("GG Gundam TCG Event" on "Gundam TCG")
+//   unrelated_to_title  numbered title, description of 4 words or fewer sharing none (editor to confirm)
 //   truncated     cut off mid-thought (unbalanced "(", dangling "and"/","/"(")
 //   ok            anything else
 //
@@ -21,6 +22,8 @@ const PLACEHOLDER_RE = /^(?:tba|tbd|n\/?a|none|no description(?: available)?|(?:
 // A short note that is mostly "coming soon" ("ALL DAY :: List Coming Soon",
 // "deets coming soon | time is a placeholder") is still a placeholder.
 const SOON_RE = /\b(?:coming soon|dropping soon|deets|details to come|tba|tbd)\b/i;
+// "#15", "Vol. 3", "Part 2", "No. 7" -- an edition number, not a year.
+const NUMBERED_RE = /#\s*\d|\b(?:vol(?:ume)?|no|part|edition|ep(?:isode)?)\.?\s*\d/i;
 const BARE_URL_RE = /^(?:https?:\/\/|www\.)\S+$/i;
 const TIME = String.raw`\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.)?`;
 const TIME_ONLY_RE = new RegExp(String.raw`^(?:doors?\s*:?\s*)?${TIME}(?:\s*[-–—]\s*|\s+to\s+)${TIME}$|^(?:doors?\s*:?\s*)?\d{1,2}(?::\d{2})?\s*(?:am|pm)$`, "i");
@@ -50,6 +53,12 @@ function descriptionQuality(description, title) {
   if (isTruncated(d)) return { quality: "truncated", ok: false };
   const extra = words(d).filter((w) => !FILLER.has(w) && !words(title).includes(w));
   if (extra.length === 0) return { quality: "restates_title", ok: false };
+  // A numbered edition ("Hi-Fight Circuit #15") whose very short description
+  // shares no word with the title usually carries another event's text
+  // ("Mario Kart Monthly"): an editor should confirm it belongs to this event.
+  const dw = words(d);
+  const tw = words(title);
+  if (NUMBERED_RE.test(String(title || "")) && dw.length <= 4 && !dw.some((w) => tw.includes(w))) return { quality: "unrelated_to_title", ok: false };
   return { quality: "ok", ok: true };
 }
 

@@ -696,7 +696,10 @@ function getMissingFields(e) {
     if (depth > 0) return false;
     if (/(?:[(,;:&\-–]|\b(?:and|or|with|featuring|feat\.?|plus|the|a|an|of|at|in|on|by|from|to))\s*$/i.test(d)) return false;
     const titleWords = words(title);
-    return words(d).some((w) => FILLER.indexOf(w) === -1 && titleWords.indexOf(w) === -1);
+    const dw = words(d);
+    if (!dw.some((w) => FILLER.indexOf(w) === -1 && titleWords.indexOf(w) === -1)) return false;
+    if (/#\s*\d|\b(?:vol(?:ume)?|no|part|edition|ep(?:isode)?)\.?\s*\d/i.test(String(title || '')) && dw.length <= 4 && !dw.some((w) => titleWords.indexOf(w) !== -1)) return false;
+    return true;
   }
   const missing = [];
   if (!e.description || !e.description.trim() || !isUsefulDescription(e.description, e.title)) missing.push('description');

@@ -6,6 +6,12 @@
 -- venues and every other row are untouched. Each UPDATE only fills a blank
 -- event_url (it can never replace a link someone set).
 
+-- Read-only preview run 2026-10-12: statement 1 matches 1 row, statement 2 matches 2 rows,
+-- all three have a NULL event_url and NULL ticket_url, status approved; the only
+-- 'shake some action wfmu' row in events is the one targeted. Total rows changed: 3.
+-- The GottaGacha venue SQL is NOT part of this file and must not run until its
+-- address is independently verified.
+
 -- ===== BEFORE (preview) ==================================================
 -- select id, title, start_date, source, event_url, ticket_url from events
 -- where id in ('f8fb2636-0b82-49d6-9386-0186a48ee77c',

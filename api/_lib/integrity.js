@@ -328,6 +328,7 @@ function evaluateEvent(e, ctx = {}) {
     if (PLACEHOLDER_DESCRIPTION_RE.test(description) || description.toLowerCase() === text(e.title).toLowerCase() || dq === "placeholder") reasons.push(reason("description.placeholder", "advisory", "Description is a placeholder"));
     else if (dq === "bare_url" || dq === "time_only") reasons.push(reason("description.not_descriptive", "advisory", `Description is only a ${dq === "bare_url" ? "link" : "time"}, not a description of the event`));
     else if (dq === "truncated") reasons.push(reason("description.truncated", "advisory", "Description is cut off"));
+    else if (dq === "unrelated_to_title") reasons.push(reason("description.unrelated_to_title", "advisory", "Short description shares nothing with the title; confirm it belongs to this event"));
     else if (dq === "restates_title") reasons.push(reason("description.restates_title", "advisory", "Description adds nothing beyond the title"));
   }
   if (e.description_source === "generated") reasons.push(reason("description.generated", "advisory", "Description was generated, not written by the source"));
@@ -385,6 +386,7 @@ const CLASS_DESCRIPTIONS = Object.freeze({
   "description.placeholder": "Description is a placeholder or repeats the title",
   "description.not_descriptive": "Description is only a link or a time, not a description of the event",
   "description.truncated": "Description is cut off mid-thought",
+  "description.unrelated_to_title": "Short description shares nothing with the title; confirm it belongs to this event",
   "description.restates_title": "Description adds nothing beyond the title",
   "description.generated": "Description was generated, not written by the source",
   "provenance.no_source": "No source recorded",
