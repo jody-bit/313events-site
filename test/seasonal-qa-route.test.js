@@ -1,6 +1,7 @@
 // test/seasonal-qa-route.test.js — the QA route is FAIL-CLOSED, and no unpublished
 // seasonal editorial data is reachable from a public (static) path.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -59,7 +60,8 @@ for (const slug of ["fall", "fall-color"]) {
     const d = JSON.parse(r.body);
     assert.strictEqual(d.collection, slug);
     assert.strictEqual(d.records.filter((x) => !x.discovered).length, { fall: 71, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
-    assert.ok(d.records.every((x) => x.public === false), slug + ": nothing is public");
+    const authSet = AUTHZ.authorized(require(path.join(root, "api/_lib/seasonal-editorial/editorial.js")));
+    assert.ok(d.records.every((x) => x.public === authSet.has(slug + "/" + x.id)), slug + ": public only if authorized");
     assert.ok(!/Hush|Slay Nights/.test(r.body));
   }
 }
@@ -98,12 +100,18 @@ assert.deepStrictEqual(served.filter((f) => /^seasonal\//.test(f)).sort(), ["sea
 const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));
 const DATA = ED.COLLECTIONS;
 const cands = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates;
-const publishedNames = new Set(["halloween", "fall", "fall-color"].flatMap((k) => DATA.published({ entries: ED.entries()[k] }).map((e) => e.name)));
+const publishedEntries = ["halloween", "fall", "fall-color"].flatMap((k) => DATA.published({ entries: ED.entries()[k] }));
+const publishedIds = new Set(publishedEntries.map((e) => e.id));
+// A published record may be listed in the inventory ledger under its inventory name as well as its record name.
+const publishedNames = new Set(publishedEntries.map((e) => e.name).concat(cands.filter((c) => publishedIds.has(c.entry_id)).map((c) => c.name)));
 const names = new Set(cands.map((c) => c.name).concat(["halloween", "fall", "fall-color"].flatMap((k) => ED.entries()[k].map((e) => e.name))));
 const unpublished = [...names].filter((n) => !publishedNames.has(n) && n.length > 8);
 const text = served.filter((f) => /^seasonal\/|^(fall|halloween|fall-color)\.html$/.test(f)).map((f) => [f, fs.readFileSync(path.join(root, f), "utf8")]);
 assert.ok(unpublished.length > 150 && text.length >= 9);
-for (const [f, t] of text) for (const n of unpublished) assert.ok(!t.includes(n), f + " exposes unpublished record: " + n);
+// Published names are removed first: an unpublished name that is only a part of a published one ("Heritage Park" in
+// "Black Oak Heritage Park") is not a leak.
+const stripPublished = (t) => [...publishedNames].sort((a, b) => b.length - a.length).reduce((acc, pn) => acc.split(pn).join(""), t);
+for (const [f, t] of text) { const t2 = stripPublished(t); for (const n of unpublished) assert.ok(!t2.includes(n), f + " exposes unpublished record: " + n); }
 // image candidates, rights metadata and review evidence do not leak either (URLs, risk notes, evidence wording)
 const linkedFile = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/linked-images.json"), "utf8"));
 const secrets = linkedFile.images.map((l) => l.image_link).concat(linkedFile.unchosen_alternatives.map((u) => u.image_link), ["Owner accepted the copyright risk", "apple_photos_uuid", "IMG_5509", "Official site read 2026-10-11"]);

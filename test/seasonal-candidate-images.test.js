@@ -14,7 +14,7 @@ test("each catalogued image belongs to an existing candidate", () => {
   for (const i of imgs) {
     const c = cands.find((x) => x.collection === i.collection && x.name === i.candidate);
     assert.ok(c, `no candidate "${i.candidate}" in ${i.collection}`);
-    assert.ok(["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW"].includes(c.status), `${i.candidate} must not be recorded as published by an image catalogue`);
+    assert.ok(["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED"].includes(c.status), `${i.candidate}: unknown ledger state`);
   }
 });
 

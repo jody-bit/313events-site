@@ -1,6 +1,7 @@
 // test/seasonal-launch-lock.test.js — content lock for the first launch set (owner decision 2026-10-12).
 // Fifteen records, none approved, image provenance resolved (photographer and illustration acceptance confirmed by the owner 2026-10-12), and visitor-facing descriptions free of research-note wording.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const path = require("path");
 const ED = require(path.join(__dirname, "..", "api/_lib/seasonal-editorial/editorial.js"));
@@ -14,12 +15,12 @@ let photos = 0, illus = 0;
 for (const col of Object.keys(ids)) for (const id of ids[col]) {
   const e = E[col].find((x) => x.id === id);
   assert.ok(e, id + " exists");
-  assert.ok(!e.approval, id + ": no approval recorded");
-  assert.ok(!ED.COLLECTIONS.isPublic(e), id + ": not public");
+  assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": carries the authorized approval");
+  assert.ok(ED.COLLECTIONS.isPublic(e), id + ": public once approved");
   assert.ok(!RESEARCH_NOTE.test(e.summary), id + ": description has no research-note wording: " + e.summary);
   const pv = e.image.provenance;
   assert.ok(pv && pv.unresolved.length === 0, id + ": image provenance has no unresolved items");
-  assert.ok(e.editorialAccepted && e.editorialAccepted.by && !e.approval, id + ": editorial acceptance recorded, no publication approval");
+  assert.ok(e.editorialAccepted && e.editorialAccepted.by && e.editorialAccepted.at === "2026-10-12", id + ": editorial acceptance recorded separately from the approval");
   if (e.image.ownerPhoto) {
     photos++;
     assert.strictEqual(pv.status, "RESOLVED"); assert.strictEqual(pv.photographer, "Miriam Vukich"); assert.strictEqual(pv.commercialUse, "authorized");

@@ -3,6 +3,7 @@
 // records and the 37 discovered leads stay out, owner-verified destinations are included, temporary closures are advisories
 // (they do not exclude a destination), and a record approved in memory would publish exactly the previewed content.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const crypto = require("crypto");
 const path = require("path");
@@ -23,9 +24,9 @@ for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
   const e = E[col].find((x) => x.id === id);
   assert.ok(e.editorialAccepted && e.editorialAccepted.by && e.editorialAccepted.at === "2026-10-12", id + ": editorial acceptance recorded");
   assert.ok(/not (a )?publication approval/i.test(e.editorialAccepted.scope), id + ": acceptance says it is not approval");
-  assert.ok(!e.approval, id + ": no approval field");
-  assert.ok(!ED.COLLECTIONS.isPublic(e), id + ": not public");
-  assert.strictEqual(ED.review(e).state, "READY_FOR_REVIEW", id);
+  assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": carries exactly the authorized approval (recorded separately from the editorial acceptance)");
+  assert.ok(ED.COLLECTIONS.isPublic(e), id + ": public once approved");
+  assert.strictEqual(ED.review(e).state, "PUBLISHED", id);
   assert.ok(/^https:\/\//.test(e.website), id + ": retains an https official source URL");
   assert.ok(e.image.illustrative === true ? e.image.provenance.label === "Illustrative image" : e.image.credit === "Photography © Miriam Vukich", id + ": labelled illustration or credited photograph");
 }
@@ -38,8 +39,9 @@ for (const col of ["fall", "fall-color"]) {
   for (const d of DISC[col]) assert.ok(!ids.has(d.ledger_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")), d.ledger_name + " stays a lead");
 }
 const all = E.fall.concat(E["fall-color"], E.halloween);
-assert.strictEqual(all.filter((e) => e.approval).length, 0, "no approval anywhere");
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 0, "nothing public");
+assert.strictEqual(all.filter((e) => e.approval).length, 76, "approvals only on the 76 authorized records");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "only the 76 are public");
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 0, "no Halloween approval");
 
 // ---- the original 15 are unchanged (name, city, description, link, image, credit, Don't Miss)
 const sig = [];
@@ -69,13 +71,12 @@ assert.ok(adv(hines).some((a) => a.type === "lane-restriction" && /Merriman/.tes
 assert.ok(!adv(hines).some((a) => /reopen/i.test(a.reopening || "") && /\d{4}/.test(a.reopening || "")), "no unsupported Hines reopening date");
 assert.ok(adv(mac).some((a) => a.type === "partial-closure" && /fall 2026/.test(a.reopening) && /no exact date/.test(a.reopening)), "Macomb partial closure recorded without a date");
 assert.ok(!/closed|reopen/i.test(hines.summary + " " + mac.summary), "cards do not claim the whole destination is closed or reopened");
-for (const e of [hines, mac]) assert.ok(inSet("fall-color").has(e.id) && ED.review(e).state === "READY_FOR_REVIEW", e.id + " stays in the set");
+for (const e of [hines, mac]) assert.ok(inSet("fall-color").has(e.id) && ED.review(e).state === "PUBLISHED", e.id + " stays in the set");
 
 // ---- public parity: a record approved in memory publishes exactly the previewed card content, with no QA data
 for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
   const e = JSON.parse(JSON.stringify(E[col].find((x) => x.id === id)));
-  e.status = "PUBLISHED"; e.approval = { by: "TEST (memory only)", at: "2026-10-12" };
-  assert.ok(ED.COLLECTIONS.isPublic(e), id + ": would pass the gate once approved");
+  assert.ok(ED.COLLECTIONS.isPublic(e), id + ": passes the gate with its recorded approval");
   const pub = ED.publicEntry(e), rec = QA[col].records.find((r) => r.id === id), o = rec.image_options[0];
   assert.deepStrictEqual([pub.name, pub.city, pub.region, pub.summary, pub.website, pub.featured, pub.categories], [rec.name, rec.city, rec.region, rec.summary, rec.website, rec.featured === undefined ? pub.featured : rec.featured, rec.categories], id + ": public card matches the preview record");
   assert.strictEqual(pub.image.src, o.src, id + ": same image");

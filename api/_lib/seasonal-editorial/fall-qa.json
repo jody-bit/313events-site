@@ -34,22 +34,20 @@
     "detail": "Official page read 2026-10-11 (https://alberorchard.com), two independent reads. Relevance (recorded): Operating cider mill and orchard with a stated 2026 fall season, so a strong fit. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -978,22 +976,20 @@
     "detail": "Official page read 2026-10-11 (https://www.bigredorchard.com/), two independent reads. Relevance (direct-prose): The official page describes a cider mill and u-pick orchard under an Orchard Season 2026 heading. Donuts and “family-owned” are not claimed: they appear only in description text the page itself leaves dated 2023. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -1128,22 +1124,20 @@
      "multiple Blake's sites: verify each separately"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -1300,22 +1294,20 @@
      "multiple Blake's sites: verify each separately"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -1449,22 +1441,20 @@
      "multiple Blake's sites: verify each separately"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -1885,22 +1875,20 @@
     "detail": "Official page read 2026-10-11 (https://www.dextercidermill.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cinnamon doughnuts, cider, caramel apples, hard cider tasting room (weekends) Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2033,22 +2021,20 @@
     "detail": "Official page read 2026-10-11 (https://www.diehlsorchard.com/), two independent reads. Relevance (direct-prose): The official page describes a cider mill with donuts, a pumpkin patch and a corn maze, with a 2026 event on the page. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "owner-photo",
     "rights_route": "owner-authorization",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: owner-confirmed 2026-10-12. Miriam Vukich photographed this destination for 313.events and authorized commercial use. Credit: Photography © Miriam Vukich. This is not a Creative Commons license and there is no license URL."
     ],
@@ -2601,22 +2587,20 @@
     "detail": "Official page read 2026-10-11 (https://erieorchards.com), two independent reads. Relevance (recorded): Open orchard and cider mill with weekend festivals and hayrides in fall 2026. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2890,22 +2874,20 @@
     "detail": "Official page read 2026-10-11 (https://www.franklincidermill.com/), two independent reads. Relevance (direct-prose): The official page describes a historic cider mill selling cider and donuts, with 2026 season dates. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -3619,22 +3601,20 @@
     "detail": "Official page read 2026-10-11 (https://krepsapplebarn.com), two independent reads. Relevance (recorded): Operating orchard and cider mill advertising a corn maze, fall market vendors and family activities. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -3767,22 +3747,20 @@
     "detail": "Official page read 2026-10-11 (https://www.longsorchard.com/), two independent reads. Relevance (direct-prose): The official page describes a cider mill, pumpkin patch and corn maze, with a 2026 anniversary banner. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -4419,22 +4397,20 @@
     "detail": "Official page read 2026-10-11 (https://www.obstbaum.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: u-pick apples (when ripe), cider, donuts, hayrides Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -4712,22 +4688,20 @@
     "detail": "Official page read 2026-10-11 (https://www.northvillecider.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cider and products, large call-ahead orders Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -4883,22 +4857,20 @@
     "detail": "Official page read 2026-10-11 (https://parshallvillecidermill.com), two independent reads. Relevance (recorded): Historic water-powered cider mill advertising cider, donuts and Sunday live music in fall. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5031,22 +5003,20 @@
     "detail": "Official page read 2026-10-11 (https://www.plymouthorchards.com), two independent reads. Relevance (direct-prose): The official page describes a cider mill with donuts, wagon rides and pumpkins, with 2026 cider-mill dates. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5178,22 +5148,20 @@
     "detail": "Official page read 2026-10-11 (https://portersorchard.com/), two independent reads. Relevance (direct-prose): The official page describes an orchard and cider mill with cider and donuts, open for the 2026 season. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5471,22 +5439,20 @@
     "detail": "Official page read 2026-10-11 (https://rochestercidermill.com), two independent reads. Relevance (direct-prose): The official page describes a cider mill selling cider and donuts, with a 2026 end-of-season date. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5618,22 +5584,20 @@
     "detail": "Official page read 2026-10-11 (https://www.schellfamilyfarm.com), two independent reads. Relevance (recorded): Operating family farm advertising pumpkins, apples and wagon rides. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5765,22 +5729,20 @@
     "detail": "Official page read 2026-10-11 (https://www.spicerorchards.com), two independent reads. Relevance (direct-prose): The official page advertises a corn maze at the orchard with 2026 content. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5913,22 +5875,20 @@
     "detail": "Official page read 2026-10-11 (https://www.stonycreekorchard.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: U-pick apples (weekends), U-pick raspberries, moonlight hayrides, farm stand Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6060,22 +6020,20 @@
     "detail": "Official page read 2026-10-11 (https://www.threecedarsfarm.org/), two independent reads. Relevance (recorded): Official page lists fall farm activities: Cider Donut Hut, Country Store, Country Christmas Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6352,22 +6310,20 @@
     "detail": "Official page read 2026-10-11 (https://www.wasemfruitfarm.com), two independent reads. Relevance (direct-prose): The official page lists pick-your-own apples and pumpkins and has a Fall 2026 hours section (the site’s own pages disagree on the hours, so none are shown). Tart cherries are not claimed: they are not a fall offering. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6499,22 +6455,20 @@
     "detail": "Official page read 2026-10-11 (https://www.westvieworchards.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: u-pick and pre-picked pumpkins, cider, donuts, baked goods Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6646,22 +6600,20 @@
     "detail": "Official page read 2026-10-11 (https://www.wiards.com), two independent reads. Relevance (direct-prose): The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -6817,22 +6769,20 @@
     "detail": "Official page read 2026-10-11 (https://www.yatescidermill.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cider, donuts, apple tent, pony rides Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -7279,22 +7229,20 @@
     "detail": "Official page read 2026-10-11 (https://bonadeofarms.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: haunted house, hayrides, cider, donuts Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -7864,22 +7812,20 @@
     "detail": "Official page read 2026-10-11 (https://cornfun.com), two independent reads. Relevance (recorded): Page advertises a 20th-anniversary 2026 season of corn mazes, hayrides and u-pick pumpkins in St. Clair County. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -8011,22 +7957,20 @@
     "detail": "Official page read 2026-10-11 (https://www.debucksfamilyfarm.com/), two independent reads. Relevance (recorded): Page advertises a 2026 Fall Festival with corn maze, pumpkin fields and farm attractions in Belleville. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -8455,22 +8399,20 @@
     "detail": "Official page read 2026-10-11 (https://flushingfarms.com), two independent reads. Relevance (recorded): Page advertises a full 2026 fall farm season with mazes, rides and a pumpkin shop in Genesee County. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -8749,22 +8691,20 @@
     "detail": "Official page read 2026-10-11 (https://www.kackleberryfarms.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: 30+ attractions, corn maze, slides, photo spots Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -9339,22 +9279,20 @@
     "detail": "Official page read 2026-10-11 (https://www.nixonfarmsdexter.com), two independent reads. Relevance (recorded): Official page advertises a corn maze, u-pick pumpkins and hayrides at a working farm in Dexter, but no 2026 dates were shown. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -9928,22 +9866,20 @@
     "detail": "Official page read 2026-10-11 (https://www.trabbicpumpkinfarm.com), two independent reads. Relevance (recorded): Official page advertises a 2026 u-pick pumpkin farm with animals, rides and cider/donuts. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -10514,22 +10450,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -10662,22 +10596,20 @@
     "detail": "Official page read 2026-10-11 (https://www.gustbrothers.com), two independent reads. Relevance (recorded): Full fall farm with u-pick pumpkins, corn maze, hayrides, cider and donuts. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -10811,22 +10743,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -11107,22 +11037,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],

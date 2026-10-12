@@ -2,6 +2,7 @@
 // publication gate (including the owner-photo route), renderer, image fallback chain, private editorial data,
 // candidate registry, built files, routes, and the scope guard.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const fs = require("fs");
 const vm = require("vm");
@@ -187,7 +188,10 @@ let allEntries = 0;
 for (const slug of DATA.ORDER) {
   const col = PRIVATE[slug];
   assert.strictEqual(col.route, routes[slug]);
-  assert.deepStrictEqual(DATA.COLLECTIONS[slug].entries, [], slug + ": the PUBLIC collections hold no unpublished records");
+  // The PUBLIC collection holds exactly the records of the authorized release batch (2026-10-12), in public form, and nothing else.
+  const authIds = [...AUTHZ.authorized(ED)].filter((k) => k.startsWith(slug + "/")).map((k) => k.split("/")[1]).sort();
+  assert.deepStrictEqual(DATA.COLLECTIONS[slug].entries.map((e) => e.id).sort(), authIds, slug + ": the PUBLIC collection holds exactly the authorized records");
+  assert.ok(DATA.COLLECTIONS[slug].entries.every((e) => e.status === "PUBLISHED"), slug + ": every public record is PUBLISHED");
   const ids = new Set(), catIds = col.categories.map((c) => c.id);
   for (const e of col.entries) {
     allEntries++;
@@ -199,14 +203,19 @@ for (const slug of DATA.ORDER) {
     assert.ok(e.categories.length && e.categories.every((c) => catIds.includes(c)), e.id + " bad category");
     assert.ok(!FORBIDDEN.test(e.summary), e.id + " summary states an unverified operating fact: " + e.summary);
     assert.ok(!("hours" in e) && !("admission" in e) && !("dates" in e), e.id + " carries unverified fields");
-    assert.ok(!e.approval, e.id + ": no approval is recorded by this repository; only the approving person adds one");
+    AUTHZ.checkApproval(assert, slug, e, AUTHZ.authorized(ED));
     assert.ok(/^\//.test(e.image.src) && fs.existsSync(path.join(root, e.image.src)), e.id + " image file missing");
   }
   assert.deepStrictEqual(DATA.published(col).map((e) => e.id), col.entries.filter((e) => e.status === "PUBLISHED").map((e) => e.id));
 }
 assert.strictEqual(allEntries, 252, "71 fall + 52 halloween + 129 fall-color records: one private record per inventory row");
-// Release-candidate state: no destination has the explicit approval, so none is public.
-for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, 0, slug + " has no public destinations yet");
+// Release state: only the 76 destinations the owner authorized carry the explicit approval, so only they are public.
+{
+  const set = AUTHZ.authorized(ED), n = { fall: 0, halloween: 0, "fall-color": 0 };
+  set.forEach((k) => { n[k.split("/")[0]]++; });
+  for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, n[slug], slug + ": public destinations = the authorized batch");
+  assert.deepStrictEqual(n, { fall: 36, halloween: 0, "fall-color": 40 });
+}
 
 // ---- 3. renderer behaviour, exercised on complete synthetic records
 const fall = clone(DATA.COLLECTIONS.fall);
@@ -274,13 +283,14 @@ assert.strictEqual(R.esc('<a href="x">&\'</a>'), "&lt;a href=&quot;x&quot;&gt;&a
 
 // ---- 4. the pages as built: empty states, no unpublished content
 for (const slug of DATA.ORDER) {
-  const col = DATA.COLLECTIONS[slug], html = R.main(col);
+  // The built page is the empty shell: cards are drawn in the browser from the public projection, never baked into the HTML.
+  const col = Object.assign({}, DATA.COLLECTIONS[slug], { entries: [] }), html = R.main(col);
   assert.strictEqual((html.match(/<h1/g) || []).length, 1);
   assert.ok(html.includes("0 of 0 destinations") && html.includes("sc-empty"), slug + " shows the existing empty state");
   assert.ok(!html.includes('class="sc-card') && !html.includes("sc-tile\""), slug + " renders no destination card");
   assert.ok(!html.includes('id="scDontMiss"') && !html.includes('id="scDiscover"'), slug + " hides Don't Miss and Discover with nothing to show");
   assert.ok(html.includes('data-cat="all" aria-pressed') && !/data-cat="(?!all)/.test(html), slug + " has only the All chip");
-  for (const e of PRIVATE[slug].entries) assert.ok(!html.includes(e.name), slug + ": unpublished record leaked into the page: " + e.name);
+  for (const e of PRIVATE[slug].entries.filter((x) => !DATA.isPublic(x))) assert.ok(!html.includes(e.name), slug + ": unpublished record leaked into the page: " + e.name);
   assert.ok(html.includes("Illustrative image") && html.includes('class="sc-hero"'), "the approved hero (labelled illustrative) is unchanged");
   assert.ok(html.includes("not only this collection") && html.includes("Open events map") && !/View on map/.test(html));
   for (const other of DATA.ORDER.filter((s) => s !== slug)) assert.ok(html.includes('href="' + routes[other] + '"'));
@@ -323,7 +333,7 @@ for (const slug of DATA.ORDER) {
   for (const c of withEntry) assert.strictEqual(c.status, DATA.readiness(col.entries.find((e) => e.id === c.entry_id)).state, c.entry_id + " registry status equals derived state");
   assert.deepStrictEqual(rows.filter((c) => c.status === "PUBLISHED").map((c) => c.entry_id).sort(), DATA.published(col).map((e) => e.id).sort());
 }
-assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 0);
+assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 76, "the ledger shows exactly the 76 authorized records as PUBLISHED");
 
 // ---- 7. built pages in sync, routed, homepage cards link to them
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);

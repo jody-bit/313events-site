@@ -23,7 +23,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 1. Big Red Orchard (Washington, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.bigredorchard.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 4900 32 Mile Road, Washington, MI 48095. Describes a family-owned cider mill offering fresh apples, cider and donuts; the page title includes U-Pick. A banner reads "Orchard Season 2026!". The footer and meta description still carry 2023 text.
 - **Relevance (direct-prose):** The official page describes a cider mill and u-pick orchard under an Orchard Season 2026 heading. Donuts and “family-owned” are not claimed: they appear only in description text the page itself leaves dated 2023.
@@ -34,7 +34,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 2. Diehl’s Orchard & Cider Mill (Holly, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.diehlsorchard.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 1479 Ranch Rd., Holly, MI 48442. Page shows "CIDERFEST 2026" and describes hot, cold and slushy cider and hot donuts, a pumpkin patch and a corn maze. It states there is no U-Pick for apples.
 - **Relevance (direct-prose):** The official page describes a cider mill with donuts, a pumpkin patch and a corn maze, with a 2026 event on the page.
@@ -45,7 +45,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 3. Franklin Cider Mill (Bloomfield Hills, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.franklincidermill.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 7450 Franklin Rd, Bloomfield Hills, MI 48301. Page title reads "Historic Cider Mill in Michigan Since 1837"; it lists fresh cider, warm donuts and a historic water wheel, an opening of Saturday, September 5, 2026 and an end of season of Sunday, November 29, 2026 (dates not shown on the card).
 - **Relevance (direct-prose):** The official page describes a historic cider mill selling cider and donuts, with 2026 season dates.
@@ -56,7 +56,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 4. Long Family Orchard & Farm (Commerce Township, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.longsorchard.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 1540 E Commerce Rd, Commerce Township. Page lists fresh-pressed cider, hot donuts daily, u-pick pumpkins and a corn maze, and shows "1876-2026 150 Years".
 - **Relevance (direct-prose):** The official page describes a cider mill, pumpkin patch and corn maze, with a 2026 anniversary banner.
@@ -67,7 +67,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 5. Plymouth Orchards & Cider Mill (Plymouth, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.plymouthorchards.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Cider mill address given as 10685 Warren Rd, Plymouth, MI 48170. Page lists award-winning apple cider, fresh donuts, wagon rides and pick-a-pumpkin, and shows the cider mill open 9/5/2026 to 11/8/26 (dates not shown on the card). A separate Red Shed Market at 10260 Ann Arbor Road is listed on the same site and is not part of this record.
 - **Relevance (direct-prose):** The official page describes a cider mill with donuts, wagon rides and pumpkins, with 2026 cider-mill dates.
@@ -78,7 +78,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 6. Porter’s Orchard Farm Market & Cider Mill (Goodrich, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://portersorchard.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 12060 Hegel Road, Goodrich, MI 48438. Page reads "We are OPEN for the Season" and lists fresh-picked apples, cider and donuts and an October 31, 2026 event. The site also mentions a separate market stall in Flint, which is not part of this record.
 - **Relevance (direct-prose):** The official page describes an orchard and cider mill with cider and donuts, open for the 2026 season.
@@ -89,7 +89,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 7. Rochester Cider Mill (Rochester, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://rochestercidermill.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 5125 N. Rochester Rd., Rochester, MI 48306. Page lists fresh-pressed cider, donuts, pies, apples, honey and maple syrup, and states the last day of the season is December 31, 2026 (not shown on the card).
 - **Relevance (direct-prose):** The official page describes a cider mill selling cider and donuts, with a 2026 end-of-season date.
@@ -100,7 +100,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 8. Spicer Orchards (Fenton, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.spicerorchards.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 10411 Clyde Rd., Fenton, MI 48430. Page announces "Corn Maze Now Open!" and "New in 2026!!". The same property also advertises a winery, which is not part of this record.
 - **Relevance (direct-prose):** The official page advertises a corn maze at the orchard with 2026 content.
@@ -111,7 +111,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 9. Wasem Fruit Farm (Milan, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.wasemfruitfarm.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 6580 Judd Road, Milan, Michigan 48160. Page lists pick-your-own apples, pumpkins and tart cherries and carries a "Fall 2026 Hours" section (hours not shown on the card).
 - **Relevance (direct-prose):** The official page lists pick-your-own apples and pumpkins and has a Fall 2026 hours section (the site’s own pages disagree on the hours, so none are shown). Tart cherries are not claimed: they are not a fall offering.
@@ -122,7 +122,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 10. Wiard’s Orchards (Ypsilanti, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.wiards.com (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 5565 Merritt Rd, Ypsilanti, Michigan 48197. The home page says "Apples, cider, pumpkins, donuts and so much more!" and "Cider mill season is here!". The Country Fair attractions (corn maze, slide, wagon rides, petting farm) each read Temporarily Closed on the fetched page, so no Country Fair attraction is claimed. A countdown banner shows a September 8, 2026 date that has passed.
 - **Relevance (direct-prose):** The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card.
@@ -136,7 +136,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 1. Indian Springs Metropark (White Lake, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 5200 Indian Trail, White Lake, MI 48386. The page describes trails through prairies, woodlands, wetlands and meadows and mentions "beautiful red, orange and yellow leaves in the fall". A daily or annual vehicle pass and a conditions-and-closures notice are shown (not displayed on the card).
 - **Relevance (direct-prose):** The official page itself mentions red, orange and yellow leaves in the fall.
@@ -147,7 +147,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 2. Cranbrook House and Gardens (Bloomfield Hills, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://housegardens.cranbrook.edu/explore/gardens (read 2026-10-11, two reads).
 - **What the official page shows:** Official Cranbrook House and Gardens page read 2026-10-11 (two reads). Street address given as 380 Lone Pine Road, Bloomfield Hills, MI 48304 (a PO Box with a different ZIP is also shown). The page says "From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover" and notes over 15 gardens around Cranbrook House. Fall hours and a give-as-you-wish admission are shown (not displayed on the card). The site's own name is Cranbrook House and Gardens; the inventory called this row Cranbrook Gardens & grounds.
 - **Relevance (direct-prose):** The official page says “From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover”. It names fall colors in passing, not as a peak-season guide; a later read notes beds are pulled and amenities reduced by mid-October.
@@ -158,7 +158,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 3. Stony Creek Metropark (Shelby Township, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 4300 Main Park Road, Shelby Township, MI 48316. The page describes a panorama of forest edge, broad fields, dense woods and small wetlands, and trails with "spectacular fall views". It does not use the words autumn, foliage, fall color or leaves. A $10 daily vehicle pass and closure notices are shown (not displayed on the card).
 - **Relevance (indirect-prose):** Weaker basis: the official trail description mentions "spectacular fall views" but nothing about leaf color. The page otherwise describes woods and trails.
@@ -170,7 +170,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 4. Highland Recreation Area (White Lake, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.michigan.gov/recsearch/parks/highland (read 2026-10-11, two reads).
 - **What the official page shows:** Official Michigan DNR page read 2026-10-11 (two reads). Address given as 5200 Highland Road, White Lake, Michigan 48383 (the inventory listed this row as Highland, MI). The site calls it Highland Recreation Area and says the park has all of southern Michigan's principal forest types within one small area. A Recreation Passport is required for vehicle entry (not displayed on the card).
 - **Relevance (caption-only):** Weaker basis: the official page does not discuss fall color in prose. Only a photo caption mentions fall leaves. The owner's own photo of 2026-10-09 shows early fall color on a trail there, which is not official evidence.
@@ -181,7 +181,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 
 ### 5. Holly State Recreation Area (Holly, MI)
 
-- **Decision:** Approve / Hold / Decline (yours). State: `READY_FOR_REVIEW`. Outstanding: Gate 5, explicit publication approval.
+- **Decision:** Approve / Hold / Decline (yours). State: `PUBLISHED`. Outstanding: none.
 - **Official source:** https://www.michigan.gov/recsearch/parks/holly (read 2026-10-11, two reads).
 - **What the official page shows:** Official Michigan DNR page read 2026-10-11 (two reads). Address given as 8100 Grange Hall Road, Holly, Michigan 48442. The page describes more than 8,000 acres of rolling woodlands and open fields. It notes a boating access parking lot and part of a park road closed for paving and that the floating water park is closed for the 2026 season (neither shown on the card). A Recreation Passport is required.
 - **Relevance (caption-only):** Weaker basis: the official page does not discuss fall color in prose. Only photo captions mention changing leaf color.
@@ -210,7 +210,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **11 rows. Official page read once; fall-color relevance and a second read still to do.** Delhi Metropark; Lake Erie Metropark; Lake St. Clair Metropark; Bald Mountain State Recreation Area; Pontiac Lake State Recreation Area; Seven Lakes State Park; Independence Oaks County Park; Brighton State Recreation Area; Island Lake State Recreation Area; Algonac State Park; Sterling State Park.
 - **97 inventory rows have not been read at all** (still HOLD_UNVERIFIED).
 
-The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 185 other fall and fall-color records stay out of this batch (7 `CONTENT_VERIFIED`, 117 `HOLD_UNVERIFIED`, 61 `READY_FOR_REVIEW`). The `READY_FOR_REVIEW` ones are Yates Cider Mill (illustration image), Parmenter's Northville Cider Mill (illustration image), Blake's Orchard & Cider Mill (illustration image), Dexter Cider Mill (illustration image), Blake's Big Apple (illustration image), Stony Creek Orchard & Cider Mill (illustration image), Obstbaum Orchards (illustration image), Westview Orchards & Winery (illustration image), Three Cedars Farm (illustration image), Kackleberry Farms (illustration image), Bonadeo Farms (illustration image), Alber Orchard & Cider Mill (illustration image), Blake's Backyard (illustration image), Erie Orchards & Cider Mill (illustration image), Kreps Apple Barn & Cider Mill (illustration image), Parshallville Cider Mill (illustration image), Schell Family Farm (illustration image), Corn Fun (illustration image), DeBuck's Family Farm (illustration image), Flushing Farms (illustration image), Nixon Farms / Blast Corn Maze (illustration image), Trabbic Family Pumpkin Farm (illustration image), MacQueen Orchards (illustration image), Gust Brother's Pumpkin Farm (illustration image), Jason's Pumpkin Patch (illustration image), Wheeler Farms Corn Maze (illustration image), Hudson Mills Metropark (illustration image), Belle Isle Park (illustration image), Rouge Park (illustration image), Hines Drive / Edward N. Hines Parkway (illustration image), Bennett Arboretum (illustration image), Maybury State Park (illustration image), Elmwood Cemetery (illustration image), Dequindre Cut Greenway (illustration image), Seven Lakes State Park (illustration image), Waterloo State Recreation Area (illustration image), Huron River Drive (illustration image), Oak Openings Preserve Metropark (illustration image), Wildwood Preserve Metropark (illustration image), Black Oak Heritage Park (illustration image), Stage Nature Center (illustration image), Dexter-Huron Metropark (illustration image), Lower Huron Metropark (illustration image), Willow Metropark (illustration image), Oakwoods Metropark (illustration image), Independence Oaks County Park (illustration image), Addison Oaks County Park (illustration image), Paint Creek Trail (illustration image), Macomb Orchard Trail (illustration image), Bird Hills Nature Area (illustration image), Barton Nature Area (illustration image), Old US-12 corridor (illustration image), Columbus County Park (illustration image), Wadhams to Avoca Trail (illustration image), Grosse Ile Nature & Land Conservancy preserves (illustration image), Secor Metropark (illustration image), Pearson Metropark (illustration image), Side Cut Metropark (illustration image), Farnsworth Metropark (illustration image), Holiday Beach Conservation Area (illustration image), Point Pelee National Park (illustration image); they are not proposed, and any linked image on them is not adopted for launch.
+The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 185 other fall and fall-color records stay out of this batch (7 `CONTENT_VERIFIED`, 117 `HOLD_UNVERIFIED`, 0 `READY_FOR_REVIEW`). 
 
 ## Image sources audited, in your priority order
 

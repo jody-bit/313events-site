@@ -1,5 +1,6 @@
 // test/seasonal-fall-qa.test.js — QA datasets and client behaviour for /fall?qa=1 and /fall-color?qa=1.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -46,7 +47,7 @@ for (const slug of ["fall", "fall-color"]) {
     }
     // an owner-photo record defaults to its photo
     if (e && e.image.ownerPhoto) assert.strictEqual(r.image_options[0].id, e.image.ownerPhoto.photoId);
-    assert.strictEqual(r.publication.gate.approval, false, r.id + " has no approval");
+    assert.strictEqual(r.publication.gate.approval, AUTHZ.authorized(ED).has(slug + "/" + r.id), r.id + ": approval only if authorized");
   }
   // the client renders every record and a selection switches the primary image
   const html = QA.results(col, d.records, { category: "all", query: "", view: "grid" }, {});
@@ -78,10 +79,11 @@ for (const slug of ["fall", "fall-color"]) {
     for (const id of launch.collections[slug]) {
       const e = ents[slug].find((x) => x.id === id), g = C.gate(e), r = d.records.find((x) => x.id === id);
       assert.ok(e, id + " exists");
-      assert.strictEqual(e.status, "READY_FOR_REVIEW", id);
-      assert.strictEqual(C.readiness(e).state, "READY_FOR_REVIEW", id);
-      assert.ok(!e.approval && !C.isPublic(e), id + ": proposed, not approved, not public");
-      assert.ok(g.official && g.relevance && g.identity && g.acquired && g.rights && !g.approval, id + ": gate items 1-4 only");
+      assert.strictEqual(e.status, "PUBLISHED", id);
+      assert.strictEqual(C.readiness(e).state, "PUBLISHED", id);
+      assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": exactly the authorized approval");
+      assert.ok(C.isPublic(e), id + ": public");
+      assert.ok(g.official && g.relevance && g.identity && g.acquired && g.rights && g.approval, id + ": all five gate items");
       assert.ok(["owner-photo", "illustration"].includes(g.imageRoute), id + " image route " + g.imageRoute);
       assert.ok(!e.image.remote, id + ": no linked image on a launch record");
       assert.ok(/^https:\/\//.test(e.website), id + " has an https official URL");
@@ -110,7 +112,7 @@ for (const slug of ["fall", "fall-color"]) {
     assert.strictEqual(lr.length, launch.collections[slug].length + exp.length);
     const grid = QA.launchResults(C.COLLECTIONS[slug], d.records, { category: "all", query: "", view: "grid" });
     assert.strictEqual((grid.match(/<li class="sc-card/g) || []).length, lr.length);
-    assert.strictEqual((grid.match(/PROPOSED, not approved/g) || []).length, lr.length);
+    assert.strictEqual((grid.match(/PROPOSED, not approved|APPROVED by the owner, published/g) || []).length, lr.length);
     assert.ok(!/data-qa-pick|<details/.test(grid), "the launch preview has no QA selectors");
     const illus = lr.filter((r) => r.launch.image_route === "illustration").length;
     assert.strictEqual((grid.match(/Illustrative image<\/span>/g) || []).length, illus, "every illustration card carries the badge; owner photos do not");

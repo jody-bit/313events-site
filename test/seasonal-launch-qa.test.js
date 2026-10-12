@@ -2,6 +2,7 @@
 // The two collections show their proposed content only through the QA-only dataset. Nothing becomes public without the
 // explicit approval, no record carries one, and the generated QA data is in sync with the private records.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const path = require("path");
 const { execFileSync } = require("child_process");
@@ -21,7 +22,7 @@ for (const slug of ["fall", "fall-color"]) {
   assert.strictEqual(qa.records.filter((r) => !r.discovered).length, slug === "fall" ? 71 : 129, slug + ": all inventory rows present");
   assert.strictEqual(new Set(qa.records.map((r) => r.id + "|" + r.name)).size, counts[slug], slug + ": no duplicate QA records");
   for (const r of qa.records) {
-    assert.strictEqual(r.public, false, r.id + " is not public");
+    assert.strictEqual(r.public, AUTHZ.authorized(ED).has(slug + "/" + r.id), r.id + ": public only if authorized");
     assert.strictEqual(r.dates_hours, null, r.id + " shows no dates or hours");
     assert.ok(r.image_options.length >= 2 && r.manifest.fallback_image, r.id + " has image options and a fallback");
     const prim = r.image_options[0];
@@ -32,13 +33,13 @@ for (const slug of ["fall", "fall-color"]) {
   }
   assert.strictEqual(entries[slug].length, slug === "fall" ? 71 : 129, slug + ": discovered destinations are not records until the owner adds them");
   for (const e of entries[slug]) {
-    assert.ok(!e.approval, e.id + ": this repository records no approval");
-    assert.notStrictEqual(ED.COLLECTIONS.readiness(e).state, "PUBLISHED", e.id + " is not published");
+    AUTHZ.checkApproval(assert, slug, e, AUTHZ.authorized(ED));
+    assert.strictEqual(ED.COLLECTIONS.readiness(e).state === "PUBLISHED", AUTHZ.authorized(ED).has(slug + "/" + e.id), e.id + ": published only if authorized");
   }
 }
-// The public projection stays empty.
+// The public projection is exactly the authorized batch.
 const pub = ED.publishedProjection();
-for (const slug of ["fall", "fall-color", "halloween"]) assert.strictEqual(pub[slug].length, 0, slug + " public list is empty");
+assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [36, 40, 0], "public lists = the authorized batch");
 // A third-party linked image is never a gate image: it is kept only as an unlicensed QA candidate.
 for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
   assert.ok(!e.image.remote, e.id + ": no linked third-party image as the record image");

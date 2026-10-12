@@ -2,6 +2,7 @@
 // image manifest, photo priority, runtime fallback logic, QA API gating, and
 // the public page staying clean.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -232,8 +233,9 @@ console.log("halloween-qa: ok");
   assert.strictEqual(cx.manifest.primary_image, "/assets/seasonal/halloween-card-6.webp", "Crossroads default unchanged");
   assert.ok(QA.results(col, qa.records, { category: "all", query: "", view: "grid" }, {}).includes("PROPOSED, not adopted"));
   // nothing in the batch is approved
-  const all = ED.entries();
-  Object.keys(all).forEach((k) => all[k].forEach((e) => assert.ok(!e.approval, e.id + " has no approval")));
+  const all = ED.entries(), authSet = AUTHZ.authorized(ED);
+  Object.keys(all).forEach((k) => all[k].forEach((e) => AUTHZ.checkApproval(assert, k, e, authSet)));
+  assert.ok(all.halloween.every((e) => !e.approval), "no Halloween record is approved");
   const md = fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md"), "utf8");
   assert.ok(/Nothing is approved/.test(md) && /Rotten Manor/.test(md) && /promo-art/.test(md));
   assert.ok(!/"approval": \{"by": "(?!<name>)/.test(md), "the batch pre-fills no approval");

@@ -3,6 +3,7 @@
 // never reach a public asset, and a public entry still shows only if it came from the generated file (or passes the gate).
 // Everything here is done in memory on copies: no record is approved, nothing is written.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -96,12 +97,13 @@ for (const slug of ["fall", "fall-color", "halloween"]) {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(ED.publishedProjection(), pe);
   for (const slug of C.ORDER) for (const e of pe[slug]) assert.deepStrictEqual(e, ED.publicEntry(all[slug].find((x) => x.id === e.id)), "shipped entry is the public form of its private record");
-  assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 0, "nothing is published");
+  assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 76, "exactly the 76 authorized records are published");
 }
-// 6. none of the 15 launch records is approved or public in the real data
+// 6. the 15 launch records carry exactly the authorized approval and are public (nothing else was approved)
 for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[slug]) {
   const e = all[slug].find((x) => x.id === id);
-  assert.ok(!e.approval && e.status === "READY_FOR_REVIEW" && !C.isPublic(e), id + " is unapproved and unpublished");
+  assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": exactly the authorized approval");
+  assert.ok(e.status === "PUBLISHED" && C.isPublic(e), id + " is published");
 }
 // 7. the credits page covers both image kinds that cards use
 {

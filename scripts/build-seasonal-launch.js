@@ -199,7 +199,9 @@ function deriveCats(col, note) {
 // The launch proposal flag. Membership comes from launch-1.json; the gate's own answer decides everything else. A proposed record that is
 // approved, public or not READY_FOR_REVIEW is a build error: the proposal is for records awaiting approval.
 function launchFor(col, e, rv, prim, batch) {
-  if (e.status !== "READY_FOR_REVIEW" || rv.gate.approval || ED.COLLECTIONS.isPublic(e)) throw new Error(col + "/" + e.id + ": a launch-1 record must be READY_FOR_REVIEW with no approval");
+  // A proposed record is READY_FOR_REVIEW with no approval, or PUBLISHED with the approver's recorded approval (never one without the other).
+  const approved = !!rv.gate.approval;
+  if (approved ? !(e.status === "PUBLISHED" && ED.COLLECTIONS.isPublic(e)) : e.status !== "READY_FOR_REVIEW") throw new Error(col + "/" + e.id + ": a launch record must be READY_FOR_REVIEW with no approval, or PUBLISHED with a recorded approval");
   const route = rv.gate.imageRoute;
   return { batch: batch || proposal.batch, featured: !!e.featured, image_route: route, image_depicts_destination: !!prim.depicts_actual_destination,
     image_note: route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + prim.id : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)" : "Image: " + route };

@@ -21,7 +21,7 @@ function build() {
   out.push("");
   out.push("**What changed.** On `feature/halloween-completion` (7e094df) these 14 entries had `status: \"published\"` under the older, weaker gate (inventory entry plus independent web coverage; no official-site read; no recorded approval). Under the five-state gate an entry is public only when every item is recorded, including an explicit approval by the approving person. These entries are **preserved as records** with their evidence, image and history. They are **not grandfathered** as fully verified, and nothing here adds an approval. `main` never contained these pages, so no live URL changes.");
   out.push("");
-  out.push("**Result:** public destinations after migration = " + rows.filter((r) => ED.COLLECTIONS.isPublic(r.e)).length + " of " + rows.length + ". The pages show their empty state until an approval is recorded.");
+  out.push("**Result:** public destinations after migration = " + rows.filter((r) => ED.COLLECTIONS.isPublic(r.e)).length + " of " + rows.length + ". A migrated record is public only through an approval recorded by the approving person; none is public by migration alone.");
   out.push("");
   const count = {};
   rows.forEach((r) => { count[r.rv.state] = (count[r.rv.state] || 0) + 1; });

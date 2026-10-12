@@ -2,6 +2,7 @@
 // credible relevance evidence is prepared for owner review with a clean description and a labelled temporary illustration.
 // Nothing is approved or public; held records and discovered leads are not part of the batch.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const path = require("path");
 const { execFileSync } = require("child_process");
@@ -25,8 +26,9 @@ for (const col of ["fall", "fall-color"]) {
     const e = E[col].find((x) => x.id === id);
     assert.ok(e, id + " exists");
     const r = ED.review(e);
-    assert.strictEqual(r.state, "READY_FOR_REVIEW", id + " is ready for review and nothing more");
-    assert.ok(!e.approval && !ED.COLLECTIONS.isPublic(e), id + ": no approval, not public");
+    assert.strictEqual(r.state, "PUBLISHED", id + " is published by the authorized approval");
+    assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": carries exactly the authorized approval");
+    assert.ok(ED.COLLECTIONS.isPublic(e), id + ": public");
     assert.ok(/^https:\/\//.test(e.website), id + ": https official website");
     assert.ok(e.relevance && e.relevance.confirmed && e.relevance.note && e.relevance.confidence !== "low", id + ": relevance evidence");
     assert.ok(e.summary.length > 20 && !RESEARCH_NOTE.test(e.summary) && !FORBIDDEN.test(e.summary), id + ": clean description: " + e.summary);
@@ -35,7 +37,7 @@ for (const col of ["fall", "fall-color"]) {
     assert.strictEqual(e.image.illustrative, true);
     assert.ok(!e.image.ownerPhoto && !e.image.remote, id + ": no unconfirmed photograph or linked image is the card image");
     assert.strictEqual(e.image.provenance.status, "OWNER_ACCEPTED");
-    assert.strictEqual(ED.publicEntry(Object.assign({}, e, { status: "PUBLISHED" })).image.illustrative, true);
+    assert.strictEqual(ED.publicEntry(e).image.illustrative, true);
   }
   // held records stay in review
   for (const id of Object.keys(B.held[col])) {
@@ -52,6 +54,6 @@ const ids = new Set(E.fall.concat(E["fall-color"]).map((e) => e.id));
 for (const col of ["fall", "fall-color"]) for (const d of DISC[col]) assert.ok(!ids.has(d.ledger_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")), d.ledger_name + " is not a record");
 // everything else is unapproved
 const all = E.fall.concat(E["fall-color"], E.halloween);
-assert.strictEqual(all.filter((e) => e.approval).length, 0);
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 0);
+assert.strictEqual(all.filter((e) => e.approval).length, 76, "only the 76 authorized records are approved");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76);
 console.log("seasonal expansion: ok");

@@ -101,7 +101,7 @@ function describe(col, e) { return (DESC[col] || {})[e.id] || null; }
 // ---- eligibility
 const STALE = /stale|copyright 20(19|2[0-4])|2025 (season|info)|no 2026|2026 unconfirmed/i;
 function reason(col, e, rv, v) {
-  if (!(rv.state === "CONTENT_VERIFIED" || rv.state === "READY_FOR_REVIEW")) return "gate: " + rv.state;
+  if (!(rv.state === "CONTENT_VERIFIED" || rv.state === "READY_FOR_REVIEW" || (rv.state === "PUBLISHED" && e.approval))) return "gate: " + rv.state;
   if (!/^https:\/\//.test(e.website || "")) return "no https official website";
   if ((v.flags || []).some((f) => STALE.test(f))) return "official page looks stale; 2026 operation to be confirmed";
   if ((v.flags || []).some((f) => /Outside the 75-mile|closed permanently|duplicate/i.test(f)) || v.duplicate_of) return "outside the radius, closed or a duplicate";
@@ -143,14 +143,14 @@ for (const col of ["fall", "fall-color"]) {
     e.summary = desc;
     e.featured = false;
     e.expansionCandidate = { batch: "expansion-1", note: "Prepared for owner review. Not approved. Description generated from facts read on the official page." };
-    e.status = "READY_FOR_REVIEW";
+    if (!e.approval) e.status = "READY_FOR_REVIEW"; // an approved record keeps the approver's status
     membership[col].push(e.id);
   }
 }
 // status derivation check: a prepared record must be READY_FOR_REVIEW with no approval
 for (const col of ["fall", "fall-color"]) for (const id of membership[col]) {
   const e = out[col].find((x) => x.id === id), r = ED.COLLECTIONS.readiness(e);
-  if (r.state !== "READY_FOR_REVIEW" || e.approval) { delete e.expansionCandidate; membership[col] = membership[col].filter((x) => x !== id); held[col][id] = "gate after preparation: " + r.state; e.status = r.state; }
+  if (!(r.state === "READY_FOR_REVIEW" && !e.approval) && !(r.state === "PUBLISHED" && e.approval)) { delete e.expansionCandidate; membership[col] = membership[col].filter((x) => x !== id); held[col][id] = "gate after preparation: " + r.state; e.status = r.state; }
 }
 const entriesText = JSON.stringify(out, null, 1) + "\n";
 const batch = { batch: "expansion-1", generated: DATE, status: "PROPOSED. Nothing here is approved or published. Publication needs an explicit approval {by, at} written by the approving person (gate item 5).",

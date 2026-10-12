@@ -34,22 +34,20 @@
     "detail": "Official page read 2026-10-11 (https://www.michigan.gov/recsearch/parks/belleisle), two independent reads. Relevance (recorded): The local official tourism bureau names Belle Isle in a fall-colors guide, and a published hiking guide describes a foliage loop, so seasonal relevance is documented. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -416,22 +414,20 @@
     "detail": "Official page read 2026-10-11 (https://www.rougepark.org/), two independent reads. Relevance (recorded): Park has documented river-floodplain forest and nature trails; a trail guide lists fall colors and a friends group has run fall colour hikes. No official or tourism-agency source states it. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -1300,22 +1296,20 @@
      "public access rules to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -1847,22 +1841,20 @@
     "detail": "Official page read 2026-10-11 (https://www.detroitriverfront.org/plan-your-visit/parks-greenways/dequindre-cut), two independent reads. Relevance (recorded): Urban greenway; one official tourism source says its trees show colour in early October. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2048,22 +2040,20 @@
     "detail": "Official page read 2026-10-11 (https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park), two independent reads. Relevance (recorded): The tourism bureau explicitly names the route for fall colour and the county itself calls it a scenic drive, so it is a documented seasonal drive. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2195,22 +2185,20 @@
     "detail": "Official page read 2026-10-11 (https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum), two independent reads. Relevance (recorded): maple, oak and beech collections and rare trees; no color timing claim Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2342,22 +2330,20 @@
     "detail": "Official page read 2026-10-11 (https://www.michigan.gov/recsearch/parks/maybury), two independent reads. Relevance (recorded): A tourism bureau names Maybury for fall colour and the park has documented mature woodland and hiking trails. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -2853,22 +2839,20 @@
      "public access rules to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -3331,22 +3315,20 @@
     "detail": "Official page read 2026-10-11 (https://troynaturesociety.org/visitor-info/hours-location/), two independent reads. Relevance (recorded): Official page documents forest trails including a Sugar Maple Loop; fall color itself is not stated. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -3795,22 +3777,20 @@
      "Weaker relevance basis (indirect-prose)"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -3967,22 +3947,20 @@
     "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/), two independent reads. Relevance (direct-prose): The official page itself mentions red, orange and yellow leaves in the fall. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -4261,22 +4239,20 @@
     "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/), two independent reads. Relevance (recorded): Destination Ann Arbor's own fall-color guide names Hudson Mills as a hiking destination, and the park has a river corridor and a nature trail. The park page itself is silent on foliage. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -4432,22 +4408,20 @@
     "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-destinations/dexter-huron-metropark/), two independent reads. Relevance (recorded): A published fall guide recommends its tree-lined paths; the official page is silent on color. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -4726,22 +4700,20 @@
     "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-trails/lower-huron-metropark/), two independent reads. Relevance (recorded): Official page lists river-corridor and woodland trails but never mentions fall color; the only evidence is a group mention in a Visit Detroit fall-color guide. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -4874,22 +4846,20 @@
     "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-trails/willow-metropark/), two independent reads. Relevance (recorded): Mature woodlands per the official page plus a group mention in a Visit Detroit fall guide. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5022,22 +4992,20 @@
     "detail": "Official page read 2026-10-11 (https://www.metroparks.com/parks-and-trails/oakwoods-metropark/), two independent reads. Relevance (recorded): Official page lists several forest nature trails; tourism guide groups it among fall-color spots and a secondary 2013 article singles it out. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -5750,22 +5718,20 @@
      "Weaker relevance basis (caption-only)"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "owner-photo",
     "rights_route": "owner-authorization",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: owner-confirmed 2026-10-12. Miriam Vukich photographed this destination for 313.events and authorized commercial use. Credit: Photography © Miriam Vukich. This is not a Creative Commons license and there is no license URL."
     ],
@@ -5966,22 +5932,20 @@
      "Weaker relevance basis (caption-only)"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6552,22 +6516,20 @@
     "detail": "Official page read 2026-10-11 (https://www.michigan.gov/recsearch/parks/sevenlakes), two independent reads. Relevance (recorded): State park with forested rolling hills, lakes and marked loop trails documented by Pure Michigan; no park-specific fall color claim. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6700,22 +6662,20 @@
     "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/independence-oaks), two independent reads. Relevance (recorded): Large wooded park with extensive trails and old-growth forest section, but no source explicitly names autumn color. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -6848,22 +6808,20 @@
     "detail": "Official page read 2026-10-11 (https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/addison-oaks), two independent reads. Relevance (recorded): Large wooded park with 20+ miles of trails and old-growth designation, but no explicit autumn-color source. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -7287,22 +7245,20 @@
     "detail": "Official page read 2026-10-11 (https://www.paintcreektrail.org/), two independent reads. Relevance (recorded): A published news guide attributes a fall-color recommendation to the state DNR; the trail's own page only carries a fall photo caption. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -8016,22 +7972,20 @@
     "detail": "Official page read 2026-10-11 (https://www.macombgov.org/macomb-orchard-trail), two independent reads. Relevance (recorded): Official page documents tree canopy and orchards but no fall statement; a county-planning remark is relayed secondhand. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -8476,22 +8430,20 @@
     "detail": "Official page read 2026-10-11 (https://www.a2gov.org/parks-and-recreation/parks-places/birdhills/), two independent reads. Relevance (recorded): City page documents mature hardwood woods and a published guide names it for canopy color. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -8624,22 +8576,20 @@
     "detail": "Official page read 2026-10-11 (https://www.a2gov.org/parks-and-recreation/parks-places/barton-nature-area/), two independent reads. Relevance (recorded): A tourism bureau names Barton for autumn color, and the city page documents river and forest habitat. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -9350,22 +9300,20 @@
     "detail": "Official page read 2026-10-11 (https://www.wcroads.org/natural-beauty-roads/), two independent reads. Relevance (recorded): Named as a fall-color road by Destination Ann Arbor and by the County Road Association of Michigan's list. No Natural Beauty Road designation found. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -9497,22 +9445,20 @@
     "detail": "Official page read 2026-10-11 (https://www.annarbor.org/fallhq/), two independent reads. Relevance (recorded): Destination Ann Arbor explicitly lists the road as a scenic fall drive; the Pure Michigan article supports the general area timing only. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -9644,22 +9590,20 @@
     "detail": "Official page read 2026-10-11 (https://www.michigan.gov/recsearch/parks/waterloo), two independent reads. Relevance (recorded): Large forested recreation area with documented hiking trails and a DNR fall tree hike program; a media list names it for fall colors. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -12850,22 +12794,20 @@
     "detail": "Official page read 2026-10-11 (https://www.stclaircounty.org/Offices/176), two independent reads. Relevance (recorded): Maple forest trail is a plausible color site, but fall color is not stated. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -12998,22 +12940,20 @@
     "detail": "Official page read 2026-10-11 (https://stclaircounty.org/offices/181), two independent reads. Relevance (recorded): The managing county page explicitly cites fall colors along the trail. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -14613,22 +14553,20 @@
     "detail": "Official page read 2026-10-11 (https://www.ginlc.org/our-protected-lands), two independent reads. Relevance (recorded): Official page documents mature oak woodlands with public trails, which plausibly support fall color, but no autumn statement exists. Season and hours are not shown on the card.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -14762,22 +14700,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -14911,22 +14847,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -15159,22 +15093,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -15309,22 +15241,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -15459,22 +15389,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -15609,22 +15537,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -17232,22 +17158,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -18251,22 +18175,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
@@ -19134,22 +19056,20 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "illustration",
     "rights_route": "owner-supplied-illustration",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],

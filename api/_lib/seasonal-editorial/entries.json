@@ -9,7 +9,7 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Historic cider mill with cider, donuts, an apple tent, pony rides and a petting zoo.",
    "image": {
     "src": "/assets/seasonal/fall-card-1.webp",
@@ -105,6 +105,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -116,7 +120,7 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Historic Northville cider mill selling cider and cider products, with call-ahead orders for large quantities.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
@@ -212,6 +216,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -224,7 +232,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery.",
    "website": "https://blakefarms.com/",
    "image": {
@@ -320,6 +328,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -331,7 +343,7 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard, cider mill and country store in Ypsilanti, with apples, cider, pumpkins and donuts.",
    "website": "https://www.wiards.com",
    "evidence": [
@@ -431,6 +443,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -442,7 +458,7 @@
     "cider-donuts"
    ],
    "featured": true,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
    "website": "https://www.franklincidermill.com/",
    "evidence": [
@@ -525,6 +541,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -585,7 +605,7 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Historic riverside cider mill with cinnamon doughnuts, fresh-pressed cider, caramel apples and outdoor seating along the Huron River.",
    "image": {
     "src": "/assets/seasonal/fall-card-4.webp",
@@ -657,6 +677,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -668,7 +692,7 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Cider mill in Rochester selling fresh-pressed cider, donuts, pies, apples, honey and maple syrup.",
    "website": "https://rochestercidermill.com",
    "evidence": [
@@ -751,6 +775,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -762,7 +790,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions.",
    "image": {
     "src": "/assets/seasonal/fall-card-5.webp",
@@ -834,6 +862,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -928,7 +960,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts.",
    "image": {
     "src": "/assets/seasonal/fall-card-6.webp",
@@ -1000,6 +1032,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1012,7 +1048,7 @@
     "farm-experiences"
    ],
    "featured": true,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze.",
    "website": "https://www.diehlsorchard.com/",
    "evidence": [
@@ -1101,6 +1137,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1166,7 +1206,7 @@
     "farm-experiences"
    ],
    "featured": true,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and farm in Commerce Township with fresh-pressed cider, hot donuts, u-pick pumpkins and a corn maze.",
    "website": "https://www.longsorchard.com/",
    "evidence": [
@@ -1249,6 +1289,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1261,7 +1305,7 @@
     "farm-experiences"
    ],
    "featured": true,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and cider mill in Plymouth with award-winning apple cider, fresh donuts, wagon rides and pumpkins.",
    "website": "https://www.plymouthorchards.com",
    "evidence": [
@@ -1344,6 +1388,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1355,7 +1403,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides.",
    "image": {
     "src": "/assets/seasonal/fall-card-7.webp",
@@ -1427,6 +1475,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1438,7 +1490,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Fruit farm in Milan with pick-your-own apples and pumpkins.",
    "website": "https://www.wasemfruitfarm.com",
    "evidence": [
@@ -1521,6 +1573,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1532,7 +1588,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and farm market with U-pick and pre-picked pumpkins, cider, donuts, baked goods and an outdoor winery.",
    "image": {
     "src": "/assets/seasonal/fall-card-8.webp",
@@ -1604,6 +1660,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1615,7 +1675,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard in Fenton with pick-your-own apples and fruit, a corn maze, a pumpkin patch, cider and donuts.",
    "website": "https://www.spicerorchards.com",
    "evidence": [
@@ -1698,6 +1758,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1709,7 +1773,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
    "image": {
     "src": "/assets/seasonal/fall-card-1.webp",
@@ -1781,6 +1845,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1792,7 +1860,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Fall festival farm with a corn maze, slides, photo spots and cider donuts.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
@@ -1869,6 +1937,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Operating status verified by the owner. Older promotional artwork or 2025 references on the website do not indicate closure."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -1880,7 +1952,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Farm with a corn maze, pumpkin patch, hayrides, cider and donuts, and a haunted house on weekend evenings.",
    "image": {
     "src": "/assets/seasonal/fall-card-3.webp",
@@ -1952,6 +2024,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -2004,7 +2080,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and cider mill with heirloom and traditional apples, cider and hard cider, pumpkins and the Freedom Winery.",
    "image": {
     "src": "/assets/seasonal/fall-card-4.webp",
@@ -2081,6 +2157,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -2221,7 +2301,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "U-pick orchard and cider mill in Washington Township, announcing its 2026 orchard season.",
    "website": "https://www.bigredorchard.com/",
    "evidence": [
@@ -2309,6 +2389,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -2320,7 +2404,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Blake Farms market, taproom and U-pick with a greenhouse, a tree nursery and fall bonfires.",
    "image": {
     "src": "/assets/seasonal/fall-card-5.webp",
@@ -2397,6 +2481,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -2519,7 +2607,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and cider mill with pumpkin picking, blueberry and peach picking, hayrides, donuts, cider and caramel apples.",
    "image": {
     "src": "/assets/seasonal/fall-card-6.webp",
@@ -2601,6 +2689,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Operating status verified by the owner."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -2779,7 +2871,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and cider mill with an animal barn, a corn maze, a sunflower trail and U-cut flowers.",
    "image": {
     "src": "/assets/seasonal/fall-card-7.webp",
@@ -2856,6 +2948,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -3015,7 +3111,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
    "image": {
     "src": "/assets/seasonal/fall-card-8.webp",
@@ -3097,6 +3193,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Operating status verified by the owner. Sunday live music confirmed by the owner."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -3108,7 +3208,7 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts.",
    "website": "https://portersorchard.com/",
    "evidence": [
@@ -3196,6 +3296,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -3244,7 +3348,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Family farm with pumpkins, apples, a fruit orchard and wagon rides.",
    "image": {
     "src": "/assets/seasonal/fall-card-1.webp",
@@ -3321,6 +3425,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -3569,7 +3677,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Family farm with two corn mazes, hayrides, pick-your-own pumpkins and a sunflower and zinnia flower festival.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
@@ -3646,6 +3754,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -3657,7 +3769,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Family farm with a corn maze, pumpkin fields, giant slides, jump pads and fall photo displays.",
    "image": {
     "src": "/assets/seasonal/fall-card-3.webp",
@@ -3734,6 +3846,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -3820,7 +3936,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Farm with three corn mazes, hay wagon and barrel train rides, a petting zoo with Highland cows, a flower field and a pumpkin shop.",
    "image": {
     "src": "/assets/seasonal/fall-card-4.webp",
@@ -3897,6 +4013,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -4057,7 +4177,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Working farm with the Blast Corn Maze, a U-pick pumpkin patch, tractor-drawn hayrides and a corn cannon.",
    "image": {
     "src": "/assets/seasonal/fall-card-5.webp",
@@ -4139,6 +4259,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Operating status verified by the owner. The website also publishes events (see TASK-010)."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -4262,7 +4386,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Pumpkin farm with pumpkin picking, farm animals, rides, and fresh cider and donuts.",
    "image": {
     "src": "/assets/seasonal/fall-card-6.webp",
@@ -4339,6 +4463,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -4479,7 +4607,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Orchard and cider mill with pick-your-own apples and pumpkins, a corn maze, pony rides, a petting zoo and a farm market and bakery.",
    "image": {
     "src": "/assets/seasonal/fall-card-7.webp",
@@ -4556,6 +4684,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -4568,7 +4700,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Fall farm with a you-pick pumpkin patch, a corn maze, hayrides, farm animals, cider and donuts.",
    "image": {
     "src": "/assets/seasonal/fall-card-8.webp",
@@ -4650,6 +4782,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Operating status verified by the owner."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -4661,7 +4797,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Pumpkin patch with a corn maze, field trips and parties.",
    "image": {
     "src": "/assets/seasonal/fall-card-1.webp",
@@ -4738,6 +4874,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -4803,7 +4943,7 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Corn maze at The Butterfly House farm, with campfires.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
@@ -4880,6 +5020,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   }
  ],
@@ -6935,7 +7079,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark in Shelby Township with forest edge, broad fields, dense woods and small wetlands, and trails the Metroparks describe as offering spectacular fall views.",
    "website": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
    "evidence": [
@@ -7035,6 +7179,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7047,7 +7195,7 @@
     "waterfronts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike loop, the Acorn Nature Trail and a canoe and kayak launch.",
    "website": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
    "image": {
@@ -7166,6 +7314,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Established public park; the owner confirms inclusion. A dated tourism article does not invalidate the park's location, landscape or trails."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7277,7 +7429,7 @@
     "waterfronts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Island state park in the Detroit River with nature trails, a nature center, a conservatory, an aquarium and the Oudolf Garden.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -7367,6 +7519,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7465,7 +7621,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Detroit's largest park, along the Rouge River with nature trails, paved walking paths, an archery range and a golf course.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
@@ -7561,6 +7717,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7572,7 +7732,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Scenic drive along the Rouge River through Wayne County parks, with walking trails, bike paths, fishing and picnic areas.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-4.webp",
@@ -7705,6 +7865,10 @@
       "https://michigan.gov/mdot/news-outreach/pressreleases/2025/02/04/bridge-work-closing-edward-hines-drive-in-wayne-county-old-m-14-ann-arbor-road-remains-closed"
      ]
     }
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7716,7 +7880,7 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Wayne County arboretum on Hines Drive with maple, oak and beech collections and a gentle unpaved walking trail.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-5.webp",
@@ -7788,6 +7952,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7799,7 +7967,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
@@ -7906,6 +8074,10 @@
       "reopening": "not confirmed"
      }
     ]
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -7975,7 +8147,7 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens to explore, from daffodils and roses to fall colors and conifers.",
    "website": "https://housegardens.cranbrook.edu/explore/gardens",
    "evidence": [
@@ -8058,6 +8230,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8069,7 +8245,7 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Historic cemetery and certified arboretum with self-guided tree tours.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-7.webp",
@@ -8141,6 +8317,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8214,7 +8394,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Below-grade greenway between Eastern Market and the riverfront with separate walking and biking lanes, murals, and trees that turn colors in early October.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-8.webp",
@@ -8294,6 +8474,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8363,7 +8547,7 @@
     "parks-gardens"
    ],
    "featured": true,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark in White Lake with trails through prairies, woodlands, wetlands and meadows. The Metroparks describe red, orange and yellow leaves in the fall.",
    "website": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
    "evidence": [
@@ -8446,6 +8630,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8457,7 +8645,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "State recreation area in White Lake with all of southern Michigan's principal forest types and about 44 miles of trails for hiking and mountain biking.",
    "website": "https://www.michigan.gov/recsearch/parks/highland",
    "evidence": [
@@ -8546,6 +8734,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8558,7 +8750,7 @@
     "waterfronts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "State park of rolling hills, forest and lakes with marked hiking loops, paddling and fishing.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-1.webp",
@@ -8648,6 +8840,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Open per the owner. An automated 403 is not evidence of closure."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8723,7 +8919,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "The Lower Peninsula's largest state park, with lakes, hiking trails and the Eddy Discovery Center.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -8818,6 +9014,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Open per the owner. Individual trails and facilities are not individually confirmed."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8829,7 +9029,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Winding road along the Huron River between Ann Arbor and Dexter, listed as a fall-color drive by Destination Ann Arbor and the County Road Association of Michigan.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
@@ -8926,6 +9126,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Open per the owner. Established scenic corridor."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -8937,7 +9141,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Metroparks Toledo's largest park, with oak savanna, more than 70 miles of trail and the Windows on Wildlife bird-viewing area. The agency's fall color report recommends it for late-fall oak color.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-4.webp",
@@ -9028,6 +9232,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -9039,7 +9247,7 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Metroparks Toledo preserve with the Manor House, a formal garden and trails across varied terrain. The agency's fall color report names it for late-fall oak color.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-5.webp",
@@ -9119,6 +9327,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -9198,7 +9410,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Windsor park of old-growth black oak savanna with one public trail.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
@@ -9270,6 +9482,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -9689,7 +9905,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Nature preserve at the headwaters of the Rouge River with forest, meadow and marsh trails, including a Sugar Maple Loop.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-7.webp",
@@ -9769,6 +9985,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -9891,7 +10111,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike trail, canoe and kayak access and tree-lined paths.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-8.webp",
@@ -9970,6 +10190,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -10040,7 +10264,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark along the Huron River with a paved Hike-Bike trail, nature trails and canoe and kayak access.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-1.webp",
@@ -10120,6 +10344,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -10132,7 +10360,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark of mature woodlands on the Huron River, with a paved Hike-Bike loop and paddling.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -10216,6 +10444,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -10228,7 +10460,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark on the Huron River with five nature trails, a nature center and a canoe and kayak trail.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
@@ -10312,6 +10544,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -10483,7 +10719,7 @@
     "waterfronts"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "State recreation area in Holly with more than 8,000 acres of rolling woodlands and open fields.",
    "website": "https://www.michigan.gov/recsearch/parks/holly",
    "evidence": [
@@ -10574,6 +10810,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -10732,7 +10972,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Oakland County park with a lake, a nature center, more than 12 miles of trails and an old-growth forest section.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-4.webp",
@@ -10811,6 +11051,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -10823,7 +11067,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Oakland County park with more than 20 miles of trails, a lake loop and an old-growth forest designation.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-5.webp",
@@ -10902,6 +11146,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -11024,7 +11272,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Rail trail between Rochester and Lake Orion, named in a published guide as a fall-color hike.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
@@ -11109,6 +11357,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -11337,7 +11589,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Rail trail through Macomb County with tree-canopy tunnels, orchards and farms.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-7.webp",
@@ -11454,6 +11706,10 @@
       "https://www.clintonrivertrail.org/projects"
      ]
     }
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -11525,7 +11781,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Ann Arbor's largest natural area, with unpaved trails through hills and ravines under beech, sugar maple, oak and hickory.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-8.webp",
@@ -11609,6 +11865,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -11621,7 +11881,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Nature area along the Huron River with trails around the Barton oxbow. Destination Ann Arbor lists it for autumn color.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-1.webp",
@@ -11698,6 +11958,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -11924,7 +12188,7 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Old US-12 scenic segment between Chelsea, Ann Arbor and Ypsilanti, on the historic Chicago Road route and listed by Destination Ann Arbor as a fall drive.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -12014,6 +12278,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Included by the owner. Scenic segment Chelsea to Ann Arbor to Ypsilanti only."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -13128,7 +13396,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "St. Clair County park with a nature trail through wetlands and maple forest, an equestrian trail and a lodge.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
@@ -13207,6 +13475,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -13219,7 +13491,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Rail trail in St. Clair County whose county page cites fall colors along the route, with a trestle overlook above the Mill Creek valley.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-4.webp",
@@ -13298,6 +13570,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -13731,7 +14007,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Autumn walking destinations on Grosse Ile: Gibraltar Bay Natural Area, the Dr. Bruce D. Jones Preserve and Sunrise Park. The conservancy protects other properties that are not all open to the public.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-5.webp",
@@ -13811,6 +14087,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "statement": "Included by the owner. Public autumn destinations identified by the owner: Gibraltar Bay Natural Area, Dr. Bruce D. Jones Preserve, Sunrise Park."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -13823,7 +14103,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Metroparks Toledo park of second-growth forest, meadows and prairies, with the region's largest concentration of native dogwood. The agency's fall color report names it.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
@@ -13905,6 +14185,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -13917,7 +14201,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Metroparks Toledo park with remnant Great Black Swamp forest, ponds and about 15 miles of trails. The agency's fall color report names it.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-7.webp",
@@ -13999,6 +14283,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -14011,7 +14299,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-8.webp",
@@ -14090,6 +14378,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -14102,7 +14394,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Metroparks Toledo park on the Maumee River with the Towpath Trail, river views and the Interurban Bridge ruins.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-1.webp",
@@ -14182,6 +14474,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -15012,7 +15308,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -15098,6 +15394,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {
@@ -15408,7 +15708,7 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "summary": "National park of forest, marsh and lakeshore with hiking trails, and a stopover for migrating Monarch butterflies each autumn.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
@@ -15493,6 +15793,10 @@
     "by": "Jody Tyree (owner)",
     "at": "2026-10-12",
     "scope": "Editorial content of this destination as written: name, location, description, source link and image treatment. This is editorial acceptance only. It is NOT publication approval and sets no approval field."
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-12"
    }
   },
   {

@@ -4,6 +4,7 @@
 //   * the public projection contains only gate-complete, approved entries (none today)
 //   * the migration review and the generated files cannot drift
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -45,7 +46,12 @@ const migrated = [].concat(...DATA.ORDER.map((s) => entries[s].filter((e) => e.m
 assert.strictEqual(migrated.length, 14);
 const review = fs.readFileSync(path.join(ED.DIR, "MIGRATION_REVIEW.md"), "utf8");
 for (const k of migrated) assert.ok(review.includes("`" + k.split("/")[1] + "`"), k + " is in the migration review");
-assert.ok(/public destinations after migration = 0 of 14/.test(review) && /not grandfathered/i.test(review));
+{
+  // Not grandfathered: a migrated record is public only through the explicit authorized approval of 2026-10-12.
+  const nPublic = [].concat(...DATA.ORDER.map((s) => entries[s].filter((e) => e.migration && DATA.isPublic(e)))).length;
+  assert.ok(review.includes("public destinations after migration = " + nPublic + " of 14") && /not grandfathered/i.test(review), "the review states the current public count of the 14");
+  for (const s of DATA.ORDER) for (const e of entries[s].filter((x) => x.migration && DATA.isPublic(x))) AUTHZ.checkApproval(assert, s, e, AUTHZ.authorized(ED));
+}
 for (const id of Object.keys(SIX)) assert.ok(review.includes(SIX[id]), "the review states the current state of " + id);
 // Entries are not auto-published beyond the six: the other 46 Halloween records are new and carry no legacy status
 assert.strictEqual(entries.halloween.filter((e) => !e.migration).length, 46);
@@ -56,7 +62,8 @@ assert.ok(entries.halloween.filter((e) => !e.migration).every((e) => !DATA.isPub
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(Object.keys(pe), DATA.ORDER);
   for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok((() => { const priv = ED.entries()[slug].find((x) => x.id === e.id); return DATA.isPublic(priv) && JSON.stringify(e) === JSON.stringify(ED.publicEntry(priv)); })(), "published-entries.js holds an entry that is not PUBLISHED, or not in public form: " + e.id);
-  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 0, "no entry is public until it is approved");
+  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 76, "only the 76 authorized entries are public");
+  assert.deepStrictEqual([].concat(...DATA.ORDER.map((s) => pe[s].map((e) => s + "/" + e.id))).sort(), [...AUTHZ.authorized(ED)].sort(), "the public entries are exactly the authorized batch");
   assert.deepStrictEqual(ED.publishedProjection(), pe, "published-entries.js equals the projection of the private data");
   // a hypothetical approval moves an entry into the projection, and ONLY that entry (checked on a copy; nothing is written)
   const e = JSON.parse(JSON.stringify(byId["halloween-greenfield-village"]));

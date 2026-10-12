@@ -2,6 +2,7 @@
 // The batch is prepared for the owner's authorization and NOT applied: no record carries an approval, nothing is public, and
 // every record would pass the gate and publish exactly the previewed card once approved in memory.
 "use strict";
+const AUTHZ = require("./fixtures/seasonal-release-authorization.js");
 const assert = require("assert");
 const path = require("path");
 const { execFileSync } = require("child_process");
@@ -14,21 +15,22 @@ const B = ED.read("RELEASE_BATCH_1.json");
 const E = ED.entries();
 assert.deepStrictEqual([B.counts.total, B.counts.fall, B.counts["fall-color"], B.counts.original15], [76, 36, 40, 15]);
 assert.deepStrictEqual([B.excluded.held, B.excluded.discoveredLeads], [124, 37]);
-assert.ok(/NOT APPLIED/.test(B.status));
+assert.ok(/^APPLIED/.test(B.status) && /Jody Tyree/.test(B.status), "the batch is marked applied by the owner's authorization");
 assert.strictEqual(new Set(B.records.map((r) => r.collection + "/" + r.id)).size, 76, "no duplicates");
 
 const all = E.fall.concat(E["fall-color"], E.halloween);
-assert.strictEqual(all.filter((e) => e.approval).length, 0, "no approval recorded");
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 0, "nothing public");
-assert.strictEqual(all.filter((e) => e.status === "PUBLISHED").length, 0, "nothing declared PUBLISHED");
+assert.strictEqual(all.filter((e) => e.approval).length, 76, "approvals only on the 76 batch records");
+assert.strictEqual(all.filter((e) => e.status === "PUBLISHED").length, 76, "only the batch is declared PUBLISHED");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "only the batch is public");
+for (const r of B.records) assert.deepStrictEqual(E[r.collection].find((x) => x.id === r.id).approval, AUTHZ.AUTH, r.id + ": the authorized approval, nothing else");
 
 let advisories = 0;
 for (const r of B.records) {
   const e = E[r.collection].find((x) => x.id === r.id);
-  assert.strictEqual(ED.review(e).state, "READY_FOR_REVIEW", r.id);
+  assert.strictEqual(ED.review(e).state, "PUBLISHED", r.id);
   assert.ok(e.editorialAccepted, r.id + ": editorially accepted");
-  const sim = JSON.parse(JSON.stringify(e)); sim.status = "PUBLISHED"; sim.approval = { by: "TEST (memory only)", at: "2026-10-12" };
-  assert.ok(ED.COLLECTIONS.isPublic(sim), r.id + ": passes the gate once approved");
+  const sim = JSON.parse(JSON.stringify(e));
+  assert.ok(ED.COLLECTIONS.isPublic(sim), r.id + ": passes the gate with its approval");
   const card = ED.publicEntry(sim);
   assert.deepStrictEqual(card, r.publicCard, r.id + ": the batch shows the exact card");
   const col = Object.assign({}, ED.COLLECTIONS.COLLECTIONS[r.collection], { entries: [card] });
