@@ -4,6 +4,7 @@ const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
+const { stableExternalId, planIdentity } = require("./_lib/mcw-identity");
 // Vercel Cron job — pulls MotorCity Wine (Corktown, Detroit) events from
 // their own public Google Calendar. Added 2026-09-18 after Jody asked "do
 // we have a motor city wine cron?" (answer at the time: no, just one
@@ -350,6 +351,81 @@ function formatTime(h, mi) {
   return `${h12}:${String(mi).padStart(2, "0")} ${period}`;
 }
 
+// Turns parsed VEVENTs into concrete occurrences. Extracted unchanged from the
+// handler (identity proposal, 2026-10-11) so the identity logic in
+// api/_lib/mcw-identity.js can be tested against the real expansion. Each
+// occurrence additionally carries `uid` and `originalDateISO` -- the date the
+// iCalendar itself uses to name the instance (RECURRENCE-ID for an override,
+// the generated date for a series member, DTSTART for a single event) -- which
+// do not change when an instance is renamed or moved. `cancelled` lists the
+// instances the calendar has removed (override STATUS:CANCELLED, EXDATE, a
+// cancelled single). Nothing here is read by the handler except `occurrences`.
+function isoOfParts(parts) {
+  return `${parts.y}-${String(parts.mo).padStart(2, "0")}-${String(parts.d).padStart(2, "0")}`;
+}
+
+function collectOccurrences(vevents, windowEndNaive) {
+  const byUid = new Map();
+  for (const e of vevents) {
+    if (!e.uid) continue;
+    if (!byUid.has(e.uid)) byUid.set(e.uid, []);
+    byUid.get(e.uid).push(e);
+  }
+
+  const occurrences = []; // { dateNaive, summary, description, uid, originalDateISO }
+  const cancelled = []; // { uid, originalDateISO, reason }
+
+  for (const [uid, group] of byUid) {
+    const master = group.find((e) => !e.recurrenceId);
+    const overrides = group.filter((e) => e.recurrenceId);
+
+    // Every override is itself a concrete, already-dated occurrence.
+    for (const ov of overrides) {
+      if (!ov.dtstart) continue;
+      const originalDateISO = isoOfParts(ov.recurrenceId);
+      if (ov.status === "CANCELLED") { cancelled.push({ uid, originalDateISO, reason: "override-cancelled" }); continue; }
+      occurrences.push({ dateNaive: naiveDate(ov.dtstart), summary: ov.summary, description: ov.description, uid, originalDateISO });
+    }
+
+    if (!master || !master.dtstart) continue;
+    if (master.status === "CANCELLED" && !master.rrule) { cancelled.push({ uid, originalDateISO: isoOfParts(master.dtstart), reason: "master-cancelled" }); continue; }
+
+    const excludeKeys = new Set(master.exdates || []);
+    for (const ov of overrides) {
+      if (ov.recurrenceId) excludeKeys.add(dateKey(ov.recurrenceId));
+    }
+
+    if (master.rrule) {
+      const occs = expandRRule(master.dtstart, master.rrule, windowEndNaive);
+      for (const occ of occs) {
+        const parts = { y: occ.getUTCFullYear(), mo: occ.getUTCMonth() + 1, d: occ.getUTCDate(), h: occ.getUTCHours(), mi: occ.getUTCMinutes() };
+        const key = dateKey(parts);
+        if (excludeKeys.has(key)) {
+          if ((master.exdates || []).includes(key)) cancelled.push({ uid, originalDateISO: isoOfParts(parts), reason: "exdate" });
+          continue;
+        }
+        occurrences.push({ dateNaive: occ, summary: master.summary, description: master.description, uid, originalDateISO: isoOfParts(parts) });
+      }
+    } else {
+      // Plain single (non-recurring) event.
+      occurrences.push({ dateNaive: naiveDate(master.dtstart), summary: master.summary, description: master.description, uid, originalDateISO: isoOfParts(master.dtstart) });
+    }
+  }
+  return { occurrences, cancelled };
+}
+
+const todayStr = (d) => d.toISOString().slice(0, 10);
+
+// SELECT-only: stored rows of this connector at or after `fromDate`, for the migration guard.
+async function fetchStoredMcwRows(fromDate) {
+  const url = `${SUPABASE_URL}/rest/v1/events?select=external_id,start_date,title,status&external_id=like.mcw-*&start_date=gte.${fromDate}&limit=1000`;
+  const r = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const rows = await r.json();
+  if (!Array.isArray(rows)) throw new Error("unusable response body");
+  return rows;
+}
+
 module.exports = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
@@ -403,47 +479,7 @@ module.exports = async (req, res) => {
   const todayNaive = naiveDate({ ...todayParts, h: 0, mi: 0 });
   const windowEndNaive = new Date(todayNaive.getTime() + WINDOW_DAYS * 24 * 3600 * 1000);
 
-  // Group by UID.
-  const byUid = new Map();
-  for (const e of vevents) {
-    if (!e.uid) continue;
-    if (!byUid.has(e.uid)) byUid.set(e.uid, []);
-    byUid.get(e.uid).push(e);
-  }
-
-  const occurrences = []; // { dateNaive, summary, description }
-
-  for (const [, group] of byUid) {
-    const master = group.find((e) => !e.recurrenceId);
-    const overrides = group.filter((e) => e.recurrenceId);
-
-    // Every override is itself a concrete, already-dated occurrence.
-    for (const ov of overrides) {
-      if (!ov.dtstart) continue;
-      if (ov.status === "CANCELLED") continue;
-      occurrences.push({ dateNaive: naiveDate(ov.dtstart), summary: ov.summary, description: ov.description });
-    }
-
-    if (!master || !master.dtstart) continue;
-    if (master.status === "CANCELLED" && !master.rrule) continue;
-
-    const excludeKeys = new Set(master.exdates || []);
-    for (const ov of overrides) {
-      if (ov.recurrenceId) excludeKeys.add(dateKey(ov.recurrenceId));
-    }
-
-    if (master.rrule) {
-      const occs = expandRRule(master.dtstart, master.rrule, windowEndNaive);
-      for (const occ of occs) {
-        const key = dateKey({ y: occ.getUTCFullYear(), mo: occ.getUTCMonth() + 1, d: occ.getUTCDate(), h: occ.getUTCHours(), mi: occ.getUTCMinutes() });
-        if (excludeKeys.has(key)) continue;
-        occurrences.push({ dateNaive: occ, summary: master.summary, description: master.description });
-      }
-    } else {
-      // Plain single (non-recurring) event.
-      occurrences.push({ dateNaive: naiveDate(master.dtstart), summary: master.summary, description: master.description });
-    }
-  }
+  const { occurrences, cancelled } = collectOccurrences(vevents, windowEndNaive);
 
   // Filter to the window, sort, cap.
   const windowed = occurrences
@@ -464,7 +500,9 @@ module.exports = async (req, res) => {
     const dateISO = `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const title = o.summary || "MotorCity Wine event";
     return {
-      external_id: `mcw-ical-${dateISO}-${crypto.createHash("md5").update(title).digest("hex").slice(0, 10)}`,
+      // Stable identity (PR #69): the calendar's own series UID + the instance's original date,
+      // so a rename or a move never strands a row and two series sharing a title stay distinct.
+      external_id: stableExternalId(o.uid, o.originalDateISO),
       title,
       description: o.description || undefined,
       category: categoryForTitle(title),
@@ -498,6 +536,24 @@ module.exports = async (req, res) => {
   if (!rows.length) {
     await finish({ outcome: "success", records_written: 0 });
     res.status(200).json({ upserted: 0, note: "No occurrences parsed in the current window — layout/feed may have changed.", fetchedAt: new Date().toISOString() });
+    return;
+  }
+
+  // Migration guard: rows stored under the old title-based ids are the SAME instances this run would
+  // now write under stable ids. Writing first would duplicate them, so stop until the reviewed id
+  // migration (supabase/proposed/2026-10-11_mcw_stable_identity.sql) has been applied. Fail closed:
+  // an unreadable lookup also stops the run. Nothing is written, hidden or cancelled.
+  try {
+    const stored = await fetchStoredMcwRows(todayStr(todayNaive));
+    const pending = planIdentity(inWindow, cancelled, stored).rows.filter((r) => r.action === "adopt" || r.action === "adopt-by-date");
+    if (pending.length) {
+      await finish({ outcome: "blocked", records_written: 0, error_sample: `Id migration pending: ${pending.length} stored rows still use legacy ids` });
+      res.status(409).json({ upserted: 0, error: `Id migration pending: ${pending.length} stored MotorCity Wine rows still use legacy ids; apply the reviewed migration first.` });
+      return;
+    }
+  } catch (guardErr) {
+    await finish({ outcome: "failed", records_written: 0, error_sample: "Identity guard lookup failed: " + guardErr.message });
+    res.status(502).json({ upserted: 0, error: "Identity guard lookup failed, aborting to avoid duplicates: " + guardErr.message });
     return;
   }
 
@@ -550,3 +606,7 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+
+// Exposed for tests (identity proposal): the pure parsing/expansion steps.
+module.exports.parseICS = parseICS;
+module.exports.collectOccurrences = collectOccurrences;
