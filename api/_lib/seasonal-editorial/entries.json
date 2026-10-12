@@ -309,14 +309,13 @@
      "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
    },
    "migration": {
@@ -325,6 +324,11 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -406,15 +410,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -594,15 +602,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -842,7 +854,7 @@
    "image": {
     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
     "source": "313.events owner photo archive, captured 2026-10-09",
-    "credit": "313.events archive",
+    "credit": "Photography © Miriam Vukich",
     "illustrative": false,
     "acquired": {
      "file": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
@@ -856,11 +868,11 @@
      "photoId": "313p-b111acba",
      "reviewRef": "R2-D2832",
      "authorization": {
-      "statement": "Owner-authorized: photographer granted use to 313.events owner",
-      "grantee": "313.events owner",
-      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
-      "recordedAt": "2026-10-11",
-      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+      "statement": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread, 2026-10-12)",
+      "recordedAt": "2026-10-12",
+      "note": "Photographer: Miriam Vukich. Commercial use authorized. Owner-confirmed; not a Creative Commons license."
      },
      "verifiedAt": "2026-10-11",
      "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
@@ -871,15 +883,20 @@
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Photographer's name",
-      "Date and scope of the photographer's grant, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the photographer. Owner-authorization statement only; not a Creative Commons license."
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner confirmation in the project thread)",
+     "photographer": "Miriam Vukich",
+     "commercialUse": "authorized",
+     "credit": "Photography © Miriam Vukich",
+     "unresolved": [],
+     "note": "Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -1015,15 +1032,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -1106,15 +1127,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -1245,15 +1270,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -1384,15 +1413,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -1845,20 +1878,24 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
    },
    "distance": {
     "miles": 26,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Washington Twp MI area at 32 Mile Rd (general geographic knowledge))"
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -2582,20 +2619,24 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
    },
    "distance": {
     "miles": 47,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Goodrich city centre; not from the official page)"
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -6065,14 +6106,13 @@
      "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
    },
    "migration": {
@@ -6081,6 +6121,11 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -6821,15 +6866,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -7137,15 +7186,19 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -7203,7 +7256,7 @@
    "image": {
     "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
     "source": "313.events owner photo archive, captured 2026-10-09",
-    "credit": "313.events archive",
+    "credit": "Photography © Miriam Vukich",
     "illustrative": false,
     "acquired": {
      "file": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
@@ -7217,11 +7270,11 @@
      "photoId": "313p-7ad1f6a5",
      "reviewRef": "R2-D2840",
      "authorization": {
-      "statement": "Owner-authorized: photographer granted use to 313.events owner",
-      "grantee": "313.events owner",
-      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
-      "recordedAt": "2026-10-11",
-      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+      "statement": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread, 2026-10-12)",
+      "recordedAt": "2026-10-12",
+      "note": "Photographer: Miriam Vukich. Commercial use authorized. Owner-confirmed; not a Creative Commons license."
      },
      "verifiedAt": "2026-10-11",
      "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
@@ -7232,15 +7285,20 @@
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Photographer's name",
-      "Date and scope of the photographer's grant, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the photographer. Owner-authorization statement only; not a Creative Commons license."
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner confirmation in the project thread)",
+     "photographer": "Miriam Vukich",
+     "commercialUse": "authorized",
+     "credit": "Photography © Miriam Vukich",
+     "unresolved": [],
+     "note": "Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use."
     }
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {
@@ -8876,20 +8934,24 @@
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     },
     "provenance": {
-     "status": "UNRESOLVED",
-     "recordedAt": "2026-10-12",
-     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
-     "unresolved": [
-      "Generation tool",
-      "Generation terms, including commercial use"
-     ],
-     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "unresolved": [],
+     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
+     "label": "Illustrative image",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
    },
    "distance": {
     "miles": 43,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; Holly area, general geographic knowledge, not from a page read)"
+   },
+   "editorialAccepted": {
+    "by": "Jody Tyree (owner)",
+    "at": "2026-10-12",
+    "scope": "Card content of this destination as written. This is an editorial acceptance, not a publication approval."
    }
   },
   {

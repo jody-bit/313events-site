@@ -1,6 +1,5 @@
 // test/seasonal-launch-lock.test.js — content lock for the first launch set (owner decision 2026-10-12).
-// Fifteen records, none approved, image provenance recorded as unresolved until the owner confirms the photographer
-// and the illustration-generation tool, and visitor-facing descriptions free of research-note wording.
+// Fifteen records, none approved, image provenance resolved (photographer and illustration acceptance confirmed by the owner 2026-10-12), and visitor-facing descriptions free of research-note wording.
 "use strict";
 const assert = require("assert");
 const path = require("path");
@@ -19,9 +18,18 @@ for (const col of Object.keys(ids)) for (const id of ids[col]) {
   assert.ok(!ED.COLLECTIONS.isPublic(e), id + ": not public");
   assert.ok(!RESEARCH_NOTE.test(e.summary), id + ": description has no research-note wording: " + e.summary);
   const pv = e.image.provenance;
-  assert.ok(pv && pv.status === "UNRESOLVED" && pv.unresolved.length, id + ": image provenance recorded as unresolved");
-  if (e.image.ownerPhoto) { photos++; assert.ok(pv.unresolved.some((u) => /Photographer/i.test(u)), id + ": photographer unresolved"); }
-  else { illus++; assert.strictEqual(e.image.illustrative, true); assert.ok(pv.unresolved.some((u) => /Generation tool/i.test(u)), id + ": generation tool unresolved"); }
+  assert.ok(pv && pv.unresolved.length === 0, id + ": image provenance has no unresolved items");
+  assert.ok(e.editorialAccepted && e.editorialAccepted.by && !e.approval, id + ": editorial acceptance recorded, no publication approval");
+  if (e.image.ownerPhoto) {
+    photos++;
+    assert.strictEqual(pv.status, "RESOLVED"); assert.strictEqual(pv.photographer, "Miriam Vukich"); assert.strictEqual(pv.commercialUse, "authorized");
+    assert.strictEqual(e.image.credit, "Photography © Miriam Vukich", id + ": photographer credit");
+    assert.strictEqual(ED.publicEntry(e).image.credit, "Photography © Miriam Vukich", id + ": credit reaches the public card");
+  } else {
+    illus++;
+    assert.strictEqual(e.image.illustrative, true); assert.strictEqual(pv.status, "OWNER_ACCEPTED"); assert.strictEqual(pv.label, "Illustrative image");
+    assert.ok(!ED.publicEntry(e).image.credit, id + ": illustrations carry the label, not a photographer credit");
+  }
 }
 assert.deepStrictEqual([photos, illus], [2, 13], "2 owner photos and 13 illustrations");
 const by = (c, i) => E[c].find((x) => x.id === i).summary;

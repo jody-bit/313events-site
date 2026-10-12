@@ -117,6 +117,8 @@ function publicEntry(e) {
   if (im.alternates && im.alternates.length) out.image.alternates = im.alternates.slice();
   if (im.placeholder) out.image.placeholder = im.placeholder;
   out.image.illustrative = im.illustrative === true;
+  // A photograph is shown with its credit line; an illustration carries the "Illustrative image" label instead.
+  if (im.illustrative !== true && im.credit && !(im.remote && im.remote.src)) out.image.credit = im.credit;
   if (im.remote && im.remote.src) out.image.remote = { src: im.remote.src, sourcePage: im.remote.sourcePage, credit: im.remote.credit };
   return out;
 }
@@ -141,7 +143,8 @@ function review(e) {
   }
   if (!g.approval) outstanding.push("Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}.");
   if (g.rightsRoute === "linked-risk-acceptance") caveats.push("Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.");
-  if (g.rightsRoute === "owner-authorization") caveats.push("Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.");
+  if (g.rightsRoute === "owner-authorization" && im.provenance && im.provenance.status === "RESOLVED") caveats.push("Image rights: owner-confirmed 2026-10-12. " + (im.provenance.photographer || "The photographer") + " photographed this destination for 313.events and authorized commercial use. Credit: " + im.credit + ". This is not a Creative Commons license and there is no license URL.");
+  else if (g.rightsRoute === "owner-authorization") caveats.push("Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.");
   if (g.rightsRoute === "owner-supplied-illustration") caveats.push("Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.");
   if (im.remote && im.remote.src) caveats.push("A linked image depends on the source site continuing to serve it; the generated card is the fallback.");
   if (e.migration) caveats.push("Was status \"published\" on " + e.migration.legacyBranch + " (" + e.migration.legacyCommit + ") on " + e.migration.legacyBasis + ". Not grandfathered.");

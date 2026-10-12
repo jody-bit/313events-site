@@ -42,7 +42,7 @@ assert.strictEqual(projection.fall.length, 10); assert.strictEqual(projection["f
 
 // 1. display fields only
 const ALLOWED_TOP = ["id", "name", "city", "region", "categories", "featured", "status", "summary", "website", "image"];
-const ALLOWED_IMG = ["src", "alternates", "placeholder", "illustrative", "remote"];
+const ALLOWED_IMG = ["src", "alternates", "placeholder", "illustrative", "remote", "credit"];
 const text = JSON.stringify(projection);
 for (const slug of C.ORDER) for (const e of projection[slug]) {
   assert.ok(Object.keys(e).every((k) => ALLOWED_TOP.includes(k)), e.id + " top-level keys: " + Object.keys(e));
@@ -107,6 +107,6 @@ for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[s
 {
   const html = fs.readFileSync(path.join(root, "copyright.html"), "utf8");
   const sec = html.slice(html.indexOf('id="photo-credits"'), html.indexOf('<footer class="site">'));
-  assert.ok(/313\.events archive/.test(sec) && /Illustrative image/.test(sec) && /not a photograph of the place/.test(sec));
+  assert.ok(/Photography &copy; Miriam Vukich/.test(sec) && /Illustrative image/.test(sec) && /not a photograph of the place/.test(sec));
 }
 console.log("seasonal public projection: ok");

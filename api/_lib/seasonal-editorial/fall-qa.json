@@ -2008,7 +2008,7 @@
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
-     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
+     "Image rights: owner-confirmed 2026-10-12. Miriam Vukich photographed this destination for 313.events and authorized commercial use. Credit: Photography © Miriam Vukich. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -2025,8 +2025,8 @@
     "destination_name": "Diehl’s Orchard & Cider Mill",
     "primary_image": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
     "primary_image_type": "owner_photo_destination",
-    "primary_image_credit": "313.events archive",
-    "primary_image_rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+    "primary_image_credit": "Photography © Miriam Vukich",
+    "primary_image_rights_status": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
     "fallback_image": "/assets/seasonal/fall-card-2.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
     "alternative_images": [
@@ -2069,8 +2069,8 @@
      "type": "owner_photo_destination",
      "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
      "source": "313.events owner photo archive, captured 2026-10-09",
-     "credit": "313.events archive",
-     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
+     "credit": "Photography © Miriam Vukich",
+     "rights_status": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
      "illustrative": false,
      "depicts_actual_destination": true,
      "subject": "Pumpkin patch field with scattered pumpkins under dramatic cloudy sky, trees beyond",

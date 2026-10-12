@@ -3902,8 +3902,8 @@
     ],
     "stored": "outside repo: Pictures/313events-photo-archive"
    },
-   "credit": "313.events archive",
-   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "credit": "Photography © Miriam Vukich",
+   "license": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
    "illustrative": false,
    "destination": {
     "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
@@ -3915,7 +3915,9 @@
     "match_confidence": "OWNER_CONFIRMED"
    },
    "capture_place": "Diehl’s Orchard & Cider Mill",
-   "reuse": "destination card and related editorial with accurate attribution"
+   "reuse": "destination card and related editorial with accurate attribution",
+   "photographer": "Miriam Vukich",
+   "commercial_use": "authorized (owner confirmation 2026-10-12)"
   },
   {
    "id": "313p-945fa1fe-f057",
@@ -4104,8 +4106,8 @@
     ],
     "stored": "outside repo: Pictures/313events-photo-archive"
    },
-   "credit": "313.events archive",
-   "license": "Owner-authorized: photographer granted use to 313.events owner",
+   "credit": "Photography © Miriam Vukich",
+   "license": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
    "illustrative": false,
    "destination": {
     "asset_key": "fall-colors__highland-state-recreation-area__highland-mi",
@@ -4117,7 +4119,9 @@
     "match_confidence": "OWNER_CONFIRMED"
    },
    "capture_place": "Highland State Recreation Area",
-   "reuse": "destination card and related editorial with accurate attribution"
+   "reuse": "destination card and related editorial with accurate attribution",
+   "photographer": "Miriam Vukich",
+   "commercial_use": "authorized (owner confirmation 2026-10-12)"
   }
  ],
  "editorial_atmospheric": [
