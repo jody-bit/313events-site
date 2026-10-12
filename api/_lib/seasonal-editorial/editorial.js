@@ -105,10 +105,25 @@ function allCollections() {
   return out;
 }
 
-// The public projection: entries that are declared and derived PUBLISHED, and nothing else.
+// The public form of ONE record that passed the gate: only what the page displays. The evidence notes and URLs, the
+// reviewer names and dates, the relevance note, the owner-photo authorization and its library ids, the file hashes, the
+// risk-acceptance text, the approval {by, at}, the migration history and every parked or alternative image stay in the
+// private data. A linked image keeps only what the card needs to draw it and credit it (src, source page, credit).
+function publicEntry(e) {
+  const im = e.image || {}, out = { id: e.id, name: e.name, city: e.city, region: e.region, categories: e.categories.slice(), featured: !!e.featured,
+    status: "PUBLISHED", summary: e.summary };
+  if (e.website) out.website = e.website;
+  out.image = { src: im.src };
+  if (im.alternates && im.alternates.length) out.image.alternates = im.alternates.slice();
+  if (im.placeholder) out.image.placeholder = im.placeholder;
+  out.image.illustrative = im.illustrative === true;
+  if (im.remote && im.remote.src) out.image.remote = { src: im.remote.src, sourcePage: im.remote.sourcePage, credit: im.remote.credit };
+  return out;
+}
+// The public projection: entries that are declared and derived PUBLISHED, in their public form, and nothing else.
 function publishedProjection() {
   const e = entries(), out = {};
-  for (const slug of COLLECTIONS.ORDER) out[slug] = (e[slug] || []).filter(COLLECTIONS.isPublic);
+  for (const slug of COLLECTIONS.ORDER) out[slug] = (e[slug] || []).filter(COLLECTIONS.isPublic).map(publicEntry);
   return out;
 }
 
@@ -133,4 +148,4 @@ function review(e) {
   return { id: e.id, name: e.name, declared: e.status, state: r.state, gate: g, outstanding, caveats, imageRoute: g.imageRoute, rightsRoute: g.rightsRoute };
 }
 
-module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };
+module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, publicEntry, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };

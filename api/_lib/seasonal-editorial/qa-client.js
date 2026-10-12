@@ -31,8 +31,8 @@
       image: { src: o.src, illustrative: o.illustrative, fallbacks: fb } };
   }
   function badge(rec) {
-    var p = rec.verification.status === "partial", st = rec.publication ? rec.publication.state : "";
-    return '<span class="sc-qa-badge ' + (p ? "sc-qa-partial" : "sc-qa-unver") + '">' + (p ? "Partly verified" : "Unverified") + (rec.public ? " · public" : " · QA only") + '</span>' +
+    var vs = rec.verification.status, p = vs === "partial" || vs === "verified", st = rec.publication ? rec.publication.state : "";
+    return '<span class="sc-qa-badge ' + (p ? "sc-qa-partial" : "sc-qa-unver") + '">' + (vs === "verified" ? "Official source read" : p ? "Partly verified" : "Unverified") + (rec.public ? " · public" : " · QA only") + '</span>' +
       (st ? ' <span class="sc-qa-badge sc-qa-state">' + esc(st.replace(/_/g, " ")) + '</span>' : "");
   }
   function publication(rec) {
@@ -140,15 +140,15 @@
     }).then(function (data) {
       if (!data || !data.records) return false;
       var records = data.records, choices = loadChoices(key), state = { category: "all", query: "", view: "grid" };
-      var counts = { partial: 0, unver: 0 };
+      var counts = { partial: 0, unver: 0, verified: 0 };
       var launchRecs = launchRecords(records), mode = launchRecs.length && /(^|[?&])launch=1(&|$)/.test(loc.search || "") ? "launch" : "qa";
-      records.forEach(function (r) { r.verification.status === "partial" ? counts.partial++ : counts.unver++; });
+      records.forEach(function (r) { var vs = r.verification.status; vs === "verified" ? counts.verified++ : vs === "partial" ? counts.partial++ : counts.unver++; });
       var chips = doc.querySelector(".sc-chips");
       chips.innerHTML = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="true">All</button>' + usedCats(col, mode === "launch" ? launchRecs : records).map(function (c) {
         return '<button type="button" class="sc-chip" data-cat="' + esc(c.id) + '" aria-pressed="false">' + esc(c.label) + '</button>'; }).join("");
       var bar = doc.createElement("div");
       bar.className = "sc-qa-bar"; bar.setAttribute("role", "status");
-      bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
+      bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + (counts.verified ? counts.verified + ' official source read · ' : '') + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
         '<button type="button" class="sc-chip" id="scQaExport">Download image selections (JSON)</button> <button type="button" class="sc-chip" id="scQaReset">Reset choices</button>' +
         (launchRecs.length ? ' <button type="button" class="sc-chip" id="scQaModeQa" aria-pressed="true">QA review (all records)</button> <button type="button" class="sc-chip" id="scQaModeLaunch" aria-pressed="false">Launch preview (' + launchRecs.length + ' proposed)</button>' : "");
       doc.querySelector(".sc-filters").insertAdjacentElement("beforebegin", bar);

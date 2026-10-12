@@ -19,7 +19,7 @@ const byId = Object.fromEntries(entries.halloween.map((e) => [e.id, e]));
 const run = (script, ...a) => execFileSync(process.execPath, [path.join(root, "scripts", script), ...a], { cwd: root, stdio: "pipe" });
 
 // ---- generated files are in sync (public projection, pages, QA data, migration review, asset hashes)
-run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); run("build-seasonal-qa.js", "--check"); run("build-approval-batch.js", "--check"); run("build-launch-proposal.js", "--check"); run("build-publication-review.js", "--check");
+run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); run("build-seasonal-launch.js", "--check"); run("build-approval-batch.js", "--check"); run("build-launch-proposal.js", "--check"); run("build-publication-review.js", "--check");
 assert.deepStrictEqual(require(path.join(root, "scripts/build-seasonal.js")).validateAssets(), []);
 
 // ---- the six existing public entries are preserved (B1)
@@ -55,7 +55,7 @@ assert.ok(entries.halloween.filter((e) => !e.migration).every((e) => !DATA.isPub
 {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(Object.keys(pe), DATA.ORDER);
-  for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok(DATA.isPublic(e), "published-entries.js holds an entry that is not PUBLISHED: " + e.id);
+  for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok((() => { const priv = ED.entries()[slug].find((x) => x.id === e.id); return DATA.isPublic(priv) && JSON.stringify(e) === JSON.stringify(ED.publicEntry(priv)); })(), "published-entries.js holds an entry that is not PUBLISHED, or not in public form: " + e.id);
   assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 0, "no entry is public until it is approved");
   assert.deepStrictEqual(ED.publishedProjection(), pe, "published-entries.js equals the projection of the private data");
   // a hypothetical approval moves an entry into the projection, and ONLY that entry (checked on a copy; nothing is written)

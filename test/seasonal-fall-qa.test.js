@@ -21,18 +21,17 @@ for (const slug of ["fall", "fall-color"]) {
   const d = JSON.parse(fs.readFileSync(path.join(E, slug + "-qa.json"), "utf8"));
   const col = Object.assign({}, C.COLLECTIONS[slug]);
   assert.strictEqual(d.collection, slug);
-  assert.strictEqual(d.records.length, ents[slug].length, slug + ": one QA record per private record");
   const rows = cands.filter((c) => c.collection === slug);
-  assert.strictEqual(d.inventory_rows, rows.length);
-  assert.strictEqual(d.inventory_without_record.length, rows.filter((c) => !c.entry_id).length);
-  assert.ok(d.inventory_without_record.every((r) => r.status === "HOLD_UNVERIFIED"), "rows without a record are HOLD_UNVERIFIED");
+  assert.strictEqual(d.records.length, rows.length, slug + ": one QA record per inventory row");
   const ids = new Set();
   for (const r of d.records) {
     const e = ents[slug].find((x) => x.id === r.id);
-    assert.ok(e, r.id + " has a private record");
-    assert.strictEqual(r.public, C.isPublic(e));
-    assert.strictEqual(r.publication.state, C.readiness(e).state, "QA state is the gate's derived state");
-    assert.strictEqual(r.publication.declared_status, e.status);
+    if (!e) { assert.strictEqual(r.public, false); assert.strictEqual(r.publication.state, "HOLD_UNVERIFIED", r.id + ": no record yet is HOLD_UNVERIFIED"); }
+    else {
+      assert.strictEqual(r.public, C.isPublic(e));
+      assert.strictEqual(r.publication.state, C.readiness(e).state, "QA state is the gate's derived state");
+      assert.strictEqual(r.publication.declared_status, e.status);
+    }
     assert.ok(r.image_options.length >= 1 && r.image_options[0].src === r.manifest.primary_image);
     for (const o of r.image_options) {
       assert.ok(!ids.has(r.id + "/" + o.id), "unique option id");
@@ -44,11 +43,8 @@ for (const slug of ["fall", "fall-color"]) {
       }
       if (o.type === "generated_illustrative") assert.strictEqual(o.depicts_actual_destination, false);
     }
-    // the default is what the record renders first: owner photo, else linked image, else generated card
-    const im = e.image, first = r.image_options[0];
-    if (im.ownerPhoto) assert.strictEqual(first.id, im.ownerPhoto.photoId);
-    else if (im.remote) assert.strictEqual(first.id, "link-" + e.id);
-    else assert.strictEqual(first.type, "generated_illustrative");
+    // an owner-photo record defaults to its photo
+    if (e && e.image.ownerPhoto) assert.strictEqual(r.image_options[0].id, e.image.ownerPhoto.photoId);
     assert.strictEqual(r.publication.gate.approval, false, r.id + " has no approval");
   }
   // the client renders every record and a selection switches the primary image

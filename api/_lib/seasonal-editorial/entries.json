@@ -9,8 +9,8 @@
     "cider-donuts"
    ],
    "featured": true,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "Cider mill in Rochester Hills.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Yates Cider Mill in Rochester Hills. Official page lists cider, donuts, apple tent, pony rides.",
    "image": {
     "src": "/assets/seasonal/fall-card-1.webp",
     "alternates": [
@@ -37,6 +37,14 @@
      "note": "Inventory #42 (Cider/orchard). WXYZ 2026 cider-mill opening list shows Yates at 1950 E. Avon Rd. as open; undated otherwise. Another listing shows a second Orion Twp location; not published here.",
      "url": null,
      "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.yatescidermill.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 1950 E. Avon Rd., Rochester Hills, MI 48307 (second location: Canterbury Village, Lake Orion). Season/hours as stated: Now Open (historic mill 7am-7pm); no explicit 2026 dates. Flags: second location listed on same site."
     }
    ],
    "migration": {
@@ -45,6 +53,13 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "website": "https://www.yatescidermill.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
    }
   },
   {
@@ -56,8 +71,8 @@
     "cider-donuts"
    ],
    "featured": true,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "Cider mill in Northville.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Parmenter's Northville Cider Mill in Northville. Official page lists cider and products, large call-ahead orders.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
@@ -84,6 +99,14 @@
      "note": "Inventory #28 (Cider/orchard). WXYZ 2026 opening list: 714 Base Line Rd., listed opening Aug 29 (not displayed).",
      "url": null,
      "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.northvillecider.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 714 Baseline Rd., Northville, MI 48167. Season/hours as stated: 'now open', daily 10am-8pm; no 2026 season dates. Flags: sparse page; activities not enumerated."
     }
    ],
    "migration": {
@@ -92,6 +115,13 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "website": "https://www.northvillecider.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
    }
   },
   {
@@ -104,9 +134,9 @@
     "farm-experiences"
    ],
    "featured": true,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "Orchard and cider mill in Armada with fall farm activities.",
-   "website": "https://www.blakefarms.com",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Blake's Orchard & Cider Mill in Armada. Official page lists cider mill, tasting room, U-pick, Funland.",
+   "website": "https://blakefarms.com/",
    "image": {
     "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
@@ -133,6 +163,14 @@
      "note": "Inventory #7. Yahoo/Macomb County/Islands.com coverage describe wagon rides and party packages in fall; Blake's has several sites (inventory #8-10), only the Armada orchard is published.",
      "url": "https://www.blakefarms.com",
      "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://blakefarms.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 17985 Armada Center Road, Armada, MI 48005. Season/hours as stated: Cider mill open daily 8am-6pm; U-pick open now. Flags: site now branded Blake Farms; one of four locations."
     }
    ],
    "migration": {
@@ -141,6 +179,12 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
    }
   },
   {
@@ -225,29 +269,28 @@
    }
   },
   {
-   "id": "big-red-orchard",
-   "name": "Big Red Orchard",
-   "city": "Washington",
+   "id": "franklin-cider-mill",
+   "name": "Franklin Cider Mill",
+   "city": "Bloomfield Hills",
    "region": "MI",
    "categories": [
-    "cider-donuts",
-    "farm-experiences"
+    "cider-donuts"
    ],
-   "featured": false,
+   "featured": true,
    "status": "READY_FOR_REVIEW",
-   "summary": "Family-owned cider mill and u-pick orchard offering fresh apples, cider and donuts.",
-   "website": "https://www.bigredorchard.com/",
+   "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
+   "website": "https://www.franklincidermill.com/",
    "evidence": [
     {
      "level": "inventory+search",
-     "note": "Inventory #6 (Both, Washington Township, MI). Identity and location from the research inventory only.",
+     "note": "Inventory #16 (Cider/orchard, Bloomfield Hills, MI). Identity and location from the research inventory only.",
      "url": null,
      "websiteChecked": false
     },
     {
      "level": "official",
-     "note": "Official site read 2026-10-11 (two reads). Address given as 4900 32 Mile Road, Washington, MI 48095. Describes a family-owned cider mill offering fresh apples, cider and donuts; the page title includes U-Pick. A banner reads \"Orchard Season 2026!\". The footer and meta description still carry 2023 text.",
-     "url": "https://www.bigredorchard.com/",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 7450 Franklin Rd, Bloomfield Hills, MI 48301. Page title reads \"Historic Cider Mill in Michigan Since 1837\"; it lists fresh cider, warm donuts and a historic water wheel, an opening of Saturday, September 5, 2026 and an end of season of Sunday, November 29, 2026 (dates not shown on the card).",
+     "url": "https://www.franklincidermill.com/",
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
@@ -255,16 +298,16 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page describes a cider mill and u-pick orchard (apples, cider, donuts) with a 2026 season banner.",
+    "note": "The official page describes a historic cider mill selling cider and donuts, with 2026 season dates.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
    },
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
      "/assets/seasonal/fall-card-6.webp",
-     "/assets/seasonal/fall-card-3.webp"
+     "/assets/seasonal/fall-card-1.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
@@ -272,9 +315,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-1.webp",
-     "bytes": 35358,
-     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "file": "/assets/seasonal/fall-card-3.webp",
+     "bytes": 30910,
+     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-11"
@@ -286,6 +329,303 @@
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
     }
+   }
+  },
+  {
+   "id": "goodison-cider-mill",
+   "name": "Goodison Cider Mill",
+   "city": "Rochester",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Goodison Cider Mill in Rochester. Official page lists fresh-pressed cider, donuts, pistachio nut bread, pies.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.goodisoncidermill.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 4295 Orion Road, Rochester, MI 48306. Season/hours as stated: Labor Day weekend to Christmas Eve; Sep-Oct daily 9am-6pm; page copyright 2024, no 2026 mention. Flags: page possibly stale (copyright 2024); official URL inferred by direct fetch, not by listing link."
+    }
+   ],
+   "website": "https://www.goodisoncidermill.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "dexter-cider-mill",
+   "name": "Dexter Cider Mill",
+   "city": "Dexter",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Dexter Cider Mill in Dexter. Official page lists cinnamon doughnuts, cider, caramel apples, hard cider tasting room (weekends).",
+   "image": {
+    "src": "/assets/seasonal/fall-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.dextercidermill.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 3685 Central St., Dexter, MI 48130. Season/hours as stated: Open now Wed-Sun 8am-5pm; no season dates. Flags: cash or check only."
+    }
+   ],
+   "website": "https://www.dextercidermill.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "rochester-cider-mill",
+   "name": "Rochester Cider Mill",
+   "city": "Rochester",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Cider mill in Rochester selling fresh-pressed cider, donuts, pies, apples, honey and maple syrup.",
+   "website": "https://rochestercidermill.com",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #33 (Cider/orchard, Rochester, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 5125 N. Rochester Rd., Rochester, MI 48306. Page lists fresh-pressed cider, donuts, pies, apples, honey and maple syrup, and states the last day of the season is December 31, 2026 (not shown on the card).",
+     "url": "https://rochestercidermill.com",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a cider mill selling cider and donuts, with a 2026 end-of-season date.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-6.webp",
+     "bytes": 37500,
+     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "blakes-big-apple",
+   "name": "Blake's Big Apple",
+   "city": "Armada",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Blake's Big Apple in Armada. Official page lists U-pick, haunted hayrides, Funland, corn maze.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://blakefarms.com/big-apple/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 71485 North Avenue, Armada, MI 48005. Season/hours as stated: Haunted attractions Sep 12 - Nov 1; Honeycrisp U-pick from Sep 5 (year not stated; footer 2026). Flags: separate location from Blake's Orchard & Cider Mill; same brand."
+    }
+   ],
+   "website": "https://blakefarms.com/big-apple/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "hys-cider-mill",
+   "name": "Hy's Cider Mill",
+   "city": "Bruce Township",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Hy's Cider Mill in Bruce Township. Official page lists cider mill store, wagon rides to U-pick apples, caramel apples, donuts.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "http://www.hyscidermill.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 6350 37 Mile Rd, Romeo/Bruce Township, MI 48065. Season/hours as stated: Sat-Sun only, Sep 12 - Nov 1, 11am-6pm (year not stated). Flags: page says Romeo and Bruce for same address."
+    }
+   ],
+   "website": "http://www.hyscidermill.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "middleton-farms-cider-mill",
+   "name": "Middleton Farms Cider Mill",
+   "city": "Shelby Township",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Cider/orchard",
+   "image": {
+    "src": "/assets/seasonal/fall-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": null,
+     "checkedAt": "2026-10-11",
+     "note": "Official page could not be read on 2026-10-11: no official website or Facebook found; third-party only. Not verified."
+    }
+   ]
+  },
+  {
+   "id": "stony-creek-orchard-and-cider-mill",
+   "name": "Stony Creek Orchard & Cider Mill",
+   "city": "Romeo",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Stony Creek Orchard & Cider Mill in Romeo. Official page lists U-pick apples (weekends), U-pick raspberries, moonlight hayrides, farm stand.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.stonycreekorchard.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 2961 W. 32 Mile, Romeo, MI 48065. Season/hours as stated: Opening Friday Sept 11, 10am; open 7 days 10am-6pm (year not stated). Flags: official URL inferred by direct fetch; year not explicit."
+    }
+   ],
+   "website": "https://www.stonycreekorchard.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
    }
   },
   {
@@ -358,130 +698,57 @@
    }
   },
   {
-   "id": "forever-acres-farm",
-   "name": "Forever Acres Farm & Orchard",
-   "city": "Britton",
+   "id": "apple-charlies-orchard-and-cider-mill",
+   "name": "Apple Charlie's Orchard & Cider Mill",
+   "city": "New Boston",
    "region": "MI",
    "categories": [
+    "cider-donuts",
     "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
-   "summary": "Farm and orchard in Britton with u-pick apples and an apple cider slushy.",
-   "website": "https://www.foreveracresfarm.com/",
-   "evidence": [
-    {
-     "level": "inventory+search",
-     "note": "Inventory #15 (Orchard, Britton, MI). Identity and location from the research inventory only.",
-     "url": null,
-     "websiteChecked": false
-    },
-    {
-     "level": "official",
-     "note": "Official site read 2026-10-11 (two reads). Address given as 278 W. Chicago Blvd., Britton, Michigan. Page states a fall season of September 5 through October 31 and weekend hours (not shown on the card). Some varieties are listed out of stock or limited; the page advises checking before visiting. No donuts, pumpkins or hayrides are mentioned.",
-     "url": "https://www.foreveracresfarm.com/",
-     "websiteChecked": true,
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-    }
-   ],
-   "relevance": {
-    "confirmed": true,
-    "note": "The official page describes a u-pick apple orchard with a 2026 fall season.",
-    "basis": "direct-prose",
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-   },
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Both",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-8.webp",
-     "/assets/seasonal/fall-card-2.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-5.webp",
-     "bytes": 30844,
-     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    }
-   }
-  },
-  {
-   "id": "franklin-cider-mill",
-   "name": "Franklin Cider Mill",
-   "city": "Bloomfield Hills",
-   "region": "MI",
-   "categories": [
-    "cider-donuts"
-   ],
-   "featured": true,
-   "status": "READY_FOR_REVIEW",
-   "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
-   "website": "https://www.franklincidermill.com/",
-   "evidence": [
-    {
-     "level": "inventory+search",
-     "note": "Inventory #16 (Cider/orchard, Bloomfield Hills, MI). Identity and location from the research inventory only.",
-     "url": null,
-     "websiteChecked": false
-    },
-    {
-     "level": "official",
-     "note": "Official site read 2026-10-11 (two reads). Address given as 7450 Franklin Rd, Bloomfield Hills, MI 48301. Page title reads \"Historic Cider Mill in Michigan Since 1837\"; it lists fresh cider, warm donuts and a historic water wheel, an opening of Saturday, September 5, 2026 and an end of season of Sunday, November 29, 2026 (dates not shown on the card).",
-     "url": "https://www.franklincidermill.com/",
-     "websiteChecked": true,
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-    }
-   ],
-   "relevance": {
-    "confirmed": true,
-    "note": "The official page describes a historic cider mill selling cider and donuts, with 2026 season dates.",
-    "basis": "direct-prose",
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-   },
-   "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
-    "alternates": [
-     "/assets/seasonal/fall-card-6.webp",
      "/assets/seasonal/fall-card-1.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
+    "src": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-01__card.webp",
+    "source": "313.events owner photo archive, captured 2023-09-23",
+    "credit": "313.events archive",
+    "illustrative": false,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-3.webp",
-     "bytes": 30910,
-     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
-     "width": 640,
-     "height": 427,
+     "file": "/assets/seasonal/photos/fall/fall-guide__apple-charlie-s-orchard-cider-mill__new-boston-mi__mine-01__card.webp",
+     "bytes": 217966,
+     "sha256": "b093355677615c27302a786b0f52e84105f767c588fba401df9e7d53606a1f30",
+     "width": 1280,
+     "height": 853,
      "acquiredAt": "2026-10-11"
     },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    "ownerPhoto": {
+     "photoId": "313p-d776493e",
+     "reviewRef": "S01-01",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (owner photo recorded in photo-library.json, S01-01)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude Code: size, dimensions and sha256 computed from the repository file"
     }
-   }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": "https://applecharlie.com",
+     "checkedAt": "2026-10-11",
+     "note": "Official page could not be read on 2026-10-11: official site refused connection on every attempt; unverified; third-party only. Not verified."
+    }
+   ]
   },
   {
    "id": "long-family-orchard-and-farm",
@@ -612,28 +879,68 @@
    }
   },
   {
-   "id": "porters-orchard",
-   "name": "Porter’s Orchard Farm Market & Cider Mill",
-   "city": "Goodrich",
+   "id": "obstbaum-orchards",
+   "name": "Obstbaum Orchards",
+   "city": "Northville",
    "region": "MI",
    "categories": [
-    "cider-donuts"
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Obstbaum Orchards in Northville. Official page lists u-pick apples (when ripe), cider, donuts, hayrides.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.obstbaum.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 9252 Currie Road, Northville, MI 48167. Season/hours as stated: no 2026 dates; fall weekends Sat-Sun 10am-6pm when crop ready. Flags: no explicit 2026 season statement; Salem vs Northville wording."
+    }
+   ],
+   "website": "https://www.obstbaum.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "wasem-fruit-farm",
+   "name": "Wasem Fruit Farm",
+   "city": "Milan",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts.",
-   "website": "https://portersorchard.com/",
+   "summary": "Fruit farm in Milan with pick-your-own apples, pumpkins and tart cherries.",
+   "website": "https://www.wasemfruitfarm.com",
    "evidence": [
     {
      "level": "inventory+search",
-     "note": "Inventory #31 (Both, Goodrich, MI). Identity and location from the research inventory only.",
+     "note": "Inventory #39 (Both, Milan, MI). Identity and location from the research inventory only.",
      "url": null,
      "websiteChecked": false
     },
     {
      "level": "official",
-     "note": "Official site read 2026-10-11 (two reads). Address given as 12060 Hegel Road, Goodrich, MI 48438. Page reads \"We are OPEN for the Season\" and lists fresh-picked apples, cider and donuts and an October 31, 2026 event. The site also mentions a separate market stall in Flint, which is not part of this record.",
-     "url": "https://portersorchard.com/",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 6580 Judd Road, Milan, Michigan 48160. Page lists pick-your-own apples, pumpkins and tart cherries and carries a \"Fall 2026 Hours\" section (hours not shown on the card).",
+     "url": "https://www.wasemfruitfarm.com",
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
@@ -641,15 +948,15 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page describes an orchard and cider mill with cider and donuts, open for the 2026 season.",
+    "note": "The official page describes pick-your-own apples and pumpkins, with 2026 fall hours.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
    },
    "image": {
-    "src": "/assets/seasonal/fall-card-8.webp",
+    "src": "/assets/seasonal/fall-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-5.webp",
      "/assets/seasonal/fall-card-7.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
@@ -658,9 +965,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-8.webp",
-     "bytes": 22172,
-     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "file": "/assets/seasonal/fall-card-4.webp",
+     "bytes": 32410,
+     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-11"
@@ -675,66 +982,43 @@
    }
   },
   {
-   "id": "rochester-cider-mill",
-   "name": "Rochester Cider Mill",
-   "city": "Rochester",
+   "id": "westview-orchards-and-winery",
+   "name": "Westview Orchards & Winery",
+   "city": "Washington Township",
    "region": "MI",
    "categories": [
-    "cider-donuts"
+    "farm-experiences"
    ],
    "featured": false,
-   "status": "READY_FOR_REVIEW",
-   "summary": "Cider mill in Rochester selling fresh-pressed cider, donuts, pies, apples, honey and maple syrup.",
-   "website": "https://rochestercidermill.com",
-   "evidence": [
-    {
-     "level": "inventory+search",
-     "note": "Inventory #33 (Cider/orchard, Rochester, MI). Identity and location from the research inventory only.",
-     "url": null,
-     "websiteChecked": false
-    },
-    {
-     "level": "official",
-     "note": "Official site read 2026-10-11 (two reads). Address given as 5125 N. Rochester Rd., Rochester, MI 48306. Page lists fresh-pressed cider, donuts, pies, apples, honey and maple syrup, and states the last day of the season is December 31, 2026 (not shown on the card).",
-     "url": "https://rochestercidermill.com",
-     "websiteChecked": true,
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-    }
-   ],
-   "relevance": {
-    "confirmed": true,
-    "note": "The official page describes a cider mill selling cider and donuts, with a 2026 end-of-season date.",
-    "basis": "direct-prose",
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-   },
+   "status": "CONTENT_VERIFIED",
+   "summary": "Westview Orchards & Winery in Washington Township. Official page lists u-pick and pre-picked pumpkins, cider, donuts, baked goods.",
    "image": {
-    "src": "/assets/seasonal/fall-card-6.webp",
+    "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-1.webp",
-     "/assets/seasonal/fall-card-3.webp"
+     "/assets/seasonal/fall-card-6.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-6.webp",
-     "bytes": 37500,
-     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.westvieworchards.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 65075 Van Dyke, Washington, MI 48095. Season/hours as stated: market daily 8-6; U-pick and Fall Family Fun daily 10-5 weather permitting; no season dates. Flags: indoor winery loft closed this fall."
     }
+   ],
+   "website": "https://www.westvieworchards.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
    }
   },
   {
@@ -801,28 +1085,189 @@
    }
   },
   {
-   "id": "wasem-fruit-farm",
-   "name": "Wasem Fruit Farm",
-   "city": "Milan",
+   "id": "three-cedars-farm",
+   "name": "Three Cedars Farm",
+   "city": "Northville",
    "region": "MI",
    "categories": [
     "farm-experiences"
    ],
    "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Three Cedars Farm in Northville. Official page lists Cider Donut Hut, Country Store, Country Christmas.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.threecedarsfarm.org/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 7897 Six Mile Road, Northville, MI 48168. Season/hours as stated: fall 2026 hours Sun-Thu 10-8, Fri/Sat 10-10; closed Nov 2-5 and Nov 9-26. Flags: banner and hours section disagree on bonus weekend dates; activity list not itemised on page read."
+    }
+   ],
+   "website": "https://www.threecedarsfarm.org/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "kackleberry-farms",
+   "name": "Kackleberry Farms",
+   "city": "Monroe",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Kackleberry Farms in Monroe. Official page lists 30+ attractions, corn maze, slides, photo spots.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-1.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.kackleberryfarms.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 6421 N Stony Creek Rd, Monroe, MI 48162. Season/hours as stated: Fall Festival Sept 12-Nov 1 (year not stated); Sat/Sun 11am-7pm. Flags: year not stated; logos reference 2025."
+    }
+   ],
+   "website": "https://www.kackleberryfarms.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "bonadeo-farms",
+   "name": "Bonadeo Farms",
+   "city": "Highland",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Bonadeo Farms in Highland. Official page lists haunted house, hayrides, cider, donuts.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://bonadeofarms.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 1215 White Lake Rd, Highland Township, MI 48356. Season/hours as stated: opening day Fri Sept 25, 2026; Fri/Sat evenings; Sat/Sun 10am-6pm. Flags: weekend-only."
+    }
+   ],
+   "website": "https://bonadeofarms.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists seasonal activities for the collection."
+   }
+  },
+  {
+   "id": "cooks-farm-dairy",
+   "name": "Cook's Farm Dairy",
+   "city": "Ortonville",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Cook's Farm Dairy in Ortonville. Official page lists meet the cows, guided tours, farm shop, ice cream.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.cooksfarmdairy.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 2950 E Seymour Lake Road, Ortonville, MI 48462. Season/hours as stated: Mon-Sat 7am-9pm, Sun 12-9pm; no 2026 fall dates on page read. Flags: working dairy, weaker fit; fall details not on page read."
+    }
+   ],
+   "website": "https://www.cooksfarmdairy.com/",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: the official page does not describe seasonal activity for this collection Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "big-red-orchard",
+   "name": "Big Red Orchard",
+   "city": "Washington",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Fruit farm in Milan with pick-your-own apples, pumpkins and tart cherries.",
-   "website": "https://www.wasemfruitfarm.com",
+   "summary": "Family-owned cider mill and u-pick orchard offering fresh apples, cider and donuts.",
+   "website": "https://www.bigredorchard.com/",
    "evidence": [
     {
      "level": "inventory+search",
-     "note": "Inventory #39 (Both, Milan, MI). Identity and location from the research inventory only.",
+     "note": "Inventory #6 (Both, Washington Township, MI). Identity and location from the research inventory only.",
      "url": null,
      "websiteChecked": false
     },
     {
      "level": "official",
-     "note": "Official site read 2026-10-11 (two reads). Address given as 6580 Judd Road, Milan, Michigan 48160. Page lists pick-your-own apples, pumpkins and tart cherries and carries a \"Fall 2026 Hours\" section (hours not shown on the card).",
-     "url": "https://www.wasemfruitfarm.com",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 4900 32 Mile Road, Washington, MI 48095. Describes a family-owned cider mill offering fresh apples, cider and donuts; the page title includes U-Pick. A banner reads \"Orchard Season 2026!\". The footer and meta description still carry 2023 text.",
+     "url": "https://www.bigredorchard.com/",
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
@@ -830,15 +1275,141 @@
    ],
    "relevance": {
     "confirmed": true,
-    "note": "The official page describes pick-your-own apples and pumpkins, with 2026 fall hours.",
+    "note": "The official page describes a cider mill and u-pick orchard (apples, cider, donuts) with a 2026 season banner.",
     "basis": "direct-prose",
     "checkedAt": "2026-10-11",
     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
    },
    "image": {
-    "src": "/assets/seasonal/fall-card-4.webp",
+    "src": "/assets/seasonal/fall-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-5.webp",
+     "/assets/seasonal/fall-card-6.webp",
+     "/assets/seasonal/fall-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-1.webp",
+     "bytes": 35358,
+     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "forever-acres-farm",
+   "name": "Forever Acres Farm & Orchard",
+   "city": "Britton",
+   "region": "MI",
+   "categories": [
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Farm and orchard in Britton with u-pick apples and an apple cider slushy.",
+   "website": "https://www.foreveracresfarm.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #15 (Orchard, Britton, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 278 W. Chicago Blvd., Britton, Michigan. Page states a fall season of September 5 through October 31 and weekend hours (not shown on the card). Some varieties are listed out of stock or limited; the page advises checking before visiting. No donuts, pumpkins or hayrides are mentioned.",
+     "url": "https://www.foreveracresfarm.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes a u-pick apple orchard with a 2026 fall season.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-8.webp",
+     "/assets/seasonal/fall-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "porters-orchard",
+   "name": "Porter’s Orchard Farm Market & Cider Mill",
+   "city": "Goodrich",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts.",
+   "website": "https://portersorchard.com/",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #31 (Both, Goodrich, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official site read 2026-10-11 (two reads). Address given as 12060 Hegel Road, Goodrich, MI 48438. Page reads \"We are OPEN for the Season\" and lists fresh-picked apples, cider and donuts and an October 31, 2026 event. The site also mentions a separate market stall in Flint, which is not part of this record.",
+     "url": "https://portersorchard.com/",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page describes an orchard and cider mill with cider and donuts, open for the 2026 season.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-2.webp",
      "/assets/seasonal/fall-card-7.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
@@ -847,9 +1418,9 @@
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/fall-card-4.webp",
-     "bytes": 32410,
-     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
+     "file": "/assets/seasonal/fall-card-8.webp",
+     "bytes": 22172,
+     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-11"
@@ -2827,7 +3398,7 @@
    "featured": true,
    "status": "HOLD_UNVERIFIED",
    "summary": "Huron-Clinton Metropark with wooded trails and Kent Lake.",
-   "website": "https://www.metroparks.com",
+   "website": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
    "image": {
     "src": "/assets/seasonal/fall-color-card-1.webp",
     "alternates": [
@@ -2854,6 +3425,14 @@
      "note": "Fall-color inventory. Metro Parent and local guides cite fall foliage and trails; no official foliage report found, so no peak-color claim is made.",
      "url": "https://www.metroparks.com",
      "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 4570 Huron River Parkway, Milford, MI 48381. Season/hours as stated: park 6am-10pm; $10 daily vehicle pass or annual pass. Flags: page has stale-season text."
     }
    ],
    "migration": {
@@ -2862,6 +3441,12 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: fall color/foliage not mentioned; park character only Awaiting editorial judgment."
    }
   },
   {
@@ -2956,7 +3541,7 @@
    "featured": true,
    "status": "HOLD_UNVERIFIED",
    "summary": "Huron-Clinton Metropark on the Huron River with forest trails.",
-   "website": "https://www.metroparks.com",
+   "website": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
     "alternates": [
@@ -2983,6 +3568,14 @@
      "note": "Fall-color inventory. Metro Parent: 8801 N. Territorial Rd., paved path, Acorn Nature Trail, Huron River.",
      "url": "https://www.metroparks.com",
      "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 8801 N. Territorial Road, Dexter, MI 48130. Season/hours as stated: park 7am-10pm; $10 daily or annual vehicle pass. "
     }
    ],
    "migration": {
@@ -2991,6 +3584,12 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: fall color not mentioned; park character only Awaiting editorial judgment."
    }
   },
   {
@@ -3042,6 +3641,13 @@
      "note": "Fall-color inventory. U-M news (older release) and local guides describe fall color; current rules and hours not confirmed so none are shown.",
      "url": null,
      "websiteChecked": false
+    },
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": "https://mbgna.umich.edu/nichols-arboretum",
+     "checkedAt": "2026-10-11",
+     "note": "Official page could not be read on 2026-10-11: official page returned 403; unverified. Not verified."
     }
    ],
    "migration": {
@@ -3050,6 +3656,523 @@
     "legacyCommit": "7e094df",
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   }
+  },
+  {
+   "id": "belle-isle-park",
+   "name": "Belle Isle Park",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "parks-gardens",
+    "waterfronts"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Island park / drive / waterfront",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/belleisle",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 99 Pleasure Drive, Detroit, MI 48207. Season/hours as stated: Recreation Passport required for vehicle entry; Oudolf Garden and lighthouse 5am-10pm; no park-wide hours or fees stated. Flags: Scott Fountain not operating until spring 2027; Casino restrooms closed."
+    }
+   ],
+   "website": "https://www.michigan.gov/recsearch/parks/belleisle",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: foliage not mentioned; park character only Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "palmer-park-and-witherell-woods",
+   "name": "Palmer Park & Witherell Woods",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "parks-gardens",
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Urban forest / walk",
+   "image": {
+    "alternates": [
+     "/assets/seasonal/fall-color-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-01__card.webp",
+    "source": "313.events owner photo archive, captured 2021-10-08",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-colors__palmer-park-witherell-woods__detroit-mi__mine-01__card.webp",
+     "bytes": 332380,
+     "sha256": "aabe5dd0727b5ded06e13c28c77b2b4f3aae5a934fc8625eb0d661019b18a335",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-377b51e9",
+     "reviewRef": "S18-01",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (owner photo recorded in photo-library.json, S18-01)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude Code: size, dimensions and sha256 computed from the repository file"
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": null,
+     "checkedAt": "2026-10-11",
+     "note": "Official page could not be read on 2026-10-11: detroitmi.gov blocked (403); unverified. Not verified."
+    }
+   ]
+  },
+  {
+   "id": "rouge-park",
+   "name": "Rouge Park",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Woodland / trails",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.rougepark.org/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: Detroit, along 4.7 miles of the Rouge River. Flags: page read is Friends of Rouge Park steward site, not the City; city page blocked."
+    }
+   ],
+   "website": "https://www.rougepark.org/",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: habitat and trails; foliage not mentioned; park character only Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "hines-drive-edward-n-hines-parkway",
+   "name": "Hines Drive / Edward N. Hines Parkway",
+   "city": "Wayne County",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Scenic drive / Rouge River",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 33275 Edward Hines Drive, Westland, MI 48185. Season/hours as stated: hours/fees not stated; flooding closes parts of road/park some of the year. Flags: 2026 closure PDF unread."
+    }
+   ],
+   "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: scenic route per Wayne County history page; park page does not mention foliage Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "bennett-arboretum",
+   "name": "Bennett Arboretum",
+   "city": "Northville",
+   "region": "MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Bennett Arboretum in Northville. Official page lists two-mile unpaved walking trail, arboretum, autumn cross-country running.",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 4990 Edward N Hines Dr., Northville, MI 48168. Season/hours as stated: dawn to dusk; no fees mentioned; no restrooms; park at Cass Benton Park across street. Flags: managed by Wayne County, Northville is mailing city."
+    }
+   ],
+   "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "maple, oak and beech collections and rare trees; no color timing claim"
+   }
+  },
+  {
+   "id": "maybury-state-park",
+   "name": "Maybury State Park",
+   "city": "Northville",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Woodland trails",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/maybury",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 49601 Eight Mile Road, Northville, MI 48167. Season/hours as stated: Recreation Passport required for vehicle entry; hours/fees not stated. Flags: mountain bike trail closed for renovation through fall 2026."
+    }
+   ],
+   "website": "https://www.michigan.gov/recsearch/parks/maybury",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: rolling hills, meadows, trails; foliage not mentioned Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "heritage-park-farmington-hills",
+   "name": "Heritage Park",
+   "city": "Farmington Hills",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Wooded trails",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-7.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.fhgov.com/facilities/heritage-park",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 24915 Farmington Rd., Farmington Hills, MI 48336; 211 acres. Season/hours as stated: no dogs; shelter reservable; hours not stated. Flags: confirmed Farmington Hills, not Heritage Park in Taylor."
+    }
+   ],
+   "website": "https://www.fhgov.com/facilities/heritage-park",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: trails and nature study; foliage not mentioned Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "cranbrook-gardens-and-grounds",
+   "name": "Cranbrook House and Gardens",
+   "city": "Bloomfield Hills",
+   "region": "MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "featured": true,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Gardens in Bloomfield Hills with more than 15 gardens around Cranbrook House. Its official page lists fall colors among the seasonal highlights.",
+   "website": "https://housegardens.cranbrook.edu/explore/gardens",
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Inventory #— (Historic landscape; access check, Bloomfield Hills, MI). Identity and location from the research inventory only.",
+     "url": null,
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "note": "Official Cranbrook House and Gardens page read 2026-10-11 (two reads). Street address given as 380 Lone Pine Road, Bloomfield Hills, MI 48304 (a PO Box with a different ZIP is also shown). The page says \"From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover\" and notes over 15 gardens around Cranbrook House. Fall hours and a give-as-you-wish admission are shown (not displayed on the card). The site's own name is Cranbrook House and Gardens; the inventory called this row Cranbrook Gardens & grounds.",
+     "url": "https://housegardens.cranbrook.edu/explore/gardens",
+     "websiteChecked": true,
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+    }
+   ],
+   "relevance": {
+    "confirmed": true,
+    "note": "The official page itself names fall colors among the gardens' seasonal highlights.",
+    "basis": "direct-prose",
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
+   },
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-8.webp",
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-11"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
+     "recordedAt": "2026-10-11",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    }
+   }
+  },
+  {
+   "id": "elmwood-cemetery",
+   "name": "Elmwood Cemetery",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Elmwood Cemetery in Detroit. Official page lists self-guided tree tours, guided tours, certified arboretum (ArbNet Level I), birding.",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.elmwoodhistoriccemetery.org/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 1200 Elmwood Avenue, Detroit, MI 48207; 86 acres. Season/hours as stated: fall gates open daily 8:30am-4pm Oct 1-May 15; leash dogs only; no alcohol; 15 mph. Flags: rules page gate dates differ from home page; operating cemetery."
+    }
+   ],
+   "website": "https://www.elmwoodhistoriccemetery.org/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "about 1,300 trees of 91 species; certified arboretum with self-guided tree tour maps"
+   }
+  },
+  {
+   "id": "woodlawn-cemetery",
+   "name": "Woodlawn Cemetery",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "parks-gardens"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Historic arboretum-like grounds; respect cemetery rules",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.woodlawncemeterydetroit.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 19975 Woodward Avenue, Detroit. Season/hours as stated: no visiting hours on home page; tour groups call ahead. Flags: no visitor rules read; operator marketing site."
+    }
+   ],
+   "website": "https://www.woodlawncemeterydetroit.com/",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: trees/foliage not mentioned Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "dequindre-cut-greenway",
+   "name": "Dequindre Cut Greenway",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Urban trail",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.detroitriverfront.org/plan-your-visit/parks-greenways/dequindre-cut",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: below-grade path, Eastern Market to Detroit Riverfront. Season/hours as stated: hours/fees not stated; 20-foot paved path. "
+    }
+   ],
+   "website": "https://www.detroitriverfront.org/plan-your-visit/parks-greenways/dequindre-cut",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: urban greenway; foliage not mentioned Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "detroit-riverwalk-and-milliken-state-park",
+   "name": "Detroit Riverwalk & Milliken State Park",
+   "city": "Detroit",
+   "region": "MI",
+   "categories": [
+    "waterfronts"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Waterfront / urban trees",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/williammilliken",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 1900 Atwater St., Detroit, MI 48207. Season/hours as stated: no hours stated; non-motorized Riverwalk. Flags: two managers: DNR (Milliken) and RiverFront Conservancy (Riverwalk)."
+    }
+   ],
+   "website": "https://www.michigan.gov/recsearch/parks/williammilliken",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: new trees/shrubs on berm; no foliage mention Awaiting editorial judgment."
    }
   },
   {
@@ -3103,69 +4226,6 @@
      "file": "/assets/seasonal/fall-color-card-4.webp",
      "bytes": 46450,
      "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    }
-   }
-  },
-  {
-   "id": "cranbrook-gardens-and-grounds",
-   "name": "Cranbrook House and Gardens",
-   "city": "Bloomfield Hills",
-   "region": "MI",
-   "categories": [
-    "parks-gardens"
-   ],
-   "featured": true,
-   "status": "READY_FOR_REVIEW",
-   "summary": "Gardens in Bloomfield Hills with more than 15 gardens around Cranbrook House. Its official page lists fall colors among the seasonal highlights.",
-   "website": "https://housegardens.cranbrook.edu/explore/gardens",
-   "evidence": [
-    {
-     "level": "inventory+search",
-     "note": "Inventory #— (Historic landscape; access check, Bloomfield Hills, MI). Identity and location from the research inventory only.",
-     "url": null,
-     "websiteChecked": false
-    },
-    {
-     "level": "official",
-     "note": "Official Cranbrook House and Gardens page read 2026-10-11 (two reads). Street address given as 380 Lone Pine Road, Bloomfield Hills, MI 48304 (a PO Box with a different ZIP is also shown). The page says \"From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover\" and notes over 15 gardens around Cranbrook House. Fall hours and a give-as-you-wish admission are shown (not displayed on the card). The site's own name is Cranbrook House and Gardens; the inventory called this row Cranbrook Gardens & grounds.",
-     "url": "https://housegardens.cranbrook.edu/explore/gardens",
-     "websiteChecked": true,
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-    }
-   ],
-   "relevance": {
-    "confirmed": true,
-    "note": "The official page itself names fall colors among the gardens' seasonal highlights.",
-    "basis": "direct-prose",
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person"
-   },
-   "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
-    "alternates": [
-     "/assets/seasonal/fall-color-card-8.webp",
-     "/assets/seasonal/fall-color-card-6.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-11"
@@ -3245,6 +4305,348 @@
      "/assets/seasonal/fall-color-card-6.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp"
+   }
+  },
+  {
+   "id": "seven-lakes-state-park",
+   "name": "Seven Lakes State Park",
+   "city": "Holly",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "waterfronts"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Lakes / woodland",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-6.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/sevenlakes",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 14390 Fish Lake Road, Holly, MI 48442. Season/hours as stated: Recreation Passport required for vehicle entry; no hours stated. "
+    }
+   ],
+   "website": "https://www.michigan.gov/recsearch/parks/sevenlakes",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: foliage not mentioned; scenic trails and rolling hills around six lakes Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "proud-lake-state-recreation-area",
+   "name": "Proud Lake State Recreation Area",
+   "city": "Commerce Township",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "waterfronts"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Huron River / forest",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/proudlake",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 3500 N. Wixom Road, Commerce Twp., MI 48382. Season/hours as stated: Recreation Passport required for vehicle entry; no hours stated. Flags: PFAS advisories for Huron River on page."
+    }
+   ],
+   "website": "https://www.michigan.gov/recsearch/parks/proudlake",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: foliage not mentioned; scenic Huron River setting Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "waterloo-state-recreation-area",
+   "name": "Waterloo State Recreation Area",
+   "city": "Chelsea",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Lakes / extensive forest",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-8.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/waterloo",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: coordinates only on page; Gerald E. Eddy Discovery Center, 17030 Bush Road, Chelsea. Season/hours as stated: Recreation Passport required for vehicle entry; no hours stated. Flags: no street address for park itself."
+    }
+   ],
+   "website": "https://www.michigan.gov/recsearch/parks/waterloo",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: foliage not mentioned; largest state park in the Lower Peninsula per page Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "huron-river-drive",
+   "name": "Huron River Drive",
+   "city": "Ann Arbor–Dexter",
+   "region": "MI",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Scenic drive",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.wcroads.org/natural-beauty-roads/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: not stated. Flags: NOT a designated Natural Beauty Road per WCRC list; scenic claim rests only on non-official sources."
+    }
+   ],
+   "website": "https://www.wcroads.org/natural-beauty-roads/",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: no official page found that designates or promotes it as a scenic or fall-color drive Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "oak-openings-preserve-metropark",
+   "name": "Oak Openings Preserve Metropark",
+   "city": "Swanton",
+   "region": "OH",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Oak savanna / fall color",
+   "image": {
+    "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
+    "source": "313.events owner photo archive, captured 2022-11-06",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
+     "bytes": 278148,
+     "sha256": "6d5208b5e190405293dc687b2d6077ccdda85641bf9a9c5171883b7e36472435",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-11"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-7264a257",
+     "reviewRef": "S16-02",
+     "authorization": {
+      "statement": "Owner-authorized: photographer granted use to 313.events owner",
+      "grantee": "313.events owner",
+      "recordedBy": "Jody Tyree (owner photo recorded in photo-library.json, S16-02)",
+      "recordedAt": "2026-10-11",
+      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+     },
+     "verifiedAt": "2026-10-11",
+     "verifiedBy": "Claude Code: size, dimensions and sha256 computed from the repository file"
+    }
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 5402 Wilkins Rd, Whitehouse, OH 43571. Season/hours as stated: open 7am until dark daily; no fees stated. Flags: official city Whitehouse OH, inventory says Swanton."
+    }
+   ],
+   "website": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: fall color not mentioned; oak savanna and planted pine/spruce stands Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "wildwood-preserve-metropark",
+   "name": "Wildwood Preserve Metropark",
+   "city": "Toledo",
+   "region": "OH",
+   "categories": [
+    "parks-gardens"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Manor / wooded trails",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 5100 W Central Ave, Toledo, OH 43615. Season/hours as stated: open 7am until dark daily; no fees stated; free Manor House tours. "
+    }
+   ],
+   "website": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: fall color not mentioned; park character only Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "ojibway-park-and-nature-centre",
+   "name": "Ojibway Park & Nature Centre",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "HOLD_UNVERIFIED",
+   "summary": "Oak woodland / trails",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-4.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.citywindsor.ca/residents/parks-and-forestry/ojibway-prairie-complex/ojibway-nature-centre",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 5200 Matchett Road, Windsor, ON N9C 4E8. Season/hours as stated: dawn to dusk; free admission and trail access. Flags: cross-border."
+    }
+   ],
+   "website": "https://www.citywindsor.ca/residents/parks-and-forestry/ojibway-prairie-complex/ojibway-nature-centre",
+   "relevance": {
+    "confirmed": false,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Not confirmed: no foliage information; prairie complex has few trees (weak tree-color fit) Awaiting editorial judgment."
+   }
+  },
+  {
+   "id": "black-oak-heritage-park",
+   "name": "Black Oak Heritage Park",
+   "city": "Windsor",
+   "region": "ON",
+   "categories": [
+    "trails-woods"
+   ],
+   "featured": false,
+   "status": "CONTENT_VERIFIED",
+   "summary": "Black Oak Heritage Park in Windsor. Official page lists hiking, bird-watching, photography, leisure cycling.",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-5.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 599 Broadway Street, Windsor, ON. Season/hours as stated: dawn to dusk; one ~2 km trail; south section closed; possible temporary closures. Flags: cross-border; temporary closures possible (bridge construction)."
+    }
+   ],
+   "website": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "old-growth trees 150-200 years old, black oak savanna; foliage not mentioned"
    }
   },
   {

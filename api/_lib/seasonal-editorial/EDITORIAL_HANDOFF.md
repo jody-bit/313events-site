@@ -11,13 +11,13 @@ tests fail if a record's declared `status` disagrees with what its fields prove.
 
 | What | Where | Public? |
 |---|---|---|
-| Every destination record (all 74: 14 fall, 52 Halloween, 8 fall color), with evidence, relevance, image, rights, approval, migration history | `entries.json` | No |
+| Every destination record (all 106: 27 fall, 52 Halloween, 27 fall color), with evidence, relevance, image, rights, approval, migration history | `entries.json` | No |
 | The 252-row inventory ledger (one row per research-inventory destination; `entry_id` links a row to its record) | `candidates.json` | No |
 | Image candidates for places without a record yet | `candidate-images.json` | No |
 | Owner photo library (originals' file names and Apple Photos ids, authorization wording) | `photo-library.json` | No |
 | Linked images (catalogue + official-site reads), load tests, risk acceptance, unchosen alternatives | `linked-images.json` | No |
 | Pinned default image per Halloween destination | `defaults.json` | No |
-| Launch proposal 1: the 16 proposed fall / fall-color records (`launch-1.json`), the two-pass official-site read log (`verification-2026-10-11.json`) and the decision packets (`LAUNCH_PROPOSAL_1.md`, generated) | `launch-1.json`, `verification-2026-10-11.json`, `LAUNCH_PROPOSAL_1.md` | No |
+| Launch proposal 1: the 16 proposed fall / fall-color records (`launch-1.json`), the two-pass official-site read log (`verification-2026-10-11.json`) and the decision packets (`LAUNCH_PROPOSAL_1.md`, generated) | `launch-1.json`, `verification-2026-10-11.json`, `LAUNCH_PROPOSAL_1.md`; the branch's own reads are in `launch-verification.json` | No |
 | QA dataset served by `/api/seasonal-qa` outside production | `halloween-qa.json` (generated) | No |
 | QA reviewer client (`/halloween?qa=1`) | `qa-client.js` | No (API only) |
 | Publication migration review (the 14 entries that were public on `feature/halloween-completion`) | `MIGRATION_REVIEW.md` (generated) | No |
@@ -72,7 +72,7 @@ Official verification -> Image rights -> Image file or linked image -> Publicati
 3. If the file is new, commit it under `assets/seasonal/` (never overwrite the shared card artwork).
 4. Run `node test/run-all.js`.
 
-Only a record that is declared and derived `PUBLISHED` is copied into `seasonal/published-entries.js`. Publishing needs
+Only a record that is declared and derived `PUBLISHED` is copied into `seasonal/published-entries.js`, and only in display form (`publicEntry` in `editorial.js`: id, name, city, region, categories, featured, summary, website, image source fields). Evidence, reviewer, rights/authorization, hashes, parked images and approval stay private. Publishing needs
 no edit to `index.html`, `data/dont-miss.json`, the renderer, the CSS or the rewrites.
 
 ## Launch preview: `/fall?qa=1&launch=1`, `/fall-color?qa=1&launch=1`

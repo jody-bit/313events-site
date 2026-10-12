@@ -56,7 +56,7 @@ const BUCKETS = {
 
 p("# Launch proposal 1: /fall and /fall-color");
 p();
-p("Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entries.json`, `launch-1.json` and `verification-2026-10-11.json`.");
+p("Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entries.json`, `launch-1.json` and `verification-2026-10-11.json`. The consolidated integration branch keeps `launch-verification.json` and its records; these 16 are the curated records for the launch.");
 p();
 p("**Status: PROPOSED. Nothing here is approved and nothing is published.** Every record below is declared and derived `READY_FOR_REVIEW`: gate items 1 to 4 are recorded, gate item 5 (`approval {by, at}`) is empty. Only the approving person writes it. Halloween is on its own verification track and is not part of this batch.");
 p();
@@ -131,7 +131,10 @@ for (const slug of SLUGS) {
   p("- **" + unread.length + " inventory rows have not been read at all** (still HOLD_UNVERIFIED).");
   p();
 }
-p("Existing records that stay on hold: Yates Cider Mill, Parmenter's Northville Cider Mill and Blake's Orchard & Cider Mill (fall); Kensington Metropark, Hudson Mills Metropark and Nichols Arboretum (fall-color). They keep their recorded linked images and are not part of this batch.");
+const others = SLUGS.flatMap((sl) => all[sl].filter((e) => !launch.collections[sl].includes(e.id)).map((e) => ({ sl, e, st: C.readiness(e).state, route: C.gate(e).imageRoute })));
+const rfr = others.filter((o) => o.st === "READY_FOR_REVIEW");
+p("The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: " + others.length + " other fall and fall-color records stay out of this batch (" + others.filter((o) => o.st === "CONTENT_VERIFIED").length + " `CONTENT_VERIFIED`, " + others.filter((o) => o.st === "HOLD_UNVERIFIED").length + " `HOLD_UNVERIFIED`, " + rfr.length + " `READY_FOR_REVIEW`). " +
+  (rfr.length ? "The `READY_FOR_REVIEW` ones are " + rfr.map((o) => o.e.name + " (" + o.route + " image)").join(", ") + "; they are not proposed, and any linked image on them is not adopted for launch." : ""));
 p();
 
 p("## Image sources audited, in your priority order");
@@ -147,9 +150,9 @@ p("## Blockers and owner decisions");
 p();
 p("1. **Approval (gate 5)** for each record you want public. None is recorded.");
 p("2. **Relevance standard for /fall-color.** Indian Springs and Cranbrook have official prose that mentions fall color. Stony Creek's page says only \"spectacular fall views\". Highland's and Holly's official pages mention fall leaves only in photo captions. They are proposed with that basis stated on the record; you can drop them. " + ((byFC => byFC)(ver["fall-color"].filter((r) => r.pass2 && r.pass2.relevance_basis === "character-only").length)) + " other parks were held because their official pages describe the park without mentioning fall color.");
-p("3. **Owner-photo credit and rights.** The photographer's name and the date of the grant are not recorded for any library photo. The approved card layout shows no credit line for a non-linked photo, while the library says reuse is \"with accurate attribution\". Adding a credit line is a layout change, so it is not made.");
-p("4. **Public projection.** When a record is published, `published-entries.js` copies the whole record into a public file: evidence notes, the reviewer text, and any recorded owner name or risk note. Decide whether to trim the projection to the displayed fields before publishing anything.");
-p("5. **Linked images** (Wiard's and Stony Creek had one). They are parked, not adopted. Your 2026-10-11 acceptance of linked-image risk is a decision about risk, not usage rights; no rights-holder permission is on file.");
+p("3. **Owner-photo credit and rights.** The photographer's name and the date of the grant are not recorded for any library photo. The existing Photo Credits page (`/copyright#photo-credits`) now explains both card image kinds: a photo credited \"313.events archive\" is used with the photographer's authorization to 313.events (photographer not named), and \"Illustrative image\" cards show generated artwork. If you want a named photographer credited, supply the name. The approved card layout is unchanged and shows no per-card credit line.");
+p("4. **Public projection (fixed).** A published record now reaches `published-entries.js` in display form only: id, name, city, region, categories, featured, summary, website and the image source fields. Evidence notes and URLs, reviewer names, relevance notes, owner-photo authorization and library ids, file hashes, risk-acceptance text, parked images and the approval `{by, at}` stay private. A test covers all 16 records approved in memory.");
+p("5. **Linked images** (Wiard's and Stony Creek had one; no launch record uses one). They are parked, not adopted. Your 2026-10-11 acceptance of linked-image risk is a decision about risk, not usage rights; no rights-holder permission is on file.");
 p("6. **Season currency.** Several fall rows need a second read of the season before they can be proposed (see Not proposed yet).");
 p("7. **Highland's address.** The official Michigan DNR page gives White Lake (48383); your inventory said Highland. The card says White Lake.");
 p("8. **Wiard's.** The Country Fair attractions read \"Temporarily Closed\" on the page read, so the card no longer mentions the Country Fair.");

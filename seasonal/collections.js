@@ -57,6 +57,11 @@
 })(typeof self !== "undefined" ? self : this, function (PUBLISHED_ENTRIES) {
   "use strict";
   var ENTRIES = PUBLISHED_ENTRIES || {};
+  // The generated public file holds only the display form of entries that passed the gate at build time (no evidence,
+  // reviewer, authorization or approval data), so they cannot be re-derived here. Exactly those objects, by identity, are
+  // shown. Anything else, including a hand-made object that merely looks like one, must pass the full gate below.
+  var PROJECTED = [];
+  Object.keys(ENTRIES).forEach(function (k) { (ENTRIES[k] || []).forEach(function (e) { PROJECTED.push(e); }); });
 
   var COLLECTIONS = {
     fall: {
@@ -196,8 +201,9 @@
   }
   // The only way an entry becomes public: declared PUBLISHED and derived PUBLISHED.
   function isPublic(e) { return !e.fixture && e.status === "PUBLISHED" && readiness(e).state === "PUBLISHED"; }
-  function published(c) { return c.entries.filter(isPublic); }
-  function entriesPublic(c) { return c.entries.filter(isPublic).length; }
+  function isShown(e) { return PROJECTED.indexOf(e) >= 0 ? (!e.fixture && e.status === "PUBLISHED") : isPublic(e); }
+  function published(c) { return c.entries.filter(isShown); }
+  function entriesPublic(c) { return c.entries.filter(isShown).length; }
 
   return { COLLECTIONS: COLLECTIONS, ORDER: ORDER, CROSS: CROSS, STATES: STATES, published: published, entriesPublic: entriesPublic,
     readiness: readiness, gate: gate, isPublic: isPublic };

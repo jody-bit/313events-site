@@ -58,7 +58,7 @@ for (const slug of ["fall", "fall-color"]) {
     assert.strictEqual(r.statusCode, 200, slug + " " + env);
     const d = JSON.parse(r.body);
     assert.strictEqual(d.collection, slug);
-    assert.strictEqual(d.records.length, { fall: 14, "fall-color": 8 }[slug], slug + " record count");
+    assert.strictEqual(d.records.length, { fall: 71, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
     assert.ok(d.records.every((x) => x.public === false), slug + ": nothing is public");
     assert.ok(!/Hush|Slay Nights/.test(r.body));
   }
@@ -71,6 +71,10 @@ for (const bad of ["Fall", "fall ", "fall-colour", "__proto__", "constructor", "
 }
 assert.strictEqual(call("preview", { c: ["fall", "halloween"] }).statusCode, 404, "array query value");
 assert.strictEqual(call("preview", { c: "fall", asset: "client" }).statusCode, 200, "the client script is the same for every collection");
+assert.strictEqual(data("preview", { c: "fall" }).statusCode, 200);
+assert.strictEqual(data("preview", { c: "fall-color" }).statusCode, 200);
+assert.strictEqual(data("production", { c: "fall" }).statusCode, 404);
+assert.strictEqual(data("preview", { c: "unknown" }).statusCode, 404);
 assert.strictEqual(data("preview", { asset: "../../package.json" }).statusCode, 404);
 // 4. every response (404 included) is no-store + noindex
 for (const env of ["production", "preview", undefined, "development"]) {

@@ -86,7 +86,7 @@ const rank = (o) => o.warnings.length * 10 + (o.warnings.some((w) => /person|ver
   Object.keys(all).forEach((k) => all[k].forEach((e) => { byKey[k + "/" + e.id] = e; }));
   const short = (rv) => rv.outstanding.map((o) => /^Gate (\d)/.exec(o)[1] + " " + { 1: "official verification", 2: "relevance", 3: "image", 4: "image rights", 5: "explicit approval" }[/^Gate (\d)/.exec(o)[1].slice(0, 1)]).join("; ");
   for (const c of reg.candidates) {
-    const e = byKey[c.collection + "/" + (c.published_id || slug(c.name))];
+    const e = byKey[c.collection + "/" + (c.entry_key || c.published_id || slug(c.name))];
     if (!e) { c.status = "HOLD_UNVERIFIED"; continue; } // no private entry yet: the ledger vocabulary is the five states
     const rv = ED.review(e);
     c.entry_id = e.id; c.status = e.status;

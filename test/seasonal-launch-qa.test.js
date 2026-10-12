@@ -1,0 +1,43 @@
+// test/seasonal-launch-qa.test.js — Fall Is On. and Fall Colors launch preparation.
+// The two collections show their proposed content only through the QA-only dataset. Nothing becomes public without the
+// explicit approval, no record carries one, and the generated QA data is in sync with the private records.
+"use strict";
+const assert = require("assert");
+const path = require("path");
+const { execFileSync } = require("child_process");
+const root = path.join(__dirname, "..");
+const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));
+const E = (f) => require(path.join(root, "api/_lib/seasonal-editorial", f));
+
+execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal-launch.js"), "--check"]);
+
+const entries = E("entries.json");
+const counts = { fall: 71, "fall-color": 129 };
+for (const slug of ["fall", "fall-color"]) {
+  const qa = E(slug + "-qa.json");
+  assert.strictEqual(qa.collection, slug);
+  assert.strictEqual(qa.records.length, counts[slug], slug + ": every inventory row is a QA record");
+  assert.strictEqual(new Set(qa.records.map((r) => r.id + "|" + r.name)).size, counts[slug], slug + ": no duplicate QA records");
+  for (const r of qa.records) {
+    assert.strictEqual(r.public, false, r.id + " is not public");
+    assert.strictEqual(r.dates_hours, null, r.id + " shows no dates or hours");
+    assert.ok(r.image_options.length >= 2 && r.manifest.fallback_image, r.id + " has image options and a fallback");
+    const prim = r.image_options[0];
+    if (prim.type === "owner_photo_destination") assert.strictEqual(prim.depicts_actual_destination, true);
+    // Generated artwork is never presented as a photograph of the destination.
+    for (const o of r.image_options) if (o.illustrative) assert.strictEqual(o.depicts_actual_destination, false, r.id + " generated art is not a destination photo");
+    for (const o of r.image_options) if (o.type === "owner_photo_atmospheric") assert.ok(o.warnings.some((w) => /does NOT depict/.test(w)), r.id + " atmospheric photo is labelled");
+  }
+  for (const e of entries[slug]) {
+    assert.ok(!e.approval, e.id + ": this repository records no approval");
+    assert.notStrictEqual(ED.COLLECTIONS.readiness(e).state, "PUBLISHED", e.id + " is not published");
+  }
+}
+// The public projection stays empty.
+const pub = ED.publishedProjection();
+for (const slug of ["fall", "fall-color", "halloween"]) assert.strictEqual(pub[slug].length, 0, slug + " public list is empty");
+// The three that were READY_FOR_REVIEW through a linked image carry the owner's risk acceptance, not rights.
+for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
+  if (e.image.remote) assert.ok(e.image.remote.acceptedBy && e.image.remote.riskNote, e.id + " linked image records the risk acceptance");
+}
+console.log("seasonal launch QA: ok");

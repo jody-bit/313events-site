@@ -204,7 +204,7 @@ for (const slug of DATA.ORDER) {
   }
   assert.deepStrictEqual(DATA.published(col).map((e) => e.id), col.entries.filter((e) => e.status === "PUBLISHED").map((e) => e.id));
 }
-assert.strictEqual(allEntries, 74, "14 fall + 52 halloween + 8 fall-color records");
+assert.strictEqual(allEntries, 106, "27 fall + 52 halloween + 27 fall-color records");
 // Release-candidate state: no destination has the explicit approval, so none is public.
 for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, 0, slug + " has no public destinations yet");
 
