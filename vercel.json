@@ -77,6 +77,10 @@
       "schedule": "0 8 * * *"
     },
     {
+      "path": "/api/cron-motorcitywine",
+      "schedule": "0 9 * * *"
+    },
+    {
       "path": "/api/cron-gottagacha",
       "schedule": "0 11 * * *"
     },
@@ -152,6 +156,9 @@
     },
     "api/cron-redford-theatre.js": {
       "maxDuration": 60
+    },
+    "api/seasonal-qa.js": {
+      "includeFiles": "api/_lib/seasonal-editorial/**"
     }
   },
   "rewrites": [
@@ -194,6 +201,18 @@
     {
       "source": "/accessibility",
       "destination": "/accessibility.html"
+    },
+    {
+      "source": "/fall",
+      "destination": "/fall.html"
+    },
+    {
+      "source": "/halloween",
+      "destination": "/halloween.html"
+    },
+    {
+      "source": "/fall-color",
+      "destination": "/fall-color.html"
     }
   ]
 }

@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
+const { fillBlankOrganizerEventUrls } = require("./_lib/organizer-links");
 const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 const { repairGenericMetadata } = require(path.join(__dirname, "..", "scripts", "generic-metadata-enrichment"));
 // Vercel serverless function powering admin.html's "Press coverage" section
@@ -332,6 +333,7 @@ module.exports = async (req, res) => {
         headers: { ...sbHeaders, Prefer: "return=representation" },
         body: JSON.stringify(row),
       });
+      if (insertResp.ok) await fillBlankOrganizerEventUrls(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, [row]);
       if (!insertResp.ok) {
         const errText = await insertResp.text();
         res.status(502).json({ error: "Database rejected the new event: " + errText });

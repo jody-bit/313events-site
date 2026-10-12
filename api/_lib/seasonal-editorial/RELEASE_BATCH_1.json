@@ -1,0 +1,2497 @@
+{
+ "batch": "seasonal-release-1",
+ "status": "APPLIED. The owner authorized this batch on 2026-10-12; approval {by: Jody Tyree, at: 2026-10-12} is recorded on all 76 records. Nothing is merged or deployed.",
+ "counts": {
+  "total": 76,
+  "fall": 36,
+  "fall-color": 40,
+  "original15": 15
+ },
+ "excluded": {
+  "held": 124,
+  "discoveredLeads": 37
+ },
+ "action": {
+  "authorizedBy": "the approving person (Jody Tyree)",
+  "wording": "AUTHORIZE PUBLICATION APPROVAL: batch seasonal-release-1, all 76 records, approved by <name> on <YYYY-MM-DD>.",
+  "steps": [
+   "For each of the 76 ids below, add approval {by: <name>, at: <YYYY-MM-DD>} to the record in entries.json and set status to PUBLISHED. Nothing else on the record changes.",
+   "Run node scripts/build-seasonal.js (writes seasonal/published-entries.js and the three pages) and the full test suite.",
+   "Commit and push to integration/halloween-consolidation; check CI and the Preview's public /fall and /fall-color without QA parameters.",
+   "Merging to main and the production deploy are separate authorizations."
+  ],
+  "note": "Nothing in this repository writes `approval`. The proposed approval is not stored on any record until the approving person's authorization is given."
+ },
+ "records": [
+  {
+   "collection": "fall",
+   "id": "big-red-orchard",
+   "name": "Big Red Orchard",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "big-red-orchard",
+    "name": "Big Red Orchard",
+    "city": "Washington",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "U-pick orchard and cider mill in Washington Township, announcing its 2026 orchard season.",
+    "website": "https://www.bigredorchard.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-6.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "diehls-orchard-and-cider-mill",
+   "name": "Diehl’s Orchard & Cider Mill",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "owner-photo",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "diehls-orchard-and-cider-mill",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "city": "Holly",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze.",
+    "website": "https://www.diehlsorchard.com/",
+    "image": {
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": false,
+     "credit": "Photography © Miriam Vukich"
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "franklin-cider-mill",
+   "name": "Franklin Cider Mill",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "franklin-cider-mill",
+    "name": "Franklin Cider Mill",
+    "city": "Bloomfield Hills",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
+    "website": "https://www.franklincidermill.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-6.webp",
+      "/assets/seasonal/fall-card-1.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "long-family-orchard-and-farm",
+   "name": "Long Family Orchard & Farm",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "long-family-orchard-and-farm",
+    "name": "Long Family Orchard & Farm",
+    "city": "Commerce Township",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Orchard and farm in Commerce Township with fresh-pressed cider, hot donuts, u-pick pumpkins and a corn maze.",
+    "website": "https://www.longsorchard.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-4.webp",
+      "/assets/seasonal/fall-card-5.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "plymouth-orchards-and-cider-mill",
+   "name": "Plymouth Orchards & Cider Mill",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "plymouth-orchards-and-cider-mill",
+    "name": "Plymouth Orchards & Cider Mill",
+    "city": "Plymouth",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Orchard and cider mill in Plymouth with award-winning apple cider, fresh donuts, wagon rides and pumpkins.",
+    "website": "https://www.plymouthorchards.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-4.webp",
+      "/assets/seasonal/fall-card-1.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "porters-orchard",
+   "name": "Porter’s Orchard Farm Market & Cider Mill",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "porters-orchard",
+    "name": "Porter’s Orchard Farm Market & Cider Mill",
+    "city": "Goodrich",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard, farm market and cider mill in Goodrich with fresh-picked apples, cider and donuts.",
+    "website": "https://portersorchard.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "rochester-cider-mill",
+   "name": "Rochester Cider Mill",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "rochester-cider-mill",
+    "name": "Rochester Cider Mill",
+    "city": "Rochester",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Cider mill in Rochester selling fresh-pressed cider, donuts, pies, apples, honey and maple syrup.",
+    "website": "https://rochestercidermill.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "spicer-orchards",
+   "name": "Spicer Orchards",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "spicer-orchards",
+    "name": "Spicer Orchards",
+    "city": "Fenton",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard in Fenton with pick-your-own apples and fruit, a corn maze, a pumpkin patch, cider and donuts.",
+    "website": "https://www.spicerorchards.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-8.webp",
+      "/assets/seasonal/fall-card-5.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "wasem-fruit-farm",
+   "name": "Wasem Fruit Farm",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "wasem-fruit-farm",
+    "name": "Wasem Fruit Farm",
+    "city": "Milan",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Fruit farm in Milan with pick-your-own apples and pumpkins.",
+    "website": "https://www.wasemfruitfarm.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-5.webp",
+      "/assets/seasonal/fall-card-7.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "wiards-orchards",
+   "name": "Wiard’s Orchards",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "wiards-orchards",
+    "name": "Wiard’s Orchards",
+    "city": "Ypsilanti",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard, cider mill and country store in Ypsilanti, with apples, cider, pumpkins and donuts.",
+    "website": "https://www.wiards.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-5.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "yates-cider-mill",
+   "name": "Yates Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "yates-cider-mill",
+    "name": "Yates Cider Mill",
+    "city": "Rochester Hills",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historic cider mill with cider, donuts, an apple tent, pony rides and a petting zoo.",
+    "website": "https://www.yatescidermill.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "parmenters-northville-cider-mill",
+   "name": "Parmenter's Northville Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "parmenters-northville-cider-mill",
+    "name": "Parmenter's Northville Cider Mill",
+    "city": "Northville",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historic Northville cider mill selling cider and cider products, with call-ahead orders for large quantities.",
+    "website": "https://www.northvillecider.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "blakes-orchard-cider-mill",
+   "name": "Blake's Orchard & Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "blakes-orchard-cider-mill",
+    "name": "Blake's Orchard & Cider Mill",
+    "city": "Armada",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery.",
+    "website": "https://blakefarms.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "dexter-cider-mill",
+   "name": "Dexter Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "dexter-cider-mill",
+    "name": "Dexter Cider Mill",
+    "city": "Dexter",
+    "region": "MI",
+    "categories": [
+     "cider-donuts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historic riverside cider mill with cinnamon doughnuts, fresh-pressed cider, caramel apples and outdoor seating along the Huron River.",
+    "website": "https://www.dextercidermill.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "blakes-big-apple",
+   "name": "Blake's Big Apple",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "blakes-big-apple",
+    "name": "Blake's Big Apple",
+    "city": "Armada",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions.",
+    "website": "https://blakefarms.com/big-apple/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "stony-creek-orchard-and-cider-mill",
+   "name": "Stony Creek Orchard & Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "stony-creek-orchard-and-cider-mill",
+    "name": "Stony Creek Orchard & Cider Mill",
+    "city": "Romeo",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts.",
+    "website": "https://www.stonycreekorchard.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "obstbaum-orchards",
+   "name": "Obstbaum Orchards",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "obstbaum-orchards",
+    "name": "Obstbaum Orchards",
+    "city": "Northville",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides.",
+    "website": "https://www.obstbaum.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "westview-orchards-and-winery",
+   "name": "Westview Orchards & Winery",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "westview-orchards-and-winery",
+    "name": "Westview Orchards & Winery",
+    "city": "Washington Township",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard and farm market with U-pick and pre-picked pumpkins, cider, donuts, baked goods and an outdoor winery.",
+    "website": "https://www.westvieworchards.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "three-cedars-farm",
+   "name": "Three Cedars Farm",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "three-cedars-farm",
+    "name": "Three Cedars Farm",
+    "city": "Northville",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
+    "website": "https://www.threecedarsfarm.org/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "kackleberry-farms",
+   "name": "Kackleberry Farms",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "kackleberry-farms",
+    "name": "Kackleberry Farms",
+    "city": "Monroe",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Fall festival farm with a corn maze, slides, photo spots and cider donuts.",
+    "website": "https://www.kackleberryfarms.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "bonadeo-farms",
+   "name": "Bonadeo Farms",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "bonadeo-farms",
+    "name": "Bonadeo Farms",
+    "city": "Highland",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Farm with a corn maze, pumpkin patch, hayrides, cider and donuts, and a haunted house on weekend evenings.",
+    "website": "https://bonadeofarms.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "alber-orchard-and-cider-mill",
+   "name": "Alber Orchard & Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "alber-orchard-and-cider-mill",
+    "name": "Alber Orchard & Cider Mill",
+    "city": "Manchester",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard and cider mill with heirloom and traditional apples, cider and hard cider, pumpkins and the Freedom Winery.",
+    "website": "https://alberorchard.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "blakes-backyard",
+   "name": "Blake's Backyard",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "blakes-backyard",
+    "name": "Blake's Backyard",
+    "city": "Almont",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Blake Farms market, taproom and U-pick with a greenhouse, a tree nursery and fall bonfires.",
+    "website": "https://blakefarms.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "erie-orchards-and-cider-mill",
+   "name": "Erie Orchards & Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "erie-orchards-and-cider-mill",
+    "name": "Erie Orchards & Cider Mill",
+    "city": "Erie",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard and cider mill with pumpkin picking, blueberry and peach picking, hayrides, donuts, cider and caramel apples.",
+    "website": "https://erieorchards.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "kreps-apple-barn-and-cider-mill",
+   "name": "Kreps Apple Barn & Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "kreps-apple-barn-and-cider-mill",
+    "name": "Kreps Apple Barn & Cider Mill",
+    "city": "La Salle",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard and cider mill with an animal barn, a corn maze, a sunflower trail and U-cut flowers.",
+    "website": "https://krepsapplebarn.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "parshallville-cider-mill",
+   "name": "Parshallville Cider Mill",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "parshallville-cider-mill",
+    "name": "Parshallville Cider Mill",
+    "city": "Fenton",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
+    "website": "https://parshallvillecidermill.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "schell-family-farm",
+   "name": "Schell Family Farm",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "schell-family-farm",
+    "name": "Schell Family Farm",
+    "city": "Pinckney",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Family farm with pumpkins, apples, a fruit orchard and wagon rides.",
+    "website": "https://www.schellfamilyfarm.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "corn-fun",
+   "name": "Corn Fun",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "corn-fun",
+    "name": "Corn Fun",
+    "city": "Casco",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Family farm with two corn mazes, hayrides, pick-your-own pumpkins and a sunflower and zinnia flower festival.",
+    "website": "https://cornfun.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "debucks-family-farm",
+   "name": "DeBuck's Family Farm",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "debucks-family-farm",
+    "name": "DeBuck's Family Farm",
+    "city": "Belleville",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Family farm with a corn maze, pumpkin fields, giant slides, jump pads and fall photo displays.",
+    "website": "https://www.debucksfamilyfarm.com/",
+    "image": {
+     "src": "/assets/seasonal/fall-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "flushing-farms",
+   "name": "Flushing Farms",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "flushing-farms",
+    "name": "Flushing Farms",
+    "city": "Flushing",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Farm with three corn mazes, hay wagon and barrel train rides, a petting zoo with Highland cows, a flower field and a pumpkin shop.",
+    "website": "https://flushingfarms.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "nixon-farms-blast-corn-maze",
+   "name": "Nixon Farms / Blast Corn Maze",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "nixon-farms-blast-corn-maze",
+    "name": "Nixon Farms / Blast Corn Maze",
+    "city": "Dexter",
+    "region": "MI",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Working farm with the Blast Corn Maze, a U-pick pumpkin patch, tractor-drawn hayrides and a corn cannon.",
+    "website": "https://www.nixonfarmsdexter.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "trabbic-family-pumpkin-farm",
+   "name": "Trabbic Family Pumpkin Farm",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "trabbic-family-pumpkin-farm",
+    "name": "Trabbic Family Pumpkin Farm",
+    "city": "Erie",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Pumpkin farm with pumpkin picking, farm animals, rides, and fresh cider and donuts.",
+    "website": "https://www.trabbicpumpkinfarm.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "macqueen-orchards",
+   "name": "MacQueen Orchards",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "macqueen-orchards",
+    "name": "MacQueen Orchards",
+    "city": "Holland",
+    "region": "OH",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Orchard and cider mill with pick-your-own apples and pumpkins, a corn maze, pony rides, a petting zoo and a farm market and bakery.",
+    "website": "https://www.macqueenorchards.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "gust-brothers-pumpkin-farm",
+   "name": "Gust Brother's Pumpkin Farm",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "gust-brothers-pumpkin-farm",
+    "name": "Gust Brother's Pumpkin Farm",
+    "city": "Ottawa Lake",
+    "region": "MI",
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Fall farm with a you-pick pumpkin patch, a corn maze, hayrides, farm animals, cider and donuts.",
+    "website": "https://www.gustbrothers.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "jasons-pumpkin-patch",
+   "name": "Jason's Pumpkin Patch",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "jasons-pumpkin-patch",
+    "name": "Jason's Pumpkin Patch",
+    "city": "Oak Harbor",
+    "region": "OH",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Pumpkin patch with a corn maze, field trips and parties.",
+    "website": "https://www.jasonspumpkinpatch.com/visit-us",
+    "image": {
+     "src": "/assets/seasonal/fall-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-2.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall",
+   "id": "wheeler-farms-corn-maze",
+   "name": "Wheeler Farms Corn Maze",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "wheeler-farms-corn-maze",
+    "name": "Wheeler Farms Corn Maze",
+    "city": "Whitehouse",
+    "region": "OH",
+    "categories": [
+     "farm-experiences"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Corn maze at The Butterfly House farm, with campfires.",
+    "website": "https://www.wheelerfarms.com",
+    "image": {
+     "src": "/assets/seasonal/fall-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-card-1.webp",
+      "/assets/seasonal/fall-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "indian-springs-metropark",
+   "name": "Indian Springs Metropark",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "indian-springs-metropark",
+    "name": "Indian Springs Metropark",
+    "city": "White Lake",
+    "region": "MI",
+    "categories": [
+     "trails-woods",
+     "parks-gardens"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark in White Lake with trails through prairies, woodlands, wetlands and meadows. The Metroparks describe red, orange and yellow leaves in the fall.",
+    "website": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-3.webp",
+      "/assets/seasonal/fall-color-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "cranbrook-gardens-and-grounds",
+   "name": "Cranbrook House and Gardens",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "cranbrook-gardens-and-grounds",
+    "name": "Cranbrook House and Gardens",
+    "city": "Bloomfield Hills",
+    "region": "MI",
+    "categories": [
+     "parks-gardens"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens to explore, from daffodils and roses to fall colors and conifers.",
+    "website": "https://housegardens.cranbrook.edu/explore/gardens",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-8.webp",
+      "/assets/seasonal/fall-color-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "stony-creek-metropark",
+   "name": "Stony Creek Metropark",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "stony-creek-metropark",
+    "name": "Stony Creek Metropark",
+    "city": "Shelby Township",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark in Shelby Township with forest edge, broad fields, dense woods and small wetlands, and trails the Metroparks describe as offering spectacular fall views.",
+    "website": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-4.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "highland-state-recreation-area",
+   "name": "Highland Recreation Area",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "owner-photo",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "highland-state-recreation-area",
+    "name": "Highland Recreation Area",
+    "city": "White Lake",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "State recreation area in White Lake with all of southern Michigan's principal forest types and about 44 miles of trails for hiking and mountain biking.",
+    "website": "https://www.michigan.gov/recsearch/parks/highland",
+    "image": {
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__highland-state-recreation-area__highland-mi__r2-d2840__card.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-3.webp",
+      "/assets/seasonal/fall-color-card-6.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": false,
+     "credit": "Photography © Miriam Vukich"
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "holly-state-recreation-area",
+   "name": "Holly State Recreation Area",
+   "original15": true,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "holly-state-recreation-area",
+    "name": "Holly State Recreation Area",
+    "city": "Holly",
+    "region": "MI",
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "State recreation area in Holly with more than 8,000 acres of rolling woodlands and open fields.",
+    "website": "https://www.michigan.gov/recsearch/parks/holly",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-8.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "hudson-mills-metropark",
+   "name": "Hudson Mills Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "hudson-mills-metropark",
+    "name": "Hudson Mills Metropark",
+    "city": "Dexter",
+    "region": "MI",
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike loop, the Acorn Nature Trail and a canoe and kayak launch.",
+    "website": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-2.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "belle-isle-park",
+   "name": "Belle Isle Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "belle-isle-park",
+    "name": "Belle Isle Park",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "parks-gardens",
+     "waterfronts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Island state park in the Detroit River with nature trails, a nature center, a conservatory, an aquarium and the Oudolf Garden.",
+    "website": "https://www.michigan.gov/recsearch/parks/belleisle",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "rouge-park",
+   "name": "Rouge Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "rouge-park",
+    "name": "Rouge Park",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Detroit's largest park, along the Rouge River with nature trails, paved walking paths, an archery range and a golf course.",
+    "website": "https://www.rougepark.org/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "hines-drive-edward-n-hines-parkway",
+   "name": "Hines Drive / Edward N. Hines Parkway",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "hines-drive-edward-n-hines-parkway",
+    "name": "Hines Drive / Edward N. Hines Parkway",
+    "city": "Wayne County",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Scenic drive along the Rouge River through Wayne County parks, with walking trails, bike paths, fishing and picnic areas.",
+    "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
+    "advisory": "Hines Drive is closed between Newburgh Road and Wayne Road for bridge replacement. Other sections remain accessible.",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "bennett-arboretum",
+   "name": "Bennett Arboretum",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "bennett-arboretum",
+    "name": "Bennett Arboretum",
+    "city": "Northville",
+    "region": "MI",
+    "categories": [
+     "parks-gardens"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Wayne County arboretum on Hines Drive with maple, oak and beech collections and a gentle unpaved walking trail.",
+    "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "maybury-state-park",
+   "name": "Maybury State Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "maybury-state-park",
+    "name": "Maybury State Park",
+    "city": "Northville",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
+    "website": "https://www.michigan.gov/recsearch/parks/maybury",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "elmwood-cemetery",
+   "name": "Elmwood Cemetery",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "elmwood-cemetery",
+    "name": "Elmwood Cemetery",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "parks-gardens"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Historic cemetery and certified arboretum with self-guided tree tours.",
+    "website": "https://www.elmwoodhistoriccemetery.org/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "dequindre-cut-greenway",
+   "name": "Dequindre Cut Greenway",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "dequindre-cut-greenway",
+    "name": "Dequindre Cut Greenway",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Below-grade greenway between Eastern Market and the riverfront with separate walking and biking lanes, murals, and trees that turn colors in early October.",
+    "website": "https://www.detroitriverfront.org/plan-your-visit/parks-greenways/dequindre-cut",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "seven-lakes-state-park",
+   "name": "Seven Lakes State Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "seven-lakes-state-park",
+    "name": "Seven Lakes State Park",
+    "city": "Holly",
+    "region": "MI",
+    "categories": [
+     "trails-woods",
+     "waterfronts"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "State park of rolling hills, forest and lakes with marked hiking loops, paddling and fishing.",
+    "website": "https://www.michigan.gov/recsearch/parks/sevenlakes",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-2.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "waterloo-state-recreation-area",
+   "name": "Waterloo State Recreation Area",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "waterloo-state-recreation-area",
+    "name": "Waterloo State Recreation Area",
+    "city": "Chelsea",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "The Lower Peninsula's largest state park, with lakes, hiking trails and the Eddy Discovery Center.",
+    "website": "https://www.michigan.gov/recsearch/parks/waterloo",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "huron-river-drive",
+   "name": "Huron River Drive",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "huron-river-drive",
+    "name": "Huron River Drive",
+    "city": "Ann Arbor–Dexter",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Winding road along the Huron River between Ann Arbor and Dexter, listed as a fall-color drive by Destination Ann Arbor and the County Road Association of Michigan.",
+    "website": "https://www.wcroads.org/natural-beauty-roads/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "oak-openings-preserve-metropark",
+   "name": "Oak Openings Preserve Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "oak-openings-preserve-metropark",
+    "name": "Oak Openings Preserve Metropark",
+    "city": "Whitehouse",
+    "region": "OH",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Metroparks Toledo's largest park, with oak savanna, more than 70 miles of trail and the Windows on Wildlife bird-viewing area. The agency's fall color report recommends it for late-fall oak color.",
+    "website": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "wildwood-preserve-metropark",
+   "name": "Wildwood Preserve Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "wildwood-preserve-metropark",
+    "name": "Wildwood Preserve Metropark",
+    "city": "Toledo",
+    "region": "OH",
+    "categories": [
+     "parks-gardens"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Metroparks Toledo preserve with the Manor House, a formal garden and trails across varied terrain. The agency's fall color report names it for late-fall oak color.",
+    "website": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "black-oak-heritage-park",
+   "name": "Black Oak Heritage Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "black-oak-heritage-park",
+    "name": "Black Oak Heritage Park",
+    "city": "Windsor",
+    "region": "ON",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Windsor park of old-growth black oak savanna with one public trail.",
+    "website": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "stage-nature-center",
+   "name": "Stage Nature Center",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "stage-nature-center",
+    "name": "Stage Nature Center",
+    "city": "Troy",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Nature preserve at the headwaters of the Rouge River with forest, meadow and marsh trails, including a Sugar Maple Loop.",
+    "website": "https://troynaturesociety.org/visitor-info/hours-location/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "dexter-huron-metropark",
+   "name": "Dexter-Huron Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "dexter-huron-metropark",
+    "name": "Dexter-Huron Metropark",
+    "city": "Dexter",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike trail, canoe and kayak access and tree-lined paths.",
+    "website": "https://www.metroparks.com/parks-and-destinations/dexter-huron-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "lower-huron-metropark",
+   "name": "Lower Huron Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "lower-huron-metropark",
+    "name": "Lower Huron Metropark",
+    "city": "Belleville",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark along the Huron River with a paved Hike-Bike trail, nature trails and canoe and kayak access.",
+    "website": "https://www.metroparks.com/parks-and-trails/lower-huron-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-2.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "willow-metropark",
+   "name": "Willow Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "willow-metropark",
+    "name": "Willow Metropark",
+    "city": "New Boston",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark of mature woodlands on the Huron River, with a paved Hike-Bike loop and paddling.",
+    "website": "https://www.metroparks.com/parks-and-trails/willow-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "oakwoods-metropark",
+   "name": "Oakwoods Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "oakwoods-metropark",
+    "name": "Oakwoods Metropark",
+    "city": "New Boston",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Huron-Clinton Metropark on the Huron River with five nature trails, a nature center and a canoe and kayak trail.",
+    "website": "https://www.metroparks.com/parks-and-trails/oakwoods-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "independence-oaks-county-park",
+   "name": "Independence Oaks County Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "independence-oaks-county-park",
+    "name": "Independence Oaks County Park",
+    "city": "Clarkston",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Oakland County park with a lake, a nature center, more than 12 miles of trails and an old-growth forest section.",
+    "website": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/independence-oaks",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "addison-oaks-county-park",
+   "name": "Addison Oaks County Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "addison-oaks-county-park",
+    "name": "Addison Oaks County Park",
+    "city": "Leonard",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Oakland County park with more than 20 miles of trails, a lake loop and an old-growth forest designation.",
+    "website": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/addison-oaks",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "paint-creek-trail",
+   "name": "Paint Creek Trail",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "paint-creek-trail",
+    "name": "Paint Creek Trail",
+    "city": "Rochester–Lake Orion",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Rail trail between Rochester and Lake Orion, named in a published guide as a fall-color hike.",
+    "website": "https://www.paintcreektrail.org/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "macomb-orchard-trail",
+   "name": "Macomb Orchard Trail",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "macomb-orchard-trail",
+    "name": "Macomb Orchard Trail",
+    "city": "Macomb County",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Rail trail through Macomb County with tree-canopy tunnels, orchards and farms.",
+    "website": "https://www.macombgov.org/macomb-orchard-trail",
+    "advisory": "A section of the trail is temporarily closed. Reopening is anticipated in fall 2026; no confirmed date.",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "bird-hills-nature-area",
+   "name": "Bird Hills Nature Area",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "bird-hills-nature-area",
+    "name": "Bird Hills Nature Area",
+    "city": "Ann Arbor",
+    "region": "MI",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Ann Arbor's largest natural area, with unpaved trails through hills and ravines under beech, sugar maple, oak and hickory.",
+    "website": "https://www.a2gov.org/parks-and-recreation/parks-places/birdhills/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "barton-nature-area",
+   "name": "Barton Nature Area",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "barton-nature-area",
+    "name": "Barton Nature Area",
+    "city": "Ann Arbor",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Nature area along the Huron River with trails around the Barton oxbow. Destination Ann Arbor lists it for autumn color.",
+    "website": "https://www.a2gov.org/parks-and-recreation/parks-places/barton-nature-area/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-2.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "old-us-12-corridor",
+   "name": "Old US-12 corridor",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "old-us-12-corridor",
+    "name": "Old US-12 corridor",
+    "city": "Chelsea–Ann Arbor–Ypsilanti",
+    "region": "MI",
+    "categories": [
+     "parks-gardens"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Old US-12 scenic segment between Chelsea, Ann Arbor and Ypsilanti, on the historic Chicago Road route and listed by Destination Ann Arbor as a fall drive.",
+    "website": "https://www.annarbor.org/fallhq/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "columbus-county-park",
+   "name": "Columbus County Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "columbus-county-park",
+    "name": "Columbus County Park",
+    "city": "Columbus Township",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "St. Clair County park with a nature trail through wetlands and maple forest, an equestrian trail and a lodge.",
+    "website": "https://www.stclaircounty.org/Offices/176",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "wadhams-to-avoca-trail",
+   "name": "Wadhams to Avoca Trail",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "wadhams-to-avoca-trail",
+    "name": "Wadhams to Avoca Trail",
+    "city": "St. Clair County",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Rail trail in St. Clair County whose county page cites fall colors along the route, with a trestle overlook above the Mill Creek valley.",
+    "website": "https://stclaircounty.org/offices/181",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "grosse-ile-nature-and-land-conservancy-preserves",
+   "name": "Grosse Ile Nature & Land Conservancy preserves",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "grosse-ile-nature-and-land-conservancy-preserves",
+    "name": "Grosse Ile Nature & Land Conservancy preserves",
+    "city": "Grosse Ile",
+    "region": "MI",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Autumn walking destinations on Grosse Ile: Gibraltar Bay Natural Area, the Dr. Bruce D. Jones Preserve and Sunrise Park. The conservancy protects other properties that are not all open to the public.",
+    "website": "https://www.ginlc.org/our-protected-lands",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "secor-metropark",
+   "name": "Secor Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "secor-metropark",
+    "name": "Secor Metropark",
+    "city": "Berkey",
+    "region": "OH",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Metroparks Toledo park of second-growth forest, meadows and prairies, with the region's largest concentration of native dogwood. The agency's fall color report names it.",
+    "website": "https://metroparkstoledo.com/explore-your-parks/secor-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "pearson-metropark",
+   "name": "Pearson Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "pearson-metropark",
+    "name": "Pearson Metropark",
+    "city": "Oregon",
+    "region": "OH",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Metroparks Toledo park with remnant Great Black Swamp forest, ponds and about 15 miles of trails. The agency's fall color report names it.",
+    "website": "https://metroparkstoledo.com/explore-your-parks/pearson-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "side-cut-metropark",
+   "name": "Side Cut Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "side-cut-metropark",
+    "name": "Side Cut Metropark",
+    "city": "Maumee",
+    "region": "OH",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
+    "website": "https://metroparkstoledo.com/explore-your-parks/side-cut-metropark/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "farnsworth-metropark",
+   "name": "Farnsworth Metropark",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "farnsworth-metropark",
+    "name": "Farnsworth Metropark",
+    "city": "Waterville",
+    "region": "OH",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Metroparks Toledo park on the Maumee River with the Towpath Trail, river views and the Interurban Bridge ruins.",
+    "website": "https://metroparkstoledo.com/explore-your-parks/farnsworth/",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-2.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "holiday-beach-conservation-area",
+   "name": "Holiday Beach Conservation Area",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "holiday-beach-conservation-area",
+    "name": "Holiday Beach Conservation Area",
+    "city": "Amherstburg",
+    "region": "ON",
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration.",
+    "website": "https://essexregionconservation.ca/conservation-areas",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-3.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  },
+  {
+   "collection": "fall-color",
+   "id": "point-pelee-national-park",
+   "name": "Point Pelee National Park",
+   "original15": false,
+   "currentStatus": "PUBLISHED",
+   "gate": "PUBLISHED",
+   "imageRoute": "illustration",
+   "editorialAcceptedAt": "2026-10-12",
+   "publicCard": {
+    "id": "point-pelee-national-park",
+    "name": "Point Pelee National Park",
+    "city": "Leamington",
+    "region": "ON",
+    "categories": [
+     "trails-woods"
+    ],
+    "featured": false,
+    "status": "PUBLISHED",
+    "summary": "National park of forest, marsh and lakeshore with hiking trails, and a stopover for migrating Monarch butterflies each autumn.",
+    "website": "https://parks.canada.ca/pn-np/on/pelee",
+    "image": {
+     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "alternates": [
+      "/assets/seasonal/fall-color-card-1.webp",
+      "/assets/seasonal/fall-color-card-2.webp"
+     ],
+     "placeholder": "/assets/placeholders/event-800.webp",
+     "illustrative": true
+    }
+   }
+  }
+ ]
+}

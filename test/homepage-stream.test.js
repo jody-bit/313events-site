@@ -103,7 +103,8 @@ function stream(page) {
     first: a, more: b,
     firstTitles: a.flatMap((g) => g.titles), moreTitles: b.flatMap((g) => g.titles),
     titles: a.concat(b).flatMap((g) => g.titles),
-    head: (/<h2 class="stream-title">([^<]*)<\/h2>/.exec(first) || [])[1] || (/<div class="list-count-heading">([^<]*)<\/div>/.exec(first) || [])[1] || null,
+    title: (/<h2 class="sec-title">([^<]*)<\/h2>/.exec(first) || [])[1] || null,
+    head: (/<p class="list-count-heading">([^<]*)<\/p>/.exec(first) || [])[1] || (/<p class="sec-sub">([^<]*)<\/p>/.exec(first) || [])[1] || null,
     moreShown: page.el("listMore").style.display !== "none",
     button: (/class="stream-more-btn"[^>]*>([^<]*)</.exec(more) || [])[1] || null,
     note: (/class="stream-foot-note">([^<]*)</.exec(more) || [])[1] || null,
@@ -120,7 +121,7 @@ async function run() {
   {
     const body = HTML.slice(HTML.indexOf("<body>"));
     const at = (s) => { const i = body.indexOf(s); assert.ok(i !== -1, `the page has ${s}`); return i; };
-    const order = ['id="heroSection"', 'id="discoveryShell"', 'id="activeFilters"', 'class="home-body"', 'id="dontMissSection"', 'id="listView"', 'id="neighborhoodsSection"', 'id="listMore"', 'id="homeSidebar"'];
+    const order = ['id="heroSection"', 'id="discoveryShell"', 'id="activeFilters"', 'class="home-body"', 'id="dontMissSection"', 'id="listView"', 'id="listMore"', 'id="neighborhoodsSection"', 'id="nearYouCard"', 'id="onRadarCard"'];
     order.reduce((prev, s) => { assert.ok(at(s) > prev, `${s} comes after what precedes it`); return at(s); }, -1);
     assert.strictEqual(body.split('id="neighborhoodsSection"').length, 2, "one Explore Neighborhoods rail, not two");
 
@@ -135,9 +136,9 @@ async function run() {
     assert.ok(/\.discovery-bar, \.location-bar, \.filters\{display:none;\}/.test(css), "the three panels start closed");
     assert.ok(!/@media \(min-width:721px\)\{\s*\.filters\{\s*display:flex/.test(css), "the chips are not opened by default on desktop");
 
-    // The two discovery modules lead the sidebar.
-    const side = body.slice(at('id="homeSidebar"'), body.indexOf("</aside>"));
-    assert.deepStrictEqual([...side.matchAll(/class="side-card" id="([^"]+)"/g)].map((m) => m[1]), ["onRadarCard", "nearYouCard", "viewCalendarCard", "mapCard", "freeTodayCard", "venuesCard"]);
+    // Homepage V2: there is no right sidebar, and none of its widgets moved.
+    assert.ok(!/id="homeSidebar"|<aside|class="side-card"/.test(body), "no sidebar");
+    for (const gone of ["viewCalendarCard", "mapCard", "freeTodayCard", "venuesCard"]) assert.ok(!body.includes(`id="${gone}"`), `${gone} is not relocated`);
 
     // Locked palette: the stream's rows carry no per-category colour.
     const page = await open("/");
@@ -169,37 +170,40 @@ async function run() {
     const page = await open("/");
     assert.strictEqual(page.get("EVENTS.length"), 153, "everything approved is loaded");
     let s = stream(page);
-    assert.strictEqual(s.head, "All events", "the plain default view is headed as what it is");
+    assert.strictEqual(s.title, "What's Happening");
+    assert.ok(/^[\d,]+ current \+ upcoming events?, in date order\.$/.test(s.head), "the plain default view says what it is: every current and upcoming event, in date order");
 
-    // First section: 5 rows — the stream opens, then the Explore
-    // Neighborhoods interlude, then the rest. The exhibition is in progress,
-    // so it is listed under today — once — and says how long it runs.
-    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 4)]);
-    assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "31 events"]], "today's heading is marked Today and counts the whole day, not just the rows above the fold");
+    // The stream opens with 12 rows, in one block directly above Explore
+    // Neighborhoods. The exhibition is in progress, so it is listed under
+    // today — once — and says how long it runs.
+    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 11)]);
+    assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "31 events"]], "today's heading is marked Today and counts the whole day, not just the rows shown");
     assert.ok(/Long Run[\s\S]*?<span class="evt-run">Through Nov 2<\/span>/.test(s.html));
     assert.strictEqual(s.titles.filter((t) => t === "Long Run").length, 1);
 
-    // Continuation: 35 more, picking today up where the first section stopped.
+    // Nothing continues the first block until someone asks: #listMore holds
+    // only the foot (Show more / the calendar).
     assert.strictEqual(s.moreShown, true);
-    assert.deepStrictEqual(s.moreTitles, [...seq("Tonight", 5, 30), ...seq("Sunday", 1, 9)]);
-    assert.deepStrictEqual(s.more.map((g) => [g.day, g.today, g.tomorrow, g.continued, g.count]), [[day(0), true, false, true, "31 events"], [day(1), false, true, false, "25 events"]]);
-    assert.strictEqual(s.titles.length, 40, "40 rows to start with");
+    assert.deepStrictEqual(s.moreTitles, []);
+    assert.strictEqual(s.titles.length, 12, "12 rows to start with");
     assert.ok(!s.titles.includes("Morning Thing") && !s.titles.includes("Augustus Williams Live") && !s.titles.includes("Not Approved"), "over, blocked and unapproved events are not in the stream");
-    assert.strictEqual(s.button, "Show 60 more");
-    assert.strictEqual(s.note, "40 of 151 shown", "the view's own size: 151 events (153 loaded, less the one that is over and the blocked one)");
+    assert.strictEqual(s.button, "Show 30 more");
+    assert.strictEqual(s.note, "12 of 151 shown", "the view's own size: 151 events (153 loaded, less the one that is over and the blocked one)");
     assert.strictEqual(D.count(plain(page.get("EVENTS")), D.defaults(), { now: new Date(NOW), defaultWhen: "all" }), 151, "…which is Discovery's count of the same view");
     assert.strictEqual(s.calendar, "/calendar.html", "the link out is Discovery's own link for this view");
 
-    // Show more: 60 at a time, same view, no change to state or URL.
+    // Show more: 30 at a time, same view, no change to state or URL; the
+    // day that was open is picked up where it stopped.
     const before = [plain(page.get("state")), page.url()];
     page.run("showMoreStream()");
     s = stream(page);
-    assert.strictEqual(s.titles.length, 100);
-    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 4)], "the first section does not move");
-    assert.strictEqual(s.note, "100 of 151 shown");
-    assert.strictEqual(s.button, "Show 51 more", "the last step is whatever is left");
+    assert.strictEqual(s.titles.length, 42);
+    assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 11)], "the first block does not move");
+    assert.deepStrictEqual(s.more.map((g) => [g.day, g.continued]), [[day(0), true], [day(1), false]], "today is continued, not repeated");
+    assert.strictEqual(s.note, "42 of 151 shown");
+    assert.strictEqual(s.button, "Show 30 more");
     assert.deepStrictEqual([plain(page.get("state")), page.url()], before, "asking for more changes neither the filters nor the address");
-    page.run("showMoreStream()");
+    for (let i = 0; i < 4; i++) page.run("showMoreStream()");
     s = stream(page);
     assert.strictEqual(s.titles.length, 151);
     assert.strictEqual(new Set(s.titles).size, 151, "every event exactly once");
@@ -214,9 +218,9 @@ async function run() {
     page.fire("search", "input", { value: "later" });
     s = stream(page);
     assert.strictEqual(s.head, 'Showing 80 events matching "later"');
-    assert.strictEqual(s.titles.length, 40);
-    assert.strictEqual(s.note, "40 of 80 shown");
-    assert.strictEqual(s.button, "Show 40 more");
+    assert.strictEqual(s.titles.length, 12);
+    assert.strictEqual(s.note, "12 of 80 shown");
+    assert.strictEqual(s.button, "Show 30 more");
     assert.strictEqual(s.calendar, "/calendar.html?q=later", "the calendar link carries the view");
 
     // A filter with no scope words of its own still says how many it found.
@@ -224,10 +228,13 @@ async function run() {
     page.el("filterBar").querySelector("#freeChip").click();
     s = stream(page);
     assert.strictEqual(s.head, "Showing 15 events");
+    assert.deepStrictEqual(s.titles, seq("Monday", 1, 12), "a short view still opens with twelve rows");
+    assert.strictEqual(s.button, "Show 3 more", "…and offers only what is left");
+    assert.strictEqual(s.note, "12 of 15 shown");
+    page.run("showMoreStream()");
+    s = stream(page);
     assert.deepStrictEqual(s.titles, seq("Monday", 1, 15));
-    assert.deepStrictEqual(s.firstTitles, seq("Monday", 1, 5), "the interlude still comes after the first five");
-    assert.strictEqual(s.moreShown, true, "…and the rest of a short view follows it, with no Show more");
-    assert.deepStrictEqual(s.moreTitles, seq("Monday", 6, 15));
+    assert.deepStrictEqual(s.moreTitles, seq("Monday", 13, 15), "the rest follows the first block directly");
     assert.strictEqual(s.button, null, "nothing more to show");
 
     // Tomorrow: the exhibition is listed under tomorrow there, still once.
@@ -245,7 +252,7 @@ async function run() {
     assert.ok(/class="empty-state"/.test(page.el("listView").innerHTML));
     assert.strictEqual(page.el("listMore").style.display, "none");
   }
-  console.log("PASS: 2. the stream — each event once, 5 rows then 35 more after the rail, Show more in steps of 60, whole-view counts, restart on a new view, hidden continuation for a short one");
+  console.log("PASS: 2. the stream — each event once, 12 rows to start, Show more in steps of 30, whole-view counts, restart on a new view, hidden continuation for a short one");
 
   // =====================================================================
   // 3. The hero's figures
@@ -284,7 +291,7 @@ async function run() {
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything()");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.defaults()), "the total leads to the whole stream");
-    assert.strictEqual(stream(page).head, "All events");
+    assert.ok(/^[\d,]+ current \+ upcoming events?, in date order\.$/.test(stream(page).head), "back to the plain default view");
     assert.strictEqual(page.url(), "/");
     assert.strictEqual(page.el("whenDateInput").value, day(0), 'the "From" input is back at its baseline');
 
@@ -309,16 +316,28 @@ async function run() {
   {
     // Nothing is selected in the page's source, and nothing is requested.
     assert.ok(/^let dontMissPlacements = \[\];$/m.test(SCRIPT), "the placement list is empty in the source");
-    assert.strictEqual([...SCRIPT.matchAll(/dontMissPlacements\s*=[^=]/g)].length, 1, "…and nothing else in the page assigns it");
+    assert.strictEqual([...SCRIPT.matchAll(/dontMissPlacements\s*=[^=]/g)].length, 2, "…and only the placements-file loader assigns it");
+    assert.ok(/dontMissPlacements = data\.placements/.test(SCRIPT));
+    const seeded = JSON.parse(read("data/dont-miss.json"));
+    // Shipped today: the three seasonal guides as static editorial cards (no
+    // canonical event is selected), each with its optimized artwork on disk.
+    assert.deepStrictEqual(seeded.placements.map((p) => p.title), ["Detroit Orbit Fall Guide", "Halloween in the Orbit", "Fall Colors"]);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
+    assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
+    for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
+    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/halloween", "/fall-color"], "the three seasonal cards link to their collection pages (release candidate)");
+    assert.ok(seeded.placements.every((p) => !p.url), "no other link field");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");
     assert.strictEqual(page.el("dontMissSection").innerHTML, "");
-    assert.ok(!page.requests.some((r) => /miss|placement/i.test(r.table)), "no placement data is requested (there is no source yet)");
+    assert.ok(!page.requests.some((r) => r.table === "events_public" && /miss/i.test(r.url || "")), "placements never come from the database");
 
     // Given placements (as a future source would supply them), it shows the
     // ones that are in their period and whose event is current — at most three.
+    page.run(`EVENTS.forEach(e => { e.imageUrl = e.id === "w03" ? "" : "https://img.example/" + e.id + ".jpg"; });`);
     page.run(`dontMissPlacements = [
-      { eventId: "u03", reason: "One night only." },
+      { eventId: "w03", reason: "Has no image, so it is skipped." },
+      { eventId: "u03", reason: "One night only.", eyebrow: "Detroit debut" },
       { eventId: "x01", reason: "Already over today." },
       { eventId: "x02", reason: "A blocked name." },
       { eventId: "nope", reason: "No such event." },
@@ -333,7 +352,51 @@ async function run() {
     assert.strictEqual(page.el("dontMissSection").style.display, "");
     assert.deepStrictEqual([...html.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Sunday 03", "Long Run", "Later 01"]);
     assert.deepStrictEqual([...html.matchAll(/class="dm-reason">([^<]*)</g)].map((m) => m[1]), ["One night only.", "Third."], "the reason is the editor's; none is invented where none was given");
-    assert.ok(/<h2 class="dm-title">Don't Miss<\/h2>/.test(html));
+    assert.ok(!/Has no image/.test(html), "a placement whose event has no usable image is skipped; the next one fills the slot");
+    assert.strictEqual([...html.matchAll(/<img class="dm-art"/g)].length, 3, "every rendered card has its image");
+    // An image that fails to load drops its card and the next placement takes the slot.
+    page.run(`dmImageFailed({ getAttribute: () => "https://img.example/u03.jpg" });`);
+    const afterFail = page.el("dontMissSection").innerHTML;
+    assert.ok(!/Sunday 03/.test(afterFail) && [...afterFail.matchAll(/class="dm-card"/g)].length === 3, "a failed image removes its card and the rail refills to three");
+    page.run(`dmBadImages.clear(); renderDontMiss();`);
+    assert.ok(/<h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"><\/span><\/h2>/.test(html));
+    assert.ok(html.includes("Extraordinary events. Handpicked for this moment."), "the descriptor");
+    assert.deepStrictEqual([...html.matchAll(/class="dm-eyebrow">([^<]*)</g)].map((m) => m[1]), ["Detroit debut"], "an eyebrow only where an editor wrote one");
+    assert.strictEqual([...html.matchAll(/<a class="dm-card" href="event\.html\?id=/g)].length, 3, "each card links to its canonical event page");
+    assert.strictEqual([...html.matchAll(/class="dm-date"/g)].length, 3, "each card carries its date");
+    assert.ok(!/View all/i.test(html), "no View all: there is no destination for it");
+    assert.ok(!/ntbm|NOT TO BE MISSED/i.test(html), "not the old giant seasonal-card treatment");
+    // Static editorial cards share the rail and its three-card limit with
+    // event placements; one without artwork is skipped like an event without.
+    page.run(`dontMissPlacements = [
+      { title: "No art", copy: "Skipped.", cta: "Go" },
+      { title: "Fall Guide", copy: "Cider mills.", cta: "Explore fall", image: "/assets/guides/fall-guide-800.webp", image2x: "/assets/guides/fall-guide-1600.webp", alt: "A cider press.", focus: "right" },
+      { eventId: "u03", reason: "An event beside it." },
+    ]; renderDontMiss();`);
+    const mixed = page.el("dontMissSection").innerHTML;
+    assert.deepStrictEqual([...mixed.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Fall Guide", "Sunday 03"]);
+    assert.ok(/class="dm-cta">Explore fall &rarr;</.test(mixed), "the CTA text shows");
+    assert.ok(/srcset="[^"]*\/assets\/guides\/fall-guide-800\.webp 800w, [^"]*\/assets\/guides\/fall-guide-1600\.webp 1600w"/.test(mixed) && /alt="A cider press\."/.test(mixed) && /object-position:right/.test(mixed));
+    assert.strictEqual([...mixed.matchAll(/<div class="dm-card dm-feature">/g)].length, 1, "a static card without an href is not a link");
+    // A static card with a root-relative href is a real link (keyboard and touch work as for any anchor);
+    // an off-site, protocol-relative or script URL is ignored and the card stays plain.
+    page.run(`dontMissPlacements = [
+      { title: "Fall", copy: "c", cta: "Go", image: "/assets/guides/fall-guide-800.webp", alt: "a", href: "/fall" },
+      { title: "Evil", copy: "c", cta: "Go", image: "/assets/guides/fall-guide-800.webp", alt: "a", href: "https://evil.example/x" },
+      { title: "Proto", copy: "c", cta: "Go", image: "/assets/guides/fall-guide-800.webp", alt: "a", href: "//evil.example/x" },
+    ]; renderDontMiss();`);
+    const linked = page.el("dontMissSection").innerHTML;
+    assert.strictEqual([...linked.matchAll(/<a class="dm-card dm-feature" href="\/fall">/g)].length, 1, "a root-relative href makes the card a link");
+    assert.strictEqual([...linked.matchAll(/<div class="dm-card dm-feature">/g)].length, 2, "off-site and protocol-relative hrefs are ignored");
+    assert.ok(!/evil\.example/.test(linked));
+    assert.ok(/<h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"><\/span><\/h2>/.test(mixed), "the signal dot is inside the title: one lockup");
+    // The loader reads the placements file; an unusable file changes nothing.
+    page.run(`dontMissPlacements = []; globalThis.fetch = async () => ({ ok: true, json: async () => ({ placements: [{ eventId: "u03", eyebrow: "From the file" }] }) }); loadDontMissPlacements();`);
+    await page.settle();
+    assert.ok(/class="dm-eyebrow">From the file</.test(page.el("dontMissSection").innerHTML), "placements from the file are shown");
+    page.run(`globalThis.fetch = async () => ({ ok: true, json: async () => ({ nonsense: 1 }) }); loadDontMissPlacements();`);
+    await page.settle();
+    assert.ok(/From the file/.test(page.el("dontMissSection").innerHTML), "an unusable file leaves what was there");
     // And it clears again.
     page.run("dontMissPlacements = []; render();");
     assert.strictEqual(page.el("dontMissSection").style.display, "none");
