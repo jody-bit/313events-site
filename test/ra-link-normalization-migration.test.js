@@ -20,6 +20,7 @@ const migration = read("2026-10-12_ra_link_normalization.sql");
 const dryRun = read("2026-10-12_ra_link_normalization_dry_run.sql");
 const rollback = read("2026-10-12_ra_link_normalization_rollback.sql");
 const verify = read("2026-10-12_ra_link_normalization_verify.sql");
+const exceptions = read("2026-10-12_ra_link_normalization_exceptions.sql");
 
 const stripComments = (sql) => sql.replace(/--.*$/gm, "");
 
@@ -56,6 +57,14 @@ function staticChecks() {
   // Rollback only restores rows still at the migrated values.
   const r = stripComments(rollback);
   assert.ok(/e\.event_url\s+is not distinct from b\.new_event_url/i.test(r) && /e\.ticket_url\s+is not distinct from b\.new_ticket_url/i.test(r), "rollback is guarded");
+  const x = stripComments(exceptions);
+  const xu = x.match(/\bupdate\s+public\.events\b[\s\S]*?;/gi) || [];
+  assert.strictEqual(xu.length, 1, "exception operation: exactly one UPDATE");
+  const xset = /\bset\b([\s\S]*?)\bfrom\b/i.exec(xu[0])[1].split(",").map((q) => q.split("=")[0].trim()).sort();
+  assert.deepStrictEqual(xset, ["event_url", "ticket_url"]);
+  assert.ok(/is not distinct from p\.event_url/i.test(xu[0]) && /is not distinct from p\.ticket_url/i.test(xu[0]), "exception operation re-checks current links");
+  assert.ok(/'ra-2552946'/.test(x) && /'ra-2553785'/.test(x) && /e\.title = v\.title/.test(x) && /e\.ticket_url = v\.foreign_ticket/.test(x), "exception operation is pinned to the two rows by id, title and foreign link");
+  assert.ok(/n not in \(0, 2\)/.test(x), "exception operation aborts unless it plans 0 or 2 rows");
   console.log("PASS: migration is one guarded, scoped UPDATE of only event_url/ticket_url; dry-run and verify are SELECT-only");
 }
 
@@ -70,7 +79,7 @@ create table public.events (
   id uuid primary key default gen_random_uuid(),
   title text not null, description text, status event_status not null default 'pending_review',
   start_date date, end_date date, time_display text,
-  source text, external_id text, event_url text, ticket_url text,
+  source text, external_id text, event_url text, ticket_url text, internal_note text, venue_name_raw text,
   updated_at timestamptz default now()
 );
 create function set_updated_at() returns trigger language plpgsql as $$ begin new.updated_at = now(); return new; end $$;
@@ -88,6 +97,10 @@ insert into public.events (title, description, status, start_date, time_display,
  ('t10 mixed source',   'd10','approved',       '2026-10-20', '9:00 PM', 'Paxahau / Resident Advisor', 'ra-1010', null, null),
  ('t11 no numeric id',  'd11','approved',       '2026-10-20', '9:00 PM', 'Resident Advisor', 'manual-1', null, null),
  ('t12 rejected row',   'd12','rejected',       '2026-10-20', '9:00 PM', 'Resident Advisor', 'ra-1012', null, null);
+insert into public.events (title, description, status, start_date, time_display, source, external_id, event_url, ticket_url, internal_note) values
+ ('House À La Mode', 'dA', 'approved', '2026-10-09', '10:00 PM', 'Resident Advisor', 'ra-2552946', null, 'https://ra.co/events/2545734', 'RA_PROVENANCE | v1 | ra_id=ra-2552946 | ra_url=https://ra.co/events/2552946 | ra_fields=title,date,venueName,url | status=unresolved'),
+ ('Industry Sunday', 'dB', 'approved', '2026-10-11', '9:00 PM',  'Resident Advisor', 'ra-2553785', null, 'https://ra.co/events/2554757', 'RA_PROVENANCE | v1 | ra_id=ra-2553785 | ra_url=https://ra.co/events/2553785 | ra_fields=title,date,venueName,url | status=unresolved'),
+ ('Foggy Sunday',    'dC', 'approved', '2026-10-11', '10:00 PM', 'Resident Advisor', 'ra-2554757', null, 'https://ra.co/events/2554757', 'RA_PROVENANCE | v1 | ra_id=ra-2554757 | ra_url=https://ra.co/events/2554757 | ra_fields=title,date,venueName,url | status=unresolved');
 `;
 
 function behavioralChecks() {
@@ -129,7 +142,7 @@ function behavioralChecks() {
     const block1 = dryRun.split(/-- =====/)[1].replace(/^[^\n]*\n/, "");
     const summary = sql(block1).trim().split("|").map(Number);
     // total, fills, replacements, ticket corrections, unchanged, exceptions, rows_that_would_change
-    assert.deepStrictEqual(summary, [9, 4, 1, 2, 1, 2, 6], "dry-run summary counts");
+    assert.deepStrictEqual(summary, [12, 5, 1, 3, 1, 4, 7], "dry-run summary counts");
     assert.deepStrictEqual(byExt(rows()), before, "dry-run wrote nothing");
 
     // Concurrency guard: a row edited after planning is skipped, not overwritten.
@@ -152,7 +165,7 @@ function behavioralChecks() {
     assert.deepStrictEqual([ra("ra-1003")[1], ra("ra-1003")[2]], ["https://ra.co/events/1003", "<null>"], "generic homepage replaced");
     assert.deepStrictEqual([ra("ra-1004")[1], ra("ra-1004")[2]], ["https://ra.co/events/1004", "https://dice.fm/event/abc"], "genuine ticket preserved");
     assert.deepStrictEqual([ra("ra-1005")[1], ra("ra-1005")[2]], ["https://ra.co/events/1005", "<null>"], "existing RA event_url kept; same-RA ticket_url cleared (www/trailing slash)");
-    for (const id of ["ra-1006", "ra-1007", "ra-1008", "ra-1009", "ra-1010", "manual-1"]) {
+    for (const id of ["ra-1006", "ra-1007", "ra-1008", "ra-1009", "ra-1010", "manual-1", "ra-2552946", "ra-2553785"]) {
       assert.deepStrictEqual(after[id], before[id], `${id} untouched (held / specific link / non-RA / out of scope)`);
     }
     assert.strictEqual(ra("ra-1012")[1], "https://ra.co/events/1012", "rejected RA row follows the same rule");
@@ -163,8 +176,37 @@ function behavioralChecks() {
     const snapshot = JSON.stringify(after);
     sql(migration);
     assert.strictEqual(JSON.stringify(byExt(rows())), snapshot, "second run changes nothing (idempotent)");
-    assert.strictEqual(sql("select count(*) from public.ra_link_normalization_backup_20261012;").trim(), "6", "backup holds exactly the changed rows");
+    assert.strictEqual(sql("select count(*) from public.ra_link_normalization_backup_20261012;").trim(), "7", "backup holds exactly the changed rows");
     console.log("PASS: migration fills, replaces generic, clears only the same-RA ticket_url, keeps genuine tickets, holds ambiguous rows, never touches non-RA rows, is idempotent and skips concurrently edited rows");
+
+    // The two held rows: the separately guarded operation resolves exactly them.
+    const exc = (x) => x.replace(/^[^\n]*\n/, "");
+    const block4 = dryRun.split(/-- =====/)[4].replace(/^[^\n]*\n/, "");
+    const preview = sql(block4).trim().split("\n");
+    assert.strictEqual(preview.length, 2, "dry-run block 4 previews exactly the two held rows");
+    assert.ok(preview.every((l) => l.includes("|t|")), "provenance records each row's own RA url");
+    // Guard: all-or-nothing. If either row no longer matches (here: a title edited by a human) the
+    // whole operation aborts and nothing is written.
+    const preExc = byExt(rows());
+    sql("update public.events set title = 'Renamed by a human' where external_id = 'ra-2553785';");
+    const rowsBeforeAbort = JSON.stringify(byExt(rows()));
+    assert.throws(() => sql(exceptions), /expected 0 or 2/, "mismatch aborts the operation");
+    assert.strictEqual(JSON.stringify(byExt(rows())), rowsBeforeAbort, "an aborted run writes nothing");
+    sql("update public.events set title = 'Industry Sunday' where external_id = 'ra-2553785';");
+    sql(exceptions);
+    const afterExc = byExt(rows());
+    assert.deepStrictEqual([afterExc["ra-2552946"][1], afterExc["ra-2552946"][2]], ["https://ra.co/events/2552946", "<null>"], "verified row: own event page set, foreign RA ticket_url cleared");
+    assert.deepStrictEqual([afterExc["ra-2553785"][1], afterExc["ra-2553785"][2]], ["https://ra.co/events/2553785", "<null>"], "second held row resolved once its title matches");
+    assert.deepStrictEqual(afterExc["ra-2554757"], preExc["ra-2554757"], "the foreign event's own row is untouched by the exception operation");
+    for (const id of ["ra-2552946", "ra-2553785"]) {
+      assert.strictEqual(afterExc[id][3], before[id][3], `${id} status unchanged`);
+      assert.strictEqual(afterExc[id][4], before[id][4], `${id} description unchanged`);
+    }
+    const snap2 = JSON.stringify(afterExc);
+    sql(exceptions);
+    assert.strictEqual(JSON.stringify(byExt(rows())), snap2, "exception operation is idempotent");
+    assert.strictEqual(sql("select count(*) from public.ra_link_normalization_backup_20261012;").trim(), "9", "backup now also holds the two exception rows");
+    console.log("PASS: exception operation resolves exactly the two held rows when title/id/foreign-link/provenance match, aborts on any mismatch, leaves other fields and the foreign event alone, and is idempotent");
 
     // Verification queries: checks 2, 3 and 4 return nothing for non-held rows.
     const v = verify.split(/\n-- \d\. /).slice(1);
