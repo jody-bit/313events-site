@@ -99,7 +99,9 @@
   var CLEAN = false;
   function launchRecords(records) { return records.filter(function (r) { return r.launch; }); }
   function launchCard(col, rec, view) {
-    var e = toEntry(rec, undefined);
+    var e = toEntry(rec, undefined), o = option(rec, undefined);
+    // A photograph carries its credit line exactly as the public card does (publicEntry adds image.credit for photographs).
+    if (o && !o.illustrative && o.credit) e.image.credit = o.credit;
     // Clean preview (?launch=1&clean=1): the card exactly as a visitor would see it, with no reviewer line.
     if (CLEAN) return R.card(col, e, { list: view === "list", attrs: ' data-launch="1"' });
     var note = '<p class="sc-qa-line sc-qa-flag">PROPOSED, not approved · ' + esc(rec.publication.state.replace(/_/g, " ")) + ' · ' + esc(rec.launch.image_note) + '</p>';
