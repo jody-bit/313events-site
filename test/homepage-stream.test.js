@@ -325,7 +325,7 @@ async function run() {
     assert.deepStrictEqual(seeded.placements.map((p) => p.cta), ["Explore fall", "Get spooky", "Chase color"]);
     assert.ok(seeded.placements.every((p) => p.eventId === undefined && p.copy && p.alt), "static cards: copy and alt text, no event id");
     for (const p of seeded.placements) for (const f of [p.image, p.image2x]) assert.ok(fs.existsSync(`${REPO_DIR}${f}`), `${f} exists`);
-    assert.ok(seeded.placements.every((p) => !p.href && !p.url), "the cards do not navigate: the guide pages do not exist yet");
+    assert.deepStrictEqual(seeded.placements.map((p) => p.href), ["/fall", "/halloween", "/fall-color"], "each guide card goes to its collection page");
     const page = await open("/");
     assert.strictEqual(page.el("dontMissSection").style.display, "none", "with no placements the section is hidden");
     assert.strictEqual(page.el("dontMissSection").innerHTML, "");
@@ -376,7 +376,20 @@ async function run() {
     assert.deepStrictEqual([...mixed.matchAll(/class="dm-name">([^<]*)</g)].map((m) => m[1]), ["Fall Guide", "Sunday 03"]);
     assert.ok(/class="dm-cta">Explore fall &rarr;</.test(mixed), "the CTA text shows");
     assert.ok(/srcset="[^"]*\/assets\/guides\/fall-guide-800\.webp 800w, [^"]*\/assets\/guides\/fall-guide-1600\.webp 1600w"/.test(mixed) && /alt="A cider press\."/.test(mixed) && /object-position:right/.test(mixed));
-    assert.strictEqual([...mixed.matchAll(/<div class="dm-card dm-feature">/g)].length, 1, "a static card is not a link");
+    assert.strictEqual([...mixed.matchAll(/<div class="dm-card dm-feature">/g)].length, 1, "a static card without href is not a link");
+    page.run(`dontMissPlacements = [
+      { title: "Fall", copy: "c", cta: "Go", href: "/fall", image: "/assets/guides/fall-guide-800.webp", alt: "a" },
+      { title: "Bad1", copy: "c", cta: "Go", href: "//evil.example/x", image: "/assets/guides/fall-guide-800.webp", alt: "a" },
+      { title: "Bad2", copy: "c", cta: "Go", href: "javascript:alert(1)", image: "/assets/guides/fall-guide-800.webp", alt: "a" },
+    ]; renderDontMiss();`);
+    const linked = page.el("dontMissSection").innerHTML;
+    assert.strictEqual([...linked.matchAll(/<a class="dm-card dm-feature" href="\/fall">/g)].length, 1, "a guide card with a same-site href is a real link");
+    assert.strictEqual([...linked.matchAll(/<div class="dm-card dm-feature">/g)].length, 2, "off-site or script hrefs are ignored");
+    page.run(`dontMissPlacements = [
+      { title: "No art", copy: "Skipped.", cta: "Go" },
+      { title: "Fall Guide", copy: "Cider mills.", cta: "Explore fall", image: "/assets/guides/fall-guide-800.webp", image2x: "/assets/guides/fall-guide-1600.webp", alt: "A cider press.", focus: "right" },
+      { eventId: "u03", reason: "An event beside it." },
+    ]; renderDontMiss();`);
     assert.ok(/<h2 class="dm-title">Don't Miss<span class="dm-sig" aria-hidden="true"><\/span><\/h2>/.test(mixed), "the signal dot is inside the title: one lockup");
     // The loader reads the placements file; an unusable file changes nothing.
     page.run(`dontMissPlacements = []; globalThis.fetch = async () => ({ ok: true, json: async () => ({ placements: [{ eventId: "u03", eyebrow: "From the file" }] }) }); loadDontMissPlacements();`);
