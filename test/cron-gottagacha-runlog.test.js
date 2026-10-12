@@ -267,7 +267,8 @@ async function run() {
     assert.notStrictEqual(parsed.event_url, "https://www.gottagacha.com", "never the bare site root");
     assert.notStrictEqual(parsed.event_url, "https://www.gottagacha.com/", "never the bare site root");
     assert.strictEqual(parsed.event_url, "https://www.gottagacha.com/events/5bcbabc3-35d4-40de-90bc-26ed9ef959c8?date=2026-10-06");
-    assert.strictEqual(parseEvent(apiEvent({ id: "youmacon-1" })).event_url, null, "a non-UUID id yields no link at all");
+    assert.strictEqual(mod.eventDetailUrl("youmacon-1", "2026-10-06"), null, "a non-UUID id yields no occurrence page");
+    assert.strictEqual(parseEvent(apiEvent({ id: "youmacon-1" })).event_url, "https://www.gottagacha.com/events", "...and falls back to the official events page, never the bare root");
   }
   console.log("PASS: event_url is never the bare site root -- only the source's own per-occurrence page, or null");
 

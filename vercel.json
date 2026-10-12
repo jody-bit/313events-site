@@ -77,6 +77,10 @@
       "schedule": "0 8 * * *"
     },
     {
+      "path": "/api/cron-motorcitywine",
+      "schedule": "0 9 * * *"
+    },
+    {
       "path": "/api/cron-gottagacha",
       "schedule": "0 11 * * *"
     },
@@ -95,6 +99,10 @@
     {
       "path": "/api/cron-localist",
       "schedule": "30 13 * * *"
+    },
+    {
+      "path": "/api/cron-antonartcenter",
+      "schedule": "15 14 * * *"
     }
   ],
   "functions": {
@@ -112,6 +120,9 @@
     },
     "api/cron-localist.js": {
       "maxDuration": 120
+    },
+    "api/cron-antonartcenter.js": {
+      "maxDuration": 60
     },
     "api/cron-metrotimes.js": {
       "maxDuration": 60

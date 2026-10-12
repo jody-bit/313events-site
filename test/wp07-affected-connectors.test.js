@@ -131,7 +131,10 @@ async function run() {
       "BEGIN:VEVENT", "UID:single-3@fixture", "SUMMARY:DJ Fixture", "DTSTART;TZID=America/Detroit:20261010T210000", "END:VEVENT",
       "END:VCALENDAR",
     ].join("\r\n");
-    const idFor = (dateISO, title) => `mcw-ical-${dateISO}-${crypto.createHash("md5").update(title).digest("hex").slice(0, 10)}`;
+    // Stable ids (PR #69): calendar UID + original instance date. The old title-based id is gone.
+    const { stableExternalId } = require("../api/_lib/mcw-identity.js");
+    const UIDS = { "The Fixture Quartet": "single-1@fixture", "Rhone Wine Tasting": "single-2@fixture", "DJ Fixture": "single-3@fixture", "Monday Night Jazz": "weekly-jazz@fixture" };
+    const idFor = (dateISO, title) => stableExternalId(UIDS[title], dateISO);
     const tonight = idFor("2026-10-03", "The Fixture Quartet");
     const { tables, db } = world({
       venues: [{ id: "venue-mcw", name: "MotorCity Wine" }],

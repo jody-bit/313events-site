@@ -105,6 +105,8 @@ const CRON_ENDPOINTS = [
   // 2026-10-01 -- Bagley neighborhood + event-source Product Owner request.
   // See api/cron-bagleycommunity.js.
   "cron-bagleycommunity",
+  // 2026-10-11 -- Anton Art Center. See api/cron-antonartcenter.js.
+  "cron-antonartcenter",
 ];
 const ADMIN_ENDPOINTS = ["admin-events", "admin-feeds", "admin-editorial", "admin-venues"];
 const PAGES = ["/", "/calendar.html", "/map.html", "/submit.html", "/sources.html", "/event.html", "/admin.html"];
@@ -227,6 +229,11 @@ const SOURCE_FRESHNESS_TARGETS = [
   // "avoid paging over a normal quiet week" reasoning as the other small
   // single-source calendars above.
   { source: "Bagley Community Council", days: SOURCE_FRESHNESS_DAYS_QUIET },
+  // 2026-10-11 -- Anton Art Center. QUIET (7d): one gallery's exhibitions
+  // (a handful a year) and a small events calendar. The row-level signal is
+  // source_runs (below): a run that fetched nothing from either page is
+  // logged failed/partial and surfaces there, not as a freshness miss.
+  { source: "Anton Art Center", days: SOURCE_FRESHNESS_DAYS_QUIET },
 ];
 
 // ADVISORY ONLY, by design (see 2026-09-23 header comment above): this never
@@ -393,6 +400,9 @@ const SOURCE_NAME_TO_SLUG = {
   // calls startRun(SLUGS.bagleycommunity)/finishRun() on every run, same as
   // every other WP 0.5-instrumented connector.
   "Bagley Community Council": SLUGS.bagleycommunity,
+  // 2026-10-11 -- Anton Art Center. api/cron-antonartcenter.js calls
+  // startRun(SLUGS.antonartcenter)/finishRun() on every (non-dry) run.
+  "Anton Art Center": SLUGS.antonartcenter,
 };
 
 // checkSourceHealth(target) -> Promise<string detail>, or throws (a failure)

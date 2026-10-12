@@ -209,6 +209,17 @@ function eventDetailUrl(seriesId, eventDate) {
   return `https://www.gottagacha.com/events/${seriesId.toLowerCase()}?date=${eventDate}`;
 }
 
+// Every GottaGacha event links back to GottaGacha. When no occurrence page
+// can be derived (malformed series id or date) the official events page --
+// the same page the occurrence pages hang off, verified in the evidence above
+// -- is the source link, so the event is never left with no source link and
+// never sent to Needs Follow Up for that alone. A derived occurrence page
+// always wins. This is event_url only; ticket_url stays omitted.
+const OFFICIAL_EVENTS_PAGE = "https://www.gottagacha.com/events";
+function eventSourceUrl(seriesId, eventDate) {
+  return eventDetailUrl(seriesId, eventDate) || OFFICIAL_EVENTS_PAGE;
+}
+
 // keepEventUrl(existing, derived) -> the event_url to send, or undefined to
 // send no event_url at all (the stored value stands). Admin Hardening
 // slice 1 safeguards, 2026-10-08:
@@ -333,7 +344,7 @@ function parseEvent(e) {
     is_free: false, // schema default; never inferred from absence of price (explicit instruction)
     price_from: null, // no structured price field demonstrated
     // ticket_url deliberately omitted (not null) -- see header note.
-    event_url: eventDetailUrl(e.id, e.eventDate), // the source's own occurrence page -- see eventDetailUrl()
+    event_url: eventSourceUrl(e.id, e.eventDate), // occurrence page, else the official events page -- see eventSourceUrl()
     image_url: null, // VERIFIED UNAVAILABLE -- see header note
     source: "GottaGacha",
     internal_note: isAmbiguous
@@ -525,6 +536,7 @@ module.exports = async (req, res) => {
 module.exports.parseEvent = parseEvent; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.mapCategory = mapCategory; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.keepEventUrl = keepEventUrl; // exposed for test/gottagacha-event-url.test.js only
+module.exports.eventSourceUrl = eventSourceUrl; // exposed for test/gottagacha-source-link.test.js only
 module.exports.eventDetailUrl = eventDetailUrl; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.buildExternalId = buildExternalId; // exposed for test/cron-gottagacha-runlog.test.js only
 module.exports.isCanonicalGottaGachaLocation = isCanonicalGottaGachaLocation; // exposed for test/cron-gottagacha-runlog.test.js only

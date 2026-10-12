@@ -2,6 +2,8 @@ const crypto = require("crypto");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { startRun, finishRun } = require("./_lib/run-log");
+const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — pulls Planet Ant Theatre's full show calendar (Ant Hall
 // and its Black Box room, both in Hamtramck) from CrowdWork, the box-office
 // platform crowdwork.com/v/planetanttheatre/shows is built on. Added
@@ -92,6 +94,7 @@ function timingSafeStringEqual(a, b) {
 }
 
 const VENUE_SLUG = "planetanttheatre";
+const SOURCE_SLUG = SLUGS.planetanttheatre; // run logging, see api/_lib/source-slugs.js
 const DEFAULT_STATUS = "approved"; // the venue's own official box office, same trust tier as cron-lagerhouse.js
 
 // 2026-09-05 fix attempt: the first live scheduled run (2026-09-04 22:01 ET,
@@ -261,30 +264,48 @@ module.exports = async (req, res) => {
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
+  // Run logging (source reliability PR 1, 2026-10-11). Before this the
+  // connector wrote no source_runs row, so a Cloudflare 403 looked the same
+  // as a healthy quiet day. Logging only: nothing is cancelled, hidden or
+  // written differently when retrieval fails.
+  const runHandle = await startRun(SOURCE_SLUG);
+
   let payload;
+  let httpStatus = null;
   try {
     const r = await fetch(
       `https://www.crowdwork.com/api/v2/${VENUE_SLUG}/shows?start=${todayISO}`,
       { headers: REQUEST_HEADERS }
     );
+    httpStatus = r.status;
     if (!r.ok) {
+      const blocked = r.status === 401 || r.status === 403;
+      await finishRun(runHandle, { outcome: blocked ? "blocked" : "failed", http_status: r.status, error_sample: `Fetch failed: HTTP ${r.status}` });
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
     payload = await r.json();
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
     return;
   }
 
-  const shows = payload && Array.isArray(payload.data) ? payload.data : [];
+  if (!payload || !Array.isArray(payload.data)) {
+    await finishRun(runHandle, { outcome: "failed", http_status: httpStatus, error_sample: "Unexpected response shape (no data array)" });
+    res.status(200).json({ upserted: 0, error: "Unexpected response shape (no data array)" });
+    return;
+  }
+  const shows = payload.data;
   if (!shows.length) {
+    await finishRun(runHandle, { outcome: "success", http_status: httpStatus, records_fetched: 0, records_parsed: 0, records_written: 0 });
     res.status(200).json({ upserted: 0, note: "API returned no shows — layout/response shape may have changed.", fetchedAt: new Date().toISOString() });
     return;
   }
 
   const allRows = shows.flatMap(shapeRowsForShow).filter((row) => row.start_date >= todayISO);
   if (!allRows.length) {
+    await finishRun(runHandle, { outcome: "success", http_status: httpStatus, records_fetched: shows.length, records_parsed: 0, records_written: 0 });
     res.status(200).json({ upserted: 0, note: "Parsed shows but none are today or later.", fetchedAt: new Date().toISOString() });
     return;
   }
@@ -325,6 +346,7 @@ module.exports = async (req, res) => {
         rows.map((r) => r.external_id)
       );
     } catch (lookupErr) {
+      await finishRun(runHandle, { outcome: "failed", http_status: httpStatus, records_fetched: shows.length, records_parsed: rows.length, records_written: 0, error_sample: "Status lookup failed: " + lookupErr.message });
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
@@ -339,11 +361,21 @@ module.exports = async (req, res) => {
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
       const errText = await resp.text();
+      await finishRun(runHandle, {
+        outcome: "failed",
+        http_status: resp.status,
+        records_fetched: shows.length,
+        records_parsed: rows.length,
+        records_written: resp.written,
+        error_sample: "Supabase upsert failed: " + errText,
+      });
       res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
+    await finishRun(runHandle, { outcome: "success", http_status: httpStatus, records_fetched: shows.length, records_parsed: rows.length, records_written: rowsWithStatus.length });
     res.status(200).json({ upserted: rowsWithStatus.length, showsParsed: shows.length, fetchedAt: new Date().toISOString() });
   } catch (err) {
+    await finishRun(runHandle, { outcome: "failed", http_status: httpStatus, records_fetched: shows.length, error_sample: err.message });
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };

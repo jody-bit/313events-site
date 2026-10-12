@@ -81,6 +81,8 @@
 // the migration costs one extra request per group, never a lost write.
 "use strict";
 
+const { fillBlankOrganizerEventUrls } = require("./organizer-links");
+
 const DEFAULT_TABLE = "events";
 const LAST_SEEN_COLUMN = "last_seen_at_source";
 
@@ -267,6 +269,10 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
       error: `not sent: ${onConflict} appears more than once in this batch, in rows of different shape (${ids})`,
     });
   }
+
+  // Known-organizer source link (api/_lib/organizer-links.js): blank event_url
+  // only, never ticket_url; a no-op unless a written row matches an organizer.
+  if (table === DEFAULT_TABLE && written > 0) await fillBlankOrganizerEventUrls(supabaseUrl, serviceRoleKey, rows);
 
   const failed = groups.filter((g) => !g.ok);
   const ok = failed.length === 0;
