@@ -2002,7 +2002,7 @@
    "id": "diehls-orchard-and-cider-mill",
    "discovered": false,
    "inventory_no": "13",
-   "name": "Diehl's Orchard & Cider Mill",
+   "name": "Diehl’s Orchard & Cider Mill",
    "city": "Holly",
    "region": "MI",
    "categories": [
@@ -2716,7 +2716,7 @@
    "id": "forever-acres-farm",
    "discovered": false,
    "inventory_no": "15",
-   "name": "Forever Acres Farm",
+   "name": "Forever Acres Farm & Orchard",
    "city": "Britton",
    "region": "MI",
    "categories": [
@@ -5130,7 +5130,7 @@
    "id": "porters-orchard",
    "discovered": false,
    "inventory_no": "31",
-   "name": "Porter's Orchard",
+   "name": "Porter’s Orchard Farm Market & Cider Mill",
    "city": "Goodrich",
    "region": "MI",
    "categories": [
@@ -6588,7 +6588,7 @@
    "id": "wiards-orchards",
    "discovered": false,
    "inventory_no": "41",
-   "name": "Wiard's Orchards",
+   "name": "Wiard’s Orchards",
    "city": "Ypsilanti",
    "region": "MI",
    "categories": [

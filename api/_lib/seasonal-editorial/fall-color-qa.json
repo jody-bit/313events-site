@@ -2816,7 +2816,7 @@
    "id": "cranbrook-gardens-and-grounds",
    "discovered": false,
    "inventory_no": null,
-   "name": "Cranbrook Gardens & grounds",
+   "name": "Cranbrook House and Gardens",
    "city": "Bloomfield Hills",
    "region": "MI",
    "categories": [
@@ -5694,7 +5694,7 @@
    "id": "highland-state-recreation-area",
    "discovered": false,
    "inventory_no": null,
-   "name": "Highland State Recreation Area",
+   "name": "Highland Recreation Area",
    "city": "White Lake",
    "region": "MI",
    "categories": [
@@ -9425,7 +9425,7 @@
     "parks-gardens"
    ],
    "category_source": "record",
-   "summary": "Scenic fall drive from Chelsea through Ann Arbor to Ypsilanti, listed by Destination Ann Arbor.",
+   "summary": "Old US-12 scenic segment between Chelsea, Ann Arbor and Ypsilanti, on the historic Chicago Road route and listed by Destination Ann Arbor as a fall drive.",
    "official_site": "https://www.annarbor.org/fallhq/",
    "website": "https://www.annarbor.org/fallhq/",
    "dates_hours": null,
@@ -14506,7 +14506,7 @@
     "trails-woods"
    ],
    "category_source": "record",
-   "summary": "Public preserves on Grosse Ile with oak woodland trails, a marsh boardwalk and an observation platform.",
+   "summary": "Autumn walking destinations on Grosse Ile: Gibraltar Bay Natural Area, the Dr. Bruce D. Jones Preserve and Sunrise Park. The conservancy protects other properties that are not all open to the public.",
    "official_site": "https://www.ginlc.org/our-protected-lands",
    "website": "https://www.ginlc.org/our-protected-lands",
    "dates_hours": null,

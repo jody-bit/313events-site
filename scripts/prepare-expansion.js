@@ -80,7 +80,7 @@ const DESC = {
     "barton-nature-area": "Nature area along the Huron River with trails around the Barton oxbow. Destination Ann Arbor lists it for autumn color.",
     "columbus-county-park": "St. Clair County park with a nature trail through wetlands and maple forest, an equestrian trail and a lodge.",
     "wadhams-to-avoca-trail": "Rail trail in St. Clair County whose county page cites fall colors along the route, with a trestle overlook above the Mill Creek valley.",
-    "grosse-ile-nature-and-land-conservancy-preserves": "Public preserves on Grosse Ile with oak woodland trails, a marsh boardwalk and an observation platform.",
+    "grosse-ile-nature-and-land-conservancy-preserves": "Autumn walking destinations on Grosse Ile: Gibraltar Bay Natural Area, the Dr. Bruce D. Jones Preserve and Sunrise Park. The conservancy protects other properties that are not all open to the public.",
     "secor-metropark": "Metroparks Toledo park of second-growth forest, meadows and prairies, with the region's largest concentration of native dogwood. The agency's fall color report names it.",
     "pearson-metropark": "Metroparks Toledo park with remnant Great Black Swamp forest, ponds and about 15 miles of trails. The agency's fall color report names it.",
     "side-cut-metropark": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
@@ -91,7 +91,7 @@ const DESC = {
     "maybury-state-park": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
     "elmwood-cemetery": "Historic cemetery and certified arboretum with self-guided tree tours.",
     "black-oak-heritage-park": "Windsor park of old-growth black oak savanna with one public trail.",
-    "old-us-12-corridor": "Scenic fall drive from Chelsea through Ann Arbor to Ypsilanti, listed by Destination Ann Arbor."
+    "old-us-12-corridor": "Old US-12 scenic segment between Chelsea, Ann Arbor and Ypsilanti, on the historic Chicago Road route and listed by Destination Ann Arbor as a fall drive."
   }
 };
 // Official addresses differ from the inventory city for these records; the card shows the official city.

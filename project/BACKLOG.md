@@ -478,6 +478,14 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 
 ---
 
+### TASK-010 — Nixon Farms: discover and maintain individual events from the farm's events pages
+
+- **Status:** BACKLOG (captured 2026-10-12, not designed or built) · **Priority:** not yet set · **Epic:** `EPIC-001` (ingestion platform)
+- **Source:** https://nixonfarmsdexter.com/events/ (the destination itself, "Nixon Farms / Blast Corn Maze", is in the Fall Is On. collection; owner verified it operating 2026-10-12).
+- **Problem:** The farm's website publishes events. The ingestion system should discover and maintain each individual Nixon Farms event in the 313.events calendar.
+- **Rules:** every harvested event keeps its original event-specific link in `event_url` (and `ticket_url` only for a real ticketing or registration destination). Do not substitute the events index for event-specific source URLs when individual event pages exist. Do not invent event dates or times.
+- **Explicitly not started:** no connector or source registration. This is not part of the seasonal collections workstream and needs a separate assignment.
+
 ## Bugs
 
 ### BUG-001 — Verify: does a failed status-lookup risk re-approving a previously-rejected event?
@@ -858,6 +866,16 @@ Set by the Product Owner 2026-09-22 ("NEXT PRIORITY — REDUCE NEEDS FOLLOW-UP H
 - **Acceptance Criteria (proposed):** identify the writer (job, person or integration) from Supabase and Vercel logs; decide whether it is intended; if intended, document it in `ENVIRONMENTS.md` with its scope and any PII handling; if not, stop it. Production counts are unaffected: they are computed from production data (see `loadOrbitEventTotal()` and the `events_public` loader in `index.html`).
 
 ---
+
+### DEBT-015 — Verification treats missing evidence as negative evidence (14 owner-verified false negatives)
+
+- **Status:** BACKLOG (captured 2026-10-12) · **Priority:** High for seasonal and destination content · **Epic:** `EPIC-001` / shared verification
+- **Problem:** The seasonal verification pass held 14 destinations that the owner confirmed directly. Retrieval failures, stale promotional artwork and dated tourism articles were read as evidence against a destination or an activity.
+- **Permanent principle:** missing evidence is not negative evidence. Keep four questions separate: (1) does the destination exist and operate; (2) is it relevant to the collection; (3) are specific activities or amenities currently available; (4) are there temporary access restrictions.
+- **Requirements:** distinguish retrieval failure (403, timeout, blocked) from closure; distinguish stale marketing from stale facts; verify operating status separately from seasonal activities; use alternate authoritative evidence when the primary site cannot be retrieved; treat owner-provided direct verification as documented editorial evidence; preserve uncertainty at the individual claim level; do not invent missing facts; do not silently erase stronger existing data; route genuine conflicts to follow-up; maintain source provenance. Do not weaken reliability requirements: the goal is to remove false negatives without allowing unsupported claims.
+- **Owner-verified examples (2026-10-12):** Fall Is On.: Kackleberry Farms (2025 artwork still on the site), Erie Orchards & Cider Mill, Parshallville Cider Mill (Sunday live music), Nixon Farms / Blast Corn Maze, Gust Brother's Pumpkin Farm. Fall Colors: Hudson Mills Metropark (dated tourism article), Hines Drive (included, with access advisories), Maybury State Park (blocked DNR page), Seven Lakes State Park (403), Waterloo State Recreation Area, Huron River Drive, Macomb Orchard Trail (partial closure, reopening expected fall 2026), Old US-12 corridor, Grosse Ile preserves (Gibraltar Bay Natural Area, Dr. Bruce D. Jones Preserve, Sunrise Park).
+- **Where the fix belongs:** the shared verification policy in the main development and product workstream. The seasonal pages must not grow a competing verification framework; the seasonal records only carry the owner-verified evidence as `ownerVerification` and temporary closures as `accessAdvisories`.
+- **Related:** `TASK-010` (Nixon Farms event source).
 
 ## Discovery / decisions needed
 

@@ -132,3 +132,10 @@ the load test result, image kind, source type, risk acceptance, `permission_on_f
 - No unpublished destination name, image candidate URL, rights note or evidence text may appear in any served file
   (`test/seasonal-qa-route.test.js`). The public `seasonal/` folder holds six files only.
 - A declared status that disagrees with the gate fails the tests; an owner photo or linked image never satisfies approval.
+
+
+## Editorial acceptance is not publication approval (2026-10-12)
+
+The owner accepted the editorial content of all 76 eligible destinations (Fall Is On. 36, Fall Colors 40) on 2026-10-12. Each of those records carries `editorialAccepted {by, at, scope}`. That field is a record of editorial acceptance only. It does not satisfy gate item 5, it sets no `approval`, and nothing in the repository writes `approval`: only the approving person adds `approval {by, at}` and sets `status` to `PUBLISHED`.
+
+Owner-verified evidence is kept as `ownerVerification` on the record (14 destinations) and temporary closures as `accessAdvisories` (Hines Drive, Macomb Orchard Trail, Maybury State Park). The public card does not yet render advisories; they are structured editorial metadata only.
