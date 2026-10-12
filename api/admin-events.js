@@ -39,6 +39,12 @@ const crypto = require("crypto");
 //                                               without touching this endpoint's query shape.
 // POST /api/admin-events -> { id, action: "approve"|"reject"|"hide"|"restore"|"update_fields" }
 //   approve/reject: pending_review -> approved/rejected (the original submission queue)
+//     approve is refused with 409 MISSING_START_TIME for a Resident Advisor
+//     event whose time_display is still null (2026-10-12 fix -- RA Start-
+//     Time Defect investigation) unless the request also sends
+//     acknowledgeMissingTime:true. The row stays pending_review, untouched,
+//     exactly as if approve had never been called -- never a silent publish
+//     of an incomplete record.
 //   hide:           approved -> rejected (takes an already-live event off the site)
 //   restore:        rejected -> approved (undo a hide, or reverse a reject)
 //   update_fields:  { id, action: "update_fields", fields: { description?, venue_address_raw?,
@@ -337,7 +343,7 @@ module.exports = async (req, res) => {
       try { body = JSON.parse(body); } catch { body = {}; }
     }
     body = body || {};
-    const { id, action } = body;
+    const { id, action, acknowledgeMissingTime } = body;
 
     // update_fields (2026-09-05, Jody: "how do I get to edit these fields?"
     // — asked right after the "Needs follow-up" section shipped as a
@@ -750,6 +756,41 @@ let genericCounts = null;
 
     const newStatus = (action === "approve" || action === "restore") ? "approved" : "rejected";
     try {
+      // RA start-time defect fix (2026-10-12): "approve" used to be a
+      // bare status flip with no check at all -- a row that
+      // ra-candidate-promotion.js deliberately published with no
+      // time_display (because it only ever had RA's listing card, never
+      // a detail-page time) went fully live, forever time-less, the
+      // moment a moderator approved it, even though RA's own detail page
+      // has had a real time the whole time. "restore" is NOT gated here
+      // -- it only ever un-hides/un-rejects a row that was already live
+      // before, so re-checking an unrelated field on the way back up
+      // would be a new behavior with no bug behind it.
+      //
+      // Scoped to Resident Advisor only ("do not modify unrelated
+      // ingestion sources") and skipped entirely when
+      // acknowledgeMissingTime is explicitly true -- a moderator who has
+      // confirmed by hand that RA genuinely has no time for this one
+      // (e.g. an all-day/date-only listing) can still approve it; this
+      // only blocks the SILENT case the defect actually was.
+      if (action === "approve" && !acknowledgeMissingTime) {
+        const checkResp = await fetch(
+          `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=id,source,time_display`,
+          { headers: sbHeaders }
+        );
+        const checkRows = checkResp.ok ? await checkResp.json() : [];
+        const current = checkRows[0];
+        if (current && current.source === "Resident Advisor" && !current.time_display) {
+          res.status(409).json({
+            error: "MISSING_START_TIME",
+            message:
+              "This Resident Advisor event has no verified start time. Run the RA time backfill first, or resend with acknowledgeMissingTime:true to approve it anyway without one.",
+            id,
+          });
+          return;
+        }
+      }
+
       const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { ...sbHeaders, Prefer: "return=representation" },

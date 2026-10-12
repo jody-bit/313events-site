@@ -41,7 +41,12 @@
 //      fetch merge into this SAME row rather than duplicate it, and what
 //      api/_lib/ra-provenance-note.js's note line also records explicitly)
 //      and via the note field (which listing fields RA actually supplied --
-//      never a fixed assumed list).
+//      never a fixed assumed list). AND (2026-10-12 fix) via the real
+//      ticket_url column itself -- deriveTicketUrl's deterministic
+//      `https://ra.co/events/<id>` shape, same helper the full
+//      detail-fetch path uses, never a guess and no fetch -- so a
+//      listing-only row no longer publishes with zero direct source
+//      link the way it could before this fix.
 //   4. Conservative cross-source dedupe (scripts/ra-sync.js's own
 //      findConservativeDuplicate, reused unmodified) runs BEFORE any row
 //      is created -- a title/venue match against an existing non-RA row
@@ -56,6 +61,7 @@ const {
   deriveCategory,
   LISTING_METADATA_FIELDS,
   parseRaListingDate,
+  deriveTicketUrl,
 } = require(path.join(__dirname, "ra-sync"));
 const { lookupExistingRows } = require(path.join(__dirname, "..", "api", "_lib", "status-lookup"));
 const { lookupKnownSourceIds, recordSourceIdentity } = require(path.join(__dirname, "..", "api", "_lib", "event-source-identities"));
@@ -334,10 +340,23 @@ async function promoteRaCandidates({
     // is visitor-facing and survived approval unchanged (2026-10-04: RA
     // provenance lines were printing on the homepage).
     const internal_note = buildRaDiscoveryNote({ raId: id, raUrl: meta.url || null, presentFields });
+    // ticket_url (2026-10-12, RA start-time/source-link defect fix): the
+    // direct RA event page is ALWAYS derivable from the bare id alone, no
+    // fetch required -- deriveTicketUrl (scripts/ra-sync.js, the same
+    // helper the full detail-fetch path already uses) prefers RA's own
+    // listing `url` when the listing walk captured one, and otherwise
+    // falls back to the deterministic `https://ra.co/events/<id>` shape.
+    // Previously this function only ever stashed meta.url inside
+    // internal_note (admin-only text) and never populated the real,
+    // public-facing ticket_url column at all -- every listing-only
+    // promoted row published with no direct source link until some LATER
+    // step (if any) filled it in. This is a pure function of data already
+    // in hand; it adds no network call and changes no other field.
     const row = {
       ...draftRow,
       status: "pending_review", // decision 2: never 'approved' here, ever.
       source: "Resident Advisor",
+      ticket_url: deriveTicketUrl(id.replace(/^ra-/, ""), meta.url || null),
       internal_note,
     };
 
