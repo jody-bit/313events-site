@@ -1,9 +1,8 @@
 -- RA LINK NORMALIZATION: THE TWO HELD ROWS (PROPOSED, NOT EXECUTED).
--- Separate, separately guarded operation. Run only after the owner has confirmed on ra.co that
---   ra-2552946 is "House À La Mode"  and  ra-2553785 is "Industry Sunday".
--- (The Resident Advisor site could not be reached from the review environment, so that
---  confirmation has NOT been made by the preparing session.)
---
+-- Separate, separately guarded operation.
+-- OWNER VERIFICATION (Jody, 2026-10-12): ra.co/events/2552946 is "House À La Mode" and
+--   ra.co/events/2553785 is "Industry Sunday". Both corrections are approved as the intended data
+--   changes. This is NOT authorization to execute: running it still needs a separate owner go-ahead.
 -- Each row currently has event_url NULL and a ticket_url pointing at a DIFFERENT RA event
 -- (ra-2545734 "HAREBRAINED..." and ra-2554757 "Foggy Sunday", which exist as their own rows).
 -- This sets event_url to the row's OWN RA page and clears that foreign RA ticket_url. Nothing else.
