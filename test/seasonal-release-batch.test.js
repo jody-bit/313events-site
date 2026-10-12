@@ -18,10 +18,11 @@ assert.deepStrictEqual([B.excluded.held, B.excluded.discoveredLeads], [124, 37])
 assert.ok(/^APPLIED/.test(B.status) && /Jody Tyree/.test(B.status), "the batch is marked applied by the owner's authorization");
 assert.strictEqual(new Set(B.records.map((r) => r.collection + "/" + r.id)).size, 76, "no duplicates");
 
-const all = E.fall.concat(E["fall-color"], E.halloween);
-assert.strictEqual(all.filter((e) => e.approval).length, 76, "approvals only on the 76 batch records");
+const all = E.fall.concat(E["fall-color"]);
+assert.strictEqual(all.filter((e) => e.approval).length, 76, "Fall approvals only on the 76 batch records");
 assert.strictEqual(all.filter((e) => e.status === "PUBLISHED").length, 76, "only the batch is declared PUBLISHED");
 assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "only the batch is public");
+assert.strictEqual(E.halloween.filter((e) => e.status === "PUBLISHED").length, 7, "Halloween: the seven gate-passing records");
 for (const r of B.records) assert.deepStrictEqual(E[r.collection].find((x) => x.id === r.id).approval, AUTHZ.AUTH, r.id + ": the authorized approval, nothing else");
 
 let advisories = 0;

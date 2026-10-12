@@ -115,7 +115,10 @@ for (const [f, t] of text) { const t2 = stripPublished(t); for (const n of unpub
 // image candidates, rights metadata and review evidence do not leak either (URLs, risk notes, evidence wording)
 const linkedFile = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/linked-images.json"), "utf8"));
 const secrets = linkedFile.images.map((l) => l.image_link).concat(linkedFile.unchosen_alternatives.map((u) => u.image_link), ["Owner accepted the copyright risk", "apple_photos_uuid", "IMG_5509", "Official site read 2026-10-11"]);
-for (const [f, t] of text) for (const x of secrets) assert.ok(!t.includes(x), f + " exposes private image/rights/evidence data: " + x);
+// A linked image that is PUBLISHED is shown from its source by design (owner-accepted, with the generated card as fallback): its own URL is public.
+// Every other candidate URL, and all rights/evidence wording, must stay private.
+const shownLinks = new Set(publishedEntries.map((e) => e.image && e.image.remote && e.image.remote.src).filter(Boolean));
+for (const [f, t] of text) for (const x of secrets.filter((u) => !shownLinks.has(u))) assert.ok(!t.includes(x), f + " exposes private image/rights/evidence data: " + x);
 // the public pages do not reference any review/fixture/config switch (B3)
 for (const [f, t] of text) assert.ok(!/review=1|fixtures=1|__313_CONFIG|\/config\.js/.test(t), f + " still references a removed preview mode");
 // the route's data is reachable only through the handler, and the function bundle includes it

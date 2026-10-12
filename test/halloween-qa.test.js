@@ -28,12 +28,12 @@ assert.strictEqual(qa.records.length, 52);
 assert.strictEqual(reg.length, 52);
 assert.strictEqual(new Set(qa.records.map((r) => r.id)).size, 52, "duplicate destination ids");
 assert.strictEqual(new Set(qa.records.map((r) => r.name)).size, 52, "duplicate destinations");
-// `public` is the gate's answer for the private entry, never a hand-set flag; no entry has the explicit approval yet
+// `public` is the gate's answer for the private entry, never a hand-set flag; every entry carries the owner's 2026-10-11 approval, which does not waive the rest of the gate
 for (const r of qa.records) assert.strictEqual(r.public, DATA.isPublic(entries[r.id]), r.id + " public flag equals the gate");
-assert.strictEqual(qa.records.filter((r) => r.public).length, 0);
+assert.deepStrictEqual(qa.records.filter((r) => r.public).map((r) => r.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "exactly the seven records that pass every gate item are public");
 for (const r of qa.records) {
   assert.strictEqual(r.publication.state, DATA.readiness(entries[r.id]).state, r.id + " publication state is derived");
-  assert.strictEqual(r.publication.gate.approval, false, r.id + ": no approval is invented");
+  assert.strictEqual(r.publication.gate.approval, !AUTHZ.HALLOWEEN_EXCLUDED[r.id], r.id + ": carries the owner approval unless excluded");
   assert.ok(r.publication.state === "PUBLISHED" || r.publication.outstanding.length > 0, r.id + " lists what is outstanding");
 }
 
@@ -42,7 +42,7 @@ const FIELDS = ["destination_id", "destination_name", "primary_image", "primary_
 const catIds = col.categories.map((c) => c.id);
 for (const c of reg) {
   for (const f of FIELDS) assert.ok(c.image_manifest && c.image_manifest[f] !== undefined && c.image_manifest[f] !== "", c.name + " manifest." + f);
-  assert.strictEqual(c.image_manifest.editorial_approval_status, "not_approved", "no approvals invented");
+  assert.strictEqual(c.image_manifest.editorial_approval_status, AUTHZ.HALLOWEEN_EXCLUDED[c.destination_id] ? "not_approved" : "owner_approved", "the owner approval is recorded for the 49, not for the excluded");
   assert.ok(c.categories.length && c.categories.every((k) => catIds.includes(k)), c.name + " categories");
 }
 const photos = Object.fromEntries(lib.destination_specific.concat(lib.editorial_atmospheric).map((p) => [p.id, p]));
@@ -81,10 +81,10 @@ assert.ok(qa.records.some((r) => r.manifest.primary_image_type === "owner_photo_
 
 // 4. public page: only published records, no QA artifacts, fallback attrs wired
 const pub = R.main(col);
-assert.ok(!/sc-qa|Unverified|Hush Haunted/.test(pub));
+assert.ok(!/sc-qa|Unverified|Rotten Manor|Slay Nights/.test(pub));
 // fallback attributes are wired on any card the renderer produces (exercised here on private entries, which are never public)
 for (const e of Object.values(entries).slice(0, 6)) assert.ok(/data-fb=/.test(R.card(col, e)), e.id + " card carries its fallback chain");
-assert.strictEqual((pub.match(/class="sc-card/g) || []).length, 0, "no destination card is public");
+assert.deepStrictEqual([...new Set([...pub.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]))].sort(), AUTHZ.HALLOWEEN_PUBLISHED, "only the seven gate-passing destinations are public (the Don't Miss rail repeats three of them)");
 // every private entry's image agrees with the QA default and its fallbacks (one data set, two views)
 for (const r of qa.records) {
   const e = entries[r.id], o = r.image_options[0];
@@ -94,7 +94,7 @@ for (const r of qa.records) {
   assert.deepStrictEqual(uniq([e.image.src].concat(e.image.alternates || []).filter((u) => u !== o.src)), uniq([r.manifest.fallback_image, r.manifest.secondary_fallback_image].filter((u) => u !== o.src)), r.id + " fallbacks agree");
 }
 const pageHtml = fs.readFileSync(path.join(root, "halloween.html"), "utf8");
-assert.ok(!pageHtml.includes("Hush Haunted") && !pageHtml.includes("Slay Nights"), "unverified names not in public HTML");
+assert.ok(!pageHtml.includes("Rotten Manor") && !pageHtml.includes("Slay Nights"), "held names not in public HTML");
 for (const f of ["seasonal/collections.js", "seasonal/published-entries.js", "seasonal/page.js", "seasonal/render.js", "seasonal/image-fallback.js", "halloween.html"]) {
   assert.ok(!fs.readFileSync(path.join(root, f), "utf8").includes("Slay Nights"), f + " leaks QA records");
 }
@@ -153,14 +153,14 @@ assert.notStrictEqual(R.pickSrc({ src: "/x.webp", fallbacks: ["/q.webp"] }), "/x
 R.setFailedLookup(null);
 
 // 8. the other seasonal pages carry no unpublished destination either
-// (the built pages now render the 76 authorized records; every card on them must be one of those, and nothing else)
+// (the built pages render the 76 authorized Fall records plus the seven Halloween records that pass the gate; every card on them must be one of those, and nothing else)
 {
   const authSet = AUTHZ.authorized(ED);
   for (const [f, slug] of [["fall.html", "fall"], ["fall-color.html", "fall-color"], ["halloween.html", "halloween"]]) {
     const html = fs.readFileSync(path.join(root, f), "utf8");
     const ids = [...html.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]);
     for (const id of ids) assert.ok(authSet.has(slug + "/" + id), f + " renders only authorized records: " + id);
-    if (slug === "halloween") assert.strictEqual(ids.length, 0, "Halloween renders no card");
+    if (slug === "halloween") assert.deepStrictEqual([...new Set(ids)].sort(), AUTHZ.HALLOWEEN_PUBLISHED, "Halloween renders exactly the seven records that pass the gate");
   }
 }
 console.log("halloween-qa: ok");
@@ -235,7 +235,7 @@ console.log("halloween-qa: ok");
     // the record itself is untouched: no remote image copied, no approval, no state change
     const e = ED.entries().halloween.find((x) => x.id === l.destination_id);
     assert.ok(!e.image.remote || e.image.remote.src !== l.image_link, "a proposal is not copied onto the record");
-    assert.ok(!e.approval, "no approval on " + e.id);
+    assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id + ": carries the owner Halloween approval; the unadopted proposal adds no rights and no image");
   });
   const cx = recs["crossroads-ghosts-goodies"];
   assert.strictEqual(cx.publication.state, "CONTENT_VERIFIED", "Crossroads state unchanged by the proposals");
@@ -244,7 +244,9 @@ console.log("halloween-qa: ok");
   // nothing in the batch is approved
   const all = ED.entries(), authSet = AUTHZ.authorized(ED);
   Object.keys(all).forEach((k) => all[k].forEach((e) => AUTHZ.checkApproval(assert, k, e, authSet)));
-  assert.ok(all.halloween.every((e) => !e.approval), "no Halloween record is approved");
+  assert.strictEqual(all.halloween.filter((e) => e.approval).length, 49, "49 Halloween records carry the owner approval of 2026-10-11");
+  assert.strictEqual(all.halloween.filter((e) => e.disposition).length, 3, "3 are excluded (duplicate or closed) and keep their records");
+  assert.deepStrictEqual(AUTHZ.halloweenApproved(ED).sort(), all.halloween.filter((e) => e.approval).map((e) => e.id).sort(), "the approved set is the 49");
   const md = fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md"), "utf8");
   assert.ok(/Nothing is approved/.test(md) && /Rotten Manor/.test(md) && /promo-art/.test(md));
   assert.ok(!/"approval": \{"by": "(?!<name>)/.test(md), "the batch pre-fills no approval");

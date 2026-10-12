@@ -15,34 +15,31 @@
    ],
    "summary": "Multi-story haunted attraction in Pontiac.",
    "summary_source": "published",
-   "website": null,
-   "official_site": null,
+   "website": "https://hauntedpontiac.com",
+   "official_site": "https://hauntedpontiac.com",
    "dates_hours": null,
    "verification": {
     "status": "partial",
-    "official_site_checked": false,
-    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -81,7 +78,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -231,34 +228,30 @@
    ],
    "summary": "Haunted attraction in the former Eloise psychiatric hospital in Westland.",
    "summary_source": "published",
-   "website": null,
-   "official_site": null,
+   "website": "https://eloiseasylum.com/",
+   "official_site": "https://eloiseasylum.com/",
    "dates_hours": null,
    "verification": {
     "status": "partial",
-    "official_site_checked": false,
-    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "owner-photo",
     "rights_route": "owner-authorization",
-    "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -294,7 +287,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo_with_flags",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -517,30 +510,26 @@
    "official_site": "https://hushhauntedattractions.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "linked",
     "rights_route": "linked-risk-acceptance",
-    "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
      "A linked image depends on the source site continuing to serve it; the generated card is the fallback."
@@ -568,7 +557,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -714,36 +703,32 @@
     "haunted-attractions",
     "serious-scares"
    ],
-   "summary": "Multilevel haunted maze",
+   "summary": "Haunted house attraction in Madison Heights with intense scares, plus occasional family and holiday events.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": "https://azrahaunt.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "linked",
     "rights_route": "linked-risk-acceptance",
-    "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
      "A linked image depends on the source site continuing to serve it; the generated card is the fallback."
@@ -771,7 +756,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -938,14 +923,13 @@
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "linked",
     "rights_route": "linked-risk-acceptance",
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer)."
     ],
     "caveats": [
      "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
@@ -974,7 +958,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -1124,7 +1108,7 @@
    "summary": "Haunted thrill park",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://hauntedhousemichigan.com/",
    "dates_hours": null,
    "verification": {
     "status": "unverified",
@@ -1142,15 +1126,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -1176,7 +1159,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -1344,14 +1327,13 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -1385,7 +1367,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -1535,33 +1517,30 @@
    "summary": "Haunted hayride, maze and forest",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://scarefestscreampark.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -1587,7 +1566,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -1743,27 +1722,25 @@
    "verification": {
     "status": "partial",
     "official_site_checked": true,
-    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance to the collection not confirmed. Dates and hours not verified.",
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
      "official": true,
-     "relevance": false,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -1804,7 +1781,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -1950,7 +1927,7 @@
     "haunted-attractions",
     "serious-scares"
    ],
-   "summary": "Haunted asylum experience",
+   "summary": "Haunted attraction in Taylor, Michigan.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -1971,15 +1948,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -2004,7 +1980,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -2131,27 +2107,25 @@
    "verification": {
     "status": "partial",
     "official_site_checked": true,
-    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance to the collection not confirmed. Dates and hours not verified.",
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
      "official": true,
-     "relevance": false,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -2177,7 +2151,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -2327,33 +2301,30 @@
    "summary": "Haunted house and corn maze",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://slaughterhouseadventure.net/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -2378,7 +2349,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -2497,36 +2468,33 @@
     "haunted-attractions",
     "serious-scares"
    ],
-   "summary": "Haunted farm",
+   "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://fullmoonhauntedhouse.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -2551,7 +2519,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -2698,6 +2666,7 @@
     "image_route": null,
     "rights_route": null,
     "outstanding": [
+     "Excluded: resolved as closed. Retained in the inventory with its history; never shown publicly.",
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
@@ -2845,7 +2814,7 @@
     "haunted-attractions",
     "serious-scares"
    ],
-   "summary": "Haunted field attraction",
+   "summary": "Haunted hayride and haunted house at The Pumpkin Factory, a family pumpkin farm in Belleville.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -2866,15 +2835,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -2899,7 +2867,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -3041,14 +3009,13 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -3074,7 +3041,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -3222,33 +3189,30 @@
    "summary": "Haunted woodland trail",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://www.thehowlinghauntedtrail.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -3281,7 +3245,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -3420,15 +3384,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -3468,7 +3431,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -3607,15 +3570,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -3640,7 +3602,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -3758,36 +3720,33 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Haunted maze, cornfield and hayride",
+   "summary": "Farm haunt with a haunted hayride, a zombie-themed family hayride and a haunted cornfield walk.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://www.spookytrails.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -3820,7 +3779,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -3961,15 +3920,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -3994,7 +3952,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -4120,29 +4078,27 @@
    "verification": {
     "status": "partial",
     "official_site_checked": true,
-    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance to the collection not confirmed. Dates and hours not verified.",
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
      "official": true,
-     "relevance": false,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -4168,7 +4124,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -4314,7 +4270,7 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Rustic haunted sawmill and maze; radius check",
+   "summary": "Haunted sawmill attraction in Millington.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -4337,15 +4293,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -4370,7 +4325,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -4491,33 +4446,30 @@
    "summary": "Haunted woodland trail",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -4543,7 +4495,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -4689,38 +4641,35 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Haunted historic village; radius check",
+   "summary": "Evening trick-or-treating and spooky trails (family-friendly and scarier) at the Sanilac County Historical Museum village in Port Sanilac.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://sanilaccountymuseum.org/calendar-of-events/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "radius check needed"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -4745,7 +4694,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -4863,15 +4812,15 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Indoor haunted house; radius check",
+   "summary": "Indoor haunted house.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://feardistracted.com/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "radius check needed",
      "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -4879,23 +4828,20 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -4920,7 +4866,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -5038,7 +4984,7 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Industrial haunted attraction; radius check",
+   "summary": "Haunted attraction in Fremont, Ohio; the 2026 route is a walk through the grounds and woods.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -5062,15 +5008,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -5095,7 +5040,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -5236,15 +5181,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -5268,7 +5212,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -5377,35 +5321,32 @@
    "summary": "Seasonal eerie manor tours",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://metroparkstoledo.com/eeriemanor",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -5429,7 +5370,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -5543,29 +5484,27 @@
    "verification": {
     "status": "partial",
     "official_site_checked": true,
-    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance to the collection not confirmed. Dates and hours not verified.",
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
      "official": true,
-     "relevance": false,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -5590,7 +5529,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -5726,7 +5665,7 @@
    "summary": "Historical ghost tours",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://watervillehistory.org/haunted-waterville-tours",
    "dates_hours": null,
    "verification": {
     "status": "unverified",
@@ -5746,15 +5685,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -5778,7 +5716,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -5883,38 +5821,34 @@
    "region": "MI",
    "categories": [
     "strange-unusual",
-    "haunted-attractions"
+    "family-friendly"
    ],
-   "summary": "Illuminated forest walk with a carnival-horror theme in Commerce Township.",
+   "summary": "Illuminated night walk with a carnival theme in Commerce Township.",
    "summary_source": "published",
    "website": "https://glenloretrails.com",
    "official_site": "https://glenloretrails.com",
    "dates_hours": null,
    "verification": {
     "status": "partial",
-    "official_site_checked": false,
-    "detail": "Identity and location from inventory plus independent web coverage; official site not checked.",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "owner-photo",
     "rights_route": "owner-authorization",
-    "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -5948,7 +5882,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -6140,27 +6074,25 @@
    "verification": {
     "status": "partial",
     "official_site_checked": true,
-    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance to the collection not confirmed. Dates and hours not verified.",
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
      "official": true,
-     "relevance": false,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -6194,7 +6126,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -6337,38 +6269,35 @@
    "city": "West Bloomfield",
    "region": "MI",
    "categories": [
-    "strange-unusual"
+    "strange-unusual",
+    "family-friendly"
    ],
-   "summary": "Halloween-themed aerial adventure",
+   "summary": "After-dark treetop climbing and ziplining among glowing lights with a festive Halloween-season atmosphere at TreeRunner West Bloomfield.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": "https://treerunnerparks.com/westbloomfield/glow-nights/",
+   "official_site": "https://treerunnerparks.com/westbloomfield/fall-festivities/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "linked",
     "rights_route": "linked-risk-acceptance",
-    "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
      "A linked image depends on the source site continuing to serve it; the generated card is the fallback."
@@ -6396,7 +6325,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -6553,23 +6482,21 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "owner-photo",
     "rights_route": "owner-authorization",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -6601,7 +6528,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo_with_flags",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -6765,7 +6692,7 @@
    "categories": [
     "strange-unusual"
    ],
-   "summary": "Adults-only immersive masquerade; 2026 occurrence must be verified",
+   "summary": "Costumed masquerade event in Detroit with a 21+ age policy.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -6789,15 +6716,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -6824,7 +6750,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -7004,6 +6930,7 @@
     "image_route": null,
     "rights_route": null,
     "outstanding": [
+     "Excluded: resolved as duplicate of scarehouse-windsor. Retained in the inventory with its history; never shown publicly.",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
@@ -7196,23 +7123,21 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "READY_FOR_REVIEW",
-    "state": "READY_FOR_REVIEW",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
      "image": true,
      "rights": true,
-     "approval": false
+     "approval": true
     },
     "image_route": "linked",
     "rights_route": "linked-risk-acceptance",
-    "outstanding": [
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
+    "outstanding": [],
     "caveats": [
      "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
      "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
@@ -7244,7 +7169,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -7410,13 +7335,12 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
@@ -7449,7 +7373,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -7663,27 +7587,25 @@
    "verification": {
     "status": "partial",
     "official_site_checked": true,
-    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance to the collection not confirmed. Dates and hours not verified.",
+    "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
      "official": true,
-     "relevance": false,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -7709,7 +7631,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -7858,33 +7780,30 @@
    "summary": "Planetarium Halloween show",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://sloanlongway.org/halloween/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -7909,7 +7828,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -8030,33 +7949,30 @@
    "summary": "Halloween-themed laser show",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://www.sloanlongway.org/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -8081,7 +7997,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -8199,7 +8115,7 @@
    "categories": [
     "family-friendly"
    ],
-   "summary": "Gentle haunted barn; radius check",
+   "summary": "Gentle haunted barn.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -8223,15 +8139,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -8256,7 +8171,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -8395,15 +8310,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -8429,7 +8343,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -8575,36 +8489,33 @@
    "categories": [
     "family-friendly"
    ],
-   "summary": "Family Halloween trail",
+   "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://porthuronrec.com/halloweenstroll",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -8629,7 +8540,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -8747,7 +8658,7 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Independent residential haunt",
+   "summary": "A walk-through haunted house in Flint that focuses on psychological scares rather than blood, gore or demonic imagery.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -8768,15 +8679,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -8801,7 +8711,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -8919,7 +8829,7 @@
    "categories": [
     "haunted-attractions"
    ],
-   "summary": "Free home haunt with actors and animatronics",
+   "summary": "A home-run Halloween haunt in Windsor, Ontario.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -8942,15 +8852,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -8975,7 +8884,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -9093,7 +9002,7 @@
    "categories": [
     "strange-unusual"
    ],
-   "summary": "Community Halloween display discovery",
+   "summary": "A community-run interactive map of decorated Halloween homes and yard displays across Windsor-Essex, part of the W.E. Have Fun Hunt the Haunts.",
    "summary_source": "inventory_note",
    "website": null,
    "official_site": null,
@@ -9121,6 +9030,7 @@
     "image_route": null,
     "rights_route": null,
     "outstanding": [
+     "Excluded: resolved as duplicate of halloween-hunt-the-haunts. Retained in the inventory with its history; never shown publicly.",
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
      "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
@@ -9290,15 +9200,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -9323,7 +9232,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -9462,15 +9371,14 @@
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
      "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
      "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -9494,7 +9402,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -9600,38 +9508,35 @@
    "categories": [
     "ghosts-history"
    ],
-   "summary": "Haunted-history walking tours",
+   "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://www.windsorjaneswalk.ca/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -9655,7 +9560,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {
@@ -9764,35 +9669,32 @@
    "summary": "Historical ghost walk",
    "summary_source": "inventory_note",
    "website": null,
-   "official_site": null,
+   "official_site": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
    "dates_hours": null,
    "verification": {
-    "status": "unverified",
-    "official_site_checked": false,
-    "detail": "Inventory candidate only; official site not reachable during research.",
+    "status": "partial",
+    "official_site_checked": true,
+    "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": [
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
+    "declared_status": "CONTENT_VERIFIED",
+    "state": "CONTENT_VERIFIED",
     "gate": {
-     "official": false,
-     "relevance": false,
+     "official": true,
+     "relevance": true,
      "identity": true,
      "image": false,
      "rights": false,
-     "approval": false
+     "approval": true
     },
     "image_route": null,
     "rights_route": null,
     "outstanding": [
-     "Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).",
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
     ],
     "caveats": [],
     "legacy": null
@@ -9816,7 +9718,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "image_options": [
     {

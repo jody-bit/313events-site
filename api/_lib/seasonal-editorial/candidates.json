@@ -1000,9 +1000,9 @@
    "name": "Erebus Haunted Attraction",
    "location": "Pontiac, MI",
    "inventory_note": "Four-story haunted house",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": "erebus",
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "image_manifest": {
     "destination_id": "erebus",
@@ -1024,7 +1024,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1040,9 +1040,9 @@
    "name": "Eloise Asylum",
    "location": "Westland, MI",
    "inventory_note": "Immersive asylum horror",
-   "status": "HOLD_UNVERIFIED",
+   "status": "PUBLISHED",
    "published_id": "eloise-asylum",
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
     "313p-73cbabcb",
@@ -1077,7 +1077,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo_with_flags",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1093,9 +1093,9 @@
    "name": "Hush Haunted Attraction",
    "location": "Westland, MI",
    "inventory_note": "Multiple haunted houses",
-   "status": "HOLD_UNVERIFIED",
+   "status": "PUBLISHED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval.",
+   "reason": "Gate state PUBLISHED. All gate items recorded.",
    "flags": [],
    "image_manifest": {
     "destination_id": "hush-haunted-attraction",
@@ -1117,7 +1117,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1133,9 +1133,9 @@
    "name": "Azra Chamber of Horrors",
    "location": "Madison Heights, MI",
    "inventory_note": "Multilevel haunted maze",
-   "status": "HOLD_UNVERIFIED",
+   "status": "PUBLISHED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval.",
+   "reason": "Gate state PUBLISHED. All gate items recorded.",
    "flags": [],
    "image_manifest": {
     "destination_id": "azra-chamber-of-horrors",
@@ -1157,7 +1157,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1175,7 +1175,7 @@
    "inventory_note": "Haunted manor, forest and asylum",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance.",
    "flags": [],
    "image_manifest": {
     "destination_id": "rotten-manor",
@@ -1197,7 +1197,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1215,7 +1215,7 @@
    "inventory_note": "Haunted thrill park",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "wiards-night-terrors",
@@ -1237,7 +1237,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1255,7 +1255,7 @@
    "inventory_note": "Story-driven haunted house",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "slay-nights",
@@ -1277,7 +1277,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1293,9 +1293,9 @@
    "name": "Scarefest Scream Park",
    "location": "Lenox Township, MI",
    "inventory_note": "Haunted hayride, maze and forest",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "scarefest-scream-park",
@@ -1317,7 +1317,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1333,9 +1333,9 @@
    "name": "Blake's Haunted Attractions",
    "location": "Armada, MI",
    "inventory_note": "Haunted barn and hayride",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "blakes-haunted-attractions",
@@ -1357,7 +1357,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1375,7 +1375,7 @@
    "inventory_note": "Haunted asylum experience",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "the-scream-machine",
@@ -1396,7 +1396,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1412,9 +1412,9 @@
    "name": "Deranged Haunt",
    "location": "Romulus, MI",
    "inventory_note": "Haunted woods",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "deranged-haunt",
@@ -1436,7 +1436,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1452,9 +1452,9 @@
    "name": "Slaughterhouse Adventure",
    "location": "Fowlerville, MI",
    "inventory_note": "Haunted house and corn maze",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "slaughterhouse-adventure",
@@ -1475,7 +1475,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1491,9 +1491,9 @@
    "name": "Full Moon Manor at Bonadeo Farms",
    "location": "Highland, MI",
    "inventory_note": "Haunted farm",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "full-moon-manor-at-bonadeo-farms",
@@ -1514,7 +1514,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1532,7 +1532,7 @@
    "inventory_note": "Extreme interactive haunt; operating status needs verification",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
    "flags": [
     "operating status/2026 occurrence flagged in inventory"
    ],
@@ -1573,7 +1573,7 @@
    "inventory_note": "Haunted field attraction",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "nightmare-fields-at-the-pumpkin-factory",
@@ -1594,7 +1594,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1612,7 +1612,7 @@
    "inventory_note": "Indoor haunted attractions and immersive horror",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -1636,7 +1636,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions",
@@ -1652,9 +1652,9 @@
    "name": "The Howling Haunted Trail & Party",
    "location": "Fenton, MI",
    "inventory_note": "Haunted woodland trail",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "the-howling-haunted-trail-and-party",
@@ -1675,7 +1675,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1692,7 +1692,7 @@
    "inventory_note": "Outdoor haunted forest",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "terrorfied-forest",
@@ -1713,7 +1713,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1730,7 +1730,7 @@
    "inventory_note": "Haunted hayride, corn maze and house",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "past-tense-after-dark",
@@ -1751,7 +1751,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1766,9 +1766,9 @@
    "name": "Spooky Trails",
    "location": "Swartz Creek, MI",
    "inventory_note": "Haunted maze, cornfield and hayride",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "spooky-trails",
@@ -1789,7 +1789,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1806,7 +1806,7 @@
    "inventory_note": "Haunted hayride and woods",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -1829,7 +1829,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1844,9 +1844,9 @@
    "name": "Field of Fear",
    "location": "Monclova, OH",
    "inventory_note": "Haunted cornfield attractions",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -1870,7 +1870,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1887,7 +1887,7 @@
    "inventory_note": "Rustic haunted sawmill and maze; radius check",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "radius check needed"
    ],
@@ -1910,7 +1910,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1925,9 +1925,9 @@
    "name": "Dearborn Haunted Trail",
    "location": "Dearborn, MI",
    "inventory_note": "Haunted woodland trail",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "dearborn-haunted-trail",
@@ -1949,7 +1949,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1964,9 +1964,9 @@
    "name": "Sanilac Museum's Haunted Village",
    "location": "Port Sanilac, MI",
    "inventory_note": "Haunted historic village; radius check",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "radius check needed"
    ],
@@ -1989,7 +1989,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -2004,9 +2004,9 @@
    "name": "Distracted Haunted House",
    "location": "Bowling Green, OH",
    "inventory_note": "Indoor haunted house; radius check",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -2030,7 +2030,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -2047,7 +2047,7 @@
    "inventory_note": "Industrial haunted attraction; radius check",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -2071,7 +2071,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -2088,7 +2088,7 @@
    "inventory_note": "Funeral history and paranormal tours",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2110,7 +2110,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"
@@ -2125,9 +2125,9 @@
    "name": "Wildwood Manor House",
    "location": "Toledo, OH",
    "inventory_note": "Seasonal eerie manor tours",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2149,7 +2149,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"
@@ -2164,9 +2164,9 @@
    "name": "Fort Meigs Garrison Ghost Walk",
    "location": "Perrysburg, OH",
    "inventory_note": "Historical ghost walk",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2189,7 +2189,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"
@@ -2206,7 +2206,7 @@
    "inventory_note": "Historical ghost tours",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2228,7 +2228,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"
@@ -2243,9 +2243,9 @@
    "name": "Glenlore Trails: CarnEvil 2",
    "location": "Commerce Township, MI",
    "inventory_note": "Immersive illuminated forest",
-   "status": "HOLD_UNVERIFIED",
+   "status": "PUBLISHED",
    "published_id": "glenlore-carnevil-2",
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
     "313p-cc8f40e5",
@@ -2276,11 +2276,11 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "strange-unusual",
-    "haunted-attractions"
+    "family-friendly"
    ],
    "destination_id": "glenlore-carnevil-2",
    "entry_id": "glenlore-carnevil-2"
@@ -2292,9 +2292,9 @@
    "name": "Halloween Stroll at Canterbury Village",
    "location": "Lake Orion, MI",
    "inventory_note": "Halloween light displays and characters",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "halloween-stroll-at-canterbury-village",
@@ -2316,7 +2316,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2331,9 +2331,9 @@
    "name": "HallowGlow at TreeRunner",
    "location": "West Bloomfield, MI",
    "inventory_note": "Halloween-themed aerial adventure",
-   "status": "HOLD_UNVERIFIED",
+   "status": "PUBLISHED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 5 explicit approval.",
+   "reason": "Gate state PUBLISHED. All gate items recorded.",
    "flags": [],
    "image_manifest": {
     "destination_id": "hallowglow-at-treerunner",
@@ -2355,10 +2355,11 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
-    "strange-unusual"
+    "strange-unusual",
+    "family-friendly"
    ],
    "destination_id": "hallowglow-at-treerunner",
    "entry_id": "hallowglow-at-treerunner"
@@ -2370,9 +2371,9 @@
    "name": "Hallowe'en in Greenfield Village",
    "location": "Dearborn, MI",
    "inventory_note": "Historic immersive Halloween experience",
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "published_id": "halloween-greenfield-village",
-   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
     "313p-522299e9-f337"
@@ -2398,7 +2399,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo_with_flags",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly",
@@ -2416,7 +2417,7 @@
    "inventory_note": "Adults-only immersive masquerade; 2026 occurrence must be verified",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "operating status/2026 occurrence flagged in inventory",
     "adults-only: age guidance to confirm"
@@ -2446,7 +2447,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "strange-unusual"
@@ -2463,7 +2464,7 @@
    "inventory_note": "Theatrical horror dining",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 2 relevance; 3 image; 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2502,9 +2503,9 @@
    "name": "Zoo Boo at Detroit Zoo",
    "location": "Royal Oak, MI",
    "inventory_note": "Trick-or-treating and animal encounters",
-   "status": "READY_FOR_REVIEW",
+   "status": "PUBLISHED",
    "published_id": "zoo-boo",
-   "reason": "Gate state READY_FOR_REVIEW. Outstanding: 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "image_manifest": {
     "destination_id": "zoo-boo",
@@ -2526,7 +2527,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2543,7 +2544,7 @@
    "inventory_note": "Historic village Halloween",
    "status": "CONTENT_VERIFIED",
    "published_id": "crossroads-ghosts-goodies",
-   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "image_manifest": {
     "destination_id": "crossroads-ghosts-goodies",
@@ -2567,7 +2568,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2582,9 +2583,9 @@
    "name": "Brick-or-Treat at LEGOLAND Discovery Center",
    "location": "Auburn Hills, MI",
    "inventory_note": "LEGO-themed Halloween activities",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "brick-or-treat-at-legoland-discovery-center",
@@ -2606,7 +2607,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2621,9 +2622,9 @@
    "name": "Ooky Spooky Light Show",
    "location": "Flint, MI",
    "inventory_note": "Planetarium Halloween show",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "ooky-spooky-light-show",
@@ -2644,7 +2645,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2659,9 +2660,9 @@
    "name": "Laser Halloween",
    "location": "Flint, MI",
    "inventory_note": "Halloween-themed laser show",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "laser-halloween",
@@ -2682,7 +2683,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2699,7 +2700,7 @@
    "inventory_note": "Gentle haunted barn; radius check",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "radius check needed",
     "outside Michigan: Orbit eligibility and coordinates to confirm"
@@ -2723,7 +2724,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2740,7 +2741,7 @@
    "inventory_note": "Illuminated woodland walk",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "jack-o-lanterns-among-the-trees",
@@ -2762,7 +2763,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2777,9 +2778,9 @@
    "name": "Halloween Stroll",
    "location": "Port Huron, MI",
    "inventory_note": "Family Halloween trail",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "halloween-stroll",
@@ -2800,7 +2801,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "family-friendly"
@@ -2817,7 +2818,7 @@
    "inventory_note": "Independent residential haunt",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "agony-on-alcott",
@@ -2838,7 +2839,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -2855,7 +2856,7 @@
    "inventory_note": "Free home haunt with actors and animatronics",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2878,7 +2879,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -2895,7 +2896,7 @@
    "inventory_note": "Community Halloween display discovery",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2935,7 +2936,7 @@
    "inventory_note": "Regional haunt-discovery experience",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2958,7 +2959,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "strange-unusual"
@@ -2975,7 +2976,7 @@
    "inventory_note": "Guided ghost walks",
    "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image.",
    "flags": [],
    "image_manifest": {
     "destination_id": "motor-city-ghosts",
@@ -2995,7 +2996,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"
@@ -3010,9 +3011,9 @@
    "name": "Spooky Jane's Walk",
    "location": "Windsor–Essex, ON",
    "inventory_note": "Haunted-history walking tours",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -3034,7 +3035,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"
@@ -3049,9 +3050,9 @@
    "name": "Sandwich Town Ghost Tour",
    "location": "Windsor, ON",
    "inventory_note": "Historical ghost walk",
-   "status": "HOLD_UNVERIFIED",
+   "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -3073,7 +3074,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
+    "editorial_approval_status": "owner_approved"
    },
    "categories": [
     "ghosts-history"

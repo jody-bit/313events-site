@@ -24,22 +24,26 @@ run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); ru
 assert.deepStrictEqual(require(path.join(root, "scripts/build-seasonal.js")).validateAssets(), []);
 
 // ---- the six existing public entries are preserved (B1)
-const SIX = { "erebus": "HOLD_UNVERIFIED", "eloise-asylum": "HOLD_UNVERIFIED", "halloween-greenfield-village": "READY_FOR_REVIEW", "zoo-boo": "READY_FOR_REVIEW", "glenlore-carnevil-2": "HOLD_UNVERIFIED", "crossroads-ghosts-goodies": "CONTENT_VERIFIED" };
+// After the owner's Halloween approval (2026-10-11) and the verified evidence recorded on 2026-10-12. Erebus and Crossroads are content-verified but
+// still have no authorized image route, so they are not public.
+const SIX = { "erebus": "CONTENT_VERIFIED", "eloise-asylum": "PUBLISHED", "halloween-greenfield-village": "PUBLISHED", "zoo-boo": "PUBLISHED", "glenlore-carnevil-2": "PUBLISHED", "crossroads-ghosts-goodies": "CONTENT_VERIFIED" };
 for (const [id, state] of Object.entries(SIX)) {
   const e = byId[id];
   assert.ok(e, id + " preserved as a record");
   assert.strictEqual(e.migration.legacyStatus, "published");
   assert.strictEqual(e.migration.legacyCommit, "7e094df");
   assert.strictEqual(e.status, state, id + " status is the derived one (not hand-set, not grandfathered)");
-  assert.ok(!e.approval, id + ": no approval is invented");
-  assert.ok(!DATA.isPublic(e), id + " is not public without an explicit approval");
-  assert.ok(e.evidence.length >= 1, id + " keeps its evidence");
+  assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, id + ": carries exactly the owner's Halloween approval");
+  assert.strictEqual(DATA.isPublic(e), state === "PUBLISHED", id + " is public only when every gate item passes");
+  assert.ok(e.evidence.length >= 2 && e.evidence[0].level === "inventory+search", id + " keeps its original evidence");
   const rv = ED.review(e);
-  assert.ok(rv.outstanding.some((o) => /^Gate 5/.test(o)), id + " lists the missing approval");
+  assert.ok(!rv.outstanding.some((o) => /^Gate 5/.test(o)), id + ": the approval is recorded");
+  assert.strictEqual(rv.outstanding.length === 0, state === "PUBLISHED", id + ": nothing outstanding only when published");
 }
-// nothing is falsely marked fully verified: the three "published" with only inventory + web coverage are on hold
+// the three that had only inventory + web coverage now carry an official-page read (recorded 2026-10-12); nothing is grandfathered
 for (const id of ["erebus", "eloise-asylum", "glenlore-carnevil-2"]) {
-  assert.strictEqual(DATA.gate(byId[id]).official, false); assert.strictEqual(DATA.gate(byId[id]).relevance, false);
+  assert.strictEqual(DATA.gate(byId[id]).official, true); assert.strictEqual(DATA.gate(byId[id]).relevance, true);
+  assert.ok(byId[id].evidence.some((x) => x.level === "official" && x.checkedAt === "2026-10-12"), id + ": official read recorded");
 }
 // all 14 previously published entries (4 fall + 6 halloween + 4 fall-color) carry the migration record
 const migrated = [].concat(...DATA.ORDER.map((s) => entries[s].filter((e) => e.migration).map((e) => s + "/" + e.id)));
@@ -47,28 +51,33 @@ assert.strictEqual(migrated.length, 14);
 const review = fs.readFileSync(path.join(ED.DIR, "MIGRATION_REVIEW.md"), "utf8");
 for (const k of migrated) assert.ok(review.includes("`" + k.split("/")[1] + "`"), k + " is in the migration review");
 {
-  // Not grandfathered: a migrated record is public only through the explicit authorized approval of 2026-10-12.
+  // Not grandfathered: a migrated record is public only through an explicit owner approval (Fall: 2026-10-12; Halloween: 2026-10-11) AND a passing gate.
   const nPublic = [].concat(...DATA.ORDER.map((s) => entries[s].filter((e) => e.migration && DATA.isPublic(e)))).length;
   assert.ok(review.includes("public destinations after migration = " + nPublic + " of 14") && /not grandfathered/i.test(review), "the review states the current public count of the 14");
   for (const s of DATA.ORDER) for (const e of entries[s].filter((x) => x.migration && DATA.isPublic(x))) AUTHZ.checkApproval(assert, s, e, AUTHZ.authorized(ED));
 }
 for (const id of Object.keys(SIX)) assert.ok(review.includes(SIX[id]), "the review states the current state of " + id);
-// Entries are not auto-published beyond the six: the other 46 Halloween records are new and carry no legacy status
+// The other 46 Halloween records are new and carry no legacy status. Only three of them pass every gate item (verified 2026 operation plus a recorded
+// image route): Hush, Azra and HallowGlow. The rest are held, and the three duplicate/closed records are excluded.
 assert.strictEqual(entries.halloween.filter((e) => !e.migration).length, 46);
-assert.ok(entries.halloween.filter((e) => !e.migration).every((e) => !DATA.isPublic(e)));
+assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPublic(e)).map((e) => e.id).sort(), ["azra-chamber-of-horrors", "hallowglow-at-treerunner", "hush-haunted-attraction"]);
 
 // ---- the public projection (B1/B6)
 {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(Object.keys(pe), DATA.ORDER);
   for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok((() => { const priv = ED.entries()[slug].find((x) => x.id === e.id); return DATA.isPublic(priv) && JSON.stringify(e) === JSON.stringify(ED.publicEntry(priv)); })(), "published-entries.js holds an entry that is not PUBLISHED, or not in public form: " + e.id);
-  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 76, "only the 76 authorized entries are public");
-  assert.deepStrictEqual([].concat(...DATA.ORDER.map((s) => pe[s].map((e) => s + "/" + e.id))).sort(), [...AUTHZ.authorized(ED)].sort(), "the public entries are exactly the authorized batch");
+  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 83, "only the 76 authorized Fall records and the seven gate-passing Halloween records are public");
+  assert.deepStrictEqual([].concat(...DATA.ORDER.map((s) => pe[s].map((e) => s + "/" + e.id))).sort(), [...AUTHZ.authorized(ED)].sort(), "the public entries are exactly the authorized set");
   assert.deepStrictEqual(ED.publishedProjection(), pe, "published-entries.js equals the projection of the private data");
   // a hypothetical approval moves an entry into the projection, and ONLY that entry (checked on a copy; nothing is written)
   const e = JSON.parse(JSON.stringify(byId["halloween-greenfield-village"]));
-  assert.ok(!DATA.isPublic(e)); e.approval = { by: "Test Approver", at: "2026-10-12" }; e.status = DATA.readiness(e).state;
+  assert.ok(DATA.isPublic(e)); delete e.approval; e.status = DATA.readiness(e).state;
+  assert.strictEqual(e.status, "READY_FOR_REVIEW"); assert.ok(!DATA.isPublic(e), "without the approval Greenfield is not public");
+  e.approval = { by: "Test Approver", at: "2026-10-12" }; e.status = DATA.readiness(e).state;
   assert.strictEqual(e.status, "PUBLISHED"); assert.ok(DATA.isPublic(e), "Greenfield needs exactly one thing: the approval");
+  // the exclusion guard: a disposition forces a record out of every public state, whatever else it carries
+  e.disposition = { type: "duplicate", of: "x" }; assert.strictEqual(DATA.readiness(e).state, "HOLD_UNVERIFIED"); assert.ok(!DATA.isPublic(e), "an excluded record is never public");
 }
 
 // ---- all 52 Halloween destinations (inventory) are present everywhere they must be
@@ -83,8 +92,10 @@ assert.ok(entries.halloween.filter((e) => !e.migration).every((e) => !DATA.isPub
   assert.deepStrictEqual(reg.map((c) => c.entry_id).sort(), ids.slice().sort());
   for (const f of frozen.destinations && ids) {
     const d = frozen.destinations[f], r = qa.records.find((x) => x.id === f);
-    assert.deepStrictEqual(r.categories, d.categories, f + " keeps the branch's conservative categories");
-    assert.strictEqual(r.summary, d.summary, f + " keeps the branch's summary");
+    // The branch's conservative categories and summary stand, except where the owner-approved verified correction (halloween-release-1.json) replaces them.
+    const corr = ED.read("halloween-release-1.json").records[f];
+    assert.deepStrictEqual(r.categories, corr.categories || d.categories, f + " keeps the branch's conservative categories unless corrected");
+    assert.strictEqual(r.summary, corr.summary || d.summary, f + " keeps the branch's summary unless corrected");
   }
 }
 

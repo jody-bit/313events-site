@@ -98,7 +98,7 @@ function validateAssets(all) {
         if (u && /^\//.test(u) && !exists(u)) problems.push(where + ": image file missing " + u);
       }
       const a = im.acquired;
-      if (!a) { if (e.status === "PUBLISHED") problems.push(where + ": PUBLISHED without image.acquired and not a linked image"); continue; }
+      if (!a) { if (e.status === "PUBLISHED" && !(im.remote && im.remote.src)) problems.push(where + ": PUBLISHED without image.acquired and not a linked image"); continue; }
       if (!exists(a.file)) { problems.push(where + ": image file missing " + a.file); continue; }
       const f = ED.fileFacts(a.file);
       if (f.bytes !== a.bytes) problems.push(where + ": size " + f.bytes + " != recorded " + a.bytes);

@@ -84,7 +84,7 @@ const rank = (o) => o.warnings.length * 10 + (o.warnings.some((w) => /person|ver
 {
   const all = ED.entries(), byKey = {};
   Object.keys(all).forEach((k) => all[k].forEach((e) => { byKey[k + "/" + e.id] = e; }));
-  const short = (rv) => rv.outstanding.map((o) => /^Gate (\d)/.exec(o)[1] + " " + { 1: "official verification", 2: "relevance", 3: "image", 4: "image rights", 5: "explicit approval" }[/^Gate (\d)/.exec(o)[1].slice(0, 1)]).join("; ");
+  const short = (rv) => rv.outstanding.map((o) => /^Excluded/.test(o) ? "excluded (duplicate or closed)" : /^Gate (\d)/.exec(o)[1] + " " + { 1: "official verification", 2: "relevance", 3: "image", 4: "image rights", 5: "explicit approval" }[/^Gate (\d)/.exec(o)[1].slice(0, 1)]).join("; ");
   for (const c of reg.candidates) {
     const e = byKey[c.collection + "/" + (c.entry_key || c.published_id || slug(c.name))];
     if (!e) { c.status = "HOLD_UNVERIFIED"; continue; } // no private entry yet: the ledger vocabulary is the five states
@@ -137,7 +137,7 @@ for (const c of rows) {
     fallback_image: fallback.src, secondary_fallback_image: (gens.find((g) => g.src !== fallback.src && g.src !== primaryOpt.src) || gens[1]).src,
     alternative_images: alt,
     image_status: primaryOpt.illustrative ? "generated_default" : primaryOpt.type.startsWith("linked") ? "linked_unverified" : (primaryOpt.warnings.length ? "owner_photo_with_flags" : "owner_photo"),
-    editorial_approval_status: "not_approved"
+    editorial_approval_status: e.approval ? "owner_approved" : "not_approved"
   };
   c.image_manifest = manifest;
   c.categories = categories; c.destination_id = id;

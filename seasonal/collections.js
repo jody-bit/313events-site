@@ -188,12 +188,15 @@
     var rights = illus || licensed || owner || remote;
     var imageStarted = !!rm || !!op || !!il || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
     var approval = !!(ap && has(ap.by) && DATE.test(ap.at || ""));
+    // A record the editor has resolved as a duplicate of another record, or as closed, is retained in the inventory with its
+    // history but is never shown: `disposition {type}` forces it out of every public state, whatever else it carries.
+    var excluded = !!(e.disposition && has(e.disposition.type));
     return { official: official, relevance: relevance, identity: identity, acquired: acquired, rights: rights,
-      imageStarted: imageStarted, approval: approval, imageRoute: imageRoute, rightsRoute: rightsRoute };
+      imageStarted: imageStarted, approval: approval, imageRoute: imageRoute, rightsRoute: rightsRoute, excluded: excluded };
   }
   function readiness(e) {
     var g = gate(e), state;
-    if (!(g.official && g.relevance && g.identity)) state = "HOLD_UNVERIFIED";
+    if (g.excluded || !(g.official && g.relevance && g.identity)) state = "HOLD_UNVERIFIED";
     else if (!(g.acquired && g.rights)) state = g.imageStarted ? "IMAGE_PENDING" : "CONTENT_VERIFIED";
     else if (!g.approval) state = "READY_FOR_REVIEW";
     else state = "PUBLISHED";

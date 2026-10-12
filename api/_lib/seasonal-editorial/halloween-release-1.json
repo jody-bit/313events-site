@@ -1,0 +1,528 @@
+{
+ "batch": "halloween-release-1",
+ "records": {
+  "eloise-asylum": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://eloiseasylum.com/",
+   "evidenceNote": "Official site (read 2026-10-12): haunt season opens Sept 25; Rockin' Haunt Night Concert Fri Oct 30, 2026 (doors 6 PM); tickets on sale through the site's ticketing page. WXYZ 2026 (secondary): sixth season, opens Sept 25.",
+   "datesNote": "Opens Sept 25, 2026 (official). Closing date is not stated on the official page. Weekly hours listed: Fri 7-11 PM, Sat 7 PM-12 AM, Sun 7-10:30 PM. WXYZ roundup (secondary) says weekends through Nov 1.",
+   "inventoryOrder": 2,
+   "website": "https://eloiseasylum.com/"
+  },
+  "halloween-greenfield-village": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+   "evidenceNote": "Official event page (re-read 2026-10-12) lists 2026 dates and a 2026 sold-out notice.",
+   "datesNote": "Oct 1-4, 8-11, 15-18 and 22-25, 2026, 6 to 9:30 PM (official).",
+   "inventoryOrder": 3,
+   "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates."
+  },
+  "zoo-boo": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://detroitzoo.org/events/zoo-boo/",
+   "evidenceNote": "Official page (re-read 2026-10-12) lists 2026 dates and ticketing.",
+   "datesNote": "Oct 3-4, 9-11, 16-18 and 23-25, 2026; event 3 to 8:30 PM (full-zoo access until 6 PM).",
+   "inventoryOrder": 4,
+   "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo."
+  },
+  "glenlore-carnevil-2": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://glenloretrails.com",
+   "evidenceNote": "Official site (read 2026-10-12) states the 2026 season runs through Nov 1, 2026 and lists dated 2026 special nights.",
+   "datesNote": "Select nights from Sept 18 through Nov 1, 2026; trail operates Thursday through Sunday. Special nights: Jay's Junior Night Oct 9; 21+ Adult Night Oct 16; Trick or Treat Oct 25; Halloween Night Oct 31.",
+   "inventoryOrder": 5,
+   "summary": "Illuminated night walk with a carnival theme in Commerce Township.",
+   "categories": [
+    "strange-unusual",
+    "family-friendly"
+   ]
+  },
+  "hush-haunted-attraction": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://hushhauntedattractions.com/",
+   "evidenceNote": "Official home page shows a 2026 season running September 25 through November 7, 2026, with online ticketing for the current season. Read 2026-10-12 at https://hushhauntedattractions.com/",
+   "datesNote": "September 25 through November 7, 2026 (page also lists a kids' daytime event on October 25, 2-5 PM with no actors, and Glow Stick Fright Nights on November 6 and 7). Evening sessions typically start 6 or 7 PM and end 10 PM or midnight per the page; exact per-night schedule not captured.",
+   "inventoryOrder": 7
+  },
+  "azra-chamber-of-horrors": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://azrahaunt.com/",
+   "evidenceNote": "Official page shows an October 2026 ticket calendar, a one-night VIP offer for Sunday Oct 11, a Boo Bash on Oct 25 and Christmas Chaos on Dec 11 and 12, with tickets sold via azrahauntedhouse.fearticket.com. Read 2026-10-12 at https://azrahaunt.com/",
+   "datesNote": "No full season range or regular hours stated in page text (calendar is an image). Stated dates: Sunday October 11 (VIP 50% off, one night only - already past as of 2026-10-12); October 25, 12pm-4pm (Boo Bash, family-friendly); December 11 and 12 (Christmas Chaos).",
+   "inventoryOrder": 8,
+   "summary": "Haunted house attraction in Madison Heights with intense scares, plus occasional family and holiday events."
+  },
+  "hallowglow-at-treerunner": {
+   "tier": "publish",
+   "section": "A",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://treerunnerparks.com/westbloomfield/fall-festivities/",
+   "evidenceNote": "Official 'HallowGlow 2026' section lists October 2026 weekend dates and online ticket links (read 2026-10-12, https://treerunnerparks.com/westbloomfield/fall-festivities/). The URL currently in the record (glow-nights) does not mention HallowGlow.",
+   "datesNote": "Every weekend in October 2026: Oct 2-4, 9-11, 16-18, 23-25 (Friday-Sunday) and Oct 30-31 (Friday and Saturday).",
+   "inventoryOrder": 37,
+   "summary": "After-dark treetop climbing and ziplining among glowing lights with a festive Halloween-season atmosphere at TreeRunner West Bloomfield.",
+   "website": "https://treerunnerparks.com/westbloomfield/fall-festivities/",
+   "categories": [
+    "strange-unusual",
+    "family-friendly"
+   ]
+  },
+  "erebus": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED (indirect: official page, calendar is an image)",
+   "officialUrl": "https://hauntedpontiac.com",
+   "evidenceNote": "Official site (read 2026-10-12) carries a 'Calendar 2026' image, a 2026 copyright and live online timed-entry ticketing. WXYZ 2026 roundup (secondary): opens Fri Sept 18, daily Oct 1 to Nov 7. The erebusattraction.com pages are blocked to automated reading, so hauntedpontiac.com is the page actually read.",
+   "datesNote": "Not readable from the official page text. Secondary only (WXYZ): opens Sept 18; daily Oct 1 to Nov 7 with some listed dates skipped. Do not publish dates until a person reads the official calendar.",
+   "inventoryOrder": 1,
+   "website": "https://hauntedpontiac.com"
+  },
+  "crossroads-ghosts-goodies": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+   "evidenceNote": "Official page (re-read 2026-10-12) lists October 2026 dates, hours and ticketing.",
+   "datesNote": "Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026. Weekdays 5-9 PM; weekends noon-9 PM; ticket sales end 8:30 PM.",
+   "inventoryOrder": 6,
+   "city": "Flint"
+  },
+  "wiards-night-terrors": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://hauntedhousemichigan.com/",
+   "evidenceNote": "Official Night Terrors site has a 'Dates of Operation' page referring to September and October 2026 calendars and links 2026 ticketing (wiardsorchardsnightterrors2026.fearticket.com). Read 2026-10-12 at https://hauntedhousemichigan.com/ and https://hauntedhousemichigan.com/visiting/dates-of-operation",
+   "datesNote": "None verified",
+   "inventoryOrder": 10,
+   "website": "https://hauntedhousemichigan.com/"
+  },
+  "scarefest-scream-park": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://scarefestscreampark.com/",
+   "evidenceNote": "Official site says 'Celebrating 20 years', lists fall 2026 events and an October 2026 schedule (open every weekend; Oct 3 20th Anniversary Celebration). Read 2026-10-12 at https://scarefestscreampark.com/ and https://scarefestscreampark.com/hours-events/",
+   "datesNote": "October 2026: 'Open every weekend'; Fri and Sat 7:00 PM-12:00 AM, Sunday 7:00 PM-10:00 PM. Listed events: Sat Oct 3 (20th Anniversary Celebration), Fri Oct 9 and Sat Oct 10 (Aqua Monkey), Sat Oct 17 (The No Ways), Fri Oct 23 and Sat Oct 24 (The MIXX Band). Also Sept 18-19 (Ghouls Night Out) and Sept 25-26 (BBQ, Bourbon & Boos), both past.",
+   "inventoryOrder": 12,
+   "website": "https://scarefestscreampark.com/"
+  },
+  "blakes-haunted-attractions": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://blakefarms.com/haunted-attractions/",
+   "evidenceNote": "Official page is headed with 2026 season dates and links 2026 ticketing at blakefarms.ticketspice.com/2026-haunted-attractions. Read 2026-10-12 at https://blakefarms.com/haunted-attractions/",
+   "datesNote": "Weekends from September 12 through November 1, 2026. Friday and Saturday 6pm-11pm; Sunday (from October 4) 6pm-10pm; open Saturday October 31. All attractions start after sunset.",
+   "inventoryOrder": 13
+  },
+  "deranged-haunt": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://derangedhauntedattraction.com/",
+   "evidenceNote": "Official home page names 2026 events ('18 and Up Adults Only Night, November 1st, 2026'; a Wednesday Oct 21 scare-free kids event) and has a 2026 copyright. Read 2026-10-12 at https://derangedhauntedattraction.com/",
+   "datesNote": "Partial only: Wednesday October 21 (scare-free kids event); November 1st, 2026 (18+ Adults Only Night - the page gives no weekday; Nov 1 2026 falls on a Sunday); select Sundays for Theme Nights (no dates given). Regular season dates and hours are on the Hours & Calendar page, which could not be fetched.",
+   "inventoryOrder": 15
+  },
+  "slaughterhouse-adventure": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://slaughterhouseadventure.net/",
+   "evidenceNote": "Official home page shows 'Opening night is Friday, October 2nd', an October 2026 calendar and 2026 copyright (Season 25). Read 2026-10-12 at https://slaughterhouseadventure.net/",
+   "datesNote": "Opening night Friday, October 2 (2026). Page has an October 2026 calendar with open dates in red, not readable as text; outdoor haunts open at dusk. A WXYZ roundup (secondary) says open every weekend in October.",
+   "inventoryOrder": 16,
+   "website": "https://slaughterhouseadventure.net/"
+  },
+  "full-moon-manor-at-bonadeo-farms": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://fullmoonhauntedhouse.com/",
+   "evidenceNote": "Farm site states 'Opening Day Friday September 25, 2026' for the haunted house and hayride; the haunt's own site is dated 2026 and says open Fri and Sat dusk to 11PM from the last weekend of September through October. Read 2026-10-12 at https://bonadeofarms.com/ and https://fullmoonhauntedhouse.com/",
+   "datesNote": "Opening day Friday, September 25, 2026 (farm site). Haunted house and hayride Friday and Saturday evenings, dusk until 11 PM, the last weekend in September and every weekend in October (haunt site). Exact per-night calendar not stated.",
+   "inventoryOrder": 17,
+   "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
+   "name": "Full Moon Haunted House at Bonadeo Farms",
+   "website": "https://fullmoonhauntedhouse.com/"
+  },
+  "nightmare-fields-at-the-pumpkin-factory": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://www.thepumpkinfactory.org/",
+   "evidenceNote": "Official site references a \"Haunt Schedule 2026\" (image title), 50th-anniversary branding, and weekly haunt hours Fri-Sat 7-11 PM for the House and Hayride; the schedule image itself was not readable. https://www.thepumpkinfactory.org/ read 2026-10-12.",
+   "datesNote": "None verified",
+   "inventoryOrder": 19,
+   "summary": "Haunted hayride and haunted house at The Pumpkin Factory, a family pumpkin farm in Belleville."
+  },
+  "the-howling-haunted-trail-and-party": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.thehowlinghauntedtrail.com/",
+   "evidenceNote": "Official site lists three weekends of October dates, 7-11 PM, but does not print the year; the venue's 'The Howling Haunted Trail 2026' ticketing page (hauntpay) and Pure Michigan event listing both show the 2026 season. https://www.thehowlinghauntedtrail.com/ read 2026-10-12; https://app.hauntpay.com/events/the-howling-haunted-trail-2026 read 2026-10-12.",
+   "datesNote": "October 9 & 10, October 16 & 17, October 23 & 24, 7-11 PM each night (as listed on official site; year 2026 per ticketing page and Pure Michigan listing)",
+   "inventoryOrder": 21
+  },
+  "past-tense-after-dark": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": null,
+   "evidenceNote": "Organizer 'Past Tense Country Store' lists 'Past Tense After Dark Haunted Attractions - 2026' with Friday and Saturday nights from September 25 to October 31, 2026. https://www.eventbrite.com/e/past-tense-after-dark-haunted-attractions-2026-tickets-2000273139807 read 2026-10-12. The venue's own website could not be retrieved.",
+   "datesNote": "Friday and Saturday nights, September 25 to October 31, 2026, dusk to 12 a.m. (start time listed 7:00 PM on Sept 25)",
+   "inventoryOrder": 23
+  },
+  "spooky-trails": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.spookytrails.com/",
+   "evidenceNote": "Official home page states a 2026 season running October 2 to October 31, with haunts Fridays and Saturdays 7pm-11pm. https://www.spookytrails.com/ read 2026-10-12.",
+   "datesNote": "Season October 2 to October 31, 2026; haunts Fridays and Saturdays, 7pm to 11pm (pumpkin picking Sundays 12pm to 5pm)",
+   "inventoryOrder": 24,
+   "summary": "Farm haunt with a haunted hayride, a zombie-themed family hayride and a haunted cornfield walk."
+  },
+  "field-of-fear": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://fieldoffear.com/",
+   "evidenceNote": "Official page states the 2026 season opens September 12, 2026 and runs through October 31, 2026. https://fieldoffear.com/ read 2026-10-12.",
+   "datesNote": "September 12, 2026 through October 31, 2026; gates open 7:00 PM, haunts begin at dark; closing 11:00 PM Fridays and Saturdays, 10:00 PM Sundays",
+   "inventoryOrder": 26
+  },
+  "dearborn-haunted-trail": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18",
+   "evidenceNote": "City of Dearborn announcement states the trail returns to Ford Field Park Friday Oct. 16 through Sunday Oct. 18, 2026, opening at 7 p.m. https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18 read 2026-10-12.",
+   "datesNote": "Friday, Oct. 16 through Sunday, Oct. 18, 2026; opens at 7 p.m. each day. Also a free sensory-friendly trick-or-treat trail Friday Oct. 16, 5:30-6:30 p.m. (registration encouraged)",
+   "inventoryOrder": 28
+  },
+  "sanilac-museums-haunted-village": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://sanilaccountymuseum.org/calendar-of-events/",
+   "evidenceNote": "Museum's official calendar lists Haunted Village on Saturdays October 10 and 17, 7-9 p.m. (the page text does not print the year; the weekday/date pairing matches 2026 and the page lists 2026 events like a Nov 7 lecture). https://sanilaccountymuseum.org/calendar-of-events/ read 2026-10-12.",
+   "datesNote": "Saturdays, October 10 and 17, 7-9 p.m. (October 10 has already passed as of 2026-10-12; October 17 remains)",
+   "inventoryOrder": 29,
+   "summary": "Evening trick-or-treating and spooky trails (family-friendly and scarier) at the Sanilac County Historical Museum village in Port Sanilac."
+  },
+  "distracted-haunted-house": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://feardistracted.com/",
+   "evidenceNote": "Official home page describes the all-new 2026 'Ritual Horrors' experience (read 2026-10-12, https://feardistracted.com/). The show calendar on that page is an image only; the 2026 dates below come from the official ticketing page linked from the site (https://app.hauntpay.com/events/distracted-haunted-house-tickets-2021, read 2026-10-12), which lists 2026 dates despite the '2021' in its URL.",
+   "datesNote": "Per the ticketing page: open Sept 19 through Nov 7, 2026 on 9/19, 9/26, 10/2, 10/3, 10/9, 10/10, 10/11, 10/16, 10/17, 10/18, 10/23, 10/24, 10/25, 10/30, 10/31 and 11/7. Hours listed: 7-11:30 pm Fridays and Saturdays, 7-10:30 pm select Sundays.",
+   "inventoryOrder": 30,
+   "website": "https://feardistracted.com/",
+   "summary": "Indoor haunted house."
+  },
+  "haunted-hydro": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://www.thehauntedhydro.com/",
+   "evidenceNote": "Official home page says 'Tickets Now Available' for the 2026 season, describes the 2026 path and links to a 2026 calendar (read 2026-10-12, https://www.thehauntedhydro.com/). The 2026 calendar is an image, so exact dates could not be read.",
+   "datesNote": "None verified",
+   "inventoryOrder": 31,
+   "summary": "Haunted attraction in Fremont, Ohio; the 2026 route is a walk through the grounds and woods."
+  },
+  "wildwood-manor-house": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://metroparkstoledo.com/eeriemanor",
+   "evidenceNote": "Official Metroparks Toledo page carries a 2026 footer and 'Updated: 10/07/2026' listings for Eerie Manor Tours (read 2026-10-12, https://metroparkstoledo.com/eeriemanor).",
+   "datesNote": "Friday, October 23 through Saturday, October 31, 2 to 8 p.m. (self-guided tours). Lights Out! Flashlight Tour on select evenings 9 to 9:45 p.m.",
+   "inventoryOrder": 33,
+   "name": "Eerie Manor Tours at Wildwood Preserve"
+  },
+  "fort-meigs-garrison-ghost-walk": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://fortmeigs.org/ghostwalk/",
+   "evidenceNote": "Official Fort Meigs pages list Garrison Ghost Walk dates in 2026 with ticket sales starting September 9, 2026 (read 2026-10-12, https://fortmeigs.org/ghostwalk/ and https://fortmeigs.org/). Official shop has a listing for the Oct 16, 2026 7:45 pm walk (https://shop.fortmeigs.org/products/garrison-ghost-walk-friday-october-16-2026-7-45-pm, search result only).",
+   "datesNote": "October 16, 17, 23 and 24, 2026. Doors open 6:30 p.m.; tours leave every 15 minutes and last about 90 minutes.",
+   "inventoryOrder": 34
+  },
+  "haunted-waterville-tours": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://watervillehistory.org/haunted-waterville-tours",
+   "evidenceNote": "Official Waterville Historical Society page shows a '2026 Haunted Waterville Tours' graphic and 2026 booking policies, but no dates in readable text (read 2026-10-12, https://watervillehistory.org/haunted-waterville-tours). Dates and price below are from a third-party listing only.",
+   "datesNote": "None verified",
+   "inventoryOrder": 35,
+   "website": "https://watervillehistory.org/haunted-waterville-tours"
+  },
+  "halloween-stroll-at-canterbury-village": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.canterburyvillage.com/event/halloween-stroll/",
+   "evidenceNote": "Official event page lists 'Halloween Stroll 2026' and the 2026 season (read 2026-10-12, https://www.canterburyvillage.com/event/halloween-stroll/ and https://www.canterburyvillage.com/).",
+   "datesNote": "October 2 to October 30, 2026; scheduled nights Oct 2-4, 9-11, 16-18 and 23-25, plus a Halloween Stroll: Adult Night (18+) on October 30. Hours not on the event page; the ticketing page says 6 PM to 9 PM.",
+   "inventoryOrder": 36
+  },
+  "brick-or-treat-at-legoland-discovery-center": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/",
+   "evidenceNote": "Official event page lists 'Brick or Treat' for October 1 to October 31, 2026, open during attraction hours (read 2026-10-12, https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/ and https://www.legolanddiscoverycenter.com/michigan/).",
+   "datesNote": "October 1 to October 31, 2026, during attraction hours (hours vary; the page's posted hours are 10am-6pm with last entry 4:30pm for the day read, not necessarily all October days).",
+   "inventoryOrder": 40
+  },
+  "ooky-spooky-light-show": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://sloanlongway.org/halloween/",
+   "evidenceNote": "Official Halloween Happenings page lists the Ooky Spooky Light Show among October 2026 events (read 2026-10-12, https://sloanlongway.org/halloween/); the Longway Planetarium page carries the same show listing.",
+   "datesNote": "Official wording: Tuesday through Sunday at 4 p.m., plus select Fridays and Saturdays at 6 p.m.; no 6 p.m. public show on October 10 due to the Halloween Extravaganza. No full date range stated.",
+   "inventoryOrder": 41,
+   "website": "https://sloanlongway.org/halloween/"
+  },
+  "laser-halloween": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.sloanlongway.org/",
+   "evidenceNote": "Sloan Longway's official calendar lists Laser Halloween with six 2026 dates in October at 7 and 8 PM, 45-minute shows, ages 12+. sloanlongway.org page describes the show but lists no dates. URLs: https://www.trumba.com/events-calendar/mi/flint/longway_shows and https://www.sloanlongway.org/ (read 2026-10-12).",
+   "datesNote": "Fri Oct 16, Sat Oct 17, Fri Oct 23, Sat Oct 24, Fri Oct 30, Sat Oct 31, 2026 - each at 7:00 PM and 8:00 PM (per Sloan Longway calendar on trumba.com)",
+   "inventoryOrder": 42
+  },
+  "thiessen-orchards-scaredy-cat-barn": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://www.thiessenorchards.com/family-fun",
+   "evidenceNote": "Site footer reads 2026 / '50 Years 1976-2026' and Halloween Extravaganza is dated Oct 24, 2026; the family-fun page says the Scaredy Cat Barn opens 'on our first weekend' and the night haunt stays closed 'this season'. The barn text itself carries no explicit year. https://www.thiessenorchards.com/family-fun and https://www.thiessenorchards.com (read 2026-10-12).",
+   "datesNote": "Barn: 'Saturdays and Sundays and PA Days' 10 a.m. to 5 p.m. (no calendar dates and no year stated on the barn text). Separate event on the same site: Halloween Extravaganza, Saturday October 24, 2026, 10:00 am to 5:30 pm. Season banner says Sept 10 to Oct 31 while the Visit Us section says Sept 10 - Nov 1 (inconsistent on the page).",
+   "inventoryOrder": 43,
+   "summary": "Gentle haunted barn."
+  },
+  "jack-o-lanterns-among-the-trees": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://troynaturesociety.org/programs/programs-all-ages/",
+   "evidenceNote": "Official programs page lists the event Saturday Oct 24, 4-6pm or 7-9pm with pre-registration and ticket tiers; no year is printed in the text, but the flyer file is named '2026-Fall-Fliers-Jack-O-Lanterns' and Oct 24 is a Saturday in 2026. Page footer says copyright 2025 (not updated). https://troynaturesociety.org/programs/programs-all-ages/ (read 2026-10-12).",
+   "datesNote": "Saturday, Oct 24, 4-6pm or 7-9pm (year not printed on the page; consistent with 2026). Optional pumpkin carving add-on Friday Oct 23.",
+   "inventoryOrder": 44
+  },
+  "halloween-stroll": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://porthuronrec.com/halloweenstroll",
+   "evidenceNote": "Official recreation-department page gives the event as Saturday, October 24, 2026, 10 a.m. to 12:30 p.m., with registration details. https://porthuronrec.com/halloweenstroll (read 2026-10-12). Matches Michigan Public community calendar listing.",
+   "datesNote": "Saturday, October 24, 2026, 10 a.m. to 12:30 p.m.; trick-or-treaters enter in groups every 30 minutes, last group at 12:30 p.m.; rain or shine.",
+   "inventoryOrder": 45,
+   "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities."
+  },
+  "halloween-hunt-the-haunts": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://wehavefun.ca/",
+   "evidenceNote": "wehavefun.ca has a 'Hunt the Haunts 2026' section: interactive map plus Catch 'Em All Hunt app and a 2026 registration form; says registration is required every year. No 2026 dates printed. https://wehavefun.ca/ (read 2026-10-12).",
+   "datesNote": "None verified",
+   "inventoryOrder": 49
+  },
+  "motor-city-ghosts": {
+   "tier": "hold-indirect",
+   "section": "B",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://usghostadventures.com/ghost-tours/detroit/",
+   "evidenceNote": "Operator's Detroit page (last modified Oct 8, 2026 per the page) says tours run daily year-round, 8 PM start, bookable online; no season-specific dates. https://usghostadventures.com/ghost-tours/detroit/ (read 2026-10-12). Medium: 'daily, 365 days' rather than dated 2026 events.",
+   "datesNote": "Operates daily at 8 PM per official page ('Open 365 Days a Year'); no specific 2026 calendar dates.",
+   "inventoryOrder": 50
+  },
+  "spooky-janes-walk": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://www.windsorjaneswalk.ca/",
+   "evidenceNote": "Official Jane's Walk site lists the fall 2026 Spooky Jane's Walk 'From Tombstones to Trading Post', Saturday Oct 17, 2026, 11:00 AM-12:00 PM, $25 via Eventbrite. https://www.windsorjaneswalk.ca/ (read 2026-10-12); detail corroborated by https://windsorite.ca/events/spooky-janes-walk-from-tombstones-to-trading-post/ (secondary).",
+   "datesNote": "Saturday, October 17, 2026, 11:00 AM-12:00 PM (one-hour walk). Per the secondary listing the Duff-Baby Mansion is open 12-4 PM afterwards.",
+   "inventoryOrder": 51,
+   "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival."
+  },
+  "sandwich-town-ghost-tour": {
+   "tier": "verified",
+   "section": "B",
+   "operation": "CONFIRMED",
+   "officialUrl": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
+   "evidenceNote": "Sandwich Town BIA's event page lists the Sandwich Town Ghost Tour on October 17, 2026, 7:30-9:30 pm, $20. Other 2026 ghost events on its events page; the July page lists monthly tours with 'Halloween tours' details to come. https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/ and https://sandwichtown.ca/events/ (read 2026-10-12).",
+   "datesNote": "Sandwich Town Ghost Tour: Saturday Oct 17, 2026, 7:30-9:30 pm. Also listed on the events page: Theatrical Ghost Stories Fri Oct 16 and Fri Oct 23, 7:30-9:30 pm (Sandwich Brewing Co.); Kids' Ghost Stories & Walk Sat Oct 24, 4:30-6:00 pm (John Muir Branch, Windsor Public Library, 363 Mill St., free). The July 2026 page also lists an Oct 10 tour (already past) and says Halloween tours were still to be announced.",
+   "inventoryOrder": 52
+  },
+  "rotten-manor": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://rottenmanor.com/",
+   "evidenceNote": "Official pages read show no 2026 season dates or ticket notice; footer reads 'Copyright 2015 - 2023' and the FAQ names no season year. A WXYZ roundup (secondary) says it opened Sept. 11 and runs select dates through Oct. 31. Read 2026-10-12 at https://rottenmanor.com/ , https://rottenmanor.com/attractions-rotten-manor/ and https://rottenmanor.com/faq/",
+   "datesNote": "None verified",
+   "inventoryOrder": 9
+  },
+  "slay-nights": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://slaynights.com/",
+   "evidenceNote": "Home page shows undated season text (Friday Oct 4 start, final night Saturday Nov 2, closed Halloween); in 2026 Oct 4 is a Sunday and Nov 2 a Monday, so these are stale prior-year dates (Oct 4/Nov 2 match 2024 or 2019 weekdays). No 2026 statement found. Read 2026-10-12 at https://slaynights.com/",
+   "datesNote": "None verified",
+   "inventoryOrder": 11
+  },
+  "the-scream-machine": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://thescreammachine.com/",
+   "evidenceNote": "Official home page shows an empty events calendar ('No Events') and no 2026 season statement; meta text still says 'coming Fall 2023', footer 2025 on one read. The hauntpay ticket venue page (app.hauntpay.com/venues/508) lists no upcoming events. A 2026 flyer image exists on the home page but could not be read. Read 2026-10-12 at https://thescreammachine.com/",
+   "datesNote": "None verified",
+   "inventoryOrder": 14,
+   "summary": "Haunted attraction in Taylor, Michigan."
+  },
+  "scarehouse-windsor": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://scarehousewindsor.com/",
+   "evidenceNote": "Home page and /tickets page show no dates or year in visible text. The US ticket-routing link on /tickets contains the path /events/scarehouse-windsor/2026/tickets, which suggests 2026 ticketing but is indirect. https://scarehousewindsor.com/ and https://scarehousewindsor.com/tickets read 2026-10-12.",
+   "datesNote": "None verified",
+   "inventoryOrder": 20
+  },
+  "terrorfied-forest": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": null,
+   "evidenceNote": "Could not locate the attraction's own website. Its hauntpay ticketing page (https://app.hauntpay.com/events/terrorfied-forest-haunted-attraction-new, read 2026-10-12) describes the 2025 season and lists no upcoming dates. Only third-party (The Scare Factor 2026 list, created 8/31/2026) mentions an October 2 opening night.",
+   "datesNote": "None verified",
+   "inventoryOrder": 22
+  },
+  "panic-in-the-pines": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://www.panicinthepines.com/",
+   "evidenceNote": "Official home page loads and links a Pricing & Tickets page (panicinthepines.fearticket.com) but shows no year or dates; the Days & Hours subpage and the ticketing page did not render. Visit Toledo listing is for 2024. https://www.panicinthepines.com/ read 2026-10-12.",
+   "datesNote": "None verified",
+   "inventoryOrder": 25
+  },
+  "bates-haunted-sawmill": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED (official page unreachable)",
+   "officialUrl": null,
+   "evidenceNote": "The attraction's only official presence found is a Facebook page (https://www.facebook.com/bateshauntedsawmill/), which could not be fetched (robots-blocked). Third-party Morty listing (last verified 8/31/2026) says 'Reopening for 2026' with no dates; this is not official evidence. Read 2026-10-12.",
+   "datesNote": "None verified",
+   "inventoryOrder": 27,
+   "summary": "Haunted sawmill attraction in Millington."
+  },
+  "mortuary-manor-funeral-museum": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": null,
+   "evidenceNote": "No website of its own was found; Toledo City Paper (March 20, 2026, secondary) lists only Facebook, Instagram and TikTok. Organizer pages show 2026 events that are already past: an Eerie Excursions flashlight tour on July 17, 2026 (https://www.eventbrite.com/e/1992819215920, 'Event ended', read 2026-10-12) and a BOOkfest ghost hunt on Aug 1, 2026 (https://www.eerieexcursions.com/events/mmbookfest, 'Tickets are not on sale', read 2026-10-12). No Halloween-season 2026 event or tour found.",
+   "datesNote": "None verified",
+   "inventoryOrder": 32
+  },
+  "theatre-bizarre": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://theatrebizarre.com/",
+   "evidenceNote": "Official site (read 2026-10-12, https://theatrebizarre.com/) shows only sold-out buttons for Oct 14, 15, 21 and 22 with no year (these match 2022 dates), a post titled about the cancelled 2023 season, and an empty Events page. About page metadata appears last modified in 2022. No 2026 dates or ticketing found. A Detroit News headline dated 2026-08-28 (https://www.detroitnews.com/story/entertainment/2026/08/28/theatre-bizarre-art-show-sparks-hope-for-return/91456106007/) suggests only an art show with 'hope for return'; the article itself could not be read (robots blocked), so treat as unverified.",
+   "datesNote": "None verified",
+   "inventoryOrder": 38,
+   "summary": "Costumed masquerade event in Detroit with a 21+ age policy."
+  },
+  "agony-on-alcott": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://www.agonyonalcotthauntedhouse.com/",
+   "evidenceNote": "Official site shows a '2026' copyright footer and says 'this year' will be bigger, and its Tickets & Hours page says every Friday and Saturday in October, 8-11 PM, but no page prints a 2026 season or specific 2026 dates. https://www.agonyonalcotthauntedhouse.com/ and https://www.agonyonalcotthauntedhouse.com/tickets-hours (read 2026-10-12).",
+   "datesNote": "None verified",
+   "inventoryOrder": 46,
+   "summary": "A walk-through haunted house in Flint that focuses on psychological scares rather than blood, gore or demonic imagery."
+  },
+  "reapers-gate-home-haunt": {
+   "tier": "hold-unconfirmed",
+   "section": "C",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": null,
+   "evidenceNote": "No official site or social page could be retrieved. Only a third-party listing title ('Reaper's Gate Haunted Backyard Maze', eyesonwindsor.com, blocked to fetch by robots rules) surfaced in search; no 2026 evidence found. W.E. Have Fun's 2026 Hunt the Haunts site (wehavefun.ca) does not mention Reapers Gate on its home page. Facebook page not retrievable. Read 2026-10-12.",
+   "datesNote": "None verified",
+   "inventoryOrder": 47,
+   "summary": "A home-run Halloween haunt in Windsor, Ontario."
+  },
+  "exit-13-haunted-house": {
+   "tier": "excluded",
+   "section": "D",
+   "operation": "CLOSED (as this name)",
+   "officialUrl": null,
+   "evidenceNote": "WNEM (2023-10-27): 2023 was the last season in its current form, with the owners planning a new location, new name and new attractions the next fall. Explore Flint and Genesee calls 2023 its 'Grand Finale Season'. No 2024-2026 evidence found under this name. Official site and Facebook were not retrievable (robots-disallowed). Read 2026-10-12 via https://www.wnem.com/2023/10/27/this-halloween-is-your-last-chance-visit-exit-13",
+   "datesNote": "None verified",
+   "inventoryOrder": 18,
+   "disposition": {
+    "type": "closed",
+    "reason": "Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record."
+   }
+  },
+  "scarehouse-windsor-immersive-dinner": {
+   "tier": "excluded",
+   "section": "D",
+   "operation": "NOT CONFIRMED",
+   "officialUrl": "https://scarehousewindsor.com/",
+   "evidenceNote": "Official home page (read 2026-10-12, https://scarehousewindsor.com/) offers a 'Gore-met' immersive dinner bookable online, but states no year, dates or dinner names in readable text, and the booking site (book.scarehousewindsor.com) gave no readable dates. Official ticketing pages for Miss Fortune, Cursed Manor and Cabin in the Woods dinners on hauntpay show 'No upcoming date/times' and 'Online sales have ended' (read 2026-10-12), which could mean sold out or season over; not interpretable as 2026 confirmation.",
+   "datesNote": "None verified",
+   "inventoryOrder": 39,
+   "disposition": {
+    "type": "duplicate",
+    "of": "scarehouse-windsor",
+    "reason": "Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record."
+   }
+  },
+  "windsor-essex-yard-haunt-map": {
+   "tier": "excluded",
+   "section": "D",
+   "operation": "CONFIRMED (indirect)",
+   "officialUrl": "https://wehavefun.ca/",
+   "evidenceNote": "wehavefun.ca has a 'Hunt the Haunts 2026' section with an interactive Google map, says registration is required every year and to re-register for 2026; the 2025 Halloween Experience is marked ended. No 2026 dates stated. https://wehavefun.ca/ (read 2026-10-12).",
+   "datesNote": "None verified",
+   "inventoryOrder": 48,
+   "summary": "A community-run interactive map of decorated Halloween homes and yard displays across Windsor-Essex, part of the W.E. Have Fun Hunt the Haunts.",
+   "disposition": {
+    "type": "duplicate",
+    "of": "halloween-hunt-the-haunts",
+    "reason": "Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record."
+   }
+  }
+ }
+}

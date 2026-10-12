@@ -136,6 +136,7 @@ function publishedProjection() {
 function review(e) {
   const r = COLLECTIONS.readiness(e), g = r.gate, im = e.image || {};
   const outstanding = [], caveats = [];
+  if (g.excluded) outstanding.push("Excluded: resolved as " + e.disposition.type + (e.disposition.of ? " of " + e.disposition.of : "") + ". Retained in the inventory with its history; never shown publicly.");
   if (!g.official) outstanding.push("Gate 1, official-source verification: no official-site read is recorded (evidence level \"official\" with url, date and reviewer).");
   if (!g.relevance) outstanding.push("Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).");
   if (!g.acquired || !g.rights) {
