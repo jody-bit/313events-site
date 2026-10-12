@@ -54,7 +54,8 @@ async function run() {
     assert.strictEqual(patches[0].event.id, "evt-dilemmas", "applyPatchFn receives the ORIGINAL row, for a race-safe re-assert filter");
     assert.strictEqual(patches[0].patchBody.time_display, "9:00 PM–2:00 AM");
     assert.strictEqual(patches[0].patchBody.end_date, "2026-10-24", "cross-midnight end_date set from RA's own endDate landing on a later calendar date");
-    assert.strictEqual(patches[0].patchBody.ticket_url, "https://ra.co/events/2542617", "direct RA URL derived and filled since ticket_url was null");
+    assert.strictEqual(patches[0].patchBody.event_url, "https://ra.co/events/2542617", "RA event page filled in event_url since it was blank");
+    assert.ok(!("ticket_url" in patches[0].patchBody), "no verified ticketing destination -- ticket_url left NULL");
   }
   console.log("PASS: ra-2542617 (real fixture) — missing time_display, end_date and ticket_url are all correctly backfilled from RA's real JSON-LD");
 
@@ -97,9 +98,10 @@ async function run() {
       fetchDetailData: async () => new Map([["ra-3000001", { startDate: "2026-11-01T22:00:00.000", endDate: null, url: null, title: "No Url Captured" }]]),
       applyPatchFn: async (url, headers, event, patchBody) => { patches.push(patchBody); return true; },
     });
-    assert.strictEqual(patches[0].ticket_url, "https://ra.co/events/3000001");
+    assert.strictEqual(patches[0].event_url, "https://ra.co/events/3000001");
+    assert.ok(!("ticket_url" in patches[0]));
   }
-  console.log("PASS: direct RA URL falls back to the deterministic ra.co/events/<id> shape when no url was captured");
+  console.log("PASS: event_url falls back to the deterministic ra.co/events/<id> shape when no url was captured");
 
   // ============================================================
   // 4. Cross-midnight is NOT invented when RA's own endDate lands on the

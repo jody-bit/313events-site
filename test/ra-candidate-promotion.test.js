@@ -468,9 +468,11 @@ async function runRealListingDateTests() {
   // ticket_url column, until some later step (if any) filled it in. Both
   // real fixtures above carry RA's own listing `url`, and both must now
   // get it verbatim.
-  assert.strictEqual(elixir.ticket_url, "https://ra.co/events/2552525", "RA's own listing url is written straight to ticket_url");
-  assert.strictEqual(jscott.ticket_url, "https://ra.co/events/2554901");
-  console.log("PASS: ticket_url is populated from RA's own listing url, never left missing");
+  assert.strictEqual(elixir.event_url, "https://ra.co/events/2552525", "RA's own event page goes in event_url");
+  assert.strictEqual(jscott.event_url, "https://ra.co/events/2554901");
+  assert.strictEqual(elixir.ticket_url, null, "no RA source-page fallback in ticket_url");
+  assert.strictEqual(jscott.ticket_url, null);
+  console.log("PASS: event_url is RA's event page; ticket_url stays NULL (no verified ticketing destination)");
 
   // And when the listing card captured no url at all, ticket_url still
   // derives the same deterministic https://ra.co/events/<id> shape every
@@ -491,9 +493,10 @@ async function runRealListingDateTests() {
       insertCandidateRowFn: async (url, key, row) => { inserted2.push(row); return true; },
     });
     assert.strictEqual(counts2.written, 1);
-    assert.strictEqual(inserted2[0].ticket_url, "https://ra.co/events/3000001", "falls back to the deterministic shape when RA's listing card had no url field");
+    assert.strictEqual(inserted2[0].event_url, "https://ra.co/events/3000001", "falls back to the deterministic shape when RA's listing card had no url field");
+    assert.strictEqual(inserted2[0].ticket_url, null);
   }
-  console.log("PASS: ticket_url falls back to the deterministic ra.co/events/<id> shape when the listing card had no url");
+  console.log("PASS: event_url falls back to the deterministic ra.co/events/<id> shape when the listing card had no url");
 
   // Idempotency (Part 4, item 8): re-running promotion against the SAME
   // session, now with the two rows already present (exactly what a real

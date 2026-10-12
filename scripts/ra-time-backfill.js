@@ -78,7 +78,7 @@
 
 const path = require("path");
 const fs = require("fs");
-const { parseIsoLocal, deriveTimeDisplayAndEndDate, deriveTicketUrl } = require(path.join(__dirname, "ra-sync"));
+const { parseIsoLocal, deriveTimeDisplayAndEndDate, deriveEventUrl, deriveTicketUrl } = require(path.join(__dirname, "ra-sync"));
 
 const SOURCE_NAME = "Resident Advisor";
 
@@ -109,7 +109,7 @@ async function fetchRaRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, 
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&time_display=is.null` +
-    `&select=id,external_id,title,start_date,end_date,time_display,ticket_url` +
+    `&select=id,external_id,title,start_date,end_date,time_display,event_url,ticket_url` +
     `&limit=1000`;
   const resp = await fetchImpl(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch RA time-backfill candidates: HTTP ${resp.status}`);
@@ -175,6 +175,7 @@ async function applyPatch(SUPABASE_URL, sbHeaders, event, patchBody, fetchImpl =
     `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(event.id)}` +
     `&${fieldFilterPart("time_display", event.time_display)}` +
     `&${fieldFilterPart("end_date", event.end_date)}` +
+    `&${fieldFilterPart("event_url", event.event_url)}` +
     `&${fieldFilterPart("ticket_url", event.ticket_url)}`;
   const resp = await fetchImpl(url, {
     method: "PATCH",
@@ -265,9 +266,17 @@ async function repairRaTimes({
     }
 
     const patchBody = { time_display: timeDisplay, end_date: endDate };
+    // Links (2026-10-12 correction): event_url = RA's own page, filled only
+    // if blank; ticket_url = a ticketing destination only if the detail data
+    // states a verified one and the column is blank; otherwise left NULL.
+    // A stored link is never replaced.
+    if (!event.event_url) {
+      const eventUrl = deriveEventUrl(event.external_id.replace(/^ra-/, ""));
+      if (eventUrl) patchBody.event_url = eventUrl;
+    }
     if (!event.ticket_url) {
-      const numericId = event.external_id.replace(/^ra-/, "");
-      patchBody.ticket_url = deriveTicketUrl(numericId, detail.url || null);
+      const ticketUrl = deriveTicketUrl(detail.ticketUrl || detail.offersUrl || null);
+      if (ticketUrl) patchBody.ticket_url = ticketUrl;
     }
 
     if (dryRun) {
