@@ -7690,7 +7690,21 @@
       "status": "active",
       "scope": "Merriman Road, outside lane, between Hines Drive and Joy Road"
      }
-    ]
+    ],
+    "publicText": "Hines Drive is closed between Newburgh Road and Wayne Road for bridge replacement. Other sections remain accessible.",
+    "publicTextApproved": {
+     "by": "Jody Tyree (owner)",
+     "at": "2026-10-12"
+    },
+    "verification": {
+     "checkedAt": "2026-10-12",
+     "status": "SUPPORTED_CURRENT_STATUS_OWNER_CONFIRMED",
+     "supports": "The MDOT release of 2025-02-04 describes the closure of Edward Hines Drive between Newburgh and Wayne roads for rebuilding the Hines Drive bridge over Ann Arbor Road, with detours, as part of the Old M-14 (Ann Arbor Road) bridge project.",
+     "limits": "No 2026 MDOT or news update was found; the current status and the absence of a confirmed reopening date rest on the owner's confirmation of 2026-10-12.",
+     "sources": [
+      "https://michigan.gov/mdot/news-outreach/pressreleases/2025/02/04/bridge-work-closing-edward-hines-drive-in-wayne-county-old-m-14-ann-arbor-road-remains-closed"
+     ]
+    }
    }
   },
   {
@@ -11425,7 +11439,21 @@
       "reopening": "anticipated fall 2026; no exact date confirmed",
       "note": "An earlier read of the county page (2026-10-11) noted a closure between Dequindre Road and 24 Mile Road for a water main."
      }
-    ]
+    ],
+    "publicText": "A section of the trail is temporarily closed. Reopening is anticipated in fall 2026; no confirmed date.",
+    "publicTextApproved": {
+     "by": "Jody Tyree (owner)",
+     "at": "2026-10-12"
+    },
+    "verification": {
+     "checkedAt": "2026-10-12",
+     "status": "SUPPORTED",
+     "supports": "The Friends of the Clinton River Trail project update (revised 2026-03-23) states an intermittent closure of the Macomb Orchard Trail between Dequindre Road and 24 Mile Road for the GLWA 96-inch water main project, with estimated completion fall 2026.",
+     "limits": "The source is an advocacy group, not the county; no exact reopening date is published. The closure is described as intermittent.",
+     "sources": [
+      "https://www.clintonrivertrail.org/projects"
+     ]
+    }
    }
   },
   {

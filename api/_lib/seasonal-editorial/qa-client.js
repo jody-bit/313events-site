@@ -27,7 +27,7 @@
   function toEntry(rec, choiceId) {
     var o = option(rec, choiceId);
     var fb = [rec.manifest.fallback_image, rec.manifest.secondary_fallback_image].filter(function (u) { return u && u !== o.src; });
-    return { id: rec.id, name: rec.name, city: rec.city, region: rec.region, categories: rec.categories, summary: rec.summary, website: rec.website,
+    return { id: rec.id, name: rec.name, city: rec.city, region: rec.region, categories: rec.categories, summary: rec.summary, website: rec.website, advisory: rec.advisory || undefined,
       image: { src: o.src, illustrative: o.illustrative, fallbacks: fb } };
   }
   function badge(rec) {

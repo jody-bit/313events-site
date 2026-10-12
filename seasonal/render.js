@@ -87,7 +87,8 @@
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title">' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
-      '<p class="sc-card-sum">' + esc(e.summary) + '</p>' + (opts.extra || "") + '</div>' +
+      '<p class="sc-card-sum">' + esc(e.summary) + '</p>' +
+      (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }
 

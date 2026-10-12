@@ -56,6 +56,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-card:hover{border-color:#555}
 .sc-card-where{margin:6px 0 0;font-size:13px;color:var(--ink-soft)}
 .sc-card-sum{margin:4px 0 0;font-size:13px;color:var(--ink-soft)}
+.sc-card-advisory strong{color:var(--ink);font-weight:600}
 .sc-arrow{position:absolute;right:10px;bottom:10px;color:var(--accent);font-size:20px}
 .sc-grid.sc-list{grid-template-columns:1fr}
 .sc-card-row{flex-direction:row;align-items:stretch}

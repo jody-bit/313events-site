@@ -30,6 +30,8 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/COVERAGE.md",
   "api/_lib/seasonal-editorial/EDITORIAL_HANDOFF.md",
   "api/_lib/seasonal-editorial/MIGRATION_REVIEW.md",
+  "api/_lib/seasonal-editorial/RELEASE_BATCH_1.json",
+  "api/_lib/seasonal-editorial/RELEASE_BATCH_1.md",
   "api/_lib/seasonal-editorial/candidate-images.json",
   "api/_lib/seasonal-editorial/candidates.json",
   "api/_lib/seasonal-editorial/defaults.json",

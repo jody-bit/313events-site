@@ -113,6 +113,8 @@ function publicEntry(e) {
   const im = e.image || {}, out = { id: e.id, name: e.name, city: e.city, region: e.region, categories: e.categories.slice(), featured: !!e.featured,
     status: "PUBLISHED", summary: e.summary };
   if (e.website) out.website = e.website;
+  // An access advisory is shown only where the record carries an approved public text (owner-confirmed 2026-10-12).
+  if (e.accessAdvisories && typeof e.accessAdvisories.publicText === "string" && e.accessAdvisories.publicText.trim()) out.advisory = e.accessAdvisories.publicText.trim();
   out.image = { src: im.src };
   if (im.alternates && im.alternates.length) out.image.alternates = im.alternates.slice();
   if (im.placeholder) out.image.placeholder = im.placeholder;

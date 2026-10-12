@@ -262,7 +262,7 @@ for (const col of ["fall", "fall-color"]) {
     records.push({
       id: e ? e.id : (c.discovered ? "discovered-" + key : key), discovered: !!c.discovered, inventory_no: c.inventory_no || null, name: e ? e.name : c.name.replace(/’/g, "'"), city: e ? e.city : wh.city, region: e ? e.region : wh.region,
       categories: e ? e.categories : (item && item.categories) || deriveCats(col, c.inventory_note || c.section || ""), category_source: e ? "record" : "derived for QA only",
-      summary: e ? e.summary : c.discovered ? c.name.replace(/’/g, "'") + " in " + wh.city + ". Listed features: " + (sentence(listOf(v || {})) || "its seasonal programs") + "." : (c.inventory_note || "") + ".", official_site: e && e.website || null, website: e && e.website || null, dates_hours: null,
+      advisory: (e && e.accessAdvisories && e.accessAdvisories.publicText) || null, summary: e ? e.summary : c.discovered ? c.name.replace(/’/g, "'") + " in " + wh.city + ". Listed features: " + (sentence(listOf(v || {})) || "its seasonal programs") + "." : (c.inventory_note || "") + ".", official_site: e && e.website || null, website: e && e.website || null, dates_hours: null,
       verification: { status, official_site_checked: !!(v && v.read_ok), detail, flags },
       public: e ? ED.COLLECTIONS.isPublic(e) : false,
       publication: rv ? { declared_status: e.status, state: rv.state, gate: { official: rv.gate.official, relevance: rv.gate.relevance, image: rv.gate.acquired, rights: rv.gate.rights, approval: rv.gate.approval },
