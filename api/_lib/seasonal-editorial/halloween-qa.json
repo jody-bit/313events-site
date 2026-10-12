@@ -5578,12 +5578,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -7212,12 +7210,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "linked",
-    "rights_route": "linked-risk-acceptance",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
     "caveats": [
-     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
-     "A linked image depends on the source site continuing to serve it; the generated card is the fallback.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -7414,11 +7410,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -8058,12 +8053,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -9635,12 +9628,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -9793,12 +9784,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],

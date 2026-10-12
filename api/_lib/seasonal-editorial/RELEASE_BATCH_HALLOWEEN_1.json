@@ -141,8 +141,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "linked",
-   "rightsRoute": "linked-risk-acceptance",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -159,17 +159,13 @@
     "website": "https://detroitzoo.org/events/zoo-boo/",
     "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo.",
     "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-6.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true,
-     "remote": {
-      "src": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
-      "sourcePage": "https://detroitzoo.org/events/zoo-boo/",
-      "credit": "Detroit Zoo"
-     }
+     "illustrative": false,
+     "credit": "Photo: WMrapids, CC0, via Wikimedia Commons"
     }
    }
   },
@@ -218,8 +214,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -235,13 +231,14 @@
     "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
     "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-6.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-3.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Rodney Campbell, CC BY 2.0, via Wikimedia Commons"
     }
    }
   },
@@ -981,8 +978,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -998,12 +995,13 @@
     "summary": "Historical ghost walk",
     "website": "https://fortmeigs.org/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-2.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__fort-meigs-garrison-ghost-walk__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1216,8 +1214,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1233,13 +1231,14 @@
     "summary": "Halloween-themed laser show",
     "website": "https://www.sloanlongway.org/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-4.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-3.webp",
       "/assets/seasonal/halloween-card-6.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1410,8 +1409,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1427,12 +1426,13 @@
     "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
     "website": "https://www.windsorjaneswalk.ca/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-8.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__spooky-janes-walk__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: LauraF84, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1444,8 +1444,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1461,12 +1461,13 @@
     "summary": "Historical ghost walk",
     "website": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-2.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__sandwich-town-ghost-tour__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   }

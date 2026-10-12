@@ -842,7 +842,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "parshallville-cider-mill",
@@ -858,13 +858,14 @@
     "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
     "website": "https://parshallvillecidermill.com",
     "image": {
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/photos/fall/fall__parshallville-cider-mill__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: JoannaPoe, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1232,7 +1233,7 @@
    "original15": true,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "cranbrook-gardens-and-grounds",
@@ -1247,13 +1248,14 @@
     "summary": "Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens to explore, from daffodils and roses to fall colors and conifers.",
     "website": "https://housegardens.cranbrook.edu/explore/gardens",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__cranbrook-gardens-and-grounds__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-8.webp",
       "/assets/seasonal/fall-color-card-6.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Barbara Eckstein, CC BY 2.0, via Wikimedia Commons"
     }
    }
   },
@@ -1329,7 +1331,7 @@
    "original15": true,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "holly-state-recreation-area",
@@ -1345,13 +1347,14 @@
     "summary": "State recreation area in Holly with more than 8,000 acres of rolling woodlands and open fields.",
     "website": "https://www.michigan.gov/recsearch/parks/holly",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__holly-state-recreation-area__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: TheKuLeR, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1396,7 +1399,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "belle-isle-park",
@@ -1412,13 +1415,14 @@
     "summary": "Island state park in the Detroit River with nature trails, a nature center, a conservatory, an aquarium and the Oudolf Garden.",
     "website": "https://www.michigan.gov/recsearch/parks/belleisle",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__belle-isle-park__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: TheDetroitGeographer, CC0, via Wikimedia Commons"
     }
    }
   },
@@ -1595,7 +1599,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "dequindre-cut-greenway",
@@ -1610,13 +1614,14 @@
     "summary": "Below-grade greenway between Eastern Market and the riverfront with separate walking and biking lanes, murals, and trees that turn colors in early October.",
     "website": "https://www.detroitriverfront.org/plan-your-visit/parks-greenways/dequindre-cut",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__dequindre-cut-greenway__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1726,7 +1731,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "oak-openings-preserve-metropark",
@@ -1741,13 +1746,14 @@
     "summary": "Metroparks Toledo's largest park, with oak savanna, more than 70 miles of trail and the Windows on Wildlife bird-viewing area. The agency's fall color report recommends it for late-fall oak color.",
     "website": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__oak-openings-preserve-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -2160,7 +2166,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "barton-nature-area",
@@ -2176,13 +2182,14 @@
     "summary": "Nature area along the Huron River with trails around the Barton oxbow. Destination Ann Arbor lists it for autumn color.",
     "website": "https://www.a2gov.org/parks-and-recreation/parks-places/barton-nature-area/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__barton-nature-area__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-2.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -2324,7 +2331,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "secor-metropark",
@@ -2340,13 +2347,14 @@
     "summary": "Metroparks Toledo park of second-growth forest, meadows and prairies, with the region's largest concentration of native dogwood. The agency's fall color report names it.",
     "website": "https://metroparkstoledo.com/explore-your-parks/secor-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__secor-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Benny Mazur, CC BY 2.0, via Wikimedia Commons"
     }
    }
   },
@@ -2424,7 +2432,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "farnsworth-metropark",
@@ -2440,13 +2448,14 @@
     "summary": "Metroparks Toledo park on the Maumee River with the Towpath Trail, river views and the Interurban Bridge ruins.",
     "website": "https://metroparkstoledo.com/explore-your-parks/farnsworth/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__farnsworth-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-2.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Jmslagle, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
