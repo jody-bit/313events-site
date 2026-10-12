@@ -23,7 +23,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Data Sources &amp; Connection Status — 313.events">
@@ -35,6 +35,7 @@
 <meta name="twitter:image" content="https://313.events/assets/social/og-default.png">
 <style>
   :root{
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
     --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
     --line:#2c2c2c; --line-soft:#212121; --radius:0px; /* Detroit Signal V2: rectilinear, editorial-broadcast — sharp corners everywhere, matching every other page (2026-09-02 color/shape unification) */
@@ -58,7 +59,7 @@
     gap:16px;flex-wrap:wrap;
     padding-bottom:16px;margin-bottom:22px;border-bottom:2px solid var(--ink);
   }
-  header.site h1{font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;text-transform:uppercase;font-size:24px;margin:0 0 4px;letter-spacing:-0.01em;}
+  header.site h1{font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;font-size:24px;margin:0 0 4px;letter-spacing:-0.01em;}
   header.site p{margin:0;color:var(--ink-soft);font-size:14px;max-width:600px;}
   .back-link{font-size:13px;color:var(--ink-soft);text-decoration:none;white-space:nowrap;}
   .back-link:hover{text-decoration:underline;color:var(--accent);}
