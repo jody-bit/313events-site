@@ -62,6 +62,7 @@ async function run() {
     "cron-eventbrite.js": "drops internal_note for existing rows",
     "cron-gottagacha.js": "drops internal_note for existing rows",
     "cron-localist.js": "edits only its own lines, keeps all others",
+    "cron-antonartcenter.js": "writes a breadcrumb on NEW held rows only; an existing row that needs review is not written at all (test/cron-antonartcenter-runlog.test.js)",
   };
   const writers = fs.readdirSync(path.join(REPO_DIR, "api")).filter((f) => /^cron-.*\.js$/.test(f)).filter((f) => {
     const src = fs.readFileSync(path.join(REPO_DIR, "api", f), "utf8").replace(/\/\/.*$/gm, "");
