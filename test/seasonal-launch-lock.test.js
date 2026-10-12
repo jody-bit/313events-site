@@ -1,0 +1,34 @@
+// test/seasonal-launch-lock.test.js — content lock for the first launch set (owner decision 2026-10-12).
+// Fifteen records, none approved, image provenance recorded as unresolved until the owner confirms the photographer
+// and the illustration-generation tool, and visitor-facing descriptions free of research-note wording.
+"use strict";
+const assert = require("assert");
+const path = require("path");
+const ED = require(path.join(__dirname, "..", "api/_lib/seasonal-editorial/editorial.js"));
+const L = require(path.join(__dirname, "..", "api/_lib/seasonal-editorial/launch-1.json"));
+const E = ED.entries();
+
+const ids = { fall: L.collections.fall, "fall-color": L.collections["fall-color"] };
+assert.strictEqual(ids.fall.length + ids["fall-color"].length, 15);
+const RESEARCH_NOTE = /\b(its|the) (official|home) (page|site)\b|\bthe site says\b|\bofficial page (says|lists|mentions|carries)\b|\bits trail description\b/i;
+let photos = 0, illus = 0;
+for (const col of Object.keys(ids)) for (const id of ids[col]) {
+  const e = E[col].find((x) => x.id === id);
+  assert.ok(e, id + " exists");
+  assert.ok(!e.approval, id + ": no approval recorded");
+  assert.ok(!ED.COLLECTIONS.isPublic(e), id + ": not public");
+  assert.ok(!RESEARCH_NOTE.test(e.summary), id + ": description has no research-note wording: " + e.summary);
+  const pv = e.image.provenance;
+  assert.ok(pv && pv.status === "UNRESOLVED" && pv.unresolved.length, id + ": image provenance recorded as unresolved");
+  if (e.image.ownerPhoto) { photos++; assert.ok(pv.unresolved.some((u) => /Photographer/i.test(u)), id + ": photographer unresolved"); }
+  else { illus++; assert.strictEqual(e.image.illustrative, true); assert.ok(pv.unresolved.some((u) => /Generation tool/i.test(u)), id + ": generation tool unresolved"); }
+}
+assert.deepStrictEqual([photos, illus], [2, 13], "2 owner photos and 13 illustrations");
+const by = (c, i) => E[c].find((x) => x.id === i).summary;
+assert.ok(!/u-pick apple picking|no u-pick/i.test(by("fall", "diehls-orchard-and-cider-mill")), "Diehl's carries no negative apple-picking statement");
+assert.ok(/pumpkin patch/.test(by("fall", "diehls-orchard-and-cider-mill")) && /corn maze/.test(by("fall", "diehls-orchard-and-cider-mill")));
+assert.ok(/forest types/.test(by("fall-color", "highland-state-recreation-area")) && !/official page/i.test(by("fall-color", "highland-state-recreation-area")));
+// Held and excluded.
+assert.ok(!ids.fall.includes("forever-acres-farm"));
+assert.ok(![].concat(ids.fall, ids["fall-color"]).some((i) => /oak-openings/.test(i)));
+console.log("seasonal launch lock: ok");

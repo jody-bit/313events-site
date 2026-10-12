@@ -307,6 +307,16 @@
      "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
      "note": "Official site photo, 602x452 (small): cider-mill cart with fall flowers.",
      "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    },
    "migration": {
@@ -394,6 +404,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -572,6 +592,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -767,7 +797,7 @@
    ],
    "featured": true,
    "status": "READY_FOR_REVIEW",
-   "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze. The site says there is no u-pick apple picking.",
+   "summary": "Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze.",
    "website": "https://www.diehlsorchard.com/",
    "evidence": [
     {
@@ -839,7 +869,17 @@
      "/assets/seasonal/fall-card-2.webp",
      "/assets/seasonal/fall-card-7.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp"
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Photographer's name",
+      "Date and scope of the photographer's grant, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the photographer. Owner-authorization statement only; not a Creative Commons license."
+    }
    }
   },
   {
@@ -973,6 +1013,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -1054,6 +1104,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -1183,6 +1243,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -1312,6 +1382,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -1763,6 +1843,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    },
    "distance": {
@@ -2490,6 +2580,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    },
    "distance": {
@@ -5963,6 +6063,16 @@
      "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
      "note": "Traveler-uploaded photo from the park's Tripadvisor page.",
      "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    },
    "migration": {
@@ -6709,6 +6819,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -7015,6 +7135,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    }
   },
@@ -7028,7 +7158,7 @@
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "State recreation area whose official page says it holds all of southern Michigan's principal forest types in one small area.",
+   "summary": "State recreation area in White Lake with all of southern Michigan's principal forest types and about 44 miles of trails for hiking and mountain biking.",
    "website": "https://www.michigan.gov/recsearch/parks/highland",
    "evidence": [
     {
@@ -7100,7 +7230,17 @@
      "/assets/seasonal/fall-color-card-3.webp",
      "/assets/seasonal/fall-color-card-6.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp"
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Photographer's name",
+      "Date and scope of the photographer's grant, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the photographer. Owner-authorization statement only; not a Creative Commons license."
+    }
    }
   },
   {
@@ -8734,6 +8874,16 @@
      "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
      "recordedAt": "2026-10-11",
      "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "UNRESOLVED",
+     "recordedAt": "2026-10-12",
+     "recordedBy": "Claude Code, on the owner's instruction in the project thread (2026-10-12)",
+     "unresolved": [
+      "Generation tool",
+      "Generation terms, including commercial use"
+     ],
+     "note": "Held as unresolved until the owner confirms the illustration-generation tool. Supplied 313.events graphic, shown with the Illustrative image label; not a photograph of the destination."
     }
    },
    "distance": {

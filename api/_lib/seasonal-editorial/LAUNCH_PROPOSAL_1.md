@@ -38,7 +38,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.diehlsorchard.com/ (read 2026-10-11, two reads).
 - **What the official page shows:** Official site read 2026-10-11 (two reads). Address given as 1479 Ranch Rd., Holly, MI 48442. Page shows "CIDERFEST 2026" and describes hot, cold and slushy cider and hot donuts, a pumpkin patch and a corn maze. It states there is no U-Pick for apples.
 - **Relevance (direct-prose):** The official page describes a cider mill with donuts, a pumpkin patch and a corn maze, with a 2026 event on the page.
-- **Card text:** Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze. The site says there is no u-pick apple picking.
+- **Card text:** Cider mill and orchard in Holly with hot, cold and slushy cider and hot donuts, plus a pumpkin patch and corn maze.
 - **Categories:** cider-donuts, farm-experiences · proposed for the Don't-miss rail
 - **Image:** your own photo, `313p-b111acba` (Pumpkin patch field with scattered pumpkins under dramatic cloudy sky, trees beyond; captured 2026-10-09; original IMG_3271.HEIC). Rights: Owner-authorized: photographer granted use to 313.events owner. The photographer's name and the date of the grant are not recorded. Credit text: 313.events archive. The approved public card shows no credit line for a non-linked photo.
 - **Caveats:** Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.
@@ -174,7 +174,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Official source:** https://www.michigan.gov/recsearch/parks/highland (read 2026-10-11, two reads).
 - **What the official page shows:** Official Michigan DNR page read 2026-10-11 (two reads). Address given as 5200 Highland Road, White Lake, Michigan 48383 (the inventory listed this row as Highland, MI). The site calls it Highland Recreation Area and says the park has all of southern Michigan's principal forest types within one small area. A Recreation Passport is required for vehicle entry (not displayed on the card).
 - **Relevance (caption-only):** Weaker basis: the official page does not discuss fall color in prose. Only a photo caption mentions fall leaves. The owner's own photo of 2026-10-09 shows early fall color on a trail there, which is not official evidence.
-- **Card text:** State recreation area whose official page says it holds all of southern Michigan's principal forest types in one small area.
+- **Card text:** State recreation area in White Lake with all of southern Michigan's principal forest types and about 44 miles of trails for hiking and mountain biking.
 - **Categories:** trails-woods
 - **Image:** your own photo, `313p-7ad1f6a5` (Gravel trail beside a park road, with a wooden bridge railing and a guardrail in frame, leading toward early fall-colored trees, blue sky; captured 2026-10-09; original IMG_2027.HEIC). Rights: Owner-authorized: photographer granted use to 313.events owner. The photographer's name and the date of the grant are not recorded. Credit text: 313.events archive. The approved public card shows no credit line for a non-linked photo.
 - **Caveats:** Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.
