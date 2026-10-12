@@ -1,0 +1,18 @@
+"use strict";
+const assert = require("assert");
+const { classify } = require("../scripts/belle-isle-verify.js");
+const ev = (d) => ({ id: 1, start_date: `${d} 10:00:00` });
+const k = (x) => classify(x).kind;
+assert.strictEqual(k({ status: 200, body: { events: [ev("2026-11-01")], total: 1, total_pages: 1 } }), "VALID_WITH_EVENTS");
+assert.strictEqual(k({ status: 200, body: JSON.stringify({ events: [], total: 0 }) }), "VALID_EMPTY");
+assert.strictEqual(k({ status: 403, body: "<html>Just a moment</html>" }), "BLOCKED");
+assert.strictEqual(k({ status: 200, body: "<!doctype html><html>consent</html>" }), "BLOCKED");
+assert.strictEqual(k({ status: 429, body: "" }), "BLOCKED");
+assert.strictEqual(k({ status: 404, body: JSON.stringify({ code: "rest_no_route" }) }), "NOT_FOUND");
+assert.strictEqual(k({ status: 200, body: JSON.stringify({ code: "x", message: "y" }) }), "INVALID_STRUCTURE");
+assert.strictEqual(k({ status: 200, body: "[]" }), "INVALID_STRUCTURE");
+assert.strictEqual(k({ status: 500, body: "" }), "INVALID_STRUCTURE");
+const paged = classify({ status: 200, body: { events: [ev("2026-11-01"), ev("2026-12-05")], total: 120, total_pages: 3, next_rest_url: "x" } });
+assert.strictEqual(paged.limits.earliest, "2026-11-01"); assert.strictEqual(paged.limits.latest, "2026-12-05");
+assert.ok(paged.notes.some((n) => /page 1 only/.test(n)));
+console.log("PASS: Belle Isle endpoint classification (valid, empty, blocked, invalid, not found, pagination)");
