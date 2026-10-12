@@ -96,7 +96,7 @@
    "original15": true,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "franklin-cider-mill",
@@ -111,13 +111,14 @@
     "summary": "Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.",
     "website": "https://www.franklincidermill.com/",
     "image": {
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/photos/fall/fall__franklin-cider-mill__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-card-6.webp",
       "/assets/seasonal/fall-card-1.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Griffinharms, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -161,7 +162,7 @@
    "original15": true,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "plymouth-orchards-and-cider-mill",
@@ -177,13 +178,14 @@
     "summary": "Orchard and cider mill in Plymouth with award-winning apple cider, fresh donuts, wagon rides and pumpkins.",
     "website": "https://www.plymouthorchards.com",
     "image": {
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/photos/fall/fall__plymouth-orchards-and-cider-mill__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-card-4.webp",
       "/assets/seasonal/fall-card-1.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -354,7 +356,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "yates-cider-mill",
@@ -369,13 +371,14 @@
     "summary": "Historic cider mill with cider, donuts, an apple tent, pony rides and a petting zoo.",
     "website": "https://www.yatescidermill.com/",
     "image": {
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-card-2.webp",
       "/assets/seasonal/fall-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Ekardiff, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -612,7 +615,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "three-cedars-farm",
@@ -627,13 +630,14 @@
     "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
     "website": "https://www.threecedarsfarm.org/",
     "image": {
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/photos/fall/fall__three-cedars-farm__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-card-1.webp",
       "/assets/seasonal/fall-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1358,7 +1362,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "hudson-mills-metropark",
@@ -1374,13 +1378,14 @@
     "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike loop, the Acorn Nature Trail and a canoe and kayak launch.",
     "website": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-2.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1424,7 +1429,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "rouge-park",
@@ -1439,13 +1444,14 @@
     "summary": "Detroit's largest park, along the Rouge River with nature trails, paved walking paths, an archery range and a golf course.",
     "website": "https://www.rougepark.org/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__rouge-park__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: DontCallMeLateForDinner, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1456,7 +1462,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "hines-drive-edward-n-hines-parkway",
@@ -1472,13 +1478,14 @@
     "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
     "advisory": "Hines Drive is closed between Newburgh Road and Wayne Road for bridge replacement. Other sections remain accessible.",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-4.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__hines-drive-edward-n-hines-parkway__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Jeffery Roberts, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1489,7 +1496,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "bennett-arboretum",
@@ -1504,13 +1511,14 @@
     "summary": "Wayne County arboretum on Hines Drive with maple, oak and beech collections and a gentle unpaved walking trail.",
     "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__bennett-arboretum__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Saul Vielmetti, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1521,7 +1529,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "maybury-state-park",
@@ -1536,13 +1544,14 @@
     "summary": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
     "website": "https://www.michigan.gov/recsearch/parks/maybury",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__maybury-state-park__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: ellenm1, CC BY 2.0, via Wikimedia Commons"
     }
    }
   },
@@ -1553,7 +1562,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "elmwood-cemetery",
@@ -1568,13 +1577,14 @@
     "summary": "Historic cemetery and certified arboretum with self-guided tree tours.",
     "website": "https://www.elmwoodhistoriccemetery.org/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__elmwood-cemetery__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Sarahfraser3585, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1617,7 +1627,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "seven-lakes-state-park",
@@ -1633,13 +1643,14 @@
     "summary": "State park of rolling hills, forest and lakes with marked hiking loops, paddling and fishing.",
     "website": "https://www.michigan.gov/recsearch/parks/sevenlakes",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__seven-lakes-state-park__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-2.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Kris Runstrom, CC BY 2.0, via Wikimedia Commons"
     }
    }
   },
@@ -1650,7 +1661,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "waterloo-state-recreation-area",
@@ -1665,13 +1676,14 @@
     "summary": "The Lower Peninsula's largest state park, with lakes, hiking trails and the Eddy Discovery Center.",
     "website": "https://www.michigan.gov/recsearch/parks/waterloo",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__waterloo-state-recreation-area__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: cmadler, CC BY-SA 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1746,7 +1758,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "wildwood-preserve-metropark",
@@ -1761,13 +1773,14 @@
     "summary": "Metroparks Toledo preserve with the Manor House, a formal garden and trails across varied terrain. The agency's fall color report names it for late-fall oak color.",
     "website": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-5.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Tim Kiser, CC BY 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1778,7 +1791,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "black-oak-heritage-park",
@@ -1793,13 +1806,14 @@
     "summary": "Windsor park of old-growth black oak savanna with one public trail.",
     "website": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__black-oak-heritage-park__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1810,7 +1824,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "stage-nature-center",
@@ -1826,13 +1840,14 @@
     "summary": "Nature preserve at the headwaters of the Rouge River with forest, meadow and marsh trails, including a Sugar Maple Loop.",
     "website": "https://troynaturesociety.org/visitor-info/hours-location/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-7.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__stage-nature-center__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Traveler100, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -1843,7 +1858,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "dexter-huron-metropark",
@@ -1859,13 +1874,14 @@
     "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike trail, canoe and kayak access and tree-lined paths.",
     "website": "https://www.metroparks.com/parks-and-destinations/dexter-huron-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1876,7 +1892,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "lower-huron-metropark",
@@ -1892,13 +1908,14 @@
     "summary": "Huron-Clinton Metropark along the Huron River with a paved Hike-Bike trail, nature trails and canoe and kayak access.",
     "website": "https://www.metroparks.com/parks-and-trails/lower-huron-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-1.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__lower-huron-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-2.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1909,7 +1926,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "willow-metropark",
@@ -1925,13 +1942,14 @@
     "summary": "Huron-Clinton Metropark of mature woodlands on the Huron River, with a paved Hike-Bike loop and paddling.",
     "website": "https://www.metroparks.com/parks-and-trails/willow-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-2.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__willow-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-3.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -1942,7 +1960,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "oakwoods-metropark",
@@ -1958,13 +1976,14 @@
     "summary": "Huron-Clinton Metropark on the Huron River with five nature trails, a nature center and a canoe and kayak trail.",
     "website": "https://www.metroparks.com/parks-and-trails/oakwoods-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__oakwoods-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons"
     }
    }
   },
@@ -2041,7 +2060,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "paint-creek-trail",
@@ -2057,13 +2076,14 @@
     "summary": "Rail trail between Rochester and Lake Orion, named in a published guide as a fall-color hike.",
     "website": "https://www.paintcreektrail.org/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-6.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__paint-creek-trail__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Cjunker1, Public domain, via Wikimedia Commons"
     }
    }
   },
@@ -2107,7 +2127,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "bird-hills-nature-area",
@@ -2122,13 +2142,14 @@
     "summary": "Ann Arbor's largest natural area, with unpaved trails through hills and ravines under beech, sugar maple, oak and hickory.",
     "website": "https://www.a2gov.org/parks-and-recreation/parks-places/birdhills/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__bird-hills-nature-area__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons"
     }
    }
   },
@@ -2369,7 +2390,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "side-cut-metropark",
@@ -2385,13 +2406,14 @@
     "summary": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
     "website": "https://metroparkstoledo.com/explore-your-parks/side-cut-metropark/",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-8.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__side-cut-metropark__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Nyttend, Public domain, via Wikimedia Commons"
     }
    }
   },
@@ -2468,7 +2490,7 @@
    "original15": false,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "acquired-file",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "point-pelee-national-park",
@@ -2483,13 +2505,14 @@
     "summary": "National park of forest, marsh and lakeshore with hiking trails, and a stopover for migrating Monarch butterflies each autumn.",
     "website": "https://parks.canada.ca/pn-np/on/pelee",
     "image": {
-     "src": "/assets/seasonal/fall-color-card-3.webp",
+     "src": "/assets/seasonal/photos/fall-color/fall-color__point-pelee-national-park__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-color-card-1.webp",
       "/assets/seasonal/fall-color-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: Ken Lund, CC BY-SA 2.0, via Wikimedia Commons"
     }
    }
   }

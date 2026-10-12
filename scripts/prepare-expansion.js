@@ -136,7 +136,10 @@ for (const col of ["fall", "fall-color"]) {
       delete e.image.ownerPhoto;
       delete e.image.acquired;
     }
-    if (!e.image.ownerPhoto) {
+    // A licensed photograph (third-party license route: author, license, license URL and rights check recorded) is kept as it is.
+    const licensedPhoto = e.image.illustrative === false && !e.image.ownerPhoto && e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && e.image.rightsVerifiedAt;
+    if (licensedPhoto) n++; // keep the illustration rotation of the other records unchanged
+    if (!e.image.ownerPhoto && !licensedPhoto) {
       const rot = ART[col][n++ % ART[col].length], ov = IMAGE_OVERRIDES[col][e.id], src = ov ? ART[col][ov - 1] : rot;
       const f = ED.illustrationImage(src, { alternates: ART[col].filter((a) => a !== src).slice(0, 2), acquiredAt: DATE, recordedBy: "Claude Code, recording the owner's image direction of 2026-10-12", recordedAt: DATE });
       e.image = Object.assign({}, f, e.image.photoCandidate ? { photoCandidate: e.image.photoCandidate } : {}, e.image.linkedCandidates ? { linkedCandidates: e.image.linkedCandidates } : {});

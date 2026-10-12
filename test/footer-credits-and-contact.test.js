@@ -51,7 +51,13 @@ console.log(`PASS: Photo Credits link in the footer of ${footerPages.length} pag
   assert.ok(/resized[^.]*converted to WebP/i.test(section) && /no other changes/i.test(section), "the modification disclosure is stated");
   assert.ok(/same license/i.test(section), "the CC BY-SA share-alike note is stated");
   const items = [...section.matchAll(/<li class="legal-li">([\s\S]*?)<\/li>/g)].map((m) => m[1]);
-  assert.strictEqual(items.length, 7, "seven photo credits");
+  // The first seven are the homepage neighborhood photographs. Seasonal-collection destination photographs follow them
+  // (listed in #seasonal-photo-credits); each needs its creator, Commons file page and license.
+  assert.ok(items.length >= 7, "at least the seven homepage photo credits");
+  items.slice(7).forEach((li, i) => {
+    assert.ok(/<strong>[^<]+<\/strong> &mdash; photo by [^,]+, <a href="https:\/\/commons\.wikimedia\.org\/wiki\/File:[^"]+"/.test(li), `seasonal credit ${i + 1}: creator and Commons file page`);
+    assert.ok(/href="https:\/\/creativecommons\.org\/(licenses|publicdomain)\/[^"]+"/.test(li), `seasonal credit ${i + 1}: links its license`);
+  });
   const expected = [
     ["Downtown", "Mikerussell", "CC BY-SA 3.0"],
     ["Eastern Market", "Michael Barera", "CC BY-SA 4.0"],
