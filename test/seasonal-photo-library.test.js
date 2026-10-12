@@ -49,7 +49,7 @@ for (const slug of DATA.ORDER) for (const e of entries[slug]) {
   assert.strictEqual(p.destination.published_id, e.id, e.id + " uses a photo of another destination");
   assert.strictEqual(e.image.src, p.files.card);
 }
-assert.strictEqual(owned, 9, "3 Halloween owner photos, plus Diehl's and Highland (launch 1) and four other fall/fall-color records that carry one");
+assert.strictEqual(owned, 8, "3 Halloween owner photos, plus Diehl's and Highland (launch 1) and three other fall/fall-color records that carry one (Oak Openings now shows a labelled illustration; its photograph is parked as an unresolved candidate)");
 // no originals in the repo
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((x) => x.isDirectory() ? walk(path.join(d, x.name)) : [path.join(d, x.name)]);
 assert.ok(!walk(path.join(root, "assets/seasonal")).some((f) => /\.(heic|heif|dng|mov)$/i.test(f)), "original files committed");

@@ -96,9 +96,12 @@
   }
   // Launch preview (QA only): the proposed launch records drawn with the public card, exactly as the public page would draw
   // them, plus one QA line under each card. Nothing here is published and nothing here records an approval.
+  var CLEAN = false;
   function launchRecords(records) { return records.filter(function (r) { return r.launch; }); }
   function launchCard(col, rec, view) {
     var e = toEntry(rec, undefined);
+    // Clean preview (?launch=1&clean=1): the card exactly as a visitor would see it, with no reviewer line.
+    if (CLEAN) return R.card(col, e, { list: view === "list", attrs: ' data-launch="1"' });
     var note = '<p class="sc-qa-line sc-qa-flag">PROPOSED, not approved · ' + esc(rec.publication.state.replace(/_/g, " ")) + ' · ' + esc(rec.launch.image_note) + '</p>';
     return R.card(col, e, { list: view === "list", extra: note, attrs: ' data-launch="1"' });
   }
@@ -142,6 +145,7 @@
       var records = data.records, choices = loadChoices(key), state = { category: "all", query: "", view: "grid" };
       var counts = { partial: 0, unver: 0, verified: 0 };
       var launchRecs = launchRecords(records), mode = launchRecs.length && /(^|[?&])launch=1(&|$)/.test(loc.search || "") ? "launch" : "qa";
+      CLEAN = mode === "launch" && /(^|[?&])clean=1(&|$)/.test(loc.search || "");
       records.forEach(function (r) { var vs = r.verification.status; vs === "verified" ? counts.verified++ : vs === "partial" ? counts.partial++ : counts.unver++; });
       var chips = doc.querySelector(".sc-chips");
       chips.innerHTML = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="true">All</button>' + usedCats(col, mode === "launch" ? launchRecs : records).map(function (c) {
@@ -151,8 +155,9 @@
       bar.innerHTML = '<strong>QA MODE</strong> — not public. ' + records.length + ' records · ' + (counts.verified ? counts.verified + ' official source read · ' : '') + counts.partial + ' partly verified · ' + counts.unver + ' unverified. Image choices save in this browser. ' +
         '<button type="button" class="sc-chip" id="scQaExport">Download image selections (JSON)</button> <button type="button" class="sc-chip" id="scQaReset">Reset choices</button>' +
         (launchRecs.length ? ' <button type="button" class="sc-chip" id="scQaModeQa" aria-pressed="true">QA review (all records)</button> <button type="button" class="sc-chip" id="scQaModeLaunch" aria-pressed="false">Launch preview (' + launchRecs.length + ' proposed)</button>' : "");
+      if (CLEAN) bar.innerHTML = '<strong>PREVIEW</strong> — not published. Nothing here is approved.';
       doc.querySelector(".sc-filters").insertAdjacentElement("beforebegin", bar);
-      if (backlog(data)) { var bl = doc.createElement("div"); bl.innerHTML = backlog(data); bar.insertAdjacentElement("afterend", bl.firstChild); }
+      if (!CLEAN && backlog(data)) { var bl = doc.createElement("div"); bl.innerHTML = backlog(data); bar.insertAdjacentElement("afterend", bl.firstChild); }
       var host = doc.getElementById("scResults"), count = doc.getElementById("scCount");
       function render() {
         var old = doc.getElementById("scQaLaunchRail"); if (old) old.remove();
@@ -160,8 +165,9 @@
           var ex = doc.getElementById("scExplore"), sec = ex && ex.closest("section");
           if (sec && !state.query && state.category === "all") sec.insertAdjacentHTML("beforebegin", launchRail(col, records));
           host.innerHTML = launchResults(col, records, state);
-          count.textContent = visible(launchRecs, state).length + " of " + launchRecs.length + " proposed destinations (LAUNCH PREVIEW: nothing is published, nothing is approved)";
-          bar.querySelector("strong").textContent = "LAUNCH PREVIEW";
+          count.textContent = CLEAN ? visible(launchRecs, state).length + " of " + launchRecs.length + " destinations (preview: nothing is published, nothing is approved)"
+            : visible(launchRecs, state).length + " of " + launchRecs.length + " proposed destinations (LAUNCH PREVIEW: nothing is published, nothing is approved)";
+          bar.querySelector("strong").textContent = CLEAN ? "PREVIEW" : "LAUNCH PREVIEW";
         } else {
           host.innerHTML = results(col, records, state, choices);
           count.textContent = visible(records, state).length + " of " + records.length + " destinations (QA: every record)";

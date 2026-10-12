@@ -72,7 +72,9 @@ for (const slug of ["fall", "fall-color"]) {
   for (const slug of ["fall", "fall-color"]) {
     const d = JSON.parse(fs.readFileSync(path.join(E, slug + "-qa.json"), "utf8"));
     assert.strictEqual(d.launch.proposed, launch.collections[slug].length);
-    assert.deepStrictEqual(d.records.filter((r) => r.launch).map((r) => r.id).sort(), launch.collections[slug].slice().sort(), slug + ": QA flags exactly the launch-1 records");
+    const exp = (() => { try { return JSON.parse(fs.readFileSync(path.join(E, "launch-expansion.json"), "utf8")).collections[slug] || []; } catch (e) { return []; } })();
+    assert.deepStrictEqual(d.records.filter((r) => r.launch && r.launch.batch === launch.batch).map((r) => r.id).sort(), launch.collections[slug].slice().sort(), slug + ": QA flags exactly the launch-1 records as launch-1");
+    assert.deepStrictEqual(d.records.filter((r) => r.launch).map((r) => r.id).sort(), launch.collections[slug].concat(exp).sort(), slug + ": QA flags launch-1 plus the expansion batch");
     for (const id of launch.collections[slug]) {
       const e = ents[slug].find((x) => x.id === id), g = C.gate(e), r = d.records.find((x) => x.id === id);
       assert.ok(e, id + " exists");
@@ -105,7 +107,7 @@ for (const slug of ["fall", "fall-color"]) {
     }
     // the launch preview draws only proposed records, with the public card, the illustration badge and a proposed-not-approved line
     const lr = QA.launchRecords(d.records);
-    assert.strictEqual(lr.length, launch.collections[slug].length);
+    assert.strictEqual(lr.length, launch.collections[slug].length + exp.length);
     const grid = QA.launchResults(C.COLLECTIONS[slug], d.records, { category: "all", query: "", view: "grid" });
     assert.strictEqual((grid.match(/<li class="sc-card/g) || []).length, lr.length);
     assert.strictEqual((grid.match(/PROPOSED, not approved/g) || []).length, lr.length);

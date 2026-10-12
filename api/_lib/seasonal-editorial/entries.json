@@ -8,19 +8,35 @@
    "categories": [
     "cider-donuts"
    ],
-   "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Yates Cider Mill in Rochester Hills. Official page lists cider, donuts, apple tent, pony rides.",
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic cider mill with cider, donuts, an apple tent, pony rides and a petting zoo.",
    "image": {
     "src": "/assets/seasonal/fall-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-2.webp"
+     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-1.webp",
+     "bytes": 35358,
+     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
     "linkedCandidates": [
      {
       "src": "https://oaklandcounty115.com/wp-content/uploads/2018/09/20180909_yates_01.jpg",
@@ -31,7 +47,16 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "2018 photo of the mill and water wheel, 600x450. Original link was http; https version loads."
      }
-    ]
+    ],
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -71,6 +96,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -81,12 +110,13 @@
    "categories": [
     "cider-donuts"
    ],
-   "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Parmenter's Northville Cider Mill in Northville. Official page lists cider and products, large call-ahead orders.",
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic Northville cider mill selling cider and cider products, with call-ahead orders for large quantities.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
+     "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
@@ -94,6 +124,21 @@
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-2.webp",
+     "bytes": 27886,
+     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
     "linkedCandidates": [
      {
       "src": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/f0/e0/e2/photo0jpg.jpg?w=1200&h=-1&s=1",
@@ -104,7 +149,16 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "Traveler-uploaded photo of the mill's red barn. Not from the mill's own site (its own photos were too small)."
      }
-    ]
+    ],
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -144,6 +198,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -155,20 +213,36 @@
     "cider-donuts",
     "farm-experiences"
    ],
-   "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Blake's Orchard & Cider Mill in Armada. Official page lists cider mill, tasting room, U-pick, Funland.",
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery.",
    "website": "https://blakefarms.com/",
    "image": {
     "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-4.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-3.webp",
+     "bytes": 30910,
+     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
     "linkedCandidates": [
      {
       "src": "https://blakefarms.com/wp-content/uploads/2024/05/BLAKES-BIG-APPLE.jpg",
@@ -179,7 +253,16 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "Official photo of the Big Apple landmark at sunset; portrait crop. Not specifically a fall-activity photo."
      }
-    ]
+    ],
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -218,6 +301,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -483,18 +570,43 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Dexter Cider Mill in Dexter. Official page lists cinnamon doughnuts, cider, caramel apples, hard cider tasting room.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic riverside cider mill with cinnamon doughnuts, fresh-pressed cider, caramel apples and outdoor seating along the Huron River.",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/fall-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-8.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-4.webp",
+     "bytes": 32410,
+     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -521,6 +633,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -626,18 +742,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Blake's Big Apple in Armada. Official page lists U-pick, haunted hayrides, Funland, corn maze.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions.",
    "image": {
-    "src": "/assets/seasonal/fall-card-8.webp",
+    "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-3.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -664,6 +805,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -758,18 +903,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Stony Creek Orchard & Cider Mill in Romeo. Official page lists U-pick apples, U-pick raspberries, moonlight hayrides, farm stand.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts.",
    "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
+    "src": "/assets/seasonal/fall-card-6.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-6.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-6.webp",
+     "bytes": 37500,
+     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -796,6 +966,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1151,18 +1325,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Obstbaum Orchards in Northville. Official page lists u-pick apples, cider, donuts, hayrides.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides.",
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/fall-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-4.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-7.webp",
+     "bytes": 38066,
+     "sha256": "1b07ab5449cbf9029bdfb97b8620b21f58fb5bbab1210b891d23d246e484ce77",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1189,6 +1388,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1294,18 +1497,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Westview Orchards & Winery in Washington Township. Official page lists u-pick and pre-picked pumpkins, cider, donuts, baked goods.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and farm market with U-pick and pre-picked pumpkins, cider, donuts, baked goods and an outdoor winery.",
    "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
+    "src": "/assets/seasonal/fall-card-8.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-6.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-8.webp",
+     "bytes": 22172,
+     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1332,6 +1560,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1437,18 +1669,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Three Cedars Farm in Northville. Official page lists Cider Donut Hut, Country Store, Country Christmas.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/fall-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-8.webp"
+     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-1.webp",
+     "bytes": 35358,
+     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1475,6 +1732,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1486,18 +1747,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Kackleberry Farms in Monroe. Official page lists corn maze, slides, photo spots, cider donuts.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Fall festival farm with a corn maze, slides, photo spots and cider donuts.",
    "image": {
-    "src": "/assets/seasonal/fall-card-6.webp",
+    "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-1.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-2.webp",
+     "bytes": 27886,
+     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1524,6 +1810,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1535,18 +1825,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Bonadeo Farms in Highland. Official page lists haunted house, hayrides, cider, donuts.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Farm with a corn maze, pumpkin patch, hayrides, cider and donuts, and a haunted house on weekend evenings.",
    "image": {
-    "src": "/assets/seasonal/fall-card-7.webp",
+    "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
+     "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-3.webp",
+     "bytes": 30910,
+     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1573,6 +1888,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1625,18 +1944,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Alber Orchard & Cider Mill in Manchester. Official page lists heirloom and traditional apples, cider and hard cider, pumpkins, wine.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill with heirloom and traditional apples, cider and hard cider, pumpkins and the Freedom Winery.",
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/fall-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-4.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-4.webp",
+     "bytes": 32410,
+     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1668,6 +2012,10 @@
     "miles": 52,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Manchester MI village centre (general geographic knowledge, not from official page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -1907,18 +2255,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Blake's Backyard in Almont. Official page lists taproom and kitchen, market and greenhouse, seasonal homegrown produce, U-pick.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Blake Farms market, taproom and U-pick with a greenhouse, a tree nursery and fall bonfires.",
    "image": {
-    "src": "/assets/seasonal/fall-card-6.webp",
+    "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-1.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -1950,6 +2323,10 @@
     "miles": 41,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Almont MI area (general geographic knowledge))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -2072,18 +2449,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Erie Orchards & Cider Mill in Erie. Official page lists pumpkin picking, blueberry and peach picking, hayrides, magic shows.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill with pumpkin picking, blueberry and peach picking, hayrides, donuts, cider and caramel apples.",
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/fall-card-6.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-4.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-6.webp",
+     "bytes": 37500,
+     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -2115,6 +2517,10 @@
     "miles": 48,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Erie MI area (general geographic knowledge))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -2293,18 +2699,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Kreps Apple Barn & Cider Mill in La Salle. Official page lists Animal barn, Corn maze, Sunflower trail, U-cut flowers and workshops.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill with an animal barn, a corn maze, a sunflower trail and U-cut flowers.",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/fall-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-8.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-7.webp",
+     "bytes": 38066,
+     "sha256": "1b07ab5449cbf9029bdfb97b8620b21f58fb5bbab1210b891d23d246e484ce77",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -2336,6 +2767,10 @@
     "miles": 37,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, La Salle (Monroe County) township centre; not taken from the official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -2495,18 +2930,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Parshallville Cider Mill in Fenton. Official page lists Fresh cider, Donuts and baked goods, Pies, cakes and cookies at the Apple Core, Live music Sunday afternoons.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/fall-card-8.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-4.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-8.webp",
+     "bytes": 22172,
+     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -2538,6 +2998,10 @@
     "miles": 51,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Parshallville/Fenton area; not from the official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -2685,18 +3149,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Schell Family Farm in Pinckney. Official page lists Pumpkins, Apples, Fruit orchard, Wagon rides.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Family farm with pumpkins, apples, a fruit orchard and wagon rides.",
    "image": {
-    "src": "/assets/seasonal/fall-card-4.webp",
+    "src": "/assets/seasonal/fall-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-7.webp"
+     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-1.webp",
+     "bytes": 35358,
+     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -2728,6 +3217,10 @@
     "miles": 47,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Pinckney village centre; not from the official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -2976,18 +3469,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Corn Fun in Casco. Official page lists two corn mazes with checkpoint games, Spookley the Square Pumpkin theme, sunflower, zinnia and cosmos Flower Festival, hayrides.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Family farm with two corn mazes, hayrides, pick-your-own pumpkins and a sunflower and zinnia flower festival.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-5.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-2.webp",
+     "bytes": 27886,
+     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3019,6 +3537,10 @@
     "miles": 32,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Casco Township area; not from the page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3030,18 +3552,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "DeBuck's Family Farm in Belleville. Official page lists fall photo displays, seasonal food and drinks, giant slides including Mega Slide, jump pads.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Family farm with a corn maze, pumpkin fields, giant slides, jump pads and fall photo displays.",
    "image": {
     "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-6.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-3.webp",
+     "bytes": 30910,
+     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3073,6 +3620,10 @@
     "miles": 24,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Belleville city centre; not from the page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3159,18 +3710,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Flushing Farms in Flushing. Official page lists three corn mazes, unlimited hay wagon and barrel train rides, petting zoo with highland cows, two inflatable obstacle courses and bounce houses.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Farm with three corn mazes, hay wagon and barrel train rides, a petting zoo with Highland cows, a flower field and a pumpkin shop.",
    "image": {
-    "src": "/assets/seasonal/fall-card-6.webp",
+    "src": "/assets/seasonal/fall-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-1.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-4.webp",
+     "bytes": 32410,
+     "sha256": "33bbb093923b83d43ac1b5c5af7c06ba699ccbfc23596162b3b79f6e5b856ac5",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3202,6 +3778,10 @@
     "miles": 65,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Flushing area; not from the page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3362,18 +3942,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Nixon Farms / Blast Corn Maze in Dexter. Official page lists Blast Corn Maze, U-pick pumpkin patch, tractor-drawn hayrides, corn cannon.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Working farm with the Blast Corn Maze, a U-pick pumpkin patch, tractor-drawn hayrides and a corn cannon.",
    "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
+    "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-6.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-5.webp",
+     "bytes": 30844,
+     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3405,6 +4010,10 @@
     "miles": 43,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Dexter city centre; not from the page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3528,18 +4137,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Trabbic Family Pumpkin Farm in Erie. Official page lists picking pumpkins, visiting the animals, rides, fresh cider and donuts.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Pumpkin farm with pumpkin picking, farm animals, rides, and fresh cider and donuts.",
    "image": {
-    "src": "/assets/seasonal/fall-card-7.webp",
+    "src": "/assets/seasonal/fall-card-6.webp",
     "alternates": [
+     "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-6.webp",
+     "bytes": 37500,
+     "sha256": "2d2959c0ddada46a580d2545c96809585ca92368490ebb942f95b137705b54dd",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3571,6 +4205,10 @@
     "miles": 47,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate city centre of Erie, MI (not from an official page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3711,18 +4349,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "MacQueen Orchards in Holland. Official page lists pick your own apples and pumpkins, corn maze, live entertainment, pony rides, carousels, barrel train.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill with pick-your-own apples and pumpkins, a corn maze, pony rides, a petting zoo and a farm market and bakery.",
    "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
+    "src": "/assets/seasonal/fall-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-6.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-7.webp",
+     "bytes": 38066,
+     "sha256": "1b07ab5449cbf9029bdfb97b8620b21f58fb5bbab1210b891d23d246e484ce77",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3754,6 +4417,10 @@
     "miles": 60,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate city centre of Holland, OH (not from an official page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3766,18 +4433,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Gust Brother's Pumpkin Farm in Ottawa Lake. Official page lists farm market, you-pick pumpkin patch and you-cut flowers, farm animals and bunny barn, cider, donuts, pumpkin cookies.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Fall farm with a you-pick pumpkin patch, a corn maze, hayrides, farm animals, cider and donuts.",
    "image": {
-    "src": "/assets/seasonal/fall-card-4.webp",
+    "src": "/assets/seasonal/fall-card-8.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-7.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-8.webp",
+     "bytes": 22172,
+     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3809,6 +4501,10 @@
     "miles": 49,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate city centre of Ottawa Lake, MI (not from an official page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3820,18 +4516,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Jason's Pumpkin Patch in Oak Harbor. Official page lists activities, corn maze, products, field trips/parties.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Pumpkin patch with a corn maze, field trips and parties.",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/fall-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-8.webp"
+     "/assets/seasonal/fall-card-2.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-1.webp",
+     "bytes": 35358,
+     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3863,6 +4584,10 @@
     "miles": 56,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate city centre of Oak Harbor, OH (not from an official page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -3928,18 +4653,43 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Wheeler Farms Corn Maze in Whitehouse. Official page lists corn maze, campfires.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Corn maze at The Butterfly House farm, with campfires.",
    "image": {
-    "src": "/assets/seasonal/fall-card-7.webp",
+    "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-card-2.webp"
+     "/assets/seasonal/fall-card-1.webp",
+     "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-card-2.webp",
+     "bytes": 27886,
+     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -3971,6 +4721,10 @@
     "miles": 69,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate city centre of Whitehouse, OH (not from an official page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   }
  ],
@@ -6137,20 +6891,36 @@
     "trails-woods",
     "waterfronts"
    ],
-   "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Hudson Mills Metropark in Dexter. Listed features: hiking, biking, canoeing/kayaking, fishing.",
+   "featured": false,
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike loop, the Acorn Nature Trail and a canoe and kayak launch.",
    "website": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-4.webp"
+     "/assets/seasonal/fall-color-card-2.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
     "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
     "linkedCandidates": [
      {
       "src": "https://images.alltrails.com/eyJidWNrZXQiOiJhc3NldHMuYWxsdHJhaWxzLmNvbSIsImtleSI6InVwbG9hZHMvcGhvdG8vaW1hZ2UvNTMyODk5MTgvNGM4MzZkOGQ0OTE0NmNmZWY5M2YzNTdiMWM1NWU1Y2IuanBnIiwiZWRpdHMiOnsidG9Gb3JtYXQiOiJ3ZWJwIiwicmVzaXplIjp7IndpZHRoIjoiMTA4MCIsImhlaWdodCI6IjcwMCIsImZpdCI6ImNvdmVyIn0sInJvdGF0ZSI6bnVsbCwianBlZyI6eyJ0cmVsbGlzUXVhbnRpc2F0aW9uIjp0cnVlLCJvdmVyc2hvb3REZXJpbmdpbmciOnRydWUsIm9wdGltaXNlU2NhbnMiOnRydWUsInF1YW50aXNhdGlvblRhYmxlIjozfX19",
@@ -6161,7 +6931,16 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "User-uploaded photo on the park's AllTrails page. The link is a long CDN link and could break sooner than others."
      }
-    ]
+    ],
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6218,6 +6997,10 @@
     "miles": 44,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from Dexter area general location; not read from an official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -6329,18 +7112,43 @@
     "waterfronts"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Belle Isle Park in Detroit. Listed features: hiking, biking, fishing, paddling.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Island state park in the Detroit River with nature trails, a nature center, a conservatory, an aquarium and the Oudolf Garden.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/fall-color-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-4.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-2.webp",
+     "bytes": 23054,
+     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6385,6 +7193,10 @@
     "miles": 3,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Wikipedia 'Belle Isle Park (Michigan)' infobox, 42°20′25″N 82°59′12″W)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -6483,18 +7295,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Rouge Park in Detroit. Listed features: golf, archery, horses, butterfly garden.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Detroit's largest park, along the Rouge River with nature trails, paved walking paths, an archery range and a golf course.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-3.webp",
+     "bytes": 42168,
+     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6545,6 +7382,10 @@
     "miles": 11,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Hiking Project trail page for Stone Bridge Nature Trail (a trail inside the park, not the park centroid); approximate)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -6556,18 +7397,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Hines Drive / Edward N. Hines Parkway in Wayne County. Listed features: bike paths, walking trails, fishing, disc golf.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Scenic drive along the Rouge River through Wayne County parks, with walking trails, bike paths, fishing and picnic areas.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-7.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-4.webp",
+     "bytes": 46450,
+     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6612,6 +7478,10 @@
     "miles": 16,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Wikipedia 'Edward N. Hines Park' infobox (park midpoint))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -6623,18 +7493,43 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Bennett Arboretum in Northville. Listed features: two-mile unpaved walking trail, arboretum, autumn cross-country running.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Wayne County arboretum on Hines Drive with maple, oak and beech collections and a gentle unpaved walking trail.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-8.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-5.webp",
+     "bytes": 40294,
+     "sha256": "4dc1d78ed126767e086990022e2f358f3247adb092f3e218ba2c436edcb13882",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6661,6 +7556,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -6672,18 +7571,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Maybury State Park in Northville. Listed features: hiking, mountain biking, equestrian trails, fishing pond.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-6.webp",
+     "bytes": 59288,
+     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6727,6 +7651,10 @@
     "miles": 26,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Wikipedia 'Maybury State Park' (42°25′46″N 83°31′58″W))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -6890,18 +7818,43 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Elmwood Cemetery in Detroit. Listed features: self-guided tree tours, guided tours, certified arboretum, birding.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic cemetery and certified arboretum with self-guided tree tours.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/fall-color-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-4.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-7.webp",
+     "bytes": 34038,
+     "sha256": "b9c11f0473887628af5ac24ddf38f5ea89d97e931b23ba827e156297145cdea0",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6928,6 +7881,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -7001,18 +7958,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Dequindre Cut Greenway in Detroit. Listed features: walking, biking, murals, seasonal beer garden.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Below-grade greenway between Eastern Market and the riverfront with separate walking and biking lanes, murals, and trees that turn colors in early October.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-8.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-8.webp",
+     "bytes": 39212,
+     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7047,6 +8029,10 @@
     "miles": 1,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Wikipedia 'Dequindre Cut' infobox (about 42.34389, -83.03361))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -7311,18 +8297,43 @@
     "waterfronts"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Seven Lakes State Park in Holly. Listed features: hiking, biking, paddling, fishing.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "State park of rolling hills, forest and lakes with marked hiking loops, paddling and fishing.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-2.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7362,6 +8373,10 @@
     "miles": 44,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from Holly area general location; not read from an official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -7437,18 +8452,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Waterloo State Recreation Area in Chelsea. Listed features: hiking, mountain biking, horseback riding, disc golf.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "The Lower Peninsula's largest state park, with lakes, hiking trails and the Eddy Discovery Center.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "src": "/assets/seasonal/fall-color-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-8.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-2.webp",
+     "bytes": 23054,
+     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7493,6 +8533,10 @@
     "miles": 54,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from Chelsea/Waterloo area general location; not read from an official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -7504,18 +8548,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Huron River Drive in Ann Arbor–Dexter. Listed features: follows the Huron River, runs past Metroparks and nature areas, ends near Dexter, Dexter Cider Mill nearby.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Winding road along the Huron River between Ann Arbor and Dexter, listed as a fall-color drive by Destination Ann Arbor and the County Road Association of Michigan.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/fall-color-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-3.webp",
+     "bytes": 42168,
+     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7562,48 +8631,63 @@
     "miles": 41,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, midpoint of Ann Arbor-Dexter corridor; not from a page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
    "id": "oak-openings-preserve-metropark",
    "name": "Oak Openings Preserve Metropark",
-   "city": "Swanton",
+   "city": "Whitehouse",
    "region": "OH",
    "categories": [
     "trails-woods"
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Oak Openings Preserve Metropark in Swanton. Listed features: camping, cabins, birding, horse trails.",
+   "summary": "Metroparks Toledo's largest park, with oak savanna, more than 70 miles of trail and the Windows on Wildlife bird-viewing area. The agency's fall color report recommends it for late-fall oak color.",
    "image": {
+    "src": "/assets/seasonal/fall-color-card-4.webp",
     "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
-    "src": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
-    "source": "313.events owner photo archive, captured 2022-11-06",
-    "credit": "313.events archive",
-    "illustrative": false,
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
     "acquired": {
-     "file": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
-     "bytes": 278148,
-     "sha256": "6d5208b5e190405293dc687b2d6077ccdda85641bf9a9c5171883b7e36472435",
-     "width": 1280,
-     "height": 853,
-     "acquiredAt": "2026-10-11"
+     "file": "/assets/seasonal/fall-color-card-4.webp",
+     "bytes": 46450,
+     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
     },
-    "ownerPhoto": {
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "photoCandidate": {
      "photoId": "313p-7264a257",
-     "reviewRef": "S16-02",
-     "authorization": {
-      "statement": "Owner-authorized: photographer granted use to 313.events owner",
-      "grantee": "313.events owner",
-      "recordedBy": "Jody Tyree (owner photo recorded in photo-library.json, S16-02)",
-      "recordedAt": "2026-10-11",
-      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
-     },
-     "verifiedAt": "2026-10-11",
-     "verifiedBy": "Claude Code: size, dimensions and sha256 computed from the repository file"
+     "src": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
+     "status": "UNRESOLVED",
+     "note": "Photographer and commercial-use scope are not confirmed, so this photograph is not used; a labelled illustration is shown instead."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
     }
    },
    "evidence": [
@@ -7644,6 +8728,10 @@
     "miles": 68,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from Oak Openings area general location; not read from an official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -7655,18 +8743,43 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Wildwood Preserve Metropark in Toledo. Listed features: hiking, Manor House tours, gardens, playground.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Metroparks Toledo preserve with the Manor House, a formal garden and trails across varied terrain. The agency's fall color report names it for late-fall oak color.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/fall-color-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-3.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-5.webp",
+     "bytes": 40294,
+     "sha256": "4dc1d78ed126767e086990022e2f358f3247adb092f3e218ba2c436edcb13882",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7701,6 +8814,10 @@
     "miles": 56,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from west Toledo location; not read from an official page)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -7780,18 +8897,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Black Oak Heritage Park in Windsor. Listed features: hiking, bird-watching, photography, leisure cycling.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Windsor park of old-growth black oak savanna with one public trail.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/fall-color-card-6.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-5.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-6.webp",
+     "bytes": 59288,
+     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7818,6 +8960,10 @@
      }
     ],
     "unresolved": []
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -8237,18 +9383,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Stage Nature Center in Troy. Listed features: Rouge River headwaters, Raptor House.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Nature preserve at the headwaters of the Rouge River with forest, meadow and marsh trails, including a Sugar Maple Loop.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-7.webp",
+     "bytes": 34038,
+     "sha256": "b9c11f0473887628af5ac24ddf38f5ea89d97e931b23ba827e156297145cdea0",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -8283,6 +9454,10 @@
      "No explicit foliage claim",
      "Trail length differs: 1.5 vs 2 mi across pages"
     ]
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -8405,18 +9580,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Dexter-Huron Metropark in Dexter. Listed features: paved Hike-Bike Trail, Huron River canoe/kayak, picnic shelters, bike rentals.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike trail, canoe and kayak access and tree-lined paths.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/fall-color-card-8.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-8.webp",
+     "bytes": 39212,
+     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -8450,6 +9650,10 @@
     "unresolved": [
      "Official foliage claim absent"
     ]
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -8520,18 +9724,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Lower Huron Metropark in Belleville. Listed features: Huron River fishing and canoeing/kayaking, Bobwhite Trail, Woods Creek Trail, Tawata Trace Trail.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark along the Huron River with a paved Hike-Bike trail, nature trails and canoe and kayak access.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/fall-color-card-1.webp",
     "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -8566,6 +9795,10 @@
     "miles": 24,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; Belleville area, general geographic knowledge, not stated on a page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -8578,18 +9811,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Willow Metropark in New Boston. Listed features: Huron River paddling and fishing, pool, playground, shelters.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark of mature woodlands on the Huron River, with a paved Hike-Bike loop and paddling.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/fall-color-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-4.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-2.webp",
+     "bytes": 23054,
+     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -8628,30 +9886,59 @@
     "miles": 22,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; New Boston area, general geographic knowledge, not stated on a page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
    "id": "oakwoods-metropark",
    "name": "Oakwoods Metropark",
-   "city": "Flat Rock",
+   "city": "New Boston",
    "region": "MI",
    "categories": [
     "waterfronts",
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Oakwoods Metropark in Flat Rock. Listed features: five nature trails, nature center, Walk-In-The-Water canoe/kayak trail, monarch waystation.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark on the Huron River with five nature trails, a nature center and a canoe and kayak trail.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/fall-color-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-5.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-3.webp",
+     "bytes": 42168,
+     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -8690,6 +9977,10 @@
     "miles": 19,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; general geographic knowledge (Flat Rock/New Boston area), not stated on a page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -9110,18 +10401,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Independence Oaks County Park in Clarkston. Listed features: Wint Nature Center, swimming beach, archery range, non-motorized boat launch.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Oakland County park with a lake, a nature center, more than 12 miles of trails and an old-growth forest section.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/fall-color-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-5.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-4.webp",
+     "bytes": 46450,
+     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -9155,6 +10471,10 @@
     "miles": 34,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; Clarkston area, general geographic knowledge, not stated on a page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -9167,18 +10487,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Addison Oaks County Park in Leonard. Listed features: Buhl Lake Loop with Solar System Trail, disc golf, camping, yurts, cabins, Old-Growth Forest Network designation.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Oakland County park with more than 20 miles of trails, a lake loop and an old-growth forest designation.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-5.webp",
+     "bytes": 40294,
+     "sha256": "4dc1d78ed126767e086990022e2f358f3247adb092f3e218ba2c436edcb13882",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -9212,6 +10557,10 @@
     "miles": 34,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; Leonard area, general geographic knowledge, not stated on a page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -9334,18 +10683,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Paint Creek Trail in Rochester–Lake Orion. Listed features: walking, biking, horseback, fishing, skiing shown, Moutrie Pollinator Garden, trail maps and events.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Rail trail between Rochester and Lake Orion, named in a published guide as a fall-color hike.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-6.webp",
+     "bytes": 59288,
+     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -9385,6 +10759,10 @@
     "miles": 24,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate midpoint from general geographic knowledge; not stated on the page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -9613,18 +10991,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Macomb Orchard Trail in Macomb County. Listed features: former railroad route with tree-canopy tunnels, small towns, orchards, farms, benches, bike repair stations, bridges, parking, restrooms.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Rail trail through Macomb County with tree-canopy tunnels, orchards and farms.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-7.webp",
+     "bytes": 34038,
+     "sha256": "b9c11f0473887628af5ac24ddf38f5ea89d97e931b23ba827e156297145cdea0",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -9664,6 +11067,10 @@
     "miles": 29,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate midpoint from general geographic knowledge; not stated on the page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -9735,18 +11142,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Bird Hills Nature Area in Ann Arbor. Listed features: unpaved trails through hills and ravines, beech, sugar maple, oaks, hickory, connects to Barton and Kuebler Langford nature areas.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Ann Arbor's largest natural area, with unpaved trails through hills and ravines under beech, sugar maple, oak and hickory.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "src": "/assets/seasonal/fall-color-card-8.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-8.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-8.webp",
+     "bytes": 39212,
+     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -9785,6 +11217,10 @@
     "miles": 38,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate from general geographic knowledge for NW Ann Arbor; not stated on the page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -9797,18 +11233,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Barton Nature Area in Ann Arbor. Listed features: trails in the Barton oxbow, Border-to-Border Trail link, Barton Pond and dam path, boat launches.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Nature area along the Huron River with trails around the Barton oxbow. Destination Ann Arbor lists it for autumn color.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/fall-color-card-1.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-2.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -9840,6 +11301,10 @@
     "miles": 38,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate from general geographic knowledge for NW Ann Arbor; not stated on the page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -10066,18 +11531,43 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Old US-12 corridor in Chelsea–Ann Arbor–Ypsilanti. Listed features: picturesque views from Chelsea through Ann Arbor to Ypsilanti.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Scenic fall drive from Chelsea through Ann Arbor to Ypsilanti, listed by Destination Ann Arbor.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/fall-color-card-2.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-6.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-2.webp",
+     "bytes": 23054,
+     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -10117,6 +11607,10 @@
      "Current construction or closures not checked",
      "No single official road page; a drive, not a destination"
     ]
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11231,18 +12725,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Columbus County Park in Columbus Township. Listed features: nature trail through wetlands and maple forest, equestrian trail, sledding hill, lodge.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "St. Clair County park with a nature trail through wetlands and maple forest, an equestrian trail and a lodge.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/fall-color-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-4.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-3.webp",
+     "bytes": 42168,
+     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -11276,6 +12795,10 @@
     "miles": 43,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate: Columbus Township area (not from page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11288,18 +12811,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Wadhams to Avoca Trail in St. Clair County. Listed features: bird watching, memorial bench program.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Rail trail in St. Clair County whose county page cites fall colors along the route, with a trestle overlook above the Mill Creek valley.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/fall-color-card-4.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-5.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-4.webp",
+     "bytes": 46450,
+     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -11333,6 +12881,10 @@
     "miles": 51,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate: trail area, St. Clair County (not from page))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11766,18 +13318,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Grosse Ile Nature & Land Conservancy preserves in Grosse Ile. Listed features: Hennepin Marsh Gateway short trail, boardwalk, observation platform, Dr. Bruce Jones Preserve public trails, Airport Natural Area trails.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Public preserves on Grosse Ile with oak woodland trails, a marsh boardwalk and an observation platform.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "src": "/assets/seasonal/fall-color-card-5.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-7.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-5.webp",
+     "bytes": 40294,
+     "sha256": "4dc1d78ed126767e086990022e2f358f3247adb092f3e218ba2c436edcb13882",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -11807,6 +13384,10 @@
      "No explicit fall color source",
      "Preserve list is many parcels; which to feature unclear"
     ]
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11819,18 +13400,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Secor Metropark in Berkey. Listed features: Tall timber, second-growth forest, meadows, prairies, Largest concentration of native dogwood in NW Ohio; former arboretum trees, Trail list and map; Moseley Trail link to Wiregrass Lake, Windows on Wildlife; picnic areas; playgrounds.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Metroparks Toledo park of second-growth forest, meadows and prairies, with the region's largest concentration of native dogwood. The agency's fall color report names it.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "src": "/assets/seasonal/fall-color-card-6.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-8.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-6.webp",
+     "bytes": 59288,
+     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -11867,6 +13473,10 @@
     "miles": 60,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Metroparks Toledo official page map link)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11879,18 +13489,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Pearson Metropark in Oregon. Listed features: Remnant Great Black Swamp forest; portions in Old-Growth Forest Network, Ponds/fishing, ball fields, Macomber Lodge, Windows on Wildlife; Johlin Cabin.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Metroparks Toledo park with remnant Great Black Swamp forest, ponds and about 15 miles of trails. The agency's fall color report names it.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/fall-color-card-7.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-7.webp",
+     "bytes": 34038,
+     "sha256": "b9c11f0473887628af5ac24ddf38f5ea89d97e931b23ba827e156297145cdea0",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -11927,6 +13562,10 @@
     "miles": 52,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Metroparks Toledo official page map link)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11939,18 +13578,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Side Cut Metropark in Maumee. Listed features: Maumee River and canal access, Fishing, walleye run, paddling, Connects to Wabash Cannonball Trail, Windows on Wildlife; sledding hill; playground.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-7.webp",
+    "src": "/assets/seasonal/fall-color-card-8.webp",
     "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-8.webp",
+     "bytes": 39212,
+     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -11984,6 +13648,10 @@
     "miles": 63,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Metroparks Toledo official page map link (approximate))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -11996,18 +13664,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Farnsworth Metropark in Waterville. Listed features: Towpath Trail, Maumee River views and Interurban Bridge ruins, Picnic and indoor facilities, Fishing.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Metroparks Toledo park on the Maumee River with the Towpath Trail, river views and the Interurban Bridge ruins.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/fall-color-card-1.webp",
     "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-1.webp",
+     "bytes": 57076,
+     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -12042,6 +13735,10 @@
     "miles": 71,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from general knowledge of the Waterville area; not stated on the page read)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -12872,18 +14569,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Holiday Beach Conservation Area in Amherstburg. Listed features: Beach, Trails, Three-storey viewing tower, Natural playground.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/fall-color-card-2.webp",
     "alternates": [
+     "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-2.webp",
+     "bytes": 23054,
+     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -12924,6 +14646,10 @@
     "miles": 16,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Wikipedia Amherstburg (town point; approximate, not the park))"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {
@@ -13234,18 +14960,43 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Point Pelee National Park in Leamington. Listed features: Hiking trails, Cycling, Paddling, Birding.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "National park of forest, marsh and lakeshore with hiking trails, and a stopover for migrating Monarch butterflies each autumn.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/fall-color-card-3.webp",
     "alternates": [
-     "/assets/seasonal/fall-color-card-1.webp"
+     "/assets/seasonal/fall-color-card-1.webp",
+     "/assets/seasonal/fall-color-card-2.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/fall-color-card-3.webp",
+     "bytes": 42168,
+     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -13285,6 +15036,10 @@
     "miles": 37,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (Wikipedia Point Pelee National Park article)"
+   },
+   "expansionCandidate": {
+    "batch": "expansion-1",
+    "note": "Prepared for owner review. Not approved. Description generated from facts read on the official page."
    }
   },
   {

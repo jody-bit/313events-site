@@ -3,7 +3,11 @@
  "collection": "fall",
  "launch": {
   "batch": "launch-1",
-  "proposed": 10
+  "proposed": 10,
+  "expansion": {
+   "batch": "expansion-1",
+   "proposed": 26
+  }
  },
  "note": "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Nothing here is approved; the publication gate decides, and no approval is recorded.",
  "records": [
@@ -19,52 +23,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Alber Orchard & Cider Mill in Manchester. Official page lists heirloom and traditional apples, cider and hard cider, pumpkins, wine.",
+   "summary": "Orchard and cider mill with heirloom and traditional apples, cider and hard cider, pumpkins and the Freedom Winery.",
    "official_site": "https://alberorchard.com",
    "website": "https://alberorchard.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://alberorchard.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "winery on same site",
-     "no closing date stated"
-    ]
+    "detail": "Official page read 2026-10-11 (https://alberorchard.com), two independent reads. Relevance (recorded): Operating cider mill and orchard with a stated 2026 fall season, so a strong fit. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "alber-orchard-and-cider-mill",
     "destination_name": "Alber Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -74,9 +82,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -86,9 +94,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1101,37 +1109,36 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Blake's Orchard & Cider Mill in Armada. Official page lists cider mill, tasting room, U-pick, Funland.",
+   "summary": "Cider mill and orchard at Blake Farms with U-pick, a tasting room, Funland and a store and bakery.",
    "official_site": "https://blakefarms.com/",
    "website": "https://blakefarms.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://blakefarms.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://blakefarms.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cider mill, tasting room, U-pick, Funland Season and hours are not shown on the card.",
     "flags": [
-     "multiple Blake's sites: verify each separately",
-     "site now branded Blake Farms; one of four locations"
+     "multiple Blake's sites: verify each separately"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -1140,7 +1147,13 @@
     }
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "blakes-orchard-cider-mill",
     "destination_name": "Blake’s Orchard & Cider Mill",
@@ -1149,10 +1162,10 @@
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
     "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "link-blakes-orchard-cider-mill",
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -1192,9 +1205,9 @@
      "load_check": null
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1267,52 +1280,58 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Blake's Big Apple in Armada. Official page lists U-pick, haunted hayrides, Funland, corn maze.",
+   "summary": "Fall farm at Blake Farms with U-pick apples and pumpkins, a corn maze, an animal farm, Funland and haunted attractions.",
    "official_site": "https://blakefarms.com/big-apple/",
    "website": "https://blakefarms.com/big-apple/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://blakefarms.com/big-apple/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://blakefarms.com/big-apple/), two independent reads. Relevance (recorded): Official page lists fall farm activities: U-pick, haunted hayrides, Funland, corn maze Season and hours are not shown on the card.",
     "flags": [
-     "multiple Blake's sites: verify each separately",
-     "separate location from Blake's Orchard & Cider Mill; same brand"
+     "multiple Blake's sites: verify each separately"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "blakes-big-apple",
     "destination_name": "Blake’s Big Apple",
-    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-3",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -1322,9 +1341,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1334,9 +1353,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1409,50 +1428,55 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Blake's Backyard in Almont. Official page lists taproom and kitchen, market and greenhouse, seasonal homegrown produce, U-pick.",
+   "summary": "Blake Farms market, taproom and U-pick with a greenhouse, a tree nursery and fall bonfires.",
    "official_site": "https://blakefarms.com",
    "website": "https://blakefarms.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://blakefarms.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://blakefarms.com), two independent reads. Relevance (recorded): Fall-oriented market, taproom and U-pick site of Blake Farms with Fall bonfires listed for 2026. Season and hours are not shown on the card.",
     "flags": [
-     "multiple Blake's sites: verify each separately",
-     "part of multi-location business",
-     "more taproom/market than cider mill"
+     "multiple Blake's sites: verify each separately"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "blakes-backyard",
     "destination_name": "Blake’s Backyard",
-    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -1465,9 +1489,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1839,51 +1863,56 @@
     "cider-donuts"
    ],
    "category_source": "record",
-   "summary": "Dexter Cider Mill in Dexter. Official page lists cinnamon doughnuts, cider, caramel apples, hard cider tasting room.",
+   "summary": "Historic riverside cider mill with cinnamon doughnuts, fresh-pressed cider, caramel apples and outdoor seating along the Huron River.",
    "official_site": "https://www.dextercidermill.com/",
    "website": "https://www.dextercidermill.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.dextercidermill.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "cash or check only"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.dextercidermill.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cinnamon doughnuts, cider, caramel apples, hard cider tasting room (weekends) Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "dexter-cider-mill",
     "destination_name": "Dexter Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-8",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -1893,9 +1922,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1905,9 +1934,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2548,52 +2577,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Erie Orchards & Cider Mill in Erie. Official page lists pumpkin picking, blueberry and peach picking, hayrides, magic shows.",
+   "summary": "Orchard and cider mill with pumpkin picking, blueberry and peach picking, hayrides, donuts, cider and caramel apples.",
    "official_site": "https://erieorchards.com",
    "website": "https://erieorchards.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://erieorchards.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "address not on page",
-     "third-party reports property for sale (news, unverified)"
-    ]
+    "detail": "Official page read 2026-10-11 (https://erieorchards.com), two independent reads. Relevance (recorded): Open orchard and cider mill with weekend festivals and hayrides in fall 2026. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "erie-orchards-and-cider-mill",
     "destination_name": "Erie Orchards & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -2603,9 +2636,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2615,9 +2648,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3555,52 +3588,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Kreps Apple Barn & Cider Mill in La Salle. Official page lists Animal barn, Corn maze, Sunflower trail, U-cut flowers and workshops.",
+   "summary": "Orchard and cider mill with an animal barn, a corn maze, a sunflower trail and U-cut flowers.",
    "official_site": "https://krepsapplebarn.com",
    "website": "https://krepsapplebarn.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://krepsapplebarn.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "no year stated on page",
-     "season end dates not stated"
-    ]
+    "detail": "Official page read 2026-10-11 (https://krepsapplebarn.com), two independent reads. Relevance (recorded): Operating orchard and cider mill advertising a corn maze, fall market vendors and family activities. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "kreps-apple-barn-and-cider-mill",
     "destination_name": "Kreps Apple Barn & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-8",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -3610,9 +3647,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3622,9 +3659,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4346,52 +4383,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Obstbaum Orchards in Northville. Official page lists u-pick apples, cider, donuts, hayrides.",
+   "summary": "Family orchard with U-pick apples when ripe, fresh-pressed cider, donuts and hayrides.",
    "official_site": "https://www.obstbaum.com/",
    "website": "https://www.obstbaum.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.obstbaum.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "no explicit 2026 season statement",
-     "Salem vs Northville wording"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.obstbaum.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: u-pick apples (when ripe), cider, donuts, hayrides Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "obstbaum-orchards",
     "destination_name": "Obstbaum Orchards",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -4401,9 +4442,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4413,9 +4454,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4633,36 +4674,34 @@
     "cider-donuts"
    ],
    "category_source": "record",
-   "summary": "Parmenter's Northville Cider Mill in Northville. Official page lists cider and products, large call-ahead orders.",
+   "summary": "Historic Northville cider mill selling cider and cider products, with call-ahead orders for large quantities.",
    "official_site": "https://www.northvillecider.com/",
    "website": "https://www.northvillecider.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.northvillecider.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "sparse page; activities not enumerated"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.northvillecider.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cider and products, large call-ahead orders Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -4671,7 +4710,13 @@
     }
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "parmenters-northville-cider-mill",
     "destination_name": "Parmenter’s Northville Cider Mill",
@@ -4680,10 +4725,10 @@
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
     "fallback_image": "/assets/seasonal/fall-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "link-parmenters-northville-cider-mill",
-     "gen-fall-3",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -4723,9 +4768,9 @@
      "load_check": null
     },
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4799,51 +4844,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Parshallville Cider Mill in Fenton. Official page lists Fresh cider, Donuts and baked goods, Pies, cakes and cookies at the Apple Core, Live music Sunday afternoons.",
+   "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
    "official_site": "https://parshallvillecidermill.com",
    "website": "https://parshallvillecidermill.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://parshallvillecidermill.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "no year stated"
-    ]
+    "detail": "Official page read 2026-10-11 (https://parshallvillecidermill.com), two independent reads. Relevance (recorded): Historic water-powered cider mill advertising cider, donuts and Sunday live music in fall. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "parshallville-cider-mill",
     "destination_name": "Parshallville Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -4853,9 +4903,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4865,9 +4915,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5524,52 +5574,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Schell Family Farm in Pinckney. Official page lists Pumpkins, Apples, Fruit orchard, Wagon rides.",
+   "summary": "Family farm with pumpkins, apples, a fruit orchard and wagon rides.",
    "official_site": "https://www.schellfamilyfarm.com",
    "website": "https://www.schellfamilyfarm.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.schellfamilyfarm.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "hours not on official page",
-     "site updated 2026 (copyright)"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.schellfamilyfarm.com), two independent reads. Relevance (recorded): Operating family farm advertising pumpkins, apples and wagon rides. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "schell-family-farm",
     "destination_name": "Schell Family Farm",
-    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-7",
+     "gen-fall-2",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -5579,9 +5633,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5591,9 +5645,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5813,52 +5867,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Stony Creek Orchard & Cider Mill in Romeo. Official page lists U-pick apples, U-pick raspberries, moonlight hayrides, farm stand.",
+   "summary": "Orchard and cider mill with U-pick apples and raspberries, moonlight hayrides, a farm stand, cider and donuts.",
    "official_site": "https://www.stonycreekorchard.com/",
    "website": "https://www.stonycreekorchard.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.stonycreekorchard.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "official URL inferred by direct fetch",
-     "year not explicit"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.stonycreekorchard.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: U-pick apples (weekends), U-pick raspberries, moonlight hayrides, farm stand Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "stony-creek-orchard-and-cider-mill",
     "destination_name": "Stony Creek Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -5868,9 +5926,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5880,9 +5938,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5955,52 +6013,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Three Cedars Farm in Northville. Official page lists Cider Donut Hut, Country Store, Country Christmas.",
+   "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
    "official_site": "https://www.threecedarsfarm.org/",
    "website": "https://www.threecedarsfarm.org/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.threecedarsfarm.org/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "banner and hours section disagree on bonus weekend dates",
-     "activity list not itemised on page read"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.threecedarsfarm.org/), two independent reads. Relevance (recorded): Official page lists fall farm activities: Cider Donut Hut, Country Store, Country Christmas Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "three-cedars-farm",
     "destination_name": "Three Cedars Farm",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-8",
+     "gen-fall-2",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -6010,9 +6072,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6022,9 +6084,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6387,51 +6449,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Westview Orchards & Winery in Washington Township. Official page lists u-pick and pre-picked pumpkins, cider, donuts, baked goods.",
+   "summary": "Orchard and farm market with U-pick and pre-picked pumpkins, cider, donuts, baked goods and an outdoor winery.",
    "official_site": "https://www.westvieworchards.com/",
    "website": "https://www.westvieworchards.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.westvieworchards.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "indoor winery loft closed this fall"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.westvieworchards.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: u-pick and pre-picked pumpkins, cider, donuts, baked goods Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "westview-orchards-and-winery",
     "destination_name": "Westview Orchards & Winery",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -6441,9 +6508,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6453,9 +6520,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6698,36 +6765,34 @@
     "cider-donuts"
    ],
    "category_source": "record",
-   "summary": "Yates Cider Mill in Rochester Hills. Official page lists cider, donuts, apple tent, pony rides.",
+   "summary": "Historic cider mill with cider, donuts, an apple tent, pony rides and a petting zoo.",
    "official_site": "https://www.yatescidermill.com/",
    "website": "https://www.yatescidermill.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.yatescidermill.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "second location listed on same site"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.yatescidermill.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: cider, donuts, apple tent, pony rides Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -6736,7 +6801,13 @@
     }
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "yates-cider-mill",
     "destination_name": "Yates Cider Mill",
@@ -7153,51 +7224,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Bonadeo Farms in Highland. Official page lists haunted house, hayrides, cider, donuts.",
+   "summary": "Farm with a corn maze, pumpkin patch, hayrides, cider and donuts, and a haunted house on weekend evenings.",
    "official_site": "https://bonadeofarms.com/",
    "website": "https://bonadeofarms.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://bonadeofarms.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "weekend-only"
-    ]
+    "detail": "Official page read 2026-10-11 (https://bonadeofarms.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: haunted house, hayrides, cider, donuts Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "bonadeo-farms",
     "destination_name": "Bonadeo Farms",
-    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-2",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -7207,9 +7283,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -7219,9 +7295,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -7729,41 +7805,45 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Corn Fun in Casco. Official page lists two corn mazes with checkpoint games, Spookley the Square Pumpkin theme, sunflower, zinnia and cosmos Flower Festival, hayrides.",
+   "summary": "Family farm with two corn mazes, hayrides, pick-your-own pumpkins and a sunflower and zinnia flower festival.",
    "official_site": "https://cornfun.com",
    "website": "https://cornfun.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://cornfun.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "name differs (Corn Fun Family Farm)",
-     "prices not on page read"
-    ]
+    "detail": "Official page read 2026-10-11 (https://cornfun.com), two independent reads. Relevance (recorded): Page advertises a 20th-anniversary 2026 season of corn mazes, hayrides and u-pick pumpkins in St. Clair County. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "corn-fun",
     "destination_name": "Corn Fun",
@@ -7772,9 +7852,9 @@
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
     "fallback_image": "/assets/seasonal/fall-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-5",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -7796,9 +7876,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -7871,42 +7951,45 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "DeBuck's Family Farm in Belleville. Official page lists fall photo displays, seasonal food and drinks, giant slides including Mega Slide, jump pads.",
+   "summary": "Family farm with a corn maze, pumpkin fields, giant slides, jump pads and fall photo displays.",
    "official_site": "https://www.debucksfamilyfarm.com/",
    "website": "https://www.debucksfamilyfarm.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.debucksfamilyfarm.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "hours gaps on some October days",
-     "prices not on page read",
-     "debuckscornmaze.com redirects (301) to this domain"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.debucksfamilyfarm.com/), two independent reads. Relevance (recorded): Page advertises a 2026 Fall Festival with corn maze, pumpkin fields and farm attractions in Belleville. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "debucks-family-farm",
     "destination_name": "DeBuck’s Family Farm",
@@ -7915,9 +7998,9 @@
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
     "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -7939,9 +8022,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8309,46 +8392,53 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Flushing Farms in Flushing. Official page lists three corn mazes, unlimited hay wagon and barrel train rides, petting zoo with highland cows, two inflatable obstacle courses and bounce houses.",
+   "summary": "Farm with three corn mazes, hay wagon and barrel train rides, a petting zoo with Highland cows, a flower field and a pumpkin shop.",
    "official_site": "https://flushingfarms.com",
    "website": "https://flushingfarms.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://flushingfarms.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://flushingfarms.com), two independent reads. Relevance (recorded): Page advertises a full 2026 fall farm season with mazes, rides and a pumpkin shop in Genesee County. Season and hours are not shown on the card.",
     "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "flushing-farms",
     "destination_name": "Flushing Farms",
-    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -8361,9 +8451,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8594,48 +8684,53 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Kackleberry Farms in Monroe. Official page lists corn maze, slides, photo spots, cider donuts.",
+   "summary": "Fall festival farm with a corn maze, slides, photo spots and cider donuts.",
    "official_site": "https://www.kackleberryfarms.com/",
    "website": "https://www.kackleberryfarms.com/",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.kackleberryfarms.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "year not stated; logos reference 2025"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.kackleberryfarms.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: 30+ attractions, corn maze, slides, photo spots Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "kackleberry-farms",
     "destination_name": "Kackleberry Farms",
-    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
      "gen-fall-1",
@@ -8648,9 +8743,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9175,53 +9270,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Nixon Farms / Blast Corn Maze in Dexter. Official page lists Blast Corn Maze, U-pick pumpkin patch, tractor-drawn hayrides, corn cannon.",
+   "summary": "Working farm with the Blast Corn Maze, a U-pick pumpkin patch, tractor-drawn hayrides and a corn cannon.",
    "official_site": "https://www.nixonfarmsdexter.com",
    "website": "https://www.nixonfarmsdexter.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.nixonfarmsdexter.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "2026 dates and hours not on page read",
-     "prices not shown",
-     "blastcornmaze.com had a self-signed certificate error and was not read"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.nixonfarmsdexter.com), two independent reads. Relevance (recorded): Official page advertises a corn maze, u-pick pumpkins and hayrides at a working farm in Dexter, but no 2026 dates were shown. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "nixon-farms-blast-corn-maze",
     "destination_name": "Nixon Farms / Blast Corn Maze",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -9231,9 +9329,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9243,9 +9341,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9757,52 +9855,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Trabbic Family Pumpkin Farm in Erie. Official page lists picking pumpkins, visiting the animals, rides, fresh cider and donuts.",
+   "summary": "Pumpkin farm with pumpkin picking, farm animals, rides, and fresh cider and donuts.",
    "official_site": "https://www.trabbicpumpkinfarm.com",
    "website": "https://www.trabbicpumpkinfarm.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.trabbicpumpkinfarm.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "name differs slightly (footer 'Trabbic Farms')",
-     "closing date not seen"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.trabbicpumpkinfarm.com), two independent reads. Relevance (recorded): Official page advertises a 2026 u-pick pumpkin farm with animals, rides and cider/donuts. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "trabbic-family-pumpkin-farm",
     "destination_name": "Trabbic Family Pumpkin Farm",
-    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-2",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -9812,9 +9914,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9824,9 +9926,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10333,53 +10435,58 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "MacQueen Orchards in Holland. Official page lists pick your own apples and pumpkins, corn maze, live entertainment, pony rides, carousels, barrel train.",
+   "summary": "Orchard and cider mill with pick-your-own apples and pumpkins, a corn maze, pony rides, a petting zoo and a farm market and bakery.",
    "official_site": "https://www.macqueenorchards.com",
    "website": "https://www.macqueenorchards.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.macqueenorchards.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://www.macqueenorchards.com), two independent reads. Relevance (recorded): Orchard and cider mill with PYO apples/pumpkins, maze and a 2026 Apple Butter Festival. Season and hours are not shown on the card.",
     "flags": [
-     "outside Michigan: Orbit eligibility and coordinates to confirm",
-     "most dates lack year",
-     "festival (Oct 3-4, 2026) already past"
+     "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "macqueen-orchards",
     "destination_name": "MacQueen Orchards",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -10389,9 +10496,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10401,9 +10508,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10477,52 +10584,56 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Gust Brother's Pumpkin Farm in Ottawa Lake. Official page lists farm market, you-pick pumpkin patch and you-cut flowers, farm animals and bunny barn, cider, donuts, pumpkin cookies.",
+   "summary": "Fall farm with a you-pick pumpkin patch, a corn maze, hayrides, farm animals, cider and donuts.",
    "official_site": "https://www.gustbrothers.com",
    "website": "https://www.gustbrothers.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.gustbrothers.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "year not stated",
-     "name uses 'Brother's'"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.gustbrothers.com), two independent reads. Relevance (recorded): Full fall farm with u-pick pumpkins, corn maze, hayrides, cider and donuts. Season and hours are not shown on the card.",
+    "flags": []
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "gust-brothers-pumpkin-farm",
     "destination_name": "Gust Brother’s Pumpkin Farm",
-    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-7",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -10532,9 +10643,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10544,9 +10655,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10619,52 +10730,58 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Jason's Pumpkin Patch in Oak Harbor. Official page lists activities, corn maze, products, field trips/parties.",
+   "summary": "Pumpkin patch with a corn maze, field trips and parties.",
    "official_site": "https://www.jasonspumpkinpatch.com/visit-us",
    "website": "https://www.jasonspumpkinpatch.com/visit-us",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.jasonspumpkinpatch.com/visit-us). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://www.jasonspumpkinpatch.com/visit-us), two independent reads. Relevance (recorded): Official page confirms a 2026 pumpkin patch with corn maze open daily through Nov 1. Season and hours are not shown on the card.",
     "flags": [
-     "outside Michigan: Orbit eligibility and coordinates to confirm",
-     "activity detail only in nav labels on page read"
+     "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "jasons-pumpkin-patch",
     "destination_name": "Jason’s Pumpkin Patch",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-8",
+     "gen-fall-2",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -10674,9 +10791,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10686,9 +10803,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10907,52 +11024,58 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Wheeler Farms Corn Maze in Whitehouse. Official page lists corn maze, campfires.",
+   "summary": "Corn maze at The Butterfly House farm, with campfires.",
    "official_site": "https://www.wheelerfarms.com",
    "website": "https://www.wheelerfarms.com",
    "dates_hours": null,
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.wheelerfarms.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
+    "detail": "Official page read 2026-10-11 (https://www.wheelerfarms.com), two independent reads. Relevance (recorded): Official page confirms a 2026 corn maze, a core fall activity, though it lists no pumpkins. Season and hours are not shown on the card.",
     "flags": [
-     "outside Michigan: Orbit eligibility and coordinates to confirm",
-     "inventory note says Pumpkins but page lists only corn maze"
+     "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
-   "launch": null,
+   "launch": {
+    "batch": "expansion-1",
+    "featured": false,
+    "image_route": "illustration",
+    "image_depicts_destination": false,
+    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+   },
    "manifest": {
     "destination_id": "wheeler-farms-corn-maze",
     "destination_name": "Wheeler Farms Corn Maze",
-    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-2",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -10962,9 +11085,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -10974,9 +11097,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

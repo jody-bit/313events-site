@@ -30,7 +30,10 @@ const proposal = read("launch-1.json");
 const curatedIds = (col) => new Set(proposal.collections[col] || []);
 // Records the owner has held out of the proposal (launch-1.json "held") stay hand-curated: never rebuilt from launch-verification.json, never flagged as proposed.
 const heldIds = (col) => new Set(Object.keys((proposal.held || {})[col] || {}));
-const handIds = (col) => new Set([...curatedIds(col), ...heldIds(col)]);
+// Expansion batch (launch-expansion.json, written by scripts/prepare-expansion.js): reviewed records, hand-curated and flagged as proposed.
+const expansion = (() => { try { return read("launch-expansion.json"); } catch (e) { return { batch: null, collections: {} }; } })();
+const expansionIds = (col) => new Set((expansion.collections || {})[col] || []);
+const handIds = (col) => new Set([...curatedIds(col), ...expansionIds(col), ...heldIds(col)]);
 const lib = read("photo-library.json");
 const reg = read("candidates.json");
 const entriesFile = read("entries.json");
@@ -195,10 +198,10 @@ function deriveCats(col, note) {
 }
 // The launch proposal flag. Membership comes from launch-1.json; the gate's own answer decides everything else. A proposed record that is
 // approved, public or not READY_FOR_REVIEW is a build error: the proposal is for records awaiting approval.
-function launchFor(col, e, rv, prim) {
+function launchFor(col, e, rv, prim, batch) {
   if (e.status !== "READY_FOR_REVIEW" || rv.gate.approval || ED.COLLECTIONS.isPublic(e)) throw new Error(col + "/" + e.id + ": a launch-1 record must be READY_FOR_REVIEW with no approval");
   const route = rv.gate.imageRoute;
-  return { batch: proposal.batch, featured: !!e.featured, image_route: route, image_depicts_destination: !!prim.depicts_actual_destination,
+  return { batch: batch || proposal.batch, featured: !!e.featured, image_route: route, image_depicts_destination: !!prim.depicts_actual_destination,
     image_note: route === "owner-photo" ? "Image: your own photo of this place (owner-authorized), " + prim.id : route === "illustration" ? "Image: labelled illustration (generated artwork, not a photo of this place)" : "Image: " + route };
 }
 const datasets = {};
@@ -246,7 +249,7 @@ for (const col of ["fall", "fall-color"]) {
     const item = c._item || launch.collections[col].find((x) => x.ledger_name === c.name && x.ledger_location === c.location);
     if (item) v = item.verification;
     const rv = e ? ED.review(e) : null;
-    const curated = !!(e && handIds(col).has(e.id)), proposed = !!(e && curatedIds(col).has(e.id));
+    const curated = !!(e && handIds(col).has(e.id)), proposed = !!(e && (curatedIds(col).has(e.id) || expansionIds(col).has(e.id)));
     const status = curated ? (rv.gate.official && rv.gate.relevance ? "verified" : "partial") : !v ? "unverified" : v.read_ok ? (item.relevance_confirmed ? "verified" : "partial") : "unverified";
     const offEv = curated ? e.evidence.find((x) => x.level === "official") : null;
     const detail = curated ? "Official page read " + offEv.checkedAt + " (" + offEv.url + "), two independent reads. Relevance (" + (e.relevance.basis || "recorded") + "): " + e.relevance.note + " Season and hours are not shown on the card."
@@ -267,7 +270,7 @@ for (const col of ["fall", "fall-color"]) {
         : { declared_status: "HOLD_UNVERIFIED", state: "HOLD_UNVERIFIED", gate: { official: false, relevance: false, image: false, rights: false, approval: false }, image_route: null, rights_route: null,
           outstanding: ["Gate 1, official-source verification: not yet read.", "Gate 2, relevance: not confirmed.", "Gate 3/4, image and rights: not complete.", "Gate 5, explicit publication approval: not recorded."], caveats: [], legacy: null },
       recorded_alternatives: [],
-      launch: proposed ? launchFor(col, e, rv, prim) : null,
+      launch: proposed ? launchFor(col, e, rv, prim, curatedIds(col).has(e.id) ? proposal.batch : expansion.batch) : null,
       manifest: { destination_id: e ? e.id : key, destination_name: c.name, primary_image: prim.src, primary_image_type: prim.type, primary_image_credit: prim.credit,
         primary_image_rights_status: prim.rights_status, fallback_image: (fallbacks[0] || art1).src, secondary_fallback_image: (fallbacks[1] || art2).src,
         alternative_images: options.slice(1).map((o) => o.id), image_status: prim.illustrative ? "generated_default" : "owner_photo", editorial_approval_status: "not_approved" },
@@ -276,7 +279,7 @@ for (const col of ["fall", "fall-color"]) {
   }
   const missing = [...handIds(col)].filter((id) => !out[col].some((e) => e.id === id));
   if (missing.length) throw new Error(col + ": launch-1.json lists records that do not exist: " + missing.join(", "));
-  datasets[col] = { generated: DATE, collection: col, launch: { batch: proposal.batch, proposed: curatedIds(col).size }, note: "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Nothing here is approved; the publication gate decides, and no approval is recorded.", records };
+  datasets[col] = { generated: DATE, collection: col, launch: { batch: proposal.batch, proposed: curatedIds(col).size, expansion: expansion.batch ? { batch: expansion.batch, proposed: expansionIds(col).size } : null }, note: "QA-only dataset. Served by /api/seasonal-qa outside production only. Not for public display. Nothing here is approved; the publication gate decides, and no approval is recorded.", records };
 }
 
 const files = [
