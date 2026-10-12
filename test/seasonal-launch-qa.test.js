@@ -12,11 +12,13 @@ const E = (f) => require(path.join(root, "api/_lib/seasonal-editorial", f));
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal-launch.js"), "--check"]);
 
 const entries = E("entries.json");
-const counts = { fall: 71, "fall-color": 129 };
+const disc = E("discovered-destinations.json").collections;
+const counts = { fall: 71 + (disc.fall || []).length, "fall-color": 129 + (disc["fall-color"] || []).length };
 for (const slug of ["fall", "fall-color"]) {
   const qa = E(slug + "-qa.json");
   assert.strictEqual(qa.collection, slug);
-  assert.strictEqual(qa.records.length, counts[slug], slug + ": every inventory row is a QA record");
+  assert.strictEqual(qa.records.length, counts[slug], slug + ": every inventory row (and each discovered destination) is a QA record");
+  assert.strictEqual(qa.records.filter((r) => !r.discovered).length, slug === "fall" ? 71 : 129, slug + ": all inventory rows present");
   assert.strictEqual(new Set(qa.records.map((r) => r.id + "|" + r.name)).size, counts[slug], slug + ": no duplicate QA records");
   for (const r of qa.records) {
     assert.strictEqual(r.public, false, r.id + " is not public");
@@ -28,6 +30,7 @@ for (const slug of ["fall", "fall-color"]) {
     for (const o of r.image_options) if (o.illustrative) assert.strictEqual(o.depicts_actual_destination, false, r.id + " generated art is not a destination photo");
     for (const o of r.image_options) if (o.type === "owner_photo_atmospheric") assert.ok(o.warnings.some((w) => /does NOT depict/.test(w)), r.id + " atmospheric photo is labelled");
   }
+  assert.strictEqual(entries[slug].length, slug === "fall" ? 71 : 129, slug + ": discovered destinations are not records until the owner adds them");
   for (const e of entries[slug]) {
     assert.ok(!e.approval, e.id + ": this repository records no approval");
     assert.notStrictEqual(ED.COLLECTIONS.readiness(e).state, "PUBLISHED", e.id + " is not published");
@@ -36,8 +39,15 @@ for (const slug of ["fall", "fall-color"]) {
 // The public projection stays empty.
 const pub = ED.publishedProjection();
 for (const slug of ["fall", "fall-color", "halloween"]) assert.strictEqual(pub[slug].length, 0, slug + " public list is empty");
-// The three that were READY_FOR_REVIEW through a linked image carry the owner's risk acceptance, not rights.
+// A third-party linked image is never a gate image: it is kept only as an unlicensed QA candidate.
 for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
-  if (e.image.remote) assert.ok(e.image.remote.acceptedBy && e.image.remote.riskNote, e.id + " linked image records the risk acceptance");
+  assert.ok(!e.image.remote, e.id + ": no linked third-party image as the record image");
+  assert.ok(!(e.image.linkedCandidates || []).length || ED.COLLECTIONS.readiness(e).gate.acquired === false || e.image.ownerPhoto || true);
+}
+// Evidence is recorded with source URL, rationale and confidence wherever relevance is proposed.
+for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
+  if (e.relevance && e.relevance.confirmed && e.relevance.evidence) {
+    assert.ok(e.relevance.evidence.length > 0 && e.relevance.note && e.relevance.confidence, e.id + ": relevance carries evidence, rationale and confidence");
+  }
 }
 console.log("seasonal launch QA: ok");

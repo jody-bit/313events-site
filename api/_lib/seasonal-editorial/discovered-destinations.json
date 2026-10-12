@@ -1,0 +1,1902 @@
+{
+ "generated": "2026-10-11",
+ "note": "Legitimate destinations found during research that are NOT in the research inventories. Private. QA-only: they are not records until the owner decides to add them. `unconfirmed` lists leads that could not be confirmed from an official page.",
+ "collections": {
+  "fall": [
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://thiessenorchards.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "400 Talbot Road East",
+     "status": "Sept 10 to Nov 1, 2026 (page header says Oct 31; closing date inconsistent); daily 10:00-5:30",
+     "access": null,
+     "activities": [
+      "U-pick apples and pumpkins",
+      "corn maze",
+      "giant slides",
+      "playgrounds",
+      "farm animals",
+      "wagon/tractor rides",
+      "sunflower field",
+      "Kountry Kitchen (apple fritters, cider slushies, pies)",
+      "haunted barn",
+      "Oct 24 Halloween Extravaganza",
+      "Oct 12 Thanksgiving Monday program"
+     ],
+     "features": [],
+     "relevance": "high - orchard, pumpkin patch, corn maze and fall farm day in the known Windsor-Essex gap",
+     "flags": [
+      "admission prices on a separate page, not read",
+      "cross-border"
+     ],
+     "confidence": "high",
+     "lat": 42.0535,
+     "lon": -82.5997,
+     "coord_source": "approximate: Leamington town centre (general geographic reference, not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://thiessenorchards.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "high - orchard, pumpkin patch, corn maze and fall farm day in the known Windsor-Essex gap"
+      }
+     ],
+     "rationale": "high - orchard, pumpkin patch, corn maze and fall farm day in the known Windsor-Essex gap",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "ledger_name": "Thiessen Orchards",
+    "ledger_location": "Leamington, ON",
+    "discovery_source_url": "https://www.visitwindsoressex.com/pick-your-own-guide/ (Fall 2026 PYO guide PDF: https://www.visitwindsoressex.com/wp-content/uploads/2026/09/PYO2026.pdf)"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://melegsorchard.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "166 Arner Townline (the Tourism Windsor Essex guide says 158 Arner Townline)",
+     "status": "U-pick apples Aug 23-Oct 25 (page references 2026 throughout); raspberries on and off to November; family farm season June to end of October; hours Mon-Fri 9-5:30, Sun 10-5, Sat closed",
+     "access": null,
+     "activities": [
+      "U-pick fruit (apples, raspberries)",
+      "apple cider",
+      "cider donuts",
+      "pies",
+      "jams"
+     ],
+     "features": [],
+     "relevance": "high - cider and u-pick orchard",
+     "flags": [
+      "address differs between own page (166) and tourism guide (158)",
+      "footer says copyright 2025 but content is 2026",
+      "pumpkins not mentioned",
+      "$1 per person over 5 stated on page"
+     ],
+     "confidence": "high",
+     "lat": 42.0378,
+     "lon": -82.7415,
+     "coord_source": "approximate: Kingsville town centre (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://melegsorchard.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "high - cider and u-pick orchard"
+      }
+     ],
+     "rationale": "high - cider and u-pick orchard",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "ledger_name": "Meleg's Lakeview Orchard & Cider Mill",
+    "ledger_location": "Kingsville, ON",
+    "discovery_source_url": "https://www.visitwindsoressex.com/wp-content/uploads/2026/09/PYO2026.pdf"
+   },
+   {
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "official_url": "https://colasanti.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "1550 Road 3 East",
+     "status": "Fall hours daily (restaurant 9-6, garden centre 10-5, animals 10-5, mini golf 10-5); Pumpkin Spice Fest Oct 10, 2026 (already past); fall field trips booking",
+     "access": null,
+     "activities": [
+      "Garden centre",
+      "indoor and outdoor animal areas",
+      "mini golf",
+      "arcade",
+      "restaurant",
+      "fall field trips",
+      "indoor Pumpkin Spice Fest (vendors)"
+     ],
+     "features": [],
+     "relevance": "low-medium - family attraction with fall programming, no pumpkin patch or maze stated",
+     "flags": [
+      "not a farm in the cider or patch sense",
+      "editor judgement needed on fit"
+     ],
+     "confidence": "medium",
+     "lat": 42.0378,
+     "lon": -82.7415,
+     "coord_source": "approximate: Kingsville town centre (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://colasanti.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "low-medium - family attraction with fall programming, no pumpkin patch or maze stated"
+      }
+     ],
+     "rationale": "low-medium - family attraction with fall programming, no pumpkin patch or maze stated",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Colasanti's Tropical Gardens",
+    "ledger_location": "Kingsville, ON",
+    "discovery_source_url": "https://www.visitwindsoressex.com/wp-content/uploads/2026/09/PYO2026.pdf (listed as a pre-picked pumpkins stand)"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://pasttensecountry.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "1965 Farnsworth Rd",
+     "status": "Cider mill and store 10-6 daily (fall hours); Fall Festival Sat-Sun 11-6 starting mid-September; Past Tense After Dark Fri-Sat from Sept 25. Page uses 2026 promo imagery but gives no full date range",
+     "access": null,
+     "activities": [
+      "Cider",
+      "donuts",
+      "pies",
+      "fudge",
+      "restaurant",
+      "corn maze",
+      "hayrides",
+      "pumpkins",
+      "live music",
+      "food trucks",
+      "inflatables",
+      "three haunted attractions"
+     ],
+     "features": [],
+     "relevance": "high - cider mill, corn maze, hayrides, fall festival, haunted",
+     "flags": [
+      "season range not stated on page",
+      "address from contact page"
+     ],
+     "confidence": "high",
+     "lat": 43.0514,
+     "lon": -83.3188,
+     "coord_source": "approximate: Lapeer city centre (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://pasttensecountry.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "high - cider mill, corn maze, hayrides, fall festival, haunted"
+      }
+     ],
+     "rationale": "high - cider mill, corn maze, hayrides, fall festival, haunted",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "ledger_name": "Past Tense Cider Mill (Past Tense Country Store & Cider Mill)",
+    "ledger_location": "Lapeer, MI",
+    "discovery_source_url": "https://www.yahoo.com/news/articles/michigans-orchards-set-open-cider-110141542.html (Detroit Free Press, Aug 2025)"
+   },
+   {
+    "categories": [
+     "cider-donuts"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.yatescidermill.com/lake-orion-cider-mill-canterbury-village/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "2375 Joslyn Ct",
+     "status": "Hours 10:00 am-8:00 pm as listed; no season dates; 2026 appears only as footer copyright",
+     "access": null,
+     "activities": [
+      "Cider",
+      "donuts",
+      "pastries",
+      "gift shop",
+      "coffee and ice cream shop",
+      "indoor seating; Canterbury Village seasonal events"
+     ],
+     "features": [],
+     "relevance": "medium-high - second physical Yates site, cider and donuts",
+     "flags": [
+      "separate physical site from inventory #42",
+      "cider appears to be made at the Rochester Hills mill; whether pressed at Lake Orion not stated",
+      "2026 operation inferred from footer only"
+     ],
+     "confidence": "medium",
+     "lat": 42.7845,
+     "lon": -83.2397,
+     "coord_source": "approximate: Lake Orion village centre (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": [
+      "Historic Yates Cider Mill, 1950 E. Avon Rd, Rochester Hills (already in inventory as #42; Oakland County list gives 1990 E. Avon, page says 1950)"
+     ]
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.yatescidermill.com/lake-orion-cider-mill-canterbury-village/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium-high - second physical Yates site, cider and donuts"
+      }
+     ],
+     "rationale": "medium-high - second physical Yates site, cider and donuts",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Yates Cider Mill at Canterbury Village",
+    "ledger_location": "Lake Orion, MI",
+    "discovery_source_url": "https://oaklandcountyblog.com/things-to-do/cider-mills/"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://mccallumsorchard.com/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "5697 Harris Road",
+     "status": "Hours Mon 10-4, Tue-Wed 10-5, Thu-Sat 10-7, Sun 12-7; 2026 dated event: Peach Festival Aug 29-30, 2026; no fall date range",
+     "access": null,
+     "activities": [
+      "U-pick apples (15+ varieties)",
+      "peaches",
+      "strawberries",
+      "grapes",
+      "pumpkins; donuts",
+      "pies",
+      "cider",
+      "cider slushies; corn maze",
+      "bounce pillow",
+      "tractor shows",
+      "sunflower patch",
+      "game nights"
+     ],
+     "features": [],
+     "relevance": "high - first St. Clair County orchard/cider mill; gap in inventory",
+     "flags": [
+      "fall 2026 dates not stated"
+     ],
+     "confidence": "high",
+     "lat": 43.19,
+     "lon": -82.67,
+     "coord_source": "approximate: Jeddo community (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://mccallumsorchard.com/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "high - first St. Clair County orchard/cider mill; gap in inventory"
+      }
+     ],
+     "rationale": "high - first St. Clair County orchard/cider mill; gap in inventory",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "ledger_name": "The Property Farms and McCallum's Orchard & Cider Mill",
+    "ledger_location": "Jeddo (St. Clair County), MI",
+    "discovery_source_url": "https://www.yahoo.com/news/articles/michigans-orchards-set-open-cider-110141542.html and https://www.michigan.org/farms-and-cider-mills (Pure Michigan directory)"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://kapnickorchards.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "4245 Rogers Highway",
+     "status": "Fall underway as of Sept 23, 2026; Sept-Oct hours Mon-Sat 7-6, Sun 9-5; 47th Apple Festival Oct 10-11, 2026 (with Tecumseh Appleumpkin Festival)",
+     "access": null,
+     "activities": [
+      "U-pick apples and pumpkins 7 days a week",
+      "cider pressed on site",
+      "fry-cake donuts daily",
+      "caramel apples",
+      "old-fashioned store",
+      "Winter CSA"
+     ],
+     "features": [],
+     "relevance": "high - cider mill and orchard in Lenawee County",
+     "flags": [
+      "distinct from Forever Acres Farm (also Britton, inventory #15)",
+      "Apple Festival Oct 10-11 is already past or ending as of check date"
+     ],
+     "confidence": "high",
+     "lat": 42.0,
+     "lon": -83.85,
+     "coord_source": "approximate: Britton village (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://kapnickorchards.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "high - cider mill and orchard in Lenawee County"
+      }
+     ],
+     "rationale": "high - cider mill and orchard in Lenawee County",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "ledger_name": "Kapnick Orchards",
+    "ledger_location": "Britton, MI",
+    "discovery_source_url": "https://www.visitlenawee.com/ and https://www.michigan.org/farms-and-cider-mills"
+   },
+   {
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.bowlanderfarm.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "3525 N. Bolander Rd (address from Destination Toledo partner page)",
+     "status": "'Seasonally open'; Fall Family Fun Weekends; dates not on pages read, directs to Facebook; Visit Toledo guide (Aug 10, 2026) says Fall Family Saturdays in October and Panic in the Pines Saturdays in October plus first Saturday in November",
+     "access": null,
+     "activities": [
+      "Large U-pick pumpkin patch via hayride",
+      "fall family festival (ticketed)",
+      "farm animal tours",
+      "field trips",
+      "haunted hayride and trail"
+     ],
+     "features": [],
+     "relevance": "high - pumpkin patch and fall farm festival in Toledo area",
+     "flags": [
+      "dates and hours not on pages read; Days and Hours page text did not state any",
+      "2026 evidence is copyright footer and Visit Toledo guide"
+     ],
+     "confidence": "medium",
+     "lat": 41.52,
+     "lon": -83.36,
+     "coord_source": "approximate: Genoa village (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.bowlanderfarm.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "high - pumpkin patch and fall farm festival in Toledo area"
+      }
+     ],
+     "rationale": "high - pumpkin patch and fall farm festival in Toledo area",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Bowlander Farm (also Country Lane Tree Farm; Panic in the Pines haunted hayride)",
+    "ledger_location": "Genoa, OH",
+    "discovery_source_url": "https://visittoledo.org/top-fall-activities-in-toledo/"
+   },
+   {
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.mayburyfarm.org/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "50165 8 Mile Rd",
+     "status": "Corn maze weekends through Nov 1; Oct 3-Nov 1 hours Tue-Fri 10-2, Sat 10-8, Sun 10-7, closed Mon; page notes closure Sunday Oct 11 for rain",
+     "access": null,
+     "activities": [
+      "Corn maze weekends",
+      "farm animals",
+      "general admission ($8)",
+      "goat yoga"
+     ],
+     "features": [],
+     "relevance": "medium-high - working farm with fall corn maze",
+     "flags": [
+      "admission charged",
+      "pumpkin patch, hayrides and fall festival not mentioned on pages read"
+     ],
+     "confidence": "high",
+     "lat": 42.4,
+     "lon": -83.55,
+     "coord_source": "approximate: Northville area (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.mayburyfarm.org/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium-high - working farm with fall corn maze"
+      }
+     ],
+     "rationale": "medium-high - working farm with fall corn maze",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "ledger_name": "Maybury Farm",
+    "ledger_location": "Northville, MI",
+    "discovery_source_url": "https://www.michigan.org/farms-and-cider-mills (Pure Michigan directory)"
+   },
+   {
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.metroparks.com/facilities-education/kensington-farm-center/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "4570 Huron River Parkway",
+     "status": "Mar-Oct hours 9-5; public hayrides Sat-Sun noon-4; pumpkin hayrides mentioned without dates",
+     "access": null,
+     "activities": [
+      "Pick Your Pumpkin hayrides",
+      "public hayrides ($5 adults, $3)",
+      "farm animals",
+      "historic barn",
+      "grass maze",
+      "herb garden",
+      "living-history programs"
+     ],
+     "features": [],
+     "relevance": "medium - agency farm with seasonal pumpkin hayrides",
+     "flags": [
+      "pumpkin hayride dates not stated",
+      "park vehicle entry fee applies (not on page read)"
+     ],
+     "confidence": "medium",
+     "lat": 42.59,
+     "lon": -83.6,
+     "coord_source": "approximate: Milford area (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": [
+      "Wolcott Farm at Wolcott Mill Metropark (see unconfirmed)"
+     ]
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.metroparks.com/facilities-education/kensington-farm-center/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium - agency farm with seasonal pumpkin hayrides"
+      }
+     ],
+     "rationale": "medium - agency farm with seasonal pumpkin hayrides",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Kensington Metropark Farm Center",
+    "ledger_location": "Milford, MI",
+    "discovery_source_url": "https://www.michigan.org/farms-and-cider-mills"
+   },
+   {
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.pettingfarm.com/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "3001 Earhart Rd",
+     "status": "Autumn Days at the Farm every weekend in October (year not stated); hours Mon-Sat 10-4, Sun 12-6",
+     "access": null,
+     "activities": [
+      "Petting farm",
+      "Autumn Days at the Farm",
+      "admission $8 (seniors $5.50, family $40)"
+     ],
+     "features": [],
+     "relevance": "medium - family fall farm day, no pumpkin patch or hayrides stated",
+     "flags": [
+      "year not stated for Autumn Days",
+      "Autumn Days details page not read"
+     ],
+     "confidence": "medium",
+     "lat": 42.31,
+     "lon": -83.7,
+     "coord_source": "approximate: Ann Arbor area (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.pettingfarm.com/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium - family fall farm day, no pumpkin patch or hayrides stated"
+      }
+     ],
+     "rationale": "medium - family fall farm day, no pumpkin patch or hayrides stated",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "The Petting Farm (Domino's Farms Petting Farm) - Autumn Days at the Farm",
+    "ledger_location": "Ann Arbor, MI",
+    "discovery_source_url": "https://www.michigan.org/farms-and-cider-mills"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.brookwoodfruitfarm.com/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "7845 Bordman Road",
+     "status": "Farm open 7 days 9-5; crop timing: cider from mid-September, pumpkins and gourds early October (page does not state a year)",
+     "access": null,
+     "activities": [
+      "Farm market",
+      "apples",
+      "pumpkins",
+      "weekly-pressed cider; only u-pick listed is tart cherries"
+     ],
+     "features": [],
+     "relevance": "medium - cider and apples at farm market; Almont; not an experience-style patch",
+     "flags": [
+      "year not stated for crop timing",
+      "distinct from Blake's Backyard (also Almont, inventory #9)"
+     ],
+     "confidence": "medium",
+     "lat": 42.92,
+     "lon": -83.04,
+     "coord_source": "approximate: Almont village (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": [
+      "Oakland County Farmers Market stall, 2350 Pontiac Lake Rd, Waterford (market stall, not a farm site)"
+     ]
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.brookwoodfruitfarm.com/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium - cider and apples at farm market; Almont; not an experience-style patch"
+      }
+     ],
+     "rationale": "medium - cider and apples at farm market; Almont; not an experience-style patch",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Brookwood Fruit Farm",
+    "ledger_location": "Almont, MI",
+    "discovery_source_url": "https://www.exploreflintandgenesee.org/ and Pure Michigan directory"
+   },
+   {
+    "categories": [
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.hoensgardencenter.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "1710 Perrysburg Holland Rd",
+     "status": "Pumpkin patch open all October; Sat-Sun tractor hayrides Oct 3-31 (year not stated); Mon-Sat 9-6, Sun 10-5",
+     "access": null,
+     "activities": [
+      "4-acre u-pick pumpkin patch",
+      "specialty pumpkins and gourds",
+      "$1 tractor hayrides"
+     ],
+     "features": [],
+     "relevance": "medium - garden centre with pumpkin patch",
+     "flags": [
+      "year not stated; Oct 3 falls on a Saturday in 2026, consistent with 2026 but not confirmed"
+     ],
+     "confidence": "medium",
+     "lat": 41.62,
+     "lon": -83.71,
+     "coord_source": "approximate: Holland village (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.hoensgardencenter.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium - garden centre with pumpkin patch"
+      }
+     ],
+     "rationale": "medium - garden centre with pumpkin patch",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Hoen's Garden Center & Landscaping (pumpkin patch)",
+    "ledger_location": "Holland, OH",
+    "discovery_source_url": "https://www.buckeyebroadband.com/blog/best-orchards-pumpkin-patches-near-toledo-ohio"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": false,
+    "verification": {
+     "official_url": "https://www.lesserfarmsdexter.com/",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "12651 Island Lake Road (from page image caption)",
+     "status": "Sept-Nov apple sales Wed-Sat 9-6, Sun 1-6; no year",
+     "access": null,
+     "activities": [
+      "Farm-stand sales of apples",
+      "plums",
+      "pears",
+      "beef; sign lists cider",
+      "honey",
+      "pumpkins; no u-pick"
+     ],
+     "features": [],
+     "relevance": "low - farm stand",
+     "flags": [
+      "no u-pick",
+      "year not stated"
+     ],
+     "confidence": "low",
+     "lat": 42.34,
+     "lon": -83.89,
+     "coord_source": "approximate: Dexter city (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.lesserfarmsdexter.com/",
+       "source_kind": "official-website",
+       "statement_paraphrase": "low - farm stand"
+      }
+     ],
+     "rationale": "low - farm stand",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Lesser Farms & Orchard",
+    "ledger_location": "Dexter, MI",
+    "discovery_source_url": "https://www.michigan.org/farms-and-cider-mills"
+   },
+   {
+    "categories": [
+     "cider-donuts",
+     "farm-experiences"
+    ],
+    "relevance_confirmed": true,
+    "verification": {
+     "official_url": "https://www.flavorfruitfarm.com",
+     "read_ok": true,
+     "url_kind": "official-website",
+     "address": "not stated on page",
+     "status": "Wed-Sun 9-6; '2026 Festival Schedule is Live'",
+     "access": null,
+     "activities": [
+      "Fall festivals",
+      "cider mill and cidery",
+      "brewery",
+      "bakery (donuts, pies)",
+      "workshops",
+      "field trips"
+     ],
+     "features": [],
+     "relevance": "medium - cider mill and festivals, on the radius edge",
+     "flags": [
+      "radius borderline",
+      "street address not on page",
+      "u-pick and pumpkins not mentioned"
+     ],
+     "confidence": "medium",
+     "lat": 41.96,
+     "lon": -84.4,
+     "coord_source": "approximate: Somerset Center area (not on the page)",
+     "official_name": null,
+     "same_business_other_locations": []
+    },
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.flavorfruitfarm.com",
+       "source_kind": "official-website",
+       "statement_paraphrase": "medium - cider mill and festivals, on the radius edge"
+      }
+     ],
+     "rationale": "medium - cider mill and festivals, on the radius edge",
+     "confidence": "medium",
+     "unresolved": []
+    },
+    "ledger_name": "Meckley's Flavor Fruit Farm & Cidery",
+    "ledger_location": "Somerset Center, MI",
+    "discovery_source_url": "https://www.yahoo.com/news/articles/michigans-orchards-set-open-cider-110141542.html (listed as Cement City)"
+   }
+  ],
+  "fall-color": [
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://metroparkstoledo.com/discover/blog/posts/fall-color-report-where-to-enjoy-the-show/",
+       "source_kind": "agency-guide",
+       "statement_paraphrase": "Metroparks Toledo fall color report groups Providence, Bend View and Farnsworth as the Maumee River parks; fall color often shows first along stream edges, with scenic water and wildlife views, linked by the Towpath Trail."
+      }
+     ],
+     "rationale": "Named by the managing agency's own fall color report as one of the river parks for autumn scenery. Park page itself does not mention fall.",
+     "confidence": "medium",
+     "unresolved": [
+      "No park-specific peak/foliage statement on park page"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.metroparkstoledo.com/explore-your-parks/bend-view-metropark/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "10613 S River Rd, Waterville, OH 43566",
+     "access": "Open 7 a.m. until dark every day. No fees listed. Camping platforms May 1 to Oct 31 by reservation.",
+     "features": [
+      "Views of 90-degree bend in Maumee River",
+      "Historic Bend View shelter",
+      "Towpath Trail (8 mi, links Providence-Bend View-Farnsworth)",
+      "Maumee River Water Trail access",
+      "enclosed camping platforms"
+     ],
+     "activities": [],
+     "relevance": "Named by the managing agency's own fall color report as one of the river parks for autumn scenery. Park page itself does not mention fall.",
+     "flags": [
+      "camping platforms seasonal",
+      "Near the 75-mile boundary: computed 73 mi (approximate coordinates)."
+     ],
+     "confidence": "medium",
+     "lat": 41.41,
+     "lon": -83.75,
+     "coord_source": "approximate: Waterville OH area, from general knowledge, not read from page",
+     "official_name": "Bend View Metropark",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Providence Metropark",
+      "Farnsworth Metropark"
+     ]
+    },
+    "ledger_name": "Bend View Metropark",
+    "ledger_location": "Waterville, OH",
+    "discovery_source_url": "https://www.metroparkstoledo.com/explore-your-parks/"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/lyon-oaks",
+       "source_kind": "official-park-page",
+       "statement_paraphrase": "Park page lists a guided Fall Color Tour (Trailblazers Hiking Series) on Oct 15, 2026, 6-7 p.m., about why leaves change color; preregistration required."
+      }
+     ],
+     "rationale": "County park page advertises an autumn color program and has about 6 miles of natural trails.",
+     "confidence": "high",
+     "unresolved": [
+      "Fee/permit not stated"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/lyon-oaks",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "52221 Pontiac Trail, Wixom, MI 48393 (Lyon Township)",
+     "access": "Open daily year-round, about 30 min before sunrise to 30 min after sunset. No admission fee listed. Archery deer hunting allowed with limitations. Golf course and dog park on site.",
+     "features": [
+      "about 6 miles of natural trails",
+      "1,041 acres incl. 800 acres protected wetlands",
+      "picnic shelter and playground",
+      "13-acre off-leash dog park",
+      "18-hole golf course"
+     ],
+     "activities": [],
+     "relevance": "County park page advertises an autumn color program and has about 6 miles of natural trails.",
+     "flags": [
+      "archery deer hunting permitted",
+      "preregistration for guided hike"
+     ],
+     "confidence": "high",
+     "lat": 42.5,
+     "lon": -83.53,
+     "coord_source": "approximate: Lyon Township area, from general knowledge, not read from page",
+     "official_name": "Lyon Oaks County Park",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Lyon Oaks County Park",
+    "ledger_location": "Wixom, MI",
+    "discovery_source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Wooded multi-use trail park on the county system; page does not mention fall. Included only on woodland-trail grounds.",
+     "confidence": "low",
+     "unresolved": [
+      "No fall-specific statement found"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/orion-oaks",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "1200 Joslyn Rd (page also lists 2301 W. Clarkston Rd), Orion, MI 48360",
+     "access": "Hours not listed on page. Archery deer hunting allowed with limitations; no firearm hunting. Only Class 1 pedal-assist e-bikes. Pavilion rental $75.",
+     "features": [
+      "about 10 miles hiking and mountain bike trails",
+      "Lake Sixteen fishing pier",
+      "dog park",
+      "geocaching",
+      "non-motorized boat launch"
+     ],
+     "activities": [],
+     "relevance": "Wooded multi-use trail park on the county system; page does not mention fall. Included only on woodland-trail grounds.",
+     "flags": [
+      "archery hunting"
+     ],
+     "confidence": "medium",
+     "lat": 42.76,
+     "lon": -83.3,
+     "coord_source": "approximate: Orion Township area, from general knowledge, not read from page",
+     "official_name": "Orion Oaks County Park",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Orion Oaks County Park",
+    "ledger_location": "Orion Township, MI",
+    "discovery_source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Rolling-hills county park with trails; no fall statement. Distinct from Highland State Recreation Area (inventoried).",
+     "confidence": "low",
+     "unresolved": [
+      "No fall statement found"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/highland-oaks",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "6555 Milford Rd, Highland, MI 48442",
+     "access": "Hours not listed. Archery deer hunting in designated areas.",
+     "features": [
+      "2.5 miles of trails",
+      "about 302 acres rolling hills, wetlands, old pastures",
+      "Shiawassee River headwaters",
+      "accessible floating fishing dock"
+     ],
+     "activities": [],
+     "relevance": "Rolling-hills county park with trails; no fall statement. Distinct from Highland State Recreation Area (inventoried).",
+     "flags": [
+      "archery hunting"
+     ],
+     "confidence": "medium",
+     "lat": 42.65,
+     "lon": -83.62,
+     "coord_source": "approximate: Highland Township area, from general knowledge, not read from page",
+     "official_name": "Highland Oaks County Park",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Highland State Recreation Area (nearby, separate site)"
+     ]
+    },
+    "ledger_name": "Highland Oaks County Park",
+    "ledger_location": "Highland, MI",
+    "discovery_source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/nature-and-environment/nature-education",
+       "source_kind": "official-park-page",
+       "statement_paraphrase": "County nature education listing includes an Autumn Colors Forest Therapy Walk at Clinton River Oaks Park (Oct 13, 1-3 p.m., ages 12+, preregistration, paid)."
+      }
+     ],
+     "rationale": "County runs an autumn-colors walk here; river-corridor parkland.",
+     "confidence": "medium",
+     "unresolved": [
+      "Which trails are open as the park is still assembling parcels"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/clinton-river-oaks",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "1991 E. Avon Rd, Rochester Hills, MI 48307",
+     "access": "8 a.m. to dusk. No fees listed.",
+     "features": [
+      "about 286 acres existing/future parkland",
+      "about 2.8 miles of Clinton River frontage",
+      "connects trails and waterways",
+      "includes portion of Rochester Hills' Bloomer Park"
+     ],
+     "activities": [],
+     "relevance": "County runs an autumn-colors walk here; river-corridor parkland.",
+     "flags": [
+      "overlaps with inventoried Bloomer Park"
+     ],
+     "confidence": "medium",
+     "lat": 42.67,
+     "lon": -83.1,
+     "coord_source": "approximate: Rochester Hills area, from general knowledge, not read from page",
+     "official_name": "Clinton River Oaks Park",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Bloomer Park",
+      "Clinton River Trail"
+     ]
+    },
+    "ledger_name": "Clinton River Oaks Park",
+    "ledger_location": "Rochester Hills, MI",
+    "discovery_source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Small hardwood/pine woodland with trails; page has no fall mention.",
+     "confidence": "low",
+     "unresolved": [
+      "Management moving from Bloomfield Hills Schools to county, full transition Oct 1, 2026"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/bloomfield-oaks-johnson-nature-center",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "3325 Franklin Rd, Bloomfield Township, MI 48302",
+     "access": "Trails 8 a.m. to sunset; Visitor Center 10-5 first Sunday monthly and Saturdays; closed holidays. No admission fee listed. No bikes, pets or drones.",
+     "features": [
+      "about 2 miles mulched trails; 0.9 mi perimeter loop",
+      "40 acres, 4-acre pond, pine and hardwood stands, sugar bush",
+      "visitor center"
+     ],
+     "activities": [],
+     "relevance": "Small hardwood/pine woodland with trails; page has no fall mention.",
+     "flags": [
+      "management transition"
+     ],
+     "confidence": "medium",
+     "lat": 42.58,
+     "lon": -83.27,
+     "coord_source": "approximate: Bloomfield Township area, from general knowledge, not read from page",
+     "official_name": "Bloomfield Oaks - Johnson Nature Center",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Johnson Nature Center (Bloomfield Oaks)",
+    "ledger_location": "Bloomfield Township, MI",
+    "discovery_source_url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Wooded river-valley county park; page has no fall mention.",
+     "confidence": "low",
+     "unresolved": [
+      "No fall evidence"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.stclaircounty.org/Offices/180",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "5980 Rynn Rd, Clyde, MI 48049",
+     "access": "Open year-round, dawn to dusk. No fees listed.",
+     "features": [
+      "44.5 acres",
+      "rustic trails along steep slopes",
+      "mountain bike trails with Black River valley views",
+      "about 2,800 ft Black River shoreline",
+      "fishing access"
+     ],
+     "activities": [],
+     "relevance": "Wooded river-valley county park; page has no fall mention.",
+     "flags": [],
+     "confidence": "medium",
+     "lat": 42.99,
+     "lon": -82.57,
+     "coord_source": "approximate: Clyde Township area, from general knowledge, not read from page",
+     "official_name": "Woodsong County Park",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Woodsong County Park",
+    "ledger_location": "Clyde Township, MI",
+    "discovery_source_url": "https://www.stclaircounty.org/Offices/670"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.washtenaw.org/nature-preserves",
+       "source_kind": "agency-guide",
+       "statement_paraphrase": "County nature preserves page says spring and fall displays at Scio Woods are spectacular and calls it one of the largest nearby beech forests."
+      }
+     ],
+     "rationale": "Washtenaw County Parks states fall displays are spectacular.",
+     "confidence": "high",
+     "unresolved": [
+      "Address, hours, parking not on read pages"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.washtenaw.org/kidder-mckeachie-scio-woods-preserve",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Scio Township near Ann Arbor (street address not on page read)",
+     "access": "Not stated on pages read.",
+     "features": [
+      "among the largest remaining beech forests nearby"
+     ],
+     "activities": [],
+     "relevance": "Washtenaw County Parks states fall displays are spectacular.",
+     "flags": [],
+     "confidence": "medium",
+     "lat": 42.28,
+     "lon": -83.85,
+     "coord_source": "approximate: Scio Township area, from general knowledge, not read from page",
+     "official_name": "Kidder-McKeachie Scio Woods Preserve",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Kidder-McKeachie Scio Woods Preserve",
+    "ledger_location": "Scio Township, MI",
+    "discovery_source_url": "https://www.washtenaw.org/nature-preserves"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.washtenaw.org/nature-preserves",
+       "source_kind": "agency-guide",
+       "statement_paraphrase": "County preserves page calls it one of southern Michigan's finest natural areas in the hilly northwest corner of the county."
+      }
+     ],
+     "rationale": "Hilly natural-area woodland; no explicit fall statement.",
+     "confidence": "low",
+     "unresolved": [
+      "Individual park page returned mostly navigation text; trails/hours unconfirmed"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.washtenaw.org/park-lyndon-0",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Lyndon Township, northwest Washtenaw County",
+     "access": "Not stated on pages read.",
+     "features": [
+      "hilly glacially shaped terrain",
+      "high-quality natural communities",
+      "hiking"
+     ],
+     "activities": [],
+     "relevance": "Hilly natural-area woodland; no explicit fall statement.",
+     "flags": [],
+     "confidence": "medium",
+     "lat": 42.4,
+     "lon": -84.02,
+     "coord_source": "approximate: township area, from general knowledge, not read from page",
+     "official_name": "Park Lyndon",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Waterloo State Recreation Area (nearby)"
+     ]
+    },
+    "ledger_name": "Park Lyndon",
+    "ledger_location": "Lyndon Township (Chelsea area), MI",
+    "discovery_source_url": "https://www.washtenaw.org/parks-facilities-0"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": true,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/bluffs-nature-area/",
+       "source_kind": "official-park-page",
+       "statement_paraphrase": "City page states fall brings colors in the trees and ground covers."
+      }
+     ],
+     "rationale": "City of Ann Arbor page explicitly cites fall colors in oak-hickory woods.",
+     "confidence": "high",
+     "unresolved": []
+    },
+    "verification": {
+     "official_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/bluffs-nature-area/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "1279 N. Main St, Ann Arbor, MI 48103",
+     "access": "6 a.m. to midnight. No fees listed.",
+     "features": [
+      "about 40 acres on glacial ridge",
+      "oak-hickory forest, wooded ravines, meadow",
+      "unpaved rugged footpaths"
+     ],
+     "activities": [],
+     "relevance": "City of Ann Arbor page explicitly cites fall colors in oak-hickory woods.",
+     "flags": [
+      "steep, rugged terrain"
+     ],
+     "confidence": "high",
+     "lat": 42.3,
+     "lon": -83.75,
+     "coord_source": "approximate: Ann Arbor area, from general knowledge, not read from page",
+     "official_name": "Bluffs Nature Area",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Bluffs Nature Area",
+    "ledger_location": "Ann Arbor, MI",
+    "discovery_source_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Large mixed-hardwood woodland with trails; page mentions only spring color.",
+     "confidence": "low",
+     "unresolved": [
+      "No autumn statement"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/marshall-nature-area/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "3355 N. Dixboro Rd, Ann Arbor, MI 48105",
+     "access": "6 a.m. to 10 p.m.; small gravel lot for about six cars.",
+     "features": [
+      "87 acres",
+      "oak grove, mixed hardwoods (oak, hickory, maple, beech)",
+      "loop trail connecting to county Freeman Preserve",
+      "paved Dixboro Road Pathway to Matthaei"
+     ],
+     "activities": [],
+     "relevance": "Large mixed-hardwood woodland with trails; page mentions only spring color.",
+     "flags": [
+      "prescribed burns possible"
+     ],
+     "confidence": "medium",
+     "lat": 42.32,
+     "lon": -83.67,
+     "coord_source": "approximate: Ann Arbor area, from general knowledge, not read from page",
+     "official_name": "Marshall Nature Area",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Matthaei Botanical Gardens trails (connected by pathway)"
+     ]
+    },
+    "ledger_name": "Marshall Nature Area",
+    "ledger_location": "Ann Arbor, MI",
+    "discovery_source_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Mature mixed hardwood woodland with trails; page highlights spring, not fall.",
+     "confidence": "low",
+     "unresolved": [
+      "No fall statement"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/black-pond-woods-nature-area/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "1905 Traver Rd, Ann Arbor, MI 48105",
+     "access": "6 a.m. to midnight. No fees listed.",
+     "features": [
+      "34-acre woodland",
+      "mature oak-hickory forest with maple and dogwood",
+      "floating boardwalk on seasonal pond",
+      "unpaved trails linking to Leslie Park"
+     ],
+     "activities": [],
+     "relevance": "Mature mixed hardwood woodland with trails; page highlights spring, not fall.",
+     "flags": [],
+     "confidence": "medium",
+     "lat": 42.31,
+     "lon": -83.71,
+     "coord_source": "approximate: Ann Arbor area, from general knowledge, not read from page",
+     "official_name": "Black Pond Woods Nature Area",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Leslie Science and Nature Center grounds (adjacent)"
+     ]
+    },
+    "ledger_name": "Black Pond Woods Nature Area",
+    "ledger_location": "Ann Arbor, MI",
+    "discovery_source_url": "https://www.a2gov.org/parks-and-recreation/parks-and-places/"
+   },
+   {
+    "categories": [
+     "parks-gardens"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [
+      {
+       "source_url": "https://www.wcroads.org/wp-content/uploads/2024/07/Natural-Beauty-Roads-List-2024-07-24.pdf",
+       "source_kind": "agency-guide",
+       "statement_paraphrase": "Road commission list (updated 07/24/2024) names 12 approved natural beauty road segments with mileage."
+      }
+     ],
+     "rationale": "Official natural beauty road designation; not a fall-specific claim.",
+     "confidence": "low",
+     "unresolved": [
+      "Whether to store as route guide or per-road",
+      "Dirt/gravel conditions not read"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.wcroads.org/natural-beauty-roads",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Northern/western Washtenaw County townships; approved segments include Gale Rd (Geddes-Cherry Hill), Warren Rd (Dixboro-Curtis and Nixon-Dixboro), Tubbs Rd, Mahrle Rd, Marshall Rd (Baker-Zeeb), Riker Rd, Scully Rd, Strawberry Lake Rd, Hartman Rd, Stein Rd, Tessmer Rd",
+     "access": "Public roads; designation carries special signage and careful maintenance per road commission.",
+     "features": [
+      "designated for unusual or outstanding natural beauty"
+     ],
+     "activities": [],
+     "relevance": "Official natural beauty road designation; not a fall-specific claim.",
+     "flags": [
+      "route/guide not venue",
+      "Distance from Detroit not computed (no coordinates)."
+     ],
+     "confidence": "high",
+     "lat": null,
+     "lon": null,
+     "coord_source": "none: multi-road route, no coordinates read",
+     "official_name": "Washtenaw County designated Natural Beauty Roads",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Huron River Drive (Strawberry Lake Rd and Tubbs Rd meet it)"
+     ]
+    },
+    "ledger_name": "Washtenaw County Natural Beauty Roads",
+    "ledger_location": "Washtenaw County, MI",
+    "discovery_source_url": "https://www.wcroads.org/natural-beauty-roads"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Large Wayne County woodland preserve with long trail network; no fall mention on page.",
+     "confidence": "low",
+     "unresolved": [
+      "No fall evidence"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.waynecountymi.gov/Parks-Recreation/Explore/William-P.-Holliday-Forest-Wildlife-Preserve",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "33670 Ann Arbor Trail, Westland, MI 48185",
+     "access": "Hours and fees not listed.",
+     "features": [
+      "over 10 miles of hiking trails",
+      "Tonquish Creek streambed trails",
+      "upland woods, wetlands, meadows",
+      "naturalist programs"
+     ],
+     "activities": [],
+     "relevance": "Large Wayne County woodland preserve with long trail network; no fall mention on page.",
+     "flags": [],
+     "confidence": "medium",
+     "lat": 42.33,
+     "lon": -83.38,
+     "coord_source": "approximate: Westland area, from general knowledge, not read from page",
+     "official_name": "William P. Holliday Forest & Wildlife Preserve",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "William P. Holliday Forest & Wildlife Preserve",
+    "ledger_location": "Westland, MI",
+    "discovery_source_url": "https://www.waynecountymi.gov/parks"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Oak-dominated urban forest with trails per the Essex Region Conservation Authority (ERCA); no fall statement.",
+     "confidence": "low",
+     "unresolved": [
+      "Individual area pages returned the combined listing; no fall text"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.essexregionconservation.ca/conservation-areas/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Division Rd & Cabana Rd East, Windsor, ON",
+     "access": "Trails open during daylight hours only; fees not listed for this area; leashed dogs; no motorized vehicles.",
+     "features": [
+      "38 ha urban forest",
+      "4.5+ km trails",
+      "eight oak species"
+     ],
+     "activities": [],
+     "relevance": "Oak-dominated urban forest with trails per the Essex Region Conservation Authority (ERCA); no fall statement.",
+     "flags": [
+      "cross-border"
+     ],
+     "confidence": "medium",
+     "lat": 42.27,
+     "lon": -83.0,
+     "coord_source": "approximate: Windsor area, from general knowledge, not read from page",
+     "official_name": "Devonwood Conservation Area",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Devonwood Conservation Area",
+    "ledger_location": "Windsor, ON",
+    "discovery_source_url": "https://www.essexregionconservation.ca/conservation-areas/"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Oak-hickory woodland trail per ERCA; no fall statement.",
+     "confidence": "low",
+     "unresolved": [
+      "Exact location"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.essexregionconservation.ca/conservation-areas/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Lakeshore, ON (exact address not listed)",
+     "access": "Trails daylight hours only; fees not listed.",
+     "features": [
+      "20 ha oak-hickory woodland",
+      "1.5 km trail along Puce River",
+      "boardwalk",
+      "picnicking"
+     ],
+     "activities": [],
+     "relevance": "Oak-hickory woodland trail per ERCA; no fall statement.",
+     "flags": [
+      "cross-border"
+     ],
+     "confidence": "medium",
+     "lat": 42.3,
+     "lon": -82.85,
+     "coord_source": "approximate: Lakeshore area, from general knowledge, not read from page",
+     "official_name": "Maidstone Woods Conservation Area",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Maidstone Woods Conservation Area",
+    "ledger_location": "Lakeshore, ON",
+    "discovery_source_url": "https://www.essexregionconservation.ca/conservation-areas/"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Carolinian forest trail per ERCA; no fall statement.",
+     "confidence": "low",
+     "unresolved": [
+      "Coordinates unverified"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.essexregionconservation.ca/conservation-areas/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "602 Mersea Rd 5, Staples, ON",
+     "access": "Trails daylight hours only; fees not listed.",
+     "features": [
+      "mixed Carolinian forest with oaks, hickories, walnut",
+      "trail",
+      "birding and photography"
+     ],
+     "activities": [],
+     "relevance": "Carolinian forest trail per ERCA; no fall statement.",
+     "flags": [
+      "cross-border"
+     ],
+     "confidence": "medium",
+     "lat": 42.22,
+     "lon": -82.75,
+     "coord_source": "approximate: Staples area, from general knowledge, not read from page",
+     "official_name": "Andrew Murray O'Neil Woods",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Andrew Murray O'Neil Woods Conservation Area",
+    "ledger_location": "Staples (Lakeshore), ON",
+    "discovery_source_url": "https://www.essexregionconservation.ca/conservation-areas/"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Small accessible woodland walk; no fall statement.",
+     "confidence": "low",
+     "unresolved": []
+    },
+    "verification": {
+     "official_url": "https://www.essexregionconservation.ca/conservation-areas/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Lessard Rd, Tecumseh, ON",
+     "access": "Trails daylight hours only; washrooms; mostly paved 1 km trail.",
+     "features": [
+      "9 ha woodland",
+      "1 km mostly paved trail, stroller and wheelchair friendly"
+     ],
+     "activities": [],
+     "relevance": "Small accessible woodland walk; no fall statement.",
+     "flags": [
+      "cross-border"
+     ],
+     "confidence": "medium",
+     "lat": 42.31,
+     "lon": -82.9,
+     "coord_source": "approximate: Tecumseh area, from general knowledge, not read from page",
+     "official_name": "McAuliffe Woods",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "McAuliffe Woods Conservation Area",
+    "ledger_location": "Tecumseh, ON",
+    "discovery_source_url": "https://www.essexregionconservation.ca/conservation-areas/"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Woodland and creek trail per ERCA; no fall statement.",
+     "confidence": "low",
+     "unresolved": [
+      "Hunting season dates"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.essexregionconservation.ca/conservation-areas/",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Cedar Creek, Essex, ON",
+     "access": "Trails daylight hours only; controlled seasonal waterfowl hunting.",
+     "features": [
+      "Carolinian woodlands, creeks, wetlands",
+      "trail",
+      "canoe/kayak access"
+     ],
+     "activities": [],
+     "relevance": "Woodland and creek trail per ERCA; no fall statement.",
+     "flags": [
+      "cross-border",
+      "waterfowl hunting"
+     ],
+     "confidence": "medium",
+     "lat": 42.08,
+     "lon": -82.85,
+     "coord_source": "approximate: Essex County area, from general knowledge, not read from page",
+     "official_name": "Cedar Creek Conservation Area",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Cedar Creek Conservation Area",
+    "ledger_location": "Essex, ON",
+    "discovery_source_url": "https://www.essexregionconservation.ca/conservation-areas/"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Prairie and savanna remnant; page has no fall content.",
+     "confidence": "low",
+     "unresolved": [
+      "Seasonal color not documented"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.ontarioparks.ca/park/ojibwayprairie",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Titcombe and Matchette Rds, Windsor, ON",
+     "access": "Hours table blank; hiking available; no facilities listed.",
+     "features": [
+      "64 ha reserve",
+      "native prairie, savanna, open woodland",
+      "500+ flowering plants"
+     ],
+     "activities": [],
+     "relevance": "Prairie and savanna remnant; page has no fall content.",
+     "flags": [
+      "cross-border",
+      "adjacent to inventoried Ojibway Park"
+     ],
+     "confidence": "medium",
+     "lat": 42.25,
+     "lon": -83.07,
+     "coord_source": "approximate: west Windsor area, from general knowledge, not read from page",
+     "official_name": "Ojibway Prairie Provincial Park (nature reserve)",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": [
+      "Ojibway Park & Nature Centre",
+      "Black Oak Heritage Park"
+     ]
+    },
+    "ledger_name": "Ojibway Prairie Provincial Nature Reserve",
+    "ledger_location": "Windsor, ON",
+    "discovery_source_url": "https://www.ontarioparks.ca/fallcolour"
+   },
+   {
+    "categories": [
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Deciduous forest nature reserve; no fall content on page.",
+     "confidence": "low",
+     "unresolved": [
+      "Ferry schedule not read"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.ontarioparks.ca/park/fishpoint",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Southwest spit of Pelee Island, Lake Erie",
+     "access": "Ferry from Kingsville or Leamington about 90 min; one small parking lot.",
+     "features": [
+      "near-virgin southern deciduous forest",
+      "sandspit and dunes",
+      "migratory bird stopover"
+     ],
+     "activities": [],
+     "relevance": "Deciduous forest nature reserve; no fall content on page.",
+     "flags": [
+      "cross-border",
+      "ferry"
+     ],
+     "confidence": "medium",
+     "lat": 41.72,
+     "lon": -82.7,
+     "coord_source": "approximate: Pelee Island area, from general knowledge, not read from page",
+     "official_name": "Fish Point Provincial Park (nature reserve)",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Fish Point Provincial Nature Reserve (Pelee Island)",
+    "ledger_location": "Pelee Island, ON",
+    "discovery_source_url": "https://www.ontarioparks.ca/fallcolour"
+   },
+   {
+    "categories": [
+     "waterfronts",
+     "trails-woods"
+    ],
+    "relevance_confirmed": false,
+    "relevance": {
+     "evidence": [],
+     "rationale": "Remnant deciduous forest reserve; no fall content on page.",
+     "confidence": "low",
+     "unresolved": [
+      "Ferry schedule not read"
+     ]
+    },
+    "verification": {
+     "official_url": "https://www.ontarioparks.ca/park/lighthousepoint",
+     "read_ok": true,
+     "url_kind": "agency-page",
+     "address": "Northeast tip of Pelee Island, Lake Erie",
+     "access": "Ferry from Kingsville or Leamington about 90 min; no facilities.",
+     "features": [
+      "remnant deciduous forests and wetlands",
+      "1834 lighthouse remains"
+     ],
+     "activities": [],
+     "relevance": "Remnant deciduous forest reserve; no fall content on page.",
+     "flags": [
+      "cross-border",
+      "ferry"
+     ],
+     "confidence": "medium",
+     "lat": 41.78,
+     "lon": -82.51,
+     "coord_source": "approximate: Pelee Island area, from general knowledge, not read from page",
+     "official_name": "Lighthouse Point Provincial Park (nature reserve)",
+     "status": null,
+     "duplicate_of": null,
+     "overlaps_with": []
+    },
+    "ledger_name": "Lighthouse Point Provincial Nature Reserve (Pelee Island)",
+    "ledger_location": "Pelee Island, ON",
+    "discovery_source_url": "https://www.ontarioparks.ca/fallcolour"
+   }
+  ]
+ },
+ "unconfirmed": {
+  "fall": [
+   {
+    "name": "Paint Creek Cider Mill",
+    "why": "Own site read (https://paintcreekcidermill.wixsite.com/paintcreek; 4480 Orion Rd, Rochester MI; donuts, ice cream, smokehouse menu, hours 10-8) but footer is 2020 and no 2026 statement. Listed by Visit Detroit/Oakland County, so likely a real destination; needs a phone check. Not in inventory."
+   },
+   {
+    "name": "Wagner Orchards & Estate Winery (1222 Lakeshore Rd 103, Lakeshore ON)",
+    "why": "Official site wagnerorchards.com connection reset on three tries. Listed in the Tourism Windsor Essex Fall 2026 PYO guide (apples, bakery, winery, kids playground, wagon rides; starts Sept 1) and an Oct 7 tourism Instagram post, so likely operating."
+   },
+   {
+    "name": "Sauve's Country Market & Pumpkin Patch (1989 Lakeshore Rd 219, South Woodslee ON)",
+    "why": "Own Canva page returned only the title. Tourism Windsor Essex Fall 2026 guide lists apples, pumpkins, corn maze, tractor rides, from Sept 1/14. Needs own-page or Facebook confirmation."
+   },
+   {
+    "name": "Pepe's Pumpkin Patch (2651 Front Rd, LaSalle ON)",
+    "why": "Facebook-only; no own site. Listed in the 2026 tourism guide for pumpkins; older local news describes hayride, corn maze, train ride, and a haunted house."
+   },
+   {
+    "name": "Allsop Farm Pumpkins & More (195 Rd 3 East, Kingsville ON)",
+    "why": "No own site found. Autism Ontario event listing confirms a corn maze and pumpkin activity at the farm on Oct 17, 2026, but that is a third-party program page."
+   },
+   {
+    "name": "Kennette Orchards (913 Lakeshore Rd 107, Lakeshore ON)",
+    "why": "Only the Tourism Windsor Essex listing was read (U-pick apples, daily 9-5, cash only); own page is Facebook; no season statement on page."
+   },
+   {
+    "name": "Patillo Apple Orchard (180 Patillo Rd, Windsor ON), Eh Oh Farm (1655 Division St N, Kingsville), Abbruzzese Farms (2804 Upcott Side Rd, Kingsville), Neumiller Orchards (650 Co. Rd 13, Harrow), Lee & Maria's (692 Seacliff Dr, Kingsville), Brandner Farms (1390 Walker Rd, Windsor), Simpson Orchards, Willow Tree Market, The Farm House Market, Riberdy Farms, Pretli's Green Acre Farm, Sunrise Farms",
+    "why": "All appear in the Tourism Windsor Essex Fall 2026 guide. Own pages read for Abbruzzese, Neumiller, Lee & Maria's, Brandner and Simpson showed farm-stand or sales only, with no experience features. Others are Facebook-only or did not load. Low collection relevance (stands, not destinations)."
+   },
+   {
+    "name": "Stonehill Estates Farm Shop (911 W Shore Rd, Pelee Island ON)",
+    "why": "In the tourism guide for apples and pumpkins; ferry-access island, not read; likely outside practical radius."
+   },
+   {
+    "name": "Wolcott Farm at Wolcott Mill Metropark (65775 Wolcott Rd, Ray MI)",
+    "why": "Metropark page read but no fall 2026 events, hayrides or pumpkins stated; Historic Center closed. Check the Wolcott events calendar."
+   },
+   {
+    "name": "Ruggles Ranch & Farm Market (6401 White Lake Rd, White Lake MI)",
+    "why": "Own site read but stale: describes Grand Stand 'Coming Fall 22'; lists donuts and cider, corn maze, pumpkin patch, u-pick sunflowers; no 2026 info. Listed by Oakland County. Needs phone check."
+   },
+   {
+    "name": "Koan's Orchard and McCarron's Orchard (Flushing MI)",
+    "why": "Named in Explore Flint & Genesee and the Free Press 2025 list (cider mills opening in September), but own pages not found or read."
+   },
+   {
+    "name": "Miller Family Orchard (Vassar MI)",
+    "why": "Listed in the Free Press Aug 2025 guide (open year-round, fall hours from early September); own page not read; about 76 mi straight-line, likely just outside radius."
+   },
+   {
+    "name": "Rex Young's / Young's Orchards (Rives Junction MI)",
+    "why": "Listed in the Free Press 2025 guide and Pure Michigan; no website; roughly 75-80 mi, at or beyond radius."
+   },
+   {
+    "name": "Bennett's Orchard (Ottawa Lake MI)",
+    "why": "Pure Michigan lists bennettorchards.com, but that domain now serves a Delaware business (Frankford DE); not usable. Probably a stale directory link."
+   },
+   {
+    "name": "The Pumpkin Factory (Belleville MI)",
+    "why": "In Pure Michigan directory with no website; may be same as or neighbor to DeBuck's (inventory #50). Needs identity check."
+   },
+   {
+    "name": "Markillie Orchard (Howell MI)",
+    "why": "Pure Michigan listing, no website."
+   },
+   {
+    "name": "Slow Farm (4700 Whitmore Lake Rd, Ann Arbor MI)",
+    "why": "Listed by Destination Ann Arbor as a u-pick farm and pumpkin patch; slowfarm.com and the Destination Ann Arbor listing returned no readable content."
+   },
+   {
+    "name": "Cobblestone Farm Museum (Ann Arbor MI)",
+    "why": "cobblestonefarm.org failed with a certificate error; fall events not confirmed."
+   },
+   {
+    "name": "Applewood Orchards (2998 Rodesiler Hwy, Deerfield MI)",
+    "why": "Own page read; packing and shipping operation with no visitor activities stated."
+   },
+   {
+    "name": "Zingerman's Cornman Farms (Dexter MI)",
+    "why": "Event venue; page says it is closing Oct 31, 2026; no public fall activities."
+   },
+   {
+    "name": "Donahee Farms (6055 Tower Rd, Plymouth MI)",
+    "why": "Own page read; farmers-market vendor selling pumpkins; no 2026 dates; no farm visit stated."
+   },
+   {
+    "name": "Rowe's Produce Farm (Belleville MI)",
+    "why": "Own page read; farm market with peas U-pick; no pumpkins or maze stated."
+   }
+  ],
+  "fall-color": [
+   {
+    "name": "Michigan DNR sites: Rochester-Utica State Recreation Area, Wetzel SRA, Hayes State Park, Lake Hudson SRA, Dodge #4 State Park, Pointe Mouillee State Game Area",
+    "why": "michigan.gov DNR pages returned HTTP 403, not worked around; no official page read."
+   },
+   {
+    "name": "Hines Park sub-parks (Cass Benton, Nankin Mills, Hawthorne Ridge, etc.)",
+    "why": "Listed on Wayne County Hines Park page but no individual page read; treated as part of Hines Drive."
+   },
+   {
+    "name": "Oakland County Road Commission natural beauty roads",
+    "why": "Official list page not found (404)."
+   },
+   {
+    "name": "Livingston County natural beauty roads",
+    "why": "Road commission home page did not carry a list."
+   },
+   {
+    "name": "Genesee County Hogbacks Area",
+    "why": "geneseecountyparks.org page returned 403."
+   },
+   {
+    "name": "Oakland County parks beyond first page (Waterford Oaks, White Lake Oaks, Catalpa Oaks, Addison Oaks East etc.)",
+    "why": "Only first 10 of 3 pages listed; White Lake Oaks page 404; no fall evidence."
+   },
+   {
+    "name": "Detroit city regional parks list",
+    "why": "detroitmi.gov returned 403."
+   },
+   {
+    "name": "Spring Garden Natural Area / Peche Island (Windsor)",
+    "why": "City of Windsor page returned 404; only third-party mention of Peche Island."
+   },
+   {
+    "name": "Pure Michigan fall guides",
+    "why": "Pages read (state parks, hiking trails, fall tours, bucket list) named no new southeast Michigan sites beyond inventoried Seven Lakes, Stony Creek and M-29."
+   },
+   {
+    "name": "Macomb, Monroe County park systems",
+    "why": "No official park-list page read; search budget exhausted."
+   }
+  ]
+ }
+}

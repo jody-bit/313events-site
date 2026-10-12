@@ -2197,7 +2197,7 @@
     "name": "Ottawa Park",
     "collection": "fall-color",
     "inventory_no": null,
-    "published_id": null,
+    "published_id": "ottawa-park",
     "identity": "gps_and_visual",
     "match_confidence": "HIGH"
    },

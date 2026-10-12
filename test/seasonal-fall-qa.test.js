@@ -22,7 +22,8 @@ for (const slug of ["fall", "fall-color"]) {
   const col = Object.assign({}, C.COLLECTIONS[slug]);
   assert.strictEqual(d.collection, slug);
   const rows = cands.filter((c) => c.collection === slug);
-  assert.strictEqual(d.records.length, rows.length, slug + ": one QA record per inventory row");
+  assert.strictEqual(d.records.filter((r) => !r.discovered).length, rows.length, slug + ": one QA record per inventory row");
+  assert.strictEqual(d.records.length, rows.length + d.records.filter((r) => r.discovered).length, slug + ": the rest are discovered destinations (QA only)");
   const ids = new Set();
   for (const r of d.records) {
     const e = ents[slug].find((x) => x.id === r.id);

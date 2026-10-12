@@ -58,7 +58,7 @@ for (const slug of ["fall", "fall-color"]) {
     assert.strictEqual(r.statusCode, 200, slug + " " + env);
     const d = JSON.parse(r.body);
     assert.strictEqual(d.collection, slug);
-    assert.strictEqual(d.records.length, { fall: 71, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
+    assert.strictEqual(d.records.filter((x) => !x.discovered).length, { fall: 71, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
     assert.ok(d.records.every((x) => x.public === false), slug + ": nothing is public");
     assert.ok(!/Hush|Slay Nights/.test(r.body));
   }

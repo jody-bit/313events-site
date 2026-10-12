@@ -221,7 +221,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **11 rows. Official page read once; fall-color relevance and a second read still to do.** Delhi Metropark; Lake Erie Metropark; Lake St. Clair Metropark; Bald Mountain State Recreation Area; Pontiac Lake State Recreation Area; Seven Lakes State Park; Independence Oaks County Park; Brighton State Recreation Area; Island Lake State Recreation Area; Algonac State Park; Sterling State Park.
 - **97 inventory rows have not been read at all** (still HOLD_UNVERIFIED).
 
-The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 38 other fall and fall-color records stay out of this batch (12 `CONTENT_VERIFIED`, 23 `HOLD_UNVERIFIED`, 3 `READY_FOR_REVIEW`). The `READY_FOR_REVIEW` ones are Yates Cider Mill (linked image), Parmenter's Northville Cider Mill (linked image), Blake's Orchard & Cider Mill (linked image); they are not proposed, and any linked image on them is not adopted for launch.
+The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 184 other fall and fall-color records stay out of this batch (67 `CONTENT_VERIFIED`, 116 `HOLD_UNVERIFIED`, 1 `READY_FOR_REVIEW`). The `READY_FOR_REVIEW` ones are Oak Openings Preserve Metropark (owner-photo image); they are not proposed, and any linked image on them is not adopted for launch.
 
 ## Image sources audited, in your priority order
 

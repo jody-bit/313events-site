@@ -33,12 +33,12 @@ for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[s
 const gf = JSON.parse(JSON.stringify(all.halloween.find((x) => x.id === "halloween-greenfield-village")));
 gf.approval = { by: APPROVER, at: "2026-10-12" }; gf.status = C.readiness(gf).state; approved.halloween.push(gf);
 // a linked-image record, to cover that projection too (in memory)
-const linked = JSON.parse(JSON.stringify(all.fall.find((x) => x.image && x.image.remote && C.readiness(x).state === "READY_FOR_REVIEW")));
-linked.id = "linked-copy"; linked.approval = { by: APPROVER, at: "2026-10-12" }; linked.status = C.readiness(linked).state; approved.fall.push(linked);
+const linked = JSON.parse(JSON.stringify(all.halloween.find((x) => x.image && x.image.remote && C.readiness(x).state === "READY_FOR_REVIEW")));
+linked.id = "linked-copy"; linked.approval = { by: APPROVER, at: "2026-10-12" }; linked.status = C.readiness(linked).state; approved.halloween.push(linked);
 
 const projection = {};
 for (const slug of C.ORDER) projection[slug] = approved[slug].filter(C.isPublic).map(ED.publicEntry);
-assert.strictEqual(projection.fall.length, 12); assert.strictEqual(projection["fall-color"].length, 5); assert.strictEqual(projection.halloween.length, 1);
+assert.strictEqual(projection.fall.length, 11); assert.strictEqual(projection["fall-color"].length, 5); assert.strictEqual(projection.halloween.length, 2);
 
 // 1. display fields only
 const ALLOWED_TOP = ["id", "name", "city", "region", "categories", "featured", "status", "summary", "website", "image"];
