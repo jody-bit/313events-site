@@ -24,24 +24,23 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
-    ],
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
     "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -1525,39 +1524,40 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "scarefest-scream-park",
     "destination_name": "Scarefest Scream Park",
-    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
      "link-scarefest-scream-park",
+     "gen-halloween-5",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -1570,9 +1570,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-5",
+     "id": "gen-halloween-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-5.webp",
+     "src": "/assets/seasonal/halloween-card-1.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1609,6 +1609,18 @@
       "result": "loaded 2160x1215"
      },
      "catalogue_note": "Size 2160x1215"
+    },
+    {
+     "id": "gen-halloween-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-5.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
     },
     {
      "id": "gen-halloween-7",
@@ -1725,24 +1737,24 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [
@@ -2110,39 +2122,40 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "deranged-haunt",
     "destination_name": "Deranged Haunt",
-    "primary_image": "/assets/seasonal/halloween-card-4.webp",
+    "primary_image": "/assets/seasonal/halloween-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "alternative_images": [
      "link-deranged-haunt",
+     "gen-halloween-4",
      "gen-halloween-5",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2155,9 +2168,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-4",
+     "id": "gen-halloween-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-4.webp",
+     "src": "/assets/seasonal/halloween-card-2.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -2193,6 +2206,18 @@
       "result": "loaded 1024x576"
      },
      "catalogue_note": "Official site featured image: character artwork with the Deranged logo. Promotional artwork, not a venue photo. derangedhaunt.com redirects to this domain."
+    },
+    {
+     "id": "gen-halloween-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-4.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
     },
     {
      "id": "gen-halloween-5",
@@ -2309,38 +2334,39 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "slaughterhouse-adventure",
     "destination_name": "Slaughterhouse Adventure",
-    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "gen-halloween-5",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2352,6 +2378,18 @@
     "editorial_approval_status": "owner_approved"
    },
    "image_options": [
+    {
+     "id": "gen-halloween-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
     {
      "id": "gen-halloween-5",
      "type": "generated_illustrative",
@@ -2479,38 +2517,39 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "full-moon-manor-at-bonadeo-farms",
     "destination_name": "Full Moon Manor at Bonadeo Farms",
-    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-1.webp",
     "alternative_images": [
+     "gen-halloween-7",
      "gen-halloween-1",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2522,6 +2561,18 @@
     "editorial_approval_status": "owner_approved"
    },
    "image_options": [
+    {
+     "id": "gen-halloween-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-4.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
     {
      "id": "gen-halloween-7",
      "type": "generated_illustrative",
@@ -3197,24 +3248,24 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [
@@ -3229,15 +3280,15 @@
    "manifest": {
     "destination_id": "the-howling-haunted-trail-and-party",
     "destination_name": "The Howling Haunted Trail & Party",
-    "primary_image": "/assets/seasonal/halloween-card-7.webp",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
-     "gen-halloween-1",
+     "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
      "313p-9f336786",
@@ -3249,9 +3300,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-7",
+     "id": "gen-halloween-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-7.webp",
+     "src": "/assets/seasonal/halloween-card-1.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3261,9 +3312,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-halloween-1",
+     "id": "gen-halloween-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-1.webp",
+     "src": "/assets/seasonal/halloween-card-7.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3731,24 +3782,24 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [
@@ -4083,39 +4134,40 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "field-of-fear",
     "destination_name": "Field of Fear",
-    "primary_image": "/assets/seasonal/halloween-card-1.webp",
+    "primary_image": "/assets/seasonal/halloween-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "alternative_images": [
      "link-field-of-fear",
+     "gen-halloween-1",
      "gen-halloween-4",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -4128,9 +4180,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-1",
+     "id": "gen-halloween-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-1.webp",
+     "src": "/assets/seasonal/halloween-card-2.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4166,6 +4218,18 @@
       "result": "loaded 1536x1024"
      },
      "catalogue_note": "Official site artwork: the Stockyard entrance gate and cornfield under a stormy sky. It may be illustration or generated art, not a verified photo."
+    },
+    {
+     "id": "gen-halloween-1",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-1.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
     },
     {
      "id": "gen-halloween-4",
@@ -4454,39 +4518,40 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "dearborn-haunted-trail",
     "destination_name": "Dearborn Haunted Trail",
-    "primary_image": "/assets/seasonal/halloween-card-5.webp",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
      "link-dearborn-haunted-trail",
+     "gen-halloween-5",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -4499,9 +4564,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-5",
+     "id": "gen-halloween-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-5.webp",
+     "src": "/assets/seasonal/halloween-card-3.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4537,6 +4602,18 @@
       "result": "loaded 600x600"
      },
      "catalogue_note": "Size 600x600"
+    },
+    {
+     "id": "gen-halloween-5",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-5.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
     },
     {
      "id": "gen-halloween-7",
@@ -4654,24 +4731,24 @@
      "radius check needed"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -4826,24 +4903,24 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -5331,24 +5408,24 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -5489,24 +5566,24 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -6077,24 +6154,24 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [
@@ -7325,24 +7402,23 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
-    ],
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
     "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -7590,39 +7666,40 @@
     "detail": "Official site read 2026-10-11 (Claude (Cowork session), read in Chrome). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "brick-or-treat-at-legoland-discovery-center",
     "destination_name": "Brick-or-Treat at LEGOLAND Discovery Center",
-    "primary_image": "/assets/seasonal/halloween-card-3.webp",
+    "primary_image": "/assets/seasonal/halloween-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
      "link-brick-or-treat-at-legoland-discovery-center",
+     "gen-halloween-3",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -7635,9 +7712,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-3",
+     "id": "gen-halloween-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-3.webp",
+     "src": "/assets/seasonal/halloween-card-1.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -7673,6 +7750,18 @@
       "result": "loaded 1200x1500"
      },
      "catalogue_note": "Official Halloween 2026 promo tile (children building a LEGO jack-o'-lantern). Brand promotional image; the file name says en-uk, so it may be a UK-market tile."
+    },
+    {
+     "id": "gen-halloween-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-3.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
     },
     {
      "id": "gen-halloween-6",
@@ -7788,24 +7877,24 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -7957,38 +8046,39 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "laser-halloween",
     "destination_name": "Laser Halloween",
-    "primary_image": "/assets/seasonal/halloween-card-3.webp",
+    "primary_image": "/assets/seasonal/halloween-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
+     "gen-halloween-3",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -8000,6 +8090,18 @@
     "editorial_approval_status": "owner_approved"
    },
    "image_options": [
+    {
+     "id": "gen-halloween-4",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/halloween-card-4.webp",
+     "source": "313.events supplied Halloween graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
     {
      "id": "gen-halloween-3",
      "type": "generated_illustrative",
@@ -8500,39 +8602,39 @@
     "detail": "Official site read 2026-10-12 (Claude (Cowork session), read via web fetch). Relevance confirmed. Dates and hours not verified.",
     "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "manifest": {
     "destination_id": "halloween-stroll",
     "destination_name": "Halloween Stroll",
-    "primary_image": "/assets/seasonal/halloween-card-6.webp",
+    "primary_image": "/assets/seasonal/halloween-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_source": "313.events supplied Halloween graphic (AI-generated), cropped",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/halloween-card-3.webp",
+    "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
-     "gen-halloween-3",
+     "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
      "313p-9f336786",
@@ -8544,9 +8646,9 @@
    },
    "image_options": [
     {
-     "id": "gen-halloween-6",
+     "id": "gen-halloween-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-6.webp",
+     "src": "/assets/seasonal/halloween-card-3.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -8556,9 +8658,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-halloween-3",
+     "id": "gen-halloween-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/halloween-card-3.webp",
+     "src": "/assets/seasonal/halloween-card-6.webp",
      "source": "313.events supplied Halloween graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -9521,24 +9623,24 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -9679,24 +9781,24 @@
      "outside Michigan: Orbit eligibility and coordinates to confirm"
     ]
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
      "identity": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image)."
+    "image_route": "illustration",
+    "rights_route": "owner-supplied-illustration",
+    "outstanding": [],
+    "caveats": [
+     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],

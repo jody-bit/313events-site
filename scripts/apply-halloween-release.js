@@ -7,6 +7,7 @@
 //
 // What it does, per record (all 52 are kept; none is deleted or reordered):
 //   - applies the documented factual corrections (summary, name, city, categories, official website);
+//   - records the owner's established illustration route (labelled "Illustrative image") on the verified records that have no authorized photo;
 //   - records the official-page evidence and the relevance confirmation where the sheet verified 2026 operation;
 //   - records the public access advisories the sheet documents (Greenfield Village sold out; Zoo Boo);
 //   - records the owner's editorial acceptance and approval {by: Jody Tyree, at: 2026-10-11} on the 49 records to be published;
@@ -24,6 +25,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const E_DIR = path.join(root, "api/_lib/seasonal-editorial");
 const C = require("../seasonal/collections.js");
+const ED = require("../api/_lib/seasonal-editorial/editorial.js");
 
 const ENTRIES = path.join(E_DIR, "entries.json");
 const DATA = JSON.parse(fs.readFileSync(path.join(E_DIR, "halloween-release-1.json"), "utf8"));
@@ -36,6 +38,24 @@ const READ_BY = "Claude (Cowork session), read via web fetch";
 const SCOPE = "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). " +
   "It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. " +
   "Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder.";
+
+// Established owner decision (owner direction 2026-10-12, recorded on the Fall batches in api/_lib/seasonal-editorial): generated artwork and the
+// fallback placeholder are approved as labelled temporary illustrations wherever authentic destination photography is unavailable. It is not a
+// new approval request. It satisfies the image route and rights (gate items 3 and 4) ONLY: never factual verification, never publication approval.
+const ILLUSTRATION_DATE = "2026-10-12";
+const EXCEPTION_NOTE = "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.";
+function illustrate(o, d) {
+  const im = o.image || {};
+  if (im.acquired && !(d.illustrationCard && im.illustration)) return;   // an authorized photo is never replaced
+  if (im.ownerPhoto || im.remote) return;                            // an authorized photo or linked image is never replaced
+  // Visual parity with the approved Fall pages (5c2e988): where the default card would sit next to the same card, release data names another of the
+  // same eight approved Halloween cards (and the matching fallback chain). Existing artwork only; nothing is generated.
+  const src = d.illustrationCard ? d.illustrationCard.src : im.src, alternates = d.illustrationCard ? d.illustrationCard.alternates : (im.alternates || []);
+  const f = ED.illustrationImage(src, { alternates, acquiredAt: ILLUSTRATION_DATE, recordedBy: "Claude Code, recording the owner's image direction of 2026-10-12", recordedAt: ILLUSTRATION_DATE });
+  o.image = Object.assign({}, im, f);
+  o.image.provenance = { status: "OWNER_ACCEPTED", resolvedAt: ILLUSTRATION_DATE, resolvedBy: "Jody Tyree (owner direction in the project thread)", unresolved: [], label: "Illustrative image", ownerAcceptance: EXCEPTION_NOTE,
+    note: "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination." };
+}
 
 function apply(e, d) {
   const o = JSON.parse(JSON.stringify(e));
@@ -51,6 +71,8 @@ function apply(e, d) {
     }
     if (!o.relevance) o.relevance = { confirmed: true, checkedAt: READ_AT, checkedBy: READ_BY, note: d.evidenceNote };
     if (!o.website) o.website = d.officialUrl;
+    // Only records whose 2026 operation is verified get the illustration route. Records held for factual verification do not.
+    if (d.tier === "verified") illustrate(o, d);
   } else if (d.tier !== "excluded") {
     // Research is kept as a private note. It is deliberately NOT official evidence: it does not satisfy the gate.
     o.verificationNote = { checkedAt: READ_AT, checkedBy: READ_BY, officialUrl: d.officialUrl || null, operation: d.operation,
@@ -90,13 +112,18 @@ const out = all.halloween.map((e) => {
 Object.keys(DATA.records).forEach((id) => { if (!seen.has(id)) { console.error("release data for unknown record " + id); process.exit(1); } });
 if (out.length !== 52) { console.error("expected 52 Halloween records, found " + out.length); process.exit(1); }
 
+// The QA default image of a record is pinned in defaults.json; a record that takes another approved card keeps its pin in step with its entry.
+const DEFAULTS_PATH = path.join(E_DIR, "defaults.json");
+const defaults = JSON.parse(fs.readFileSync(DEFAULTS_PATH, "utf8"));
+Object.keys(DATA.records).forEach((id) => { const ic = DATA.records[id].illustrationCard; if (ic) defaults.defaults[id] = "gen-halloween-" + /card-(\d)\.webp/.exec(ic.src)[1]; });
+const defaultsText = JSON.stringify(defaults, null, 1) + "\n";
 const next = Object.assign({}, all, { halloween: out });
 const text = JSON.stringify(next, null, 1) + "\n";
 const cur = fs.readFileSync(ENTRIES, "utf8");
 if (process.argv.includes("--check")) {
-  if (cur !== text) { console.error("entries.json is stale: run node scripts/apply-halloween-release.js"); process.exit(1); }
+  if (cur !== text || fs.readFileSync(DEFAULTS_PATH, "utf8") !== defaultsText) { console.error("entries.json or defaults.json is stale: run node scripts/apply-halloween-release.js"); process.exit(1); }
   console.log("entries.json matches the Halloween release data (52 records)."); process.exit(0);
 }
-fs.writeFileSync(ENTRIES, text);
+fs.writeFileSync(ENTRIES, text); fs.writeFileSync(DEFAULTS_PATH, defaultsText);
 const by = {}; out.forEach((e) => { by[e.status] = (by[e.status] || 0) + 1; });
 console.log("Halloween records:", out.length, JSON.stringify(by));

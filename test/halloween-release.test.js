@@ -2,7 +2,8 @@
 //   * all 52 inventory records are preserved; 49 carry exactly the owner's approval (2026-10-11); 3 duplicate/closed records are excluded
 //     with their history preserved and carry no approval
 //   * the documented factual corrections are applied
-//   * the publication gate still decides: exactly seven records are public, each with an authorized image route
+//   * the publication gate still decides: exactly 29 records are public, each with official 2026 evidence and an authorized image route
+//     (7 original: owner photos or linked images; 22 on the owner's established labelled-illustration route)
 //   * linked images are never represented as licensed; held records are never public; the closed Fall batch is untouched
 "use strict";
 const assert = require("assert");
@@ -48,21 +49,39 @@ assert.strictEqual(byId["scarehouse-windsor-immersive-dinner"].disposition.of, "
 assert.strictEqual(byId["windsor-essex-yard-haunt-map"].disposition.of, "halloween-hunt-the-haunts");
 assert.strictEqual(byId["exit-13-haunted-house"].disposition.type, "closed");
 
-// 4. exactly seven public, each with every gate item and an authorized image route; the rest held with a reason
+// 4. exactly 29 public, each with every gate item and an authorized image route; the rest held with a reason
 const pubIds = H.filter(C.isPublic).map((e) => e.id).sort();
 assert.deepStrictEqual(pubIds, AUTHZ.HALLOWEEN_PUBLISHED);
 for (const id of pubIds) {
   const g = C.gate(byId[id]);
   assert.ok(g.official && g.relevance && g.identity && g.acquired && g.rights && g.approval, id + ": all gate items");
-  assert.ok(["owner-photo", "linked"].includes(g.imageRoute), id + ": image route is " + g.imageRoute);
+  assert.ok(["owner-photo", "linked", "illustration"].includes(g.imageRoute), id + ": image route is " + g.imageRoute);
+  assert.ok(byId[id].evidence.some((x) => x.level === "official" && x.websiteChecked === true), id + ": factual verification is not waived (official-page read recorded)");
   assert.strictEqual(byId[id].status, "PUBLISHED");
 }
-assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 49, 7, 42, 3]);
+assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 49, 29, 20, 3]);
 for (const r of batch.records.filter((r) => r.category === "held")) { assert.ok(r.reasons.length >= 1 && r.reasons.every((x) => x.length > 20), r.id + ": held with an exact reason"); assert.ok(!C.isPublic(byId[r.id])); }
 const states = H.reduce((o, e) => (o[e.status] = (o[e.status] || 0) + 1, o), {});
-assert.deepStrictEqual(states, { PUBLISHED: 7, CONTENT_VERIFIED: 22, HOLD_UNVERIFIED: 23 });
-// no held record rests on a generated card as if it were a photo: none of the 22 has an image route
-for (const e of H.filter((e) => e.status === "CONTENT_VERIFIED")) { const g = C.gate(e); assert.ok(!g.acquired && !g.rights, e.id + ": retained without an image route"); }
+assert.deepStrictEqual(states, { PUBLISHED: 29, HOLD_UNVERIFIED: 23 });
+// the 20 held records are held for FACTUAL verification (no official 2026 evidence, or only indirect evidence); the illustration route is not recorded on them
+const held = H.filter((e) => !e.disposition && !C.isPublic(e));
+assert.strictEqual(held.length, 20);
+for (const e of held) { const g = C.gate(e); assert.ok(!g.official || !g.relevance, e.id + ": held for factual verification"); assert.notStrictEqual(g.imageRoute, "illustration", e.id + ": no illustration route on an unverified record"); }
+assert.deepStrictEqual(Object.keys(rel.records).filter((id) => rel.records[id].tier === "verified").sort(), AUTHZ.HALLOWEEN_ILLUSTRATED.slice().sort());
+
+// 4b. the owner's established illustration decision (2026-10-12): the 22 verified records without an authorized photo publish on the labelled route
+assert.strictEqual(AUTHZ.HALLOWEEN_ILLUSTRATED.length, 22);
+for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
+  const e = byId[id], im = e.image, g = C.gate(e);
+  assert.strictEqual(g.imageRoute, "illustration", id); assert.strictEqual(g.rightsRoute, "owner-supplied-illustration", id);
+  assert.strictEqual(im.illustrative, true); assert.ok(!im.remote && !im.ownerPhoto, id + ": no photo or linked-image claim");
+  assert.ok(/never presented as documentary photography/.test(im.illustration.statement) && /does not depict this destination/.test(im.illustration.note), id + ": illustration statement");
+  assert.strictEqual(im.provenance.label, "Illustrative image"); assert.strictEqual(im.provenance.status, "OWNER_ACCEPTED");
+  assert.ok(/^\/assets\/seasonal\/halloween-card-[1-8]\.webp$/.test(im.src), id + ": an existing approved card, no new image generated");
+  const card = ED.publicEntry(e);
+  assert.strictEqual(card.image.illustrative, true, id + ": the public card carries the Illustrative image label"); assert.ok(!card.image.credit && !card.image.remote, id + ": no credit or link on an illustration");
+  assert.ok(ED.review(e).caveats.some((c) => /labelled generated illustration/.test(c)));
+}
 
 // 5. image rights are not misrepresented: linked images are risk-accepted, never licensed
 for (const id of pubIds.filter((id) => C.gate(byId[id]).imageRoute === "linked")) {
@@ -96,7 +115,20 @@ assert.ok(!/\$\d/.test(JSON.stringify(projection)), "no price appears on any pub
 const html = fs.readFileSync(path.join(root, "halloween.html"), "utf8");
 assert.ok(/sold out for 2026/i.test(html), "the built page shows the sold-out advisory");
 const htmlIds = [...new Set([...html.matchAll(/data-entry="([^"]+)"/g)].map((m) => m[1]))].sort();
-assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds exactly the seven");
+assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds exactly the 29");
+
+// 6b. mobile word-breaking fix (shared by all three seasonal pages): cards with a 10+ letter word carry the size hint
+{
+  const R = require(path.join(root, "seasonal/render.js"));
+  const colH = C.COLLECTIONS.halloween, colF = C.COLLECTIONS.fall;
+  const long = ED.publicEntry(byId["hallowglow-at-treerunner"]), short = ED.publicEntry(byId["zoo-boo"]);
+  assert.ok(/class="sc-card-title sc-card-title--long" style="--lw:10"/.test(R.card(colH, long)), "HallowGlow carries the long-word hint");
+  assert.ok(/--lw:14/.test(R.card(colH, ED.publicEntry(byId["slaughterhouse-adventure"]))), "Slaughterhouse (14 letters)");
+  assert.ok(/class="sc-card-title">/.test(R.card(colH, short)) && !/--lw/.test(R.card(colH, short)), "short titles are untouched");
+  assert.ok(/--lw:10/.test(R.card(colF, long)), "the rule is shared: the same card code gives every seasonal page the same hint (see seasonal-shared-presentation.test.js)");
+  const css = fs.readFileSync(path.join(root, "seasonal/seasonal.css"), "utf8");
+  assert.ok(/\.sc-card-title--long\{font-size:min\(21px/.test(css) && /\.sc-card-row \.sc-card-title--long\{font-size:21px\}/.test(css), "the CSS only shrinks the 2-column grid title; rail and list keep 21px");
+}
 
 // 7. the closed Fall and Fall Colors batch (76 records) is untouched by the Halloween work. The pin is the state on release/seasonal-homepage-v2-rc
 // (0a42885), i.e. including the seasonal visual corrections of 5c2e988 (neighbouring illustration repeats); it was 6981208c... on 08871c7.

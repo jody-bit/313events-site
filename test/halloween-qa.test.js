@@ -30,7 +30,7 @@ assert.strictEqual(new Set(qa.records.map((r) => r.id)).size, 52, "duplicate des
 assert.strictEqual(new Set(qa.records.map((r) => r.name)).size, 52, "duplicate destinations");
 // `public` is the gate's answer for the private entry, never a hand-set flag; every entry carries the owner's 2026-10-11 approval, which does not waive the rest of the gate
 for (const r of qa.records) assert.strictEqual(r.public, DATA.isPublic(entries[r.id]), r.id + " public flag equals the gate");
-assert.deepStrictEqual(qa.records.filter((r) => r.public).map((r) => r.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "exactly the seven records that pass every gate item are public");
+assert.deepStrictEqual(qa.records.filter((r) => r.public).map((r) => r.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "exactly the 29 records that pass every gate item are public");
 for (const r of qa.records) {
   assert.strictEqual(r.publication.state, DATA.readiness(entries[r.id]).state, r.id + " publication state is derived");
   assert.strictEqual(r.publication.gate.approval, !AUTHZ.HALLOWEEN_EXCLUDED[r.id], r.id + ": carries the owner approval unless excluded");
@@ -84,7 +84,7 @@ const pub = R.main(col);
 assert.ok(!/sc-qa|Unverified|Rotten Manor|Slay Nights/.test(pub));
 // fallback attributes are wired on any card the renderer produces (exercised here on private entries, which are never public)
 for (const e of Object.values(entries).slice(0, 6)) assert.ok(/data-fb=/.test(R.card(col, e)), e.id + " card carries its fallback chain");
-assert.deepStrictEqual([...new Set([...pub.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]))].sort(), AUTHZ.HALLOWEEN_PUBLISHED, "only the seven gate-passing destinations are public (the Don't Miss rail repeats three of them)");
+assert.deepStrictEqual([...new Set([...pub.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]))].sort(), AUTHZ.HALLOWEEN_PUBLISHED, "only the 29 gate-passing destinations are public (the Don't Miss rail repeats three of them)");
 // every private entry's image agrees with the QA default and its fallbacks (one data set, two views)
 for (const r of qa.records) {
   const e = entries[r.id], o = r.image_options[0];
@@ -153,14 +153,14 @@ assert.notStrictEqual(R.pickSrc({ src: "/x.webp", fallbacks: ["/q.webp"] }), "/x
 R.setFailedLookup(null);
 
 // 8. the other seasonal pages carry no unpublished destination either
-// (the built pages render the 76 authorized Fall records plus the seven Halloween records that pass the gate; every card on them must be one of those, and nothing else)
+// (the built pages render the 76 authorized Fall records plus the 29 Halloween records that pass the gate; every card on them must be one of those, and nothing else)
 {
   const authSet = AUTHZ.authorized(ED);
   for (const [f, slug] of [["fall.html", "fall"], ["fall-color.html", "fall-color"], ["halloween.html", "halloween"]]) {
     const html = fs.readFileSync(path.join(root, f), "utf8");
     const ids = [...html.matchAll(/<li class="sc-card[^"]*" data-entry="([^"]+)"/g)].map((m) => m[1]);
     for (const id of ids) assert.ok(authSet.has(slug + "/" + id), f + " renders only authorized records: " + id);
-    if (slug === "halloween") assert.deepStrictEqual([...new Set(ids)].sort(), AUTHZ.HALLOWEEN_PUBLISHED, "Halloween renders exactly the seven records that pass the gate");
+    if (slug === "halloween") assert.deepStrictEqual([...new Set(ids)].sort(), AUTHZ.HALLOWEEN_PUBLISHED, "Halloween renders exactly the 29 records that pass the gate");
   }
 }
 console.log("halloween-qa: ok");
@@ -238,7 +238,7 @@ console.log("halloween-qa: ok");
     assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id + ": carries the owner Halloween approval; the unadopted proposal adds no rights and no image");
   });
   const cx = recs["crossroads-ghosts-goodies"];
-  assert.strictEqual(cx.publication.state, "CONTENT_VERIFIED", "Crossroads state unchanged by the proposals");
+  assert.strictEqual(cx.publication.state, "PUBLISHED", "Crossroads publishes on the labelled-illustration route; the unadopted proposals change nothing");
   assert.strictEqual(cx.manifest.primary_image, "/assets/seasonal/halloween-card-6.webp", "Crossroads default unchanged");
   assert.ok(QA.results(col, qa.records, { category: "all", query: "", view: "grid" }, {}).includes("PROPOSED, not adopted"));
   // nothing in the batch is approved

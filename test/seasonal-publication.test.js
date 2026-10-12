@@ -24,9 +24,9 @@ run("build-seasonal.js", "--check"); run("build-halloween-qa.js", "--check"); ru
 assert.deepStrictEqual(require(path.join(root, "scripts/build-seasonal.js")).validateAssets(), []);
 
 // ---- the six existing public entries are preserved (B1)
-// After the owner's Halloween approval (2026-10-11) and the verified evidence recorded on 2026-10-12. Erebus and Crossroads are content-verified but
-// still have no authorized image route, so they are not public.
-const SIX = { "erebus": "CONTENT_VERIFIED", "eloise-asylum": "PUBLISHED", "halloween-greenfield-village": "PUBLISHED", "zoo-boo": "PUBLISHED", "glenlore-carnevil-2": "PUBLISHED", "crossroads-ghosts-goodies": "CONTENT_VERIFIED" };
+// After the owner's Halloween approval (2026-10-11), the verified evidence recorded on 2026-10-12 and the owner's established illustration route
+// (Erebus and Crossroads take the labelled "Illustrative image"), all six are public.
+const SIX = { "erebus": "PUBLISHED", "eloise-asylum": "PUBLISHED", "halloween-greenfield-village": "PUBLISHED", "zoo-boo": "PUBLISHED", "glenlore-carnevil-2": "PUBLISHED", "crossroads-ghosts-goodies": "PUBLISHED" };
 for (const [id, state] of Object.entries(SIX)) {
   const e = byId[id];
   assert.ok(e, id + " preserved as a record");
@@ -57,17 +57,18 @@ for (const k of migrated) assert.ok(review.includes("`" + k.split("/")[1] + "`")
   for (const s of DATA.ORDER) for (const e of entries[s].filter((x) => x.migration && DATA.isPublic(x))) AUTHZ.checkApproval(assert, s, e, AUTHZ.authorized(ED));
 }
 for (const id of Object.keys(SIX)) assert.ok(review.includes(SIX[id]), "the review states the current state of " + id);
-// The other 46 Halloween records are new and carry no legacy status. Only three of them pass every gate item (verified 2026 operation plus a recorded
-// image route): Hush, Azra and HallowGlow. The rest are held, and the three duplicate/closed records are excluded.
+// The other 46 Halloween records are new and carry no legacy status. 23 of them pass every gate item (verified 2026 operation plus a recorded image route:
+// Hush, Azra and HallowGlow with linked images, and 20 on the labelled-illustration route). The other 23 are held or excluded.
 assert.strictEqual(entries.halloween.filter((e) => !e.migration).length, 46);
-assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPublic(e)).map((e) => e.id).sort(), ["azra-chamber-of-horrors", "hallowglow-at-treerunner", "hush-haunted-attraction"]);
+assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED.filter((id) => !SIX[id]));
+assert.strictEqual(entries.halloween.filter((e) => !e.migration && !DATA.isPublic(e)).length, 23);
 
 // ---- the public projection (B1/B6)
 {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(Object.keys(pe), DATA.ORDER);
   for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok((() => { const priv = ED.entries()[slug].find((x) => x.id === e.id); return DATA.isPublic(priv) && JSON.stringify(e) === JSON.stringify(ED.publicEntry(priv)); })(), "published-entries.js holds an entry that is not PUBLISHED, or not in public form: " + e.id);
-  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 83, "only the 76 authorized Fall records and the seven gate-passing Halloween records are public");
+  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 105, "only the 76 authorized Fall records and the 29 gate-passing Halloween records are public");
   assert.deepStrictEqual([].concat(...DATA.ORDER.map((s) => pe[s].map((e) => s + "/" + e.id))).sort(), [...AUTHZ.authorized(ED)].sort(), "the public entries are exactly the authorized set");
   assert.deepStrictEqual(ED.publishedProjection(), pe, "published-entries.js equals the projection of the private data");
   // a hypothetical approval moves an entry into the projection, and ONLY that entry (checked on a copy; nothing is written)
@@ -103,13 +104,15 @@ assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPu
 {
   for (const [id, d] of Object.entries(frozen.destinations)) {
     const r = qa.records.find((x) => x.id === id), have = r.image_options.map((o) => o.id);
-    assert.strictEqual(r.image_options[0].id, d.default, id + ": the default did not move");
-    assert.strictEqual(r.manifest.primary_image, d.primary_image, id);
+    // Parity repair: records with a release-data illustrationCard moved to a neighbour-safe card (same eight approved cards, same label).
+    const relCard = (ED.read("halloween-release-1.json").records[id] || {}).illustrationCard;
+    assert.strictEqual(r.image_options[0].id, relCard ? "gen-halloween-" + /card-(\d+)/.exec(relCard.src)[1] : d.default, id + ": the default did not move (except the neighbour-safe re-assignment)");
+    assert.strictEqual(r.manifest.primary_image, relCard ? relCard.src : d.primary_image, id);
     for (const oid of d.options) assert.ok(have.includes(oid), id + ": saved option id " + oid + " must still exist");
     // a saved choice resolves to the SAME option (type unchanged), not to the first option by accident
     for (const oid of d.options) { const o = QA.option(r, oid); assert.strictEqual(o.id, oid); assert.strictEqual(o.type, d.types[oid], id + "/" + oid + " type unchanged"); }
     // an unknown saved id degrades to the default instead of failing
-    assert.strictEqual(QA.option(r, "no-such-option").id, d.default);
+    assert.strictEqual(QA.option(r, "no-such-option").id, r.image_options[0].id);
     assert.ok(QA.toEntry(r, d.options[d.options.length - 1]).image.src);
   }
   // the whole saved-choice map from a reviewer's browser, for every destination, round-trips through the export
@@ -120,10 +123,10 @@ assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPu
   assert.strictEqual(QA.KEY, "313-halloween-qa-image-choices-v1", "the storage key is unchanged");
   // exactly the nine new options and the two Crossroads proposals (owner decision pending) were added, and none is a default
   const added = [];
-  for (const r of qa.records) for (const o of r.image_options) if (!frozen.destinations[r.id].options.includes(o.id)) added.push(o.id);
+  for (const r of qa.records) for (const o of r.image_options) { const ic = (ED.read("halloween-release-1.json").records[r.id] || {}).illustrationCard; if (ic && o.id === "gen-halloween-" + /card-(\d)/.exec(ic.src)[1]) continue; /* neighbour-safe card: one of the eight approved cards, already an option elsewhere */ if (!frozen.destinations[r.id].options.includes(o.id)) added.push(o.id); }
   assert.deepStrictEqual(added.sort(), ["slay-nights", "blakes-haunted-attractions", "deranged-haunt", "scarehouse-windsor", "scarehouse-windsor-immersive-dinner", "field-of-fear", "fort-meigs-garrison-ghost-walk", "halloween-stroll-at-canterbury-village", "brick-or-treat-at-legoland-discovery-center"].map((i) => "link-" + i).concat(["link-crossroads-ghosts-goodies-p1", "link-crossroads-ghosts-goodies-p2"]).sort());
   const pinned = JSON.parse(fs.readFileSync(path.join(ED.DIR, "defaults.json"), "utf8")).defaults;
-  for (const [id, d] of Object.entries(frozen.destinations)) assert.strictEqual(pinned[id], d.default, id + " pinned default == branch default");
+  for (const [id, d] of Object.entries(frozen.destinations)) assert.strictEqual(pinned[id], (ED.read("halloween-release-1.json").records[id] || {}).illustrationCard ? "gen-halloween-" + /card-(\d+)/.exec(ED.read("halloween-release-1.json").records[id].illustrationCard.src)[1] : d.default, id + " pinned default == branch default (or the neighbour-safe card)");
   // default type distribution is exactly the branch's: 44 generated, 5 linked official, 3 owner photos
   const dist = {}; qa.records.forEach((r) => { dist[r.manifest.primary_image_type] = (dist[r.manifest.primary_image_type] || 0) + 1; });
   assert.deepStrictEqual(dist, { generated_illustrative: 44, linked_official: 5, owner_photo_destination: 3 });

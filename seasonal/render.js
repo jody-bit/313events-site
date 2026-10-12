@@ -82,10 +82,15 @@
     var name = e.website
       ? '<a class="sc-card-link" href="' + esc(e.website) + '" target="_blank" rel="noopener noreferrer">' + esc(e.name) + '<span class="sc-sr"> (official site, opens in a new tab)</span></a>'
       : esc(e.name);
+    // Shared mobile word-breaking rule (every seasonal page, same code path): a card title whose longest word (split at spaces and hyphens) has 10+ letters
+    // carries its length, so the 2-column mobile grid can set the title just small enough for that word to fit instead of breaking it mid-word.
+    // The CSS only ever shrinks a title that would not fit; every other title keeps the approved 21px.
+    var longWord = 0;
+    String(e.name).split(/[\s\-\u2013\u2014]+/).forEach(function (w) { if (w.length >= 10 && w.length > longWord) longWord = w.length; });
     return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '"' + (opts.attrs || "") + '>' +
       media(e) +
       '<div class="sc-card-body">' + tags(col, e) +
-      '<h3 class="sc-card-title">' + name + '</h3>' +
+      '<h3 class="sc-card-title' + (longWord ? " sc-card-title--long" : "") + '"' + (longWord ? ' style="--lw:' + longWord + '"' : "") + '>' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
       '<p class="sc-card-sum">' + esc(e.summary) + '</p>' +
       (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + (opts.extra || "") + '</div>' +
@@ -117,9 +122,12 @@
   function discover(col, state) {
     var used = usedCategories(col);
     if (!used.length) return "";
+    var shown = {};   // shared rule: navigation tiles never repeat an image; each takes the first destination in its category whose image no earlier tile used
     return '<section class="sc-section" aria-labelledby="scDiscover"><h2 class="sc-h2" id="scDiscover">' + esc(col.discoverTitle) + '</h2>' +
       '<ul class="sc-tiles">' + used.map(function (c, i) {
-        var n = DATA.published(col).filter(function (e) { return e.categories.indexOf(c.id) >= 0; })[0];
+        var inCat = DATA.published(col).filter(function (e) { return e.categories.indexOf(c.id) >= 0; });
+        var n = inCat.filter(function (e) { return !shown[e.image.src]; })[0] || inCat[0];
+        shown[n.image.src] = true;
         return '<li><button type="button" class="sc-tile" data-cat="' + esc(c.id) + '"><img src="' + esc(n.image.src) + '" alt="" loading="lazy" width="640" height="427"><span class="sc-tile-label">' + esc(c.tile) + ' <span aria-hidden="true">&rarr;</span></span></button></li>';
       }).join("") + '</ul></section>';
   }

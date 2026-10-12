@@ -38,7 +38,7 @@ for (const e of E) {
       if (d.tier === "hold-indirect") reasons.push("Official 2026 operation supported only indirectly (" + d.operation + "): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. " + d.evidenceNote);
       else reasons.push("No official 2026 evidence found (" + d.operation + "). " + d.evidenceNote);
     }
-    if (!g.acquired || !g.rights) reasons.push("No authorized image route: the record has only a generated card with no illustration statement and no rights route. Retained until a compliant image (owner photo, license, or an owner illustration statement) is available.");
+    if (!g.acquired || !g.rights) reasons.push("No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet.");
     if (!reasons.length) reasons.push("Gate state " + rv.state + "; outstanding: " + rv.outstanding.join(" "));
   }
   // contradictions
@@ -87,7 +87,10 @@ md.push("| Held (retained, not public) | " + counts.held + " |");
 md.push("| Excluded as duplicate or closed (retained with history) | " + counts.excluded + " |");
 md.push("| Check: " + counts.eligiblePublished + " + " + counts.held + " + " + counts.excluded + " | " + (counts.eligiblePublished + counts.held + counts.excluded) + " |");
 md.push("");
-md.push("Held, by exact reason: " + counts.heldContentVerifiedAwaitingImage + " are CONTENT_VERIFIED (2026 operation verified from the official page) and wait only for an authorized image route; " + counts.heldIndirect + " have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; " + counts.heldUnconfirmed + " have no official 2026 evidence" + (held.filter((r) => REL.records[r.id].tier === "hold-unconfirmed" && r.imageRoute).length ? " (" + held.filter((r) => REL.records[r.id].tier === "hold-unconfirmed" && r.imageRoute).map((r) => r.name).join(", ") + " has a linked image but no 2026 evidence)" : "") + ".");
+const illus = published.filter((r) => r.imageRoute === "illustration");
+md.push("Image route: " + illus.length + " of the " + published.length + " published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible \"Illustrative image\" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other " + (published.length - illus.length) + " use an owner photo or a linked image.");
+md.push("");
+md.push("All " + held.length + " held records are held for factual verification: " + counts.heldIndirect + " have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; " + counts.heldUnconfirmed + " have no official 2026 evidence" + (held.filter((r) => REL.records[r.id].tier === "hold-unconfirmed" && r.imageRoute).length ? " (" + held.filter((r) => REL.records[r.id].tier === "hold-unconfirmed" && r.imageRoute).map((r) => r.name).join(", ") + " has a linked image but no 2026 evidence)" : "") + ".");
 md.push("");
 md.push("## Published through the gate (" + published.length + ")");
 md.push("");

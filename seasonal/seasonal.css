@@ -92,6 +92,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 /* mobile readability (visual acceptance 2026-10-12): the text column no longer loses 40px to the arrow, and secondary text is larger; the 2-column grid is unchanged */
 .sc-card-body{padding:10px 12px 38px 12px}.sc-card-where,.sc-card-sum{font-size:14px;line-height:1.4}.sc-tags li{font-size:11px;padding:2px 6px}
 .sc-card-row .sc-card-body{padding:10px 12px 38px 12px}
+/* long card titles on every seasonal page (word-breaking fix): in the 2-column grid the title is set only as small as the longest word needs (about 0.52em per letter, against 0.50em measured), never above 21px; the rail, list and single-card layouts keep 21px */
+.sc-card-title--long{font-size:min(21px,calc((50vw - 48px) / (var(--lw) * .52)))}.sc-rail:not(.sc-rail-solo) .sc-card-title--long,.sc-card-row .sc-card-title--long{font-size:21px}
 .sc-rail-solo .sc-card{flex-basis:100%}.sc-rail-solo .sc-card-row{flex-direction:column}.sc-rail-solo .sc-card-row .sc-card-media{width:auto;aspect-ratio:3/2}.sc-rail-solo .sc-card-row .sc-card-body{padding:10px 12px 38px 12px}.sc-rail-solo .sc-card-title{font-size:21px}.sc-rail-solo .sc-card-sum{font-size:14px}.sc-map-card{flex-direction:column;align-items:flex-start}
 }
 /* ---- image fallback + QA mode (Halloween). Public layout above is unchanged. ---- */

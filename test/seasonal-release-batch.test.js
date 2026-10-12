@@ -22,7 +22,7 @@ const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 76, "Fall approvals only on the 76 batch records");
 assert.strictEqual(all.filter((e) => e.status === "PUBLISHED").length, 76, "only the batch is declared PUBLISHED");
 assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "only the batch is public");
-assert.strictEqual(E.halloween.filter((e) => e.status === "PUBLISHED").length, 7, "Halloween: the seven gate-passing records");
+assert.strictEqual(E.halloween.filter((e) => e.status === "PUBLISHED").length, 29, "Halloween: the 29 gate-passing records");
 for (const r of B.records) assert.deepStrictEqual(E[r.collection].find((x) => x.id === r.id).approval, AUTHZ.AUTH, r.id + ": the authorized approval, nothing else");
 
 let advisories = 0;

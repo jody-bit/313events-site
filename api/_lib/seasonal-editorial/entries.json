@@ -5038,7 +5038,7 @@
     "serious-scares"
    ],
    "featured": true,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Multi-story haunted attraction in Pontiac.",
    "image": {
     "src": "/assets/seasonal/halloween-card-1.webp",
@@ -5050,7 +5050,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-1.webp",
+     "bytes": 45914,
+     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -5472,7 +5496,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
    "image": {
@@ -5485,7 +5509,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-6.webp",
+     "bytes": 42636,
+     "sha256": "04766e9e0415d3227db29e37758f9840b79e389bbac6089b1aadb02b946519f7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -5832,19 +5880,43 @@
     "serious-scares"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted hayride, maze and forest",
    "image": {
-    "src": "/assets/seasonal/halloween-card-5.webp",
+    "src": "/assets/seasonal/halloween-card-1.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-7.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-7.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-1.webp",
+     "bytes": 45914,
+     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -5889,7 +5961,7 @@
     "serious-scares"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted barn and hayride",
    "website": "https://blakefarms.com/haunted-attractions/",
    "image": {
@@ -5902,7 +5974,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-7.webp",
+     "bytes": 28018,
+     "sha256": "23f719787237fea1db5a2ab917d52be5bf3e3e9109a44a8e0847da8bb774c09f",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -5995,20 +6091,44 @@
     "serious-scares"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted woods",
    "website": "https://derangedhauntedattraction.com/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-4.webp",
+    "src": "/assets/seasonal/halloween-card-2.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-5.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-4.webp",
+     "/assets/seasonal/halloween-card-5.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-2.webp",
+     "bytes": 21586,
+     "sha256": "f445faacd7f196ebd42799947f7cc4f63bcf3d91269d51f0ab7d064d8d8de4d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6052,19 +6172,43 @@
     "serious-scares"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted house and corn maze",
    "image": {
-    "src": "/assets/seasonal/halloween-card-5.webp",
+    "src": "/assets/seasonal/halloween-card-3.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-7.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-7.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-3.webp",
+     "bytes": 28712,
+     "sha256": "ac9654a060b4997e1b1a67255313bd9fc7e2b33bfbcd7e04db69a2a629a1f943",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6109,19 +6253,43 @@
     "serious-scares"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted house and haunted hayride at Bonadeo Farms in Highland Township.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-7.webp",
+    "src": "/assets/seasonal/halloween-card-4.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-1.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-7.webp",
+     "/assets/seasonal/halloween-card-1.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-4.webp",
+     "bytes": 27586,
+     "sha256": "4852f7d406f9489f74cd203ffda2ac7a7d82020266679066bb95d710097ccbd8",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6311,19 +6479,43 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted woodland trail",
    "image": {
-    "src": "/assets/seasonal/halloween-card-7.webp",
+    "src": "/assets/seasonal/halloween-card-1.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-7.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-1.webp",
+     "bytes": 45914,
+     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6463,7 +6655,7 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Farm haunt with a haunted hayride, a zombie-themed family hayride and a haunted cornfield walk.",
    "image": {
     "src": "/assets/seasonal/halloween-card-5.webp",
@@ -6475,7 +6667,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-5.webp",
+     "bytes": 36568,
+     "sha256": "0507c837e495ba36a445b1d768c68c3756ee87aa4608c09f5f26bf7807601b4c",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6567,20 +6783,44 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted cornfield attractions",
    "website": "https://fieldoffear.com/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/halloween-card-2.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-4.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-1.webp",
+     "/assets/seasonal/halloween-card-4.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-2.webp",
+     "bytes": 21586,
+     "sha256": "f445faacd7f196ebd42799947f7cc4f63bcf3d91269d51f0ab7d064d8d8de4d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6671,19 +6911,43 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Haunted woodland trail",
    "image": {
-    "src": "/assets/seasonal/halloween-card-5.webp",
+    "src": "/assets/seasonal/halloween-card-3.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-7.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-5.webp",
+     "/assets/seasonal/halloween-card-7.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-3.webp",
+     "bytes": 28712,
+     "sha256": "ac9654a060b4997e1b1a67255313bd9fc7e2b33bfbcd7e04db69a2a629a1f943",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6727,7 +6991,7 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Evening trick-or-treating and spooky trails (family-friendly and scarier) at the Sanilac County Historical Museum village in Port Sanilac.",
    "image": {
     "src": "/assets/seasonal/halloween-card-7.webp",
@@ -6739,7 +7003,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-7.webp",
+     "bytes": 28018,
+     "sha256": "23f719787237fea1db5a2ab917d52be5bf3e3e9109a44a8e0847da8bb774c09f",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6783,7 +7071,7 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Indoor haunted house.",
    "image": {
     "src": "/assets/seasonal/halloween-card-1.webp",
@@ -6795,7 +7083,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-1.webp",
+     "bytes": 45914,
+     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6934,7 +7246,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Seasonal eerie manor tours",
    "image": {
     "src": "/assets/seasonal/halloween-card-8.webp",
@@ -6945,7 +7257,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-8.webp",
+     "bytes": 33614,
+     "sha256": "ff2ddf1c0903bdabbb8b4b285409f83e4e4ef83c50fabff796b881cfd1c54052",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -6989,7 +7325,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Historical ghost walk",
    "website": "https://fortmeigs.org/",
    "image": {
@@ -7001,7 +7337,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-2.webp",
+     "bytes": 21586,
+     "sha256": "f445faacd7f196ebd42799947f7cc4f63bcf3d91269d51f0ab7d064d8d8de4d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7100,7 +7460,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Halloween light displays and characters",
    "website": "https://www.canterburyvillage.com/",
    "image": {
@@ -7113,7 +7473,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-3.webp",
+     "bytes": 28712,
+     "sha256": "ac9654a060b4997e1b1a67255313bd9fc7e2b33bfbcd7e04db69a2a629a1f943",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7325,20 +7709,44 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "LEGO-themed Halloween activities",
    "website": "https://www.legolanddiscoverycenter.com/michigan/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-3.webp",
+    "src": "/assets/seasonal/halloween-card-1.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-6.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-6.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-1.webp",
+     "bytes": 45914,
+     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7389,7 +7797,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Planetarium Halloween show",
    "image": {
     "src": "/assets/seasonal/halloween-card-6.webp",
@@ -7401,7 +7809,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-6.webp",
+     "bytes": 42636,
+     "sha256": "04766e9e0415d3227db29e37758f9840b79e389bbac6089b1aadb02b946519f7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7445,19 +7877,43 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Halloween-themed laser show",
    "image": {
-    "src": "/assets/seasonal/halloween-card-3.webp",
+    "src": "/assets/seasonal/halloween-card-4.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-6.webp",
-     "/assets/seasonal/halloween-card-8.webp"
+     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-6.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-4.webp",
+     "bytes": 27586,
+     "sha256": "4852f7d406f9489f74cd203ffda2ac7a7d82020266679066bb95d710097ccbd8",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7597,19 +8053,43 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-6.webp",
+    "src": "/assets/seasonal/halloween-card-3.webp",
     "alternates": [
-     "/assets/seasonal/halloween-card-3.webp",
+     "/assets/seasonal/halloween-card-6.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-3.webp",
+     "bytes": 28712,
+     "sha256": "ac9654a060b4997e1b1a67255313bd9fc7e2b33bfbcd7e04db69a2a629a1f943",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7883,7 +8363,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
    "image": {
     "src": "/assets/seasonal/halloween-card-8.webp",
@@ -7894,7 +8374,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-8.webp",
+     "bytes": 33614,
+     "sha256": "ff2ddf1c0903bdabbb8b4b285409f83e4e4ef83c50fabff796b881cfd1c54052",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {
@@ -7938,7 +8442,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "summary": "Historical ghost walk",
    "image": {
     "src": "/assets/seasonal/halloween-card-2.webp",
@@ -7949,7 +8453,31 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "acquired": {
+     "file": "/assets/seasonal/halloween-card-2.webp",
+     "bytes": 21586,
+     "sha256": "f445faacd7f196ebd42799947f7cc4f63bcf3d91269d51f0ab7d064d8d8de4d7",
+     "width": 640,
+     "height": 427,
+     "acquiredAt": "2026-10-12"
+    },
+    "illustration": {
+     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
+     "suppliedBy": "313.events owner",
+     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
+     "recordedAt": "2026-10-12",
+     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    },
+    "provenance": {
+     "status": "OWNER_ACCEPTED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "unresolved": [],
+     "label": "Illustrative image",
+     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
+     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+    }
    },
    "evidence": [
     {

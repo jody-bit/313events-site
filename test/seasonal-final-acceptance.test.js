@@ -44,7 +44,7 @@ assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "on
 // Halloween has its own, later owner approval (2026-10-11): 49 records, exactly AUTH_HALLOWEEN; 3 excluded carry none.
 assert.strictEqual(E.halloween.filter((e) => e.approval).length, 49, "49 Halloween approvals");
 E.halloween.filter((e) => e.approval).forEach((e) => assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id));
-assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned seven Halloween records are public");
+assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned 29 Halloween records are public");
 
 // ---- the original 15 are unchanged (name, city, description, link, image, credit, Don't Miss)
 const sig = [];
