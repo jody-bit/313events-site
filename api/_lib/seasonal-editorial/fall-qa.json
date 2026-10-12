@@ -946,7 +946,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Big Red Orchard in Washington Township. Official page lists U-pick apples, cider mill, Legacy Bar with trivia, Crimson Hills Event Center.",
+   "summary": "U-pick apples and a cider mill in Washington Township.",
    "official_site": "https://bigredorchard.com",
    "website": "https://bigredorchard.com",
    "dates_hours": null,
@@ -960,22 +960,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -1961,7 +1962,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Diehl's Orchard & Cider Mill in Holly. Official page lists pumpkin patch, corn maze, hay maze, hayrides.",
+   "summary": "Orchard and cider mill in Holly with a pumpkin patch, corn maze, hay maze, hayrides, farm animals and a playground. The farm does not offer U-pick apples.",
    "official_site": "https://www.diehlsorchard.com/",
    "website": "https://www.diehlsorchard.com/",
    "dates_hours": null,
@@ -2664,7 +2665,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Orchard.",
+   "summary": "Forever Acres Farm in Britton. Not verified for 2026.",
    "official_site": null,
    "website": null,
    "dates_hours": null,
@@ -2809,7 +2810,7 @@
     "cider-donuts"
    ],
    "category_source": "record",
-   "summary": "Franklin Cider Mill in Bloomfield Hills. Official page lists cider pressing viewing, donut baking viewing, cider, donuts.",
+   "summary": "Historic cider mill where visitors can watch cider pressing and donut making, with caramel apples and a water wheel.",
    "official_site": "https://www.franklincidermill.com/",
    "website": "https://www.franklincidermill.com/",
    "dates_hours": null,
@@ -2821,22 +2822,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -3663,7 +3665,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Long Family Orchard & Farm in Commerce Township. Official page lists cider, donuts, apples, corn maze.",
+   "summary": "Cider mill and farm market with a corn maze, hayrides, a petting farm and pumpkin picking by hayride.",
    "official_site": "https://www.longsorchard.com/",
    "website": "https://www.longsorchard.com/",
    "dates_hours": null,
@@ -4895,7 +4897,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Plymouth Orchards & Cider Mill in Plymouth. Official page lists wagon rides, farm animals, pumpkin patch, live music.",
+   "summary": "Cider mill and orchard with a pumpkin patch, wagon rides, farm animals and live music, where visitors can watch cider pressing and donut making. A separate Red Shed Market is on Ann Arbor Road.",
    "official_site": "https://www.plymouthorchards.com/",
    "website": "https://www.plymouthorchards.com/",
    "dates_hours": null,
@@ -4909,22 +4911,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -5036,7 +5039,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Porter's Orchard in Goodrich. Official page lists Apple orchard, Farm market with honey and cider slushies, Hayrides through orchard / play space, Donuts and cider.",
+   "summary": "Orchard, farm market and cider mill with hayrides, donuts, cider slushies and fall attractions.",
    "official_site": "https://portersorchard.com",
    "website": "https://portersorchard.com",
    "dates_hours": null,
@@ -5050,22 +5053,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -5321,7 +5325,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Rochester Cider Mill in Rochester. Official page lists cider, donuts, pies, caramel apples.",
+   "summary": "Cider mill with donuts, pies, caramel apples, a free petting farm and a giant straw pyramid.",
    "official_site": "https://www.rochestercidermill.com/",
    "website": "https://www.rochestercidermill.com/",
    "dates_hours": null,
@@ -5335,22 +5339,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -5602,7 +5607,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Spicer Orchards in Fenton. Official page lists pick-your-own apples and fruit, corn maze, pumpkin patch, playground.",
+   "summary": "Pick-your-own orchard with a corn maze, pumpkin patch, cider, donuts and a winery.",
    "official_site": "https://www.spicerorchards.com/",
    "website": "https://www.spicerorchards.com/",
    "dates_hours": null,
@@ -5616,22 +5621,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -6168,7 +6174,7 @@
     "farm-experiences"
    ],
    "category_source": "record",
-   "summary": "Wasem Fruit Farm in Milan. Official page lists pick-your-own apples, pick-your-own pumpkins, tart cherries, cider.",
+   "summary": "Pick-your-own apples, pumpkins and tart cherries, with cider and fresh donuts in autumn.",
    "official_site": "https://www.wasemfruitfarm.com/",
    "website": "https://www.wasemfruitfarm.com/",
    "dates_hours": null,
@@ -6182,22 +6188,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -6449,7 +6456,7 @@
     "fall-festivals"
    ],
    "category_source": "record",
-   "summary": "Wiard's Orchards in Ypsilanti. Official page lists u-pick apples, u-pick pumpkins, cider mill, country store and bakery.",
+   "summary": "Orchard and cider mill with U-pick apples and pumpkins, a country store and bakery, cider, donuts and pies.",
    "official_site": "https://www.wiards.com/",
    "website": "https://www.wiards.com/",
    "dates_hours": null,
@@ -6463,22 +6470,22 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {

@@ -2771,7 +2771,7 @@
     "parks-gardens"
    ],
    "category_source": "record",
-   "summary": "Cranbrook Gardens & grounds in Bloomfield Hills. Listed features: self-guided garden walks, Sunken Garden, Japanese Garden, tree-covered trails.",
+   "summary": "Historic gardens and grounds with self-guided walks, tree-covered trails and fall colors and conifers. Restrooms are typically closed and garden beds pulled by mid-October.",
    "official_site": "https://www.housegardens.cranbrook.edu/contact/hours-admission",
    "website": "https://www.housegardens.cranbrook.edu/contact/hours-admission",
    "dates_hours": null,
@@ -2786,22 +2786,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -3693,7 +3694,7 @@
     "trails-woods"
    ],
    "category_source": "record",
-   "summary": "Stony Creek Metropark in Shelby Township. Listed features: hiking, biking, boating, fishing.",
+   "summary": "Huron-Clinton Metropark with lake views, wooded trails and Trolley Trails the Metroparks describe as offering spectacular fall views.",
    "official_site": "https://www.metroparks.com/parks-and-trails/stony-creek-metropark/",
    "website": "https://www.metroparks.com/parks-and-trails/stony-creek-metropark/",
    "dates_hours": null,
@@ -3707,22 +3708,22 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -3857,7 +3858,7 @@
     "trails-woods"
    ],
    "category_source": "record",
-   "summary": "Indian Springs Metropark in White Lake. Listed features: hiking, biking, bird watching, Environmental Discovery Center.",
+   "summary": "Huron-Clinton Metropark whose roughly 3.25-mile Woodland Trail the Metroparks describe as showing red, orange and yellow leaves in the fall.",
    "official_site": "https://www.metroparks.com/parks-and-trails/indian-springs-metropark/",
    "website": "https://www.metroparks.com/parks-and-trails/indian-springs-metropark/",
    "dates_hours": null,
@@ -3869,22 +3870,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -5585,7 +5587,7 @@
     "trails-woods"
    ],
    "category_source": "record",
-   "summary": "Highland State Recreation Area in Highland. Listed features: mountain biking, horseback riding, fishing, paddling.",
+   "summary": "State recreation area with about 44 miles of trails through the principal forest types of southern Michigan.",
    "official_site": "https://www.michigan.gov/recsearch/parks/highland",
    "website": "https://www.michigan.gov/recsearch/parks/highland",
    "dates_hours": null,
@@ -5790,7 +5792,7 @@
     "parks-gardens"
    ],
    "category_source": "record",
-   "summary": "Holly State Recreation Area in Holly. Listed features: hiking, mountain biking, camping, boating, fishing, disc golf.",
+   "summary": "State recreation area of more than 8,000 acres of rolling woodlands and open fields, with hiking, mountain biking, fishing and a beach on Heron Lake.",
    "official_site": "https://www.michigan.gov/recsearch/parks/holly",
    "website": "https://www.michigan.gov/recsearch/parks/holly",
    "dates_hours": null,
@@ -5807,22 +5809,23 @@
    },
    "public": false,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "READY_FOR_REVIEW",
+    "state": "READY_FOR_REVIEW",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
+     "image": true,
+     "rights": true,
      "approval": false
     },
-    "image_route": null,
-    "rights_route": null,
+    "image_route": "labelled-illustration",
+    "rights_route": "labelled-illustration-exception",
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card, which cannot satisfy the image or rights items. A real image with recorded rights is needed (acquired file, owner photo, or linked image).",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
-    "caveats": [],
+    "caveats": [
+     "Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],

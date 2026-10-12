@@ -50,4 +50,47 @@ for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
     assert.ok(e.relevance.evidence.length > 0 && e.relevance.note && e.relevance.confidence, e.id + ": relevance carries evidence, rationale and confidence");
   }
 }
+
+// ---- first launch candidate set (owner decision 2026-10-12): 15 destinations, none approved
+{
+  const DATA = ED.COLLECTIONS;
+  const all = entries.fall.concat(entries["fall-color"]);
+  const set = all.filter((e) => e.launchCandidate && e.launchCandidate.set);
+  assert.strictEqual(set.length, 15, "15 launch candidates");
+  assert.strictEqual(set.filter((e) => entries.fall.includes(e)).length, 10, "10 Fall");
+  assert.strictEqual(set.filter((e) => entries["fall-color"].includes(e)).length, 5, "5 Fall Colors");
+  for (const e of set) {
+    const r = DATA.readiness(e);
+    assert.strictEqual(r.state, "READY_FOR_REVIEW", e.id + " is ready for review and nothing more");
+    assert.ok(!e.approval && !DATA.isPublic(e), e.id + " is not approved or public");
+    const route = r.gate.imageRoute;
+    assert.ok(route === "owner-photo" || route === "labelled-illustration", e.id + " image route " + route);
+    if (route === "labelled-illustration") {
+      assert.strictEqual(e.image.illustrative, true, e.id + " illustration is flagged illustrative");
+      assert.strictEqual(e.image.illustrationException.label, "Illustrative image");
+      assert.ok(!e.image.ownerPhoto && !e.image.acquired, e.id + " exception only without a photograph");
+    } else assert.ok(!e.image.illustrationException, e.id + " photo entries carry no exception");
+  }
+  // Held, not launched.
+  const fa = all.find((e) => e.id === "forever-acres-farm");
+  assert.ok(fa.launchCandidate.held && DATA.readiness(fa).state === "HOLD_UNVERIFIED", "Forever Acres is held");
+  // Accuracy corrections.
+  const by = Object.fromEntries(all.map((e) => [e.id, e]));
+  assert.ok(!/corn maze|slide|wagon|petting/i.test(by["wiards-orchards"].summary), "Wiard's card does not advertise closed attractions");
+  assert.ok(!/Legacy|trivia|event center/i.test(by["big-red-orchard"].summary), "Big Red card drops the bar and event center");
+  assert.ok(!/\b(mon|tue|wed|thu|fri|sat|sun)\w*\b|hours/i.test(by["wasem-fruit-farm"].summary), "Wasem card states no days or hours");
+  assert.ok(!/fountain|sculpture/i.test(by["cranbrook-gardens-and-grounds"].summary), "Cranbrook card does not claim fountains");
+  assert.ok(!/whoa|water park|boat launch|paving/i.test(by["holly-state-recreation-area"].summary), "Holly card advertises no closed attractions");
+  for (const id of ["wiards-orchards", "wasem-fruit-farm", "big-red-orchard", "cranbrook-gardens-and-grounds", "holly-state-recreation-area"]) assert.ok(by[id].editorialNotes.length, id + " keeps its conflict in a private note");
+  // The exception is strict: any missing part falls back to IMAGE_PENDING/CONTENT_VERIFIED.
+  const base = JSON.parse(JSON.stringify(by["rochester-cider-mill"]));
+  assert.strictEqual(DATA.readiness(base).state, "READY_FOR_REVIEW");
+  for (const mut of [(x) => { delete x.image.illustrationException; }, (x) => { x.image.illustrationException.authorizedBy = ""; },
+    (x) => { x.image.illustrationException.label = "Photo"; }, (x) => { x.image.illustrative = false; }, (x) => { x.image.src = "https://example.org/a.jpg"; }]) {
+    const x = JSON.parse(JSON.stringify(base)); mut(x);
+    assert.notStrictEqual(DATA.readiness(x).state, "READY_FOR_REVIEW", "a broken exception does not pass the gate");
+  }
+  // Approval is still required, and approval alone with the exception publishes only when recorded by the approver.
+  const ap = JSON.parse(JSON.stringify(base)); assert.strictEqual(DATA.isPublic(ap), false);
+}
 console.log("seasonal launch QA: ok");

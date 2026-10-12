@@ -230,8 +230,8 @@
     "fall-festivals"
    ],
    "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Wiard's Orchards in Ypsilanti. Official page lists u-pick apples, u-pick pumpkins, cider mill, country store and bakery.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard and cider mill with U-pick apples and pumpkins, a country store and bakery, cider, donuts and pies.",
    "website": "https://www.wiards.com/",
    "image": {
     "src": "/assets/seasonal/fall-card-4.webp",
@@ -253,7 +253,13 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "Official site photo, 602x452 (small): cider-mill cart with fall flowers."
      }
-    ]
+    ],
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -292,6 +298,13 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [
+    "When read, the official page marked the corn maze, slide, wagon rides and petting farm Temporarily Closed. None is advertised on the card. Hours page was not read."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -303,8 +316,8 @@
     "cider-donuts"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Franklin Cider Mill in Bloomfield Hills. Official page lists cider pressing viewing, donut baking viewing, cider, donuts.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic cider mill where visitors can watch cider pressing and donut making, with caramel apples and a water wheel.",
    "image": {
     "src": "/assets/seasonal/fall-card-3.webp",
     "alternates": [
@@ -314,7 +327,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -341,6 +360,11 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -451,8 +475,8 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Rochester Cider Mill in Rochester. Official page lists cider, donuts, pies, caramel apples.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Cider mill with donuts, pies, caramel apples, a free petting farm and a giant straw pyramid.",
    "image": {
     "src": "/assets/seasonal/fall-card-6.webp",
     "alternates": [
@@ -462,7 +486,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -489,6 +519,13 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [
+    "Petting farm is weather permitting and runs only into early November per the page."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -683,7 +720,7 @@
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Diehl's Orchard & Cider Mill in Holly. Official page lists pumpkin patch, corn maze, hay maze, hayrides.",
+   "summary": "Orchard and cider mill in Holly with a pumpkin patch, corn maze, hay maze, hayrides, farm animals and a playground. The farm does not offer U-pick apples.",
    "image": {
     "alternates": [
      "/assets/seasonal/fall-card-8.webp"
@@ -740,6 +777,11 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -806,7 +848,7 @@
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Long Family Orchard & Farm in Commerce Township. Official page lists cider, donuts, apples, corn maze.",
+   "summary": "Cider mill and farm market with a corn maze, hayrides, a petting farm and pumpkin picking by hayride.",
    "image": {
     "alternates": [
      "/assets/seasonal/fall-card-2.webp"
@@ -863,6 +905,13 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [
+    "Brand appears as Long's Orchard on the official site."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -875,8 +924,8 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Plymouth Orchards & Cider Mill in Plymouth. Official page lists wagon rides, farm animals, pumpkin patch, live music.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Cider mill and orchard with a pumpkin patch, wagon rides, farm animals and live music, where visitors can watch cider pressing and donut making. A separate Red Shed Market is on Ann Arbor Road.",
    "image": {
     "src": "/assets/seasonal/fall-card-8.webp",
     "alternates": [
@@ -886,7 +935,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -913,6 +968,11 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -973,8 +1033,8 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Wasem Fruit Farm in Milan. Official page lists pick-your-own apples, pick-your-own pumpkins, tart cherries, cider.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Pick-your-own apples, pumpkins and tart cherries, with cider and fresh donuts in autumn.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
@@ -984,7 +1044,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -1011,6 +1077,13 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [
+    "Hours conflict on the official site: the home page says Wednesday to Sunday, the info page says Fridays only. No days or hours are shown on the card."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -1071,8 +1144,8 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Spicer Orchards in Fenton. Official page lists pick-your-own apples and fruit, corn maze, pumpkin patch, playground.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Pick-your-own orchard with a corn maze, pumpkin patch, cider, donuts and a winery.",
    "image": {
     "src": "/assets/seasonal/fall-card-4.webp",
     "alternates": [
@@ -1082,7 +1155,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -1109,6 +1188,11 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -1492,8 +1576,8 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Big Red Orchard in Washington Township. Official page lists U-pick apples, cider mill, Legacy Bar with trivia, Crimson Hills Event Center.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "U-pick apples and a cider mill in Washington Township.",
    "image": {
     "src": "/assets/seasonal/fall-card-5.webp",
     "alternates": [
@@ -1503,7 +1587,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -1535,6 +1625,13 @@
     "miles": 26,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Washington Twp MI area at 32 Mile Rd (general geographic knowledge))"
+   },
+   "editorialNotes": [
+    "Official page shows conflicting hours (older Legacy Bar hours alongside the 2026 season hours) and no season dates. Legacy Bar and the event center were removed from the card text as not part of the collection fit."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -1766,7 +1863,7 @@
    ],
    "featured": false,
    "status": "HOLD_UNVERIFIED",
-   "summary": "Orchard.",
+   "summary": "Forever Acres Farm in Britton. Not verified for 2026.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
@@ -1791,6 +1888,13 @@
     "miles": 49,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Britton MI village (general geographic knowledge))"
+   },
+   "editorialNotes": [
+    "Held outside the launch set until 2026 operation is verified (owner decision 2026-10-12). Only a 2025 third-party report on file."
+   ],
+   "launchCandidate": {
+    "held": true,
+    "note": "Held outside the launch set until 2026 operation is verified (owner decision 2026-10-12). Only a 2025 third-party report on file."
    }
   },
   {
@@ -2143,7 +2247,7 @@
   },
   {
    "id": "porters-orchard",
-   "name": "Porter's Orchard",
+   "name": "Porter's Orchard Farm Market & Cider Mill",
    "city": "Goodrich",
    "region": "MI",
    "categories": [
@@ -2151,8 +2255,8 @@
     "farm-experiences"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Porter's Orchard in Goodrich. Official page lists Apple orchard, Farm market with honey and cider slushies, Hayrides through orchard / play space, Donuts and cider.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Orchard, farm market and cider mill with hayrides, donuts, cider slushies and fall attractions.",
    "image": {
     "src": "/assets/seasonal/fall-card-2.webp",
     "alternates": [
@@ -2162,7 +2266,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -2194,6 +2304,13 @@
     "miles": 47,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Goodrich city centre; not from the official page)"
+   },
+   "editorialNotes": [
+    "Official site names it Porter's Orchard Farm Market & Cider Mill; the inventory name is Porter's Orchard. No season start or end dates on the page."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -5584,8 +5701,8 @@
     "trails-woods"
    ],
    "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Stony Creek Metropark in Shelby Township. Listed features: hiking, biking, boating, fishing.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark with lake views, wooded trails and Trolley Trails the Metroparks describe as offering spectacular fall views.",
    "website": "https://www.metroparks.com/parks-and-trails/stony-creek-metropark/",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
@@ -5607,7 +5724,13 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "Traveler-uploaded photo from the park's Tripadvisor page."
      }
-    ]
+    ],
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -5646,6 +5769,11 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -6309,15 +6437,15 @@
   },
   {
    "id": "cranbrook-gardens-and-grounds",
-   "name": "Cranbrook Gardens & grounds",
+   "name": "Cranbrook House & Gardens",
    "city": "Bloomfield Hills",
    "region": "MI",
    "categories": [
     "parks-gardens"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Cranbrook Gardens & grounds in Bloomfield Hills. Listed features: self-guided garden walks, Sunken Garden, Japanese Garden, tree-covered trails.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Historic gardens and grounds with self-guided walks, tree-covered trails and fall colors and conifers. Restrooms are typically closed and garden beds pulled by mid-October.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-8.webp",
     "alternates": [
@@ -6327,7 +6455,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -6354,6 +6488,13 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [
+    "Official page: self-guided visits Oct 1 to Mar 13 8am to 5pm weather permitting; fountains off by mid-October. Not shown on the card."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -6590,8 +6731,8 @@
     "trails-woods"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Indian Springs Metropark in White Lake. Listed features: hiking, biking, bird watching, Environmental Discovery Center.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "Huron-Clinton Metropark whose roughly 3.25-mile Woodland Trail the Metroparks describe as showing red, orange and yellow leaves in the fall.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-8.webp",
     "alternates": [
@@ -6601,7 +6742,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -6628,6 +6775,11 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -6640,7 +6792,7 @@
    ],
    "featured": false,
    "status": "READY_FOR_REVIEW",
-   "summary": "Highland State Recreation Area in Highland. Listed features: mountain biking, horseback riding, fishing, paddling.",
+   "summary": "State recreation area with about 44 miles of trails through the principal forest types of southern Michigan.",
    "image": {
     "alternates": [
      "/assets/seasonal/fall-color-card-5.webp"
@@ -6697,6 +6849,13 @@
      }
     ],
     "unresolved": []
+   },
+   "editorialNotes": [
+    "Official mailing city is White Lake; the inventory city is Highland. The page does not state fall colour; relevance rests on the forest and trail description."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
    }
   },
   {
@@ -8258,8 +8417,8 @@
     "parks-gardens"
    ],
    "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Holly State Recreation Area in Holly. Listed features: hiking, mountain biking, camping, boating, fishing, disc golf.",
+   "status": "READY_FOR_REVIEW",
+   "summary": "State recreation area of more than 8,000 acres of rolling woodlands and open fields, with hiking, mountain biking, fishing and a beach on Heron Lake.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-6.webp",
     "alternates": [
@@ -8269,7 +8428,13 @@
     "source": "313.events supplied collection graphic (AI-generated), cropped",
     "credit": "313.events",
     "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "illustrative": true,
+    "illustrationException": {
+     "authorizedBy": "Jody Tyree (owner)",
+     "authorizedAt": "2026-10-12",
+     "label": "Illustrative image",
+     "statement": "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval."
+    }
    },
    "evidence": [
     {
@@ -8304,7 +8469,14 @@
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate; Holly area, general geographic knowledge, not from a page read)"
    },
-   "website": "https://www.michigan.gov/recsearch/parks/holly"
+   "website": "https://www.michigan.gov/recsearch/parks/holly",
+   "editorialNotes": [
+    "The WhoaZone water park is closed for 2026 and the boat launch lot was being repaved when read; neither is on the card. Page header image is captioned as a lake with changing leaf colour."
+   ],
+   "launchCandidate": {
+    "set": "2026-10-12 first launch set (15)",
+    "note": "Prepared for owner approval. Not approved."
+   }
   },
   {
    "id": "ortonville-recreation-area",

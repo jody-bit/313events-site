@@ -101,6 +101,7 @@ function review(e) {
   if (g.rightsRoute === "linked-risk-acceptance") caveats.push("Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.");
   if (g.rightsRoute === "owner-authorization") caveats.push("Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL.");
   if (im.remote && im.remote.src) caveats.push("A linked image depends on the source site continuing to serve it; the generated card is the fallback.");
+  if (g.rightsRoute === "labelled-illustration-exception") caveats.push("Image: a labelled illustration (owner exception 2026-10-12). The card shows \"Illustrative image\" and is not a photograph of the destination. This is not image rights clearance and not publication approval.");
   if (e.migration) caveats.push("Was status \"published\" on " + e.migration.legacyBranch + " (" + e.migration.legacyCommit + ") on " + e.migration.legacyBasis + ". Not grandfathered.");
   return { id: e.id, name: e.name, declared: e.status, state: r.state, gate: g, outstanding, caveats, imageRoute: g.imageRoute, rightsRoute: g.rightsRoute };
 }

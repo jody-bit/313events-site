@@ -28,6 +28,11 @@
  *           license and carries no license URL. The original photo identifiers (file name, Apple Photos id) stay in the
  *           private photo library and are looked up by photoId; scripts/build-seasonal.js and the tests verify that;
  *        c. linked image: recorded owner acceptance of the copyright risk. That is NOT confirmed usage rights.
+ *        d. labelled illustration (owner decision 2026-10-12): `image.illustrationException` {authorizedBy, authorizedAt,
+ *           statement, label: "Illustrative image"} on an entry whose `image.illustrative` is true and whose image is a
+ *           313.events supplied graphic under /assets/seasonal/. Authentic photography is unavailable for that card, so the
+ *           card shows the "Illustrative image" label and is never presented as a photograph of the destination. The
+ *           exception is per entry and is NOT publication approval (item 5).
  *   5. explicit publication approval: `approval` {by, at}. Only the approving person adds this; nothing in this repo
  *      writes it. The owner-photo route never satisfies item 5.
  * `status` is the ledger state the editor declares. The five states, derived by readiness():
@@ -163,10 +168,14 @@
     var rm = img.remote;
     var remote = !!(rm && HTTPS.test(rm.src || "") && HTTPS.test(rm.sourcePage || "") && has(rm.credit) && has(rm.acceptedBy) && DATE.test(rm.acceptedAt || "") && has(rm.riskNote) &&
       has(img.src) && /^\/assets\//.test(img.src));
-    var imageRoute = remote && !file ? "linked" : (file && owner ? "owner-photo" : (file ? "acquired-file" : null));
-    var rightsRoute = licensed ? "third-party-license" : (owner ? "owner-authorization" : (remote ? "linked-risk-acceptance" : null));
-    var acquired = file || remote;
-    var rights = licensed || owner || remote;
+    // Labelled-illustration exception (owner decision 2026-10-12): recorded per entry, never a default.
+    var ex = img.illustrationException;
+    var illus = !!(ex && img.illustrative === true && has(img.src) && /^\/assets\/seasonal\//.test(img.src) && has(img.credit) &&
+      has(ex.authorizedBy) && DATE.test(ex.authorizedAt || "") && has(ex.statement) && ex.label === "Illustrative image" && !file && !remote);
+    var imageRoute = remote && !file ? "linked" : (file && owner ? "owner-photo" : (file ? "acquired-file" : (illus ? "labelled-illustration" : null)));
+    var rightsRoute = licensed ? "third-party-license" : (owner ? "owner-authorization" : (remote ? "linked-risk-acceptance" : (illus ? "labelled-illustration-exception" : null)));
+    var acquired = file || remote || illus;
+    var rights = licensed || owner || remote || illus;
     var imageStarted = !!rm || !!op || (img.illustrative !== true && (has(img.sourcePage) || has(img.license)));
     var approval = !!(ap && has(ap.by) && DATE.test(ap.at || ""));
     return { official: official, relevance: relevance, identity: identity, acquired: acquired, rights: rights,

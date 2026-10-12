@@ -78,6 +78,32 @@ function safeNote(note, name, where) {
   const n = String(note || "").replace(/\s+/g, " ").trim();
   return n && !RISKY.test(n) ? n + "." : name.replace(/’/g, "'") + " in " + where.city + ", inventory candidate.";
 }
+// ---- Launch candidate set (owner decision 2026-10-12): 15 destinations prepared for publication review.
+// Summaries below are written only from facts read on the destinations' official pages. They name no hours, dates,
+// prices or attractions the pages mark closed. Where an official page contradicts itself or lists closures, the
+// conflict is kept in the private `editorialNotes`, not on the card. Forever Acres is held until 2026 operation is
+// verified. Nothing here records an approval.
+const EXCEPTION = { authorizedBy: "Jody Tyree (owner)", authorizedAt: "2026-10-12", label: "Illustrative image",
+  statement: "Owner decision (project thread, 2026-10-12): a clearly labelled illustration may stand in for authentic, authorized photography on a seasonal destination card. It is never represented as a photograph of the destination. This is not publication approval." };
+const LAUNCH = {
+  "big-red-orchard": { summary: "U-pick apples and a cider mill in Washington Township.", notes: ["Official page shows conflicting hours (older Legacy Bar hours alongside the 2026 season hours) and no season dates. Legacy Bar and the event center were removed from the card text as not part of the collection fit."] },
+  "diehls-orchard-and-cider-mill": { summary: "Orchard and cider mill in Holly with a pumpkin patch, corn maze, hay maze, hayrides, farm animals and a playground. The farm does not offer U-pick apples.", notes: [] },
+  "franklin-cider-mill": { summary: "Historic cider mill where visitors can watch cider pressing and donut making, with caramel apples and a water wheel.", notes: [] },
+  "long-family-orchard-and-farm": { summary: "Cider mill and farm market with a corn maze, hayrides, a petting farm and pumpkin picking by hayride.", notes: ["Brand appears as Long's Orchard on the official site."] },
+  "plymouth-orchards-and-cider-mill": { summary: "Cider mill and orchard with a pumpkin patch, wagon rides, farm animals and live music, where visitors can watch cider pressing and donut making. A separate Red Shed Market is on Ann Arbor Road.", notes: [] },
+  "porters-orchard": { name: "Porter's Orchard Farm Market & Cider Mill", summary: "Orchard, farm market and cider mill with hayrides, donuts, cider slushies and fall attractions.", notes: ["Official site names it Porter's Orchard Farm Market & Cider Mill; the inventory name is Porter's Orchard. No season start or end dates on the page."] },
+  "rochester-cider-mill": { summary: "Cider mill with donuts, pies, caramel apples, a free petting farm and a giant straw pyramid.", notes: ["Petting farm is weather permitting and runs only into early November per the page."] },
+  "spicer-orchards": { summary: "Pick-your-own orchard with a corn maze, pumpkin patch, cider, donuts and a winery.", notes: [] },
+  "wasem-fruit-farm": { summary: "Pick-your-own apples, pumpkins and tart cherries, with cider and fresh donuts in autumn.", notes: ["Hours conflict on the official site: the home page says Wednesday to Sunday, the info page says Fridays only. No days or hours are shown on the card."] },
+  "wiards-orchards": { summary: "Orchard and cider mill with U-pick apples and pumpkins, a country store and bakery, cider, donuts and pies.", notes: ["When read, the official page marked the corn maze, slide, wagon rides and petting farm Temporarily Closed. None is advertised on the card. Hours page was not read."] },
+  "indian-springs-metropark": { summary: "Huron-Clinton Metropark whose roughly 3.25-mile Woodland Trail the Metroparks describe as showing red, orange and yellow leaves in the fall.", notes: [] },
+  "cranbrook-gardens-and-grounds": { name: "Cranbrook House & Gardens", summary: "Historic gardens and grounds with self-guided walks, tree-covered trails and fall colors and conifers. Restrooms are typically closed and garden beds pulled by mid-October.", notes: ["Official page: self-guided visits Oct 1 to Mar 13 8am to 5pm weather permitting; fountains off by mid-October. Not shown on the card."] },
+  "stony-creek-metropark": { summary: "Huron-Clinton Metropark with lake views, wooded trails and Trolley Trails the Metroparks describe as offering spectacular fall views.", notes: [] },
+  "highland-state-recreation-area": { summary: "State recreation area with about 44 miles of trails through the principal forest types of southern Michigan.", notes: ["Official mailing city is White Lake; the inventory city is Highland. The page does not state fall colour; relevance rests on the forest and trail description."] },
+  "holly-state-recreation-area": { summary: "State recreation area of more than 8,000 acres of rolling woodlands and open fields, with hiking, mountain biking, fishing and a beach on Heron Lake.", notes: ["The WhoaZone water park is closed for 2026 and the boat launch lot was being repaved when read; neither is on the card. Page header image is captioned as a lake with changing leaf colour."] }
+};
+const HELD = { "forever-acres-farm": { summary: "Forever Acres Farm in Britton. Not verified for 2026.", notes: ["Held outside the launch set until 2026 operation is verified (owner decision 2026-10-12). Only a 2025 third-party report on file."] } };
+
 function buildEntry(col, item, existing, n) {
   const row = reg.candidates.find((c) => c.collection === col && c.name === item.ledger_name && c.location === item.ledger_location);
   const id = existing ? existing.id : keyFor(row);
@@ -129,6 +155,19 @@ function buildEntry(col, item, existing, n) {
       recordedBy: "Jody Tyree (owner photo recorded in photo-library.json, " + (pick.review_ref || pick.id) + ")", recordedAt: DATE });
     e.image = Object.assign({ alternates: e.image.alternates, placeholder: e.image.placeholder }, oi);
   }
+  const LC = LAUNCH[e.id];
+  if (LC) {
+    if (LC.name) e.name = LC.name;
+    e.summary = LC.summary;
+    e.editorialNotes = LC.notes;
+    e.launchCandidate = { set: "2026-10-12 first launch set (15)", note: "Prepared for owner approval. Not approved." };
+    // Labelled illustration exception only where there is no owner photograph.
+    if (!e.image.ownerPhoto) e.image.illustrationException = EXCEPTION; else delete e.image.illustrationException;
+  } else if (HELD[e.id]) {
+    e.summary = HELD[e.id].summary; e.editorialNotes = HELD[e.id].notes;
+    e.launchCandidate = { held: true, note: HELD[e.id].notes[0] };
+    delete e.image.illustrationException;
+  } else { delete e.launchCandidate; delete e.image.illustrationException; }
   e.status = "HOLD_UNVERIFIED";
   e.status = stateOf(e);
   return { entry: e, row, pick };
