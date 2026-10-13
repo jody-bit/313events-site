@@ -301,6 +301,12 @@ module.exports = async (req, res) => {
       outcome: stepErrors.length ? "partial" : "success",
       records_written: combinedWrittenIds.size,
       error_sample: stepErrors.length ? stepErrors.join(" | ") : undefined,
+      // Per-record description outcomes (issue #100): counts by outcome, and
+      // the records that were changed, skipped or failed (not the untouched
+      // ones). Observation only; capSessionData drops the samples if too big.
+      session_data: genericCounts && genericCounts.descriptionOutcomes
+        ? { description_outcomes: genericCounts.descriptionOutcomes, samples: genericCounts.descriptionOutcomeSamples || [] }
+        : undefined,
     });
 
     res.status(200).json({
