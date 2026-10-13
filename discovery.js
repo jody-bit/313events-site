@@ -877,6 +877,22 @@
       // No end date, or an end before the start, is a single-day event.
       var end = (typeof e.endDate === "string" && e.endDate > start) ? e.endDate : start;
       var w = windowOf(s, c);
+      // Issue #48: an event with explicit dates (single, or recurring with
+      // occurrence_dates) matches a window only on those dates, never across
+      // the gaps between them. EventDates is /event-dates.js (shared rule);
+      // without it, or for a continuous / unclassified event, the range rule
+      // below applies unchanged.
+      var ED = (typeof EventDates !== "undefined") ? EventDates : null;
+      var b = ED ? ED.bounds(e) : null;
+      if (b && b.dates) {
+        var hit = b.dates.some(function (d) {
+          if (w.forward && (d < c.today || (d === c.today && endedByClock(e.time, c.minutes)))) return false;
+          if (w.from !== null && d < w.from) return false;
+          if (w.to !== null && d > w.to) return false;
+          return true;
+        });
+        return hit && !(w.evening && !isEvening(e.time));
+      }
       if (w.forward) {
         if (end < c.today) return false;                                         // its last day has passed
         if (end === c.today && endedByClock(e.time, c.minutes)) return false;    // last day, and it has ended
