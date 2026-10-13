@@ -2514,6 +2514,51 @@
    "reuse": "destination card and related editorial with accurate attribution"
   },
   {
+   "id": "313p-f9dfb30c",
+   "review_ref": "VENUE-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Colonial house at night with glowing jack-o-lanterns and large lit pumpkins (venue-supplied image)",
+   "capture_date": "not recorded",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__1600.webp",
+    "full_px": [
+     1920,
+     697
+    ]
+   },
+   "original": {
+    "filename": "venue-henryford-01.webp",
+    "sha256": "f9dfb30c558e2e12e83fb961d071a7dff3772a5393b086b173b1d8ea1028320d",
+    "pixels": [
+     1920,
+     697
+    ],
+    "stored": "in repo as the __1600 file (untouched copy of the supplied file)"
+   },
+   "credit": "Photography © The Henry Ford",
+   "license": "Owner confirmation (project thread, 2026-10-13): Jody Tyree states that The Henry Ford, the venue, permits 313.events to use this image of Hallowe'en in Greenfield Village.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__hallowe-en-in-greenfield-village__dearborn-mi",
+    "name": "Hallowe'en in Greenfield Village",
+    "collection": "halloween",
+    "inventory_no": "35",
+    "published_id": "halloween-greenfield-village",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Hallowe'en in Greenfield Village (supplied by the owner from the venue)",
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
    "id": "313p-ef240824",
    "review_ref": "R2-D1072",
    "classification": "DESTINATION_SPECIFIC",

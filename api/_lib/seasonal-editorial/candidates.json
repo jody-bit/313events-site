@@ -2383,7 +2383,8 @@
    "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
-    "313p-522299e9-f337"
+    "313p-522299e9-f337",
+    "313p-f9dfb30c"
    ],
    "image_manifest": {
     "destination_id": "halloween-greenfield-village",
@@ -2396,6 +2397,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "alternative_images": [
+     "313p-f9dfb30c",
      "link-halloween-greenfield-village",
      "gen-halloween-6",
      "gen-halloween-3",

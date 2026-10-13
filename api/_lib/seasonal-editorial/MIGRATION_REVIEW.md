@@ -125,7 +125,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #35. thehenryford.org 2026 news: 46th season; the event page reports general admission sold out. Availability not displayed. <https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village>
   - official (site read 2026-10-11): Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card. <https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session), read in Chrome: Official page describes Hallowe'en in Greenfield Village, October 2026..
-- Image: `/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp` (owner photo 313p-522299e9-f337, sha256 64fbdba06a58..., verified 2026-10-11).
+- Image: `/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp` (owner photo 313p-f9dfb30c, sha256 5bde741e7c71..., verified 2026-10-13).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
