@@ -56,7 +56,9 @@ assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map
 // changed image.src and image.credit only (openly licensed Commons photographs). Pin before: ceabe4d5...
 const sig = [];
 for (const col of ["fall", "fall-color"]) for (const id of L1[col]) { const e = E[col].find((x) => x.id === id); sig.push([id, e.name, e.city, e.summary, e.website, e.image.src, e.image.credit || "", e.featured].join("|")); }
-assert.strictEqual(crypto.createHash("sha256").update(sig.join("\n")).digest("hex"), "0ecb0c8e6c7b80d80e520fcd6be45431eca402f9ab58ea72c32c36c493288301", "the original 15 records are unchanged");
+// Re-pinned again 2026-10-12 with owner approval (photography batch 2): belle-isle-park and cranbrook-gardens-and-grounds changed
+// image.src and image.credit only (openly licensed Commons photographs). Pin before: 0ecb0c8e...
+assert.strictEqual(crypto.createHash("sha256").update(sig.join("\n")).digest("hex"), "6165c7a233ebfd33c7dc3ab599a67882c863ea4a4ff1887b83575da3bd669203", "the original 15 records are unchanged");
 
 // ---- owner-verified destinations are included
 const FALL = ["kackleberry-farms", "erie-orchards-and-cider-mill", "parshallville-cider-mill", "nixon-farms-blast-corn-maze", "gust-brothers-pumpkin-farm"];

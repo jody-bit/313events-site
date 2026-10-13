@@ -36,7 +36,9 @@ for (const col of Object.keys(ids)) for (const id of ids[col]) {
     assert.ok(!ED.publicEntry(e).image.credit, id + ": illustrations carry the label, not a photographer credit");
   }
 }
-assert.deepStrictEqual([photos, licensedPhotos, illus], [2, 2, 11], "2 owner photos, 2 openly licensed photographs (Wikimedia Commons) and 11 illustrations");
+// Re-pinned 2026-10-12 with owner approval (photography batch 2): belle-isle-park and cranbrook-gardens-and-grounds (both among the
+// original 15) changed their `image` block only, from labelled illustrations to openly licensed photographs. Before: [2, 2, 11].
+assert.deepStrictEqual([photos, licensedPhotos, illus], [2, 4, 9], "2 owner photos, 4 openly licensed photographs (Wikimedia Commons) and 9 illustrations");
 const by = (c, i) => E[c].find((x) => x.id === i).summary;
 assert.ok(!/u-pick apple picking|no u-pick/i.test(by("fall", "diehls-orchard-and-cider-mill")), "Diehl's carries no negative apple-picking statement");
 assert.ok(/pumpkin patch/.test(by("fall", "diehls-orchard-and-cider-mill")) && /corn maze/.test(by("fall", "diehls-orchard-and-cider-mill")));

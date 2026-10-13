@@ -17,6 +17,7 @@ const qa = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editori
 const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates.filter((c) => c.collection === "halloween");
 const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));
 const col = DATA.COLLECTIONS.halloween;
+const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk"]); // photography batch 2, owner approved 2026-10-12
 const entries = Object.fromEntries(ED.entries().halloween.map((e) => [e.id, e]));
 const pins = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/defaults.json"), "utf8")).defaults;
 
@@ -88,6 +89,14 @@ assert.deepStrictEqual([...new Set([...pub.matchAll(/<li class="sc-card[^"]*" da
 // every private entry's image agrees with the QA default and its fallbacks (one data set, two views)
 for (const r of qa.records) {
   const e = entries[r.id], o = r.image_options[0];
+  // Photography batch 2 (owner approval 2026-10-12): these six records show an openly licensed Commons photograph on the public card. The QA
+  // default stays pinned (defaults.json is the owner's file and is not edited here), so the card image is checked against its licence record instead.
+  if (PHOTO_B2.has(r.id)) {
+    assert.ok(e.image.illustrative === false && !e.image.ownerPhoto && !e.image.remote && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && !!e.image.rightsVerifiedAt &&
+      /^Photo: .+, (CC0|CC BY(-SA)? \d\.\d), via Wikimedia Commons$/.test(e.image.credit) && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(e.image.commons.filePage), r.id + ": licensed photograph with its rights recorded");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the photograph, the pinned QA default is still the illustration");
+    continue;
+  }
   if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
   else assert.strictEqual(e.image.src, o.src, r.id + " entry image == QA default");
   const uniq = (l) => [...new Set(l)].sort();

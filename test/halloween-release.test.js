@@ -22,6 +22,11 @@ run("apply-halloween-release.js", "--check"); run("build-halloween-release.js", 
 
 const all = ED.entries(), H = all.halloween, byId = Object.fromEntries(H.map((e) => [e.id, e]));
 const rel = ED.read("halloween-release-1.json");
+// Photography batch 2 (owner approval 2026-10-12): exactly these six records replaced their labelled illustration with an openly licensed
+// Wikimedia Commons photograph (image block only). Any other record taking a photograph still fails this guard.
+const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk"]);
+const isLicensedPhoto = (e) => e.image.illustrative === false && !e.image.ownerPhoto && !e.image.remote && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") &&
+  !!e.image.rightsVerifiedAt && /^Photo: .+, (CC0|CC BY(-SA)? \d\.\d), via Wikimedia Commons$/.test(e.image.credit || "") && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test((e.image.commons || {}).filePage || "");
 const batch = ED.read("RELEASE_BATCH_HALLOWEEN_1.json");
 
 // 1. all 52 preserved; none removed or renamed id-wise
@@ -55,7 +60,7 @@ assert.deepStrictEqual(pubIds, AUTHZ.HALLOWEEN_PUBLISHED);
 for (const id of pubIds) {
   const g = C.gate(byId[id]);
   assert.ok(g.official && g.relevance && g.identity && g.acquired && g.rights && g.approval, id + ": all gate items");
-  assert.ok(["owner-photo", "linked", "illustration"].includes(g.imageRoute), id + ": image route is " + g.imageRoute);
+  assert.ok(["owner-photo", "linked", "illustration"].concat(PHOTO_B2.has(id) ? ["acquired-file"] : []).includes(g.imageRoute), id + ": image route is " + g.imageRoute);
   assert.ok(byId[id].evidence.some((x) => x.level === "official" && x.websiteChecked === true), id + ": factual verification is not waived (official-page read recorded)");
   assert.strictEqual(byId[id].status, "PUBLISHED");
 }
@@ -73,6 +78,11 @@ assert.deepStrictEqual(Object.keys(rel.records).filter((id) => rel.records[id].t
 assert.strictEqual(AUTHZ.HALLOWEEN_ILLUSTRATED.length, 22);
 for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
   const e = byId[id], im = e.image, g = C.gate(e);
+  if (PHOTO_B2.has(id)) { // since replaced by a licensed photograph (photography batch 2); the credit must reach the public card
+    assert.ok(isLicensedPhoto(e), id + ": licensed photograph with author, license, license URL and Commons file page");
+    assert.strictEqual(g.imageRoute, "acquired-file", id); assert.strictEqual(ED.publicEntry(e).image.credit, im.credit, id + ": credit reaches the public card");
+    continue;
+  }
   assert.strictEqual(g.imageRoute, "illustration", id); assert.strictEqual(g.rightsRoute, "owner-supplied-illustration", id);
   assert.strictEqual(im.illustrative, true); assert.ok(!im.remote && !im.ownerPhoto, id + ": no photo or linked-image claim");
   assert.ok(/never presented as documentary photography/.test(im.illustration.statement) && /does not depict this destination/.test(im.illustration.note), id + ": illustration statement");
@@ -139,6 +149,6 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "88f69422e7cb80f2e7d819fcf93bbc4458cd256ac338038097fbaea209065329", "the 76 approved Fall / Fall Colors records are unchanged");
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "84ef56c5c314ad9ae072056018b3e3f6efc19b75996c0dabec2fe43ea8879fdf", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");
