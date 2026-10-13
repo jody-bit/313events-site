@@ -463,6 +463,7 @@ function applyFeedDefaultCity(rows, rowsWithNoStatedLocation) {
 function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap) {
   const rows = [];
   const rowsWithNoStatedLocation = new Set(); // BUG-012: see applyFeedDefaultCity
+  const seenUids = new Set();
   const policy = policyFor(feedSource); // api/_lib/feed-publication.js: null for almost every feed
   for (const ev of icsEvents) {
     if (!ev.dtstart) continue; // no start date at all — can't place this on the calendar
@@ -485,7 +486,16 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       timeDisplay = endStr ? `${startStr} – ${endStr}` : startStr;
     }
 
-    const uidOrHash = ev.uid || `${start.date}-${(ev.summary || "").slice(0, 40)}`;
+    let uidOrHash = ev.uid || `${start.date}-${(ev.summary || "").slice(0, 40)}`;
+    // A recurring-series master and its RECURRENCE-ID overrides share one UID (Google Calendar exports do this);
+    // the parser reads each VEVENT as its own DTSTART occurrence, so a repeat within one feed gets the occurrence
+    // date appended. The first keeps the bare UID, so every existing external_id is unchanged.
+    if (seenUids.has(uidOrHash)) {
+      const base = `${uidOrHash}-${start.date}`;
+      uidOrHash = base;
+      for (let n = 2; seenUids.has(uidOrHash); n++) uidOrHash = `${base}-${n}`;
+    }
+    seenUids.add(uidOrHash);
 
     const venueFields = feedSource.location_per_event
       ? resolveIcsEventVenue(ev.location, venueDetailsMaps)

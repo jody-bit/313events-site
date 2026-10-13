@@ -2,7 +2,7 @@
 //
 // City of Dearborn publication policy (api/_lib/feed-publication.js), exercised on a sample of the REAL
 // public export of the city's "Website Calendar 2026" (test/fixtures/dearborn-website-calendar-sample.ics:
-// 20 of 1,061 VEVENTs, unmodified, saved from the live feed on 2026-10-12). The feed has no category field,
+// 21 of 1,061 VEVENTs, unmodified, saved from the live feed on 2026-10-12). The feed has no category field,
 // so the policy skips plain notices by title and holds every other new row for review.
 //
 // Covers: Symphony Under the Stars (2026-09-10), the historical coverage-gap case; notices skipped; real
@@ -55,9 +55,17 @@ async function run() {
   const FEED = { id: "fs-dbn", venue_name: "City of Dearborn", website: "https://www.dearborn.gov/calendar", default_category: "community", feed_url: FEED_URL, feed_format: "ics", status: "approved", location_per_event: true };
   let { written: rows } = await poll({ feed: FEED });
 
-  // Notices are never ingested.
-  for (const re of [/City Council Meeting/, /Early Voting/, /Civil Service Commission/, /Thanksgiving \(DISC CLOSED\)/, /LOOSE LEAF/]) assert.strictEqual(byTitle(rows, re).length, 0, `${re} is a notice`);
-  console.log("PASS: meetings, voting dates, closures and leaf-collection notices are skipped");
+  // Plain notices are never ingested.
+  for (const re of [/Early Voting/, /Thanksgiving \(DISC CLOSED\)/, /LOOSE LEAF/]) assert.strictEqual(byTitle(rows, re).length, 0, `${re} is a notice`);
+  console.log("PASS: voting dates, closures and leaf-collection notices are skipped");
+
+  // Government-meeting titles are NOT discarded (owner rule 2026-10-13): held, with an extra reason.
+  const council = byTitle(rows, /City Council Meeting/);
+  assert.strictEqual(council.length, 1);
+  assert.strictEqual(council[0].status, "pending_review");
+  assert.match(council[0].note, /looks like a government meeting; kept for review, not discarded/);
+  assert.ok(!/government meeting/.test(byTitle(rows, /Fire Department Open House/)[0].note), "non-meeting rows get no meeting reason");
+  console.log("PASS: meeting-type titles are held, never discarded");
 
   // Real public events are ingested but NEVER auto-published: nothing in the feed labels event vs notice.
   for (const re of [/Fire Department Open House/, /Friends Of The Library/, /Haunted Trail/, /Nutcracker/, /Dearborn Symphony Orchestra Concert/, /Camp Dearborn Halloween Weekend/]) assert.ok(byTitle(rows, re).length >= 1, `${re} ingested`);
@@ -79,10 +87,15 @@ async function run() {
   // A CANCELED entry keeps its CANCELED title (visible to reviewers; nothing hides or invents it).
   assert.ok(byTitle(rows, /^CANCELED - Jazz Under the Stars$/).length === 1);
 
-  // Source identity: unique UIDs, no duplicates from the RECURRENCE-ID override already skipped as a notice.
+  // Source identity: a recurring master and its RECURRENCE-ID override share a UID; the override must not
+  // collide with (or overwrite) the master, and every first-seen UID keeps its bare id.
   assert.strictEqual(new Set(rows.map((r) => r.external_id)).size, rows.length);
-  assert.ok(rows.every((r) => /^feed-fs-dbn-[a-z0-9]+@google\.com$/.test(r.external_id)));
-  console.log("PASS: stable Google UIDs, no duplicates");
+  const civil = rows.filter((r) => r.external_id.includes("2j65eemat49ngh64ukq1igp83k@google.com"));
+  assert.strictEqual(civil.length, 2, "master and override are two rows");
+  assert.ok(civil.some((r) => /^feed-fs-dbn-[a-z0-9]+@google\.com$/.test(r.external_id)), "master keeps the bare UID");
+  assert.ok(civil.some((r) => /@google\.com-\d{4}-\d{2}-\d{2}$/.test(r.external_id)), "override gets the occurrence date appended");
+  assert.ok(rows.filter((r) => !civil.includes(r)).every((r) => /^feed-fs-dbn-[a-z0-9]+@google\.com$/.test(r.external_id)));
+  console.log("PASS: stable Google UIDs; RECURRENCE-ID override does not collide");
 
   // No invented times: an all-day entry has no time_display.
   const trail = byTitle(rows, /Haunted Trail/)[0];

@@ -39,13 +39,15 @@ const POLICIES = [
     // Verified against the real export (1,061 VEVENTs, 2026-10-12): the feed has NO category field, so the page's
     // "City Event" label cannot be reproduced. It mixes public events with governing-body meetings, building
     // closures, trash and leaf-collection notices, election dates and observances. So: (1) title-only, narrow
-    // skips for entries that are plainly notices (below); (2) every other NEW row is created pending_review
+    // skips for entries that are plainly notices (closures, trash, voting, deadlines); (2) every other NEW row is created pending_review
     // (reviewAll) rather than published, because nothing in the feed separates an event from an announcement.
     reviewAll: "City of Dearborn's calendar mixes public events with notices and the feed carries no event-type label",
+    // Governing-body titles are NOT discarded (Jody 2026-10-13: legitimate community events must not vanish merely
+    // because they are meetings). They are held for review with an extra reason so a reviewer sees why.
+    meetingLike: /\b(commission|committee|board of (?:zoning )?(?:appeals?|review)|business district improvement authority|downtown development authority|pension board|briefing session|hearing officer|city council)\b/i,
     skipEvent: (ev) => {
       const t = String(ev.summary || "").trim();
-      return /\b(commission|committee|board of (?:zoning )?(?:appeals?|review)|business district improvement authority|downtown development authority|pension board|briefing session|hearing officer|city council)\b/i.test(t)
-        || /\b(?:closed|closes)\b/i.test(t)
+      return /\b(?:closed|closes)\b/i.test(t)
         || /\((?:disc|the center|center)\s+open\)|^\s*(?:disc|the center)\s+open\b|\bpost thanksgiving day\b/i.test(t)
         || /\b(?:trash|yard waste|loose leaf|leaf collection|pick ?up delayed|service (?:thursday|friday))\b/i.test(t)
         || /\b(?:early voting|general election|register to vote|mail-in ballot|receive a ballot)\b/i.test(t)
@@ -83,7 +85,11 @@ function classify(row, span, policy) {
     && end.hour * 60 + end.minute < start.hour * 60 + start.minute))) reasons.push("end before start");
   if (reasons.length) return { state: "conflicting", reasons };
 
-  if (policy && policy.reviewAll) return { state: "needs_review", reasons: [policy.reviewAll] };
+  if (policy && policy.reviewAll) {
+    const reasons = [policy.reviewAll];
+    if (policy.meetingLike && policy.meetingLike.test(title)) reasons.push("title looks like a government meeting; kept for review, not discarded");
+    return { state: "needs_review", reasons };
+  }
 
   const placed = !!row.venue_id || !!String(row.venue_address_raw || "").trim();
   if (!placed) {
