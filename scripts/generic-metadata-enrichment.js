@@ -264,6 +264,13 @@ async function repairGenericMetadata({
     externalSearchesSkippedBudgetRA: 0,
     raDescriptionSkippedNoCorroboration: 0,
     skippedConcurrentChange: 0,
+    // Per-record description outcomes (issue #100). Keys are "outcome" or
+    // "outcome:reason"; samples list the records that were NOT left alone
+    // (capped), so a run's log shows what changed, what was skipped and why,
+    // and what failed. Observation only: no decision above reads these.
+    dryRun: !!dryRun,
+    descriptionOutcomes: {},
+    descriptionOutcomeSamples: [],
     written: 0,
     fieldsWritten: 0,
     writtenIds: [],
@@ -279,6 +286,15 @@ async function repairGenericMetadata({
   const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders);
   counts.totalConsidered = candidates.length;
 
+  const MAX_OUTCOME_SAMPLES = 200;
+  function recordDescriptionOutcome(event, outcome, reason) {
+    const key = reason ? `${outcome}:${reason}` : outcome;
+    counts.descriptionOutcomes[key] = (counts.descriptionOutcomes[key] || 0) + 1;
+    if (outcome !== "kept_existing" && counts.descriptionOutcomeSamples.length < MAX_OUTCOME_SAMPLES) {
+      counts.descriptionOutcomeSamples.push({ id: event.id, source: event.source || null, outcome, reason: reason || null });
+    }
+  }
+
   const attemptedVenueDiscoveryNames = new Set();
   let externalVenueLookupsUsed = 0;
   let externalDescriptionLookupsUsed = 0;
@@ -287,6 +303,9 @@ async function repairGenericMetadata({
 
   for (const event of candidates) {
     let touchedThisEvent = false;
+    let descOutcome = null;     // [outcome, reason] for this record's description, recorded once below
+    let descNote = null;        // why an external lookup was not used (explains a later skip)
+    const descWasBlank = isDescriptionBlank(event);
 
     // 1. Reverse venue resolution (ADDRESS -> VENUE NAME) -- runs before
     //    description generation so a description generated in the same
@@ -449,14 +468,18 @@ async function repairGenericMetadata({
       const raNeedsCorroborationFirst = isRaSourced(event) && isBlank(event.venue_id);
       if (raNeedsCorroborationFirst) {
         counts.raDescriptionSkippedNoCorroboration++;
+        descNote = "ra_no_corroboration";
       } else if (externalDescriptionLookupsUsed < MAX_EXTERNAL_DESCRIPTION_LOOKUPS_PER_RUN) {
         const isRa = isRaSourced(event);
         if (!isExternalDiscoveryConfiguredFn()) {
           counts.externalDescriptionUnavailable++;
+          descNote = "external_unavailable";
         } else if (totalExternalSearchesToday >= dailySearchLimit) {
           counts.externalSearchesSkippedBudgetTotal++;
+          descNote = "search_budget_exhausted";
         } else if (isRa && raExternalSearchesToday >= dailySearchLimitRA) {
           counts.externalSearchesSkippedBudgetRA++;
+          descNote = "search_budget_exhausted";
         } else {
           totalExternalSearchesToday++;
           if (isRa) raExternalSearchesToday++;
@@ -471,8 +494,10 @@ async function repairGenericMetadata({
           if (!authoritative) {
             counts.externalDescriptionNoResult++;
             counts.externalSearchesNoResult++;
+            descNote = "no_external_result";
           } else if (dryRun) {
             logger.log(`[dry-run] would write authoritative description for event ${event.id}: "${authoritative.text}" (source: ${authoritative.sourceUrl})`);
+            descOutcome = ["enriched", "authoritative"];
           } else {
             // 2026-10-01 hardening: unlike the venue-discovery call site
             // above (a true venue-identity search, where "venue" is an
@@ -510,8 +535,10 @@ async function repairGenericMetadata({
               touchedThisEvent = true;
               usedLevel1 = true;
               event.description = authoritative.text;
+              descOutcome = ["enriched", "authoritative"];
             } else {
               counts.skippedConcurrentChange++;
+              descOutcome = ["failed", "concurrent_change"];
             }
           }
         }
@@ -522,6 +549,7 @@ async function repairGenericMetadata({
         if (generated) {
           if (dryRun) {
             logger.log(`[dry-run] would generate description for event ${event.id}: "${generated}"`);
+            descOutcome = ["enriched", "generated"];
           } else {
             const applied = await applyPatchFn(
               SUPABASE_URL, sbHeaders, event.id,
@@ -532,8 +560,10 @@ async function repairGenericMetadata({
               counts.descriptionsGenerated++;
               counts.fieldsWritten += 1; // description_source is provenance metadata, not counted as its own "field repaired"
               touchedThisEvent = true;
+              descOutcome = ["enriched", "generated"];
             } else {
               counts.skippedConcurrentChange++;
+              descOutcome = ["failed", "concurrent_change"];
             }
           }
         }
@@ -550,10 +580,16 @@ async function repairGenericMetadata({
     //     as event_url when that link is blank.
     if (!isDescriptionBlank(event)) {
       const verdict = repairVerdict(event);
+      if (!verdict.repairable) {
+        descOutcome = ["kept_existing", verdict.quality || null];
+      } else if (counts.poorDescriptionsRepaired >= MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN) {
+        descOutcome = ["skipped", "repair_cap"];
+      }
       if (verdict.repairable && counts.poorDescriptionsRepaired < MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN) {
         const generated = buildFactualDescription(event);
         if (!generated || !descriptionQuality(generated, event.title).ok) {
           counts.poorDescriptionsSkippedNoFacts++;
+          descOutcome = ["skipped", "no_facts"];
         } else {
           const prior = event.description;
           const patch = {
@@ -566,6 +602,7 @@ async function repairGenericMetadata({
           if (urlToKeep) patch.event_url = urlToKeep;
           if (dryRun) {
             logger.log(`[dry-run] would replace ${verdict.quality} description for event ${event.id}: ${JSON.stringify(prior)} -> "${generated}"${urlToKeep ? " (url kept as event_url)" : ""}`);
+            descOutcome = ["overwritten", verdict.quality || null];
           } else {
             const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, patch, ["description"], { descriptionEquals: prior });
             if (applied) {
@@ -575,13 +612,20 @@ async function repairGenericMetadata({
               touchedThisEvent = true;
               event.description = generated;
               event.description_source = "generated";
+              descOutcome = ["overwritten", verdict.quality || null];
             } else {
               counts.skippedConcurrentChange++;
+              descOutcome = ["failed", "concurrent_change"];
             }
           }
         }
       }
     }
+
+    // Record this record's description outcome exactly once. A record that was
+    // blank and got nothing is a skip with the reason it was not enriched.
+    if (!descOutcome && descWasBlank) descOutcome = ["skipped", descNote || "no_facts"];
+    if (descOutcome) recordDescriptionOutcome(event, descOutcome[0], descOutcome[1]);
 
     // 3. Last-resort ticket/event link recovery via the venue's own
     //    verified digital home -- only if still genuinely blank after
