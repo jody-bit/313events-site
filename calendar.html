@@ -1192,8 +1192,20 @@ let EVENTS = FALLBACK_EVENTS.slice();
 
 // Which days an event is listed under is decided by /event-dates.js (issue
 // #48): the one shared rule for homepage, calendar, map and Discovery.
+// A still-running event longer than the 60-day list cap is listed from a few
+// days back instead of from its start, so a long exhibition does not drop off
+// the calendar once the cap is spent on days that have already passed. Shorter
+// events keep their full history for month browsing.
 function addToByDate(target, e){
-  EventDates.expand(e).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+  let floor = null;
+  if(e.endDate && e.endDate > e.date && e.endDate >= getTodayISO()){
+    const spanDays = (new Date(e.endDate+"T12:00:00") - new Date(e.date+"T12:00:00")) / 86400000;
+    if(spanDays >= EventDates.MAX_SPAN_DAYS){
+      const d = new Date(getTodayISO()+"T12:00:00"); d.setDate(d.getDate()-8);
+      floor = toISO(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+  }
+  EventDates.expand(e, floor).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
 }
 
 // index by date

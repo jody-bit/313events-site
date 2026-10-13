@@ -757,7 +757,8 @@ let EVENTS = FALLBACK_EVENTS.slice();
 // Which days an event is listed under is decided by /event-dates.js (issue
 // #48): the one shared rule for homepage, calendar, map and Discovery.
 function addToByDate(target, e){
-  EventDates.expand(e).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+  const multiDay = !!e.endDate && e.endDate > e.date;
+  EventDates.expand(e, multiDay ? loadFloorISO() : null).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
 }
 
 // index by date

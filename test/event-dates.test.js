@@ -86,6 +86,11 @@ function run() {
   assert.strictEqual(gbEx[0], TODAY, "the exhibition is listed from today");
   assert.ok(gbEx.length > 1, "the exhibition stays visible while it runs");
   assert.strictEqual(ED.reviewReason(ROWS.glennBarrExhibition), null, "classified continuous: nothing to review");
+  // The 60-day cap must not make a long exhibition vanish before it ends: with
+  // the page's floor (calendar/map/index pass one), it is still listed on Dec 29/30.
+  const gbLate = ED.expand(ROWS.glennBarrExhibition, "2026-12-15");
+  assert.strictEqual(gbLate[gbLate.length - 1], "2026-12-30", "exhibition still listed through its end date");
+  assert.ok(ED.expand(ROWS.glennBarrExhibition).slice(-1)[0] < "2026-12-30", "without a floor the cap ends the list early (why pages pass one)");
   assert.strictEqual(ED.reviewReason(ROWS.glennBarrLegacy), "unclassified-multiday-clock-time");
   assert.ok(ED.expand(ROWS.glennBarrLegacy, TODAY).length > 1, "legacy row keeps its listings until classified");
 
@@ -145,6 +150,9 @@ function run() {
     assert.ok(/EventDates\.expand\(/.test(src), `${page} lists days through EventDates.expand()`);
     assert.ok(/dateSemantics:\s*row\.date_semantics/.test(src), `${page} maps date_semantics when present`);
   }
+  // map and calendar must pass a floor so long exhibitions are not truncated by the cap.
+  assert.ok(/EventDates\.expand\(e, multiDay \? loadFloorISO\(\) : null\)/.test(read("map.html")), "map.html passes the load floor");
+  assert.ok(/EventDates\.expand\(e, floor\)/.test(read("calendar.html")), "calendar.html passes a floor for long running events");
   assert.ok(read("index.html").indexOf('/event-dates.js') < read("index.html").indexOf('/discovery.js'), "index.html loads event-dates.js before discovery.js");
 
   // Release safety: until the proposed migration is applied the new columns

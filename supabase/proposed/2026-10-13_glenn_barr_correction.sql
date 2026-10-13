@@ -7,6 +7,8 @@
 --    Wed-Fri 12-5. The page states NO exhibition end date.
 --  * Row's own internal_note: Dec 30, 2026 came from an artist Instagram post supplied by a user;
 --    it is NOT confirmed by the gallery. It is therefore not presented as confirmed.
+--  * Hazel Park: the gallery's own site lists its address as 420 W 9 Mile, Hazel Park, MI (read
+--    2026-10-13). The existing row's description already named Hazel Park; this keeps it.
 --  * The opening reception was Fri Oct 9 and is past: it is not listed as an upcoming event.
 --
 -- BEFORE  time_display = 'Opening reception 7:00–10:00 PM', is_all_day = false, end_date = 2026-12-30,
@@ -16,11 +18,9 @@
 --         description states only that the exhibition opened Oct 9 with an opening reception and points to
 --         the gallery for hours: NO closing date and no "artist announced" wording in the text.
 --         end_date UNCHANGED (see decision below). No hours or recurrence added.
--- DECISION FOR OWNER (open): the stored end_date 2026-12-30 is unconfirmed by the gallery. Keeping it
---   means the site still shows a "Through Dec 30" label and lists the exhibition to then; setting it to NULL
---   drops the exhibition off after Oct 9 until the gallery confirms. This file leaves it unchanged; the
---   alternative is one extra `end_date = null` line.
--- After the date-semantics migration: also set date_semantics = 'continuous' (second statement below).
+-- DECIDED (Jody, 2026-10-13): keep end_date 2026-12-30 (unconfirmed by the gallery; source = artist Instagram).
+--   end_date is left unchanged.
+-- The date-semantics migration is applied, so this also sets date_semantics = 'continuous'.
 
 begin;
 
@@ -37,11 +37,23 @@ where id = '15c5c165-ab1e-4d8a-817b-8cc1eb135b9f'
 update public.events
 set time_display = null,
     is_all_day = true,
+    date_semantics = 'continuous',
     description = 'Detroit artist Glenn Barr presents The Beautiful and the Banal, a solo exhibition at The Gallery at Ideation Orange in Hazel Park. The exhibition opened Friday, October 9, with an opening reception. See the gallery for current hours.'
 where id = '15c5c165-ab1e-4d8a-817b-8cc1eb135b9f'
   and time_display = 'Opening reception 7:00–10:00 PM'
   and is_all_day = false
   and status = 'approved';
--- expect exactly 1 row; if not, ROLLBACK and report.
+
+-- Enforced, not advisory: abort the whole transaction unless exactly this one row now matches.
+do $$
+declare n int;
+begin
+  select count(*) into n from public.events
+  where id = '15c5c165-ab1e-4d8a-817b-8cc1eb135b9f'
+    and time_display is null and is_all_day = true and date_semantics = 'continuous';
+  if n <> 1 then
+    raise exception 'Glenn Barr correction matched % rows, expected 1; rolling back', n;
+  end if;
+end $$;
 
 commit;
