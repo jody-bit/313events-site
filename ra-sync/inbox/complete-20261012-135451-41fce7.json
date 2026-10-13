@@ -1,0 +1,79 @@
+{
+  "runToken": "20261012-135451-41fce7",
+  "action": "complete",
+  "runId": "83179792-4801-47ac-aafd-641d0561ee8e",
+  "events": [
+    {
+      "id": "ra-2558748",
+      "title": "Música",
+      "description": null,
+      "startDate": "2026-10-12T22:00:00.000",
+      "endDate": "2026-10-13T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/1bf775ada669889bb06ba282577724862a50f1cf.png",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2558645",
+      "title": "Locomotion",
+      "description": null,
+      "startDate": "2026-10-13T22:00:00.000",
+      "endDate": "2026-10-14T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/e0a50af672a6006d6573a253a1a1c9899de2f186.jpg",
+      "offersPrice": 5.5,
+      "url": null
+    },
+    {
+      "id": "ra-2558646",
+      "title": "Nightcap Detroit",
+      "description": null,
+      "startDate": "2026-10-14T22:00:00.000",
+      "endDate": "2026-10-15T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/147c9273a8a47ce41efb9ea751becb73d359a5c8.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2558647",
+      "title": "The Peel Back",
+      "description": null,
+      "startDate": "2026-10-14T22:00:00.000",
+      "endDate": "2026-10-15T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/cf0b6eabddfffe5fcced525e05186983c012b92b.jpg",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2559128",
+      "title": "FIESTA RAVE",
+      "description": "FIESTA RAVE returns to Tulum Detroit with special guest BONES (CDMX), official DJ for Tito Double P, alongside Detroit’s own SWDEJAY.\n\nBringing Mexico City’s underground energy to Southwest Detroit with Reggaeton, Latin House, Guaracha, Afro House, Ghetto Tech, Dembow & Corridos.\n\nExpect high-energy sets, tropical vibes, drinks by El Jimador and food by Taqueria El Rey.",
+      "startDate": "2026-10-17T22:00:00.000",
+      "endDate": "2026-10-18T02:00:00.000",
+      "venueName": "TBA - TULUM DETROIT  3400 Bagley St ",
+      "address": null,
+      "image": "https://images.ra.co/2248026e2969b173cc569f037a66c00c6fd4ea6e.jpg",
+      "offersPrice": 0,
+      "url": null
+    },
+    {
+      "id": "ra-2558815",
+      "title": "TECHNO THURSDAY: DBU Edition",
+      "description": "TECHNO THURSDAY: BERLIN - DETROIT UNDERGROUND EDITION",
+      "startDate": "2026-10-22T21:00:00.000",
+      "endDate": "2026-10-23T02:00:00.000",
+      "venueName": "Marble Bar",
+      "address": "1501 Holden St, Detroit, MI 48208, USA",
+      "image": "https://images.ra.co/6a3512402390147ba98b5cce8431cf0293239c82.jpg",
+      "offersPrice": 5.5,
+      "url": null
+    }
+  ]
+}
