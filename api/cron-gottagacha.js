@@ -4,6 +4,7 @@ const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { decideSourceDescription } = require("./_lib/description-strength");
 
 // Vercel Cron job — pulls upcoming events from GottaGacha (gottagacha.com),
 // a gaming arcade/TCG venue in Warren, MI. Added 2026-09-22 after a
@@ -472,7 +473,7 @@ module.exports = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rows.map((r) => r.external_id),
-        { select: "external_id,status,event_url" }
+        { select: "external_id,status,event_url,description,description_source,title" }
       );
     } catch (lookupErr) {
       await finishRun(runHandle, {
@@ -494,6 +495,18 @@ module.exports = async (req, res) => {
       const eventUrl = keepEventUrl(existingEventUrlByExternalId.get(row.external_id), rest.event_url);
       if (eventUrl === undefined) delete rest.event_url;
       else rest.event_url = eventUrl;
+      // Description strength rule (api/_lib/description-strength.js): a weaker
+      // or blank source text never replaces a stronger stored description
+      // (manual / authoritative / generated repair / good source text), and a
+      // blank source never writes null over stored text. When the source text
+      // is allowed to replace a generated one, the label is cleared so
+      // description_source stays truthful.
+      const prev = existingRows.get(row.external_id);
+      if (prev && prev.description) {
+        const verdict = decideSourceDescription({ stored: prev.description, storedSource: prev.description_source, incoming: rest.description, title: rest.title || prev.title });
+        if (!verdict.write) delete rest.description;
+        else if (prev.description_source === "generated") rest.description_source = null;
+      }
       return {
         ...rest,
         status: existingStatusByExternalId.get(row.external_id) || _defaultStatusForRow,

@@ -25,7 +25,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Calendar — 313.events">
@@ -42,6 +42,7 @@
 
 <style>
   :root{
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     /* Detroit Signal V2 — locked color architecture */
     --bg:#0A0A0A;          /* asphalt — primary dark environment */
     --panel:#202020;       /* charcoal — raised surface: cards, panels */
@@ -156,7 +157,7 @@
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }
   header.site h1{
-    font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;
+    font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:30px;margin:0 0 4px;letter-spacing:-0.01em;text-transform:uppercase;
   }
   /* The locked tagline ("THE CITY IS ON.") gets its own oversized display
@@ -435,7 +436,7 @@
   .leaflet-popup-content-wrapper{background:var(--panel);color:var(--ink);border-radius:var(--radius);}
   .leaflet-popup-tip{background:var(--panel);}
   .leaflet-popup-content{margin:12px 14px;font-size:12.5px;min-width:200px;max-width:260px;}
-  .popup-place-name{font-family:'Archivo Narrow',-apple-system,sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;margin-bottom:2px;}
+  .popup-place-name{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:14px;text-transform:uppercase;margin-bottom:2px;}
   .popup-approx{font-size:10.5px;color:var(--ink-dim);font-style:italic;margin-bottom:8px;}
   .popup-evt{padding:5px 0;border-top:1px solid var(--line-soft);}
   .popup-evt:first-of-type{border-top:none;}
@@ -1869,8 +1870,8 @@ function showDayPanel(iso){
                 </div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+                ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+                ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
                 ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>
@@ -1919,8 +1920,8 @@ function renderList(dateList){
                 </div>
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-                ${e.ticketUrl && safeUrl(e.ticketUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-                ${e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+                ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+                ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
                 ${affiliateDisclosureHtml(e)}
                 ${ticketStatusNoteHtml(e)}
               </div>

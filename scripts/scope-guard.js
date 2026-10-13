@@ -23,8 +23,12 @@ const ALLOWED = [
   "assets/guides/fall-color-guide-1600.webp", "assets/guides/fall-color-guide-800.webp",
   "assets/guides/fall-guide-1600.webp", "assets/guides/fall-guide-800.webp",
   "assets/guides/halloween-guide-1600.webp", "assets/guides/halloween-guide-800.webp",
+  // RA link and start-time fix (PR #74): the RA link helper and the missing-time approval guard.
+  "api/_lib/ra-links.js", "api/admin-events.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
+  // Description self-healing: shared strength rule + GottaGacha adopting it.
+  "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
