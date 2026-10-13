@@ -65,16 +65,24 @@
     for (var i = 0; i < chain.length; i++) if (!failedLookup(chain[i])) return chain[i];
     return chain[0];
   }
+  // Photo credit policy (owner decision 2026-10-13): no credit is ever drawn over a photograph. Owner photography (credit "Photography © Name"
+  // or "313.events archive") shows no visible credit; it is kept in a data attribute here and in the content metadata (entries.json,
+  // published-entries.js). A credit that a license or a linked image requires is a small muted line in the card's text area, with its link.
+  var OWNER_CREDIT = /^(Photography \u00a9 |313\.events archive$)/;
+  function creditLine(e) {
+    var img = e.image, r = linkedOf(img);
+    if (r && pickSrc(img) === r.src) return '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
+    if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
+    return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
+  }
   function media(e) {
     var chain = chainOf(e.image), r = linkedOf(e.image), first = pickSrc(e.image);
     var viaLink = !!r && first === r.src;
     var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
-    var html = '<div class="sc-card-media"><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
-    if (viaLink) {
-      return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span>' +
-        '<a class="sc-credit" href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></div>';
-    }
-    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : (e.image.credit ? '<span class="sc-credit">' + (/ via Wikimedia Commons$/.test(e.image.credit) ? '<a href="/copyright#photo-credits">' + esc(e.image.credit) + '</a>' : esc(e.image.credit)) + '</span>' : "")) + '</div>';
+    var owner = !viaLink && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
+    var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
+    if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
+    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>';
   }
   function card(col, e, opts) {
     opts = opts || {};
@@ -93,7 +101,7 @@
       '<h3 class="sc-card-title' + (longWord ? " sc-card-title--long" : "") + '"' + (longWord ? ' style="--lw:' + longWord + '"' : "") + '>' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
       '<p class="sc-card-sum">' + esc(e.summary) + '</p>' +
-      (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + (opts.extra || "") + '</div>' +
+      (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + creditLine(e) + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }
 

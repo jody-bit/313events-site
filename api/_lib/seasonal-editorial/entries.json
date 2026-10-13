@@ -1110,29 +1110,29 @@
     "unresolved": []
    },
    "image": {
-    "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+    "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__card.webp",
     "source": "313.events owner photo archive, captured 2026-10-09",
     "credit": "Photography © Miriam Vukich",
     "illustrative": false,
     "acquired": {
-     "file": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
-     "bytes": 347036,
-     "sha256": "58653958c88d94f306870ba602e17255fe26381c0b23f5b6305ece52b34651f9",
+     "file": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__card.webp",
+     "bytes": 197108,
+     "sha256": "4d816c74f0544faef7f417bb40f145e4862e2887a529b14c739537a0271cacfd",
      "width": 1280,
      "height": 853,
-     "acquiredAt": "2026-10-11"
+     "acquiredAt": "2026-10-13"
     },
     "ownerPhoto": {
-     "photoId": "313p-b111acba",
-     "reviewRef": "R2-D2832",
+     "photoId": "313p-9cdd1fd7",
+     "reviewRef": "IMG_3232",
      "authorization": {
       "statement": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
       "grantee": "313.events",
       "recordedBy": "Jody Tyree (owner confirmation in the project thread, 2026-10-12)",
       "recordedAt": "2026-10-12",
-      "note": "Photographer: Miriam Vukich. Commercial use authorized. Owner-confirmed; not a Creative Commons license."
+      "note": "Photographer: Miriam Vukich. Commercial use authorized. Owner-confirmed; not a Creative Commons license. Image selected by the owner on 2026-10-13 (the welcome sign, replacing the pumpkin-field photograph). Photographer credit confirmed by the owner (Jody Tyree, project thread, 2026-10-13): Miriam Vukich took IMG_3232; consistent with the capture device (the same iPhone 14 as 313p-b111acba)."
      },
-     "verifiedAt": "2026-10-11",
+     "verifiedAt": "2026-10-13",
      "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
     },
     "alternates": [
