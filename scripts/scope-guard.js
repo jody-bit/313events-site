@@ -55,6 +55,7 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/verification-2026-10-11.json",
   // City of Dearborn feed publication policy (Event Intelligence, draft PR #77): inert until a feed_sources row exists. cron-feeds.js: one-line change passing the policy to classify().
   "api/_lib/feed-publication.js",
+  "api/_lib/dearborn-enrichment.js",
   "api/cron-feeds.js"
 ];
 

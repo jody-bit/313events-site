@@ -187,6 +187,7 @@ function parseIcsEvents(icsText) {
     else if (prop.name === "DESCRIPTION") current.description = decodeEntities(unescapeIcsText(prop.value));
     else if (prop.name === "URL") current.url = prop.value;
     else if (prop.name === "UID") current.uid = prop.value;
+    else if (prop.name === "RECURRENCE-ID") current.recurrenceId = true; // an override of one occurrence of a series; shares its master's UID
     // 2026-09-05 addition — RFC 7986 §5.10 defines an IMAGE property for
     // exactly this ("a graphic image associated with the calendar or a
     // calendar component"). No organizer feed has been seen using it yet in
@@ -487,15 +488,18 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     }
 
     let uidOrHash = ev.uid || `${start.date}-${(ev.summary || "").slice(0, 40)}`;
-    // A recurring-series master and its RECURRENCE-ID overrides share one UID (Google Calendar exports do this);
-    // the parser reads each VEVENT as its own DTSTART occurrence, so a repeat within one feed gets the occurrence
-    // date appended. The first keeps the bare UID, so every existing external_id is unchanged.
-    if (seenUids.has(uidOrHash)) {
-      const base = `${uidOrHash}-${start.date}`;
-      uidOrHash = base;
-      for (let n = 2; seenUids.has(uidOrHash); n++) uidOrHash = `${base}-${n}`;
+    // Opt-in per feed policy (policy.uniqueOccurrenceIds, today Dearborn only; every other feed is unchanged).
+    // A recurring-series master and its RECURRENCE-ID overrides share one UID (Google Calendar exports); the
+    // parser reads each VEVENT as its own DTSTART occurrence. The VEVENT without RECURRENCE-ID always keeps the
+    // bare UID whatever the file order; an override gets the occurrence date appended (then -2, -3 if needed).
+    if (policy && policy.uniqueOccurrenceIds) {
+      if (ev.recurrenceId || seenUids.has(uidOrHash)) {
+        const base = `${uidOrHash}-${start.date}`;
+        uidOrHash = base;
+        for (let n = 2; seenUids.has(uidOrHash); n++) uidOrHash = `${base}-${n}`;
+      }
+      seenUids.add(uidOrHash);
     }
-    seenUids.add(uidOrHash);
 
     const venueFields = feedSource.location_per_event
       ? resolveIcsEventVenue(ev.location, venueDetailsMaps)
@@ -814,12 +818,18 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   const rowsWithStatus = rows.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
-    const { _dateConfidence, _publication, ...cleanRow } = row;
+    const { _dateConfidence, _publication, _enrichment, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
     // A NEW row held by its feed's publication policy says why (api/_lib/feed-publication.js).
     // An existing row keeps its status and its note: this run only writes the note key for a new row.
     if (!existingStatus && _publication && _publication.state !== "verified") out.note = holdNote(_publication);
+    // A feed policy's enrichment (a per-event link and the source page's category label) is likewise written for a NEW
+    // row only, so a reviewer's edit to an existing row's link or note is never overwritten. A hint, never a status.
+    if (!existingStatus && _enrichment) {
+      if (_enrichment.event_url && !out.event_url) out.event_url = _enrichment.event_url;
+      if (_enrichment.category) out.note = `${out.note ? out.note + " " : ""}Source page category: ${_enrichment.category}.`;
+    }
     return out;
   });
 
@@ -938,6 +948,11 @@ module.exports = async (req, res) => {
           const text = await r.text();
           const icsEvents = parseIcsEvents(text);
           const rows = icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap);
+          const feedPolicy = policyFor(feedSource);
+          let enrichNote = "";
+          if (rows.length && feedPolicy && feedPolicy.enrich) {
+            try { enrichNote = await feedPolicy.enrich(rows, feedSource); } catch (e) { enrichNote = `enrichment failed: ${e.message}`; }
+          }
 
           if (!rows.length) {
             pollResult = "Fetched OK — 0 events found (feed may be empty, all-past, or in an unsupported shape)";
@@ -952,7 +967,7 @@ module.exports = async (req, res) => {
             const outcome = await upsertParsedRows(rows, (row) => (row._publication && row._publication.state !== "verified" ? "pending_review" : DEFAULT_STATUS), sbHeaders, res);
             if (outcome === null) return; // upsertParsedRows already wrote the 502 response
             totalUpserted += outcome.upserted;
-            pollResult = outcome.pollResult;
+            pollResult = enrichNote ? `${outcome.pollResult} (${enrichNote})` : outcome.pollResult;
           }
         }
       }

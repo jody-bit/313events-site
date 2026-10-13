@@ -41,6 +41,9 @@ const POLICIES = [
     // closures, trash and leaf-collection notices, election dates and observances. So: (1) title-only, narrow
     // skips for entries that are plainly notices (closures, trash, voting, deadlines); (2) every other NEW row is created pending_review
     // (reviewAll) rather than published, because nothing in the feed separates an event from an announcement.
+    uniqueOccurrenceIds: true,
+    // Links and page-category hints from dearborn.gov/calendar (api/_lib/dearborn-enrichment.js). Hint only.
+    enrich: (rows, feed, opts) => require("./dearborn-enrichment").enrichRows(rows, feed, opts),
     reviewAll: "City of Dearborn's calendar mixes public events with notices and the feed carries no event-type label",
     // Governing-body titles are NOT discarded (Jody 2026-10-13: legitimate community events must not vanish merely
     // because they are meetings). They are held for review with an extra reason so a reviewer sees why.
