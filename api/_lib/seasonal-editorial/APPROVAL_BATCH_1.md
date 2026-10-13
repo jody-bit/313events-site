@@ -32,9 +32,9 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 - Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card. Source: https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
 
 ### Image
-- **Current image (owner photo `313p-522299e9-f337`)**: 41s video of an antique carousel on Halloween with autumn trees in background. Captured 2020-10-31. File 1280x853, sha256 `64fbdba06a587bd0...`.
-  - Quality flags in the library: upscaled from video frame.
-  - Rights basis: owner authorization (Owner-authorized: photographer granted use to 313.events owner). The photographer's name and the date of the grant are not recorded in the photo library. This is not a license and there is no license URL.
+- **Current image (owner photo `313p-f9dfb30c`)**: Colonial house at night with glowing jack-o-lanterns and large lit pumpkins (venue-supplied image). Captured not recorded. File 1280x853, sha256 `5bde741e7c71afe4...`.
+  - Quality flags in the library: none.
+  - Rights basis: owner authorization (Owner confirmation (project thread, 2026-10-13): Jody Tyree states that The Henry Ford, the venue, permits 313.events to use this image of Hallowe'en in Greenfield Village.). Image supplied by the owner and attributed by the owner to the venue, The Henry Ford. The photographer and the venue's written terms are not recorded; the owner confirmed permission in the project thread. Credit is metadata only (no visible credit) unless the venue's terms require one. This is not a license and there is no license URL.
 - **Catalogue link on file (not adopted on this record):** https://www.thehenryford.org/images/thehenryfordlibraries/event-card-1064x798/halloween_pumpkins_1064x798.png. Event card image; may be generated art Warning: Event card image; may be generated art, not a photo of the place. Load test: loaded 1064x798. Risk acceptance recorded 2026-10-11 for this link.
 
 ### What becomes public if you approve

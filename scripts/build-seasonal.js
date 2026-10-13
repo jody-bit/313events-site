@@ -109,8 +109,11 @@ function validateAssets(all) {
         const p = photos[op.photoId];
         if (!p) { problems.push(where + ": ownerPhoto " + op.photoId + " is not in photo-library.json"); continue; }
         if (p.files.card !== a.file) problems.push(where + ": ownerPhoto card file differs from the library");
-        if (!p.original || !p.original.filename || !p.original.apple_photos_uuid) problems.push(where + ": library lacks the original photo identifiers for " + op.photoId);
-        else if (op.photoId.slice(5, 13).toUpperCase() !== p.original.apple_photos_uuid.slice(0, 8)) problems.push(where + ": photoId does not match the original photo identifier");
+        // A photo from the owner's Apple Photos library is identified by its Apple Photos id; a photo supplied from elsewhere (for example a
+        // venue's own image) is identified by the sha256 of the supplied file, which is kept in the library entry.
+        const oid = p.original && (p.original.apple_photos_uuid || p.original.sha256);
+        if (!p.original || !p.original.filename || !oid) problems.push(where + ": library lacks the original photo identifiers for " + op.photoId);
+        else if (op.photoId.slice(5, 13).toUpperCase() !== oid.slice(0, 8).toUpperCase()) problems.push(where + ": photoId does not match the original photo identifier");
         if (op.authorization.statement !== p.license) problems.push(where + ": authorization statement differs from the library");
         if (op.reviewRef !== p.review_ref) problems.push(where + ": reviewRef differs from the library");
         if (im.licenseUrl) problems.push(where + ": owner photo must not carry a licenseUrl (owner authorization is not a Creative Commons license)");

@@ -5254,30 +5254,30 @@
    "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
    "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
    "image": {
-    "src": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
-    "source": "313.events owner photo archive, captured 2020-10-31",
-    "credit": "313.events archive",
+    "src": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp",
+    "source": "Supplied by the owner from the venue (The Henry Ford); original file untouched, card is a 3:2 crop",
+    "credit": "Photography © The Henry Ford",
     "illustrative": false,
     "acquired": {
-     "file": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__r2-d0372-f337__card.webp",
-     "bytes": 60788,
-     "sha256": "64fbdba06a587bd08409723092b84ef2ae7a195a1776369cffd86934eedacb17",
+     "file": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp",
+     "bytes": 93042,
+     "sha256": "5bde741e7c71afe4ab617ea4bc99bfbc5f81025e3ee109d508111caaaf26f535",
      "width": 1280,
      "height": 853,
-     "acquiredAt": "2026-10-11"
+     "acquiredAt": "2026-10-13"
     },
     "ownerPhoto": {
-     "photoId": "313p-522299e9-f337",
-     "reviewRef": "R2-D0372-F337",
+     "photoId": "313p-f9dfb30c",
+     "reviewRef": "VENUE-01",
      "authorization": {
-      "statement": "Owner-authorized: photographer granted use to 313.events owner",
-      "grantee": "313.events owner",
-      "recordedBy": "Jody Tyree (added the photo to the repository as owner-approved, commit f590531)",
-      "recordedAt": "2026-10-11",
-      "note": "The photographer's name and the date of the grant are not recorded in the photo library."
+      "statement": "Owner confirmation (project thread, 2026-10-13): Jody Tyree states that The Henry Ford, the venue, permits 313.events to use this image of Hallowe'en in Greenfield Village.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread)",
+      "recordedAt": "2026-10-13",
+      "note": "Image supplied by the owner and attributed by the owner to the venue, The Henry Ford. The photographer and the venue's written terms are not recorded; the owner confirmed permission in the project thread. Credit is metadata only (no visible credit) unless the venue's terms require one."
      },
-     "verifiedAt": "2026-10-11",
-     "verifiedBy": "Claude (Cowork session): size, dimensions and sha256 computed from the repository file"
+     "verifiedAt": "2026-10-13",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
     },
     "alternates": [
      "/assets/seasonal/halloween-card-6.webp",
