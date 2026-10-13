@@ -644,6 +644,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
+<script src="/event-dates.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -1189,28 +1190,25 @@ const FALLBACK_EVENTS = [
 // below replaces its contents with the live database rows once fetched.
 let EVENTS = FALLBACK_EVENTS.slice();
 
-// index by date
-// expandDateRange/addToByDate (2026-09-02 audit fix) — see index.html's
-// identical helpers for the multi-day bug this closes.
-const MAX_EVENT_SPAN_DAYS = 60;
-function expandDateRange(startIso, endIso){
-  if(!endIso || endIso <= startIso) return [startIso];
-  const dates = [];
-  let cur = new Date(startIso+"T12:00:00");
-  const end = new Date(endIso+"T12:00:00");
-  let guard = 0;
-  while(cur <= end && guard < MAX_EVENT_SPAN_DAYS){
-    const y = cur.getFullYear(), m = String(cur.getMonth()+1).padStart(2,'0'), d = String(cur.getDate()).padStart(2,'0');
-    dates.push(`${y}-${m}-${d}`);
-    cur.setDate(cur.getDate()+1);
-    guard++;
-  }
-  return dates;
-}
+// Which days an event is listed under is decided by /event-dates.js (issue
+// #48): the one shared rule for homepage, calendar, map and Discovery.
+// A still-running event longer than the 60-day list cap is listed from a few
+// days back instead of from its start, so a long exhibition does not drop off
+// the calendar once the cap is spent on days that have already passed. Shorter
+// events keep their full history for month browsing.
 function addToByDate(target, e){
-  expandDateRange(e.date, e.endDate).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+  let floor = null;
+  if(e.endDate && e.endDate > e.date && e.endDate >= getTodayISO()){
+    const spanDays = (new Date(e.endDate+"T12:00:00") - new Date(e.date+"T12:00:00")) / 86400000;
+    if(spanDays >= EventDates.MAX_SPAN_DAYS){
+      const d = new Date(getTodayISO()+"T12:00:00"); d.setDate(d.getDate()-8);
+      floor = toISO(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+  }
+  EventDates.expand(e, floor).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
 }
 
+// index by date
 let byDate = {};
 EVENTS.forEach(e=>{ addToByDate(byDate, e); });
 Object.values(byDate).forEach(list=>list.sort((a,b)=> timeSortMinutes(a.time) - timeSortMinutes(b.time)));
@@ -2854,6 +2852,8 @@ function mapSupabaseRow(row) {
     // end_date (2026-09-02 audit fix) — see index.html's identical
     // mapSupabaseRow() comment for the multi-day bug this closes.
     endDate: row.end_date || row.start_date,
+    dateSemantics: row.date_semantics || undefined, // issue #48; undefined until the column is selected -> legacy range
+    occurrenceDates: row.occurrence_dates || undefined,
     title: decodeEntities(row.title),
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,

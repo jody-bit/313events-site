@@ -4368,6 +4368,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
+<script src="/event-dates.js"></script>
 <script src="/discovery.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
@@ -4979,25 +4980,12 @@ let orbitEventTotal = null;
 // start — otherwise the 60-day guard would be spent entirely on days this
 // page never shows, and an exhibition that opened in the spring would never
 // appear under today. The guard itself is unchanged: 60 listed days.
-const MAX_EVENT_SPAN_DAYS = 60;
-function expandDateRange(startIso, endIso, floorIso){
-  if(!endIso || endIso <= startIso) return [startIso];
-  const firstIso = (floorIso && floorIso > startIso && floorIso <= endIso) ? floorIso : startIso;
-  const dates = [];
-  let cur = new Date(firstIso+"T12:00:00");
-  const end = new Date(endIso+"T12:00:00");
-  let guard = 0;
-  while(cur <= end && guard < MAX_EVENT_SPAN_DAYS){
-    const y = cur.getFullYear(), m = String(cur.getMonth()+1).padStart(2,'0'), d = String(cur.getDate()).padStart(2,'0');
-    dates.push(`${y}-${m}-${d}`);
-    cur.setDate(cur.getDate()+1);
-    guard++;
-  }
-  return dates;
-}
+// Which days an event is listed under is decided by /event-dates.js (issue
+// #48): the one shared rule for homepage, calendar, map and Discovery. A date
+// range never implies daily occurrences on its own; see that file's header.
 function addToByDate(target, e){
   const multiDay = !!e.endDate && e.endDate > e.date;
-  expandDateRange(e.date, e.endDate, multiDay ? loadFloorISO() : null).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
+  EventDates.expand(e, multiDay ? loadFloorISO() : null).forEach(iso => { (target[iso] = target[iso]||[]).push(e); });
 }
 
 let byDate = {};
@@ -7713,6 +7701,8 @@ function mapSupabaseRow(row) {
     // back to start_date (i.e. "just one day") when unset, so every other
     // reference to endDate below can skip a null check.
     endDate: row.end_date || row.start_date,
+    dateSemantics: row.date_semantics || undefined, // issue #48; undefined until the column is selected -> legacy range
+    occurrenceDates: row.occurrence_dates || undefined,
     title: decodeEntities(row.title),
     // 2026-08-28 (Jody: "i just submit an event and the description is
     // nowhere to be seen"): description/image_url were always accepted by
