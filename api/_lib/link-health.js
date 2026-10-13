@@ -207,6 +207,128 @@ async function healEventUrl({ url, title, fetchFn = fetch } = {}) {
   return { checked: true, classification: "dead", repaired: true, newUrl: revalidated.finalUrl || candidate };
 }
 
+// ---------------------------------------------------------------------------
+// LINK USABILITY (issue #99). A 200 response is not proof a link is useful: a
+// "ticket_url" that is just a venue's homepage resolves fine and still sends
+// the visitor nowhere near the event. These helpers CLASSIFY a stored URL by
+// what it points at, and summarise usability by class and source. Pure (no
+// network, no DB): the live reachability check above (checkUrl /
+// link_check_status) is unchanged and independent of this.
+//
+// Classes:
+//   direct_event      a page specific to this event (deep path or query id)
+//   ticket            a purchase/registration page: the ticket_url field, or
+//                     a known ticketing host with a deep path
+//   venue             the venue's own site root (matches the venue website)
+//   generic_homepage  a bare site root or a generic index (/, /events, ...)
+//                     that does not identify the event
+//   invalid / missing not a usable http(s) URL / no value
+// Usable = direct_event or ticket. Nothing here suppresses a record: a
+// missing ticket URL never hides a valid event or venue link, and unusable
+// links are counted for review, not removed.
+// Classification rules are Platform's defaults; Event Intelligence owns what
+// counts as usable and can adjust GENERIC_INDEX_SEGMENTS / TICKETING_HOSTS.
+const GENERIC_INDEX_SEGMENTS = new Set([
+  "events", "event", "calendar", "whats-on", "whatson", "shows", "tickets",
+  "upcoming", "schedule", "home", "index", "index.html", "programs", "happenings",
+]);
+const TICKETING_HOSTS = new Set([
+  "ticketmaster.com", "livenation.com", "eventbrite.com", "etix.com", "axs.com",
+  "seetickets.us", "dice.fm", "ra.co", "tixr.com", "ticketweb.com", "universe.com",
+  "showclix.com", "ticketleap.com", "eventim.us",
+]);
+
+function parseHttpUrl(url) {
+  if (typeof url !== "string" || !url.trim()) return null;
+  try {
+    const u = new URL(url.trim());
+    return /^https?:$/.test(u.protocol) && u.hostname ? u : null;
+  } catch {
+    return null;
+  }
+}
+
+function bareHost(u) {
+  return u.hostname.replace(/^www\./, "").toLowerCase();
+}
+
+function pathSegments(u) {
+  return u.pathname.split("/").filter(Boolean);
+}
+
+function isGenericPath(u) {
+  const segs = pathSegments(u);
+  if (segs.length === 0) return !hasIdentifyingQuery(u);
+  return segs.length === 1 && GENERIC_INDEX_SEGMENTS.has(segs[0].toLowerCase()) && !hasIdentifyingQuery(u);
+}
+
+// A query string only identifies a page when it carries an id-like parameter
+// (e.g. ?p=123, ?event_id=...). Tracking parameters do not.
+function hasIdentifyingQuery(u) {
+  for (const k of u.searchParams.keys()) {
+    if (/^(p|id|eid|event|event_id|eventid|post|pid|tribe_events)$/i.test(k)) return true;
+  }
+  return false;
+}
+
+// classifyLinkKind(url, { field: 'event'|'ticket', venueWebsite }) -> class
+function classifyLinkKind(url, { field = "event", venueWebsite = null } = {}) {
+  if (url === null || url === undefined || (typeof url === "string" && !url.trim())) return "missing";
+  const u = parseHttpUrl(url);
+  if (!u) return "invalid";
+  const v = parseHttpUrl(venueWebsite);
+  if (v && bareHost(u) === bareHost(v) && pathSegments(u).join("/") === pathSegments(v).join("/") && !hasIdentifyingQuery(u)) {
+    return pathSegments(u).length === 0 ? "generic_homepage" : "venue";
+  }
+  if (isGenericPath(u)) return "generic_homepage";
+  const host = bareHost(u);
+  const ticketingHost = [...TICKETING_HOSTS].some((h) => host === h || host.endsWith("." + h));
+  if (field === "ticket" || ticketingHost) return "ticket";
+  return "direct_event";
+}
+
+function isUsableLinkKind(kind) {
+  return kind === "direct_event" || kind === "ticket";
+}
+
+// assessEventLinks(row, { venueWebsite }) -> per-field class + usability.
+// hasUsableLink is true if EITHER field is usable, so a missing ticket_url
+// never marks an event with a good event_url as unlinked (and vice versa).
+function assessEventLinks(row, { venueWebsite = null } = {}) {
+  const eventKind = classifyLinkKind(row && row.event_url, { field: "event", venueWebsite });
+  const ticketKind = classifyLinkKind(row && row.ticket_url, { field: "ticket", venueWebsite });
+  return {
+    event: { kind: eventKind, usable: isUsableLinkKind(eventKind) },
+    ticket: { kind: ticketKind, usable: isUsableLinkKind(ticketKind) },
+    hasUsableLink: isUsableLinkKind(eventKind) || isUsableLinkKind(ticketKind),
+    deadFlagged: !!(row && row.link_check_status === "dead"),
+  };
+}
+
+// summarizeLinkUsability(rows, { venueWebsiteFor }) -> counts by class and
+// by source. rows: events with source, event_url, ticket_url,
+// link_check_status. venueWebsiteFor(row) optionally returns the linked
+// venue's website. Read-only; the caller decides what to do with the counts.
+function summarizeLinkUsability(rows, { venueWebsiteFor = null } = {}) {
+  const emptyBucket = () => ({ events: 0, withUsableLink: 0, noUsableLink: 0, deadFlagged: 0, event_url: {}, ticket_url: {} });
+  const total = emptyBucket();
+  const bySource = {};
+  const bump = (b, a) => {
+    b.events += 1;
+    if (a.hasUsableLink) b.withUsableLink += 1; else b.noUsableLink += 1;
+    if (a.deadFlagged) b.deadFlagged += 1;
+    b.event_url[a.event.kind] = (b.event_url[a.event.kind] || 0) + 1;
+    b.ticket_url[a.ticket.kind] = (b.ticket_url[a.ticket.kind] || 0) + 1;
+  };
+  for (const row of rows || []) {
+    const a = assessEventLinks(row, { venueWebsite: venueWebsiteFor ? venueWebsiteFor(row) : null });
+    bump(total, a);
+    const src = (row && row.source) || "unknown";
+    bump((bySource[src] = bySource[src] || emptyBucket()), a);
+  }
+  return { total, bySource };
+}
+
 module.exports = {
   classifyUrlCheck,
   checkUrl,
@@ -216,4 +338,8 @@ module.exports = {
   normalizeForIdentityMatch,
   htmlContainsTitle,
   classifyRecoveryOutcome,
+  classifyLinkKind,
+  isUsableLinkKind,
+  assessEventLinks,
+  summarizeLinkUsability,
 };
