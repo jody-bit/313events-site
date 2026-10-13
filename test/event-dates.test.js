@@ -72,6 +72,11 @@ function run() {
   // Duplicate / invalid occurrence dates are ignored, not trusted.
   assert.deepStrictEqual(ED.expand({ date: "2026-10-03", endDate: "2026-10-31", dateSemantics: "recurring", occurrenceDates: ["2026-10-04", "2026-10-04", "bad", null] }), ["2026-10-04"]);
 
+  // An occurrence outside start..end is still listed (evidence wins) but flagged.
+  const outside = { date: "2026-10-03", endDate: "2026-10-10", dateSemantics: "recurring", occurrenceDates: ["2026-10-03", "2026-10-17"] };
+  assert.deepStrictEqual(ED.expand(outside), ["2026-10-03", "2026-10-17"]);
+  assert.strictEqual(ED.reviewReason(outside), "occurrence-outside-range");
+
   // Recurring with no usable dates: coverage kept (legacy range), routed to review.
   assert.deepStrictEqual(ED.expand(ROWS.recurringNoDates), legacyExpand("2026-10-15", "2026-11-08"));
   assert.strictEqual(ED.reviewReason(ROWS.recurringNoDates), "recurring-without-dates");

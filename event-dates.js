@@ -116,11 +116,19 @@
   //   unclassified-multiday-clock-time: legacy range that also states a clock
   //     time; may be a nightly run, a series, or one continuous thing
   //   recurring-without-dates: marked recurring but no occurrence_dates
+//   occurrence-outside-range: an occurrence date falls outside start..end; it
+//     is still listed (evidence wins) but start/end should be corrected
   function reviewReason(e) {
     var sem = semanticsOf(e);
     var b = bounds(e);
     var multi = isIso(b.start) && isIso(b.end) && b.end > b.start;
     if (sem === "recurring" && !b.dates) return "recurring-without-dates";
+    // Explicit dates are the evidence and are always listed; but start/end drive
+    // which rows the pages load, so a date outside them is an inconsistency a person fixes.
+    if (sem === "recurring" && b.dates) {
+      var rs = startOf(e), re = endOf(e);
+      if (isIso(rs) && b.dates.some(function (d) { return d < rs || d > re; })) return "occurrence-outside-range";
+    }
     if (sem === null && multi && !e.isAllDay && !e.is_all_day && !!(e.time || e.time_display)) return "unclassified-multiday-clock-time";
     return null;
   }
