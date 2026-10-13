@@ -29,6 +29,8 @@ const ALLOWED = [
   "api/seasonal-qa.js",
   // Description enrichment per-record outcomes (issue #100, approved by the owner 2026-10-13): the enrichment cron passes them to the run log.
   "api/cron-enrichment.js",
+  // Link usability classification (issue #99, approved by the owner 2026-10-13): extends the existing link-health helper.
+  "api/_lib/link-health.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
