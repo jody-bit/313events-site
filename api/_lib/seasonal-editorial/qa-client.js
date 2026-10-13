@@ -49,7 +49,7 @@
     return '<p class="sc-qa-line">Recorded alternatives (not selectable): ' + esc(a.map(function (x) { return x.image_link + " (" + x.why_not_chosen + ")"; }).join(" · ")) + '</p>';
   }
   function typeLabel(o) {
-    var base = { owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)" }[o.type] || o.type;
+    var base = { licensed_third_party: "Openly licensed photo of this place", owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)" }[o.type] || o.type;
     return (o.image_kind === "promo-art" ? base + " · promotional artwork" : base) + (o.proposal ? " · PROPOSED, not adopted" + (o.proposal.recommended ? " (recommended)" : "") : "") + (o.parked ? " · PARKED, not used by the launch record" : "");
   }
   // Rights and provenance for one option. Recorded risk acceptance is shown as exactly that, never as usage rights.

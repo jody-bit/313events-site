@@ -74,7 +74,7 @@
       return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span>' +
         '<a class="sc-credit" href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></div>';
     }
-    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : (e.image.credit ? '<span class="sc-credit">' + esc(e.image.credit) + '</span>' : "")) + '</div>';
+    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : (e.image.credit ? '<span class="sc-credit">' + (/ via Wikimedia Commons$/.test(e.image.credit) ? '<a href="/copyright#photo-credits">' + esc(e.image.credit) + '</a>' : esc(e.image.credit)) + '</span>' : "")) + '</div>';
   }
   function card(col, e, opts) {
     opts = opts || {};

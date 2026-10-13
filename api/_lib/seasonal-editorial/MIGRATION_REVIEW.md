@@ -10,7 +10,7 @@ State counts: HOLD_UNVERIFIED 1, CONTENT_VERIFIED 1, IMAGE_PENDING 0, READY_FOR_
 
 | Collection | Entry | Was | Now (derived) | Image route | Rights route | Still needed |
 |---|---|---|---|---|---|---|
-| fall | Yates Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
+| fall | Yates Cider Mill | published | PUBLISHED | acquired-file | third-party-license | none |
 | fall | Parmenter's Northville Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | fall | Blake's Orchard & Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | fall | Wiard’s Orchards | published | PUBLISHED | illustration | owner-supplied-illustration | none |
@@ -22,7 +22,7 @@ State counts: HOLD_UNVERIFIED 1, CONTENT_VERIFIED 1, IMAGE_PENDING 0, READY_FOR_
 | halloween | Halloween Ghosts & Goodies at Crossroads Village | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | fall-color | Kensington Metropark | published | CONTENT_VERIFIED | none (generated card) | none | 3, 5 |
 | fall-color | Stony Creek Metropark | published | PUBLISHED | illustration | owner-supplied-illustration | none |
-| fall-color | Hudson Mills Metropark | published | PUBLISHED | illustration | owner-supplied-illustration | none |
+| fall-color | Hudson Mills Metropark | published | PUBLISHED | acquired-file | third-party-license | none |
 | fall-color | Nichols Arboretum | published | HOLD_UNVERIFIED | owner-photo | owner-authorization | 1, 5 |
 
 Numbers in the last column are gate items: 1 official-source verification, 2 relevance, 3 image, 4 image rights, 5 explicit approval.
@@ -35,11 +35,10 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #42 (Cider/orchard). WXYZ 2026 cider-mill opening list shows Yates at 1950 E. Avon Rd. as open; undated otherwise. Another listing shows a second Orion Twp location; not published here.
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 1950 E. Avon Rd., Rochester Hills, MI 48307 (second location: Canterbury Village, Lake Orion). Season/hours as stated: Now Open (historic mill 7am-7pm); no explicit 2026 dates. Flags: second location listed on same site. <https://www.yatescidermill.com/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Official page lists fall farm activities: cider, donuts, apple tent, pony rides.
-- Image: `/assets/seasonal/fall-card-1.webp` (generated illustrative card).
+- Image: `/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Parmenter's Northville Cider Mill (fall, `parmenters-northville-cider-mill`)
@@ -218,11 +217,10 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Fall-color inventory. Metro Parent: 8801 N. Territorial Rd., paved path, Acorn Nature Trail, Huron River. <https://www.metroparks.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 8801 N. Territorial Road, Dexter, MI 48130. Season/hours as stated: park 7am-10pm; $10 daily or annual vehicle pass. Flags: Acorn Nature Trail unsalted/muddy in winter. <https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Destination Ann Arbor's own fall-color guide names Hudson Mills as a hiking destination, and the park has a river corridor and a nature trail. The park page itself is silent on foliage..
-- Image: `/assets/seasonal/fall-color-card-1.webp` (generated illustrative card).
+- Image: `/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Nichols Arboretum (fall-color, `nichols-arboretum`)
