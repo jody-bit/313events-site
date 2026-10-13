@@ -274,6 +274,9 @@ const TICKETING_HOSTS = {
 // Platforms whose per-organisation subdomain root IS the sales page.
 const TICKET_PLATFORM_SUBDOMAINS = ["fearticket.com", "ticketleap.com", "tixr.com", "eventbrite.com", "crowdwork.com", "spektrix.com"];
 const SOCIAL_HOSTS = ["instagram.com", "facebook.com", "fb.com", "fb.me", "tiktok.com", "linktr.ee", "twitter.com", "x.com", "beacons.ai", "threads.net"];
+// Affiliate links are sometimes wrapped more than once (a wrapper whose u= is
+// itself a wrapper); unwrap up to this many levels, then classify what is left.
+const MAX_UNWRAP_DEPTH = 3;
 const CALENDAR_FEED_RE = /(\.ics(\?|#|$)|icalendar\.aspx|\/ical(endar)?(\/|\?|$)|webcal:)/i;
 
 function bareHost(u) { return u.hostname.replace(/^www\./, "").toLowerCase(); }
@@ -338,15 +341,15 @@ function classifyLinkDetail(url, { field = "event", venueWebsite = null, _depth 
   try { u = new URL(raw); } catch { return { kind: "invalid", reason: "malformed_url" }; }
   if (!/^https?:$/.test(u.protocol) || !u.hostname) return { kind: "invalid", reason: "unsupported_scheme" };
 
-  const wrapped = _depth === 0 ? unwrapAffiliate(u) : null;
+  const wrapped = _depth < MAX_UNWRAP_DEPTH ? unwrapAffiliate(u) : null;
   if (wrapped) {
-    const inner = classifyLinkDetail(wrapped, { field, venueWebsite, _depth: 1 });
+    const inner = classifyLinkDetail(wrapped, { field, venueWebsite, _depth: _depth + 1 });
     return { ...inner, unwrapped: true };
   }
 
   const host = bareHost(u);
   if (hostIn(host, SOCIAL_HOSTS)) {
-    if (/(^|\.)facebook\.com$/.test(host) && /^\/events\/\d+/.test(u.pathname)) return { kind: "direct_event" };
+    if (/(^|\.)facebook\.com$/.test(host) && /^\/events\/(\d+|s\/[^/]+\/\d+)/.test(u.pathname)) return { kind: "direct_event" };
     return { kind: "social" };
   }
 

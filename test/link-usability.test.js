@@ -125,6 +125,13 @@ assert.strictEqual(k("https://www.songkick.com/", { field: "ticket" }), "generic
 for (const h of ["crowdwork.com", "veezi.com", "spektrix.com", "signupgenius.com"]) {
   assert.strictEqual(k(`https://${h}/`, { field: "ticket" }), "generic_homepage", h);
 }
+
+// Follow-up from Event Intelligence: double/triple-wrapped affiliate links, Facebook /events/s/ pages
+const wrap2 = (t) => wrap(wrap(t));
+assert.deepStrictEqual(d(wrap2("https://www.ticketmaster.com/some-artist-tickets/event/0600ABC"), { field: "ticket" }), { kind: "ticket", unwrapped: true });
+assert.strictEqual(d(wrap(wrap(wrap("https://am.ticketmaster.com/"))), { field: "ticket" }).kind, "generic_homepage", "three levels unwrap");
+assert.strictEqual(k("https://www.facebook.com/events/s/glenn-barr-opening/1234567890/"), "direct_event");
+assert.strictEqual(k("https://www.facebook.com/events/s/glenn-barr-opening"), "social", "no id: not an event page");
 // Summary reports why links were invalid, and every row still counts once
 const s2 = L.summarizeLinkUsability([
   { source: "CivicPlus", ticket_url: "/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=14", event_url: null },
