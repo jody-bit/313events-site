@@ -2959,7 +2959,7 @@ async function loadSupabaseEvents() {
     // fetchAllRows() (paged-fetch.js) now pages through the whole result
     // instead; see that file's header for the mechanism. `id.asc` is the
     // tiebreak that makes the order total, which paging needs.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status&order=start_date.asc,id.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
     const { rows } = await fetchAllRows(url, {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
