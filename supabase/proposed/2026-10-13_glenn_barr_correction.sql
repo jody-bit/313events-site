@@ -13,11 +13,13 @@
 --         description = '...The exhibition opens Friday, October 9 with an opening reception from 7–10 PM
 --         and remains on view through December 30, 2026.'
 -- AFTER   time_display = NULL, is_all_day = true (ongoing exhibition, no clock time on any day),
---         description states the opening was Oct 9 and Dec 30 is the artist's announced closing date,
+--         description states only that the exhibition opened Oct 9 with an opening reception and points to
+--         the gallery for hours: NO closing date and no "artist announced" wording in the text.
 --         end_date UNCHANGED (see decision below). No hours or recurrence added.
--- DECISION FOR OWNER: keep end_date = 2026-12-30 (listed through the artist-announced close, wording
---   above) [recommended], or set it to NULL (the exhibition would drop off after Oct 9 until the gallery
---   confirms). This file implements the first; the second is one extra `end_date = null` line.
+-- DECISION FOR OWNER (open): the stored end_date 2026-12-30 is unconfirmed by the gallery. Keeping it
+--   means the site still shows a "Through Dec 30" label and lists the exhibition to then; setting it to NULL
+--   drops the exhibition off after Oct 9 until the gallery confirms. This file leaves it unchanged; the
+--   alternative is one extra `end_date = null` line.
 -- After the date-semantics migration: also set date_semantics = 'continuous' (second statement below).
 
 begin;
@@ -35,7 +37,7 @@ where id = '15c5c165-ab1e-4d8a-817b-8cc1eb135b9f'
 update public.events
 set time_display = null,
     is_all_day = true,
-    description = 'Detroit artist Glenn Barr presents The Beautiful and the Banal, a solo exhibition at The Gallery at Ideation Orange in Hazel Park. The exhibition opened Friday, October 9, with an opening reception. The artist has announced that it remains on view through December 30, 2026; check the gallery for hours and any change to the closing date.'
+    description = 'Detroit artist Glenn Barr presents The Beautiful and the Banal, a solo exhibition at The Gallery at Ideation Orange in Hazel Park. The exhibition opened Friday, October 9, with an opening reception. See the gallery for current hours.'
 where id = '15c5c165-ab1e-4d8a-817b-8cc1eb135b9f'
   and time_display = 'Opening reception 7:00–10:00 PM'
   and is_all_day = false
