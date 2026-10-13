@@ -160,12 +160,15 @@ function run() {
   assert.ok(/EventDates\.expand\(e, floor\)/.test(read("calendar.html")), "calendar.html passes a floor for long running events");
   assert.ok(read("index.html").indexOf('/event-dates.js') < read("index.html").indexOf('/discovery.js'), "index.html loads event-dates.js before discovery.js");
 
-  // Release safety: until the proposed migration is applied the new columns
-  // must NOT be in any page's select list (PostgREST would reject the whole
-  // request). Flip these assertions in the PR that applies the migration.
-  for (const page of ["index.html", "calendar.html", "map.html"]) {
+  // The migration is applied (2026-10-13). index.html reads the owner-rights view events_public,
+  // which exposes the two columns, so its main query asks for them.
+  assert.ok(/events_public\?[^`]*select=[^`]*date_semantics,occurrence_dates/.test(read("index.html")), "index.html: main query selects date_semantics and occurrence_dates");
+  // calendar.html and map.html read the raw `events` table, where anon has column-level grants only
+  // and none on the new columns. They must NOT select them until
+  // supabase/proposed/2026-10-13_events_date_columns_anon_grant.sql is applied (flip then).
+  for (const page of ["calendar.html", "map.html"]) {
     const m = read(page).match(/select=[^`"']*/g) || [];
-    assert.ok(!m.some((s) => /date_semantics|occurrence_dates/.test(s)), `${page}: no select list asks for unmigrated columns`);
+    assert.ok(!m.some((x) => /date_semantics|occurrence_dates/.test(x)), `${page}: no select of columns anon cannot read yet`);
   }
 
   console.log("PASS: event-dates — single / continuous / recurring / legacy, Glenn Barr, Kent Myers, Harvest Festival, discovery, surfaces");

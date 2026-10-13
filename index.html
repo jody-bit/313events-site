@@ -7815,7 +7815,7 @@ async function loadSupabaseEvents() {
     // That is the whole change: no other history is loaded (measured on
     // production the day it was made: 2,216 -> 2,230 rows, the 14 added all
     // in progress, the same three pages).
-    const url = `${SUPABASE_URL}/rest/v1/events_public?or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,ticket_url,event_url,price_from,is_clothing_optional,ticket_status&order=start_date.asc,id.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events_public?or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name,venue_city,venue_id,neighborhood,category,time_display,is_free,source,ticket_url,event_url,price_from,is_clothing_optional,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
     const { rows } = await fetchAllRows(url, {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
