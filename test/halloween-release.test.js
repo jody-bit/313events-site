@@ -144,11 +144,14 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
 // (0a42885), i.e. including the seasonal visual corrections of 5c2e988 (neighbouring illustration repeats); it was 6981208c... on 08871c7.
 // Re-pinned 2026-10-12 with owner approval (photography batch 1, commit 5813bfec): 23 of the 76 records changed their `image` block only
 // (openly licensed Wikimedia Commons photographs; name, city, summary, website, categories, evidence, approval and status untouched). Pin before: 16627534...
+// Re-pinned 2026-10-13 with owner authorization (project thread, Wiard's Country Fair photo integration): wiards-orchards's
+// `image` block only changed, replacing the temporary AI-generated illustration with an owner-authorized original
+// photograph; name, city, summary, website, categories, evidence, approval and status untouched. Pin before: 678f6049...
 {
   const set = AUTHZ.batch76(ED), recs = [];
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "678f6049773c0006fa3940e2a43c49a5bbda1ad90bdca7ca4c5991c6e0b530c6", "the 76 approved Fall / Fall Colors records are unchanged");
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "23757ef9fec372e84e107df3f26095a3bea2d3341e882ebed68a333e49443f47", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");

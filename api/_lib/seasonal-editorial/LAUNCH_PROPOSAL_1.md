@@ -8,7 +8,7 @@ Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entrie
 
 | Collection | Proposed | Your own photo | Labelled illustration | Inventory rows | Not yet proposed |
 |---|---|---|---|---|---|
-| /fall (Fall Is On.) | 10 | 1 | 7 | 71 | 61 |
+| /fall (Fall Is On.) | 10 | 2 | 6 | 71 | 61 |
 | /fall-color (Chase the Color) | 5 | 1 | 2 | 129 | 124 |
 
 Every proposed record has: a verified name and location taken from its official page, the official source URL, a recorded relevance note, and an image by a recorded route. No hours, admission, dates or accessibility appear on any card (none are displayed, so none are asserted). Season dates seen on official pages are kept in the evidence notes only.
@@ -126,9 +126,8 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Relevance (direct-prose):** The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card.
 - **Card text:** Orchard, cider mill and country store in Ypsilanti, with apples, cider, pumpkins and donuts.
 - **Categories:** cider-donuts
-- **Image:** labelled illustration, `fall-card-8.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
-- **Parked linked image:** https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg (Wiard's Orchards). Not used by this record; kept in the QA view as an unadopted alternative.
-- **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded. Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
+- **Image:** your own photo, `313p-0340da3a` (Wiard's Country Fair sign atop stacked hay bales with pumpkins and mum-filled wooden crates; captured null; original 4cb4d0b6-image.jpg). Rights: Owner confirmation (project thread, 2026-10-13): original photograph taken by the 313.events owner; publication on 313.events confirmed; no photographer credit required.. Photographer: 313.events owner; commercial use authorized (owner confirmation 2026-10-12). Credit shown on the card: 313.events archive.
+- **Caveats:** Image rights: owner-confirmed 2026-10-12. 313.events owner photographed this destination for 313.events and authorized commercial use. Credit: 313.events archive. This is not a Creative Commons license and there is no license URL. Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## /fall-color (Chase the Color): proposed records
 
@@ -210,10 +209,10 @@ The integration branch's own reads (`launch-verification.json`, 50 destinations)
 
 ## Image sources audited, in your priority order
 
-1. **Your library.** 75 owner photos are matched to 16 fall and fall-color inventory rows. Used: one for Diehl's (pumpkin field) and one for Highland. Not used: Long Family's four photos each show a person posing as the main subject (two were tagged "incidental" in the library metadata, which was wrong); Cranbrook's two are August and February shots; Apple Charlie's 13 photos belong to a place with no official source yet; the remaining fall-color matches are spring, summer or winter shots, details, or places outside Michigan, not autumn color here. The library's description of the Highland photo said boardwalk; it is a gravel trail beside a road, and the entry was corrected. Diehl's has 24 other photos (donuts, hayride, corn maze, cider counter) that can replace the pumpkin photo.
+1. **Your library.** 76 owner photos are matched to 17 fall and fall-color inventory rows. Used: one for Diehl's (pumpkin field) and one for Highland. Not used: Long Family's four photos each show a person posing as the main subject (two were tagged "incidental" in the library metadata, which was wrong); Cranbrook's two are August and February shots; Apple Charlie's 13 photos belong to a place with no official source yet; the remaining fall-color matches are spring, summer or winter shots, details, or places outside Michigan, not autumn color here. The library's description of the Highland photo said boardwalk; it is a gravel trail beside a road, and the entry was corrected. Diehl's has 24 other photos (donuts, hayride, corn maze, cider counter) that can replace the pumpkin photo.
 2. **Official photography with documented reuse rights.** None found. Official pages show images, but none of the pages read states reuse terms for them, so none is used. Publicly viewable is not treated as permission.
 3. **Wikimedia Commons.** Not checked: the Commons site could not be reached from this environment, and the search budget was exhausted. No Commons image is proposed, and no license or credit is asserted. Unverified leads to check by hand: Yates Cider Mill main building, Franklin historic mill, Wasem Fruit Farm orchard, Category:Kensington Metropark, Cranbrook, Belle Isle, Matthaei Botanical Gardens, Hudson Mills, Huron Meadows, Dexter-Huron, Lower Huron.
-4. **Existing generated artwork.** Used for 9 records as labelled temporary illustrations, with the "Illustrative image" badge. Eight generated cards per collection are reused across records, so a few records share an image. Three of the fall-color cards show the Detroit skyline, so they were deliberately not used for suburban parks.
+4. **Existing generated artwork.** Used for 8 records as labelled temporary illustrations, with the "Illustrative image" badge. Eight generated cards per collection are reused across records, so a few records share an image. Three of the fall-color cards show the Detroit skyline, so they were deliberately not used for suburban parks.
 
 ## Blockers and owner decisions
 
