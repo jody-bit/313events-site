@@ -60,20 +60,20 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an official linke
 |---|---|---|
 | 1. Official-source verification | recorded | https://detroitzoo.org/events/zoo-boo/ (2026-10-11) |
 | 2. Relevance to the collection | recorded | Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026. |
-| 3. Image | recorded | linked |
-| 4. Image rights | recorded | linked-risk-acceptance |
+| 3. Image | recorded | acquired-file |
+| 4. Image rights | recorded | third-party-license |
 | 5. Explicit publication approval | recorded | only the approving person adds it |
 
 ### Evidence read (official)
 - Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card. Source: https://detroitzoo.org/events/zoo-boo/. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
 
 ### Image
-- **Current image (linked official image)**: https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp (page: https://detroitzoo.org/events/zoo-boo/). Credit: Detroit Zoo. Load test 2026-10-11: loaded 1920x1281.
-  - Rights basis: your recorded acceptance of the copyright risk (2026-10-11). **No permission from the rights holder is on file.** This is not usage rights.
+- **Current image:** a generated illustrative card only. It cannot satisfy gate items 3 and 4, so this record cannot reach READY_FOR_REVIEW until a real image is chosen.
+- **Catalogue link on file (not adopted on this record):** https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp. Official hero photo Load test: loaded 1920x1281. Risk acceptance recorded 2026-10-11 for this link.
 
 ### What becomes public if you approve
 - The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`, `riskNote`, `Owner accepted the copyright risk`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
 
 ### Things you should know
 - **No permission from the Detroit Zoo is on file** for the image. Publishing would rest on your recorded risk acceptance alone, and the link depends on the zoo continuing to serve the file. If it fails, visitors see the generated card.
@@ -92,8 +92,8 @@ State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFI
 |---|---|---|
 | 1. Official-source verification | recorded | https://geneseecountyparks.org/halloween-ghosts-goodies/ (2026-10-11) |
 | 2. Relevance to the collection | recorded | Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026. |
-| 3. Image | recorded | illustration |
-| 4. Image rights | recorded | owner-supplied-illustration |
+| 3. Image | recorded | acquired-file |
+| 4. Image rights | recorded | third-party-license |
 | 5. Explicit publication approval | recorded | only the approving person adds it |
 
 ### Evidence read (official)
