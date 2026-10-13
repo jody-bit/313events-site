@@ -2046,12 +2046,12 @@
     "featured": true,
     "image_route": "owner-photo",
     "image_depicts_destination": true,
-    "image_note": "Image: your own photo of this place (owner-authorized), 313p-b111acba"
+    "image_note": "Image: your own photo of this place (owner-authorized), 313p-9cdd1fd7"
    },
    "manifest": {
     "destination_id": "diehls-orchard-and-cider-mill",
     "destination_name": "Diehl’s Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__card.webp",
     "primary_image_type": "owner_photo_destination",
     "primary_image_credit": "Photography © Miriam Vukich",
     "primary_image_rights_status": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
@@ -2079,6 +2079,7 @@
      "313p-b717bfa1-f155",
      "313p-b717bfa1-f224",
      "313p-98887783-f009",
+     "313p-b111acba",
      "313p-945fa1fe-f057",
      "313p-cfa446cd",
      "313p-8d1c0afc-f112",
@@ -2093,15 +2094,15 @@
    },
    "image_options": [
     {
-     "id": "313p-b111acba",
+     "id": "313p-9cdd1fd7",
      "type": "owner_photo_destination",
-     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__card.webp",
      "source": "313.events owner photo archive, captured 2026-10-09",
      "credit": "Photography © Miriam Vukich",
      "rights_status": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
      "illustrative": false,
      "depicts_actual_destination": true,
-     "subject": "Pumpkin patch field with scattered pumpkins under dramatic cloudy sky, trees beyond",
+     "subject": "Welcome sign: \"Diehl's Orchard & Cider Mill\" (apple logo)",
      "warnings": [],
      "image_kind": "photo",
      "rights_basis": "owner-authorization",
@@ -2434,6 +2435,21 @@
      "warnings": [
       "upscaled from video frame"
      ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
+    },
+    {
+     "id": "313p-b111acba",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-d2832__card.webp",
+     "source": "313.events owner photo archive, captured 2026-10-09",
+     "credit": "Photography © Miriam Vukich",
+     "rights_status": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Pumpkin patch field with scattered pumpkins under dramatic cloudy sky, trees beyond",
+     "warnings": [],
      "image_kind": "photo",
      "rights_basis": "owner-authorization",
      "license_url": null

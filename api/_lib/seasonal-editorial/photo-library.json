@@ -371,6 +371,51 @@
    "reuse": "destination card and related editorial with accurate attribution"
   },
   {
+   "id": "313p-9cdd1fd7",
+   "review_ref": "IMG_3232",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__diehl-s-orchard-cider-mill__holly-mi",
+    "name": "Diehl’s Orchard & Cider Mill",
+    "collection": "fall",
+    "inventory_no": "13",
+    "published_id": "diehls-orchard-and-cider-mill",
+    "identity": "gps_and_sign_text",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Welcome sign: \"Diehl's Orchard & Cider Mill\" (apple logo)",
+   "capture_date": "2026-10-09",
+   "capture_place": "Diehl’s Orchard & Cider Mill",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__diehl-s-orchard-cider-mill__holly-mi__r2-img3232-sign__1600.webp",
+    "full_px": [
+     1200,
+     1600
+    ]
+   },
+   "original": {
+    "filename": "IMG_3232.HEIC",
+    "apple_photos_uuid": "9CDD1FD7-46C0-412B-A8B2-53E6F9663F0D",
+    "pixels": [
+     3024,
+     4032
+    ],
+    "stored": "outside repo: Pictures/Photos Library.photoslibrary (original untouched)"
+   },
+   "credit": "Photography © Miriam Vukich",
+   "license": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
+   "illustrative": false,
+   "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
    "id": "313p-0880886f",
    "review_ref": "S02-02",
    "classification": "DESTINATION_SPECIFIC",
