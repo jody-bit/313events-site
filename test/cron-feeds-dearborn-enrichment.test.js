@@ -99,6 +99,22 @@ async function run() {
   assert.deepStrictEqual(fetched, ["https://www.dearborn.gov/calendar", "https://www.dearborn.gov/calendar?page=%2C%2C1"], "second request is the page's own pager link; repeat content stops it");
   console.log("PASS: pager follows the exposed link and stops when it adds nothing");
 
+  // --- time budget: a slow second page is abandoned, page-one results are kept, total time stays bounded
+  const { enrichRows } = require(`${REPO_DIR}/api/_lib/dearborn-enrichment.js`);
+  const rowsB = [{ title: "Friends Of The Library-Dearborn (FOLD) Used Book Sale", start_date: "2026-10-14", time_display: "10:00 AM – 6:00 PM" }];
+  let calls = 0;
+  const slowSecond = async (url, o) => {
+    calls++;
+    if (calls === 1) return { ok: true, status: 200, text: async () => LISTING };
+    return new Promise((_, reject) => o.signal.addEventListener("abort", () => reject(new Error("aborted")))); // never answers
+  };
+  const t0 = Date.now();
+  const note = await enrichRows(rowsB, FEED, { fetch: slowSecond, budgetMs: 400 });
+  assert.ok(Date.now() - t0 < 2000, "bounded by the budget");
+  assert.ok(rowsB[0]._enrichment && /friends-library/.test(rowsB[0]._enrichment.event_url), "page-one match kept");
+  assert.match(note, /page 2 failed: aborted/);
+  console.log("PASS: time budget keeps partial results and stays bounded");
+
   // --- matching is conservative: ambiguity and weak titles stay unlinked
   const card = { category: "Meeting", title: "Open Mic", path: "/events/2026/10/20/open-mic", date: "2026-10-20", startMin: 1140 };
   const a = { title: "Open Mic", start_date: "2026-10-20", time_display: "7:00 PM" };

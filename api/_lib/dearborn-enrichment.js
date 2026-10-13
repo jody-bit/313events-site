@@ -13,8 +13,10 @@
 //     edit to an existing row is never overwritten.
 //   - Nothing is invented: a card is attached only on a safe match (same local date, and an identical
 //     normalized title, or a close title plus the same start time) that is unique in both directions.
-//   - Fail-soft and bounded: at most MAX_PAGES listing pages, one request at a time, TIMEOUT_MS each, a fetch
-//     or parse failure leaves rows unlinked and is reported in the poll result, never failing the feed.
+//   - Fail-soft and bounded: at most MAX_PAGES listing pages, one request at a time, and BUDGET_MS in total
+//     (each request is also capped by TIMEOUT_MS and by what is left of the budget); results from earlier pages
+//     are kept when a later one is slow or fails. A fetch or parse failure leaves rows unlinked and is reported
+//     in the poll result, never failing the feed.
 //   - The pager is followed only through the link the page itself exposes ("?page=..."), and a page that
 //     adds no new event is the end. The category filter is not used (unproven as a plain GET).
 //
@@ -25,7 +27,8 @@
 const LISTING_URL = "https://www.dearborn.gov/calendar";
 const SITE = "https://www.dearborn.gov";
 const MAX_PAGES = 3;
-const TIMEOUT_MS = 10000;
+const TIMEOUT_MS = 5000; // per page; never more than what is left of the budget
+const BUDGET_MS = 8000; // the whole step, shared with every other feed in the 60 s cron (Reliability, 2026-10-13)
 const UA = "313.events event calendar (City of Dearborn public listing)";
 
 function decode(str) {
@@ -110,9 +113,9 @@ function matchRows(rows, cards) {
   return out;
 }
 
-async function fetchPage(url, fetchImpl) {
+async function fetchPage(url, fetchImpl, timeoutMs) {
   const ctl = typeof AbortController === "function" ? new AbortController() : null;
-  const timer = ctl ? setTimeout(() => ctl.abort(), TIMEOUT_MS) : null;
+  const timer = ctl ? setTimeout(() => ctl.abort(), timeoutMs) : null;
   try {
     const r = await fetchImpl(url, { headers: { "User-Agent": UA }, signal: ctl ? ctl.signal : undefined });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -124,13 +127,17 @@ async function fetchPage(url, fetchImpl) {
 // rows only and strips it before the write). Returns a short note for last_poll_result; never throws.
 async function enrichRows(rows, _feedSource, opts) {
   const fetchImpl = (opts && opts.fetch) || global.fetch;
+  const budgetMs = (opts && opts.budgetMs) || BUDGET_MS;
+  const started = Date.now();
   const cards = [];
   const seen = new Set();
   let url = LISTING_URL;
   let pages = 0;
   try {
     while (url && pages < MAX_PAGES) {
-      const html = await fetchPage(url, fetchImpl);
+      const left = budgetMs - (Date.now() - started);
+      if (left < 250) { var budgetNote = " (time budget reached)"; break; }
+      const html = await fetchPage(url, fetchImpl, Math.min(TIMEOUT_MS, left));
       pages++;
       const fresh = parseListing(html).filter((c) => !seen.has(c.path));
       fresh.forEach((c) => { seen.add(c.path); cards.push(c); });
@@ -144,7 +151,7 @@ async function enrichRows(rows, _feedSource, opts) {
   }
   const matches = matchRows(rows, cards);
   for (const [row, card] of matches) row._enrichment = { event_url: SITE + card.path, category: card.category };
-  return `enrichment: ${matches.size}/${rows.length} rows linked from ${cards.length} listing cards on ${pages} page${pages === 1 ? "" : "s"}${partial || ""}`;
+  return `enrichment: ${matches.size}/${rows.length} rows linked from ${cards.length} listing cards on ${pages} page${pages === 1 ? "" : "s"}${partial || ""}${budgetNote || ""}`;
 }
 
-module.exports = { parseListing, nextPageUrl, matchRows, enrichRows, LISTING_URL, MAX_PAGES };
+module.exports = { parseListing, nextPageUrl, matchRows, enrichRows, LISTING_URL, MAX_PAGES, BUDGET_MS };
