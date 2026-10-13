@@ -11,7 +11,7 @@ const E = ED.entries();
 const ids = { fall: L.collections.fall, "fall-color": L.collections["fall-color"] };
 assert.strictEqual(ids.fall.length + ids["fall-color"].length, 15);
 const RESEARCH_NOTE = /\b(its|the) (official|home) (page|site)\b|\bthe site says\b|\bofficial page (says|lists|mentions|carries)\b|\bits trail description\b/i;
-let photos = 0, illus = 0;
+let photos = 0, illus = 0, licensedPhotos = 0;
 for (const col of Object.keys(ids)) for (const id of ids[col]) {
   const e = E[col].find((x) => x.id === id);
   assert.ok(e, id + " exists");
@@ -26,13 +26,19 @@ for (const col of Object.keys(ids)) for (const id of ids[col]) {
     assert.strictEqual(pv.status, "RESOLVED"); assert.strictEqual(pv.photographer, "Miriam Vukich"); assert.strictEqual(pv.commercialUse, "authorized");
     assert.strictEqual(e.image.credit, "Photography © Miriam Vukich", id + ": photographer credit");
     assert.strictEqual(ED.publicEntry(e).image.credit, "Photography © Miriam Vukich", id + ": credit reaches the public card");
+  } else if (e.image.illustrative === false && e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && e.image.rightsVerifiedAt) {
+    licensedPhotos++;
+    assert.strictEqual(pv.status, "RESOLVED");
+    assert.ok(/^Photo: .+, via Wikimedia Commons$/.test(ED.publicEntry(e).image.credit), id + ": license credit reaches the public card");
   } else {
     illus++;
     assert.strictEqual(e.image.illustrative, true); assert.strictEqual(pv.status, "OWNER_ACCEPTED"); assert.strictEqual(pv.label, "Illustrative image");
     assert.ok(!ED.publicEntry(e).image.credit, id + ": illustrations carry the label, not a photographer credit");
   }
 }
-assert.deepStrictEqual([photos, illus], [2, 13], "2 owner photos and 13 illustrations");
+// Re-pinned 2026-10-12 with owner approval (photography batch 2): belle-isle-park and cranbrook-gardens-and-grounds (both among the
+// original 15) changed their `image` block only, from labelled illustrations to openly licensed photographs. Before: [2, 2, 11].
+assert.deepStrictEqual([photos, licensedPhotos, illus], [2, 4, 9], "2 owner photos, 4 openly licensed photographs (Wikimedia Commons) and 9 illustrations");
 const by = (c, i) => E[c].find((x) => x.id === i).summary;
 assert.ok(!/u-pick apple picking|no u-pick/i.test(by("fall", "diehls-orchard-and-cider-mill")), "Diehl's carries no negative apple-picking statement");
 assert.ok(/pumpkin patch/.test(by("fall", "diehls-orchard-and-cider-mill")) && /corn maze/.test(by("fall", "diehls-orchard-and-cider-mill")));

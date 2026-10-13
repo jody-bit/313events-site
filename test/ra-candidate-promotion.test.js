@@ -449,14 +449,54 @@ async function runRealListingDateTests() {
     // price/time keys at all -- confirming that directly (rather than
     // merely checking a null) is the strongest guarantee that no later
     // change could silently start defaulting one of these to a guessed
-    // value without a test noticing.
-    for (const neverInvented of ["venue_address_raw", "venue_city_raw", "description", "price_from", "is_free", "time_display", "ticket_url"]) {
+    // value without a test noticing. ticket_url is deliberately NOT in
+    // this list (2026-10-12 fix, see below): the direct RA URL is a
+    // DERIVED fact, not an invented one -- it's the deterministic
+    // `https://ra.co/events/<id>` shape every detail-fetched row already
+    // gets, never a guess.
+    for (const neverInvented of ["venue_address_raw", "venue_city_raw", "description", "price_from", "is_free", "time_display"]) {
       assert.ok(!Object.prototype.hasOwnProperty.call(row, neverInvented), `${neverInvented} must not be present at all on a listing-only promoted row -- missing stays missing, never defaulted/guessed`);
     }
   }
   assert.strictEqual(elixir.venue_name_raw, "Northern Lights Lounge");
   assert.strictEqual(jscott.venue_name_raw, "Tigris");
-  console.log("PASS: both named Oct 8 candidates promoted with start_date=2026-10-08, status=pending_review, and no invented address/description/price/time/ticket field");
+  console.log("PASS: both named Oct 8 candidates promoted with start_date=2026-10-08, status=pending_review, and no invented address/description/price/time field");
+
+  // 2026-10-12 fix (RA Start-Time Defect investigation): a listing-only
+  // promoted row previously published with NO direct RA link at all --
+  // the real URL sat unused in internal_note, never in the public-facing
+  // ticket_url column, until some later step (if any) filled it in. Both
+  // real fixtures above carry RA's own listing `url`, and both must now
+  // get it verbatim.
+  assert.strictEqual(elixir.event_url, "https://ra.co/events/2552525", "RA's own event page goes in event_url");
+  assert.strictEqual(jscott.event_url, "https://ra.co/events/2554901");
+  assert.strictEqual(elixir.ticket_url, null, "no RA source-page fallback in ticket_url");
+  assert.strictEqual(jscott.ticket_url, null);
+  console.log("PASS: event_url is RA's event page; ticket_url stays NULL (no verified ticketing destination)");
+
+  // And when the listing card captured no url at all, ticket_url still
+  // derives the same deterministic https://ra.co/events/<id> shape every
+  // detail-fetched row already gets -- from the id alone, no fetch, never
+  // a guess at a DIFFERENT url.
+  {
+    const inserted2 = [];
+    const counts2 = await lib.promoteRaCandidates({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: SUPABASE_KEY,
+      now: REFERENCE_NOW,
+      getLatestRaSessionFn: async () => ({
+        id: "run-no-url",
+        allNewIds: ["ra-3000001"],
+        listingMetadata: { "ra-3000001": { title: "No Listing URL Captured", date: "Thu, 8 Oct", venueName: "Somewhere" } },
+      }),
+      lookupExistingRowsFn: async () => new Map(),
+      findConservativeDuplicateFn: async () => null,
+      insertCandidateRowFn: async (url, key, row) => { inserted2.push(row); return true; },
+    });
+    assert.strictEqual(counts2.written, 1);
+    assert.strictEqual(inserted2[0].event_url, "https://ra.co/events/3000001", "falls back to the deterministic shape when RA's listing card had no url field");
+    assert.strictEqual(inserted2[0].ticket_url, null);
+  }
+  console.log("PASS: event_url falls back to the deterministic ra.co/events/<id> shape when the listing card had no url");
 
   // Idempotency (Part 4, item 8): re-running promotion against the SAME
   // session, now with the two rows already present (exactly what a real

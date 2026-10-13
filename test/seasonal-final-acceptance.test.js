@@ -28,7 +28,12 @@ for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
   assert.ok(ED.COLLECTIONS.isPublic(e), id + ": public once approved");
   assert.strictEqual(ED.review(e).state, "PUBLISHED", id);
   assert.ok(/^https:\/\//.test(e.website), id + ": retains an https official source URL");
-  assert.ok(e.image.illustrative === true ? e.image.provenance.label === "Illustrative image" : e.image.credit === "Photography © Miriam Vukich", id + ": labelled illustration or credited photograph");
+  // A card shows a labelled illustration, the owner-authorized photograph credited to its photographer, or an openly
+  // licensed photograph (author, license and license URL recorded; credit names the author, license and Wikimedia Commons).
+  const licensed = (e.image.illustrative === false && !e.image.ownerPhoto && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && !!e.image.rightsVerifiedAt);
+  assert.ok(e.image.illustrative === true ? e.image.provenance.label === "Illustrative image"
+    : licensed ? /^Photo: .+, (CC0|CC BY(-SA)? \d\.\d|Public domain), via Wikimedia Commons$/.test(e.image.credit) && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(e.image.commons.filePage)
+    : e.image.credit === "Photography © Miriam Vukich", id + ": labelled illustration, licensed photograph or credited photograph");
 }
 // ---- held and leads stay out
 for (const col of ["fall", "fall-color"]) {
@@ -47,9 +52,13 @@ E.halloween.filter((e) => e.approval).forEach((e) => assert.deepStrictEqual(e.ap
 assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned 29 Halloween records are public");
 
 // ---- the original 15 are unchanged (name, city, description, link, image, credit, Don't Miss)
+// Re-pinned 2026-10-12 with owner approval (photography batch 1, commit 5813bfec): franklin-cider-mill and plymouth-orchards-and-cider-mill
+// changed image.src and image.credit only (openly licensed Commons photographs). Pin before: ceabe4d5...
 const sig = [];
 for (const col of ["fall", "fall-color"]) for (const id of L1[col]) { const e = E[col].find((x) => x.id === id); sig.push([id, e.name, e.city, e.summary, e.website, e.image.src, e.image.credit || "", e.featured].join("|")); }
-assert.strictEqual(crypto.createHash("sha256").update(sig.join("\n")).digest("hex"), "ceabe4d5b09f7efb69c96d6ca66afdf3d43be70e3f0980c733010f6812170add", "the original 15 records are unchanged");
+// Re-pinned again 2026-10-12 with owner approval (photography batch 2): belle-isle-park and cranbrook-gardens-and-grounds changed
+// image.src and image.credit only (openly licensed Commons photographs). Pin before: 0ecb0c8e...
+assert.strictEqual(crypto.createHash("sha256").update(sig.join("\n")).digest("hex"), "6165c7a233ebfd33c7dc3ab599a67882c863ea4a4ff1887b83575da3bd669203", "the original 15 records are unchanged");
 
 // ---- owner-verified destinations are included
 const FALL = ["kackleberry-farms", "erie-orchards-and-cider-mill", "parshallville-cider-mill", "nixon-farms-blast-corn-maze", "gust-brothers-pumpkin-farm"];

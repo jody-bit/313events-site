@@ -12,31 +12,49 @@
    "status": "PUBLISHED",
    "summary": "Historic cider mill with cider, donuts, an apple tent, pony rides and a petting zoo.",
    "image": {
-    "src": "/assets/seasonal/fall-card-1.webp",
+    "src": "/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Yates_Cider_Mill_main_building.jpg (taken 2011-10-14)",
+    "credit": "Photo: Ekardiff, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp",
+     "bytes": 205836,
+     "sha256": "b77cbd95cc7c62ab15440825debf4cf0523dc7f89561e6678c2ba30b2c49c066",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Yates_Cider_Mill_main_building.jpg",
+     "title": "Yates Cider Mill main building.jpg",
+     "author": "Ekardiff",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 2272,
+     "originalHeight": 1704,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2011-10-14",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Yates_Cider_Mill_main_building.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Ekardiff, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-card-2.webp",
      "/assets/seasonal/fall-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-1.webp",
-     "bytes": 35358,
-     "sha256": "58945252b8e2c4e02548a814118eecb3e2f635ccb4b667e66e191421708120ca",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
     "linkedCandidates": [
      {
       "src": "https://oaklandcounty115.com/wp-content/uploads/2018/09/20180909_yates_01.jpg",
@@ -47,16 +65,7 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "2018 photo of the mill and water wheel, 600x450. Original link was http; https version loads."
      }
-    ],
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    ]
    },
    "evidence": [
     {
@@ -502,40 +511,49 @@
     "unresolved": []
    },
    "image": {
-    "src": "/assets/seasonal/fall-card-3.webp",
+    "src": "/assets/seasonal/photos/fall/fall__franklin-cider-mill__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Historic_Franklin_Cider_Mill.JPG (taken 2013-01-24)",
+    "credit": "Photo: Griffinharms, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__franklin-cider-mill__commons-01__card.webp",
+     "bytes": 231834,
+     "sha256": "78a6880b953edcb7718349c947bd3acc0387390cc41c8990bf1e90135780fdf1",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Historic_Franklin_Cider_Mill.JPG",
+     "title": "Historic Franklin Cider Mill.JPG",
+     "author": "Griffinharms",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 3840,
+     "originalHeight": 2160,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2013-01-24",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Historic_Franklin_Cider_Mill.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Griffinharms, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-card-6.webp",
      "/assets/seasonal/fall-card-1.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-3.webp",
-     "bytes": 30910,
-     "sha256": "c560c7158d591f298a60ee8f77a08c8f652e2041a7893ed5f011c6292a3a0d65",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
-     "unresolved": [],
-     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
-     "label": "Illustrative image",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
@@ -1349,40 +1367,49 @@
     "unresolved": []
    },
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/photos/fall/fall__plymouth-orchards-and-cider-mill__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Plymouth_Orchards_and_Cider_Mill,_Gottfredson_Road_%5E_Plymouth_Ann_Arbor_Road,_Superior_Township,_Michigan_-_panoramio.jpg (taken Taken on 7)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__plymouth-orchards-and-cider-mill__commons-01__card.webp",
+     "bytes": 172506,
+     "sha256": "4e4f7e55c3fb008faa08a8b0f33d5a3b5ad2b0aabf63a04677452d7c34418b0a",
+     "width": 1275,
+     "height": 850,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Plymouth_Orchards_and_Cider_Mill,_Gottfredson_Road_%5E_Plymouth_Ann_Arbor_Road,_Superior_Township,_Michigan_-_panoramio.jpg",
+     "title": "Plymouth Orchards and Cider Mill, Gottfredson Road ^ Plymouth Ann Arbor Road, Superior Township, Michigan - panoramio.jpg",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 2103,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2011-10-07",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/71/Plymouth_Orchards_and_Cider_Mill%2C_Gottfredson_Road_%5E_Plymouth_Ann_Arbor_Road%2C_Superior_Township%2C_Michigan_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-card-4.webp",
      "/assets/seasonal/fall-card-1.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-5.webp",
-     "bytes": 30844,
-     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
-     "unresolved": [],
-     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
-     "label": "Illustrative image",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
@@ -1776,40 +1803,49 @@
    "status": "PUBLISHED",
    "summary": "Farm with a Cider Donut Hut, a country store and a Country Christmas season.",
    "image": {
-    "src": "/assets/seasonal/fall-card-2.webp",
+    "src": "/assets/seasonal/photos/fall/fall__three-cedars-farm__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Three_Cedars_Farm,_7897_Six_Mile_Road,_Salem_Township,_Michigan_-_panoramio.jpg (taken Taken on 1)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__three-cedars-farm__commons-01__card.webp",
+     "bytes": 126828,
+     "sha256": "475611c9a003e3078af40480017ad87c3c912c833ec1eef874efffbffc5e53fa",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Three_Cedars_Farm,_7897_Six_Mile_Road,_Salem_Township,_Michigan_-_panoramio.jpg",
+     "title": "Three Cedars Farm, 7897 Six Mile Road, Salem Township, Michigan - panoramio.jpg",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 2554,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2012-01-14",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Three_Cedars_Farm%2C_7897_Six_Mile_Road%2C_Salem_Township%2C_Michigan_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-2.webp",
-     "bytes": 27886,
-     "sha256": "ff09a6c49b384ee1a58bf74a0bfcc76a9adda70a2824e52a4951c4775ca91997",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -3114,40 +3150,44 @@
    "status": "PUBLISHED",
    "summary": "Historic water-powered cider mill with cider, donuts, pies and baked goods, and live music on Sunday afternoons.",
    "image": {
-    "src": "/assets/seasonal/fall-card-5.webp",
+    "src": "/assets/seasonal/photos/fall/fall__parshallville-cider-mill__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Tom_Walker's_Grist_Mill_01.jpg (taken 2018-09-23)",
+    "credit": "Photo: JoannaPoe, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__parshallville-cider-mill__commons-01__card.webp",
+     "bytes": 334382,
+     "sha256": "bfcac2942b3947f6f066752c0be8f36a36c3a79f5786c55895d969b941be2d17",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Tom_Walker's_Grist_Mill_01.jpg",
+     "title": "Tom Walker's Grist Mill 01.jpg",
+     "author": "JoannaPoe",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 2588,
+     "originalHeight": 3000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: JoannaPoe, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-card-1.webp",
      "/assets/seasonal/fall-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-5.webp",
-     "bytes": 30844,
-     "sha256": "902b3540a410bf7816d8275d507887a6e9f1152aa26609ba3ce8e231063d3436",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -5321,24 +5361,43 @@
    "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
    "website": "https://detroitzoo.org/events/zoo-boo/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-3.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Detroit_Zoo.jpg (taken 2025-08-26)",
+    "credit": "Photo: WMrapids, CC0, via Wikimedia Commons",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp",
+     "bytes": 193994,
+     "sha256": "d70484f3d72cb12d9ab27a5a41827a42edf466a8261603a4fe8d5dac2a1a51c3",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Detroit_Zoo.jpg",
+     "title": "Detroit Zoo.jpg",
+     "author": "WMrapids",
+     "license": "CC0",
+     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+     "originalWidth": 3602,
+     "originalHeight": 2026,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: WMrapids, CC0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-6.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "remote": {
-     "src": "https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp",
-     "sourcePage": "https://detroitzoo.org/events/zoo-boo/",
-     "credit": "Detroit Zoo",
-     "acceptedBy": "Jody Tyree (owner)",
-     "acceptedAt": "2026-10-11",
-     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
-     "note": "Official Zoo Boo hero photo: pumpkin scarecrow display in front of the zoo's Wildlife Interpretive Gallery."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -5500,40 +5559,44 @@
    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-6.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Church_in_the_Woods.jpg (taken 2015-10-17)",
+    "credit": "Photo: Rodney Campbell, CC BY 2.0, via Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp",
+     "bytes": 488320,
+     "sha256": "cdf7caf3d8c3b0f132ec8df4bbc11842d23862dc976149c863c19d6627d3fb04",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Church_in_the_Woods.jpg",
+     "title": "Church in the Woods.jpg",
+     "author": "Rodney Campbell",
+     "license": "CC BY 2.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+     "originalWidth": 4800,
+     "originalHeight": 3050,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Rodney Campbell, CC BY 2.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-3.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-6.webp",
-     "bytes": 42636,
-     "sha256": "04766e9e0415d3227db29e37758f9840b79e389bbac6089b1aadb02b946519f7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -7329,39 +7392,43 @@
    "summary": "Historical ghost walk",
    "website": "https://fortmeigs.org/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-2.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__fort-meigs-garrison-ghost-walk__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Fort_Meigs_Blockhouse_and_Flag.jpg (taken 2019-06-02)",
+    "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__fort-meigs-garrison-ghost-walk__commons-01__card.webp",
+     "bytes": 144440,
+     "sha256": "b32d6a284fc5fc37d165e4e0c3fa6963f1bc86bb6326206e821a8ebb76ef54e9",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Fort_Meigs_Blockhouse_and_Flag.jpg",
+     "title": "Fort Meigs Blockhouse and Flag.jpg",
+     "author": "Mbrickn",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 4032,
+     "originalHeight": 3024,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-2.webp",
-     "bytes": 21586,
-     "sha256": "f445faacd7f196ebd42799947f7cc4f63bcf3d91269d51f0ab7d064d8d8de4d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -7880,40 +7947,44 @@
    "status": "PUBLISHED",
    "summary": "Halloween-themed laser show",
    "image": {
-    "src": "/assets/seasonal/halloween-card-4.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Flint_July_2018_12_(Robert_T._Longway_Planetarium).jpg (taken 2018-07-02)",
+    "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
+     "bytes": 142144,
+     "sha256": "1cfe70dadb3cbdea9191727556f9277f8274a7443c0bd5d4bc24121db38ae88c",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Flint_July_2018_12_(Robert_T._Longway_Planetarium).jpg",
+     "title": "Flint July 2018 12 (Robert T. Longway Planetarium).jpg",
+     "author": "Michael Barera",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 6000,
+     "originalHeight": 4000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-3.webp",
      "/assets/seasonal/halloween-card-6.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-4.webp",
-     "bytes": 27586,
-     "sha256": "4852f7d406f9489f74cd203ffda2ac7a7d82020266679066bb95d710097ccbd8",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -8366,39 +8437,43 @@
    "status": "PUBLISHED",
    "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-8.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__spooky-janes-walk__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Duff-Baby_House,_2012.JPG (taken 2012-09-27)",
+    "credit": "Photo: LauraF84, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__spooky-janes-walk__commons-01__card.webp",
+     "bytes": 254870,
+     "sha256": "bf637e11de64b3420a3a5e162442a8b0370abc520edb98bac68301dd988a4f41",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Duff-Baby_House,_2012.JPG",
+     "title": "Duff-Baby House, 2012.JPG",
+     "author": "LauraF84",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 2592,
+     "originalHeight": 1944,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: LauraF84, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-8.webp",
-     "bytes": 33614,
-     "sha256": "ff2ddf1c0903bdabbb8b4b285409f83e4e4ef83c50fabff796b881cfd1c54052",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -8445,39 +8520,43 @@
    "status": "PUBLISHED",
    "summary": "Historical ghost walk",
    "image": {
-    "src": "/assets/seasonal/halloween-card-2.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__sandwich-town-ghost-tour__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Historic_Sandwich_Town_Arch,_Windsor,_Ontario,_2025-06-03_01.jpg (taken 2025-06-03)",
+    "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__sandwich-town-ghost-tour__commons-01__card.webp",
+     "bytes": 237574,
+     "sha256": "c523f099f0f828175e4b3009fd4ab907fcb0c940223bea244024399e239c9b4b",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Historic_Sandwich_Town_Arch,_Windsor,_Ontario,_2025-06-03_01.jpg",
+     "title": "Historic Sandwich Town Arch, Windsor, Ontario, 2025-06-03 01.jpg",
+     "author": "Crisco 1492",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 6000,
+     "originalHeight": 4000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-2.webp",
-     "bytes": 21586,
-     "sha256": "f445faacd7f196ebd42799947f7cc4f63bcf3d91269d51f0ab7d064d8d8de4d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -8735,31 +8814,49 @@
    "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike loop, the Acorn Nature Trail and a canoe and kayak launch.",
    "website": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Hudson_mills_metropark_river_grove.JPG (taken 2010-08-03)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp",
+     "bytes": 258372,
+     "sha256": "0f572eba4446fdf459380872b7fa9aeb99823ebcaadf9af3778aee440e007390",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Hudson_mills_metropark_river_grove.JPG",
+     "title": "Hudson mills metropark river grove.JPG",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 3168,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2010-08-03",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Hudson_mills_metropark_river_grove.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-2.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
     "linkedCandidates": [
      {
       "src": "https://images.alltrails.com/eyJidWNrZXQiOiJhc3NldHMuYWxsdHJhaWxzLmNvbSIsImtleSI6InVwbG9hZHMvcGhvdG8vaW1hZ2UvNTMyODk5MTgvNGM4MzZkOGQ0OTE0NmNmZWY5M2YzNTdiMWM1NWU1Y2IuanBnIiwiZWRpdHMiOnsidG9Gb3JtYXQiOiJ3ZWJwIiwicmVzaXplIjp7IndpZHRoIjoiMTA4MCIsImhlaWdodCI6IjcwMCIsImZpdCI6ImNvdmVyIn0sInJvdGF0ZSI6bnVsbCwianBlZyI6eyJ0cmVsbGlzUXVhbnRpc2F0aW9uIjp0cnVlLCJvdmVyc2hvb3REZXJpbmdpbmciOnRydWUsIm9wdGltaXNlU2NhbnMiOnRydWUsInF1YW50aXNhdGlvblRhYmxlIjozfX19",
@@ -8770,16 +8867,7 @@
       "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
       "note": "User-uploaded photo on the park's AllTrails page. The link is a long CDN link and could break sooner than others."
      }
-    ],
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    ]
    },
    "evidence": [
     {
@@ -8968,40 +9056,44 @@
    "status": "PUBLISHED",
    "summary": "Island state park in the Detroit River with nature trails, a nature center, a conservatory, an aquarium and the Oudolf Garden.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__belle-isle-park__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Early_Fall_foliage_in_Belle_Isle_State_Park_Detroit,_Michigan_2026-10-07_1120.jpg (taken 2026-10-07)",
+    "credit": "Photo: TheDetroitGeographer, CC0, via Wikimedia Commons",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__belle-isle-park__commons-01__card.webp",
+     "bytes": 341736,
+     "sha256": "4d36f6fde37139cada8c80042d8bd5e721643b9cbde3af33779c12a65fcb1af5",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Early_Fall_foliage_in_Belle_Isle_State_Park_Detroit,_Michigan_2026-10-07_1120.jpg",
+     "title": "Early Fall foliage in Belle Isle State Park Detroit, Michigan 2026-10-07 1120.jpg",
+     "author": "TheDetroitGeographer",
+     "license": "CC0",
+     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+     "originalWidth": 4058,
+     "originalHeight": 3797,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: TheDetroitGeographer, CC0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-2.webp",
-     "bytes": 23054,
-     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -9160,40 +9252,49 @@
    "status": "PUBLISHED",
    "summary": "Detroit's largest park, along the Rouge River with nature trails, paved walking paths, an archery range and a golf course.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__rouge-park__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Rouge_Park_Detroit_south_entrance.jpg (taken 2024-11-16)",
+    "credit": "Photo: DontCallMeLateForDinner, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__rouge-park__commons-01__card.webp",
+     "bytes": 418836,
+     "sha256": "fc6e33c4bacb723cd54abdd5af1228f7480d60ced93d2e02a5d4bdad5ca03655",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Rouge_Park_Detroit_south_entrance.jpg",
+     "title": "Rouge Park Detroit south entrance.jpg",
+     "author": "DontCallMeLateForDinner",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 3640,
+     "originalHeight": 2931,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2024-11-16",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Rouge_Park_Detroit_south_entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: DontCallMeLateForDinner, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-3.webp",
-     "bytes": 42168,
-     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -9271,40 +9372,49 @@
    "status": "PUBLISHED",
    "summary": "Scenic drive along the Rouge River through Wayne County parks, with walking trails, bike paths, fishing and picnic areas.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__hines-drive-edward-n-hines-parkway__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Brilliant_Fall_Color_-_panoramio.jpg (taken Taken on 2)",
+    "credit": "Photo: Jeffery Roberts, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__hines-drive-edward-n-hines-parkway__commons-01__card.webp",
+     "bytes": 181094,
+     "sha256": "5b2aa8292132f1e430e58f1371a99cd5da90f06cfe873760bad637957d3e4b5c",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Brilliant_Fall_Color_-_panoramio.jpg",
+     "title": "Brilliant Fall Color - panoramio.jpg",
+     "author": "Jeffery Roberts",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 3872,
+     "originalHeight": 2592,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2009-10-22",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Brilliant_Fall_Color_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Jeffery Roberts, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-4.webp",
-     "bytes": 46450,
-     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -9419,40 +9529,49 @@
    "status": "PUBLISHED",
    "summary": "Wayne County arboretum on Hines Drive with maple, oak and beech collections and a gentle unpaved walking trail.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__bennett-arboretum__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Hines_Drive_at_Bennett_Arboretum.jpg (taken 2024-11-16)",
+    "credit": "Photo: Saul Vielmetti, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__bennett-arboretum__commons-01__card.webp",
+     "bytes": 272944,
+     "sha256": "19aae6a5e441f804039ea2db166d92c8d707b64a1ec1ea5355eff7e42e00bc82",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Hines_Drive_at_Bennett_Arboretum.jpg",
+     "title": "Hines Drive at Bennett Arboretum.jpg",
+     "author": "Saul Vielmetti",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 4000,
+     "originalHeight": 3000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2024-11-16",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/Hines_Drive_at_Bennett_Arboretum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Saul Vielmetti, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-5.webp",
-     "bytes": 40294,
-     "sha256": "4dc1d78ed126767e086990022e2f358f3247adb092f3e218ba2c436edcb13882",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -9506,40 +9625,49 @@
    "status": "PUBLISHED",
    "summary": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__maybury-state-park__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Maybury_Sanatorium.jpg (taken 2011-10-16)",
+    "credit": "Photo: ellenm1, CC BY 2.0, via Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__maybury-state-park__commons-01__card.webp",
+     "bytes": 358854,
+     "sha256": "8beb041cf794096f6cd5c1bb32d5b1f3cb54aa0fa18863496028593d2e16a87a",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Maybury_Sanatorium.jpg",
+     "title": "Maybury Sanatorium.jpg",
+     "author": "ellenm1",
+     "license": "CC BY 2.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+     "originalWidth": 4000,
+     "originalHeight": 2248,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2011-10-16",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Maybury_Sanatorium.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: ellenm1, CC BY 2.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-6.webp",
-     "bytes": 59288,
-     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -9727,40 +9855,44 @@
     "unresolved": []
    },
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__cranbrook-gardens-and-grounds__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Cranbrook_Gardens_(7150931405).jpg (taken 2012-05-06)",
+    "credit": "Photo: Barbara Eckstein, CC BY 2.0, via Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__cranbrook-gardens-and-grounds__commons-01__card.webp",
+     "bytes": 464630,
+     "sha256": "1ab06d4867099af38ec45fe38f2ce33bcb28339b462a821303dbee9f3af4649a",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Cranbrook_Gardens_(7150931405).jpg",
+     "title": "Cranbrook Gardens (7150931405).jpg",
+     "author": "Barbara Eckstein",
+     "license": "CC BY 2.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+     "originalWidth": 5184,
+     "originalHeight": 3456,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Barbara Eckstein, CC BY 2.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-8.webp",
      "/assets/seasonal/fall-color-card-6.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
-     "unresolved": [],
-     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
-     "label": "Illustrative image",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
@@ -9784,40 +9916,49 @@
    "status": "PUBLISHED",
    "summary": "Historic cemetery and certified arboretum with self-guided tree tours.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-7.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__elmwood-cemetery__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:ELMWOOD_CEMETERY_4.jpg (taken 2016-10-07)",
+    "credit": "Photo: Sarahfraser3585, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__elmwood-cemetery__commons-01__card.webp",
+     "bytes": 57374,
+     "sha256": "074f6c4980ed6f7a1301e0c46dd58453ce8331d4f23df22854b901ddb30e2fd2",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:ELMWOOD_CEMETERY_4.jpg",
+     "title": "ELMWOOD CEMETERY 4.jpg",
+     "author": "Sarahfraser3585",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 2700,
+     "originalHeight": 1800,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2016-10-07",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/ELMWOOD_CEMETERY_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Sarahfraser3585, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-7.webp",
-     "bytes": 34038,
-     "sha256": "b9c11f0473887628af5ac24ddf38f5ea89d97e931b23ba827e156297145cdea0",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -9933,40 +10074,44 @@
    "status": "PUBLISHED",
    "summary": "Below-grade greenway between Eastern Market and the riverfront with separate walking and biking lanes, murals, and trees that turn colors in early October.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__dequindre-cut-greenway__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Detroit_May_2023_01_(Dequindre_Cut).jpg (taken 2023-05-20)",
+    "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__dequindre-cut-greenway__commons-01__card.webp",
+     "bytes": 229248,
+     "sha256": "764dab400b6f61a1e272d8865c181280cace014667b21b1763dd3d5b907de40e",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Detroit_May_2023_01_(Dequindre_Cut).jpg",
+     "title": "Detroit May 2023 01 (Dequindre Cut).jpg",
+     "author": "Michael Barera",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 6000,
+     "originalHeight": 4000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-8.webp",
-     "bytes": 39212,
-     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -10289,40 +10434,49 @@
    "status": "PUBLISHED",
    "summary": "State park of rolling hills, forest and lakes with marked hiking loops, paddling and fishing.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__seven-lakes-state-park__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Seven_Lakes_State_Park.jpg (taken 2012-10-04)",
+    "credit": "Photo: Kris Runstrom, CC BY 2.0, via Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__seven-lakes-state-park__commons-01__card.webp",
+     "bytes": 165274,
+     "sha256": "ef41fecf56eff9b398cead5491fd604f5d8b03d4bec104b4b6186de052a57270",
+     "width": 978,
+     "height": 652,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Seven_Lakes_State_Park.jpg",
+     "title": "Seven Lakes State Park.jpg",
+     "author": "Kris Runstrom",
+     "license": "CC BY 2.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+     "originalWidth": 7115,
+     "originalHeight": 2417,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2012-10-04",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/77/Seven_Lakes_State_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Kris Runstrom, CC BY 2.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-2.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -10458,40 +10612,49 @@
    "status": "PUBLISHED",
    "summary": "The Lower Peninsula's largest state park, with lakes, hiking trails and the Eddy Discovery Center.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__waterloo-state-recreation-area__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Waterloo_565.jpg (taken 2012-03-29)",
+    "credit": "Photo: cmadler, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__waterloo-state-recreation-area__commons-01__card.webp",
+     "bytes": 503800,
+     "sha256": "f4f5907644965f86ec421ef3824a6629f21957cc8645a5496dd95b75aa5ccb4c",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Waterloo_565.jpg",
+     "title": "Waterloo 565.jpg",
+     "author": "cmadler",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 3264,
+     "originalHeight": 1952,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2012-03-29",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Waterloo_565.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: cmadler, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-2.webp",
-     "bytes": 23054,
-     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -10680,46 +10843,44 @@
    "status": "PUBLISHED",
    "summary": "Metroparks Toledo's largest park, with oak savanna, more than 70 miles of trail and the Windows on Wildlife bird-viewing area. The agency's fall color report recommends it for late-fall oak color.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-4.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__oak-openings-preserve-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Mallard_Lake_Foliage.jpg (taken 2019-06-02)",
+    "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__oak-openings-preserve-metropark__commons-01__card.webp",
+     "bytes": 484062,
+     "sha256": "24398a33bb376cb4df2305344561d8b22019e11e33e396699f461e857a03f8fe",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Mallard_Lake_Foliage.jpg",
+     "title": "Mallard Lake Foliage.jpg",
+     "author": "Mbrickn",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 4032,
+     "originalHeight": 3024,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-4.webp",
-     "bytes": 46450,
-     "sha256": "b94753c8a9e3da553cbe95922831e123f640b156e3ae4dd164bf5c5a5f66e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "photoCandidate": {
-     "photoId": "313p-7264a257",
-     "src": "/assets/seasonal/photos/fall-color/fall-colors__oak-openings-preserve-metropark__swanton-oh__mine-02__card.webp",
-     "status": "UNRESOLVED",
-     "note": "Photographer and commercial-use scope are not confirmed, so this photograph is not used; a labelled illustration is shown instead."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -10786,40 +10947,49 @@
    "status": "PUBLISHED",
    "summary": "Metroparks Toledo preserve with the Manor House, a formal garden and trails across varied terrain. The agency's fall color report names it for late-fall oak color.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-5.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Ottawa_River_Wildwood_Preserve_Metropark_Ohio_July_2018.jpg (taken 2018-07-21)",
+    "credit": "Photo: Tim Kiser, CC BY 4.0, via Wikimedia Commons",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__wildwood-preserve-metropark__commons-01__card.webp",
+     "bytes": 399070,
+     "sha256": "f3bfef721268dab4419aa9c6339ad339e0303e614af73ba7ea55f82941563a8e",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Ottawa_River_Wildwood_Preserve_Metropark_Ohio_July_2018.jpg",
+     "title": "Ottawa River Wildwood Preserve Metropark Ohio July 2018.jpg",
+     "author": "Tim Kiser",
+     "license": "CC BY 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+     "originalWidth": 5064,
+     "originalHeight": 3376,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2018-07-21",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Ottawa_River_Wildwood_Preserve_Metropark_Ohio_July_2018.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Tim Kiser, CC BY 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-5.webp",
-     "bytes": 40294,
-     "sha256": "4dc1d78ed126767e086990022e2f358f3247adb092f3e218ba2c436edcb13882",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -10949,40 +11119,49 @@
    "status": "PUBLISHED",
    "summary": "Windsor park of old-growth black oak savanna with one public trail.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__black-oak-heritage-park__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Black_Oak_Heritage_Park,_Windsor,_Ontario,_2025-06-07_09.jpg (taken 2025-06-07)",
+    "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__black-oak-heritage-park__commons-01__card.webp",
+     "bytes": 442202,
+     "sha256": "ad481d79c5fc4a2f3ed5ac7b7c212ed946c76b7e66e3c8b43b0161fd8e8cabba",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Black_Oak_Heritage_Park,_Windsor,_Ontario,_2025-06-07_09.jpg",
+     "title": "Black Oak Heritage Park, Windsor, Ontario, 2025-06-07 09.jpg",
+     "author": "Crisco 1492",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 5064,
+     "originalHeight": 4000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2025-06-07",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/5/56/Black_Oak_Heritage_Park%2C_Windsor%2C_Ontario%2C_2025-06-07_09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-6.webp",
-     "bytes": 59288,
-     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -11444,40 +11623,49 @@
    "status": "PUBLISHED",
    "summary": "Nature preserve at the headwaters of the Rouge River with forest, meadow and marsh trails, including a Sugar Maple Loop.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-7.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__stage-nature-center__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:LloydAStageNatureCenter-01.jpg (taken 2014-08)",
+    "credit": "Photo: Traveler100, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__stage-nature-center__commons-01__card.webp",
+     "bytes": 476862,
+     "sha256": "099b7a779899079d24563a224b73ab699719274f768d0c095c935f45a269d4af",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:LloydAStageNatureCenter-01.jpg",
+     "title": "LloydAStageNatureCenter-01.jpg",
+     "author": "Traveler100",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 4685,
+     "originalHeight": 2970,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2014-08",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/0/05/LloydAStageNatureCenter-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Traveler100, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-7.webp",
-     "bytes": 34038,
-     "sha256": "b9c11f0473887628af5ac24ddf38f5ea89d97e931b23ba827e156297145cdea0",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -11650,40 +11838,49 @@
    "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark on the Huron River with a paved Hike-Bike trail, canoe and kayak access and tree-lined paths.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Dexter-huron_metropark_huron_riverJPG.JPG (taken 2010-08-18)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__dexter-huron-metropark__commons-01__card.webp",
+     "bytes": 352576,
+     "sha256": "db6a8036422e4bc6473bf2494949f42b7d9e3ff5e926bfbd4c3bc1b65e14c21e",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Dexter-huron_metropark_huron_riverJPG.JPG",
+     "title": "Dexter-huron metropark huron riverJPG.JPG",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 3168,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2010-08-18",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/Dexter-huron_metropark_huron_riverJPG.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-8.webp",
-     "bytes": 39212,
-     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -11803,40 +12000,49 @@
    "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark along the Huron River with a paved Hike-Bike trail, nature trails and canoe and kayak access.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__lower-huron-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Lower_huron_metropark_huron_river_bridge.JPG (taken 2010-08-04)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__lower-huron-metropark__commons-01__card.webp",
+     "bytes": 221618,
+     "sha256": "87bad2404e8776a1b435d5a0ac786550758002fdfc120c1ac74a0d5735f58c69",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Lower_huron_metropark_huron_river_bridge.JPG",
+     "title": "Lower huron metropark huron river bridge.JPG",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 3168,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2010-08-04",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Lower_huron_metropark_huron_river_bridge.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-2.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -11899,40 +12105,49 @@
    "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark of mature woodlands on the Huron River, with a paved Hike-Bike loop and paddling.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-2.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__willow-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Washago_Pond,_Willow_Metropark,_Huron_Township,_Michigan.JPG (taken 2013-07-09)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__willow-metropark__commons-01__card.webp",
+     "bytes": 184532,
+     "sha256": "7016cdf276e9dbf29826715a972ac26b043d5730ed8a4fefc24ce13a602d802c",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Washago_Pond,_Willow_Metropark,_Huron_Township,_Michigan.JPG",
+     "title": "Washago Pond, Willow Metropark, Huron Township, Michigan.JPG",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 5067,
+     "originalHeight": 3315,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2013-07-09",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Washago_Pond%2C_Willow_Metropark%2C_Huron_Township%2C_Michigan.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-2.webp",
-     "bytes": 23054,
-     "sha256": "7051539a9001518951f6416eb01f0bcf6c85d0bb54d722e9a9400abd3819560b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -11999,40 +12214,49 @@
    "status": "PUBLISHED",
    "summary": "Huron-Clinton Metropark on the Huron River with five nature trails, a nature center and a canoe and kayak trail.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__oakwoods-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Huron_River_in_Oakwoods_Metropark,_New_Boston,_Michigan_-_panoramio.jpg (taken Taken on 6)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__oakwoods-metropark__commons-01__card.webp",
+     "bytes": 180418,
+     "sha256": "64f4f11b1679e46c58803ec76e99839a31c7d2adbbfe910e13c2c7cec5b32ca1",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Huron_River_in_Oakwoods_Metropark,_New_Boston,_Michigan_-_panoramio.jpg",
+     "title": "Huron River in Oakwoods Metropark, New Boston, Michigan - panoramio.jpg",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 3014,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2012-11-06",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Huron_River_in_Oakwoods_Metropark%2C_New_Boston%2C_Michigan_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-3.webp",
-     "bytes": 42168,
-     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -12302,40 +12526,44 @@
     ]
    },
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__holly-state-recreation-area__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Hollystaterec.jpg (taken 2012-05-10)",
+    "credit": "Photo: TheKuLeR, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__holly-state-recreation-area__commons-01__card.webp",
+     "bytes": 217046,
+     "sha256": "390087d2b21c04507ca7f701373eb31c279d25b47fcd84821aa4a4614b37565a",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Hollystaterec.jpg",
+     "title": "Hollystaterec.jpg",
+     "author": "TheKuLeR",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 3264,
+     "originalHeight": 1840,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: TheKuLeR, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-6.webp",
-     "bytes": 59288,
-     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
-     "unresolved": [],
-     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
-     "label": "Illustrative image",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "distance": {
     "miles": 43,
@@ -12811,40 +13039,50 @@
    "status": "PUBLISHED",
    "summary": "Rail trail between Rochester and Lake Orion, named in a published guide as a fall-color hike.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__paint-creek-trail__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Rochester_Michigan_Paint_Creek_Trail.JPG (taken 30 June 20)",
+    "credit": "Photo: Cjunker1, Public domain, via Wikimedia Commons",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__paint-creek-trail__commons-01__card.webp",
+     "bytes": 172468,
+     "sha256": "aad1720498a2d1358d421bd6cfe0c4d530bcd15f364768df0c7996023353fda2",
+     "width": 1203,
+     "height": 802,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Rochester_Michigan_Paint_Creek_Trail.JPG",
+     "title": "Rochester Michigan Paint Creek Trail.JPG",
+     "author": "Cjunker1",
+     "license": "Public domain",
+     "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+     "originalWidth": 1203,
+     "originalHeight": 1454,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": null,
+     "takenNote": "30 June 2007 (original upload date)",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/0/02/Rochester_Michigan_Paint_Creek_Trail.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Cjunker1, Public domain, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-6.webp",
-     "bytes": 59288,
-     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -13320,40 +13558,49 @@
    "status": "PUBLISHED",
    "summary": "Ann Arbor's largest natural area, with unpaved trails through hills and ravines under beech, sugar maple, oak and hickory.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__bird-hills-nature-area__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Bird_Hills_Nature_Area_May_2025_05.jpg (taken Taken on 2)",
+    "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__bird-hills-nature-area__commons-01__card.webp",
+     "bytes": 394368,
+     "sha256": "86032f40c718895a397f7a7c6c5037232f37a6486c5fc1a4892d908ea46019ef",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Bird_Hills_Nature_Area_May_2025_05.jpg",
+     "title": "Bird Hills Nature Area May 2025 05.jpg",
+     "author": "Michael Barera",
+     "license": "CC BY-SA 4.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "originalWidth": 6000,
+     "originalHeight": 4000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2025-05-24",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Bird_Hills_Nature_Area_May_2025_05.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-8.webp",
-     "bytes": 39212,
-     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -13420,40 +13667,44 @@
    "status": "PUBLISHED",
    "summary": "Nature area along the Huron River with trails around the Barton oxbow. Destination Ann Arbor lists it for autumn color.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__barton-nature-area__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Huron_River_Viewed_from_Barton_Nature_Area,_Ann_Arbor,_Michigan_-_panoramio.jpg (taken 2012-11-21)",
+    "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__barton-nature-area__commons-01__card.webp",
+     "bytes": 169220,
+     "sha256": "bcdba9b9277f4294dfc436731b9bc619572de3cc97acb067f8ef00fb8496858b",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Huron_River_Viewed_from_Barton_Nature_Area,_Ann_Arbor,_Michigan_-_panoramio.jpg",
+     "title": "Huron River Viewed from Barton Nature Area, Ann Arbor, Michigan - panoramio.jpg",
+     "author": "Dwight Burdette",
+     "license": "CC BY 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+     "originalWidth": 4752,
+     "originalHeight": 3168,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-2.webp",
      "/assets/seasonal/fall-color-card-3.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -15642,40 +15893,44 @@
    "status": "PUBLISHED",
    "summary": "Metroparks Toledo park of second-growth forest, meadows and prairies, with the region's largest concentration of native dogwood. The agency's fall color report names it.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-6.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__secor-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:The_wild_geraniums_lined_the_trail_(2503375911).jpg (taken 2008-05-18)",
+    "credit": "Photo: Benny Mazur, CC BY 2.0, via Wikimedia Commons",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__secor-metropark__commons-01__card.webp",
+     "bytes": 373442,
+     "sha256": "b20dbd1ce3acd7cef5fbe822c4a4ff818db5c700b0c8b5aa1fff8eae6e6d8216",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:The_wild_geraniums_lined_the_trail_(2503375911).jpg",
+     "title": "The wild geraniums lined the trail (2503375911).jpg",
+     "author": "Benny Mazur",
+     "license": "CC BY 2.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+     "originalWidth": 2816,
+     "originalHeight": 2112,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Benny Mazur, CC BY 2.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-6.webp",
-     "bytes": 59288,
-     "sha256": "617c2ee2f58e19967b0f5283048b981b2ce6667f53146d14ea581d3f09d56db9",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -15838,40 +16093,49 @@
    "status": "PUBLISHED",
    "summary": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-8.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__side-cut-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Locks_Four_and_Three,_Miami_Sidecut.jpg (taken Taken on 1)",
+    "credit": "Photo: Nyttend, Public domain, via Wikimedia Commons",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__side-cut-metropark__commons-01__card.webp",
+     "bytes": 182522,
+     "sha256": "855963c69cf97cdd2118d6856fad30775bfa5ab7f8e168e2b176c735211a4b5a",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Locks_Four_and_Three,_Miami_Sidecut.jpg",
+     "title": "Locks Four and Three, Miami Sidecut.jpg",
+     "author": "Nyttend",
+     "license": "Public domain",
+     "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+     "originalWidth": 2816,
+     "originalHeight": 2112,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2013-03-12",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Locks_Four_and_Three%2C_Miami_Sidecut.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": false,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Nyttend, Public domain, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-8.webp",
-     "bytes": 39212,
-     "sha256": "4b1273dfd1051e3d77c3ab43c7235c716ffec3a5e717959bfe6017400370c86a",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -15933,40 +16197,44 @@
    "status": "PUBLISHED",
    "summary": "Metroparks Toledo park on the Maumee River with the Towpath Trail, river views and the Interurban Bridge ruins.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
-    "alternates": [
-     "/assets/seasonal/fall-color-card-2.webp",
-     "/assets/seasonal/fall-color-card-3.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
+    "src": "/assets/seasonal/photos/fall-color/fall-color__farnsworth-metropark__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Farnsworth_Metropark.jpg (taken 2006-04-21)",
+    "credit": "Photo: Jmslagle, CC BY-SA 3.0, via Wikimedia Commons",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
     "acquired": {
-     "file": "/assets/seasonal/fall-color-card-1.webp",
-     "bytes": 57076,
-     "sha256": "647149349965e868d73c3d2d969361f0fa823641d4eea815944d77042ae4e48b",
+     "file": "/assets/seasonal/photos/fall-color/fall-color__farnsworth-metropark__commons-01__card.webp",
+     "bytes": 44028,
+     "sha256": "6533779ecfdab111a37f92e87b95cd76c69a633bc92d41ba9e22d252db16b42e",
      "width": 640,
      "height": 427,
      "acquiredAt": "2026-10-12"
     },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Farnsworth_Metropark.jpg",
+     "title": "Farnsworth Metropark.jpg",
+     "author": "Jmslagle",
+     "license": "CC BY-SA 3.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "originalWidth": 640,
+     "originalHeight": 480,
+     "modifications": "Cropped to 3:2; converted to WebP."
     },
     "provenance": {
-     "status": "OWNER_ACCEPTED",
+     "status": "RESOLVED",
      "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
      "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+     "credit": "Photo: Jmslagle, CC BY-SA 3.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
+    "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp",
+     "/assets/seasonal/fall-color-card-3.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -17247,40 +17515,49 @@
    "status": "PUBLISHED",
    "summary": "National park of forest, marsh and lakeshore with hiking trails, and a stopover for migrating Monarch butterflies each autumn.",
    "image": {
-    "src": "/assets/seasonal/fall-color-card-3.webp",
+    "src": "/assets/seasonal/photos/fall-color/fall-color__point-pelee-national-park__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Marsh_Boardwalk,_Point_Pelee_National_Park,_Leamington,_Ontario,_Canada_(21586377780).jpg (taken 2015-09-27)",
+    "credit": "Photo: Ken Lund, CC BY-SA 2.0, via Wikimedia Commons",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "rightsVerifiedAt": "2026-10-12",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall-color/fall-color__point-pelee-national-park__commons-01__card.webp",
+     "bytes": 268752,
+     "sha256": "9719dd6422624fd1850e6464b50d2257f973224e0d8730fb4c314a9adc24d82f",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-12"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Marsh_Boardwalk,_Point_Pelee_National_Park,_Leamington,_Ontario,_Canada_(21586377780).jpg",
+     "title": "Marsh Boardwalk, Point Pelee National Park, Leamington, Ontario, Canada (21586377780).jpg",
+     "author": "Ken Lund",
+     "license": "CC BY-SA 2.0",
+     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+     "originalWidth": 4000,
+     "originalHeight": 3000,
+     "modifications": "Cropped to 3:2 and resized; converted to WebP.",
+     "takenOn": "2015-09-27",
+     "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/70/Marsh_Boardwalk%2C_Point_Pelee_National_Park%2C_Leamington%2C_Ontario%2C_Canada_%2821586377780%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "commercialUseAllowed": true,
+     "shareAlike": true,
+     "rightsVerifiedFrom": "Wikimedia Commons file page, read 2026-10-12"
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-12",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
+     "unresolved": [],
+     "credit": "Photo: Ken Lund, CC BY-SA 2.0, via Wikimedia Commons",
+     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
+    },
     "alternates": [
      "/assets/seasonal/fall-color-card-1.webp",
      "/assets/seasonal/fall-color-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-color-card-3.webp",
-     "bytes": 42168,
-     "sha256": "37f12783c4aefe6f17eaa210e19f5afe597a176fbc37766d683243c6197f4bb6",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {

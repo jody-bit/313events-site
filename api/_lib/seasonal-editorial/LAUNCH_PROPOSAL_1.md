@@ -8,8 +8,8 @@ Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entrie
 
 | Collection | Proposed | Your own photo | Labelled illustration | Inventory rows | Not yet proposed |
 |---|---|---|---|---|---|
-| /fall (Fall Is On.) | 10 | 1 | 9 | 71 | 61 |
-| /fall-color (Chase the Color) | 5 | 1 | 4 | 129 | 124 |
+| /fall (Fall Is On.) | 10 | 1 | 7 | 71 | 61 |
+| /fall-color (Chase the Color) | 5 | 1 | 2 | 129 | 124 |
 
 Every proposed record has: a verified name and location taken from its official page, the official source URL, a recorded relevance note, and an image by a recorded route. No hours, admission, dates or accessibility appear on any card (none are displayed, so none are asserted). Season dates seen on official pages are kept in the evidence notes only.
 
@@ -51,8 +51,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Relevance (direct-prose):** The official page describes a historic cider mill selling cider and donuts, with 2026 season dates.
 - **Card text:** Historic cider mill in Bloomfield Hills, in operation since 1837, with fresh cider, warm donuts and a historic water wheel.
 - **Categories:** cider-donuts · proposed for the Don't-miss rail
-- **Image:** labelled illustration, `fall-card-3.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
-- **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
+- **Image:** labelled illustration, `photos/fall/fall__franklin-cider-mill__commons-01__card.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 
 ### 4. Long Family Orchard & Farm (Commerce Township, MI)
 
@@ -73,8 +72,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Relevance (direct-prose):** The official page describes a cider mill with donuts, wagon rides and pumpkins, with 2026 cider-mill dates.
 - **Card text:** Orchard and cider mill in Plymouth with award-winning apple cider, fresh donuts, wagon rides and pumpkins.
 - **Categories:** cider-donuts, farm-experiences · proposed for the Don't-miss rail
-- **Image:** labelled illustration, `fall-card-5.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
-- **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
+- **Image:** labelled illustration, `photos/fall/fall__plymouth-orchards-and-cider-mill__commons-01__card.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 
 ### 6. Porter’s Orchard Farm Market & Cider Mill (Goodrich, MI)
 
@@ -153,8 +151,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Relevance (direct-prose):** The official page says “From daffodils and roses, to fall colors and conifers, there is always something beautiful to discover”. It names fall colors in passing, not as a peak-season guide; a later read notes beds are pulled and amenities reduced by mid-October.
 - **Card text:** Gardens in Bloomfield Hills around Cranbrook House, with more than 15 gardens to explore, from daffodils and roses to fall colors and conifers.
 - **Categories:** parks-gardens
-- **Image:** labelled illustration, `fall-color-card-1.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
-- **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
+- **Image:** labelled illustration, `photos/fall-color/fall-color__cranbrook-gardens-and-grounds__commons-01__card.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 
 ### 3. Stony Creek Metropark (Shelby Township, MI)
 
@@ -187,8 +184,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **Relevance (caption-only):** Weaker basis: the official page does not discuss fall color in prose. Only photo captions mention changing leaf color.
 - **Card text:** State recreation area in Holly with more than 8,000 acres of rolling woodlands and open fields.
 - **Categories:** trails-woods, waterfronts
-- **Image:** labelled illustration, `fall-color-card-6.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
-- **Caveats:** Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
+- **Image:** labelled illustration, `photos/fall-color/fall-color__holly-state-recreation-area__commons-01__card.webp` (generated artwork supplied by 313.events; tool and terms not recorded). The card carries the persistent "Illustrative image" badge. It is not a photograph of this place.
 
 ## Not proposed yet
 
@@ -217,7 +213,7 @@ The integration branch's own reads (`launch-verification.json`, 50 destinations)
 1. **Your library.** 74 owner photos are matched to 16 fall and fall-color inventory rows. Used: one for Diehl's (pumpkin field) and one for Highland. Not used: Long Family's four photos each show a person posing as the main subject (two were tagged "incidental" in the library metadata, which was wrong); Cranbrook's two are August and February shots; Apple Charlie's 13 photos belong to a place with no official source yet; the remaining fall-color matches are spring, summer or winter shots, details, or places outside Michigan, not autumn color here. The library's description of the Highland photo said boardwalk; it is a gravel trail beside a road, and the entry was corrected. Diehl's has 24 other photos (donuts, hayride, corn maze, cider counter) that can replace the pumpkin photo.
 2. **Official photography with documented reuse rights.** None found. Official pages show images, but none of the pages read states reuse terms for them, so none is used. Publicly viewable is not treated as permission.
 3. **Wikimedia Commons.** Not checked: the Commons site could not be reached from this environment, and the search budget was exhausted. No Commons image is proposed, and no license or credit is asserted. Unverified leads to check by hand: Yates Cider Mill main building, Franklin historic mill, Wasem Fruit Farm orchard, Category:Kensington Metropark, Cranbrook, Belle Isle, Matthaei Botanical Gardens, Hudson Mills, Huron Meadows, Dexter-Huron, Lower Huron.
-4. **Existing generated artwork.** Used for 13 records as labelled temporary illustrations, with the "Illustrative image" badge. Eight generated cards per collection are reused across records, so a few records share an image. Three of the fall-color cards show the Detroit skyline, so they were deliberately not used for suburban parks.
+4. **Existing generated artwork.** Used for 9 records as labelled temporary illustrations, with the "Illustrative image" badge. Eight generated cards per collection are reused across records, so a few records share an image. Three of the fall-color cards show the Detroit skyline, so they were deliberately not used for suburban parks.
 
 ## Blockers and owner decisions
 

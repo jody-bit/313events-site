@@ -2885,43 +2885,57 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "launch": {
     "batch": "launch-1",
     "featured": true,
-    "image_route": "illustration",
-    "image_depicts_destination": false,
-    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+    "image_route": "acquired-file",
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "franklin-cider-mill",
     "destination_name": "Franklin Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "primary_image": "/assets/seasonal/photos/fall/fall__franklin-cider-mill__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Griffinharms, CC BY-SA 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
     "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-4",
+     "gen-fall-7",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "commons-franklin-cider-mill",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall/fall__franklin-cider-mill__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Historic_Franklin_Cider_Mill.JPG (taken 2013-01-24)",
+     "credit": "Photo: Griffinharms, CC BY-SA 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Historic_Franklin_Cider_Mill.JPG"
+    },
+    {
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
@@ -2933,9 +2947,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4868,45 +4882,59 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "launch": {
     "batch": "expansion-1",
     "featured": false,
-    "image_route": "illustration",
-    "image_depicts_destination": false,
-    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+    "image_route": "acquired-file",
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 4.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "parshallville-cider-mill",
     "destination_name": "Parshallville Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall__parshallville-cider-mill__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: JoannaPoe, CC BY-SA 4.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
     "alternative_images": [
-     "gen-fall-1",
+     "gen-fall-5",
+     "gen-fall-8",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
+     "id": "commons-parshallville-cider-mill",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall/fall__parshallville-cider-mill__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Tom_Walker's_Grist_Mill_01.jpg (taken 2018-09-23)",
+     "credit": "Photo: JoannaPoe, CC BY-SA 4.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Tom_Walker's_Grist_Mill_01.jpg"
+    },
+    {
      "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -4916,9 +4944,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -5014,43 +5042,57 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "launch": {
     "batch": "launch-1",
     "featured": true,
-    "image_route": "illustration",
-    "image_depicts_destination": false,
-    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+    "image_route": "acquired-file",
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "plymouth-orchards-and-cider-mill",
     "destination_name": "Plymouth Orchards & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "primary_image": "/assets/seasonal/photos/fall/fall__plymouth-orchards-and-cider-mill__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
     "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-6",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "commons-plymouth-orchards-and-cider-mill",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall/fall__plymouth-orchards-and-cider-mill__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Plymouth_Orchards_and_Cider_Mill,_Gottfredson_Road_%5E_Plymouth_Ann_Arbor_Road,_Superior_Township,_Michigan_-_panoramio.jpg (taken Taken on 7)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Plymouth_Orchards_and_Cider_Mill,_Gottfredson_Road_%5E_Plymouth_Ann_Arbor_Road,_Superior_Township,_Michigan_-_panoramio.jpg"
+    },
+    {
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
@@ -5062,9 +5104,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6031,45 +6073,59 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
    "launch": {
     "batch": "expansion-1",
     "featured": false,
-    "image_route": "illustration",
-    "image_depicts_destination": false,
-    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+    "image_route": "acquired-file",
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "three-cedars-farm",
     "destination_name": "Three Cedars Farm",
-    "primary_image": "/assets/seasonal/fall-card-2.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall__three-cedars-farm__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-1",
+     "gen-fall-7",
+     "gen-fall-2",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-2",
+     "id": "commons-three-cedars-farm",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall/fall__three-cedars-farm__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Three_Cedars_Farm,_7897_Six_Mile_Road,_Salem_Township,_Michigan_-_panoramio.jpg (taken Taken on 1)",
+     "credit": "Photo: Dwight Burdette, CC BY 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "warnings": [],
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Three_Cedars_Farm,_7897_Six_Mile_Road,_Salem_Township,_Michigan_-_panoramio.jpg"
+    },
+    {
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6079,9 +6135,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -6780,11 +6836,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.",
      "Was status \"published\" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered."
     ],
     "legacy": {
@@ -6796,41 +6851,45 @@
    "launch": {
     "batch": "expansion-1",
     "featured": false,
-    "image_route": "illustration",
-    "image_depicts_destination": false,
-    "image_note": "Image: labelled illustration (generated artwork, not a photo of this place)"
+    "image_route": "acquired-file",
+    "image_depicts_destination": true,
+    "image_note": "Image: openly licensed photograph (CC BY-SA 3.0, Wikimedia Commons)"
    },
    "manifest": {
     "destination_id": "yates-cider-mill",
     "destination_name": "Yates Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp",
+    "primary_image_type": "licensed_third_party",
+    "primary_image_credit": "Photo: Ekardiff, CC BY-SA 3.0, via Wikimedia Commons",
+    "primary_image_rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
     "alternative_images": [
      "link-yates-cider-mill",
-     "gen-fall-2",
+     "gen-fall-8",
+     "gen-fall-3",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
-     "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
-     "source": "313.events supplied Fall graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
+     "id": "commons-yates-cider-mill",
+     "type": "licensed_third_party",
+     "src": "/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp",
+     "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Yates_Cider_Mill_main_building.jpg (taken 2011-10-14)",
+     "credit": "Photo: Ekardiff, CC BY-SA 3.0, via Wikimedia Commons",
+     "rights_status": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)",
+     "illustrative": false,
+     "depicts_actual_destination": true,
      "warnings": [],
-     "image_kind": "generated-artwork"
+     "image_kind": "photo",
+     "rights_basis": "third-party-license",
+     "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+     "source_page": "https://commons.wikimedia.org/wiki/File:Yates_Cider_Mill_main_building.jpg"
     },
     {
      "id": "link-yates-cider-mill",
@@ -6851,9 +6910,21 @@
      "load_check": null
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
+     "source": "313.events supplied Fall graphic (AI-generated), cropped",
+     "credit": "313.events",
+     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
+     "illustrative": true,
+     "depicts_actual_destination": false,
+     "warnings": [],
+     "image_kind": "generated-artwork"
+    },
+    {
+     "id": "gen-fall-3",
+     "type": "generated_illustrative",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11214,14 +11285,14 @@
    "manifest": {
     "destination_id": "thiessen-orchards",
     "destination_name": "Thiessen Orchards",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
     "alternative_images": [
-     "gen-fall-7",
+     "gen-fall-4",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -11231,9 +11302,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11243,9 +11314,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11363,14 +11434,14 @@
    "manifest": {
     "destination_id": "melegs-lakeview-orchard-and-cider-mill",
     "destination_name": "Meleg's Lakeview Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
     "alternative_images": [
-     "gen-fall-8",
+     "gen-fall-5",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -11380,9 +11451,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11392,9 +11463,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11509,14 +11580,14 @@
    "manifest": {
     "destination_id": "colasantis-tropical-gardens",
     "destination_name": "Colasanti's Tropical Gardens",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
     "alternative_images": [
-     "gen-fall-1",
+     "gen-fall-6",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -11526,9 +11597,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11538,9 +11609,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11656,14 +11727,14 @@
    "manifest": {
     "destination_id": "past-tense-cider-mill-past-tense-country-store-and-cider-mill",
     "destination_name": "Past Tense Cider Mill (Past Tense Country Store & Cider Mill)",
-    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
     "alternative_images": [
-     "gen-fall-2",
+     "gen-fall-7",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -11673,9 +11744,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11685,9 +11756,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11803,14 +11874,14 @@
    "manifest": {
     "destination_id": "yates-cider-mill-at-canterbury-village",
     "destination_name": "Yates Cider Mill at Canterbury Village",
-    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
     "alternative_images": [
-     "gen-fall-3",
+     "gen-fall-8",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -11820,9 +11891,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11832,9 +11903,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11949,14 +12020,14 @@
    "manifest": {
     "destination_id": "the-property-farms-and-mccallums-orchard-and-cider-mill",
     "destination_name": "The Property Farms and McCallum's Orchard & Cider Mill",
-    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -11966,9 +12037,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -11978,9 +12049,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12096,14 +12167,14 @@
    "manifest": {
     "destination_id": "kapnick-orchards",
     "destination_name": "Kapnick Orchards",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-5",
+     "gen-fall-2",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12113,9 +12184,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12125,9 +12196,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12242,14 +12313,14 @@
    "manifest": {
     "destination_id": "bowlander-farm-also-country-lane-tree-farm-panic-in-the-pines-haunted-hayride",
     "destination_name": "Bowlander Farm (also Country Lane Tree Farm; Panic in the Pines haunted hayride)",
-    "primary_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image": "/assets/seasonal/fall-card-7.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
     "alternative_images": [
-     "gen-fall-6",
+     "gen-fall-3",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12259,9 +12330,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12271,9 +12342,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12388,14 +12459,14 @@
    "manifest": {
     "destination_id": "maybury-farm",
     "destination_name": "Maybury Farm",
-    "primary_image": "/assets/seasonal/fall-card-3.webp",
+    "primary_image": "/assets/seasonal/fall-card-8.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-3.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
+    "fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
     "alternative_images": [
-     "gen-fall-7",
+     "gen-fall-4",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12405,9 +12476,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12417,9 +12488,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12534,14 +12605,14 @@
    "manifest": {
     "destination_id": "kensington-metropark-farm-center",
     "destination_name": "Kensington Metropark Farm Center",
-    "primary_image": "/assets/seasonal/fall-card-4.webp",
+    "primary_image": "/assets/seasonal/fall-card-1.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
+    "fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
     "alternative_images": [
-     "gen-fall-8",
+     "gen-fall-5",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12551,9 +12622,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12563,9 +12634,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12680,14 +12751,14 @@
    "manifest": {
     "destination_id": "the-petting-farm-dominos-farms-petting-farm-autumn-days-at-the-farm",
     "destination_name": "The Petting Farm (Domino's Farms Petting Farm) - Autumn Days at the Farm",
-    "primary_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/fall-card-2.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-5.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
+    "fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-6.webp",
     "alternative_images": [
-     "gen-fall-1",
+     "gen-fall-6",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12697,9 +12768,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-6",
+     "id": "gen-fall-3",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12709,9 +12780,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12827,14 +12898,14 @@
    "manifest": {
     "destination_id": "brookwood-fruit-farm",
     "destination_name": "Brookwood Fruit Farm",
-    "primary_image": "/assets/seasonal/fall-card-6.webp",
+    "primary_image": "/assets/seasonal/fall-card-3.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-6.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
+    "fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
     "alternative_images": [
-     "gen-fall-2",
+     "gen-fall-7",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12844,9 +12915,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-7",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-6.webp",
+     "src": "/assets/seasonal/fall-card-3.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12856,9 +12927,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -12972,14 +13043,14 @@
    "manifest": {
     "destination_id": "hoens-garden-center-and-landscaping-pumpkin-patch",
     "destination_name": "Hoen's Garden Center & Landscaping (pumpkin patch)",
-    "primary_image": "/assets/seasonal/fall-card-7.webp",
+    "primary_image": "/assets/seasonal/fall-card-4.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-7.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-8.webp",
     "alternative_images": [
-     "gen-fall-3",
+     "gen-fall-8",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -12989,9 +13060,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -13001,9 +13072,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-8",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-8.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -13119,14 +13190,14 @@
    "manifest": {
     "destination_id": "lesser-farms-and-orchard",
     "destination_name": "Lesser Farms & Orchard",
-    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image": "/assets/seasonal/fall-card-5.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
+    "fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-1.webp",
     "alternative_images": [
-     "gen-fall-4",
+     "gen-fall-1",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -13136,9 +13207,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-1",
+     "id": "gen-fall-6",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -13148,9 +13219,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-4",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
+     "src": "/assets/seasonal/fall-card-1.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -13267,14 +13338,14 @@
    "manifest": {
     "destination_id": "meckleys-flavor-fruit-farm-and-cidery",
     "destination_name": "Meckley's Flavor Fruit Farm & Cidery",
-    "primary_image": "/assets/seasonal/fall-card-1.webp",
+    "primary_image": "/assets/seasonal/fall-card-6.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-1.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "fallback_image": "/assets/seasonal/fall-card-6.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-2.webp",
     "alternative_images": [
-     "gen-fall-5",
+     "gen-fall-2",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -13284,9 +13355,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-7",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-1.webp",
+     "src": "/assets/seasonal/fall-card-6.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -13296,9 +13367,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-2.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

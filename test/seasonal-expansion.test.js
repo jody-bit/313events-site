@@ -33,11 +33,21 @@ for (const col of ["fall", "fall-color"]) {
     assert.ok(e.relevance && e.relevance.confirmed && e.relevance.note && e.relevance.confidence !== "low", id + ": relevance evidence");
     assert.ok(e.summary.length > 20 && !RESEARCH_NOTE.test(e.summary) && !FORBIDDEN.test(e.summary), id + ": clean description: " + e.summary);
     assert.strictEqual(e.featured, false, id + ": expansion records do not change the Don't Miss selections");
-    assert.strictEqual(r.imageRoute, "illustration", id + ": labelled illustration route");
-    assert.strictEqual(e.image.illustrative, true);
-    assert.ok(!e.image.ownerPhoto && !e.image.remote, id + ": no unconfirmed photograph or linked image is the card image");
-    assert.strictEqual(e.image.provenance.status, "OWNER_ACCEPTED");
-    assert.strictEqual(ED.publicEntry(e).image.illustrative, true);
+    const licensed = e.image.illustrative === false && !e.image.ownerPhoto && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && !!e.image.rightsVerifiedAt;
+    if (licensed) {
+      // an openly licensed photograph (Wikimedia Commons) replaced the temporary illustration: third-party license route
+      assert.strictEqual(r.imageRoute, "acquired-file", id + ": acquired-file route");
+      assert.strictEqual(r.gate.rightsRoute, "third-party-license", id + ": third-party license rights route");
+      assert.ok(!e.image.remote, id + ": no linked image");
+      assert.ok(/^Photo: .+, via Wikimedia Commons$/.test(ED.publicEntry(e).image.credit), id + ": public card carries the credit line");
+      assert.strictEqual(ED.publicEntry(e).image.illustrative, false);
+    } else {
+      assert.strictEqual(r.imageRoute, "illustration", id + ": labelled illustration route");
+      assert.strictEqual(e.image.illustrative, true);
+      assert.ok(!e.image.ownerPhoto && !e.image.remote, id + ": no unconfirmed photograph or linked image is the card image");
+      assert.strictEqual(e.image.provenance.status, "OWNER_ACCEPTED");
+      assert.strictEqual(ED.publicEntry(e).image.illustrative, true);
+    }
   }
   // held records stay in review
   for (const id of Object.keys(B.held[col])) {

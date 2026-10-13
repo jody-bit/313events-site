@@ -15,7 +15,7 @@ Owner decisions applied: approval of 2026-10-11 (all 52 destinations approved fo
 | Excluded as duplicate or closed (retained with history) | 3 |
 | Check: 29 + 20 + 3 | 52 |
 
-Image route: 22 of the 29 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 7 use an owner photo or a linked image.
+Image route: 17 of the 29 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 12 use an owner photo or a linked image.
 
 All 20 held records are held for factual verification: 9 have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; 11 have no official 2026 evidence (Rotten Manor has a linked image but no 2026 evidence).
 
@@ -26,9 +26,9 @@ All 20 held records are held for factual verification: 9 have only indirect 2026
 | Erebus Haunted Attraction | illustration | owner-supplied-illustration |  |
 | Eloise Asylum | owner-photo | owner-authorization |  |
 | Hallowe'en in Greenfield Village | owner-photo | owner-authorization | General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates. |
-| Zoo Boo at the Detroit Zoo | linked | linked-risk-acceptance | Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo. |
+| Zoo Boo at the Detroit Zoo | acquired-file | third-party-license | Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo. |
 | Glenlore Trails: CarnEvil 2 | owner-photo | owner-authorization |  |
-| Halloween Ghosts & Goodies at Crossroads Village | illustration | owner-supplied-illustration |  |
+| Halloween Ghosts & Goodies at Crossroads Village | acquired-file | third-party-license |  |
 | Hush Haunted Attraction | linked | linked-risk-acceptance |  |
 | Azra Chamber of Horrors | linked | linked-risk-acceptance |  |
 | Scarefest Scream Park | illustration | owner-supplied-illustration |  |
@@ -43,15 +43,15 @@ All 20 held records are held for factual verification: 9 have only indirect 2026
 | Sanilac Museum's Haunted Village | illustration | owner-supplied-illustration |  |
 | Distracted Haunted House | illustration | owner-supplied-illustration |  |
 | Eerie Manor Tours at Wildwood Preserve | illustration | owner-supplied-illustration |  |
-| Fort Meigs Garrison Ghost Walk | illustration | owner-supplied-illustration |  |
+| Fort Meigs Garrison Ghost Walk | acquired-file | third-party-license |  |
 | Halloween Stroll at Canterbury Village | illustration | owner-supplied-illustration |  |
 | HallowGlow at TreeRunner | linked | linked-risk-acceptance |  |
 | Brick-or-Treat at LEGOLAND Discovery Center | illustration | owner-supplied-illustration |  |
 | Ooky Spooky Light Show | illustration | owner-supplied-illustration |  |
-| Laser Halloween | illustration | owner-supplied-illustration |  |
+| Laser Halloween | acquired-file | third-party-license |  |
 | Halloween Stroll | illustration | owner-supplied-illustration |  |
-| Spooky Jane's Walk | illustration | owner-supplied-illustration |  |
-| Sandwich Town Ghost Tour | illustration | owner-supplied-illustration |  |
+| Spooky Jane's Walk | acquired-file | third-party-license |  |
+| Sandwich Town Ghost Tour | acquired-file | third-party-license |  |
 
 Four of these (Zoo Boo, Hush, Azra, HallowGlow) use a linked image on the owner's recorded risk acceptance. That is not a license; no rights-holder permission is on file. Each falls back to the generated card with the "Illustrative image" label if the link fails.
 

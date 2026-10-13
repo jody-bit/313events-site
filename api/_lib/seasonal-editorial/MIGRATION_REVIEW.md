@@ -10,19 +10,19 @@ State counts: HOLD_UNVERIFIED 1, CONTENT_VERIFIED 1, IMAGE_PENDING 0, READY_FOR_
 
 | Collection | Entry | Was | Now (derived) | Image route | Rights route | Still needed |
 |---|---|---|---|---|---|---|
-| fall | Yates Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
+| fall | Yates Cider Mill | published | PUBLISHED | acquired-file | third-party-license | none |
 | fall | Parmenter's Northville Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | fall | Blake's Orchard & Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | fall | Wiard’s Orchards | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | halloween | Erebus Haunted Attraction | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | halloween | Eloise Asylum | published | PUBLISHED | owner-photo | owner-authorization | none |
 | halloween | Hallowe'en in Greenfield Village | published | PUBLISHED | owner-photo | owner-authorization | none |
-| halloween | Zoo Boo at the Detroit Zoo | published | PUBLISHED | linked | linked-risk-acceptance | none |
+| halloween | Zoo Boo at the Detroit Zoo | published | PUBLISHED | acquired-file | third-party-license | none |
 | halloween | Glenlore Trails: CarnEvil 2 | published | PUBLISHED | owner-photo | owner-authorization | none |
-| halloween | Halloween Ghosts & Goodies at Crossroads Village | published | PUBLISHED | illustration | owner-supplied-illustration | none |
+| halloween | Halloween Ghosts & Goodies at Crossroads Village | published | PUBLISHED | acquired-file | third-party-license | none |
 | fall-color | Kensington Metropark | published | CONTENT_VERIFIED | none (generated card) | none | 3, 5 |
 | fall-color | Stony Creek Metropark | published | PUBLISHED | illustration | owner-supplied-illustration | none |
-| fall-color | Hudson Mills Metropark | published | PUBLISHED | illustration | owner-supplied-illustration | none |
+| fall-color | Hudson Mills Metropark | published | PUBLISHED | acquired-file | third-party-license | none |
 | fall-color | Nichols Arboretum | published | HOLD_UNVERIFIED | owner-photo | owner-authorization | 1, 5 |
 
 Numbers in the last column are gate items: 1 official-source verification, 2 relevance, 3 image, 4 image rights, 5 explicit approval.
@@ -35,11 +35,10 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #42 (Cider/orchard). WXYZ 2026 cider-mill opening list shows Yates at 1950 E. Avon Rd. as open; undated otherwise. Another listing shows a second Orion Twp location; not published here.
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 1950 E. Avon Rd., Rochester Hills, MI 48307 (second location: Canterbury Village, Lake Orion). Season/hours as stated: Now Open (historic mill 7am-7pm); no explicit 2026 dates. Flags: second location listed on same site. <https://www.yatescidermill.com/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Official page lists fall farm activities: cider, donuts, apple tent, pony rides.
-- Image: `/assets/seasonal/fall-card-1.webp` (generated illustrative card).
+- Image: `/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Parmenter's Northville Cider Mill (fall, `parmenters-northville-cider-mill`)
@@ -141,12 +140,10 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #38. WXYZ 2026: returns on select October weekends. One date listed as a typo in the source, so no dates shown.
   - official (site read 2026-10-11): Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card. <https://detroitzoo.org/events/zoo-boo/>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session), read in Chrome: Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026..
-- Image: `/assets/seasonal/halloween-card-3.webp` (generated card; linked image https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp recorded as the default).
+- Image: `/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.
-  - A linked image depends on the source site continuing to serve it; the generated card is the fallback.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Glenlore Trails: CarnEvil 2 (halloween, `glenlore-carnevil-2`)
@@ -172,11 +169,10 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #39. A late-summer 2026 listing invites reservations for the 2026 event; specific 2026 dates not found.
   - official (site read 2026-10-11): Official Genesee County Parks page read 2026-10-11: Halloween Ghosts & Goodies at Crossroads Village, October 2026 (3-4, 9-11, 16-18, 22-25, 29-30). Dates are not shown on the card. <https://geneseecountyparks.org/halloween-ghosts-goodies/>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session), read in Chrome: Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026..
-- Image: `/assets/seasonal/halloween-card-6.webp` (generated illustrative card).
+- Image: `/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Kensington Metropark (fall-color, `kensington-metropark`)
@@ -218,11 +214,10 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Fall-color inventory. Metro Parent: 8801 N. Territorial Rd., paved path, Acorn Nature Trail, Huron River. <https://www.metroparks.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 8801 N. Territorial Road, Dexter, MI 48130. Season/hours as stated: park 7am-10pm; $10 daily or annual vehicle pass. Flags: Acorn Nature Trail unsalted/muddy in winter. <https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Destination Ann Arbor's own fall-color guide names Hudson Mills as a hiking destination, and the park has a river corridor and a nature trail. The park page itself is silent on foliage..
-- Image: `/assets/seasonal/fall-color-card-1.webp` (generated illustrative card).
+- Image: `/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Nichols Arboretum (fall-color, `nichols-arboretum`)

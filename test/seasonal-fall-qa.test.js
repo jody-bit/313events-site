@@ -38,7 +38,7 @@ for (const slug of ["fall", "fall-color"]) {
     for (const o of r.image_options) {
       assert.ok(!ids.has(r.id + "/" + o.id), "unique option id");
       ids.add(r.id + "/" + o.id);
-      assert.ok(/^(gen-(fall|fall-color)-\d|link-[a-z0-9-]+|313p-[0-9a-f]{8}(-[0-9a-z]+)?)$/.test(o.id), "stable id shape: " + o.id);
+      assert.ok(/^(gen-(fall|fall-color)-\d|link-[a-z0-9-]+|commons-[a-z0-9-]+|313p-[0-9a-f]{8}(-[0-9a-z]+)?)$/.test(o.id), "stable id shape: " + o.id);
       if (o.type.indexOf("linked") === 0) {
         assert.strictEqual(o.permission_on_file, false, "no permission on file for a linked image");
         assert.ok(/not cleared/.test(o.rights_status));
@@ -84,7 +84,7 @@ for (const slug of ["fall", "fall-color"]) {
       assert.deepStrictEqual(e.approval, AUTHZ.AUTH, id + ": exactly the authorized approval");
       assert.ok(C.isPublic(e), id + ": public");
       assert.ok(g.official && g.relevance && g.identity && g.acquired && g.rights && g.approval, id + ": all five gate items");
-      assert.ok(["owner-photo", "illustration"].includes(g.imageRoute), id + " image route " + g.imageRoute);
+      assert.ok(["owner-photo", "illustration"].includes(g.imageRoute) || (g.imageRoute === "acquired-file" && g.rightsRoute === "third-party-license"), id + " image route " + g.imageRoute);
       assert.ok(!e.image.remote, id + ": no linked image on a launch record");
       assert.ok(/^https:\/\//.test(e.website), id + " has an https official URL");
       const off = e.evidence.find((x) => x.level === "official");
@@ -92,6 +92,11 @@ for (const slug of ["fall", "fall-color"]) {
       assert.ok(e.relevance.basis && e.relevance.note, id + " relevance states its basis");
       assert.ok(!("hours" in e) && !("admission" in e) && !("dates" in e));
       if (g.imageRoute === "illustration") { assert.strictEqual(e.image.illustrative, true); assert.strictEqual(r.launch.image_depicts_destination, false); }
+      else if (g.rightsRoute === "third-party-license") {
+        // openly licensed photograph (Wikimedia Commons): recorded author, license, https license URL, and the credit reaches the public card
+        assert.strictEqual(e.image.illustrative, false); assert.ok(!e.image.ownerPhoto && !e.image.remote);
+        assert.ok(e.image.license && /^https:\/\//.test(e.image.licenseUrl) && e.image.rightsVerifiedAt && e.image.commons && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(e.image.commons.filePage));
+      }
       else { assert.strictEqual(e.image.illustrative, false); assert.ok(e.image.ownerPhoto); }
       assert.strictEqual(r.launch.image_route, g.imageRoute);
       // two independent reads are on file in the verification log
