@@ -79,6 +79,7 @@ const {
 } = require("../api/_lib/status-lookup");
 const { startRun, finishRun } = require("../api/_lib/run-log");
 const { SLUGS } = require("../api/_lib/source-slugs");
+const { deriveRaEventUrl, deriveRaTicketUrl } = require("../api/_lib/ra-links");
 const { buildVenueNameToIdMap, resolveVenueId } = require("../api/_lib/venue-lookup");
 const { lookupKnownSourceIds, recordSourceIdentity } = require("../api/_lib/event-source-identities");
 const {
@@ -176,9 +177,18 @@ function deriveOffer(offersPrice) {
   return { priceFrom: n, isFree: false };
 }
 
-function deriveTicketUrl(numericId, jsonLdUrl) {
-  if (typeof jsonLdUrl === "string" && /^https?:\/\//.test(jsonLdUrl)) return jsonLdUrl;
-  return `https://ra.co/events/${numericId}`;
+// event_url: RA's own event-specific page, always https://ra.co/events/<id>.
+// The JSON-LD `url` is deliberately NOT trusted over the id: it is only ever
+// that same page, and anything else (a homepage, another event) must not
+// become the event link. ticket_url: the actual ticketing destination, only
+// when the source states one (offers.url); otherwise NULL. Never invented,
+// never an RA page. See api/_lib/ra-links.js.
+function deriveEventUrl(numericId) {
+  return deriveRaEventUrl(numericId);
+}
+
+function deriveTicketUrl(rawTicketUrl) {
+  return deriveRaTicketUrl(rawTicketUrl);
 }
 
 function deriveImageUrl(image) {
@@ -252,7 +262,8 @@ function deriveEventRow(raw, venueMap) {
   const venueName = (typeof raw.venueName === "string" && raw.venueName.trim()) || "Location TBA";
   const { priceFrom, isFree } = deriveOffer(raw.offersPrice);
   const numericId = String(raw.id).replace(/^ra-/, "");
-  const ticketUrl = deriveTicketUrl(numericId, raw.url);
+  const eventUrl = deriveEventUrl(numericId);
+  const ticketUrl = deriveTicketUrl(raw.ticketUrl || raw.offersUrl);
   const imageUrl = deriveImageUrl(raw.image);
   const { endDate, timeDisplay } = deriveTimeDisplayAndEndDate(raw.startDate, raw.endDate);
 
@@ -270,6 +281,7 @@ function deriveEventRow(raw, venueMap) {
     time_display: timeDisplay,
     is_free: isFree,
     price_from: priceFrom,
+    event_url: eventUrl,
     ticket_url: ticketUrl,
     image_url: imageUrl,
     source: "Resident Advisor",
@@ -751,7 +763,7 @@ async function startRaSyncSession(opts) {
 // this path.
 const MERGE_BLANK_FIELDS = [
   "description", "venue_id", "venue_name_raw", "venue_address_raw", "venue_city_raw",
-  "ticket_url", "image_url", "end_date", "time_display", "is_free", "price_from",
+  "event_url", "ticket_url", "image_url", "end_date", "time_display", "is_free", "price_from",
 ]; // fields a later successful RA detail fetch may fill in ONLY if still blank -- see completeRaSyncSession's own updated comment.
 
 async function completeRaSyncSession(opts) {
@@ -1013,6 +1025,7 @@ module.exports = {
   deriveTimeDisplayAndEndDate,
   parseAddressText,
   deriveOffer,
+  deriveEventUrl,
   deriveTicketUrl,
   deriveImageUrl,
   deriveDescription,

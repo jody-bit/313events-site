@@ -114,11 +114,19 @@ async function run() {
   console.log("PASS: deriveOffer -- price=0 is explicit free, missing price is unknown (never assumed free)");
 
   {
-    assert.strictEqual(lib.deriveTicketUrl("2461133", null), "https://ra.co/events/2461133");
-    assert.strictEqual(lib.deriveTicketUrl("2461133", "https://ra.co/events/2461133"), "https://ra.co/events/2461133");
-    assert.strictEqual(lib.deriveTicketUrl("2461133", "not-a-url"), "https://ra.co/events/2461133");
+    // event_url: always RA's own event page, from the id alone.
+    assert.strictEqual(lib.deriveEventUrl("2461133"), "https://ra.co/events/2461133");
+    assert.strictEqual(lib.deriveEventUrl("ra-2461133"), "https://ra.co/events/2461133");
+    assert.strictEqual(lib.deriveEventUrl("not-an-id"), null, "never a made-up URL");
+    // ticket_url: only a real, non-RA, non-generic ticketing destination; else null.
+    assert.strictEqual(lib.deriveTicketUrl(null), null);
+    assert.strictEqual(lib.deriveTicketUrl(undefined), null);
+    assert.strictEqual(lib.deriveTicketUrl("not-a-url"), null);
+    assert.strictEqual(lib.deriveTicketUrl("https://ra.co/events/2461133"), null, "an RA page is the event page, not a ticketing destination");
+    assert.strictEqual(lib.deriveTicketUrl("https://tickets.example.com/"), null, "a bare homepage is not a ticketing destination");
+    assert.strictEqual(lib.deriveTicketUrl("https://tickets.example.com/e/123"), "https://tickets.example.com/e/123");
   }
-  console.log("PASS: deriveTicketUrl");
+  console.log("PASS: deriveEventUrl / deriveTicketUrl -- event page in event_url, ticket_url only for a verified ticketing destination");
 
   {
     assert.strictEqual(lib.deriveImageUrl("https://images.ra.co/abc.png"), "https://images.ra.co/abc.png");
@@ -191,7 +199,8 @@ async function run() {
     assert.strictEqual(row.time_display, "9:00 PM–2:00 AM");
     assert.strictEqual(row.is_free, false);
     assert.strictEqual(row.price_from, null);
-    assert.strictEqual(row.ticket_url, "https://ra.co/events/2461133");
+    assert.strictEqual(row.event_url, "https://ra.co/events/2461133");
+    assert.strictEqual(row.ticket_url, null, "no verified ticketing destination -- never an RA page, never invented");
     assert.strictEqual(row.image_url, "https://images.ra.co/4dc17dd530ddabe44b827c729b0bac137d06890f.png");
     assert.strictEqual(row.source, "Resident Advisor");
     assert.strictEqual(row.note, null);

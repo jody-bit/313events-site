@@ -41,7 +41,12 @@
 //      fetch merge into this SAME row rather than duplicate it, and what
 //      api/_lib/ra-provenance-note.js's note line also records explicitly)
 //      and via the note field (which listing fields RA actually supplied --
-//      never a fixed assumed list).
+//      never a fixed assumed list). AND (2026-10-12 fix) via the real
+//      event_url column -- deriveEventUrl's deterministic
+//      `https://ra.co/events/<id>` shape, same helper the full
+//      detail-fetch path uses, never a guess and no fetch -- so a
+//      listing-only row no longer publishes with zero direct source
+//      link. ticket_url stays NULL (no verified ticketing destination).
 //   4. Conservative cross-source dedupe (scripts/ra-sync.js's own
 //      findConservativeDuplicate, reused unmodified) runs BEFORE any row
 //      is created -- a title/venue match against an existing non-RA row
@@ -56,6 +61,7 @@ const {
   deriveCategory,
   LISTING_METADATA_FIELDS,
   parseRaListingDate,
+  deriveEventUrl,
 } = require(path.join(__dirname, "ra-sync"));
 const { lookupExistingRows } = require(path.join(__dirname, "..", "api", "_lib", "status-lookup"));
 const { lookupKnownSourceIds, recordSourceIdentity } = require(path.join(__dirname, "..", "api", "_lib", "event-source-identities"));
@@ -334,10 +340,19 @@ async function promoteRaCandidates({
     // is visitor-facing and survived approval unchanged (2026-10-04: RA
     // provenance lines were printing on the homepage).
     const internal_note = buildRaDiscoveryNote({ raId: id, raUrl: meta.url || null, presentFields });
+    // event_url (2026-10-12, RA source-link correction): RA's own
+    // event-specific page, https://ra.co/events/<id>, derived from the id
+    // alone -- no fetch, no guess. ticket_url stays NULL: a listing-only
+    // candidate carries no verified ticketing destination, and an RA page
+    // is the event page, not a ticketing destination. Previously this
+    // function put RA's URL only in admin-only internal_note; the first
+    // fix wrote it to ticket_url, which mislabels it.
     const row = {
       ...draftRow,
       status: "pending_review", // decision 2: never 'approved' here, ever.
       source: "Resident Advisor",
+      event_url: deriveEventUrl(id.replace(/^ra-/, "")),
+      ticket_url: null,
       internal_note,
     };
 

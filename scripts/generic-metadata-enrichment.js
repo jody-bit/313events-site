@@ -100,6 +100,7 @@ const {
   discoverAuthoritativeDescription,
 } = require(path.join(__dirname, "..", "api", "_lib", "external-discovery"));
 const { classifySourceTier, domainPlausiblyOwnedByName } = require(path.join(__dirname, "..", "api", "_lib", "source-authority"));
+const { deriveRaEventUrl } = require(path.join(__dirname, "..", "api", "_lib", "ra-links"));
 const { appendEnrichmentProvenance } = require(path.join(__dirname, "..", "api", "_lib", "ra-provenance-note"));
 const { repairVerdict, REPAIR_SOURCES } = require(path.join(__dirname, "..", "api", "_lib", "description-strength"));
 const REPAIR_SOURCES_LIST = REPAIR_SOURCES;
@@ -163,7 +164,7 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     `&followup_dismissed=is.false` +
     `&or=(description.is.null,and(venue_name_raw.is.null,venue_id.is.null),and(ticket_url.is.null,event_url.is.null),and(venue_address_raw.is.null,venue_city_raw.is.null,venue_id.is.null))` +
     `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
-    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
+    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,external_id,source,internal_note,` +
     `venues(name,address,city,website,facebook_url)` +
     `&limit=1000`;
   const resp = await fetch(url, { headers: sbHeaders });
@@ -587,7 +588,12 @@ async function repairGenericMetadata({
     //    every more specific recovery tier (including steps 1/1.5 above,
     //    in this same pass) has had its chance.
     if (isBlank(event.ticket_url) && isBlank(event.event_url)) {
-      const link = resolveDigitalHomeLink(event, canonicalMaps);
+      // RA rows: the authoritative link is RA's own event page, derived from
+      // the id. A venue's digital home (a generic link) must never stand in
+      // for it (2026-10-12).
+      const link = isRaSourced(event)
+        ? deriveRaEventUrl(event.external_id)
+        : resolveDigitalHomeLink(event, canonicalMaps);
       if (link) {
         if (dryRun) {
           logger.log(`[dry-run] would set event_url from venue digital home for event ${event.id}: ${link}`);
