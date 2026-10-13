@@ -160,16 +160,13 @@ function run() {
   assert.ok(/EventDates\.expand\(e, floor\)/.test(read("calendar.html")), "calendar.html passes a floor for long running events");
   assert.ok(read("index.html").indexOf('/event-dates.js') < read("index.html").indexOf('/discovery.js'), "index.html loads event-dates.js before discovery.js");
 
-  // The migration is applied (2026-10-13). index.html reads the owner-rights view events_public,
-  // which exposes the two columns, so its main query asks for them.
-  assert.ok(/events_public\?[^`]*select=[^`]*date_semantics,occurrence_dates/.test(read("index.html")), "index.html: main query selects date_semantics and occurrence_dates");
-  // calendar.html and map.html read the raw `events` table, where anon has column-level grants only
-  // and none on the new columns. They must NOT select them until
-  // supabase/proposed/2026-10-13_events_date_columns_anon_grant.sql is applied (flip then).
-  for (const page of ["calendar.html", "map.html"]) {
-    const m = read(page).match(/select=[^`"']*/g) || [];
-    assert.ok(!m.some((x) => /date_semantics|occurrence_dates/.test(x)), `${page}: no select of columns anon cannot read yet`);
-  }
+  // The migration and the anon column grant (2026-10-13_events_date_columns_anon_grant.sql) are applied,
+  // so every page's main event query asks for the two columns: index.html through the owner-rights view
+  // events_public, calendar.html and map.html through the raw events table (anon column grant).
+  const sel = { "index.html": /events_public\?[^`]*select=[^`]*date_semantics,occurrence_dates/, "calendar.html": /rest\/v1\/events\?status=eq\.approved&select=[^`]*date_semantics,occurrence_dates/, "map.html": /rest\/v1\/events\?status=eq\.approved&start_date[^`]*select=[^`]*date_semantics,occurrence_dates/ };
+  for (const page of Object.keys(sel)) assert.ok(sel[page].test(read(page)), `${page}: main query selects date_semantics and occurrence_dates`);
+  // recurrence_evidence is internal and must never be selected by a page.
+  for (const page of ["index.html", "calendar.html", "map.html"]) assert.ok(!/recurrence_evidence/.test(read(page)), `${page}: does not select recurrence_evidence`);
 
   console.log("PASS: event-dates — single / continuous / recurring / legacy, Glenn Barr, Kent Myers, Harvest Festival, discovery, surfaces");
 }

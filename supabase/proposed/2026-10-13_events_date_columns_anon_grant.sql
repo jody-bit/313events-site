@@ -1,4 +1,6 @@
--- EVENTS DATE COLUMNS: ANON READ GRANT (PROPOSED, NOT EXECUTED). Needs owner SQL approval.
+-- EVENTS DATE COLUMNS: ANON READ GRANT. APPLIED to production 2026-10-13 (owner-approved; Platform-verified;
+-- rollback tested in a discarded transaction; post-apply VERIFY: true,true,false,false,false,23,21).
+-- Kept here as the record of what ran; test/public-boundary.test.js reads the grant from this file.
 -- Why: calendar.html and map.html read the raw `events` table with the anon key, where anon
 -- has column-level SELECT only. Checked on production 2026-10-13:
 --   has_column_privilege('anon','public.events','date_semantics','select')   = false
