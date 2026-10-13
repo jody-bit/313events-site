@@ -27,6 +27,8 @@ const ALLOWED = [
   "api/_lib/ra-links.js", "api/admin-events.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
+  // Description self-healing: shared strength rule + GottaGacha adopting it.
+  "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",
   "api/_lib/seasonal-editorial/HALLOWEEN_RECONCILIATION.md",
   "api/_lib/seasonal-editorial/LAUNCH_PROPOSAL_1.md",
