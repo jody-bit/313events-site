@@ -21,13 +21,15 @@ where id in ('8e4db9ef-2f29-4155-9927-2da3bf771bcf','25a74571-7cde-44b5-b0e9-5f8
 update public.events set
   date_semantics = 'single',
   description = 'One night at Eloise Asylum in Westland: DJ 3choc@t, Mob Opera and Marz Radio, with MCs Trudi Daniels and John Bobby. Doors open at 6 PM, rain or shine. Concert-only tickets include Concert Zone access (concert, beer tent, food trucks and vendors). Combined Haunt/Concert GA and VIP tickets add the haunted attraction; they are the only haunt tickets valid on October 30, and regular haunt admission is not accepted. The Haunt requires guests to be 18 or older. Set times and ticket prices are not published; see official ticketing.'
-where id = '8e4db9ef-2f29-4155-9927-2da3bf771bcf' and status = 'approved';
+where id = '8e4db9ef-2f29-4155-9927-2da3bf771bcf' and status = 'approved'
+  and date_semantics is null and time_display = '6:00 PM doors';
 
 update public.events set
   time_display = 'Special Haunt/Concert night; see official ticketing for times',
   price_from = null,
   description = 'Haunted attraction at Eloise Asylum in Westland. On October 30 the haunt runs with the Rockin'' Haunt Night Concert: only the special Haunt/Concert GA or VIP ticket is valid, and regular haunt admission is not accepted. Guests must be 18 or older. Check official ticketing for details.'
-where id = '25a74571-7cde-44b5-b0e9-5f8c25a02cdc' and status = 'approved' and time_display = '7:00–11:00 PM';
+where id = '25a74571-7cde-44b5-b0e9-5f8c25a02cdc' and status = 'approved'
+  and time_display = '7:00–11:00 PM' and price_from = 34.99;
 
 do $$ declare n int; begin
   select count(*) into n from public.events
@@ -39,6 +41,5 @@ commit;
 
 -- VERIFY: select id,title,time_display,price_from,date_semantics from public.events where id in (...both ids...);
 --         and confirm events_public shows both, and approved count unchanged.
--- ROLLBACK:
---   update public.events e set description=b.description, time_display=b.time_display, price_from=b.price_from, date_semantics=b.date_semantics
---   from public.events_correction_backup_20261013_eloise b where b.id=e.id;
+-- ROLLBACK: run 2026-10-13_eloise_oct30_correction_rollback.sql (restores description, time_display, price_from, date_semantics from the backup table).
+-- NOT CHANGED on either row: title, dates, is_all_day, event_url, ticket_url, image_url, venue_id, status.
