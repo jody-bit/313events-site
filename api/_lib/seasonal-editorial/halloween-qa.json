@@ -4933,11 +4933,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -4953,6 +4953,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-2073df4d",
      "gen-halloween-4",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -4975,6 +4976,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-2073df4d",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Distracted Haunted House",
+     "rights_status": "Owner confirmation (project thread, 2026-10-14): Jody Tyree states Distracted Haunted House sent this image by email for 313.events to use.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Performer with pale contact lenses and cracked-skin makeup against red-lit wall, Distracted Haunted House promotional image (venue-supplied)",
+     "warnings": [
+      "card is a crop; logo and HAUNTED HOUSE banner baked into the full image"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-4",

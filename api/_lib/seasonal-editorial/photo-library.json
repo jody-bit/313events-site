@@ -4306,6 +4306,53 @@
    },
    "capture_place": "Hush Haunted Attraction, Westland (supplied from the venue's website)",
    "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-2073df4d",
+   "review_ref": "VENUE-DISTRACTED-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Performer with pale contact lenses and cracked-skin makeup against red-lit wall, Distracted Haunted House promotional image (venue-supplied)",
+   "capture_date": "not recorded",
+   "people_visible": "one performer (promotional image)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "card is a crop; logo and HAUNTED HOUSE banner baked into the full image"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+    "card_px": [
+     1080,
+     720
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__1600.webp",
+    "full_px": [
+     1080,
+     1350
+    ]
+   },
+   "original": {
+    "filename": "Stacey_Distracted1080x1350.png",
+    "sha256": "2073df4db6f018f1f093b82d98108b1996e0fcdb0c4ebbff84da03399f24b9ed",
+    "pixels": [
+     1080,
+     1350
+    ],
+    "stored": "in repo as the __1600 file (lossless WebP of the supplied PNG)"
+   },
+   "credit": "Distracted Haunted House",
+   "license": "Owner confirmation (project thread, 2026-10-14): Jody Tyree states Distracted Haunted House sent this image by email for 313.events to use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__distracted-haunted-house__bowling-green-oh",
+    "name": "Distracted Haunted House",
+    "collection": "halloween",
+    "inventory_no": "",
+    "published_id": "distracted-haunted-house",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Distracted Haunted House (supplied by the venue)",
+   "reuse": "destination card and related editorial with accurate attribution"
   }
  ],
  "editorial_atmospheric": [

@@ -106,6 +106,13 @@ for (const r of qa.records) {
   }
   // Owner decision 2026-10-14: Hush Haunted Attraction shows the venue-website image (Saints and Sinners art) that Hush approved in writing
   // (owner-authorized route, reply recorded in image.ownerPhoto). The pinned QA default is still the linked official image.
+  // Owner decision 2026-10-14: Distracted Haunted House shows the image the venue emailed (owner-authorized route, permission recorded in
+  // image.ownerPhoto); the card is a 3:2 crop. The pinned QA default is still the carousel illustration.
+  if (r.id === "distracted-haunted-house") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-distracted-01__card\.webp$/.test(e.image.src) && /Distracted/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier option");
+    continue;
+  }
   if (r.id === "hush-haunted-attraction") {
     assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-hush-01__card\.webp$/.test(e.image.src) && /Yes, you may use it/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
     assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the linked official image");
