@@ -305,7 +305,8 @@
     <div class="tab-panel active" data-tab-panel="submissions">
       <section class="block" style="margin-top:0;">
         <h2>Event submissions</h2>
-        <div class="sub">Single events submitted via submit.html — approve to publish, reject to discard.</div>
+        <div class="sub">Single events submitted via submit.html — approve to publish, reject to discard. Pending events whose date has passed are kept out of this list, not deleted or rejected.</div>
+        <div class="refresh" style="margin:0 0 12px;"><button id="queueViewBtn" type="button" onclick="toggleQueueView()">Show ended pending events</button><span class="refresh-status" id="queueViewStatus"></span></div>
         <div id="list"></div>
       </section>
     </div>
@@ -1399,11 +1400,21 @@ function renderRaSync(data) {
   banner.style.display = 'block';
 }
 
+// Default queue: pending events that have not ended. The historical view lists the pending events that have
+// ended (nothing is rejected or deleted; they are the same pending_review rows). Approve/Reject work in both.
+let QUEUE_EXPIRED_VIEW = false;
+
+function toggleQueueView() {
+  QUEUE_EXPIRED_VIEW = !QUEUE_EXPIRED_VIEW;
+  document.getElementById('queueViewBtn').textContent = QUEUE_EXPIRED_VIEW ? 'Back to current pending events' : 'Show ended pending events';
+  loadQueue();
+}
+
 async function loadQueue() {
   const gateErr = document.getElementById('gateErr');
   gateErr.style.display = 'none';
   try {
-    const resp = await fetch('/api/admin-events', { headers: { 'x-admin-secret': SECRET } });
+    const resp = await fetch('/api/admin-events' + (QUEUE_EXPIRED_VIEW ? '?expired=1' : ''), { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Failed to load queue'));
 
@@ -1418,9 +1429,11 @@ async function loadQueue() {
 
 function renderList(events) {
   const list = document.getElementById('list');
-  setTabBadge('submissions', events.length);
+  // The tab badge counts the current queue only; the historical view must not inflate it.
+  if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', events.length);
+  document.getElementById('queueViewStatus').textContent = QUEUE_EXPIRED_VIEW ? events.length + ' ended pending event' + (events.length === 1 ? '' : 's') : '';
   if (!events.length) {
-    list.innerHTML = '<div class="empty">No pending submissions. 🎉</div>';
+    list.innerHTML = QUEUE_EXPIRED_VIEW ? '<div class="empty">No ended pending events.</div>' : '<div class="empty">No pending submissions. 🎉</div>';
     return;
   }
   list.innerHTML = events.map(e => `

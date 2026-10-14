@@ -115,6 +115,7 @@ function isSafeHttpUrl(url) {
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = require("./_lib/environment").siteUrl();
+const { filterPendingQueue } = require("./_lib/pending-queue");
 
 function escapeHtmlForEmail(str) {
   return String(str == null ? "" : str)
@@ -239,6 +240,7 @@ module.exports = async (req, res) => {
     try {
       const search = typeof req.query?.search === "string" ? req.query.search.trim() : "";
       const hidden = req.query?.hidden === "1";
+      const expiredView = req.query?.expired === "1";
       const includePending = req.query?.includePending === "1";
       const incomplete = req.query?.incomplete === "1";
       const duplicates = req.query?.duplicates === "1";
@@ -325,7 +327,13 @@ module.exports = async (req, res) => {
         // has to be reachable here to be put back.
         url = `${SUPABASE_URL}/rest/v1/events?status=eq.rejected&select=*&order=updated_at.desc&limit=200`;
       } else {
-        url = `${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc`;
+        // The submissions queue. Default: pending rows whose effective end date has not passed. ?expired=1: the
+        // historical view of pending rows that have ended. Read-side only (api/_lib/pending-queue.js); no status
+        // changes. Paged and ordered on a total order (created_at ties are common after a bulk feed run), because
+        // the queue can exceed the database's per-request cap.
+        const all = await fetchAllPages(`${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc,id.asc`, sbHeaders);
+        res.status(all.ok ? 200 : 502).json(all.ok ? { events: filterPendingQueue(all.rows, expiredView ? "expired" : "current"), view: expiredView ? "expired" : "current" } : { error: all.error });
+        return;
       }
 
       const resp = await fetch(url, { headers: sbHeaders });
