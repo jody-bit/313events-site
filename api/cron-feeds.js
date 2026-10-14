@@ -849,7 +849,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     // `upserted` is what actually landed (rows in key-shape groups that
     // were accepted -- see api/_lib/event-upsert.js); `failed` keeps a
     // partial write from being read as a clean one by the caller.
-    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: upsertResp.written, skippedPast, failed: true };
+    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, skippedPast, upserted: upsertResp.written, failed: true };
   }
   return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}`, upserted: keep.length, skippedPast };
 }
