@@ -7,6 +7,52 @@
  },
  "destination_specific": [
   {
+   "id": "313p-0340da3a",
+   "review_ref": "Wiards-CountryFair-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "destination": {
+    "asset_key": "fall-guide__wiards-orchards__ypsilanti-mi",
+    "name": "Wiard’s Orchards",
+    "collection": "fall",
+    "published_id": "wiards-orchards",
+    "identity": "sign_text",
+    "match_confidence": "HIGH"
+   },
+   "subject": "Wiard's Country Fair sign atop stacked hay bales with pumpkins and mum-filled wooden crates",
+   "capture_date": null,
+   "capture_place": "Wiard's Country Fair / Wiard's Orchards, Ypsilanti, MI",
+   "people_visible": "none",
+   "editorial_flags": [],
+   "quality_flags": [
+    "Source photo (961x1055) is portrait; cropped top-anchored to 3:2 to keep the sign and upper pumpkin tiers, which excludes the bottom pumpkin row. See entries.json image.cropNote."
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__full.webp",
+    "full_px": [
+     961,
+     1055
+    ]
+   },
+   "original": {
+    "filename": "4cb4d0b6-image.jpg",
+    "sha256": "0340da3a9b88ec1606e8922d7b3638d8570a36b745939750cb2bb3c2143d7dac",
+    "pixels": [
+     961,
+     1055
+    ],
+    "stored": "outside repo: supplied directly by the owner in the project thread, 2026-10-13"
+   },
+   "credit": "313.events archive",
+   "license": "Owner confirmation (project thread, 2026-10-13): original photograph taken by the 313.events owner; publication on 313.events confirmed; no photographer credit required.",
+   "illustrative": false,
+   "reuse": "destination card and related editorial; no attribution required"
+  },
+  {
    "id": "313p-d776493e",
    "review_ref": "S01-01",
    "classification": "DESTINATION_SPECIFIC",

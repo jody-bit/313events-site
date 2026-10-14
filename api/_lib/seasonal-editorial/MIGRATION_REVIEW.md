@@ -13,7 +13,7 @@ State counts: HOLD_UNVERIFIED 1, CONTENT_VERIFIED 1, IMAGE_PENDING 0, READY_FOR_
 | fall | Yates Cider Mill | published | PUBLISHED | acquired-file | third-party-license | none |
 | fall | Parmenter's Northville Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | fall | Blake's Orchard & Cider Mill | published | PUBLISHED | illustration | owner-supplied-illustration | none |
-| fall | Wiard’s Orchards | published | PUBLISHED | illustration | owner-supplied-illustration | none |
+| fall | Wiard’s Orchards | published | PUBLISHED | owner-photo | owner-authorization | none |
 | halloween | Erebus Haunted Attraction | published | PUBLISHED | illustration | owner-supplied-illustration | none |
 | halloween | Eloise Asylum | published | PUBLISHED | owner-photo | owner-authorization | none |
 | halloween | Hallowe'en in Greenfield Village | published | PUBLISHED | owner-photo | owner-authorization | none |
@@ -80,11 +80,11 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - official (site read 2026-10-11): Official site read 2026-10-11 (two reads). Address given as 5565 Merritt Rd, Ypsilanti, Michigan 48197. The home page says "Apples, cider, pumpkins, donuts and so much more!" and "Cider mill season is here!". The Country Fair attractions (corn maze, slide, wagon rides, petting farm) each read Temporarily Closed on the fetched page, so no Country Fair attraction is claimed. A countdown banner shows a September 8, 2026 date that has passed. <https://www.wiards.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 5565 Merritt Rd, Ypsilanti, MI 48197. Season/hours as stated: Fall underway; Country Fair Wed-Sun, Country Store Tue-Sun; hours on separate page not read. Flags: corn maze, slide, wagon rides, petting farm marked Temporarily Closed on page. <https://www.wiards.com/>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person: The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card..
-- Image: `/assets/seasonal/fall-card-8.webp` (generated illustrative card).
+- Image: `/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__card.webp` (owner photo 313p-0340da3a, sha256 4d6410520166..., verified 2026-10-13).
 - Outstanding:
   - nothing blocks the gate except what is listed under caveats.
 - Caveats:
-  - Image: a labelled generated illustration ("Illustrative image" badge). It is not a photograph of this destination. Generation tool and terms are not recorded.
+  - Image rights: owner-confirmed 2026-10-12. 313.events owner photographed this destination for 313.events and authorized commercial use. Credit: 313.events archive. This is not a Creative Commons license and there is no license URL.
   - Was status "published" on feature/halloween-completion (7e094df) on inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval. Not grandfathered.
 
 ## Erebus Haunted Attraction (halloween, `erebus`)

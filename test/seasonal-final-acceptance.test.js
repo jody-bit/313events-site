@@ -31,9 +31,12 @@ for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
   // A card shows a labelled illustration, the owner-authorized photograph credited to its photographer, or an openly
   // licensed photograph (author, license and license URL recorded; credit names the author, license and Wikimedia Commons).
   const licensed = (e.image.illustrative === false && !e.image.ownerPhoto && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && !!e.image.rightsVerifiedAt);
+  // An owner-authorized photograph either names its photographer (a real credit line is shown on the card) or is from
+  // the owner's own archive, in which case render.js's OWNER_CREDIT pattern suppresses the credit line entirely.
+  const ownerCredited = e.image.ownerPhoto && /^(Photography © .+|313\.events archive)$/.test(e.image.credit || "");
   assert.ok(e.image.illustrative === true ? e.image.provenance.label === "Illustrative image"
     : licensed ? /^Photo: .+, (CC0|CC BY(-SA)? \d\.\d|Public domain), via Wikimedia Commons$/.test(e.image.credit) && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(e.image.commons.filePage)
-    : e.image.credit === "Photography © Miriam Vukich", id + ": labelled illustration, licensed photograph or credited photograph");
+    : ownerCredited, id + ": labelled illustration, licensed photograph or credited photograph");
 }
 // ---- held and leads stay out
 for (const col of ["fall", "fall-color"]) {
@@ -58,7 +61,10 @@ const sig = [];
 for (const col of ["fall", "fall-color"]) for (const id of L1[col]) { const e = E[col].find((x) => x.id === id); sig.push([id, e.name, e.city, e.summary, e.website, e.image.src, e.image.credit || "", e.featured].join("|")); }
 // Re-pinned again 2026-10-12 with owner approval (photography batch 2): belle-isle-park and cranbrook-gardens-and-grounds changed
 // image.src and image.credit only (openly licensed Commons photographs). Pin before: 0ecb0c8e...
-assert.strictEqual(crypto.createHash("sha256").update(sig.join("\n")).digest("hex"), "b7a9e7b4c51b78d891bd953c8ea3320369165c3330ccc3c1daec965e180bee6b", "the original 15 records are unchanged");
+// Re-pinned 2026-10-13 with owner authorization (project thread, Wiard's Country Fair photo integration): wiards-orchards
+// changed image.src and image.credit only, replacing the temporary AI-generated illustration with an owner-authorized
+// original photograph. Pin before: b7a9e7b4...
+assert.strictEqual(crypto.createHash("sha256").update(sig.join("\n")).digest("hex"), "0d1f75bf4d83d5745891e098bbe35409c813c1b7331b131ed344fe9ff10f3ae7", "the original 15 records are unchanged");
 
 // ---- owner-verified destinations are included
 const FALL = ["kackleberry-farms", "erie-orchards-and-cider-mill", "parshallville-cider-mill", "nixon-farms-blast-corn-maze", "gust-brothers-pumpkin-farm"];

@@ -324,7 +324,7 @@
    "original15": true,
    "currentStatus": "PUBLISHED",
    "gate": "PUBLISHED",
-   "imageRoute": "illustration",
+   "imageRoute": "owner-photo",
    "editorialAcceptedAt": "2026-10-12",
    "publicCard": {
     "id": "wiards-orchards",
@@ -339,13 +339,14 @@
     "summary": "Orchard, cider mill and country store in Ypsilanti, with apples, cider, pumpkins and donuts.",
     "website": "https://www.wiards.com",
     "image": {
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__card.webp",
      "alternates": [
       "/assets/seasonal/fall-card-2.webp",
       "/assets/seasonal/fall-card-5.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "313.events archive"
     }
    }
   },

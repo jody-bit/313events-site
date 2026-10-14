@@ -396,49 +396,48 @@
     "unresolved": []
    },
    "image": {
-    "src": "/assets/seasonal/fall-card-8.webp",
+    "src": "/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__card.webp",
+    "source": "313.events owner photo archive",
+    "credit": "313.events archive",
+    "illustrative": false,
+    "alt": "Orange pumpkins arranged on stacked hay bales beneath a Wiard’s Country Fair sign, with wooden flower crates and blue skies.",
+    "caption": "Pumpkins, hay bales, and autumn traditions at Wiard’s Country Fair in Ypsilanti, Michigan.",
+    "altNote": "Stored for future use. The current card template (seasonal/render.js) renders all card images with alt=\"\" (decorative; destination name is separate visible text), so this alt/caption is not yet output to the page. Wire it up if/when the template adds per-image alt text.",
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__card.webp",
+     "bytes": 153858,
+     "sha256": "4d6410520166d4c6ad5454b83c913f9fada3704d8fbb914c83616a3429a538d2",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-13"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-0340da3a",
+     "reviewRef": "Wiards-CountryFair-01",
+     "authorization": {
+      "statement": "Owner confirmation (project thread, 2026-10-13): original photograph taken by the 313.events owner; publication on 313.events confirmed; no photographer credit required.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread, 2026-10-13)",
+      "recordedAt": "2026-10-13"
+     },
+     "verifiedAt": "2026-10-13",
+     "verifiedBy": "Claude Code (Cowork session): size, dimensions and sha256 computed from the repository file"
+    },
     "alternates": [
      "/assets/seasonal/fall-card-2.webp",
      "/assets/seasonal/fall-card-5.webp"
     ],
     "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/fall-card-8.webp",
-     "bytes": 22172,
-     "sha256": "2b53c5a0005fe473ae75b4c4a4e3ee2fc5a909ab0153329b4cc9eca86969ac13",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-11"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude (Cowork session), recording the owner's image strategy message of 2026-10-11",
-     "recordedAt": "2026-10-11",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "remoteParked": {
-     "src": "https://cdn.prod.website-files.com/6100464ae6f378353e5dc239/610ae3a9f6f80d50841334c1_Wiard%27s%20Cider%20Mill.jpg",
-     "sourcePage": "https://www.wiards.com/orchard-info/wiards-history",
-     "credit": "Wiard's Orchards",
-     "acceptedBy": "Jody Tyree (owner)",
-     "acceptedAt": "2026-10-11",
-     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
-     "note": "Official site photo, 602x452 (small): cider-mill cart with fall flowers.",
-     "parkedNote": "Not used for the launch record. Kept for reference only; it is not adopted and has no rights-holder permission."
-    },
+    "cropNote": "Source photo 961x1055 (portrait). Cropped top-anchored to 3:2 (0,0)-(961,641) to keep the full Country Fair sign and the upper pumpkin/hay-bale tiers intact, then scaled to 1280x853 (no AI alteration; natural colors preserved). The bottom-most row of pumpkins falls outside this crop; a different crop can be requested if that trade-off should go the other way.",
     "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner decision in the project thread)",
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-13",
+     "resolvedBy": "Jody Tyree (owner photograph, project thread)",
+     "photographer": "313.events owner",
+     "commercialUse": "authorized",
+     "credit": "313.events archive",
      "unresolved": [],
-     "ownerAcceptance": "The owner explicitly accepts responsibility for using this temporary illustration. Missing generation-tool metadata is not an owner-approval blocker.",
-     "label": "Illustrative image",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
+     "note": "Replaces the temporary AI-generated illustration and the parked, rights-unconfirmed official-site photo with an owner-authorized original photograph of this destination."
     }
    },
    "migration": {
