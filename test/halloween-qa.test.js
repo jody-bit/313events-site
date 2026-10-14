@@ -17,7 +17,7 @@ const qa = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editori
 const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates.filter((c) => c.collection === "halloween");
 const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));
 const col = DATA.COLLECTIONS.halloween;
-const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk"]); // photography batch 2, owner approved 2026-10-12
+const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk", "wildwood-manor-house"]); // photography batch 2, owner approved 2026-10-12 (wildwood-manor-house: owner approved 2026-10-14)
 const entries = Object.fromEntries(ED.entries().halloween.map((e) => [e.id, e]));
 const pins = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/defaults.json"), "utf8")).defaults;
 
@@ -89,7 +89,7 @@ assert.deepStrictEqual([...new Set([...pub.matchAll(/<li class="sc-card[^"]*" da
 // every private entry's image agrees with the QA default and its fallbacks (one data set, two views)
 for (const r of qa.records) {
   const e = entries[r.id], o = r.image_options[0];
-  // Photography batch 2 (owner approval 2026-10-12): these six records show an openly licensed Commons photograph on the public card. The QA
+  // Photography batch 2 (owner approval 2026-10-12): these seven records show an openly licensed Commons photograph on the public card. The QA
   // default stays pinned (defaults.json is the owner's file and is not edited here), so the card image is checked against its licence record instead.
   if (PHOTO_B2.has(r.id)) {
     assert.ok(e.image.illustrative === false && !e.image.ownerPhoto && !e.image.remote && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") && !!e.image.rightsVerifiedAt &&

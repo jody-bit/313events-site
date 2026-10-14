@@ -24,7 +24,7 @@ const all = ED.entries(), H = all.halloween, byId = Object.fromEntries(H.map((e)
 const rel = ED.read("halloween-release-1.json");
 // Photography batch 2 (owner approval 2026-10-12): exactly these six records replaced their labelled illustration with an openly licensed
 // Wikimedia Commons photograph (image block only). Any other record taking a photograph still fails this guard.
-const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk"]);
+const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk", "wildwood-manor-house"]);
 const isLicensedPhoto = (e) => e.image.illustrative === false && !e.image.ownerPhoto && !e.image.remote && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") &&
   !!e.image.rightsVerifiedAt && /^Photo: .+, (CC0|CC BY(-SA)? \d\.\d), via Wikimedia Commons$/.test(e.image.credit || "") && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test((e.image.commons || {}).filePage || "");
 const batch = ED.read("RELEASE_BATCH_HALLOWEEN_1.json");

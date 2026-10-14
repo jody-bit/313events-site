@@ -944,8 +944,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "acquired-file",
+   "rightsRoute": "third-party-license",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -961,12 +961,13 @@
     "summary": "Seasonal eerie manor tours",
     "website": "https://metroparkstoledo.com/eeriemanor",
     "image": {
-     "src": "/assets/seasonal/halloween-card-8.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__wildwood-manor-house__commons-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-2.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photo: John Michael Dewees, CC0, via Wikimedia Commons"
     }
    }
   },
