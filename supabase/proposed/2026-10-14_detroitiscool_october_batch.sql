@@ -13,7 +13,7 @@ select 'Haunted House of Film at Side Hustle Lounge', 'nightlife', date '2026-10
 where not exists (select 1 from public.events where title ilike '%haunted house of film%');
 
 insert into public.events (title, category, start_date, end_date, is_all_day, date_semantics, is_free, source, status, venue_name_raw, venue_city_raw, description)
-select 'Black Lagoon Halloween Pop-Up at The Skip', 'nightlife', date '2026-09-30', date '2026-11-01', true, 'continuous', false, 'Manual', 'approved',
+select 'Black Lagoon Halloween Pop-Up at The Skip', 'nightlife', date '2026-10-01', date '2026-11-01', true, 'continuous', false, 'Manual', 'approved',
        'The Skip', 'Detroit', 
        'The Black Lagoon Halloween-themed pop-up bar takes over The Skip in downtown Detroit''s Belt through November 1. See the venue for hours and reservations.'
 where not exists (select 1 from public.events where title ilike '%black lagoon%pop%' );
