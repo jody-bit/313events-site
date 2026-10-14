@@ -2036,6 +2036,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-2073df4d",
      "gen-halloween-4",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2050,7 +2051,10 @@
     "haunted-attractions"
    ],
    "destination_id": "distracted-haunted-house",
-   "entry_id": "distracted-haunted-house"
+   "entry_id": "distracted-haunted-house",
+   "photos": [
+    "313p-2073df4d"
+   ]
   },
   {
    "collection": "halloween",

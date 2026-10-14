@@ -7148,40 +7148,37 @@
    "status": "PUBLISHED",
    "summary": "Indoor haunted house.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+    "source": "Supplied by Distracted Entertainment, LLC by email (Stacey portrait); original untouched as the full file, card is a 3:2 crop",
+    "credit": "Photography © Distracted Entertainment",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+     "bytes": 67768,
+     "sha256": "f2eeca6aa941427145e595da080c9caecc25af8749913f5150a81410cdbfe532",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-14"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-2073df4d",
+     "reviewRef": "VENUE-DISTRACTED-01",
+     "authorization": {
+      "statement": "Written reply from Distracted Entertainment, LLC (Scott Francis, Creative Director / Owner), received 2026-10-14 17:30 UTC, in answer to our photo permission request, attaching the images: \"Thank you for the photo permission request and we'd be happy to participate. Attached are a few images to choose from and if you need specific sizes please let me know.\" Owner confirmation (project thread, 2026-10-14): the supplied Distracted images are approved for 313.events use.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Distracted reply received 2026-10-14",
+      "recordedAt": "2026-10-14",
+      "note": "Evidence: experience/permissions/distracted-permission-2026-10-14.md. No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-14",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 1080x1350 portrait (4:5), cropped to 3:2 (rows 70-790) so the face stays and most of the baked-in logo is cut off, scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-4.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-1.webp",
-     "bytes": 45914,
-     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
