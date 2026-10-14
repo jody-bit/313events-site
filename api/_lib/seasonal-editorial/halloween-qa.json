@@ -5420,12 +5420,10 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "acquired-file",
+    "rights_route": "third-party-license",
     "outstanding": [],
-    "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
-    ],
+    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],

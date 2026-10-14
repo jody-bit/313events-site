@@ -7311,39 +7311,43 @@
    "status": "PUBLISHED",
    "summary": "Seasonal eerie manor tours",
    "image": {
-    "src": "/assets/seasonal/halloween-card-8.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__wildwood-manor-house__commons-01__card.webp",
+    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Robert_A._Stranahan_residence,_exterior_views,_2019_-_DPLA_-_eed3161fa610da19ad462be4f1d0fb8d_(page_1).jpg (taken 2019-03-19)",
+    "credit": "Photo: John Michael Dewees, CC0, via Wikimedia Commons",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "rightsVerifiedAt": "2026-10-14",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__wildwood-manor-house__commons-01__card.webp",
+     "bytes": 332498,
+     "sha256": "157e7a7687bc92e713f9ebe46f773daa428b2adfe812e6aedc8a7fedd0d04b42",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-14"
+    },
+    "commons": {
+     "filePage": "https://commons.wikimedia.org/wiki/File:Robert_A._Stranahan_residence,_exterior_views,_2019_-_DPLA_-_eed3161fa610da19ad462be4f1d0fb8d_(page_1).jpg",
+     "title": "Robert A. Stranahan residence, exterior views, 2019 - DPLA - eed3161fa610da19ad462be4f1d0fb8d (page 1).jpg",
+     "author": "John Michael Dewees",
+     "license": "CC0",
+     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+     "originalWidth": 6000,
+     "originalHeight": 4000,
+     "modifications": "Resized to 1280 px wide (already 3:2); converted to WebP."
+    },
+    "provenance": {
+     "status": "RESOLVED",
+     "resolvedAt": "2026-10-14",
+     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page and the image viewed; owner approved this photograph 2026-10-14",
+     "unresolved": [],
+     "credit": "Photo: John Michael Dewees, CC0, via Wikimedia Commons",
+     "note": "CC0 public-domain dedication; no permission or attribution is required. The Commons description names the Wildwood Manor House on the grounds of Wildwood Preserve Metropark, which hosts Eerie Manor Tours. Photographed in March, so the trees are bare."
+    },
     "alternates": [
      "/assets/seasonal/halloween-card-2.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-8.webp",
-     "bytes": 33614,
-     "sha256": "ff2ddf1c0903bdabbb8b4b285409f83e4e4ef83c50fabff796b881cfd1c54052",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
