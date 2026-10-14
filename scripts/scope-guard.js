@@ -62,7 +62,9 @@ const ALLOWED = [
   // City of Dearborn feed publication policy (Event Intelligence, draft PR #77): inert until a feed_sources row exists. cron-feeds.js: one-line change passing the policy to classify().
   "api/_lib/feed-publication.js",
   "api/_lib/dearborn-enrichment.js",
-  "api/cron-feeds.js"
+  "api/cron-feeds.js",
+  // Shared ingestion eligibility rule (owner decision 2026-10-14): feed rows that are definitively over are not inserted.
+  "api/_lib/ingest-eligibility.js"
 ];
 
 class ScopeGuardError extends Error {}
