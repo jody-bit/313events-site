@@ -526,12 +526,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "linked",
-    "rights_route": "linked-risk-acceptance",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
-     "A linked image depends on the source site continuing to serve it; the generated card is the fallback."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -547,6 +546,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "alternative_images": [
+     "313p-50d6d4a5",
      "gen-halloween-4",
      "gen-halloween-5",
      "gen-halloween-8",
@@ -585,6 +585,24 @@
       "result": "loaded 1440x902"
      },
      "catalogue_note": "Size 1440x902"
+    },
+    {
+     "id": "313p-50d6d4a5",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Hush Haunted Attraction",
+     "rights_status": "Owner confirmation (project thread, 2026-10-14): Jody Tyree states the image was taken from Hush Haunted Attraction's website and that Hush approved 313.events use. Hush reply recorded verbatim: \"Yes, you may use it.\" signed Gary, received 2026-10-14 11:44 AM.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Costumed vampire actor lunging toward camera in red-and-black brocade coat, Saints and Sinners haunted house promotional art (venue-supplied)",
+     "warnings": [
+      "title and HAUNTED HOUSE banner baked into image",
+      "865x574 native size"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-4",
