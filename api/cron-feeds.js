@@ -7,6 +7,7 @@ const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { policyFor, classify, holdNote } = require("./_lib/feed-publication");
+const { partitionExpired } = require("./_lib/ingest-eligibility");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
 // "Production track record") — scripts/press-coverage-linking.js's
 // extractCategory() already does keyword-based category derivation against
@@ -187,6 +188,7 @@ function parseIcsEvents(icsText) {
     else if (prop.name === "DESCRIPTION") current.description = decodeEntities(unescapeIcsText(prop.value));
     else if (prop.name === "URL") current.url = prop.value;
     else if (prop.name === "UID") current.uid = prop.value;
+    else if (prop.name === "RRULE" || prop.name === "RDATE") current.recurring = true; // a series master: its own DTSTART may be past while later occurrences are not
     else if (prop.name === "RECURRENCE-ID") current.recurrenceId = true; // an override of one occurrence of a series; shares its master's UID
     // 2026-09-05 addition — RFC 7986 §5.10 defines an IMAGE property for
     // exactly this ("a graphic image associated with the calendar or a
@@ -617,6 +619,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     // Only a feed with a publication policy gets a verdict; the marker is internal and is
     // stripped before the write (upsertParsedRows).
     if (policy) row._publication = classify(row, { start, end }, policy);
+    if (ev.recurring || ev.recurrenceId) row._recurring = true; // internal marker for api/_lib/ingest-eligibility.js; stripped before the write
     rows.push(row);
   }
   // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,
@@ -815,10 +818,17 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
     return null;
   }
-  const rowsWithStatus = rows.map((row) => {
+  // Shared eligibility rule (api/_lib/ingest-eligibility.js): a NEW row that is definitively over is not inserted.
+  // Existing rows are never filtered, so reviewer decisions and approved records are untouched.
+  const { keep, skippedPast } = partitionExpired(rows, (r) => existingStatusByExternalId.has(r.external_id));
+  if (!keep.length) {
+    return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found; ${skippedPast} already ended, not inserted`, upserted: 0, skippedPast };
+  }
+  const skippedNote = skippedPast ? `; ${skippedPast} already ended, not inserted` : "";
+  const rowsWithStatus = keep.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
-    const { _dateConfidence, _publication, _enrichment, ...cleanRow } = row;
+    const { _dateConfidence, _publication, _enrichment, _recurring, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
     // A NEW row held by its feed's publication policy says why (api/_lib/feed-publication.js).
@@ -839,9 +849,9 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     // `upserted` is what actually landed (rows in key-shape groups that
     // were accepted -- see api/_lib/event-upsert.js); `failed` keeps a
     // partial write from being read as a clean one by the caller.
-    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, upserted: upsertResp.written, failed: true };
+    return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, skippedPast, upserted: upsertResp.written, failed: true };
   }
-  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found`, upserted: rows.length };
+  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}`, upserted: keep.length, skippedPast };
 }
 
 async function patchFeedSource(id, patch, sbHeaders) {
@@ -891,6 +901,7 @@ module.exports = async (req, res) => {
   }
 
   let totalUpserted = 0;
+  let totalSkippedPast = 0;
   const results = [];
 
   // See api/_lib/venue-lookup.js — one lookup for the whole run, reused
@@ -928,6 +939,7 @@ module.exports = async (req, res) => {
             const outcome = await upsertParsedRows(rows, statusForRow, sbHeaders, res);
             if (outcome === null) return; // upsertParsedRows already wrote the 502 response
             totalUpserted += outcome.upserted;
+            totalSkippedPast += outcome.skippedPast || 0;
             const lowConfidenceCount = rows.filter((r) => r._dateConfidence !== "extracted").length;
             pollResult = outcome.upserted && !outcome.failed
               ? `${outcome.pollResult}${lowConfidenceCount ? ` (${lowConfidenceCount} with a pubDate-fallback date, needs human verification)` : ""}`
@@ -967,6 +979,7 @@ module.exports = async (req, res) => {
             const outcome = await upsertParsedRows(rows, (row) => (row._publication && row._publication.state !== "verified" ? "pending_review" : DEFAULT_STATUS), sbHeaders, res);
             if (outcome === null) return; // upsertParsedRows already wrote the 502 response
             totalUpserted += outcome.upserted;
+            totalSkippedPast += outcome.skippedPast || 0;
             pollResult = enrichNote ? `${outcome.pollResult} (${enrichNote})` : outcome.pollResult;
           }
         }
@@ -979,5 +992,5 @@ module.exports = async (req, res) => {
     await patchFeedSource(feedSource.id, { last_polled_at: new Date().toISOString(), last_poll_result: pollResult }, sbHeaders);
   }
 
-  res.status(200).json({ upserted: totalUpserted, feedsChecked: feedSources.length, results, fetchedAt: new Date().toISOString() });
+  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, results, fetchedAt: new Date().toISOString() });
 };

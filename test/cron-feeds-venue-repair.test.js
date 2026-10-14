@@ -15,6 +15,8 @@
 //
 // Run: node test/cron-feeds-venue-repair.test.js
 "use strict";
+// api/cron-feeds.js skips new rows that have already ended (api/_lib/ingest-eligibility.js), so pin "now" before the fixtures' dates.
+require("./fixtures/freeze-clock.js").freezeClock("2025-01-01T00:00:00Z");
 const assert = require("assert");
 const { strictWriteResponse } = require("./fixtures/mock-postgrest.js");
 
