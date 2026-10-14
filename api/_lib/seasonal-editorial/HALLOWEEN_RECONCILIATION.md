@@ -29,7 +29,7 @@ All 20 held records are held for factual verification: 9 have only indirect 2026
 | Zoo Boo at the Detroit Zoo | acquired-file | third-party-license | Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo. |
 | Glenlore Trails: CarnEvil 2 | owner-photo | owner-authorization |  |
 | Halloween Ghosts & Goodies at Crossroads Village | acquired-file | third-party-license |  |
-| Hush Haunted Attraction | linked | linked-risk-acceptance |  |
+| Hush Haunted Attraction | owner-photo | owner-authorization |  |
 | Azra Chamber of Horrors | linked | linked-risk-acceptance |  |
 | Scarefest Scream Park | illustration | owner-supplied-illustration |  |
 | Blake's Haunted Attractions | illustration | owner-supplied-illustration |  |

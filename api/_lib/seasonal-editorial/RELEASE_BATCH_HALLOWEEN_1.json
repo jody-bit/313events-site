@@ -250,8 +250,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "linked",
-   "rightsRoute": "linked-risk-acceptance",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -268,17 +268,14 @@
     "summary": "Multiple haunted houses",
     "website": "https://hushhauntedattractions.com/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-4.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
      "alternates": [
+      "/assets/seasonal/halloween-card-4.webp",
       "/assets/seasonal/halloween-card-5.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true,
-     "remote": {
-      "src": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
-      "sourcePage": "https://hushhauntedattractions.com/",
-      "credit": "Hush Haunted Attractions (official site)"
-     }
+     "illustrative": false,
+     "credit": "Hush Haunted Attraction"
     }
    }
   },

@@ -4258,6 +4258,54 @@
    "reuse": "destination card and related editorial with accurate attribution",
    "photographer": "Miriam Vukich",
    "commercial_use": "authorized (owner confirmation 2026-10-12)"
+  },
+  {
+   "id": "313p-50d6d4a5",
+   "review_ref": "VENUE-HUSH-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Costumed vampire actor lunging toward camera in red-and-black brocade coat, Saints and Sinners haunted house promotional art (venue-supplied)",
+   "capture_date": "not recorded",
+   "people_visible": "one performer (promotional art)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "title and HAUNTED HOUSE banner baked into image",
+    "865x574 native size"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
+    "card_px": [
+     865,
+     574
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__1600.webp",
+    "full_px": [
+     865,
+     574
+    ]
+   },
+   "original": {
+    "filename": "SaintsSinners.webp",
+    "sha256": "50d6d4a5e680e04ef062e6ad919134a078cc99716da60ae417899cf010e9110a",
+    "pixels": [
+     865,
+     574
+    ],
+    "stored": "in repo as the __1600 file (untouched copy of the supplied file)"
+   },
+   "credit": "Hush Haunted Attraction",
+   "license": "Owner confirmation (project thread, 2026-10-14): Jody Tyree states the image was taken from Hush Haunted Attraction's website and that Hush approved 313.events use. Hush reply recorded verbatim: \"Yes, you may use it.\" signed Gary, received 2026-10-14 11:44 AM.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__hush-haunted-attraction__westland-mi",
+    "name": "Hush Haunted Attraction",
+    "collection": "halloween",
+    "inventory_no": "3",
+    "published_id": "hush-haunted-attraction",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Hush Haunted Attraction, Westland (supplied from the venue's website)",
+   "reuse": "destination card and related editorial with accurate attribution"
   }
  ],
  "editorial_atmospheric": [

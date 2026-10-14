@@ -1112,6 +1112,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "alternative_images": [
+     "313p-50d6d4a5",
      "gen-halloween-4",
      "gen-halloween-5",
      "gen-halloween-8",
@@ -1128,7 +1129,10 @@
     "serious-scares"
    ],
    "destination_id": "hush-haunted-attraction",
-   "entry_id": "hush-haunted-attraction"
+   "entry_id": "hush-haunted-attraction",
+   "photos": [
+    "313p-50d6d4a5"
+   ]
   },
   {
    "collection": "halloween",

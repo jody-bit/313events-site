@@ -5650,24 +5650,36 @@
    "summary": "Multiple haunted houses",
    "website": "https://hushhauntedattractions.com/",
    "image": {
-    "src": "/assets/seasonal/halloween-card-4.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
+    "source": "Supplied from the venue's website (Hush Haunted Attraction, Saints and Sinners promotional art); original file untouched, card is the file at its native 3:2 size",
+    "credit": "Hush Haunted Attraction",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
+     "bytes": 76886,
+     "sha256": "50d6d4a5e680e04ef062e6ad919134a078cc99716da60ae417899cf010e9110a",
+     "width": 865,
+     "height": 574,
+     "acquiredAt": "2026-10-14"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-50d6d4a5",
+     "reviewRef": "VENUE-HUSH-01",
+     "authorization": {
+      "statement": "Owner confirmation (project thread, 2026-10-14): Jody Tyree states the image was taken from Hush Haunted Attraction's website and that Hush approved 313.events use. Hush reply recorded verbatim: \"Yes, you may use it.\" signed Gary, received 2026-10-14 11:44 AM.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Hush reply received 2026-10-14",
+      "recordedAt": "2026-10-14",
+      "note": "Image taken from the venue's own website (hushhauntedattractions.com) and approved by Hush in writing as above. The signer's role and any further written terms are not recorded; no usage rights beyond what the reply states are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-14",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
     "alternates": [
+     "/assets/seasonal/halloween-card-4.webp",
      "/assets/seasonal/halloween-card-5.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "remote": {
-     "src": "https://hushhauntedattractions.com/wp-content/uploads/2025/07/vampire-hero-image1.webp",
-     "sourcePage": "https://hushhauntedattractions.com/",
-     "credit": "Hush Haunted Attractions (official site)",
-     "acceptedBy": "Jody Tyree (owner)",
-     "acceptedAt": "2026-10-11",
-     "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
-     "note": "Hush vampire hero image. Found in the catalogue pass (Google Images (Chrome)); size 1440x902."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
