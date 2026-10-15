@@ -111,6 +111,13 @@ for (const r of qa.records) {
     assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the linked official image");
     continue;
   }
+  // Owner decision 2026-10-14: Distracted Haunted House shows the photo Distracted Entertainment emailed in reply to our request (owner-authorized
+  // route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "distracted-haunted-house") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-distracted-01__card\.webp$/.test(e.image.src) && /happy to participate/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
   if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
   else assert.strictEqual(e.image.src, o.src, r.id + " entry image == QA default");
   const uniq = (l) => [...new Set(l)].sort();
