@@ -169,7 +169,7 @@ async function run() {
   // --- Surface wiring checks (criteria 8/9/10: each surface actually calls
   // resolveVenueDisplay() and embeds venue_id + venues(...) in its query) ---
   const calendarHtml = fs.readFileSync(`${REPO_DIR}/calendar.html`, "utf8");
-  assert.ok(/venue_id,venues\(name,address,city,lat,lng\)/.test(calendarHtml), "calendar.html's query is missing the venues(...) embed");
+  assert.ok(/venue_id,venues\(name,address,city,(?:zip_code,)?lat,lng\)/.test(calendarHtml), "calendar.html's query is missing the venues(...) embed");
   assert.ok(/const vd = resolveVenueDisplay\(row\);/.test(calendarHtml), "calendar.html's mapSupabaseRow doesn't call resolveVenueDisplay");
   console.log("PASS: 9. calendar.html embeds canonical venue data and resolves it through resolveVenueDisplay()");
 

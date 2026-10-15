@@ -382,6 +382,7 @@
     font-size:12.5px;color:var(--ink-soft);line-height:1.4;margin:3px 0;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
+  .evt-street{font-size:12px;color:var(--ink-soft);margin-top:2px;overflow-wrap:anywhere;}
   .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .tag{
     display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;
@@ -646,6 +647,7 @@
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
+<script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -1867,6 +1869,7 @@ function showDayPanel(iso){
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
+                ${streetLineHtml(e)}
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
                 ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
@@ -1917,6 +1920,7 @@ function renderList(dateList){
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
+                ${streetLineHtml(e)}
                 ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
                 ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
                 ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
@@ -1965,6 +1969,12 @@ function emptyStateMessage(scopeLabel){
 // an uncaught ReferenceError.
 const VENUE_LATLNG_MAP = new Map();
 
+// One street line under the venue (CalendarLocation.streetLineForEvent): empty when no usable
+// street exists or the event and venue disagree; never a placeholder.
+function streetLineHtml(e){
+  const t = typeof CalendarLocation !== 'undefined' ? CalendarLocation.streetLineForEvent(e).text : '';
+  return t ? `<div class="evt-street">${escapeHtml(t)}</div>` : '';
+}
 const venueKeyOf = (e) => (e.venue || "").trim().toLowerCase();
 
 function resolvePlace(e){
@@ -2860,6 +2870,13 @@ function mapSupabaseRow(row) {
     imageUrl: row.image_url || undefined,
     venue: decodeEntities(vd.name) || "Venue TBA",
     venueId: row.venue_id || null,
+    // Street line inputs (shared location resolution, PR B): the event's own raw
+    // address/city and the canonical venue row. Resolved by CalendarLocation only.
+    locEventAddress: row.venue_address_raw ? decodeEntities(row.venue_address_raw) : undefined,
+    locEventCity: row.venue_city_raw ? decodeEntities(row.venue_city_raw) : undefined,
+    locVenueAddress: row.venues && row.venues.address ? decodeEntities(row.venues.address) : undefined,
+    locVenueCity: row.venues && row.venues.city ? decodeEntities(row.venues.city) : undefined,
+    locVenueZip: row.venues && row.venues.zip_code ? row.venues.zip_code : undefined,
     // Suppress "Detroit" specifically — it's the implicit default everywhere
     // else on the site, so showing it on every card would just be noise.
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
@@ -2960,7 +2977,7 @@ async function loadSupabaseEvents() {
     // fetchAllRows() (paged-fetch.js) now pages through the whole result
     // instead; see that file's header for the mechanism. `id.asc` is the
     // tiebreak that makes the order total, which paging needs.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_id,venues(name,address,city,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
+    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
     const { rows } = await fetchAllRows(url, {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
