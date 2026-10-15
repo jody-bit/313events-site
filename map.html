@@ -160,6 +160,7 @@
     font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-soft);white-space:nowrap;
   }
   .map-stat strong{color:var(--accent);font-weight:700;}
+  .map-stat .load-error{color:var(--ink);display:block;}
   @media (max-width:480px){.map-stat{white-space:normal;}}
 
   .discovery-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
@@ -738,25 +739,17 @@ function haversineMiles(lat1, lng1, lat2, lng2){
   return R * 2 * Math.asin(Math.sqrt(a));
 }
 
-// Fallback data — same dataset calendar.html/index.html ship (kept in sync
-// by hand, same as those two already are with each other; no shared module,
-// see the file-header comment). Used only if the live Supabase fetch fails.
-const FALLBACK_EVENTS = [
-  {date:"2026-08-19", title:"Be My Neighbor Day", venue:"Eastern Market", cat:"family", time:"12:00–3:00 PM", free:true},
-  {date:"2026-08-20", title:"Trivia Night", venue:"Beacon Park", cat:"community", time:"7:00 PM", free:true},
-  {date:"2026-08-21", title:"Jazz at the Shed", venue:"Chene Park", cat:"music", time:"7:00–9:00 PM", free:false, priceFrom:15},
-  {date:"2026-08-22", title:"Detroit Grand Prix Weekend Kickoff", venue:"Belle Isle", cat:"sports", time:"All day", free:false, priceFrom:45},
-  {date:"2026-08-23", title:"Eastern Market Sunday Flower Day", venue:"Eastern Market", cat:"fest", time:"7:00 AM–4:00 PM", free:true},
-  {date:"2026-08-28", title:"Cinema Detroit — Late Show", venue:"Cinema Detroit", cat:"film", time:"9:30 PM", free:false, priceFrom:12},
-  {date:"2026-08-29", title:"Dally in the Alley", venue:"Cass Corridor", cat:"fest", time:"11:00 AM–10:00 PM", free:true},
-  {date:"2026-08-30", title:"DIA After Hours", venue:"Detroit Institute of Arts", cat:"museum", time:"6:00–9:00 PM", free:false, priceFrom:14},
-  {date:"2026-09-04", title:"Trinosophes Live Set", venue:"Trinosophes", cat:"music", time:"8:00 PM", free:false, priceFrom:18},
-  {date:"2026-09-12", title:"MOCAD Opening Reception", venue:"MOCAD", cat:"visual", time:"7:00–10:00 PM", free:true},
-];
+// No demo/placeholder events: the map shows live data, a loading state, or an explicit
+// error state (loadState below) -- never invented events.
+
 
 // Live, mutable working set. Starts as the fallback data; loadSupabaseEvents()
 // below replaces its contents with the live database rows once fetched.
-let EVENTS = FALLBACK_EVENTS.slice();
+let EVENTS = [];
+// 'loading' until the first live fetch settles, 'ready' once rows are in, 'error' if every
+// attempt failed. loadDiag is exposed as window.__313MapLoad for support and tests.
+let loadState = 'loading';
+const loadDiag = window.__313MapLoad = { state: 'loading', attempts: 0, total: null, loaded: 0, plotted: 0, complete: null, error: null };
 
 // Which days an event is listed under is decided by /event-dates.js (issue
 // #48): the one shared rule for homepage, calendar, map and Discovery.
@@ -1144,6 +1137,8 @@ function evtRowHtml(e){
 }
 
 function emptyStateMessage(){
+  if(loadState === 'loading') return 'Loading events…';
+  if(loadState === 'error') return `Events could not be loaded.<div class="es-actions"><button type="button" class="es-action" onclick="retryLoad()">Try again</button></div>`;
   const actions = [];
   if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
   if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
@@ -1431,7 +1426,14 @@ function selectPlace(key, opts){
 function updateMapStat(places){
   const totalEvents = [...places.values()].reduce((sum,p)=> sum + p.events.length, 0);
   const stat = document.getElementById('mapStat');
-  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${places.size.toLocaleString()}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`;
+  loadDiag.plotted = totalEvents;
+  if(loadState === 'loading'){ stat.textContent = 'Loading events…'; return; }
+  if(loadState === 'error'){
+    stat.innerHTML = `<span class="load-error" role="alert">Events could not be loaded. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>`;
+    return;
+  }
+  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${places.size.toLocaleString()}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`
+    + (loadDiag.complete === false ? ` <span class="load-error" role="alert">Some events did not load. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>` : '');
 }
 
 function render(){
@@ -1930,38 +1932,70 @@ function loadFloorISO(){
 }
 
 async function loadSupabaseEvents() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
-  try {
-    // loadVenueLatLng() and the events fetch hit two unrelated endpoints
-    // (venues vs. events) and neither's request depends on the other's
-    // result -- only the *processing* below (mapSupabaseRow()/resolvePlace())
-    // needs VENUE_LATLNG_MAP already populated. So the two requests run
-    // concurrently via Promise.all rather than one `await` after another;
-    // only the mapping step still waits for loadVenueLatLng() to finish.
-    //
-    // 2026-10-03: this query used to end in `limit=2000`, but Supabase
-    // returns at most its "Max rows" setting (1,000 here) per request no
-    // matter what `limit=` asks for, with no error — so this page was
-    // holding 686 of 1,901 upcoming events and nothing after 2026-10-20.
-    // fetchAllRows() (paged-fetch.js) now pages through the whole result
-    // instead; see that file's header for the mechanism. `id.asc` is the
-    // tiebreak that makes the order total, which paging needs.
-    const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
-    const [, { rows }] = await Promise.all([
-      loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run below, but not before this fetch starts
-      fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded — caught below
-    ]);
-    if (!rows.length) return;
-
-    EVENTS = rows.map(mapSupabaseRow);
-    byDate = {};
-    EVENTS.forEach(e => { addToByDate(byDate, e); });
-
-    buildFilterBar();
-    render();
-  } catch (err) {
-    // Silent by design — FALLBACK_EVENTS keeps the map usable regardless.
+  loadState = 'loading';
+  loadDiag.state = 'loading';
+  loadDiag.error = null;
+  render();
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    failLoad(new Error('missing Supabase configuration'));
+    return;
   }
+  // A transient network/API failure on any one request must not turn into a permanent
+  // failure for the visitor, so the whole load is retried before the error state shows.
+  const LOAD_ATTEMPTS = 3;
+  const RETRY_DELAYS_MS = [800, 2000];
+  let lastErr = null;
+  for (let attempt = 1; attempt <= LOAD_ATTEMPTS; attempt++) {
+    loadDiag.attempts = attempt;
+    try {
+      const result = await fetchLiveEvents();
+      if (!result.rows.length) throw new Error('the events query returned 0 rows');
+      EVENTS = result.rows.map(mapSupabaseRow);
+      byDate = {};
+      EVENTS.forEach(e => { addToByDate(byDate, e); });
+      loadState = 'ready';
+      loadDiag.state = 'ready';
+      loadDiag.total = result.total;
+      loadDiag.loaded = EVENTS.length;
+      loadDiag.complete = result.complete;
+      buildFilterBar();
+      render();
+      return;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < LOAD_ATTEMPTS) await new Promise(r => setTimeout(r, RETRY_DELAYS_MS[attempt - 1]));
+    }
+  }
+  failLoad(lastErr);
+}
+
+function failLoad(err) {
+  EVENTS = [];
+  byDate = {};
+  loadState = 'error';
+  loadDiag.state = 'error';
+  loadDiag.error = String(err && err.message || err);
+  if (typeof console !== 'undefined' && console.error) console.error('[map] live events failed to load:', err);
+  render();
+}
+
+function retryLoad() { loadSupabaseEvents(); }
+
+async function fetchLiveEvents() {
+  // loadVenueLatLng() and the events fetch hit two unrelated endpoints
+  // (venues vs. events) and neither's request depends on the other's
+  // result -- only the *processing* needs VENUE_LATLNG_MAP already populated.
+  //
+  // 2026-10-03: this query used to end in `limit=2000`, but Supabase
+  // returns at most its "Max rows" setting (1,000 here) per request no
+  // matter what `limit=` asks for, with no error. fetchAllRows() (paged-fetch.js)
+  // pages through the whole result instead; `id.asc` makes the order total, which paging needs.
+  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
+  const [, result] = await Promise.all([
+    loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run, but not before this fetch starts
+    fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded
+  ]);
+  return result;
 }
 loadSupabaseEvents();
 </script>
