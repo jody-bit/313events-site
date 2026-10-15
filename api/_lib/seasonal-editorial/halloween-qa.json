@@ -3296,11 +3296,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -3324,6 +3324,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-b3004032",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -3346,6 +3347,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-b3004032",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © The Howling Haunted Trail",
+     "rights_status": "Written reply from Christine Welsh (Kerning Advertising), received 2026-10-15 15:50 UTC, in answer to our photo permission request to The Howling Haunted Trail, attaching a logo and photos: \"Attached are a few photos and the logo, use whichever fits best for our listing. Thanks for including The Howling!\" Owner decision (project thread, 2026-10-15): venue-supplied photos are used now and taken down on request.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Foggy night scene on the trail: costumed figures behind a broken picket fence and fallen branches, The Howling Haunted Trail promotional photo (venue-supplied, black and white)",
+     "warnings": [
+      "source is 1600x900; card is a centre 3:2 crop scaled to 1280x853"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-7",
