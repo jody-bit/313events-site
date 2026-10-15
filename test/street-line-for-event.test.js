@@ -95,4 +95,33 @@ assert.ok(/CalendarLocation\.streetLineForEvent\(e\)/.test(page), "event-templat
 assert.ok(!/function\s+(?:formatAddress|streetLine|buildStreetLine)\b/.test(page), "event-template.html defines its own address formatter");
 assert.ok(!/["'`]TBA["'`]\s*\+|textContent\s*=\s*[^;\n]*TBA/.test(page.split("evtAddress")[1] || ""), "the address line must never write TBA");
 
+// 11. calendar.html (PR B): same shared function, extra columns selected, no private formatter
+const cal = fs.readFileSync(`${REPO_DIR}/calendar.html`, "utf8");
+assert.ok(cal.includes('<script src="/calendar-location.js"></script>'), "calendar.html must load calendar-location.js");
+assert.ok(/venue_address_raw,venue_id,venues\(name,address,city,zip_code,lat,lng\)/.test(cal), "calendar.html must select venue_address_raw and venues.zip_code");
+assert.ok(/CalendarLocation\.streetLineForEvent\(e\)/.test(cal), "calendar.html must use CalendarLocation.streetLineForEvent");
+assert.ok(!/function\s+(?:formatAddress|streetLine|buildStreetLine)\b/.test(cal), "calendar.html defines its own address formatter");
+assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "both venue-showing event rows render the street line");
+{
+  const vm = require("vm");
+  const grab = (re) => { const m = re.exec(cal); assert.ok(m, String(re)); return m[0]; };
+  const code = [
+    grab(/function resolveVenueDisplay\(row\) \{[\s\S]*?\n\}\n/),
+    grab(/function mapSupabaseRow\(row\) \{[\s\S]*?\n\}\n/),
+    grab(/function streetLineHtml\(e\)\{[\s\S]*?\n\}\n/),
+  ].join("\n");
+  const ctx = { CalendarLocation: CL, decodeEntities: (x) => x, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), CATS: {}, console };
+  vm.createContext(ctx);
+  vm.runInContext(code + "\nthis.map = mapSupabaseRow; this.html = streetLineHtml;", ctx);
+  const row = (o) => Object.assign({ id: "1", start_date: "2026-10-20", title: "T", category: "music" }, o);
+  // canonical venue fallback
+  assert.strictEqual(ctx.html(ctx.map(row({ venue_name_raw: "Sound Board", venue_id: "v", venues: { name: "Sound Board", address: "2901 Grand River", city: "Detroit", zip_code: "48201" } }))), '<div class="evt-street">2901 Grand River, Detroit 48201</div>');
+  // event-specific address, semicolons tidied
+  assert.strictEqual(ctx.html(ctx.map(row({ venue_name_raw: "Elektricity", venue_address_raw: "15 South Saginaw Street; Pontiac; MI 48342", venue_city_raw: "Pontiac" }))), '<div class="evt-street">15 South Saginaw Street, Pontiac, MI 48342</div>');
+  // no address / TBA / conflict -> nothing
+  assert.strictEqual(ctx.html(ctx.map(row({}))), "");
+  assert.strictEqual(ctx.html(ctx.map(row({ venue_name_raw: "Venue TBA" }))), "");
+  assert.strictEqual(ctx.html(ctx.map(row({ venue_address_raw: "11474 Joseph Campau Ave", venue_city_raw: "Hamtramck", venues: { name: "The High Dive", address: "11474 Joseph Campau", city: "Detroit" } }))), "");
+}
+
 console.log("street-line-for-event: all assertions passed");
