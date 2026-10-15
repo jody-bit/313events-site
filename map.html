@@ -279,6 +279,8 @@
   .popup-evt a{color:var(--ink);text-decoration:none;font-weight:700;font-size:12px;}
   .popup-evt a:hover{color:var(--accent);}
   .popup-evt .pe-meta{color:var(--ink-soft);font-size:11px;}
+  .popup-evt .pe-where{color:var(--ink-soft);font-size:11px;overflow-wrap:anywhere;}
+  .popup-evt .pe-where .pe-venue{color:var(--ink);}
   .popup-more{font-size:11px;color:var(--ink-soft);margin-top:6px;}
   .popup-more button{border:none;background:none;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;padding:0;}
 
@@ -1274,6 +1276,16 @@ function placeStreetHtml(place){
   return t ? `<div class="popup-street">${escapeHtml(t)}</div>` : '';
 }
 
+// "Venue · street, city ZIP" under an event in a city-centroid popup, from the event's own
+// CalendarLocation street line. Nothing at all when there is no usable or a conflicting street.
+function eventWhereHtml(e){
+  if(typeof CalendarLocation === 'undefined') return '';
+  const street = CalendarLocation.streetLineForEvent(e).text;
+  if(!street) return '';
+  const venue = e.venue && e.venue !== 'Venue TBA' ? `<span class="pe-venue">${escapeHtml(e.venue)}</span> · ` : '';
+  return `<div class="pe-where">${venue}${escapeHtml(street)}</div>`;
+}
+
 function placePopupHtml(place){
   // No hard cap on how many events render here — the popup's own maxHeight
   // + Leaflet's auto-added scrollbar (see bindPopup() below) let a many-event
@@ -1283,19 +1295,27 @@ function placePopupHtml(place){
   // nowhere"). The link below is now a genuine jump to a richer view
   // (description, price, ticket link) in the city-rail list, not the only
   // way to see the rest of what's happening at this place.
-  const rows = place.events.map(e => `
+  // City-centroid places stand for many venues, so each event lists its own address (never one
+  // shared street). `shown` records whether any row got one, which decides the marker note.
+  let shown = false;
+  const rows = place.events.map(e => {
+    const where = place.precise ? '' : eventWhereHtml(e);
+    if(where) shown = true;
+    return `
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
       <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
+      ${where}
     </div>
-  `).join('');
+  `;
+  }).join('');
   const jump = place.events.length > 1
     ? `<div class="popup-more"><button type="button" onclick="jumpToPlaceList('${place.key.replace(/'/g,"\\'")}')">Full details for all ${place.events.length} &rarr;</button></div>`
     : '';
   return `
     <div class="popup-place-name">${escapeHtml(place.label)}</div>
     ${placeStreetHtml(place)}
-    ${!place.precise ? `<div class="popup-approx">Approximate — city center, exact venue unknown</div>` : ''}
+    ${!place.precise ? `<div class="popup-approx">${shown ? 'Marker is the city center, not an event location. Addresses are listed under each event.' : 'Approximate — city center, exact venue unknown'}</div>` : ''}
     ${rows}
     ${jump}
   `;

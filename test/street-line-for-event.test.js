@@ -157,7 +157,7 @@ assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "b
   assert.ok(!/function\s+(?:formatAddress|streetLine|buildStreetLine)\b/.test(map), "map.html defines its own address formatter");
   assert.ok(!/geocod|nominatim/i.test(map.replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, "")), "map.html must not geocode");
   const grab = (re) => { const m = re.exec(map); assert.ok(m, String(re)); return m[0]; };
-  const code = [grab(/function placeStreetHtml\(place\)\{[\s\S]*?\n\}\n/), grab(/function placePopupHtml\(place\)\{[\s\S]*?\n\}\n/)].join("\n");
+  const code = [grab(/function eventWhereHtml\(e\)\{[\s\S]*?\n\}\n/), grab(/function placeStreetHtml\(place\)\{[\s\S]*?\n\}\n/), grab(/function placePopupHtml\(place\)\{[\s\S]*?\n\}\n/)].join("\n");
   const ctx = { CalendarLocation: CL, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), eventUrl: () => "", console };
   vm.createContext(ctx);
   vm.runInContext(code + "\nthis.popup = placePopupHtml;", ctx);
@@ -174,7 +174,30 @@ assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "b
   assert.ok(!ctx.popup(place({ events: [ev({}), ev({ locEventAddress: "9 Elsewhere Rd", locEventCity: "Detroit" })] })).includes("popup-street"));
   // city-centroid (approximate) place never shows a street, even if every event has one
   const approx = ctx.popup(place({ precise: false, key: "c:detroit", label: "Detroit" }));
-  assert.ok(!approx.includes("popup-street") && approx.includes("Approximate"));
+  assert.ok(!approx.includes("popup-street"), "no shared street group line on a city-centroid popup");
+  // ...instead each event lists its own "venue · street" line, and the note says the marker is the city center
+  assert.strictEqual((approx.match(/<div class="pe-where">/g) || []).length, 2);
+  assert.ok(approx.includes('<div class="pe-where"><span class="pe-venue">Sound Board</span> · 2901 Grand River, Detroit 48201</div>'));
+  assert.ok(approx.includes("Marker is the city center, not an event location. Addresses are listed under each event."));
+  assert.ok(!approx.includes("Approximate — city center"));
+  // mixed: rows with and without an address render cleanly, each its own address
+  const mixed = ctx.popup(place({ precise: false, key: "c:warren", label: "Warren", events: [
+    ev({ title: "A", venue: "Andiamo", locVenueAddress: "7096 E 14 Mile Rd", locVenueCity: "Warren", locVenueZip: "48092" }),
+    ev({ title: "B", venue: "Other Hall", locVenueAddress: "1 Elsewhere Ave", locVenueCity: "Warren", locVenueZip: undefined }),
+    ev({ title: "C", venue: "No Address Hall", locVenueAddress: undefined, locVenueCity: undefined, locVenueZip: undefined }),
+    ev({ title: "D", venue: "Venue TBA", locVenueAddress: "5 Main St", locVenueCity: "Warren", locVenueZip: undefined }),
+    ev({ title: "E", venue: "High Dive", locEventAddress: "11474 Joseph Campau Ave", locEventCity: "Hamtramck", locVenueAddress: "11474 Joseph Campau", locVenueCity: "Detroit" }),
+  ] }));
+  assert.strictEqual((mixed.match(/<div class="pe-where">/g) || []).length, 3, "A, B and D only");
+  assert.ok(mixed.includes('<span class="pe-venue">Andiamo</span> · 7096 E 14 Mile Rd, Warren 48092'));
+  assert.ok(mixed.includes('<div class="pe-where">5 Main St, Warren</div>'), "no venue name -> street alone");
+  assert.ok(!/pe-venue">(No Address Hall|High Dive)/.test(mixed), "no address or conflict -> nothing rendered, not even the venue name");
+  assert.ok(!/TBA|unknown\b/.test(mixed.replace("exact venue unknown", "")), "never TBA or unknown");
+  // no address anywhere in a centroid popup -> today's wording, unchanged
+  const none = ctx.popup(place({ precise: false, key: "c:x", label: "X", events: [{ title: "T", date: "2026-10-20", time: "", venue: "Y" }] }));
+  assert.ok(none.includes("Approximate — city center, exact venue unknown") && !none.includes("pe-where"));
+  // precise popups are unchanged: shared street line, no per-event lines, original note logic
+  assert.ok(!ok.includes("pe-where") && !ok.includes("Marker is the city center"));
   // no street data -> popup identical to the old markup
   assert.ok(!ctx.popup(place({ events: [{ title: "T", date: "2026-10-20", time: "", venue: "X" }] })).includes("popup-street"));
 }
