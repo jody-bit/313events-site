@@ -718,10 +718,18 @@ function renderEvent(e){
   const venueHref = e.venueId != null ? `venue.html?id=${encodeURIComponent(e.venueId)}` : null;
   document.getElementById('evtWhere').innerHTML = `${venueHref?`<a class="evt-venue-link" href="${escapeHtml(venueHref)}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}`;
 
+  // Street line: the shared CalendarLocation resolver decides (the event's own
+  // complete address first, the canonical venue as fallback, nothing invented).
+  // No usable street -> no line; it never says "TBA". When the event's address
+  // and the venue's disagree (different street or city) no line is shown rather
+  // than pairing one place's name with another's address; the reason is left on
+  // the element for QA and the source data is not touched.
   const addrEl = document.getElementById('evtAddress');
-  if(e.address){
-    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.address)}`;
-    addrEl.textContent = `📍 ${e.address} — Get directions`;
+  const streetLine = CalendarLocation.streetLineForEvent(e);
+  if(streetLine.conflict){ addrEl.dataset.locationConflict = streetLine.conflict; } else { delete addrEl.dataset.locationConflict; }
+  if(streetLine.text){
+    addrEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(streetLine.text)}`;
+    addrEl.textContent = `📍 ${streetLine.text} — Get directions`;
     addrEl.style.display = 'block';
   } else {
     addrEl.style.display = 'none';
