@@ -4536,6 +4536,52 @@
    },
    "capture_place": "Halloween Stroll, Port Huron, MI (supplied by Port Huron Parks and Recreation)",
    "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-2c7e296c",
+   "review_ref": "VENUE-SLOAN-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Laser Halloween promotional artwork (venue-supplied): glowing title over a haunted mansion with laser-drawn Frankenstein face and pumpkin",
+   "capture_date": "not recorded",
+   "people_visible": "none (illustrated artwork)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop that cuts off the lower part of the laser pumpkin"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__full.webp",
+    "full_px": [
+     1200,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "LaserHalloween_1200x1200.jpg",
+    "sha256": "2c7e296c426170d94e39afa10d61281a91d6f6c1d968a4f9f18b876d2df2f253",
+    "pixels": [
+     1200,
+     1200
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Artwork © Sloan Museum of Discovery & Longway Planetarium",
+   "license": "Written reply from Sloan Longway (alane@sloanlongway.org, forwarded by Anne Mancour, Marketing Manager), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Laser Halloween image is approved for 313.events use and replaces the earlier Commons photo.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__laser-halloween__flint-mi",
+    "name": "Laser Halloween",
+    "collection": "halloween",
+    "published_id": "laser-halloween",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Laser Halloween, Longway Planetarium, Flint, MI (supplied by the venue)",
+   "reuse": "destination card and related editorial"
   }
  ],
  "editorial_atmospheric": [

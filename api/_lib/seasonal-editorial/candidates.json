@@ -2708,6 +2708,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
+     "313p-2c7e296c",
      "gen-halloween-3",
      "gen-halloween-6",
      "gen-halloween-8",
@@ -2723,7 +2724,10 @@
     "family-friendly"
    ],
    "destination_id": "laser-halloween",
-   "entry_id": "laser-halloween"
+   "entry_id": "laser-halloween",
+   "photos": [
+    "313p-2c7e296c"
+   ]
   },
   {
    "collection": "halloween",

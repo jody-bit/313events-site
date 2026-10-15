@@ -8157,10 +8157,12 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "acquired-file",
-    "rights_route": "third-party-license",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
-    "caveats": [],
+    "caveats": [
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -8175,6 +8177,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
+     "313p-2c7e296c",
      "gen-halloween-3",
      "gen-halloween-6",
      "gen-halloween-8",
@@ -8198,6 +8201,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-2c7e296c",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Artwork © Sloan Museum of Discovery & Longway Planetarium",
+     "rights_status": "Written reply from Sloan Longway (alane@sloanlongway.org, forwarded by Anne Mancour, Marketing Manager), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Laser Halloween image is approved for 313.events use and replaces the earlier Commons photo.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Laser Halloween promotional artwork (venue-supplied): glowing title over a haunted mansion with laser-drawn Frankenstein face and pumpkin",
+     "warnings": [
+      "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop that cuts off the lower part of the laser pumpkin"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-3",
