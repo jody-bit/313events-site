@@ -93,6 +93,16 @@ for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
     assert.ok(im.illustrative === false && !!im.ownerPhoto && /use whichever fits best/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
     continue;
   }
+  if (id === "ooky-spooky-light-show") { // since replaced by the artwork Sloan Longway emailed in reply to our request (owner decision 2026-10-15)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /that you can use for promotion/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
+    continue;
+  }
+  if (id === "halloween-stroll") { // since replaced by the photo Port Huron Parks and Recreation emailed in reply to our request (owner decision 2026-10-15)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /welcome to use/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
+    continue;
+  }
   assert.strictEqual(g.imageRoute, "illustration", id); assert.strictEqual(g.rightsRoute, "owner-supplied-illustration", id);
   assert.strictEqual(im.illustrative, true); assert.ok(!im.remote && !im.ownerPhoto, id + ": no photo or linked-image claim");
   assert.ok(/never presented as documentary photography/.test(im.illustration.statement) && /does not depict this destination/.test(im.illustration.note), id + ": illustration statement");
