@@ -1316,6 +1316,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "313p-79a7ddc3",
      "link-scarefest-scream-park",
      "gen-halloween-5",
      "gen-halloween-7",
@@ -1333,7 +1334,10 @@
     "serious-scares"
    ],
    "destination_id": "scarefest-scream-park",
-   "entry_id": "scarefest-scream-park"
+   "entry_id": "scarefest-scream-park",
+   "photos": [
+    "313p-79a7ddc3"
+   ]
   },
   {
    "collection": "halloween",
@@ -1679,6 +1683,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-b3004032",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -1693,7 +1698,10 @@
     "haunted-attractions"
    ],
    "destination_id": "the-howling-haunted-trail-and-party",
-   "entry_id": "the-howling-haunted-trail-and-party"
+   "entry_id": "the-howling-haunted-trail-and-party",
+   "photos": [
+    "313p-b3004032"
+   ]
   },
   {
    "collection": "halloween",
@@ -2036,6 +2044,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-2073df4d",
      "gen-halloween-4",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2050,7 +2059,10 @@
     "haunted-attractions"
    ],
    "destination_id": "distracted-haunted-house",
-   "entry_id": "distracted-haunted-house"
+   "entry_id": "distracted-haunted-house",
+   "photos": [
+    "313p-2073df4d"
+   ]
   },
   {
    "collection": "halloween",
@@ -2654,6 +2666,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-33303347",
      "gen-halloween-3",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2668,7 +2681,10 @@
     "family-friendly"
    ],
    "destination_id": "ooky-spooky-light-show",
-   "entry_id": "ooky-spooky-light-show"
+   "entry_id": "ooky-spooky-light-show",
+   "photos": [
+    "313p-33303347"
+   ]
   },
   {
    "collection": "halloween",
@@ -2692,6 +2708,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
+     "313p-2c7e296c",
      "gen-halloween-3",
      "gen-halloween-6",
      "gen-halloween-8",
@@ -2707,7 +2724,10 @@
     "family-friendly"
    ],
    "destination_id": "laser-halloween",
-   "entry_id": "laser-halloween"
+   "entry_id": "laser-halloween",
+   "photos": [
+    "313p-2c7e296c"
+   ]
   },
   {
    "collection": "halloween",
@@ -2811,6 +2831,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-9c99ee31",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2825,7 +2846,10 @@
     "family-friendly"
    ],
    "destination_id": "halloween-stroll",
-   "entry_id": "halloween-stroll"
+   "entry_id": "halloween-stroll",
+   "photos": [
+    "313p-9c99ee31"
+   ]
   },
   {
    "collection": "halloween",

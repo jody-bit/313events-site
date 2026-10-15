@@ -5652,7 +5652,7 @@
    "image": {
     "src": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
     "source": "Supplied from the venue's website (Hush Haunted Attraction, Saints and Sinners promotional art); original file untouched, card is the file at its native 3:2 size",
-    "credit": "Hush Haunted Attraction",
+    "credit": "Photography © Hush Haunted Attractions",
     "illustrative": false,
     "acquired": {
      "file": "/assets/seasonal/photos/halloween/halloween__hush-haunted-attraction__westland-mi__venue-hush-01__card.webp",
@@ -5957,40 +5957,37 @@
    "status": "PUBLISHED",
    "summary": "Haunted hayride, maze and forest",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
+    "source": "Scarefest Scream Park media kit photo (Scarefest_Scream.jpg), supplied by the owner",
+    "credit": "Photography © Scarefest Scream Park",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
+     "bytes": 59052,
+     "sha256": "d34e4ed57095f64d39353da6d5e3cbe48cf3c17ba3ebfd10b50f54c5f93dd252",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-79a7ddc3",
+     "reviewRef": "VENUE-SCAREFEST-01",
+     "authorization": {
+      "statement": "Written reply from Scarefest Scream Park (info@scarefestscreampark.com), received 2026-10-14 16:50 UTC, in answer to our photo permission request: \"You are welcome to use any of the photographs available in our media kit ... for your listing on 313.events.\" Owner confirmation (project thread, 2026-10-15): the supplied Scarefest image is approved for the 313.events Scarefest card.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread, 2026-10-15); Scarefest reply received 2026-10-14",
+      "recordedAt": "2026-10-15",
+      "note": "Evidence: experience/permissions/scarefest-permission-2026-10-14.md. No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit)."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 1064x1596 portrait, cropped to 3:2 (rows 110-819) so the performer's face, hair and upper costume stay, scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-5.webp",
      "/assets/seasonal/halloween-card-7.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-1.webp",
-     "bytes": 45914,
-     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -6556,40 +6553,37 @@
    "status": "PUBLISHED",
    "summary": "Haunted woodland trail",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+    "source": "Supplied by The Howling Haunted Trail (Kerning Advertising) by email; original untouched as the full file, card is a 3:2 crop",
+    "credit": "Photography © The Howling Haunted Trail",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+     "bytes": 89580,
+     "sha256": "22dab9a2c2fb0e01e437c9e7000654900c5732a570a8b76aae80e8938e5da364",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-b3004032",
+     "reviewRef": "VENUE-HOWLING-01",
+     "authorization": {
+      "statement": "Written reply from Christine Welsh (Kerning Advertising), received 2026-10-15 15:50 UTC, in answer to our photo permission request to The Howling Haunted Trail, attaching a logo and photos: \"Attached are a few photos and the logo, use whichever fits best for our listing. Thanks for including The Howling!\" Owner decision (project thread, 2026-10-15): venue-supplied photos are used now and taken down on request.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner decision in the project thread); The Howling reply received 2026-10-15",
+      "recordedAt": "2026-10-15",
+      "note": "No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 1600x900 (16:9), centre-cropped to 3:2 and scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-7.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-1.webp",
-     "bytes": 45914,
-     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -7148,40 +7142,37 @@
    "status": "PUBLISHED",
    "summary": "Indoor haunted house.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+    "source": "Supplied by Distracted Entertainment, LLC by email (Stacey portrait); original untouched as the full file, card is a 3:2 crop",
+    "credit": "Photography © Distracted Entertainment",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+     "bytes": 67768,
+     "sha256": "f2eeca6aa941427145e595da080c9caecc25af8749913f5150a81410cdbfe532",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-14"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-2073df4d",
+     "reviewRef": "VENUE-DISTRACTED-01",
+     "authorization": {
+      "statement": "Written reply from Distracted Entertainment, LLC (Scott Francis, Creative Director / Owner), received 2026-10-14 17:30 UTC, in answer to our photo permission request, attaching the images: \"Thank you for the photo permission request and we'd be happy to participate. Attached are a few images to choose from and if you need specific sizes please let me know.\" Owner confirmation (project thread, 2026-10-14): the supplied Distracted images are approved for 313.events use.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Distracted reply received 2026-10-14",
+      "recordedAt": "2026-10-14",
+      "note": "Evidence: experience/permissions/distracted-permission-2026-10-14.md. No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-14",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 1080x1350 portrait (4:5), cropped to 3:2 (rows 70-790) so the face stays and most of the baked-in logo is cut off, scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-4.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-1.webp",
-     "bytes": 45914,
-     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -7882,40 +7873,37 @@
    "status": "PUBLISHED",
    "summary": "Planetarium Halloween show",
    "image": {
-    "src": "/assets/seasonal/halloween-card-6.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
+    "source": "Supplied by Sloan Museum of Discovery & Longway Planetarium by email (Ooky Spooky Light Show promotional artwork); original untouched as the full file, card is a 3:2 crop",
+    "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
+     "bytes": 96038,
+     "sha256": "911eb38d4623d6e0ddd012d9ade828595497624e81aa5e1ca522995c03640295",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-33303347",
+     "reviewRef": "VENUE-SLOAN-01",
+     "authorization": {
+      "statement": "Written reply from Sloan Longway (Anne Mancour, Marketing Manager, forwarded to colleague Alane), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Ooky Spooky Light Show image is approved for 313.events use.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Sloan Longway reply received 2026-10-15",
+      "recordedAt": "2026-10-15",
+      "note": "No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 1200x1200 square promotional artwork, cropped to 3:2 (rows 170-970) so the full Ooky Spooky Light Show title stays in frame (the Longway logo and URL at the bottom are cropped off), scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-3.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-6.webp",
-     "bytes": 42636,
-     "sha256": "04766e9e0415d3227db29e37758f9840b79e389bbac6089b1aadb02b946519f7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
@@ -7962,39 +7950,32 @@
    "status": "PUBLISHED",
    "summary": "Halloween-themed laser show",
    "image": {
-    "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
-    "source": "Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Flint_July_2018_12_(Robert_T._Longway_Planetarium).jpg (taken 2018-07-02)",
-    "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "rightsVerifiedAt": "2026-10-12",
+    "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
+    "source": "Supplied by Sloan Museum of Discovery & Longway Planetarium by email (Laser Halloween promotional artwork); original untouched as the full file, card is a 3:2 crop",
+    "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium",
     "illustrative": false,
     "acquired": {
-     "file": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
-     "bytes": 142144,
-     "sha256": "1cfe70dadb3cbdea9191727556f9277f8274a7443c0bd5d4bc24121db38ae88c",
+     "file": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
+     "bytes": 102876,
+     "sha256": "e0782c854bb46ad6ee8047f4bb8be45c4da60d2483a32141a6a158258c9ad536",
      "width": 1280,
      "height": 853,
-     "acquiredAt": "2026-10-12"
+     "acquiredAt": "2026-10-15"
     },
-    "commons": {
-     "filePage": "https://commons.wikimedia.org/wiki/File:Flint_July_2018_12_(Robert_T._Longway_Planetarium).jpg",
-     "title": "Flint July 2018 12 (Robert T. Longway Planetarium).jpg",
-     "author": "Michael Barera",
-     "license": "CC BY-SA 4.0",
-     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-     "originalWidth": 6000,
-     "originalHeight": 4000,
-     "modifications": "Cropped to 3:2 and resized; converted to WebP."
+    "ownerPhoto": {
+     "photoId": "313p-2c7e296c",
+     "reviewRef": "VENUE-SLOAN-02",
+     "authorization": {
+      "statement": "Written reply from Sloan Longway (alane@sloanlongway.org, forwarded by Anne Mancour, Marketing Manager), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Laser Halloween image is approved for 313.events use and replaces the earlier Commons photo.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Sloan Longway reply received 2026-10-15",
+      "recordedAt": "2026-10-15",
+      "note": "No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one. Replaces the CC BY-SA Commons photo (Michael Barera) that needed a visible credit line."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
     },
-    "provenance": {
-     "status": "RESOLVED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Claude Code: license, author and subject read from the Wikimedia Commons file page; owner review pending",
-     "unresolved": [],
-     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons",
-     "note": "Openly licensed photograph. The Commons file description and categories name this destination; verify before approval."
-    },
+    "cropNote": "Source 1200x1200 square promotional artwork, cropped to 3:2 (rows 95-895) so the full LASER HALLOWEEN title stays in frame (the lower part of the laser pumpkin and the Longway logo and URL are cropped off), scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-3.webp",
      "/assets/seasonal/halloween-card-6.webp"
@@ -8142,40 +8123,37 @@
    "status": "PUBLISHED",
    "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-3.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+    "source": "Supplied by Port Huron Parks and Recreation by email (Halloween Stroll photo, skeletons at a card table); card is the full 3:2 frame scaled down, full file is a 2400 px copy",
+    "credit": "Photography © Port Huron Parks and Recreation",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+     "bytes": 268032,
+     "sha256": "11437f0eb2b61c72bead6df5b412c1e634b99115e4fcdca52076d4b4674eeb2a",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-9c99ee31",
+     "reviewRef": "VENUE-PORTHURON-01",
+     "authorization": {
+      "statement": "Written reply from Brittany Bezrutczyk (Marketing and Communications, Port Huron Parks and Recreation), received 2026-10-15 13:42 UTC, in answer to our photo permission request, attaching photos: \"I have attached photos you are welcome to use.\" Owner confirmation (project thread, 2026-10-15): the supplied Halloween Stroll images are approved for 313.events use.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Port Huron Parks and Recreation reply received 2026-10-15",
+      "recordedAt": "2026-10-15",
+      "note": "No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 6016x4000 (3:2), no crop; scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-6.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-3.webp",
-     "bytes": 28712,
-     "sha256": "ac9654a060b4997e1b1a67255313bd9fc7e2b33bfbcd7e04db69a2a629a1f943",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {

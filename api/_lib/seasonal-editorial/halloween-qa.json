@@ -1554,11 +1554,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -1574,6 +1574,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "313p-79a7ddc3",
      "link-scarefest-scream-park",
      "gen-halloween-5",
      "gen-halloween-7",
@@ -1598,6 +1599,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-79a7ddc3",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © Scarefest Scream Park",
+     "rights_status": "Written reply from Scarefest Scream Park (info@scarefestscreampark.com), received 2026-10-14 16:50 UTC, in answer to our photo permission request: \"You are welcome to use any of the photographs available in our media kit ... for your listing on 313.events.\" Owner confirmation (project thread, 2026-10-15): the supplied Scarefest image is approved for the 313.events Scarefest card.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Performer in blood-spattered white gown bent backward with head upside down on a dirt path at night, Scarefest Scream Park media kit photo",
+     "warnings": [
+      "source is a 2:3 portrait; card is a 3:2 crop of the upper part"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "link-scarefest-scream-park",
@@ -3278,11 +3296,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -3306,6 +3324,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-b3004032",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -3328,6 +3347,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-b3004032",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © The Howling Haunted Trail",
+     "rights_status": "Written reply from Christine Welsh (Kerning Advertising), received 2026-10-15 15:50 UTC, in answer to our photo permission request to The Howling Haunted Trail, attaching a logo and photos: \"Attached are a few photos and the logo, use whichever fits best for our listing. Thanks for including The Howling!\" Owner decision (project thread, 2026-10-15): venue-supplied photos are used now and taken down on request.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Foggy night scene on the trail: costumed figures behind a broken picket fence and fallen branches, The Howling Haunted Trail promotional photo (venue-supplied, black and white)",
+     "warnings": [
+      "source is 1600x900; card is a centre 3:2 crop scaled to 1280x853"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-7",
@@ -4933,11 +4969,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -4953,6 +4989,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-4.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-2073df4d",
      "gen-halloween-4",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -4975,6 +5012,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-2073df4d",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © Distracted Entertainment",
+     "rights_status": "Written reply from Distracted Entertainment, LLC (Scott Francis, Creative Director / Owner), received 2026-10-14 17:30 UTC, in answer to our photo permission request, attaching the images: \"Thank you for the photo permission request and we'd be happy to participate. Attached are a few images to choose from and if you need specific sizes please let me know.\" Owner confirmation (project thread, 2026-10-14): the supplied Distracted images are approved for 313.events use.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Costumed performer with white contact lenses and cracked face makeup against red wall, Distracted Haunted House promotional photo (venue-supplied)",
+     "warnings": [
+      "source is a 4:5 portrait with the Distracted logo baked into the lower third; card is a 3:2 crop of the upper part"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-4",
@@ -7916,11 +7970,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -7936,6 +7990,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-33303347",
      "gen-halloween-3",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -7958,6 +8013,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-33303347",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium",
+     "rights_status": "Written reply from Sloan Longway (Anne Mancour, Marketing Manager, forwarded to colleague Alane), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Ooky Spooky Light Show image is approved for 313.events use.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Ooky Spooky Light Show 2026 promotional artwork (venue-supplied): glowing pumpkin scarecrow and ghost figure behind the show title",
+     "warnings": [
+      "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop of the title area"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-3",
@@ -8085,10 +8157,12 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "acquired-file",
-    "rights_route": "third-party-license",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
-    "caveats": [],
+    "caveats": [
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
+    ],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -8103,6 +8177,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "alternative_images": [
+     "313p-2c7e296c",
      "gen-halloween-3",
      "gen-halloween-6",
      "gen-halloween-8",
@@ -8126,6 +8201,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-2c7e296c",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium",
+     "rights_status": "Written reply from Sloan Longway (alane@sloanlongway.org, forwarded by Anne Mancour, Marketing Manager), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Laser Halloween image is approved for 313.events use and replaces the earlier Commons photo.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Laser Halloween promotional artwork (venue-supplied): glowing title over a haunted mansion with laser-drawn Frankenstein face and pumpkin",
+     "warnings": [
+      "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop that cuts off the lower part of the laser pumpkin"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-3",
@@ -8639,11 +8731,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -8659,6 +8751,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-9c99ee31",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -8681,6 +8774,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-9c99ee31",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © Port Huron Parks and Recreation",
+     "rights_status": "Written reply from Brittany Bezrutczyk (Marketing and Communications, Port Huron Parks and Recreation), received 2026-10-15 13:42 UTC, in answer to our photo permission request, attaching photos: \"I have attached photos you are welcome to use.\" Owner confirmation (project thread, 2026-10-15): the supplied Halloween Stroll images are approved for 313.events use.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Five costumed skeletons and a troll figure playing cards at a table on the lawn, Halloween Stroll, Port Huron (venue-supplied)",
+     "warnings": [
+      "original 6016x4000 is not stored in the repo; the card and the 2400 px full file are downscaled copies"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-6",

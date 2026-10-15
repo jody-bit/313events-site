@@ -24,7 +24,7 @@ const all = ED.entries(), H = all.halloween, byId = Object.fromEntries(H.map((e)
 const rel = ED.read("halloween-release-1.json");
 // Photography batch 2 (owner approval 2026-10-12): exactly these six records replaced their labelled illustration with an openly licensed
 // Wikimedia Commons photograph (image block only). Any other record taking a photograph still fails this guard.
-const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk", "wildwood-manor-house"]);
+const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "sandwich-town-ghost-tour", "spooky-janes-walk", "wildwood-manor-house"]);
 const isLicensedPhoto = (e) => e.image.illustrative === false && !e.image.ownerPhoto && !e.image.remote && !!e.image.license && /^https:\/\//.test(e.image.licenseUrl || "") &&
   !!e.image.rightsVerifiedAt && /^Photo: .+, (CC0|CC BY(-SA)? \d\.\d), via Wikimedia Commons$/.test(e.image.credit || "") && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test((e.image.commons || {}).filePage || "");
 const batch = ED.read("RELEASE_BATCH_HALLOWEEN_1.json");
@@ -81,6 +81,26 @@ for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
   if (PHOTO_B2.has(id)) { // since replaced by a licensed photograph (photography batch 2); the credit must reach the public card
     assert.ok(isLicensedPhoto(e), id + ": licensed photograph with author, license, license URL and Commons file page");
     assert.strictEqual(g.imageRoute, "acquired-file", id); assert.strictEqual(ED.publicEntry(e).image.credit, im.credit, id + ": credit reaches the public card");
+    continue;
+  }
+  if (id === "distracted-haunted-house" || id === "scarefest-scream-park" || id === "laser-halloween") { // since replaced by the photo Distracted Entertainment emailed in reply to our request (owner decision 2026-10-14)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /(happy to participate|media kit|that you can use for promotion)/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
+    continue;
+  }
+  if (id === "the-howling-haunted-trail-and-party") { // since replaced by the photo The Howling Haunted Trail emailed in reply to our request (owner decision 2026-10-15)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /use whichever fits best/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
+    continue;
+  }
+  if (id === "ooky-spooky-light-show") { // since replaced by the artwork Sloan Longway emailed in reply to our request (owner decision 2026-10-15)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /that you can use for promotion/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
+    continue;
+  }
+  if (id === "halloween-stroll") { // since replaced by the photo Port Huron Parks and Recreation emailed in reply to our request (owner decision 2026-10-15)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /welcome to use/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
     continue;
   }
   assert.strictEqual(g.imageRoute, "illustration", id); assert.strictEqual(g.rightsRoute, "owner-supplied-illustration", id);

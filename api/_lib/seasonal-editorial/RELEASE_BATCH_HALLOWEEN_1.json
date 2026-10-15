@@ -275,7 +275,7 @@
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
      "illustrative": false,
-     "credit": "Hush Haunted Attraction"
+     "credit": "Photography © Hush Haunted Attractions"
     }
    }
   },
@@ -377,8 +377,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -395,13 +395,14 @@
     "summary": "Haunted hayride, maze and forest",
     "website": "https://scarefestscreampark.com/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-1.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-5.webp",
       "/assets/seasonal/halloween-card-7.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © Scarefest Scream Park"
     }
    }
   },
@@ -629,8 +630,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -646,13 +647,14 @@
     "summary": "Haunted woodland trail",
     "website": "https://www.thehowlinghauntedtrail.com/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-1.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-7.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © The Howling Haunted Trail"
     }
    }
   },
@@ -872,8 +874,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -889,13 +891,14 @@
     "summary": "Indoor haunted house.",
     "website": "https://feardistracted.com/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-1.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-4.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © Distracted Entertainment"
     }
    }
   },
@@ -1177,8 +1180,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1194,13 +1197,14 @@
     "summary": "Planetarium Halloween show",
     "website": "https://sloanlongway.org/halloween/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-6.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-3.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium"
     }
    }
   },
@@ -1212,8 +1216,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "acquired-file",
-   "rightsRoute": "third-party-license",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1229,14 +1233,14 @@
     "summary": "Halloween-themed laser show",
     "website": "https://www.sloanlongway.org/",
     "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-3.webp",
       "/assets/seasonal/halloween-card-6.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
      "illustrative": false,
-     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons"
+     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium"
     }
    }
   },
@@ -1282,8 +1286,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1299,13 +1303,14 @@
     "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
     "website": "https://porthuronrec.com/halloweenstroll",
     "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-6.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © Port Huron Parks and Recreation"
     }
    }
   },

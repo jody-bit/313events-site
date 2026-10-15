@@ -4306,6 +4306,282 @@
    },
    "capture_place": "Hush Haunted Attraction, Westland (supplied from the venue's website)",
    "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-2073df4d",
+   "review_ref": "VENUE-DISTRACTED-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Costumed performer with white contact lenses and cracked face makeup against red wall, Distracted Haunted House promotional photo (venue-supplied)",
+   "capture_date": "not recorded",
+   "people_visible": "one performer (promotional photo)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "source is a 4:5 portrait with the Distracted logo baked into the lower third; card is a 3:2 crop of the upper part"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__full.webp",
+    "full_px": [
+     1080,
+     1350
+    ]
+   },
+   "original": {
+    "filename": "Stacey_Distracted(1080x1350).png",
+    "sha256": "2073df4db6f018f1f093b82d98108b1996e0fcdb0c4ebbff84da03399f24b9ed",
+    "pixels": [
+     1080,
+     1350
+    ],
+    "stored": "in repo as the __full file (lossless-equivalent WebP of the supplied PNG)"
+   },
+   "credit": "Photography © Distracted Entertainment",
+   "license": "Written reply from Distracted Entertainment, LLC (Scott Francis, Creative Director / Owner), received 2026-10-14 17:30 UTC, in answer to our photo permission request, attaching the images: \"Thank you for the photo permission request and we'd be happy to participate. Attached are a few images to choose from and if you need specific sizes please let me know.\" Owner confirmation (project thread, 2026-10-14): the supplied Distracted images are approved for 313.events use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__distracted-haunted-house__bowling-green-oh",
+    "name": "Distracted Haunted House",
+    "collection": "halloween",
+    "published_id": "distracted-haunted-house",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Distracted Haunted House, Bowling Green, OH (supplied by the venue)",
+   "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-79a7ddc3",
+   "review_ref": "VENUE-SCAREFEST-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Performer in blood-spattered white gown bent backward with head upside down on a dirt path at night, Scarefest Scream Park media kit photo",
+   "capture_date": "not recorded",
+   "people_visible": "one performer (promotional photo)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "source is a 2:3 portrait; card is a 3:2 crop of the upper part"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__full.webp",
+    "full_px": [
+     1064,
+     1596
+    ]
+   },
+   "original": {
+    "filename": "Scarefest_Scream.jpg",
+    "sha256": "79a7ddc333cd38f4cd238a247ce7e701217c69451d0b3fcbdaaf4c992e032715",
+    "pixels": [
+     1064,
+     1596
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Photography © Scarefest Scream Park",
+   "license": "Written reply from Scarefest Scream Park (info@scarefestscreampark.com), received 2026-10-14 16:50 UTC, in answer to our photo permission request: \"You are welcome to use any of the photographs available in our media kit ... for your listing on 313.events.\" Owner confirmation (project thread, 2026-10-15): the supplied Scarefest image is approved for the 313.events Scarefest card.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__scarefest-scream-park",
+    "name": "Scarefest Scream Park",
+    "collection": "halloween",
+    "published_id": "scarefest-scream-park",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Scarefest Scream Park (media kit photo supplied by the venue)",
+   "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-b3004032",
+   "review_ref": "VENUE-HOWLING-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Foggy night scene on the trail: costumed figures behind a broken picket fence and fallen branches, The Howling Haunted Trail promotional photo (venue-supplied, black and white)",
+   "capture_date": "not recorded",
+   "people_visible": "costumed performers in silhouette (promotional photo)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "source is 1600x900; card is a centre 3:2 crop scaled to 1280x853"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__full.webp",
+    "full_px": [
+     1600,
+     900
+    ]
+   },
+   "original": {
+    "filename": "Howling_Haunted_Trail_2.jpg",
+    "sha256": "b3004032f4f3fbe4ffffd0d55479d6ddf486c23970776649557c26e9c4729379",
+    "pixels": [
+     1600,
+     900
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Photography © The Howling Haunted Trail",
+   "license": "Written reply from Christine Welsh (Kerning Advertising), received 2026-10-15 15:50 UTC, in answer to our photo permission request to The Howling Haunted Trail, attaching a logo and photos: \"Attached are a few photos and the logo, use whichever fits best for our listing. Thanks for including The Howling!\" Owner decision (project thread, 2026-10-15): venue-supplied photos are used now and taken down on request.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__the-howling-haunted-trail-and-party__fenton-mi",
+    "name": "The Howling Haunted Trail & Party",
+    "collection": "halloween",
+    "published_id": "the-howling-haunted-trail-and-party",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "The Howling Haunted Trail, Fenton, MI (supplied by the venue)",
+   "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-33303347",
+   "review_ref": "VENUE-SLOAN-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Ooky Spooky Light Show 2026 promotional artwork (venue-supplied): glowing pumpkin scarecrow and ghost figure behind the show title",
+   "capture_date": "not recorded",
+   "people_visible": "none (illustrated artwork)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop of the title area"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__full.webp",
+    "full_px": [
+     1200,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "OokySpooky2026_1200x1200.jpg",
+    "sha256": "33303347cfa9f16c818f1e4e2f0eaa596c790f142cc7ec41f4d9438d2136e17a",
+    "pixels": [
+     1200,
+     1200
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium",
+   "license": "Written reply from Sloan Longway (Anne Mancour, Marketing Manager, forwarded to colleague Alane), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Ooky Spooky Light Show image is approved for 313.events use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__ooky-spooky-light-show__flint-mi",
+    "name": "Ooky Spooky Light Show",
+    "collection": "halloween",
+    "published_id": "ooky-spooky-light-show",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Ooky Spooky Light Show, Longway Planetarium, Flint, MI (supplied by the venue)",
+   "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-9c99ee31",
+   "review_ref": "VENUE-PORTHURON-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Five costumed skeletons and a troll figure playing cards at a table on the lawn, Halloween Stroll, Port Huron (venue-supplied)",
+   "capture_date": "not recorded",
+   "people_visible": "none (decorations)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "original 6016x4000 is not stored in the repo; the card and the 2400 px full file are downscaled copies"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__full.webp",
+    "full_px": [
+     2400,
+     1596
+    ]
+   },
+   "original": {
+    "filename": "Skeletons at Halloween Stroll.JPG",
+    "sha256": "9c99ee315f59d3f2cbde466700059ab8c9be59000a6f7289ccc75cf0ca629c32",
+    "pixels": [
+     6016,
+     4000
+    ],
+    "stored": "not in repo; the __full file is a 2400 px WebP copy"
+   },
+   "credit": "Photography © Port Huron Parks and Recreation",
+   "license": "Written reply from Brittany Bezrutczyk (Marketing and Communications, Port Huron Parks and Recreation), received 2026-10-15 13:42 UTC, in answer to our photo permission request, attaching photos: \"I have attached photos you are welcome to use.\" Owner confirmation (project thread, 2026-10-15): the supplied Halloween Stroll images are approved for 313.events use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__halloween-stroll__port-huron-mi",
+    "name": "Halloween Stroll",
+    "collection": "halloween",
+    "published_id": "halloween-stroll",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Halloween Stroll, Port Huron, MI (supplied by Port Huron Parks and Recreation)",
+   "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-2c7e296c",
+   "review_ref": "VENUE-SLOAN-02",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Laser Halloween promotional artwork (venue-supplied): glowing title over a haunted mansion with laser-drawn Frankenstein face and pumpkin",
+   "capture_date": "not recorded",
+   "people_visible": "none (illustrated artwork)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop that cuts off the lower part of the laser pumpkin"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__full.webp",
+    "full_px": [
+     1200,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "LaserHalloween_1200x1200.jpg",
+    "sha256": "2c7e296c426170d94e39afa10d61281a91d6f6c1d968a4f9f18b876d2df2f253",
+    "pixels": [
+     1200,
+     1200
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium",
+   "license": "Written reply from Sloan Longway (alane@sloanlongway.org, forwarded by Anne Mancour, Marketing Manager), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Laser Halloween image is approved for 313.events use and replaces the earlier Commons photo.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__laser-halloween__flint-mi",
+    "name": "Laser Halloween",
+    "collection": "halloween",
+    "published_id": "laser-halloween",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Laser Halloween, Longway Planetarium, Flint, MI (supplied by the venue)",
+   "reuse": "destination card and related editorial"
   }
  ],
  "editorial_atmospheric": [

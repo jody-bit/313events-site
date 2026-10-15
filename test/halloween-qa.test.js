@@ -17,7 +17,7 @@ const qa = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editori
 const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates.filter((c) => c.collection === "halloween");
 const ED = require(path.join(root, "api/_lib/seasonal-editorial/editorial.js"));
 const col = DATA.COLLECTIONS.halloween;
-const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "laser-halloween", "sandwich-town-ghost-tour", "spooky-janes-walk", "wildwood-manor-house"]); // photography batch 2, owner approved 2026-10-12 (wildwood-manor-house: owner approved 2026-10-14)
+const PHOTO_B2 = new Set(["zoo-boo", "crossroads-ghosts-goodies", "fort-meigs-garrison-ghost-walk", "sandwich-town-ghost-tour", "spooky-janes-walk", "wildwood-manor-house"]); // photography batch 2, owner approved 2026-10-12 (wildwood-manor-house: owner approved 2026-10-14)
 const entries = Object.fromEntries(ED.entries().halloween.map((e) => [e.id, e]));
 const pins = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/defaults.json"), "utf8")).defaults;
 
@@ -111,7 +111,49 @@ for (const r of qa.records) {
     assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the linked official image");
     continue;
   }
-  if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
+  // Owner decision 2026-10-14: Distracted Haunted House shows the photo Distracted Entertainment emailed in reply to our request (owner-authorized
+  // route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "distracted-haunted-house") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-distracted-01__card\.webp$/.test(e.image.src) && /happy to participate/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  // Owner decision 2026-10-15: Scarefest Scream Park shows the media kit photo the venue said we may use (owner-authorized route, reply recorded in
+  // image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "scarefest-scream-park") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-scarefest-01__card\.webp$/.test(e.image.src) && /media kit/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  // Owner decision 2026-10-15: The Howling Haunted Trail shows a photo the venue emailed in reply to our request (owner-authorized
+  // route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "the-howling-haunted-trail-and-party") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-howling-01__card\.webp$/.test(e.image.src) && /use whichever fits best/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  // Owner decision 2026-10-15: Ooky Spooky Light Show shows the promotional artwork Sloan Longway emailed in reply to our request
+  // (owner-authorized route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "ooky-spooky-light-show") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-sloan-01__card\.webp$/.test(e.image.src) && /that you can use for promotion/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  // Owner decision 2026-10-15: the Port Huron Halloween Stroll shows a photo Port Huron Parks and Recreation emailed in reply to our request
+  // (owner-authorized route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  // Owner decision 2026-10-15: Laser Halloween shows the promotional artwork Sloan Longway emailed, which replaces the earlier Commons photograph
+  // (owner-authorized route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "laser-halloween") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && !e.image.commons && /venue-sloan-01__card\.webp$/.test(e.image.src) && /that you can use for promotion/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  if (r.id === "halloween-stroll") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-porthuron-01__card\.webp$/.test(e.image.src) && /welcome to use/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
   else assert.strictEqual(e.image.src, o.src, r.id + " entry image == QA default");
   const uniq = (l) => [...new Set(l)].sort();
   assert.deepStrictEqual(uniq([e.image.src].concat(e.image.alternates || []).filter((u) => u !== o.src)), uniq([r.manifest.fallback_image, r.manifest.secondary_fallback_image].filter((u) => u !== o.src)), r.id + " fallbacks agree");

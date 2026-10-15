@@ -15,7 +15,7 @@ Owner decisions applied: approval of 2026-10-11 (all 52 destinations approved fo
 | Excluded as duplicate or closed (retained with history) | 3 |
 | Check: 29 + 20 + 3 | 52 |
 
-Image route: 16 of the 29 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 13 use an owner photo or a linked image.
+Image route: 11 of the 29 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 18 use an owner photo or a linked image.
 
 All 20 held records are held for factual verification: 9 have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; 11 have no official 2026 evidence (Rotten Manor has a linked image but no 2026 evidence).
 
@@ -31,25 +31,25 @@ All 20 held records are held for factual verification: 9 have only indirect 2026
 | Halloween Ghosts & Goodies at Crossroads Village | acquired-file | third-party-license |  |
 | Hush Haunted Attraction | owner-photo | owner-authorization |  |
 | Azra Chamber of Horrors | linked | linked-risk-acceptance |  |
-| Scarefest Scream Park | illustration | owner-supplied-illustration |  |
+| Scarefest Scream Park | owner-photo | owner-authorization |  |
 | Blake's Haunted Attractions | illustration | owner-supplied-illustration |  |
 | Deranged Haunt | illustration | owner-supplied-illustration |  |
 | Slaughterhouse Adventure | illustration | owner-supplied-illustration |  |
 | Full Moon Haunted House at Bonadeo Farms | illustration | owner-supplied-illustration |  |
-| The Howling Haunted Trail & Party | illustration | owner-supplied-illustration |  |
+| The Howling Haunted Trail & Party | owner-photo | owner-authorization |  |
 | Spooky Trails | illustration | owner-supplied-illustration |  |
 | Field of Fear | illustration | owner-supplied-illustration |  |
 | Dearborn Haunted Trail | illustration | owner-supplied-illustration |  |
 | Sanilac Museum's Haunted Village | illustration | owner-supplied-illustration |  |
-| Distracted Haunted House | illustration | owner-supplied-illustration |  |
+| Distracted Haunted House | owner-photo | owner-authorization |  |
 | Eerie Manor Tours at Wildwood Preserve | acquired-file | third-party-license |  |
 | Fort Meigs Garrison Ghost Walk | acquired-file | third-party-license |  |
 | Halloween Stroll at Canterbury Village | illustration | owner-supplied-illustration |  |
 | HallowGlow at TreeRunner | linked | linked-risk-acceptance |  |
 | Brick-or-Treat at LEGOLAND Discovery Center | illustration | owner-supplied-illustration |  |
-| Ooky Spooky Light Show | illustration | owner-supplied-illustration |  |
-| Laser Halloween | acquired-file | third-party-license |  |
-| Halloween Stroll | illustration | owner-supplied-illustration |  |
+| Ooky Spooky Light Show | owner-photo | owner-authorization |  |
+| Laser Halloween | owner-photo | owner-authorization |  |
+| Halloween Stroll | owner-photo | owner-authorization |  |
 | Spooky Jane's Walk | acquired-file | third-party-license |  |
 | Sandwich Town Ghost Tour | acquired-file | third-party-license |  |
 
