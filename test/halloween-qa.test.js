@@ -118,6 +118,13 @@ for (const r of qa.records) {
     assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
     continue;
   }
+  // Owner decision 2026-10-15: Scarefest Scream Park shows the media kit photo the venue said we may use (owner-authorized route, reply recorded in
+  // image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "scarefest-scream-park") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-scarefest-01__card\.webp$/.test(e.image.src) && /media kit/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
   if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
   else assert.strictEqual(e.image.src, o.src, r.id + " entry image == QA default");
   const uniq = (l) => [...new Set(l)].sort();
