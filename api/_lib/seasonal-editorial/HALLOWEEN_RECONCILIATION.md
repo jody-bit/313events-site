@@ -15,7 +15,7 @@ Owner decisions applied: approval of 2026-10-11 (all 52 destinations approved fo
 | Excluded as duplicate or closed (retained with history) | 3 |
 | Check: 29 + 20 + 3 | 52 |
 
-Image route: 13 of the 29 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 16 use an owner photo or a linked image.
+Image route: 12 of the 29 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 17 use an owner photo or a linked image.
 
 All 20 held records are held for factual verification: 9 have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; 11 have no official 2026 evidence (Rotten Manor has a linked image but no 2026 evidence).
 
@@ -47,7 +47,7 @@ All 20 held records are held for factual verification: 9 have only indirect 2026
 | Halloween Stroll at Canterbury Village | illustration | owner-supplied-illustration |  |
 | HallowGlow at TreeRunner | linked | linked-risk-acceptance |  |
 | Brick-or-Treat at LEGOLAND Discovery Center | illustration | owner-supplied-illustration |  |
-| Ooky Spooky Light Show | illustration | owner-supplied-illustration |  |
+| Ooky Spooky Light Show | owner-photo | owner-authorization |  |
 | Laser Halloween | acquired-file | third-party-license |  |
 | Halloween Stroll | illustration | owner-supplied-illustration |  |
 | Spooky Jane's Walk | acquired-file | third-party-license |  |

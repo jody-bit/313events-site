@@ -7970,11 +7970,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -7990,6 +7990,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-33303347",
      "gen-halloween-3",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -8012,6 +8013,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-33303347",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Artwork © Sloan Museum of Discovery & Longway Planetarium",
+     "rights_status": "Written reply from Sloan Longway (Anne Mancour, Marketing Manager, forwarded to colleague Alane), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Ooky Spooky Light Show image is approved for 313.events use.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Ooky Spooky Light Show 2026 promotional artwork (venue-supplied): glowing pumpkin scarecrow and ghost figure behind the show title",
+     "warnings": [
+      "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop of the title area"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "gen-halloween-3",

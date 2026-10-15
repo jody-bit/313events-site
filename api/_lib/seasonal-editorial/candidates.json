@@ -2666,6 +2666,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-3.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-33303347",
      "gen-halloween-3",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2680,7 +2681,10 @@
     "family-friendly"
    ],
    "destination_id": "ooky-spooky-light-show",
-   "entry_id": "ooky-spooky-light-show"
+   "entry_id": "ooky-spooky-light-show",
+   "photos": [
+    "313p-33303347"
+   ]
   },
   {
    "collection": "halloween",

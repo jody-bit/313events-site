@@ -4444,6 +4444,52 @@
    },
    "capture_place": "The Howling Haunted Trail, Fenton, MI (supplied by the venue)",
    "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-33303347",
+   "review_ref": "VENUE-SLOAN-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Ooky Spooky Light Show 2026 promotional artwork (venue-supplied): glowing pumpkin scarecrow and ghost figure behind the show title",
+   "capture_date": "not recorded",
+   "people_visible": "none (illustrated artwork)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "promotional artwork, not a photograph; source is a 1200x1200 square with the Longway logo and URL at the bottom, card is a 3:2 crop of the title area"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__ooky-spooky-light-show__flint-mi__venue-sloan-01__full.webp",
+    "full_px": [
+     1200,
+     1200
+    ]
+   },
+   "original": {
+    "filename": "OokySpooky2026_1200x1200.jpg",
+    "sha256": "33303347cfa9f16c818f1e4e2f0eaa596c790f142cc7ec41f4d9438d2136e17a",
+    "pixels": [
+     1200,
+     1200
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Artwork © Sloan Museum of Discovery & Longway Planetarium",
+   "license": "Written reply from Sloan Longway (Anne Mancour, Marketing Manager, forwarded to colleague Alane), received 2026-10-15 15:26 UTC, attaching images \"that you can use for promotion of our Halloween shows\", in answer to our photo permission request. Owner confirmation (project thread, 2026-10-15): the supplied Ooky Spooky Light Show image is approved for 313.events use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__ooky-spooky-light-show__flint-mi",
+    "name": "Ooky Spooky Light Show",
+    "collection": "halloween",
+    "published_id": "ooky-spooky-light-show",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Ooky Spooky Light Show, Longway Planetarium, Flint, MI (supplied by the venue)",
+   "reuse": "destination card and related editorial"
   }
  ],
  "editorial_atmospheric": [
