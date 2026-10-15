@@ -223,7 +223,7 @@
   // street, or a different city) the page would combine one place's name with
   // another place's address, so no line is shown and the reason is returned for
   // QA. Source data is never corrected here.
-  function streetLineForEvent(e) {
+  function streetLineParts(e) {
     e = e || {};
     var name = e.venue && e.venue !== "Venue TBA" ? e.venue : "";
     var evAddr = tidyForDisplay(e.locEventAddress), vnAddr = tidyForDisplay(e.locVenueAddress);
@@ -240,7 +240,34 @@
     var r = resolve({ name: name, eventAddress: evAddr, eventCity: e.locEventCity, venueAddress: vnAddr, venueCity: e.locVenueCity, venueZip: e.locVenueZip });
     if (!r.street || !hasHouseNumber(r.street)) return none;
     var text = compose("", { street: r.street, city: r.city, state: r.state, zip: r.zip, country: r.country });
-    return { text: text, source: r.source, conflict: "" };
+    return { text: text, source: r.source, conflict: "", street: r.street, city: r.city };
+  }
+
+  // The street line for a GROUP of events that share one marker (map popup). A single
+  // street is returned only when every event that has a usable street resolves to the
+  // same street and city; any event/venue conflict, or two different locations, means
+  // no street at all. Events with no usable street neither support nor contradict.
+  // -> { text, conflict }  conflict is "" | "event" | "group".
+  function sharedStreetLine(events) {
+    var none = { text: "", conflict: "" };
+    var lines = (events || []).map(streetLineParts);
+    if (lines.some(function (l) { return l.conflict; })) return { text: "", conflict: "event" };
+    var known = lines.filter(function (l) { return l.text; });
+    if (!known.length) return none;
+    var first = known[0];
+    for (var i = 1; i < known.length; i++) {
+      var k = known[i];
+      if (!sameStreetLine(first.street, k.street)) return { text: "", conflict: "group" };
+      if (first.city && k.city && normKey(first.city) !== normKey(k.city)) return { text: "", conflict: "group" };
+    }
+    // same place, different wording: show the most complete rendering (longest text)
+    var best = known.reduce(function (a, b) { return b.text.length > a.text.length ? b : a; });
+    return { text: best.text, conflict: "" };
+  }
+
+  function streetLineForEvent(e) {
+    var r = streetLineParts(e);
+    return { text: r.text, source: r.source, conflict: r.conflict };
   }
 
   // An event object as the pages build it: venue (display name), locEventAddress/
@@ -288,6 +315,7 @@
     resolve: resolve,
     resolveForEvent: resolveForEvent,
     streetLineForEvent: streetLineForEvent,
+    sharedStreetLine: sharedStreetLine,
     parseAddress: parseAddress,
     icsEscape: icsEscape,
     foldICSLine: foldICSLine,
