@@ -4354,6 +4354,52 @@
    "reuse": "destination card and related editorial"
   },
   {
+   "id": "313p-79a7ddc3",
+   "review_ref": "VENUE-SCAREFEST-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Performer in blood-spattered white gown bent backward with head upside down on a dirt path at night, Scarefest Scream Park media kit photo",
+   "capture_date": "not recorded",
+   "people_visible": "one performer (promotional photo)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "source is a 2:3 portrait; card is a 3:2 crop of the upper part"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__full.webp",
+    "full_px": [
+     1064,
+     1596
+    ]
+   },
+   "original": {
+    "filename": "Scarefest_Scream.jpg",
+    "sha256": "79a7ddc333cd38f4cd238a247ce7e701217c69451d0b3fcbdaaf4c992e032715",
+    "pixels": [
+     1064,
+     1596
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Photography © Scarefest Scream Park",
+   "license": "Written reply from Scarefest Scream Park (info@scarefestscreampark.com), received 2026-10-14 16:50 UTC, in answer to our photo permission request: \"You are welcome to use any of the photographs available in our media kit ... for your listing on 313.events.\" Owner confirmation (project thread, 2026-10-15): the supplied Scarefest image is approved for the 313.events Scarefest card.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__scarefest-scream-park",
+    "name": "Scarefest Scream Park",
+    "collection": "halloween",
+    "published_id": "scarefest-scream-park",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Scarefest Scream Park (media kit photo supplied by the venue)",
+   "reuse": "destination card and related editorial"
+  },
+  {
    "id": "313p-b3004032",
    "review_ref": "VENUE-HOWLING-01",
    "classification": "DESTINATION_SPECIFIC",

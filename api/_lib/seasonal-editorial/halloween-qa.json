@@ -1554,11 +1554,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -1574,6 +1574,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "313p-79a7ddc3",
      "link-scarefest-scream-park",
      "gen-halloween-5",
      "gen-halloween-7",
@@ -1598,6 +1599,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-79a7ddc3",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__venue-scarefest-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Photography © Scarefest Scream Park",
+     "rights_status": "Written reply from Scarefest Scream Park (info@scarefestscreampark.com), received 2026-10-14 16:50 UTC, in answer to our photo permission request: \"You are welcome to use any of the photographs available in our media kit ... for your listing on 313.events.\" Owner confirmation (project thread, 2026-10-15): the supplied Scarefest image is approved for the 313.events Scarefest card.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Performer in blood-spattered white gown bent backward with head upside down on a dirt path at night, Scarefest Scream Park media kit photo",
+     "warnings": [
+      "source is a 2:3 portrait; card is a 3:2 crop of the upper part"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "link-scarefest-scream-park",

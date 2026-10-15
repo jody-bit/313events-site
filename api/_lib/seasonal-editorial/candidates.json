@@ -1316,6 +1316,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "313p-79a7ddc3",
      "link-scarefest-scream-park",
      "gen-halloween-5",
      "gen-halloween-7",
@@ -1333,7 +1334,10 @@
     "serious-scares"
    ],
    "destination_id": "scarefest-scream-park",
-   "entry_id": "scarefest-scream-park"
+   "entry_id": "scarefest-scream-park",
+   "photos": [
+    "313p-79a7ddc3"
+   ]
   },
   {
    "collection": "halloween",
