@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { SLUGS } = require("./_lib/source-slugs"); // WP 0.5 reuse -- see api/_lib/source-slugs.js
 // Vercel Cron job — the automated smoke test suite Jody asked about on
 // 2026-09-02 ("wanted to check in on the automated smoke tests - when are
@@ -640,13 +641,7 @@ async function pruneOldRows(sbHeaders) {
 }
 
 module.exports = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ overall: "fail", error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured — cannot write results" });

@@ -29,23 +29,13 @@
 
 "use strict";
 
-const crypto = require("crypto");
 const { startRun, finishRun } = require("./run-log");
+const { cronAuthStatus } = require("./cron-auth");
 
-function timingSafeEqual(a, b) {
-  const ab = Buffer.from(String(a));
-  const bb = Buffer.from(String(b));
-  if (ab.length !== bb.length) return false;
-  return crypto.timingSafeEqual(ab, bb);
-}
-
-// Same rule the handlers apply today: no CRON_SECRET configured means the
-// handler does not check. (Fail-closed behaviour is a separate change.)
+// A request is a run only if the shared cron auth would let it through; an
+// unauthorised (or unconfigured-and-refused) hit is not a run.
 function requestAuthorized(req) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
-  const header = req && req.headers ? req.headers.authorization : "";
-  return timingSafeEqual(header || "", `Bearer ${secret}`);
+  return cronAuthStatus(req) === "ok";
 }
 
 const SESSION_KEYS = ["note", "skipped", "skippedPast", "checked", "checkedUrls", "checkedCount", "feedsChecked", "excludedByCategory", "excludedByDate"];
