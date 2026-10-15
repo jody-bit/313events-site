@@ -48,7 +48,7 @@ All 20 held records are held for factual verification: 9 have only indirect 2026
 | HallowGlow at TreeRunner | linked | linked-risk-acceptance |  |
 | Brick-or-Treat at LEGOLAND Discovery Center | illustration | owner-supplied-illustration |  |
 | Ooky Spooky Light Show | owner-photo | owner-authorization |  |
-| Laser Halloween | acquired-file | third-party-license |  |
+| Laser Halloween | owner-photo | owner-authorization |  |
 | Halloween Stroll | owner-photo | owner-authorization |  |
 | Spooky Jane's Walk | acquired-file | third-party-license |  |
 | Sandwich Town Ghost Tour | acquired-file | third-party-license |  |

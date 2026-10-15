@@ -1204,7 +1204,7 @@
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
      "illustrative": false,
-     "credit": "Artwork © Sloan Museum of Discovery & Longway Planetarium"
+     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium"
     }
    }
   },
@@ -1216,8 +1216,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "acquired-file",
-   "rightsRoute": "third-party-license",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1233,14 +1233,14 @@
     "summary": "Halloween-themed laser show",
     "website": "https://www.sloanlongway.org/",
     "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__commons-01__card.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__laser-halloween__flint-mi__venue-sloan-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-3.webp",
       "/assets/seasonal/halloween-card-6.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
      "illustrative": false,
-     "credit": "Photo: Michael Barera, CC BY-SA 4.0, via Wikimedia Commons"
+     "credit": "Photography © Sloan Museum of Discovery & Longway Planetarium"
     }
    }
   },
