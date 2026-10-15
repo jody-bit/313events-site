@@ -1286,8 +1286,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -1303,13 +1303,14 @@
     "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
     "website": "https://porthuronrec.com/halloweenstroll",
     "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-6.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © Port Huron Parks and Recreation"
     }
    }
   },

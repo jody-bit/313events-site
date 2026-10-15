@@ -4490,6 +4490,50 @@
    },
    "capture_place": "Ooky Spooky Light Show, Longway Planetarium, Flint, MI (supplied by the venue)",
    "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-9c99ee31",
+   "review_ref": "VENUE-PORTHURON-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Five costumed skeletons and a troll figure playing cards at a table on the lawn, Halloween Stroll, Port Huron (venue-supplied)",
+   "capture_date": "not recorded",
+   "people_visible": "none (decorations)",
+   "editorial_flags": [],
+   "quality_flags": [],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__full.webp",
+    "full_px": [
+     2400,
+     1596
+    ]
+   },
+   "original": {
+    "filename": "Skeletons at Halloween Stroll.JPG",
+    "sha256": "9c99ee315f59d3f2cbde466700059ab8c9be59000a6f7289ccc75cf0ca629c32",
+    "pixels": [
+     6016,
+     4000
+    ],
+    "stored": "not in repo; the __full file is a 2400 px WebP copy"
+   },
+   "credit": "Photography © Port Huron Parks and Recreation",
+   "license": "Written reply from Brittany Bezrutczyk (Marketing and Communications, Port Huron Parks and Recreation), received 2026-10-15 13:42 UTC, in answer to our photo permission request, attaching photos: \"I have attached photos you are welcome to use.\" Owner confirmation (project thread, 2026-10-15): the supplied Halloween Stroll images are approved for 313.events use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__halloween-stroll__port-huron-mi",
+    "name": "Halloween Stroll",
+    "collection": "halloween",
+    "published_id": "halloween-stroll",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Halloween Stroll, Port Huron, MI (supplied by Port Huron Parks and Recreation)",
+   "reuse": "destination card and related editorial"
   }
  ],
  "editorial_atmospheric": [

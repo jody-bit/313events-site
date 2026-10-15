@@ -2827,6 +2827,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-6.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-9c99ee31",
      "gen-halloween-6",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -2841,7 +2842,10 @@
     "family-friendly"
    ],
    "destination_id": "halloween-stroll",
-   "entry_id": "halloween-stroll"
+   "entry_id": "halloween-stroll",
+   "photos": [
+    "313p-9c99ee31"
+   ]
   },
   {
    "collection": "halloween",

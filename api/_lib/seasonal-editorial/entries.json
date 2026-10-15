@@ -8130,40 +8130,37 @@
    "status": "PUBLISHED",
    "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
    "image": {
-    "src": "/assets/seasonal/halloween-card-3.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+    "source": "Supplied by Port Huron Parks and Recreation by email (Halloween Stroll photo, skeletons at a card table); card is the full 3:2 frame scaled down, full file is a 2400 px copy",
+    "credit": "Photography © Port Huron Parks and Recreation",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
+     "bytes": 268032,
+     "sha256": "11437f0eb2b61c72bead6df5b412c1e634b99115e4fcdca52076d4b4674eeb2a",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-9c99ee31",
+     "reviewRef": "VENUE-PORTHURON-01",
+     "authorization": {
+      "statement": "Written reply from Brittany Bezrutczyk (Marketing and Communications, Port Huron Parks and Recreation), received 2026-10-15 13:42 UTC, in answer to our photo permission request, attaching photos: \"I have attached photos you are welcome to use.\" Owner confirmation (project thread, 2026-10-15): the supplied Halloween Stroll images are approved for 313.events use.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread); Port Huron Parks and Recreation reply received 2026-10-15",
+      "recordedAt": "2026-10-15",
+      "note": "No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 6016x4000 (3:2), no crop; scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-6.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-3.webp",
-     "bytes": 28712,
-     "sha256": "ac9654a060b4997e1b1a67255313bd9fc7e2b33bfbcd7e04db69a2a629a1f943",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {
