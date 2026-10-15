@@ -4499,7 +4499,9 @@
    "capture_date": "not recorded",
    "people_visible": "none (decorations)",
    "editorial_flags": [],
-   "quality_flags": [],
+   "quality_flags": [
+    "original 6016x4000 is not stored in the repo; the card and the 2400 px full file are downscaled copies"
+   ],
    "files": {
     "card": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
     "card_px": [

@@ -8765,7 +8765,9 @@
      "illustrative": false,
      "depicts_actual_destination": true,
      "subject": "Five costumed skeletons and a troll figure playing cards at a table on the lawn, Halloween Stroll, Port Huron (venue-supplied)",
-     "warnings": [],
+     "warnings": [
+      "original 6016x4000 is not stored in the repo; the card and the 2400 px full file are downscaled copies"
+     ],
      "image_kind": "photo",
      "rights_basis": "owner-authorization",
      "license_url": null
