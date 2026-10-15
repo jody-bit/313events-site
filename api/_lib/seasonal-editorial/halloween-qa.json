@@ -1554,11 +1554,11 @@
      "rights": true,
      "approval": true
     },
-    "image_route": "illustration",
-    "rights_route": "owner-supplied-illustration",
+    "image_route": "owner-photo",
+    "rights_route": "owner-authorization",
     "outstanding": [],
     "caveats": [
-     "Image: a labelled generated illustration (\"Illustrative image\" badge). It is not a photograph of this destination. Generation tool and terms are not recorded."
+     "Image rights: owner authorization (statement in the photo library). The photographer's name and the date of the grant are not recorded. This is not a Creative Commons license and there is no license URL."
     ],
     "legacy": null
    },
@@ -1574,6 +1574,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-5.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "alternative_images": [
+     "313p-79a7ddc3",
      "link-scarefest-scream-park",
      "gen-halloween-5",
      "gen-halloween-7",
@@ -1598,6 +1599,23 @@
      "depicts_actual_destination": false,
      "warnings": [],
      "image_kind": "generated-artwork"
+    },
+    {
+     "id": "313p-79a7ddc3",
+     "type": "owner_photo_destination",
+     "src": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__lenox-township-mi__venue-scarefest-01__card.webp",
+     "source": "313.events owner photo archive, captured not recorded",
+     "credit": "Scarefest Scream Park",
+     "rights_status": "Owner confirmation (project thread, 2026-10-15): Jody Tyree states that Scarefest Scream Park confirmed by email that 313.events may use materials from its media kit (scarefestscreampark.com/media); this image was selected from that media kit.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "subject": "Performer in a blood-spattered white gown bent backward with head upside down on a dirt path at night, Scarefest Scream Park media-kit photograph",
+     "warnings": [
+      "card is a 3:2 crop of a portrait photograph"
+     ],
+     "image_kind": "photo",
+     "rights_basis": "owner-authorization",
+     "license_url": null
     },
     {
      "id": "link-scarefest-scream-park",

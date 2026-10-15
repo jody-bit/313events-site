@@ -5957,40 +5957,37 @@
    "status": "PUBLISHED",
    "summary": "Haunted hayride, maze and forest",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__lenox-township-mi__venue-scarefest-01__card.webp",
+    "source": "From the venue's media kit (Scarefest Scream Park); full image kept as the 1600 file, card is a 3:2 crop",
+    "credit": "Scarefest Scream Park",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__lenox-township-mi__venue-scarefest-01__card.webp",
+     "bytes": 66908,
+     "sha256": "959e865547364fd0ce194ca1a3a679782e56d2f108644c5e982d21315a71a88d",
+     "width": 1064,
+     "height": 709,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-79a7ddc3",
+     "reviewRef": "VENUE-SCAREFEST-01",
+     "authorization": {
+      "statement": "Owner confirmation (project thread, 2026-10-15): Jody Tyree states that Scarefest Scream Park confirmed by email that 313.events may use materials from its media kit (scarefestscreampark.com/media); this image was selected from that media kit.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner confirmation in the project thread)",
+      "recordedAt": "2026-10-15",
+      "note": "Image from the venue's media kit and attributed by the owner to Scarefest Scream Park. The photographer and the venue's written terms are not recorded in the repository; the owner confirmed permission in the project thread (the email is held by the owner). Credit is metadata only (no visible credit) unless the venue's terms require one. Card is a 1064x709 (3:2) crop of the supplied 1064x1596 portrait; the full image is kept as the __1600 file."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
     "alternates": [
+     "/assets/seasonal/halloween-card-1.webp",
      "/assets/seasonal/halloween-card-5.webp",
      "/assets/seasonal/halloween-card-7.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-1.webp",
-     "bytes": 45914,
-     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {

@@ -83,6 +83,11 @@ for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
     assert.strictEqual(g.imageRoute, "acquired-file", id); assert.strictEqual(ED.publicEntry(e).image.credit, im.credit, id + ": credit reaches the public card");
     continue;
   }
+  if (id === "scarefest-scream-park") { // since replaced by a photograph from Scarefest's own media kit (owner decision 2026-10-15)
+    assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
+    assert.ok(im.illustrative === false && !!im.ownerPhoto && /media kit/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");
+    continue;
+  }
   if (id === "distracted-haunted-house") { // since replaced by the photo Distracted Entertainment emailed in reply to our request (owner decision 2026-10-14)
     assert.strictEqual(g.imageRoute, "owner-photo", id); assert.strictEqual(g.rightsRoute, "owner-authorization", id);
     assert.ok(im.illustrative === false && !!im.ownerPhoto && /happy to participate/.test(im.ownerPhoto.authorization.statement), id + ": venue-supplied owner-authorized image");

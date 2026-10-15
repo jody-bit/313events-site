@@ -113,6 +113,13 @@ for (const r of qa.records) {
   }
   // Owner decision 2026-10-14: Distracted Haunted House shows the photo Distracted Entertainment emailed in reply to our request (owner-authorized
   // route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  // Owner decision 2026-10-15: Scarefest Scream Park shows a photograph from its own media kit (owner-authorized route; the venue's confirmation
+  // that its media-kit materials may be used is recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "scarefest-scream-park") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-scarefest-01__card\.webp$/.test(e.image.src) && /media kit/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue photograph, the pinned QA default is still the earlier image");
+    continue;
+  }
   if (r.id === "distracted-haunted-house") {
     assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-distracted-01__card\.webp$/.test(e.image.src) && /happy to participate/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
     assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");

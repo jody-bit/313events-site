@@ -4352,6 +4352,53 @@
    },
    "capture_place": "Distracted Haunted House, Bowling Green, OH (supplied by the venue)",
    "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-79a7ddc3",
+   "review_ref": "VENUE-SCAREFEST-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Performer in a blood-spattered white gown bent backward with head upside down on a dirt path at night, Scarefest Scream Park media-kit photograph",
+   "capture_date": "not recorded",
+   "people_visible": "one performer",
+   "editorial_flags": [],
+   "quality_flags": [
+    "card is a 3:2 crop of a portrait photograph"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__lenox-township-mi__venue-scarefest-01__card.webp",
+    "card_px": [
+     1064,
+     709
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__scarefest-scream-park__lenox-township-mi__venue-scarefest-01__1600.webp",
+    "full_px": [
+     1064,
+     1596
+    ]
+   },
+   "original": {
+    "filename": "Scarefest_Scream.jpg",
+    "sha256": "79a7ddc333cd38f4cd238a247ce7e701217c69451d0b3fcbdaaf4c992e032715",
+    "pixels": [
+     1064,
+     1596
+    ],
+    "stored": "in repo as the __1600 file (re-encoded WebP of the supplied JPEG)"
+   },
+   "credit": "Scarefest Scream Park",
+   "license": "Owner confirmation (project thread, 2026-10-15): Jody Tyree states that Scarefest Scream Park confirmed by email that 313.events may use materials from its media kit (scarefestscreampark.com/media); this image was selected from that media kit.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__scarefest-scream-park__lenox-township-mi",
+    "name": "Scarefest Scream Park",
+    "collection": "halloween",
+    "inventory_no": "",
+    "published_id": "scarefest-scream-park",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Scarefest Scream Park (venue media kit)",
+   "reuse": "destination card and related editorial with accurate attribution"
   }
  ],
  "editorial_atmospheric": [
