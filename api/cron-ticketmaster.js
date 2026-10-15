@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
@@ -328,13 +329,7 @@ const DEFAULT_STATUS = "approved";
 const SOURCE_SLUG = SLUGS.ticketmaster; // see api/_lib/source-slugs.js
 
 module.exports = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
 
   // Run logging (source reliability PR 1, 2026-10-11): this connector wrote
   // no source_runs row before, so "ran and wrote nothing", "blocked" and

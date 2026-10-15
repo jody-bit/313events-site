@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const path = require("path");
 const { buildVenueDetailsMap, resolveVenueFromCandidate, normalizeVenueName, citiesConflict, isBlank } = require("./_lib/venue-lookup");
 const { startRun, finishRun } = require("./_lib/run-log");
@@ -584,13 +585,7 @@ function mergeWithStored(row, stored, categoryConfident, venueMaps) {
 
 module.exports = async (req, res) => {
   const startedAt = Date.now();
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   const runHandle = await startRun(SOURCE_SLUG);
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {

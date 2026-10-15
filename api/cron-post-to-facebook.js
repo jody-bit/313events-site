@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 // Vercel Cron job — auto-posts newly-approved events to 313.events' own
 // Facebook Page feed. Added 2026-09-14 (Jody: "what if people posted their
 // events on 313 and then it auto published to Facebook so they can come to
@@ -99,13 +100,7 @@ module.exports = async (req, res) => {
     res.status(200).json({ ok: true, skipped: "not a production deployment" });
     return;
   }
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ posted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;

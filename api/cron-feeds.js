@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair, resolveVenueFromCandidate } = require("./_lib/venue-lookup");
 const { parseIcsLocation } = require("./_lib/ics-location");
@@ -878,13 +879,7 @@ function feedSourceFailures(body) {
 }
 
 const handleRequest = async (req, res) => {
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;

@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
@@ -252,13 +253,7 @@ const handleRequest = async (req, res) => {
   // nothing written, no visibility" problem). No secrets/tokens/full
   // payloads are logged — counts and statuses only.
   console.log(`[cron-poppspacking] cron started ${new Date().toISOString()}`);
-  if (CRON_SECRET) {
-    const auth = req.headers["authorization"];
-    if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  }
+  if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(200).json({ upserted: 0, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
     return;
