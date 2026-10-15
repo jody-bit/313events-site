@@ -118,7 +118,14 @@ for (const r of qa.records) {
     assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
     continue;
   }
-  if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
+  // Owner decision 2026-10-15: The Howling Haunted Trail shows a photo the venue emailed in reply to our request (owner-authorized
+  // route, reply recorded in image.ownerPhoto). The pinned QA default is still the earlier illustration.
+  if (r.id === "the-howling-haunted-trail-and-party") {
+    assert.ok(e.image.illustrative === false && !!e.image.ownerPhoto && /venue-howling-01__card\.webp$/.test(e.image.src) && /use whichever fits best/.test(e.image.ownerPhoto.authorization.statement), r.id + ": venue-supplied owner-authorized image");
+    assert.notStrictEqual(e.image.src, o.src, r.id + ": the card shows the venue image, the pinned QA default is still the earlier image");
+    continue;
+  }
+  if (o.type.startsWith("linked")) { assert.strictEqual(e.image.remote.src, o.src); assert.strictEqual(e.image.src, r.manifest.fallback_image); assert.strictEqual(e.image.src, r.manifest.fallback_image); }
   else assert.strictEqual(e.image.src, o.src, r.id + " entry image == QA default");
   const uniq = (l) => [...new Set(l)].sort();
   assert.deepStrictEqual(uniq([e.image.src].concat(e.image.alternates || []).filter((u) => u !== o.src)), uniq([r.manifest.fallback_image, r.manifest.secondary_fallback_image].filter((u) => u !== o.src)), r.id + " fallbacks agree");

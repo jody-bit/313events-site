@@ -6556,40 +6556,37 @@
    "status": "PUBLISHED",
    "summary": "Haunted woodland trail",
    "image": {
-    "src": "/assets/seasonal/halloween-card-1.webp",
+    "src": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+    "source": "Supplied by The Howling Haunted Trail (Kerning Advertising) by email; original untouched as the full file, card is a 3:2 crop",
+    "credit": "Photography © The Howling Haunted Trail",
+    "illustrative": false,
+    "acquired": {
+     "file": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+     "bytes": 89580,
+     "sha256": "22dab9a2c2fb0e01e437c9e7000654900c5732a570a8b76aae80e8938e5da364",
+     "width": 1280,
+     "height": 853,
+     "acquiredAt": "2026-10-15"
+    },
+    "ownerPhoto": {
+     "photoId": "313p-b3004032",
+     "reviewRef": "VENUE-HOWLING-01",
+     "authorization": {
+      "statement": "Written reply from Christine Welsh (Kerning Advertising), received 2026-10-15 15:50 UTC, in answer to our photo permission request to The Howling Haunted Trail, attaching a logo and photos: \"Attached are a few photos and the logo, use whichever fits best for our listing. Thanks for including The Howling!\" Owner decision (project thread, 2026-10-15): venue-supplied photos are used now and taken down on request.",
+      "grantee": "313.events",
+      "recordedBy": "Jody Tyree (owner decision in the project thread); The Howling reply received 2026-10-15",
+      "recordedAt": "2026-10-15",
+      "note": "No usage terms beyond the reply are claimed. Credit is metadata only (no visible credit) unless the venue's terms require one."
+     },
+     "verifiedAt": "2026-10-15",
+     "verifiedBy": "Claude: size, dimensions and sha256 computed from the repository file"
+    },
+    "cropNote": "Source 1600x900 (16:9), centre-cropped to 3:2 and scaled to 1280x853.",
     "alternates": [
      "/assets/seasonal/halloween-card-7.webp",
      "/assets/seasonal/halloween-card-8.webp"
     ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "acquired": {
-     "file": "/assets/seasonal/halloween-card-1.webp",
-     "bytes": 45914,
-     "sha256": "f7381f090692ecaa1f2f090e884e93985aadd0f451b069edb14a9b827b69d2d7",
-     "width": 640,
-     "height": 427,
-     "acquiredAt": "2026-10-12"
-    },
-    "illustration": {
-     "statement": "Temporary editorial illustration. Owner strategy of 2026-10-11 allows existing generated artwork as temporary editorial illustrations where appropriate, never presented as documentary photography of an actual destination.",
-     "suppliedBy": "313.events owner",
-     "recordedBy": "Claude Code, recording the owner's image direction of 2026-10-12",
-     "recordedAt": "2026-10-12",
-     "note": "Generation tool and terms are not recorded. It does not depict this destination. Replace with an authentic or properly licensed photograph when one is available."
-    },
-    "provenance": {
-     "status": "OWNER_ACCEPTED",
-     "resolvedAt": "2026-10-12",
-     "resolvedBy": "Jody Tyree (owner direction in the project thread)",
-     "unresolved": [],
-     "label": "Illustrative image",
-     "ownerAcceptance": "Owner direction 2026-10-12: use labelled temporary illustrations wherever authorized photography is unavailable. Shown with the visible Illustrative image label; never a photograph of the destination.",
-     "note": "Temporary 313.events illustration with the visible Illustrative image label; not a photograph of the destination."
-    }
+    "placeholder": "/assets/placeholders/event-800.webp"
    },
    "evidence": [
     {

@@ -1679,6 +1679,7 @@
     "fallback_image": "/assets/seasonal/halloween-card-7.webp",
     "secondary_fallback_image": "/assets/seasonal/halloween-card-8.webp",
     "alternative_images": [
+     "313p-b3004032",
      "gen-halloween-7",
      "gen-halloween-8",
      "313p-4e36da88",
@@ -1693,7 +1694,10 @@
     "haunted-attractions"
    ],
    "destination_id": "the-howling-haunted-trail-and-party",
-   "entry_id": "the-howling-haunted-trail-and-party"
+   "entry_id": "the-howling-haunted-trail-and-party",
+   "photos": [
+    "313p-b3004032"
+   ]
   },
   {
    "collection": "halloween",

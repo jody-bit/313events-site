@@ -4352,6 +4352,52 @@
    },
    "capture_place": "Distracted Haunted House, Bowling Green, OH (supplied by the venue)",
    "reuse": "destination card and related editorial"
+  },
+  {
+   "id": "313p-b3004032",
+   "review_ref": "VENUE-HOWLING-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Foggy night scene on the trail: costumed figures behind a broken picket fence and fallen branches, The Howling Haunted Trail promotional photo (venue-supplied, black and white)",
+   "capture_date": "not recorded",
+   "people_visible": "costumed performers in silhouette (promotional photo)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "source is 1600x900; card is a centre 3:2 crop scaled to 1280x853"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__full.webp",
+    "full_px": [
+     1600,
+     900
+    ]
+   },
+   "original": {
+    "filename": "Howling_Haunted_Trail_2.jpg",
+    "sha256": "b3004032f4f3fbe4ffffd0d55479d6ddf486c23970776649557c26e9c4729379",
+    "pixels": [
+     1600,
+     900
+    ],
+    "stored": "in repo as the __full file (WebP re-encode of the supplied JPEG)"
+   },
+   "credit": "Photography © The Howling Haunted Trail",
+   "license": "Written reply from Christine Welsh (Kerning Advertising), received 2026-10-15 15:50 UTC, in answer to our photo permission request to The Howling Haunted Trail, attaching a logo and photos: \"Attached are a few photos and the logo, use whichever fits best for our listing. Thanks for including The Howling!\" Owner decision (project thread, 2026-10-15): venue-supplied photos are used now and taken down on request.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__the-howling-haunted-trail-and-party__fenton-mi",
+    "name": "The Howling Haunted Trail & Party",
+    "collection": "halloween",
+    "published_id": "the-howling-haunted-trail-and-party",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "The Howling Haunted Trail, Fenton, MI (supplied by the venue)",
+   "reuse": "destination card and related editorial"
   }
  ],
  "editorial_atmospheric": [

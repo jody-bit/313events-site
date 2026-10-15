@@ -629,8 +629,8 @@
    "state": "PUBLISHED",
    "category": "published",
    "ownerApproved": true,
-   "imageRoute": "illustration",
-   "rightsRoute": "owner-supplied-illustration",
+   "imageRoute": "owner-photo",
+   "rightsRoute": "owner-authorization",
    "reasons": [],
    "disposition": null,
    "publicCard": {
@@ -646,13 +646,14 @@
     "summary": "Haunted woodland trail",
     "website": "https://www.thehowlinghauntedtrail.com/",
     "image": {
-     "src": "/assets/seasonal/halloween-card-1.webp",
+     "src": "/assets/seasonal/photos/halloween/halloween__the-howling-haunted-trail-and-party__fenton-mi__venue-howling-01__card.webp",
      "alternates": [
       "/assets/seasonal/halloween-card-7.webp",
       "/assets/seasonal/halloween-card-8.webp"
      ],
      "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+     "illustrative": false,
+     "credit": "Photography © The Howling Haunted Trail"
     }
    }
   },
