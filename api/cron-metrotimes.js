@@ -274,7 +274,8 @@ async function mapLimit(items, limit, fn) {
   return results;
 }
 
-module.exports = async (req, res) => {
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+const handleRequest = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -468,5 +469,6 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports = withRunLog("metrotimes", handleRequest);
 module.exports.parseEventPage = parseEventPage; // exposed for test/cron-metrotimes-sh4.test.js only
 

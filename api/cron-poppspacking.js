@@ -243,7 +243,8 @@ function shapeRowForPost(post) {
   };
 }
 
-module.exports = async (req, res) => {
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+const handleRequest = async (req, res) => {
   // BUG-004 (2026-09-21) diagnostic instrumentation — this connector had no
   // logging at all, so a 7-day production freshness incident couldn't be
   // diagnosed from Vercel's logs (unlike cron-metrotimes.js, which got this
@@ -445,3 +446,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports = withRunLog("poppspacking", handleRequest);

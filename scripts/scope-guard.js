@@ -32,7 +32,9 @@ const ALLOWED = [
   // Link usability classification (issue #99, approved by the owner 2026-10-13): extends the existing link-health helper.
   "api/_lib/link-health.js",
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
-  "api/_lib/pending-queue.js", "admin.html",
+  "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js",
+  // Package 1: these handlers export through withRunLog (truthful source_runs rows).
+  "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-metrotimes.js", "api/cron-oldmiami.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-visitdetroit.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
   "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md",

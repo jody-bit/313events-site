@@ -434,7 +434,8 @@ const visitDetroitHandler = async (req, res) => {
   }
 };
 
-module.exports = visitDetroitHandler;
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+module.exports = withRunLog("visitdetroit", visitDetroitHandler);
 module.exports.detroitParts = detroitParts; // exposed for test/cron-visitdetroit-time-parsing.test.js only
 module.exports.parseAddress = parseAddress;
 module.exports.mapCategory = mapCategory;

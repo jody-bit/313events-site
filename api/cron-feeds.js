@@ -866,7 +866,18 @@ async function patchFeedSource(id, patch, sbHeaders) {
   }
 }
 
-module.exports = async (req, res) => {
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+
+// A feed that could not be fetched, parsed or written is reported in its own
+// `result` string while the invocation still answers 200. Count those so the
+// run row says "partial"/"failed" instead of "success".
+const FEED_FAILURE_RESULT = /^(Fetch failed|Error:|Skipped — unrecognized|Parsed \d+ events? but Supabase upsert failed)/;
+function feedSourceFailures(body) {
+  const results = Array.isArray(body && body.results) ? body.results : [];
+  return { attempted: results.length, failed: results.filter((r) => FEED_FAILURE_RESULT.test(String((r && r.result) || ""))).length };
+}
+
+const handleRequest = async (req, res) => {
   if (CRON_SECRET) {
     const auth = req.headers["authorization"];
     if (!timingSafeStringEqual(auth || "", `Bearer ${CRON_SECRET}`)) {
@@ -994,3 +1005,4 @@ module.exports = async (req, res) => {
 
   res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, results, fetchedAt: new Date().toISOString() });
 };
+module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
