@@ -4306,6 +4306,52 @@
    },
    "capture_place": "Hush Haunted Attraction, Westland (supplied from the venue's website)",
    "reuse": "destination card and related editorial with accurate attribution"
+  },
+  {
+   "id": "313p-2073df4d",
+   "review_ref": "VENUE-DISTRACTED-01",
+   "classification": "DESTINATION_SPECIFIC",
+   "subject": "Costumed performer with white contact lenses and cracked face makeup against red wall, Distracted Haunted House promotional photo (venue-supplied)",
+   "capture_date": "not recorded",
+   "people_visible": "one performer (promotional photo)",
+   "editorial_flags": [],
+   "quality_flags": [
+    "source is a 4:5 portrait with the Distracted logo baked into the lower third; card is a 3:2 crop of the upper part"
+   ],
+   "files": {
+    "card": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__card.webp",
+    "card_px": [
+     1280,
+     853
+    ],
+    "full": "/assets/seasonal/photos/halloween/halloween__distracted-haunted-house__bowling-green-oh__venue-distracted-01__full.webp",
+    "full_px": [
+     1080,
+     1350
+    ]
+   },
+   "original": {
+    "filename": "Stacey_Distracted(1080x1350).png",
+    "sha256": "2073df4db6f018f1f093b82d98108b1996e0fcdb0c4ebbff84da03399f24b9ed",
+    "pixels": [
+     1080,
+     1350
+    ],
+    "stored": "in repo as the __full file (lossless-equivalent WebP of the supplied PNG)"
+   },
+   "credit": "Photography © Distracted Entertainment",
+   "license": "Written reply from Distracted Entertainment, LLC (Scott Francis, Creative Director / Owner), received 2026-10-14 17:30 UTC, in answer to our photo permission request, attaching the images: \"Thank you for the photo permission request and we'd be happy to participate. Attached are a few images to choose from and if you need specific sizes please let me know.\" Owner confirmation (project thread, 2026-10-14): the supplied Distracted images are approved for 313.events use.",
+   "illustrative": false,
+   "destination": {
+    "asset_key": "halloween__distracted-haunted-house__bowling-green-oh",
+    "name": "Distracted Haunted House",
+    "collection": "halloween",
+    "published_id": "distracted-haunted-house",
+    "identity": "venue_supplied",
+    "match_confidence": "OWNER_CONFIRMED"
+   },
+   "capture_place": "Distracted Haunted House, Bowling Green, OH (supplied by the venue)",
+   "reuse": "destination card and related editorial"
   }
  ],
  "editorial_atmospheric": [
