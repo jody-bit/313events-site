@@ -260,7 +260,8 @@ async function mapWithConcurrency(items, limit, worker) {
   return results;
 }
 
-module.exports = async (req, res) => {
+const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+const handleRequest = async (req, res) => {
   // BUG-003 (2026-09-21) diagnostic instrumentation. No upstream/parsing
   // defect was found during the production incident triage — sitemap,
   // JSON-LD parsing, and a real future event all checked out live — so
@@ -433,3 +434,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports = withRunLog("detroitmonthofdesign", handleRequest);
