@@ -124,4 +124,59 @@ assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "b
   assert.strictEqual(ctx.html(ctx.map(row({ venue_address_raw: "11474 Joseph Campau Ave", venue_city_raw: "Hamtramck", venues: { name: "The High Dive", address: "11474 Joseph Campau", city: "Detroit" } }))), "");
 }
 
+// 12. PR C: map popups. A street is shown for a GROUP of events only when they agree.
+{
+  const S = (list) => CL.sharedStreetLine(list);
+  const lca = { venue: "Little Caesars Arena", locVenueAddress: "2645 Woodward Avenue", locVenueCity: "Detroit", locVenueZip: "48201" };
+  const lcaEv = { venue: "Little Caesars Arena", locEventAddress: "2645 Woodward Ave.", locEventCity: "Detroit", locVenueAddress: "2645 Woodward Avenue", locVenueCity: "Detroit", locVenueZip: "48201" };
+  // same place, different wording -> one street (the most complete rendering)
+  assert.deepStrictEqual(S([lcaEv, lca, lcaEv]), { text: "2645 Woodward Avenue, Detroit 48201", conflict: "" });
+  // events without a usable street neither support nor contradict
+  assert.strictEqual(S([lca, { venue: "Little Caesars Arena" }]).text, "2645 Woodward Avenue, Detroit 48201");
+  // nobody has a street -> nothing
+  assert.deepStrictEqual(S([{ venue: "X" }, {}]), { text: "", conflict: "" });
+  assert.deepStrictEqual(S([]), { text: "", conflict: "" });
+  // two different locations under one venue name -> nothing
+  const other = { venue: "Eastern Market", locEventAddress: "2934 Russell Street", locEventCity: "Detroit" };
+  const other2 = { venue: "Eastern Market", locEventAddress: "2810 Russell St", locEventCity: "Detroit" };
+  assert.deepStrictEqual(S([other, other2]), { text: "", conflict: "group" });
+  // same street number in two different cities -> nothing
+  assert.deepStrictEqual(S([{ locEventAddress: "100 Main St", locEventCity: "Pontiac" }, { locEventAddress: "100 Main St", locEventCity: "Royal Oak" }]), { text: "", conflict: "group" });
+  // any event/venue conflict in the group -> nothing, even if the others agree
+  const highDive = { venue: "The High Dive", locEventAddress: "11474 Joseph Campau Ave", locEventCity: "Hamtramck", locVenueAddress: "11474 Joseph Campau", locVenueCity: "Detroit" };
+  assert.deepStrictEqual(S([lca, lca, highDive]), { text: "", conflict: "event" });
+  assert.deepStrictEqual(S([highDive, highDive]), { text: "", conflict: "event" });
+  // streetLineForEvent keeps its three-key shape
+  assert.deepStrictEqual(Object.keys(CL.streetLineForEvent(lca)).sort(), ["conflict", "source", "text"]);
+}
+{
+  const vm = require("vm");
+  const map = fs.readFileSync(`${REPO_DIR}/map.html`, "utf8");
+  assert.ok(map.includes('<script src="/calendar-location.js"></script>'), "map.html must load calendar-location.js");
+  assert.ok(/venue_address_raw,venue_id,venues\(name,address,city,zip_code,lat,lng\)/.test(map), "map.html must select venue_address_raw and venues.zip_code");
+  assert.ok(!/function\s+(?:formatAddress|streetLine|buildStreetLine)\b/.test(map), "map.html defines its own address formatter");
+  assert.ok(!/geocod|nominatim/i.test(map.replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, "")), "map.html must not geocode");
+  const grab = (re) => { const m = re.exec(map); assert.ok(m, String(re)); return m[0]; };
+  const code = [grab(/function placeStreetHtml\(place\)\{[\s\S]*?\n\}\n/), grab(/function placePopupHtml\(place\)\{[\s\S]*?\n\}\n/)].join("\n");
+  const ctx = { CalendarLocation: CL, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), eventUrl: () => "", console };
+  vm.createContext(ctx);
+  vm.runInContext(code + "\nthis.popup = placePopupHtml;", ctx);
+  const ev = (o) => Object.assign({ title: "T", date: "2026-10-20", time: "7 PM", venue: "Sound Board", locVenueAddress: "2901 Grand River", locVenueCity: "Detroit", locVenueZip: "48201" }, o);
+  const place = (o) => Object.assign({ key: "v:sound board", label: "Sound Board", precise: true, events: [ev({}), ev({ title: "U" })] }, o);
+  // precise place, events agree -> one street line under the name, popup otherwise unchanged
+  const ok = ctx.popup(place());
+  assert.ok(ok.includes('<div class="popup-street">2901 Grand River, Detroit 48201</div>'));
+  assert.ok(ok.indexOf("popup-place-name") < ok.indexOf("popup-street") && ok.indexOf("popup-street") < ok.indexOf("popup-evt"));
+  assert.ok(ok.includes("Full details for all 2"), "grouping link unchanged");
+  // precise place whose events disagree -> no street line
+  assert.ok(!ctx.popup(place({ events: [ev({}), ev({ locVenueAddress: "1 Other Way" })] })).includes("popup-street"));
+  // precise place containing a conflicting event -> no street line
+  assert.ok(!ctx.popup(place({ events: [ev({}), ev({ locEventAddress: "9 Elsewhere Rd", locEventCity: "Detroit" })] })).includes("popup-street"));
+  // city-centroid (approximate) place never shows a street, even if every event has one
+  const approx = ctx.popup(place({ precise: false, key: "c:detroit", label: "Detroit" }));
+  assert.ok(!approx.includes("popup-street") && approx.includes("Approximate"));
+  // no street data -> popup identical to the old markup
+  assert.ok(!ctx.popup(place({ events: [{ title: "T", date: "2026-10-20", time: "", venue: "X" }] })).includes("popup-street"));
+}
+
 console.log("street-line-for-event: all assertions passed");
