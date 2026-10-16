@@ -70,7 +70,12 @@ const ALLOWED = [
   "api/_lib/dearborn-enrichment.js",
   "api/cron-feeds.js",
   // Shared ingestion eligibility rule (owner decision 2026-10-14): feed rows that are definitively over are not inserted.
-  "api/_lib/ingest-eligibility.js"
+  "api/_lib/ingest-eligibility.js",
+  // DQ-004 verified-only editorial associations (owner approval 2026-10-16, staging implementation): the shared verification rule,
+  // the admin decisions API, and the additive verification columns + verified-only public read policy.
+  "api/_lib/editorial-verification.js",
+  "api/admin-editorial.js",
+  "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql"
 ];
 
 class ScopeGuardError extends Error {}
