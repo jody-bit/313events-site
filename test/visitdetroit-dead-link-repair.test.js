@@ -208,3 +208,14 @@ run().catch((err) => {
   assert.ok(!c3.stoppedEarly); assert.strictEqual(c3.inconclusive, 5);
   console.log("PASS: repair run budget");
 })().catch((e) => { console.error(e); process.exit(1); });
+
+// P0 2026-10-16: candidate query covers still-running events and rotates by least-recently-checked.
+(async () => {
+  const { fetchRepairCandidates } = require("../scripts/visitdetroit-dead-link-repair");
+  let seen = "";
+  await fetchRepairCandidates("https://x.supabase.co", "k", {}, async (u) => { seen = u; return { ok: true, json: async () => [] }; });
+  assert.ok(seen.includes("or=(start_date.gte.") && seen.includes(",end_date.gte."), "includes events still running");
+  assert.ok(seen.includes("order=link_checked_at.asc.nullsfirst"), "unchecked first, then oldest check");
+  assert.ok(seen.includes("status=neq.rejected"), "rejected rows stay out");
+  console.log("PASS: repair candidate selection");
+})().catch((e) => { console.error(e); process.exit(1); });
