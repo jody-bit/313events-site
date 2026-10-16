@@ -10,6 +10,7 @@ const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { policyFor, classify, holdNote } = require("./_lib/feed-publication");
 const { partitionExpired } = require("./_lib/ingest-eligibility");
+const { backfillPatch } = require("./_lib/dearborn-enrichment");
 // Reused, not reimplemented (2026-09-29 correction, see FEED_SUBMISSIONS.md's
 // "Production track record") — scripts/press-coverage-linking.js's
 // extractCategory() already does keyword-based category derivation against
@@ -816,7 +817,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY,
       rows.map((r) => r.external_id),
-      { select: "external_id,status,title,description,description_source" }
+      { select: "external_id,status,title,description,description_source,event_url,note" }
     );
     existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([externalId, existing]) => [externalId, existing.status]));
   } catch (lookupErr) {
@@ -854,6 +855,13 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     if (!existingStatus && _enrichment) {
       if (_enrichment.event_url && !out.event_url) out.event_url = _enrichment.event_url;
       if (_enrichment.category) out.note = `${out.note ? out.note + " " : ""}Source page category: ${_enrichment.category}.`;
+    } else if (existingStatus === "pending_review" && _enrichment && stored) {
+      // Stage 5 (owner decision 2026-10-16): a row nobody has reviewed yet still gets the safe-match link and category
+      // hint, but ONLY into an empty link and only once. A stored link, a reviewer's edit, any other status, and the
+      // title/date/description/category/status are never touched. A second run finds both in place and writes nothing.
+      const patch = backfillPatch(stored, _enrichment);
+      if (patch.event_url) out.event_url = patch.event_url;
+      if (patch.note) out.note = patch.note;
     }
     return out;
   });
