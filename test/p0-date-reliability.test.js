@@ -77,17 +77,22 @@ test("FIXED: recurring with no dates is schedule-unverified (no daily listing), 
 test("PINNED: every surface asks the shared rule (no private date loop)", () => {
   for (const f of ["index.html", "calendar.html", "map.html"]) assert.ok(read(f).includes("EventDates.expand("), f);
 });
-test("PINNED (browser-confirmation pending): 'today' basis differs by surface", () => {
-  // Source facts only; the real-browser confirmation is in incidents/p0-date-reliability-2026-10-16/01-rq.md.
+test("FIXED (PR-4): 'today' is Detroit time on homepage, calendar and map", () => {
   const idx = read("index.html"), map = read("map.html"), cal = read("calendar.html");
   assert.ok(/function getTodayISO\(\)\{[\s\S]{0,400}Discovery/.test(idx), "index.html derives today from Discovery (Detroit)");
-  assert.ok(/function getTodayISO\(\)\{\s*const d = new Date\(\);/.test(map), "map.html uses the visitor's clock");
-  assert.ok(/function getTodayISO\(\)\{[\s\S]{0,200}new Date\(\)/.test(cal), "calendar.html uses the visitor's clock");
+  assert.ok(/function getTodayISO\(\)\{\s*return EventDates\.detroitClock\(\)\.iso/.test(map), "map.html uses Detroit time");
+  assert.ok(/function getTodayISO\(\)\{\s*return EventDates\.detroitClock\(\)\.iso/.test(cal), "calendar.html uses Detroit time");
 });
-test("PINNED: map loads only events that started within the last 8 days (start_date >= today-8)", () => {
+test("FIXED (PR-4): detroitClock rolls the day at Detroit midnight, not the visitor's or UTC's", () => {
+  assert.deepStrictEqual(ED.detroitClock(new Date("2026-10-17T02:30:00Z")), { iso: "2026-10-16", hours: 22.5, dow: 5 });
+  assert.strictEqual(ED.detroitClock(new Date("2026-10-17T04:00:00Z")).iso, "2026-10-17"); // EDT midnight
+  assert.strictEqual(ED.detroitClock(new Date("2026-11-02T04:59:00Z")).iso, "2026-11-01"); // after fall-back, EST
+  assert.strictEqual(ED.detroitClock(new Date("2026-10-16T04:00:00Z")).hours, 0);
+});
+test("FIXED (PR-4): map fetch also loads still-running events that started before today-8", () => {
   const map = read("map.html");
   assert.ok(/d\.setDate\(d\.getDate\(\)-8\)/.test(map));
-  assert.ok(/start_date=gte\.\$\{loadFloorISO\(\)\}/.test(map), "no end_date clause: a long-running event that started earlier is never fetched");
+  assert.ok(/or=\(start_date\.gte\.\$\{loadFloorISO\(\)\},end_date\.gte\.\$\{getTodayISO\(\)\}\)/.test(map));
 });
 
 // ---------------------------------------------------------------- 2. target contract (todo)
@@ -113,12 +118,6 @@ test("TARGET: classified weekend, Friday-only, continuous, overnight and excepti
   assert.strictEqual(on(FIX.fridayOnly, FRI), true);
   assert.strictEqual(on(FIX.continuousExhibit, FRI), true);
   assert.strictEqual(on(FIX.overnight, FRI), true);
-});
-test("TARGET: today is Detroit time on homepage, calendar and map", TODO, () => {
-  assert.ok(!/function getTodayISO\(\)\{\s*const d = new Date\(\);/.test(read("map.html")));
-});
-test("TARGET: map fetch includes still-running events that started before today-8", TODO, () => {
-  assert.ok(/end_date=gte\./.test(read("map.html")) || /or=\(start_date/.test(read("map.html")));
 });
 
 // ---------------------------------------------------------------- 3. overnight rule + counts (PR-1)
