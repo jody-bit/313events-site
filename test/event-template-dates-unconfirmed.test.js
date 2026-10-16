@@ -21,13 +21,20 @@ const src = [
   grab(/function shouldShowSource\([\s\S]*?\n\}\n/, "shouldShowSource"),
   grab(/function truncateText\([\s\S]*?\n\}\n/, "truncateText"),
   grab(/function parseTimeRange\([\s\S]*?\n\}\n/, "parseTimeRange"),
+  grab(/function detroitTodayIso\([\s\S]*?\n\}\n/, "detroitTodayIso"),
+  grab(/function occurrenceDays\([\s\S]*?\n\}\n/, "occurrenceDays"),
+  grab(/function nextOccurrence\([\s\S]*?\n\}\n/, "nextOccurrence"),
+  grab(/function upcomingOccurrences\([\s\S]*?\n\}\n/, "upcomingOccurrences"),
   grab(/function pad2\([^\n]*\n/, "pad2"),
   grab(/function isDatesUnconfirmed\([\s\S]*?\n\}\n/, "isDatesUnconfirmed"),
   grab(/function eventDateTimeParts\([\s\S]*?\n\}\n/, "eventDateTimeParts"),
   grab(/function buildEventDescription\([\s\S]*?\n\}\n/, "buildEventDescription"),
 ].join("\n");
 // eslint-disable-next-line no-new-func
-const F = new Function(`${src}\nreturn { isDatesUnconfirmed, eventDateTimeParts, buildEventDescription };`)();
+// "Now" is pinned to Fri Oct 16 2026 12:00 Detroit so the occurrence helpers are deterministic.
+const RealDate = Date;
+class FakeDate extends RealDate { constructor(...a) { super(...(a.length ? a : ["2026-10-16T16:00:00Z"])); } }
+const F = new Function("Date", `${src}\nreturn { isDatesUnconfirmed, eventDateTimeParts, buildEventDescription, nextOccurrence, upcomingOccurrences };`)(FakeDate);
 
 const ev = (o) => Object.assign({ date: "2026-10-01", endDate: "2026-10-31", time: "9:00 AM", dateSemantics: null, occurrenceDates: null, source: "Manual" }, o);
 
@@ -59,5 +66,21 @@ console.log("PASS: single-date, overnight, recurring-with-dates and continuous r
 assert.ok(/select=[^`]*date_semantics,occurrence_dates/.test(html), "main query selects date_semantics and occurrence_dates");
 assert.ok(html.indexOf('/event-dates.js') !== -1 && html.indexOf('/event-dates.js') < html.indexOf("function isDatesUnconfirmed"), "event-dates.js is loaded before use");
 assert.ok(/isDatesUnconfirmed\(e\)\?' · days not confirmed'/.test(html), "heading appends 'days not confirmed' for unverified rows only");
+assert.ok(/e\.time && !isDatesUnconfirmed\(e\)\?/.test(html), "heading omits the stored hours for unverified rows (#151)");
 assert.ok(!/recurrence_evidence/.test(html), "recurrence_evidence is never selected");
 console.log("PASS: page selects the schedule columns, loads the shared rule, annotates the heading");
+
+// 4. #151: occurrence-dated rows export their next evidenced occurrence, not the stored first day.
+const cider2 = ev({ date: "2026-10-11", endDate: "2026-10-18", time: "1:00 PM\u20135:00 PM", dateSemantics: "recurring", occurrenceDates: ["2026-10-17", "2026-10-18"] });
+assert.strictEqual(F.nextOccurrence(cider2), "2026-10-17");
+assert.deepStrictEqual(F.eventDateTimeParts(cider2), { allDay: false, startDate: "20261017", startTime: "130000", endDate: "20261017", endTime: "170000" }, "Cider exports Oct 17 1-5 PM, not Oct 11");
+assert.ok(/Also on: Oct 18/.test(F.buildEventDescription(cider2)), "the other upcoming date is named in the description");
+const harvest = ev({ date: "2026-10-03", endDate: "2026-10-31", time: "10:00 AM", dateSemantics: "recurring", occurrenceDates: ["2026-10-03", "2026-10-04", "2026-10-10", "2026-10-11", "2026-10-17", "2026-10-18", "2026-10-24", "2026-10-25", "2026-10-31"] });
+assert.deepStrictEqual(F.upcomingOccurrences(harvest), ["2026-10-17", "2026-10-18", "2026-10-24", "2026-10-25", "2026-10-31"], "past occurrences are dropped");
+const done = ev({ date: "2026-09-01", endDate: "2026-09-30", dateSemantics: "recurring", occurrenceDates: ["2026-09-05", "2026-09-06"] });
+assert.strictEqual(F.nextOccurrence(done), "2026-09-06", "all past: the last evidenced occurrence");
+assert.strictEqual(F.nextOccurrence(single), null, "single-date and unverified rows are untouched");
+assert.strictEqual(F.nextOccurrence(cont), null);
+assert.deepStrictEqual(F.eventDateTimeParts(single), { allDay: false, startDate: "20261017", startTime: "193000", endDate: "20261017", endTime: "213000" });
+assert.ok(/dateRangeLabel[\s\S]{0,400}upcomingOccurrences\(e\)/.test(html), "the date label shows the occurrence dates");
+console.log("PASS: occurrence-dated rows show and export their next evidenced occurrence; others unchanged");
