@@ -116,6 +116,7 @@ function isSafeHttpUrl(url) {
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = require("./_lib/environment").siteUrl();
 const { filterPendingQueue } = require("./_lib/pending-queue");
+const { classifyRows } = require("./_lib/pending-classifier");
 
 function escapeHtmlForEmail(str) {
   return String(str == null ? "" : str)
@@ -332,7 +333,10 @@ module.exports = async (req, res) => {
         // changes. Paged and ordered on a total order (created_at ties are common after a bulk feed run), because
         // the queue can exceed the database's per-request cap.
         const all = await fetchAllPages(`${SUPABASE_URL}/rest/v1/events?status=eq.pending_review&select=*&order=created_at.desc,id.asc`, sbHeaders);
-        res.status(all.ok ? 200 : 502).json(all.ok ? { events: filterPendingQueue(all.rows, expiredView ? "expired" : "current"), view: expiredView ? "expired" : "current" } : { error: all.error });
+        if (!all.ok) { res.status(502).json({ error: all.error }); return; }
+        // Read-side grouping (admin queue Stage 2): each row gets a queue_class annotation; none is dropped or changed.
+        const classified = classifyRows(filterPendingQueue(all.rows, expiredView ? "expired" : "current"));
+        res.status(200).json({ events: classified.events, class_counts: classified.class_counts, view: expiredView ? "expired" : "current" });
         return;
       }
 
