@@ -11,8 +11,10 @@ require("./fixtures/freeze-clock.js").freezeClock("2026-10-16T16:00:00Z");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { classifyPendingRow, classifyRows, CLASSES } = require("../api/_lib/pending-classifier.js");
+const { classifyPendingRow: classifyAny, classifyRows, CLASSES } = require("../api/_lib/pending-classifier.js");
 const FX = require("./fixtures/dearborn-pending-titles-2026-10-16.json");
+// The fixture and the cases below are City of Dearborn rows.
+const classifyPendingRow = (r) => classifyAny(Object.assign({ source: "City of Dearborn" }, r));
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 
 // 1. Every real title lands in the expected class.
@@ -46,13 +48,22 @@ assert.strictEqual(classifyPendingRow({ title: "Something Unlisted", venue_name_
 assert.strictEqual(classifyPendingRow({}).class, "ambiguous");
 
 // 4. classifyRows: nothing dropped, nothing written, original fields untouched.
-const rows = FX.map((r, i) => ({ id: "id" + i, status: "pending_review", title: r.title, venue_name_raw: r.venue_name_raw, category: r.category }));
+const rows = FX.map((r, i) => ({ id: "id" + i, source: "City of Dearborn", status: "pending_review", title: r.title, venue_name_raw: r.venue_name_raw, category: r.category }));
 const snap = JSON.stringify(rows);
 const out = classifyRows(rows);
 assert.strictEqual(JSON.stringify(rows), snap, "input rows are not mutated");
 assert.strictEqual(out.events.length, rows.length);
 assert.ok(out.events.every((e, i) => e.id === rows[i].id && e.status === "pending_review"), "order and status preserved");
 assert.strictEqual(Object.values(out.class_counts).reduce((a, b) => a + b, 0), rows.length);
+
+// 4b. Other sources are never grouped as meetings, observances or services (R&Q finding, #138).
+for (const title of ["Bagley Community Council Annual Trunk or Treat", "Board Game Night", "Authority Comedy Night", "Book Club Meeting", "Commission Hill Jazz Brunch", "Diwali Festival of Lights Gala", "Gleaners Food Pantry Volunteer Day", "City Council Meeting"]) {
+  for (const source of ["Eventbrite", "Ticketmaster", "Public submission", "", undefined]) {
+    const got = classifyAny({ title, source, venue_name_raw: "Venue TBA", category: "community" });
+    assert.strictEqual(got.class, "public_event", `${title} from ${source} must stay an ordinary submission`);
+  }
+}
+assert.strictEqual(classifyAny({ title: "Pension Board Meeting", source: "City of Dearborn" }).class, "civic_meeting");
 
 // 5. Endpoint: annotated, no writes; admin.html groups, collapses only the three standing classes.
 async function endpoint() {
@@ -61,8 +72,8 @@ async function endpoint() {
   process.env.ADMIN_SECRET = "fixture-admin-secret"; // a test value for this fixture only
   const calls = [];
   const pending = [
-    { id: "a", title: "City Council Meeting", category: "community", status: "pending_review", start_date: "2026-11-01", end_date: null, is_recurring: false, venue_name_raw: "16901 Michigan Avenue, Dearborn", created_at: "2026-10-13T22:01:18Z" },
-    { id: "b", title: "The Nutcracker 1", category: "community", status: "pending_review", start_date: "2026-12-05", end_date: null, is_recurring: false, venue_name_raw: "15801 Michigan Avenue, Dearborn", created_at: "2026-10-13T22:01:18Z" },
+    { id: "a", source: "City of Dearborn", title: "City Council Meeting", category: "community", status: "pending_review", start_date: "2026-11-01", end_date: null, is_recurring: false, venue_name_raw: "16901 Michigan Avenue, Dearborn", created_at: "2026-10-13T22:01:18Z" },
+    { id: "b", source: "City of Dearborn", title: "The Nutcracker 1", category: "community", status: "pending_review", start_date: "2026-12-05", end_date: null, is_recurring: false, venue_name_raw: "15801 Michigan Avenue, Dearborn", created_at: "2026-10-13T22:01:18Z" },
   ];
   const { makeMockPostgrest } = require("./fixtures/mock-postgrest.js");
   const db = makeMockPostgrest({ events: pending }, { cap: 1000 });

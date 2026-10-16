@@ -4,6 +4,7 @@
 // event row into a class so the admin Event submissions tab can group it. It never changes a status, never rejects,
 // and never hides a row: every row keeps its Approve and Reject buttons, and a class can be changed without a migration.
 //
+// Applies to City of Dearborn rows only (source contains "Dearborn"); other sources stay ordinary submissions.
 // Classes (the rules are deterministic and tested against the real upcoming City of Dearborn titles, 2026-10-16):
 //   civic_meeting  governing-body and advisory meetings. Legitimate public meetings: kept, grouped under
 //                  "Civic & Community", never treated as entertainment and never auto-rejected.
@@ -31,7 +32,15 @@ const NOTICE = /\b(reservations open|nominations due|winter hours)\b/i;
 const EVENTISH = /\b(festival|concert|haunted|nutcracker|tournament|craft|lecture|open house|book sale|ceremony|bingo|dance|walk\/run|5k|art daze|specials|camp dearborn|lights|swim|basketball|gym night|market|spruce up|party|band|symphony)\b/i;
 const EVENT_CATEGORIES = new Set(["music", "fest", "dance", "nightlife", "vendor", "sports", "arts", "theater", "comedy", "food-event"]);
 
+// Owner scope (2026-10-16): the grouping rules are written for, and tested on, the City of Dearborn calendar. A row from any
+// other source is never given a meeting, observance or service class (a title such as "Board Game Night" or "Book Club
+// Meeting" from another feed must stay an ordinary submission).
+function isDearbornRow(row) {
+  return /dearborn/i.test(String((row && row.source) || ""));
+}
+
 function classifyPendingRow(row) {
+  if (!isDearbornRow(row)) return { class: "public_event", reason: "not a City of Dearborn row: no grouping rule applies", cancelled: false };
   const title = String((row && row.title) || "").trim();
   const category = String((row && row.category) || "").toLowerCase();
   const cancelled = /^\s*(cancell?ed|postponed)\b/i.test(title) || /\b(cancell?ed|postponed)\s*$/i.test(title);
@@ -58,4 +67,4 @@ function classifyRows(rows) {
   return { events: out, class_counts: counts };
 }
 
-module.exports = { classifyPendingRow, classifyRows, CLASSES, CLASS_LABELS };
+module.exports = { isDearbornRow, classifyPendingRow, classifyRows, CLASSES, CLASS_LABELS };
