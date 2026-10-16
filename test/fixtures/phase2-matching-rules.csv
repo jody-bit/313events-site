@@ -1,0 +1,32 @@
+city,region,source_string_to_match,also_require,allowed_evidence_sources,events_now_2026-10-16,lat,lng,status
+Bowling Green,OH,Bowling Green,"evidence source in allowed list below, or state in venue address",Bowling Green State University; Ticketmaster,244,41.379088,-83.647921,ready_for_implementation
+Richmond,MI,Richmond,"evidence source in allowed list below, or state in venue address",Richmond Recreation Calendar,47,42.8105584,-82.7521734,ready_for_implementation
+Redford,MI,Redford,"evidence source in allowed list below, or state in venue address",Redford Township Community Events; Facebook Event Export,25,42.3947885,-83.294018,ready_for_implementation
+Canton,MI,Canton,"evidence source in allowed list below, or state in venue address",Canton Township Community and Special Events; VisitDetroit,20,42.3075411,-83.4857746,ready_for_implementation
+Plymouth,MI,Plymouth,"evidence source in allowed list below, or state in venue address",Ticketmaster; City of Livonia - Community Events; Bowling Green State University (USA Hockey Arena is in Plymouth MI); VisitDetroit,14,42.3712455,-83.4676165,ready_for_implementation
+Leamington,ON,Leamington,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island; Windsor Symphony Orchestra,6,42.09535,-82.55906,ready_for_implementation
+Belleville,MI,Belleville,"evidence source in allowed list below, or state in venue address",Ticketmaster (venue_id linked); Redford Township Community Events,6,42.1984979,-83.4799575,ready_for_implementation
+Macomb,MI,Macomb,"evidence source in allowed list below, or state in venue address",Macomb Township Events,5,42.6748636,-82.9181698,ready_for_implementation
+Garden City,MI,Garden City,"evidence source in allowed list below, or state in venue address",Garden City Community Events,4,42.3243828,-83.3411923,ready_for_implementation
+Melvindale,MI,Melvindale,"evidence source in allowed list below, or state in venue address",Eastern Market Partnership; VisitDetroit,3,42.2786889,-83.1821595,ready_for_implementation
+LaSalle,ON,LaSalle,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island,3,42.2252778,-83.0480556,ready_for_implementation
+Lakeshore,ON,Lakeshore,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island,3,42.24812,-82.68766,ready_for_implementation
+Ecorse,MI,Ecorse,"evidence source in allowed list below, or state in venue address",Eastern Market Partnership,2,42.249592,-83.1404393,ready_for_implementation
+Northville,MI,Northville,"evidence source in allowed list below, or state in venue address",City of Northville Events,2,42.4361604,-83.4876603,ready_for_implementation
+River Rouge,MI,River Rouge,"evidence source in allowed list below, or state in venue address",Eastern Market Partnership,2,42.2743459,-83.1241616,ready_for_implementation
+Romulus,MI,Romulus,"evidence source in allowed list below, or state in venue address",Eastern Market Partnership,2,42.2212613,-83.3674371,ready_for_implementation
+Wayne,MI,Wayne,"evidence source in allowed list below, or state in venue address",Eastern Market Partnership; Facebook Event Export,2,42.2769132,-83.3881483,ready_for_implementation
+Huron,OH,Huron,"evidence source in allowed list below, or state in venue address",Bowling Green State University (venue BGSU Firelands),2,41.3976309,-82.5625689,ready_for_implementation
+Essex,ON,Essex,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island,2,42.0941666,-82.9008333,ready_for_implementation
+Tecumseh,ON,Tecumseh,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island; Windsor Symphony Orchestra,2,42.2430555,-82.9255556,ready_for_implementation
+Kingsville,ON,Ontario,venue_name_raw = 'Town of Kingsville',"Tourism Windsor Essex Pelee Island (city string is 'Ontario', venue 'Town of Kingsville')",2,42.10368,-82.72962,ready_for_implementation
+Inkster,MI,Inkster,"evidence source in allowed list below, or state in venue address",Eastern Market Partnership,1,42.2939448,-83.320298,ready_for_implementation
+West Bloomfield,MI,West Bloomfield,"evidence source in allowed list below, or state in venue address",VisitDetroit,1,42.5666956,-83.3870949,ready_for_implementation
+Hazel Park,MI,Hazel Park,"evidence source in allowed list below, or state in venue address",Manual,1,42.4619261,-83.0976927,ready_for_implementation
+Lake Orion,MI,Lake Orion,"evidence source in allowed list below, or state in venue address",VisitDetroit,1,42.7842202,-83.2455417,ready_for_implementation
+Lathrup Village,MI,Lathrup Village,"evidence source in allowed list below, or state in venue address",Editorial Review,1,42.4920759,-83.2272835,ready_for_implementation
+Oxford,MI,Oxford,"evidence source in allowed list below, or state in venue address",VisitDetroit,1,42.8214262,-83.253462,ready_for_implementation
+Onsted,MI,Onsted,"evidence source in allowed list below, or state in venue address",Facebook Event Export,1,42.0060958,-84.1893476,ready_for_implementation
+Amherstburg,ON,Amherstburg,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island,1,42.1172222,-83.0441666,ready_for_implementation
+Harrow,ON,Harrow,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island (Paglione Estate Winery),1,42.0355556,-82.9183333,ready_for_implementation
+Maidstone,ON,Maidstone,"evidence source in allowed list below, or state in venue address",Tourism Windsor Essex Pelee Island (Denver's Homestead),1,42.2094445,-82.8877778,UNRESOLVED_KEEP_OUT

@@ -18,7 +18,7 @@ const b = html.indexOf("function haversineMiles");
 const c = html.indexOf("const VENUE_LATLNG_MAP");
 const d = html.indexOf("// Rebuilt on every render()");
 assert.ok(a > 0 && b > a && c > b && d > c, "map.html anchors moved");
-const ctx = { CityResolution: CR };
+const ctx = { CityResolution: CR, PHASE2_CITIES: require(path.join(ROOT, "city-table-phase2.js")).PHASE2_CITIES };
 vm.createContext(ctx);
 vm.runInContext(
   html.slice(a, b) + html.slice(c, d) + "\nthis.LOCATIONS=LOCATIONS;this.CITY_LOOKUP=CITY_LOOKUP;this.resolvePlace=resolvePlace;",
@@ -36,7 +36,7 @@ assert.strictEqual(CR.normalize("Charter Township Of Clinton"), "clinton townshi
 console.log("PASS: normalisation rules");
 
 // 2. Everything that plots today keeps exactly the same place key and coordinates.
-for (const l of ctx.LOCATIONS.filter((x) => x.type === "city")) {
+for (const l of ctx.LOCATIONS.filter((x) => x.type === "city" && !x.sources)) {
   for (const spelling of [l.name, l.name.toUpperCase(), l.name.toLowerCase()]) {
     const p = place(spelling);
     assert.ok(p, spelling);
@@ -124,5 +124,5 @@ assert.strictEqual(place("").key, "c:detroit");
 console.log("PASS: blank-city behaviour unchanged (handled in a separate PR)");
 
 // 7. Radius filter shares the resolver.
-assert.ok(/CityResolution\.resolve\(e\.city, CITY_LOOKUP\)/.test(html), "radius filter must use CityResolution");
+assert.ok(/CityResolution\.resolve\(e\.city, CITY_LOOKUP, /.test(html), "radius filter must use CityResolution");
 console.log("PASS: radius filter uses the shared resolver");
