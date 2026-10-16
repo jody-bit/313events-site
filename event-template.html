@@ -111,9 +111,9 @@
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
-    text-transform:uppercase;margin:0 0 14px;
+    text-transform:uppercase;margin:0 0 14px;overflow-wrap:anywhere;
   }
-  .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;}
+  .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;overflow-wrap:anywhere;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
@@ -140,13 +140,13 @@
   .btn-secondary{background:none;color:var(--ink);border:1px solid var(--line);}
   .btn-secondary:hover{background:var(--panel-hover);}
 
-  .evt-detail-desc{font-size:15.5px;color:var(--ink);white-space:pre-line;margin-bottom:24px;}
+  .evt-detail-desc{font-size:15.5px;color:var(--ink);white-space:pre-line;margin-bottom:24px;overflow-wrap:anywhere;}
   /* Content-nature descriptor, distinct from the italic editorial note
      below — a plain fact about the event, not a caveat. See
      migration_034_clothing_optional.sql. */
   .evt-tag-clothing-optional{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line);border-radius:3px;padding:3px 8px;margin-bottom:16px;}
   .evt-detail-note{font-size:13.5px;color:#d1b34a;font-style:italic;margin-bottom:20px;}
-  .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;}
+  .evt-detail-source{font-size:13px;color:var(--ink-dim);margin-bottom:20px;overflow-wrap:anywhere;}
 
   /* Resale-availability note (2026-09-16, Jody: "see if the event is sold
      out ... to get tickets cheaper on the resale apps") -- only shown for
