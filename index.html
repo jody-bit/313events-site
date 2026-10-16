@@ -5932,7 +5932,13 @@ function streamRows(ctx){
     if(!Discovery.matches(e, state, ctx)) return;
     if(EventDates.scheduleState(e) === 'unverified'){ unverifiedRows.push({event: e, day: null}); return; }
     const listableFrom = e.date < floor ? floor : e.date;
-    const day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
+    let day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
+    // An event with evidenced occurrence dates is listed under its next occurrence on or after the window start,
+    // not under the window start itself (Cider: Oct 17, not Fri Oct 16). Continuous events stay under the start.
+    if(EventDates.semanticsOf(e) === 'recurring'){
+      const next = EventDates.expand(e).find(iso => iso >= day);
+      if(next) day = next;
+    }
     if(w.to !== null && day > w.to) return; // only on days before the load window
     rows.push({event: e, day});
   });
