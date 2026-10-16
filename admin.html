@@ -303,7 +303,8 @@
       <section class="block" id="linkReviewBlock">
         <h2>Article–event links to verify</h2>
         <div class="sub">The site only shows an article as covering an event once that pairing is <b>verified</b>. Pairings the matcher found but could not verify wait here, hidden from the public. Confirm a pairing only if the article is really about that specific event (same event, place and dates); reject it if it is a different event with a similar name. Nothing is deleted: rejected pairings stay on record, are never re-created automatically, and can be reopened.</div>
-        <div class="refresh" style="margin:0 0 12px;"><label><input type="checkbox" id="linkShowRejected" onchange="loadLinkReview()"> Also show rejected</label></div>
+        <div class="refresh" style="margin:0 0 12px;"><label><input type="checkbox" id="linkShowRejected" onchange="loadLinkReview()"> Also show rejected</label> <label style="margin-left:14px;"><input type="checkbox" id="linkShowHidden" onchange="renderLinkReview(linkReviewData.links, linkReviewData.counts)"> Show hidden</label></div>
+        <div class="meta" id="linkHiddenLine" style="margin:0 0 12px;"></div>
         <div id="linkReviewList"></div>
       </section>
     </div>
@@ -1717,6 +1718,7 @@ async function autoLinkEditorial() {
 // ---- DQ-004: article<->event links waiting for verification ----
 let editorialQueueCount = 0;
 let linkReviewCount = 0;
+let linkReviewData = { links: [], counts: { active: 0, hidden: 0, ended: 0, removed: 0, outside_orbit: 0 } };
 async function loadLinkReview() {
   const list = document.getElementById('linkReviewList');
   if (!list) return;
@@ -1726,7 +1728,7 @@ async function loadLinkReview() {
     const resp = await fetch('/api/admin-editorial?view=links&status=' + status, { headers: { 'x-admin-secret': SECRET } });
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Failed to load links to verify'));
-    renderLinkReview(data.links || []);
+    renderLinkReview(data.links || [], data.counts);
   } catch (err) {
     list.innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
   }
@@ -1746,10 +1748,17 @@ function linkReviewCard(l) {
   const histHtml = history.length
     ? '<details><summary>History (' + history.length + ')</summary>' + history.map(h => '<div class="meta">' + escapeHtml((h.at || '').slice(0, 16).replace('T', ' ')) + ' · ' + escapeHtml((h.from || 'new') + ' → ' + h.to) + ' · ' + escapeHtml(h.by || '') + (h.basis ? ' · ' + escapeHtml(h.basis) : '') + '</div>').join('') + '</details>'
     : '';
+  const q = l.queue || {};
+  const rec = q.recommendation;
+  const recHtml = rec
+    ? '<div class="meta"><b>Editorial recommendation: ' + escapeHtml(rec.verdict) + '</b> (a recommendation, not a status) · ' + escapeHtml(rec.by || '') + (rec.on ? ' · ' + escapeHtml(rec.on) : '') + (rec.basis ? '<br>' + escapeHtml(rec.basis) : '') + '</div>'
+    : '';
+  const hiddenHtml = q.hidden ? '<div class="meta"><b>Hidden by rule:</b> ' + escapeHtml(q.reasonText || q.reason || '') + '. Nothing was changed.</div>' : '';
   return `
     <div class="card article-card" id="link-card-${escapeAttr(l.article_id)}-${escapeAttr(l.event_id)}">
       <div class="ac-body">
         <div class="meta"><b>${escapeHtml(status)}</b> · ${escapeHtml(l.verification_basis || 'no evidence recorded')}</div>
+        ${recHtml}${hiddenHtml}
         <h3>Article: ${escapeHtml(a.title || '')}</h3>
         <div class="meta"><b>${escapeHtml(a.source || '')}</b>${published ? ' · ' + escapeHtml(published) : ''} · <a href="${escapeAttr(a.url || '#')}" target="_blank" rel="noopener">read the article</a></div>
         ${a.excerpt ? `<div class="ac-excerpt">${escapeHtml(a.excerpt)}</div>` : ''}
@@ -1767,15 +1776,32 @@ function linkReviewCard(l) {
     </div>`;
 }
 
-function renderLinkReview(links) {
+// Hidden line text is built from live counts only (never hard-coded).
+function linkHiddenLineText(c) {
+  if (!c || !c.hidden) return '';
+  const parts = [];
+  if (c.ended) parts.push('the event has ended (' + c.ended + ')');
+  if (c.outside_orbit) parts.push('the event is outside the Orbit (' + c.outside_orbit + ')');
+  if (c.removed) parts.push('the event was removed (' + c.removed + ')');
+  return c.hidden + ' link' + (c.hidden === 1 ? '' : 's') + ' hidden by rule: ' + parts.join(', ') + '. Nothing was deleted or changed.';
+}
+
+function renderLinkReview(links, counts) {
   const list = document.getElementById('linkReviewList');
-  linkReviewCount = links.filter(l => l.verification_status !== 'rejected').length;
+  linkReviewData = { links: links, counts: counts || { active: links.length, hidden: 0, ended: 0, removed: 0, outside_orbit: 0 } };
+  const showHidden = document.getElementById('linkShowHidden') && document.getElementById('linkShowHidden').checked;
+  const active = links.filter(l => !(l.queue && l.queue.hidden));
+  // The tab badge counts only active, unresolved rows.
+  linkReviewCount = active.filter(l => l.verification_status !== 'rejected').length;
   setTabBadge('editorial', editorialQueueCount + linkReviewCount);
-  if (!links.length) {
+  const line = document.getElementById('linkHiddenLine');
+  if (line) line.textContent = linkHiddenLineText(linkReviewData.counts);
+  const shown = showHidden ? links : active;
+  if (!shown.length) {
     list.innerHTML = '<div class="empty">No article–event links waiting for verification.</div>';
     return;
   }
-  list.innerHTML = links.map(linkReviewCard).join('');
+  list.innerHTML = shown.map(linkReviewCard).join('');
 }
 
 async function decideLink(action, articleId, eventId) {
