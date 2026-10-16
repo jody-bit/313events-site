@@ -1,0 +1,95 @@
+id,external_id,matched,match_method,address_venue,address_street,address_city_line,lat,lng,live_title,live_startDate
+85ce9b14-838e-4754-8da6-b27d1b7b0b14,vd-40664063,y,objectID,461 Piquette Street,461 Piquette Ave.,"Detroit, Michigan 48202",42.368559,-83.065393,Motor Cities Origins Tour,2026-11-28T12:30:00
+508724bc-d1aa-4a26-b0f3-78f0229ffd85,vd-50985348,y,objectID,Aretha Franklin Amphitheatre,2600 Atwater Street,"Detroit, Michigan 48207",42.3342075,-83.0217032,UniverSoul Circus,2026-10-21T15:00:00
+04fdda35-e3df-4749-87d8-842a7b7e5a22,vd-50116748,n,none,,,,,,,
+5bf90f52-28ac-4b6c-a1dc-95f682e2e14c,vd-50116751,y,objectID,Beacon Park,"1903 Grand River Ave, Detroit, 48226","Detroit, Michigan 48226",42.334362,-83.0545118,Cider in the City,2026-10-11T09:00:00
+8e67ecc9-f82b-4f8f-80a3-b16668f6c829,vd-49564646,y,objectID,Bonstelle Playhouse,"3424 Woodward Ave, Detroit, MI 48201, US","Detroit, Michigan 48201",42.3463025,-83.0567078,Celebrating the Music of the Minneapolis Sound with Mr. Hayes and Friends,2026-10-27T15:00:00
+321b8359-904f-41e1-80e3-6e9b51da4eda,vd-51205744,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Tribute to Dolly Parton,2026-11-13T13:30:00
+3535e276-3bce-478b-8a43-fffbf08c457f,vd-51205745,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Tributo a Juan Luis Guerra,2026-11-13T15:45:00
+4d2a43f3-4f3c-41c9-a623-fb78b9c15c48,vd-51205748,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Tribute to Dolly Parton,2026-12-03T13:30:00
+ee304783-8a96-4ed2-acb0-928efef617b6,vd-51205749,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Tribute to Queen and The Beatles,2026-12-03T15:45:00
+dca6f6f2-dcee-4653-8706-8562c5cabd9b,vd-51205750,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Tribute to Chris Cornell,2026-12-05T13:30:00
+5cd7db18-0f01-45fd-b003-d79b67605cdd,vd-51205753,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Christmas Carols on Strings,2026-12-18T13:30:00
+c6b1a2db-cdfc-4a33-81bd-7e16043178ac,vd-51205754,y,objectID,Christ Church Detroit,960 East Jefferson Avenue,"Detroit, Michigan 48207",42.3324473,-83.0349209,Candlelight: Christmas Special Featuring “The Nutcracker” & More,2026-12-26T15:45:00
+b26546be-e1eb-4a94-9dd7-3d7fdd0a132f,vd-40979391,y,objectID,City Institute,"440 Burroughs St., #118","Detroit, Michigan",42.342678,-83.03342,Detroit in Context Downtown Walking Tour,2026-10-18T09:00:00
+86f297a6-e364-4658-b2f5-fc662856cb06,vd-50306343,y,objectID,Detroit Artists Market,4719 Woodward Avenue,"Detroit, Michigan 48201",42.3548054,-83.0634776,The Intimacy of Memories,2026-10-10T07:00:00
+14dc6a02-7a0a-481c-9805-9e907d78dd45,vd-50851279,n,none,,,,,,,
+ecf03f65-a3ed-40f2-9352-7c47b731a2e4,vd-50985377,y,objectID,Fisher Theatre,3011 W Grand Blvd,"Detroit, Michigan 48202",42.3698975,-83.0775771,Cinderella in Detroit,2026-11-13T14:00:00
+ee3bd52d-f77f-4f9e-a359-9a453b3be96c,vd-50605992,y,objectID,Flamingo Vintage, 5449 Vernor W.,"Detroit, Michigan 48209",42.3176591,-83.1013638,THE SWEAT SHOP,2026-10-16T14:00:00
+58fd0118-01a8-4c16-8e7e-f5f87dd952f0,vd-51127062,y,objectID,Fort Street Presbyterian Church,"631 W. Fort Street, MI 48226","Detroit, Michigan 48226",42.3275881,-83.0535024,Winter Wonderland,2026-12-11T15:00:00
+3a69e190-3718-4e03-9941-1eae7162c9f9,vd-51111319,y,objectID,Gem Theatre Detroit,333 Madison Street,"Detroit, Michigan 48226",42.3376476,-83.0461643,Candlelight: The Best of Hans Zimmer,2026-11-06T13:30:00
+0a7c97bc-c4e0-463b-af62-cd48cea8d37c,vd-51111323,y,objectID,Gem Theatre Detroit,333 Madison Street,"Detroit, Michigan 48226",42.3376476,-83.0461643,The Jazz Room: A Journey to the Heart of New Orleans,2026-12-06T11:00:00
+3e35797c-e546-43c4-892b-33db2f8c9ddd,vd-50985346,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Whethan,2026-10-23T16:00:00
+beb1c2d7-4e43-45d8-9a8f-656fb75b878d,vd-50985358,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,The Wrecks,2026-10-28T14:00:00
+de83c3bf-6363-453c-b4fd-68d67ef17bd9,vd-50985359,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,The Damned with Flamin Groovies and The Courettes,2026-10-29T15:00:00
+d62f363a-7742-4f33-8fe4-012cbc3c75b1,vd-50985369,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Akeem Ali,2026-11-01T14:00:00
+b156b29c-1b63-4a78-930d-700f452c37fe,vd-51111286,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Lil Peep 30th Birthday Celebration,2026-11-04T14:00:00
+24780e2b-571d-4c2f-bdfa-0d7cdcb05cef,vd-51111290,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Chat Pile,2026-11-05T13:30:00
+1edeb01e-2e74-40c8-af6e-24b312d83791,vd-51111302,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Vince Staples,2026-11-07T14:00:00
+5cf423ed-800f-46c6-bbce-237f8ad8e24b,vd-51111308,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Neko Case with Destroyer,2026-11-08T14:00:00
+1b783ef6-b381-49d8-bd71-384a36c0ed4b,vd-51111311,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,The Menzingers with Hot Water Music and Weakened Friends,2026-11-11T14:00:00
+73e134ef-ab5b-4eb7-9aff-54ec68314fe4,vd-51205765,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,"Saosin with Silent Planet, Like Moths To Flames and Save Us",2026-11-14T13:00:00
+71443440-9beb-457b-ac33-27556ccc9d37,vd-51205777,y,objectID,Majestic Theatre - MI,4140 Woodward Avenue,"Detroit, Michigan 48201",42.3514751,-83.060216,Madeon,2026-11-20T15:00:00
+e262afbc-1a8e-4376-b4dc-cac3ff67bfbb,vd-45878114,y,objectID,Masonic Temple Detroit,500 Temple St,"Detroit, Michigan 48201-2659",42.3418787,-83.0597768,Centennial Gala,2026-10-17T14:00:00
+a9c6d405-fcd4-422f-ae86-8d38032380fd,vd-47866808,y,objectID,MGM Grand Detroit,1777 3rd Ave,"Detroit, Michigan 48226",42.3336754,-83.0603744,The LaLa's Halloween Burlesque Show,2026-10-30T16:00:00
+b911b4f7-05f8-4432-91eb-bc66f2195f7c,vd-50448140,y,objectID,Michigan Hot Glass,1600 Clay St,"Detroit, Michigan 48211",42.3791555,-83.0588793,A Glass Experience Workshop - Make 'N' Take 10/17/26,2026-10-17T06:00:00
+dc3c6a93-a669-4882-9ea1-aba9e5e69397,vd-50874882,y,objectID,Michigan Hot Glass,1600 Clay St,"Detroit, Michigan 48211",42.3791555,-83.0588793,A Glass Experience - Make 'N' Take Workshop 11/14/26,2026-11-14T05:00:00
+add8774a-3378-46d5-adea-dfb84e36604e,vd-29167201,n,none,,,,,,,
+bbdc9029-c681-46f6-a232-a3f7a2e7560a,vd-50779691,y,objectID,Music Hall - Main Stage,350 Madison Ave.,"Detroit, Michigan 48226",42.3372189,-83.0457467,Marvin - The Marvin Gaye Musical,2026-10-16T16:00:00
+e1c1b227-177b-4364-914e-60c337c90ca1,vd-50779695,y,objectID,Music Hall - Main Stage,350 Madison Ave.,"Detroit, Michigan 48226",42.3372189,-83.0457467,One Sleepy Night - Detroit,2026-12-03T14:00:00
+5d64cc33-4479-44ac-acbf-b56446327ed5,vd-50779699,y,objectID,Music Hall - Main Stage,350 Madison Ave.,"Detroit, Michigan 48226",42.3372189,-83.0457467,World Ballet Company Presents: The Nutcracker,2026-12-19T14:00:00
+9dece7dc-3cf8-48ac-a1ac-3d969f3c8ab0,vd-50779701,y,objectID,Music Hall - Main Stage,350 Madison Ave.,"Detroit, Michigan 48226",42.3372189,-83.0457467,RUBY The Musical,2027-02-26T15:00:00
+bf9682ba-c52b-4f75-bfa8-5e65109a9268,vd-49990330,n,none,,,,,,,
+b936cf30-7c55-4ad5-a7d6-119bc46d0307,vd-49998207,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Fountains & Pines of Rome,2026-10-14T20:00:00
+3790f2fc-70a9-4891-a016-524dae327c4a,vd-50140381,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Bernadette Peters in Concert,2026-10-23T20:00:00
+6b6a2194-d47e-497b-94be-80956661cb03,vd-50140382,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Enigma Variations & Britten,2026-10-30T20:00:00
+029a81f2-4ac1-435e-9b84-5d2730381a78,vd-50140383,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,"French Splendor: Ravel, Debussy, and More",2026-11-04T19:00:00
+7e4ba30f-a8cd-403e-9042-f149ea56041f,vd-50140384,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Mozart & Schumann’s Romantic Rhenish,2026-11-12T19:00:00
+7082a781-c5fb-40e2-955a-33d1ebce21a1,vd-50140386,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Andrew Bird with the Detroit Symphony Orchestra,2026-11-17T14:30:00
+5a42225b-0701-4eaf-8373-36043cb432f5,vd-50140385,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Legends: The Paul Simon Songbook,2026-11-19T19:00:00
+082e00b9-829d-48ed-b9b5-0e478d27b67a,vd-50140387,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Mahler’s Symphony No. 6,2026-12-03T19:00:00
+c8fc33eb-e8e4-4fa1-bab6-729998a21d52,vd-50140388,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Home Alone in Concert,2026-12-09T14:30:00
+8e5cd847-7ac2-40f9-843b-02f481587185,vd-50140389,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Home for the Holidays,2026-12-10T19:00:00
+95621d5b-59c8-4be6-b9fe-b1cfdc5b0966,vd-50140390,y,objectID,Orchestra Hall,3711 Woodward Ave.,"Detroit, Michigan 48201",42.348598,-83.059139,Frozen in Concert,2026-12-10T19:00:00
+023f6bb5-4ec4-4e0d-8a54-0acd4c65e7e3,vd-50985340,y,objectID,PJ's Lager House,1254 Michigan Ave,"Detroit, Michigan 48226",42.3317067,-83.0632461,Telescreens,2026-10-20T16:00:00
+192eac39-6fb9-4172-925c-06b6bc9b9877,vd-51111310,y,objectID,PJ's Lager House,1254 Michigan Ave,"Detroit, Michigan 48226",42.3317067,-83.0632461,Surely Tempo,2026-11-11T03:00:00
+18a5f936-b9fb-42a8-a0b8-12eec2a57d7c,vd-51111313,y,objectID,PJ's Lager House,1254 Michigan Ave,"Detroit, Michigan 48226",42.3317067,-83.0632461,Austin Giorgio,2026-11-12T15:00:00
+471d8122-cdb8-4c67-a8bd-609b74c06463,vd-51205771,y,objectID,PJ's Lager House,1254 Michigan Ave,"Detroit, Michigan 48226",42.3317067,-83.0632461,Freak Slug,2026-11-19T15:00:00
+cabbcc85-4b48-4ee0-8313-d62ab40c237a,vd-48154315,n,none,,,,,,,
+601d19f3-de4a-486b-a7ae-998c2e145c5a,vd-48146516,y,objectID,Roasting Plant Coffee,660 Woodward Ave,"Detroit, Michigan 48226",42.3310998,-83.0460416,Black History by the People that Lived It: Downtown Detroit Walking Tour,2026-11-07T08:00:00
+56c2c4c4-3b5b-4656-bce9-14bae70834ab,vd-28143828,y,objectID,Roosevelt Park,14th Street & Michigan Avenue,"Detroit, Michigan 48216",42.3313693,-83.0765069,The Case of the Corktown Corpse - A Detroit Murder Mystery Tour,2026-10-31T09:30:00
+f25b4d4d-a6d5-4779-8fd0-4e7d4833ce23,vd-50985349,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Plini,2026-10-24T14:00:00
+8e9e83b1-2891-4fad-9244-30a9f94bb22d,vd-50985351,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Judah and The Lion,2026-10-25T14:30:00
+c9e9506f-34eb-4c18-abdd-49c72f8229b7,vd-50985356,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Quadeca,2026-10-28T15:00:00
+239f1bd2-99e7-453c-8c6a-fdd254435874,vd-50985366,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Twiztid,2026-10-30T13:30:00
+6886cd88-4ac7-48db-9079-578800157a35,vd-50985367,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,L7,2026-10-31T15:00:00
+f705a9d8-4116-41dc-a6bd-0426da01b7a4,vd-50985370,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Amble,2026-11-01T14:00:00
+5ca73e67-cb97-4bf8-99f6-1990720ccbe8,vd-50985372,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Hunxho,2026-11-02T14:00:00
+cd8ee084-b67e-4b47-b107-b4ca9b25fc42,vd-50985373,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Nekrogoblikon,2026-11-03T13:00:00
+82517f79-762f-4c5f-ac86-4c75fddb137a,vd-51111301,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Sleep,2026-11-07T14:00:00
+bc1fc74f-4a60-4a3e-bdec-0454a8098749,vd-51111312,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3323959,-83.0416336,Voila,2026-11-11T13:00:00
+982f492b-3305-421b-bdd2-6f23d8dd44c9,vd-51205762,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3321936,-83.0414304,Hamilton Leithauser and ROSTAM with Johanna Samuels,2026-11-14T14:00:00
+59d17823-38b1-4b42-95d9-9355974ade6d,vd-51205767,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3321936,-83.0414304,Slow Pulp,2026-11-17T14:00:00
+def61332-5bd2-49fb-b620-628ede465816,vd-51205769,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3321936,-83.0414304,DJ Meredith Marks,2026-11-19T14:00:00
+bb2bd479-efc4-4ffb-86ac-d11cf755ca75,vd-51205775,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3321936,-83.0414304,Catch Your Breath,2026-11-20T13:00:00
+d680e498-9013-49a6-85c1-591ac04de0e5,vd-51205784,y,objectID,Saint Andrews Hall - Detroit,431 East Congress Street,"Detroit, Michigan 48226",42.3321936,-83.0414304,Yung Gravy,2026-11-21T14:00:00
+1caf7721-3521-448b-a537-2e134121dc21,vd-51205743,y,objectID,Sanctuary Church Birmingham,300 Willits St,"Detroit, Michigan 48009",42.5477081,-83.2174755,Candlelight: Tribute to Michael Jackson,2026-11-12T13:30:00
+70bf4f43-6762-4476-8cf6-7b8d62abde5d,vd-51205742,y,objectID,Sanctuary Church Birmingham,300 Willits St,"Detroit, Michigan 48009",42.5477081,-83.2174755,Candlelight: Tribute to Bad Bunny,2026-11-12T15:45:00
+2321ff59-cb0d-4269-a326-5c8dba4bd97a,vd-51205752,y,objectID,Sanctuary Church Birmingham,300 Willits St,"Detroit, Michigan 48009",42.5477081,-83.2174755,Candlelight: Tribute to Queen and The Beatles,2026-12-10T13:30:00
+8d4d95b3-8afa-4178-931f-892a5467eba4,vd-51111324,y,objectID,Sanctuary Church Birmingham,300 Willits St,"Detroit, Michigan 48009",42.5477081,-83.2174755,Candlelight: A Tribute to Taylor Swift,2026-12-11T13:30:00
+7a14cb0a-c79e-4684-a7bd-861e90871c69,vd-51205751,y,objectID,Sanctuary Church Birmingham,300 Willits St,"Detroit, Michigan 48009",42.5477081,-83.2174755,Candlelight: Tribute to Michael Jackson,2026-12-14T15:45:00
+10232bca-6b17-4c5f-a216-bb268bd02df2,vd-51158532,y,objectID,Sanctuary Church Birmingham,300 Willits St,"Detroit, Michigan 48009",42.5477081,-83.2174755,Candlelight: A Tribute to Taylor Swift,2027-01-14T13:30:00
+8d5e2644-69c6-444f-954c-1150fb79ea4e,vd-51158531,y,objectID,Society Detroit,1995 Woodbridge St,"Detroit, Michigan 48207",42.3359418,-83.0261388,Josie G at AIA Collaborative Detroit Magazine Release Party,2026-10-24T14:00:00
+fc700f14-7d21-49c2-b88a-2980dc97276b,vd-48162109,y,objectID,Source Booksellers,4240 Cass Ave Unit 105,"Detroit, Michigan 48201",42.3513987,-83.0638046,"Eating Around the World: Stories, Culture & Connection",2026-11-13T13:30:00
+f1b9d5b7-49cf-4e39-b703-01a4c5b4df09,vd-49564647,y,objectID,The Chandler Park Fieldhouse (The Dome),12300 Chandler Park Dr,"Detroit, Michigan 48213",42.3930063,-82.9771849,The ReVamp Clothing Swap Festival - Fall 2026,2026-10-17T08:00:00
+8904dad1-d2e2-46fd-9e45-f994d2228d10,vd-51205741,y,objectID,The Detroit Masonic Temple,500 Temple Street,"Detroit, Michigan 48201",42.3418787,-83.0597768,Candlelight: Vivaldi's Four Seasons,2026-10-18T14:30:00
+f4ba1f26-7fa5-4b47-b94e-abe67fed8c25,vd-51111318,y,objectID,The Detroit Masonic Temple,500 Temple Street,"Detroit, Michigan 48201",42.3418787,-83.0597768,Candlelight: Tribute to Drake,2026-11-01T15:45:00
+a7b2f3c1-b01a-4efa-9354-f865e5457e24,vd-51158530,y,objectID,The Detroit Masonic Temple,500 Temple Street,"Detroit, Michigan 48201",42.3418787,-83.0597768,Candlelight: Christmas Carols on Strings,2026-12-20T13:30:00
+dd6a7d71-2444-4584-8d9d-98a46cd0c14f,vd-48661701,n,none,,,,,,,
+2ecb5e4c-4299-4975-906b-1942f731fd73,vd-50851277,y,objectID,The Russell Industrial Center,1600 Clay St,"Detroit, Michigan 48211",42.3791555,-83.0588793,A Glass Experience - Make 'N' Take  Workshop,2026-10-17T06:00:00
+bc4c7d79-b313-43f4-9435-a66473b93404,vd-51111287,y,objectID,The Shelter at Saint Andrews Hall,431 East Congress,"Detroit, Michigan 48226",42.3323959,-83.0416336,Static Dress,2026-11-04T13:00:00
+b7b8dad9-afd3-4cfd-8ce6-12adc68a1ee4,vd-51111309,y,objectID,The Shelter at Saint Andrews Hall,431 East Congress,"Detroit, Michigan 48226",42.3323959,-83.0416336,Em Beihold,2026-11-09T14:00:00
+5a829892-308c-4a92-8ebf-d4ec2c94bbda,vd-50851276,y,objectID,Woodbridge Pub,5169 Trumbull,"Detroit, Michigan 48208",42.3540437,-83.0801341,Last Laugh's Helloween Comedy Show Featuring Sam Rager,2026-10-27T18:00:00
+1fd2e206-8978-4cf4-8043-1d09d173c997,vd-27575461,y,objectID,,,,,,The Original Detroit Christmas Bakery Bus Tour,2026-12-05T03:30:00
+c4df8f4d-4e9a-4645-930c-914efe1eefaf,vd-38994556,y,objectID,,,,,,Christmas Cookie Coach Tour,2026-12-05T08:30:00
+4c870e24-569d-4e64-b577-2ed128da8db2,vd-51174271,y,objectID,,,,,,Winter Wonderland,2026-12-12T10:00:00

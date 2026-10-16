@@ -1,9 +1,15 @@
 const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
+const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, loadZipTiers, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
+
+// Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v3 table (with evidence tiers), loaded lazily. A ZIP
+// that is not in it is "no evidence". FEED_CITY_INCLUDE_CDP=0 drops Census-designated-place names (owner decision open).
+let zipTableCache = null;
+function zipTable() { return zipTableCache || (zipTableCache = loadZipTable()); }
 
 // Vercel Cron job — pulls Detroit-area events straight from visitdetroit.com's
 // own Algolia search index, discovered 2026-09-14 while answering Jody's
@@ -179,7 +185,7 @@ function formatTime(hour, minute) {
 // address is Algolia's own [venueName, street, "City, State (zip)"] shape —
 // seen as short as [venueName] alone for a "TBA"-style listing.
 function parseAddress(address) {
-  if (!Array.isArray(address) || !address.length) return { name: null, street: null, city: null };
+  if (!Array.isArray(address) || !address.length) return { name: null, street: null, city: null, zip: null };
   const name = address[0] || null;
   const street = address.length > 2 ? address[1] : null;
   const cityState = address.length > 2 ? address[2] : (address.length === 2 ? address[1] : null);
@@ -188,7 +194,18 @@ function parseAddress(address) {
     const commaIdx = cityState.indexOf(",");
     city = (commaIdx === -1 ? cityState : cityState.slice(0, commaIdx)).trim() || null;
   }
-  return { name, street, city };
+  return { name, street, city, zip: parseZip(cityState) };
+}
+
+// venue_address_raw / venue_city_raw for one hit. The parsed city is stored only when it agrees with the
+// feed's own ZIP and _geoloc (GEO-003 Addendum 2); a mismatch stores no city (NULL) and keeps the street;
+// the admin Needs Follow-up list surfaces it because the city is missing. Detroit is stored explicitly, not as NULL, so that a blank city
+// can mean "unknown" once the map stops defaulting blanks to Detroit.
+function rowCityFields(address, hit, deps) {
+  const { street, city, zip } = parseAddress(address);
+  const g = (hit && hit._geoloc) || {};
+  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable(), cdpNames: loadCdpNames(), tiers: loadZipTiers() });
+  return { venue_address_raw: street, venue_city_raw: decision.city, _cityDecision: decision };
 }
 
 // Conservative cross-source dedupe key — see header comment. Punctuation-
@@ -283,6 +300,7 @@ const visitDetroitHandler = async (req, res) => {
 
   let excludedByCategory = 0;
   let excludedByDate = 0;
+  const cityMismatches = [];
 
   const mappedRows = hits
     .map((h) => {
@@ -292,7 +310,9 @@ const visitDetroitHandler = async (req, res) => {
       const dt = deriveDateTimeFields(h);
       if (!dt) { excludedByDate++; return null; }
 
-      const { name: venueName, street, city } = parseAddress(h.address);
+      const { name: venueName } = parseAddress(h.address);
+      const { venue_address_raw, venue_city_raw, _cityDecision } = rowCityFields(h.address, h);
+      if (_cityDecision.status === "needs_follow_up") cityMismatches.push({ id: h.id, title: h.title, reason: _cityDecision.reason });
 
       return {
         external_id: `vd-${h.id}`,
@@ -300,8 +320,8 @@ const visitDetroitHandler = async (req, res) => {
         description: h.content || null,
         category: cat,
         venue_name_raw: venueName,
-        venue_address_raw: street,
-        venue_city_raw: city && city.toLowerCase() !== "detroit" ? city : null,
+        venue_address_raw,
+        venue_city_raw,
         venue_id: resolveVenueId(venueMap, venueName),
         // See api/_lib/mobile-event.js -- true only when VisitDetroit's own
         // eventCategories (e.g. "Tours") or an unambiguous title keyword
@@ -329,15 +349,19 @@ const visitDetroitHandler = async (req, res) => {
           ? `VisitDetroit lists this as recurring ("${h.readableRepeatRule}") — only this dated occurrence is captured here.`
           : null,
         _dedupeKey: dedupeKey(h.title, dt.startDate),
+        _cityDecision,
       };
     })
     .filter(Boolean);
+
+  if (cityMismatches.length) console.warn("visitdetroit: city not stored (feed city contradicts ZIP/coordinates):", JSON.stringify(cityMismatches.slice(0, 20)));
 
   if (!mappedRows.length) {
     res.status(200).json({
       upserted: 0,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -371,7 +395,7 @@ const visitDetroitHandler = async (req, res) => {
 
   const newRows = mappedRows.filter((r) => !existingKeys.has(r._dedupeKey));
   const skippedAsDuplicate = mappedRows.length - newRows.length;
-  const rows = newRows.map(({ _dedupeKey, ...rest }) => rest);
+  const rows = newRows.map(({ _dedupeKey, ...rest }) => rest); // keeps _cityDecision until the existing-city check below
 
   if (!rows.length) {
     res.status(200).json({
@@ -379,6 +403,7 @@ const visitDetroitHandler = async (req, res) => {
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -395,21 +420,26 @@ const visitDetroitHandler = async (req, res) => {
     // (<=100 ids/request) this also fixes. Any failure aborts this run
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
-    let existingStatusByExternalId;
+    let existingRowsByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      existingRowsByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,venue_city_raw" }
       );
     } catch (lookupErr) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    // GEO-003 safeguard: an incoming city that is not evidence-confirmed never replaces a city the row already has.
+    const rowsWithStatus = rows.map(({ _cityDecision, ...row }) => {
+      const existing = existingRowsByExternalId.get(row.external_id);
+      return {
+        ...protectExistingCity(row, _cityDecision, existing && existing.venue_city_raw),
+        status: (existing && existing.status) || DEFAULT_STATUS,
+      };
+    });
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
@@ -422,6 +452,7 @@ const visitDetroitHandler = async (req, res) => {
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
       fetchedAt: new Date().toISOString(),
     });
   } catch (err) {
@@ -433,5 +464,6 @@ const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source
 module.exports = withRunLog("visitdetroit", visitDetroitHandler);
 module.exports.detroitParts = detroitParts; // exposed for test/cron-visitdetroit-time-parsing.test.js only
 module.exports.parseAddress = parseAddress;
+module.exports.rowCityFields = rowCityFields;
 module.exports.mapCategory = mapCategory;
 module.exports.deriveDateTimeFields = deriveDateTimeFields; // exposed for scripts/visitdetroit-time-backfill.js and its test only

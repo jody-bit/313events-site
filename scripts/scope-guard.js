@@ -71,6 +71,12 @@ const ALLOWED = [
   "api/cron-feeds.js",
   // Shared ingestion eligibility rule (owner decision 2026-10-14): feed rows that are definitively over are not inserted.
   "api/_lib/ingest-eligibility.js",
+  // GEO-003 step 2 (owner order 2026-10-16): VisitDetroit stores the feed city only when it agrees with ZIP and _geoloc.
+  "api/_lib/feed-city.js",
+  "api/_lib/orbit-zip-table.json",
+  "api/_lib/orbit-zip-cdp-names.json",
+  "api/_lib/orbit-zip-tiers.json",
+  "api/cron-visitdetroit.js",
   // DQ-004 verified-only editorial associations (owner approval 2026-10-16, staging implementation): the shared verification rule,
   // the admin decisions API, and the additive verification columns + verified-only public read policy.
   "api/_lib/editorial-verification.js",
