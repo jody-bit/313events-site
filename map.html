@@ -1382,7 +1382,7 @@ function renderMap(places){
     // live site (2026-08-30) with a 40-event cluster near Rochester.
     // autoPanPadding gives real breathing room from the window edge (the
     // 5px Leaflet default was letting the popup sit flush against it).
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: 320, autoPanPadding: [24, 24], keepInView: true});
+    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: Math.max(160, Math.min(320, leafletMap.getSize().y - 100)), autoPanPadding: [24, 24], keepInView: true});
     marker.on('click', ()=> selectPlace(place.key));
     markersByKey.set(place.key, marker);
   });
@@ -1440,8 +1440,23 @@ function selectPlace(key, opts){
   if(selectedPlaceKey){
     const marker = markersByKey.get(selectedPlaceKey);
     if(marker){
-      marker.openPopup();
-      leafletMap.panTo(marker.getLatLng());
+      // Recenter first, open the popup once the pan has finished. Opening it first lets
+      // Leaflet's popup auto-pan and this panTo run at the same time (two animated pans,
+      // the second cancelling the first mid-flight); for a place far from the current view,
+      // like Bowling Green on the 380px mobile map, that left the marker off-screen with
+      // no popup. Closing first also stops a marker click's own auto-pan from joining the race.
+      const target = marker.getLatLng();
+      const key = selectedPlaceKey;
+      const openIfStillSelected = ()=>{ if(selectedPlaceKey === key && markersByKey.get(key) === marker && !marker.isPopupOpen()) marker.openPopup(); };
+      marker.closePopup();
+      const offCenter = leafletMap.latLngToContainerPoint(target).distanceTo(leafletMap.getSize().divideBy(2)) > 1;
+      if(offCenter){
+        leafletMap.once('moveend', openIfStillSelected);
+        leafletMap.panTo(target);
+        setTimeout(openIfStillSelected, 700); // moveend can be skipped if the pan is interrupted
+      } else {
+        openIfStillSelected();
+      }
     }
     if(!(opts && opts.fromRail)){
       const row = document.querySelector(`.city-row-head[data-key="${CSS.escape(selectedPlaceKey)}"]`);
