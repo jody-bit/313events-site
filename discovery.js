@@ -884,6 +884,16 @@
       // below applies unchanged.
       var ED = (typeof EventDates !== "undefined") ? EventDates : null;
       var b = ED ? ED.bounds(e) : null;
+      if (b && b.dates && !b.dates.length) {
+        // Schedule-unverified multiday range (owner decision 2026-10-16): it is
+        // not attendable on any specific date, so no date-specific window
+        // matches it. It stays in general browsing (open-ended 'all' window,
+        // no upper bound) while the range has not ended, and in search.
+        if (w.to !== null) return false;
+        if (w.forward && end < c.today) return false;
+        if (w.from !== null && end < w.from) return false;
+        return !w.evening;
+      }
       if (b && b.dates) {
         var hit = b.dates.some(function (d) {
           if (w.forward && (d < c.today || (d === c.today && endedByClock(e.time, c.minutes)))) return false;
