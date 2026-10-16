@@ -301,6 +301,7 @@ const visitDetroitHandler = async (req, res) => {
   let excludedByCategory = 0;
   let excludedByDate = 0;
   const cityMismatches = [];
+  const cityZipAdvisories = []; // kept unverified: ZIP table does not list the feed city, nothing demonstrates it wrong
 
   const mappedRows = hits
     .map((h) => {
@@ -313,6 +314,7 @@ const visitDetroitHandler = async (req, res) => {
       const { name: venueName } = parseAddress(h.address);
       const { venue_address_raw, venue_city_raw, _cityDecision } = rowCityFields(h.address, h);
       if (_cityDecision.status === "needs_follow_up") cityMismatches.push({ id: h.id, title: h.title, reason: _cityDecision.reason });
+      else if (_cityDecision.zipMismatch) cityZipAdvisories.push({ id: h.id, title: h.title, city: venue_city_raw });
 
       return {
         external_id: `vd-${h.id}`,
@@ -354,7 +356,8 @@ const visitDetroitHandler = async (req, res) => {
     })
     .filter(Boolean);
 
-  if (cityMismatches.length) console.warn("visitdetroit: city not stored (feed city contradicts ZIP/coordinates):", JSON.stringify(cityMismatches.slice(0, 20)));
+  if (cityMismatches.length) console.warn(`visitdetroit: city not stored, ${cityMismatches.length} contradicted by ZIP/coordinates:`, JSON.stringify(cityMismatches));
+  if (cityZipAdvisories.length) console.warn(`visitdetroit: city kept unverified, ${cityZipAdvisories.length} not listed for their ZIP:`, JSON.stringify(cityZipAdvisories));
 
   if (!mappedRows.length) {
     res.status(200).json({
@@ -362,6 +365,7 @@ const visitDetroitHandler = async (req, res) => {
       excludedByCategory,
       excludedByDate,
       cityMismatches: cityMismatches.length,
+      cityZipAdvisories: cityZipAdvisories.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -404,6 +408,7 @@ const visitDetroitHandler = async (req, res) => {
       excludedByCategory,
       excludedByDate,
       cityMismatches: cityMismatches.length,
+      cityZipAdvisories: cityZipAdvisories.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -453,6 +458,7 @@ const visitDetroitHandler = async (req, res) => {
       excludedByCategory,
       excludedByDate,
       cityMismatches: cityMismatches.length,
+      cityZipAdvisories: cityZipAdvisories.length,
       fetchedAt: new Date().toISOString(),
     });
   } catch (err) {

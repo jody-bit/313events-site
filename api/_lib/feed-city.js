@@ -31,6 +31,23 @@ function norm(s) {
   return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
+// Name core: drops the legal-status words so naming conventions compare equal.
+function isAmbiguousPartial(city, match, table) {
+  const w = ` ${norm(city)} `, mcore = core(match);
+  for (const z of Object.keys(table)) for (const m of (table[z].municipalities || [])) {
+    if (core(m) === mcore) continue;
+    if (` ${norm(m)} `.includes(w)) return true;
+  }
+  return false;
+}
+
+function core(s) {
+  return norm(s)
+    .replace(/^(charter township of|township of|city of|village of) /, "")
+    .replace(/ (charter township|township|twp|city|village)$/, "")
+    .trim();
+}
+
 function validPoint(lat, lng) {
   return typeof lat === "number" && typeof lng === "number" && isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
 }
@@ -102,17 +119,39 @@ function decideFeedCity(input, deps) {
   const key = norm(city);
 
   let evidence = "none";
+  let canonical = null;
+  let zipMismatch = null; // set when the ZIP table does not list the feed city but nothing demonstrates it is wrong
   const zipRow = input.zip && table[input.zip];
   if (zipRow && Array.isArray(zipRow.municipalities) && zipRow.municipalities.length) {
-    if (!zipRow.municipalities.some((m) => norm(m) === key)) {
-      return { city: null, status: "needs_follow_up", evidence: "none", confirmed: false, reason: `feed city "${city}" is not among ZIP ${input.zip}'s municipalities (${zipRow.municipalities.join(", ")})` };
+    // Same municipality under another naming convention ("Charter Township Of Clinton" = "Clinton Township",
+    // "Highland" = "Highland Township"). Only the legal-status words are ignored; "Lake Orion" is not "Orion Township".
+    const exact = zipRow.municipalities.find((m) => norm(m) === key);
+    const match = exact || zipRow.municipalities.find((m) => core(m) === core(city));
+    // A bare partial name ("Bloomfield", "Highland") is not confirmed by a variant match when another municipality in
+    // the table also contains it as a whole-word run (Bloomfield Hills, West Bloomfield, Highland Park): preserved as unverified.
+    if (match && !exact && key === core(city) && isAmbiguousPartial(city, match, table)) {
+      return { city, status: "stored_unverified", evidence: "none", confirmed: false, zipMismatch: true, ambiguousPartial: true, reason: `feed city "${city}" is a partial name that also fits other municipalities (not confirmed as "${match}"); kept unverified` };
     }
-    const cdp = ((deps && deps.cdpNames) || {})[input.zip] || [];
-    const cdpOnly = cdp.some((n) => norm(n) === key || norm(n.replace(/\s+CDP$/i, "")) === key);
-    // Tier (Census overlap strength, EI v3). Only `strong` confirms a municipality; census_supported, CDP-only, or a
-    // name with no tier on record are compatible. deps.tiers absent = legacy injected table (tests): treated as strong.
-    const tier = deps && deps.tiers ? ((deps.tiers[input.zip] || {})[key] || "unknown") : "strong";
-    evidence = cdpOnly ? "cdp_compatible" : tier === "strong" ? "municipality" : "census_supported";
+    if (match) {
+      const mkey = norm(match);
+      const cdp = ((deps && deps.cdpNames) || {})[input.zip] || [];
+      const cdpOnly = cdp.some((n) => norm(n) === mkey || norm(n.replace(/\s+CDP$/i, "")) === mkey);
+      // Tier (Census overlap strength, EI v3). Only `strong` confirms a municipality; census_supported, CDP-only, or a
+      // name with no tier on record are compatible. deps.tiers absent = legacy injected table (tests): treated as strong.
+      canonical = match; // store the table's municipality name, never the postal/township alias
+      const tier = deps && deps.tiers ? ((deps.tiers[input.zip] || {})[mkey] || "unknown") : "strong";
+      evidence = cdpOnly ? "cdp_compatible" : tier === "strong" ? "municipality" : "census_supported";
+    } else if (key === "detroit") {
+      // A Detroit claim against a ZIP that does not list Detroit is contradicted unless the coordinates are inside
+      // Detroit (feeds carry wrong ZIPs: Elektricity Nightclub, downtown Pontiac, arrives with Keego Harbor's 48320).
+      const inside = validPoint(input.lat, input.lng) && !clearlyOutsideDetroit(input.lat, input.lng);
+      if (!inside) return { city: null, status: "needs_follow_up", evidence: "none", confirmed: false, reason: `feed city "${city}" is not among ZIP ${input.zip}'s municipalities (${zipRow.municipalities.join(", ")})` };
+    } else {
+      // Not Detroit, not listed for this ZIP. Post-office place names ("Oxford", "Rochester", "Lake Orion") and wrong
+      // feed ZIPs both look like this, and neither is a demonstrable contradiction: there is no non-Detroit boundary to
+      // test the coordinates against. Keep the feed city as before, flagged, never confirmed, never overwriting a city.
+      zipMismatch = `feed city "${city}" is not among ZIP ${input.zip}'s municipalities (${zipRow.municipalities.join(", ")}); kept unverified (post-office name or feed ZIP error not ruled out)`;
+    }
   }
 
   if (validPoint(input.lat, input.lng) && key === "detroit") {
@@ -122,9 +161,10 @@ function decideFeedCity(input, deps) {
     if (evidence !== "municipality") evidence = "boundary";
   }
 
-  if (evidence === "municipality" || evidence === "boundary") return { city, status: "stored", evidence, confirmed: true, reason: "feed city agrees with the ZIP and/or coordinates" };
+  if (evidence === "municipality" || evidence === "boundary") return { city: canonical || city, status: "stored", evidence, confirmed: true, reason: "feed city agrees with the ZIP and/or coordinates" };
   if (evidence === "cdp_compatible") return { city, status: "stored_compatible", evidence, confirmed: false, reason: "feed city is a Census-designated place within the ZIP: compatible, not a definitive municipality" };
   if (evidence === "census_supported") return { city, status: "stored_compatible", evidence, confirmed: false, reason: "feed city has only weak Census overlap with the ZIP (census_supported): compatible, not confirmed" };
+  if (zipMismatch) return { city, status: "stored_unverified", evidence, confirmed: false, zipMismatch: true, reason: zipMismatch };
   return { city, status: "stored_unverified", evidence, confirmed: false, reason: "no ZIP-table or boundary evidence to confirm or contradict" };
 }
 
@@ -132,7 +172,11 @@ function decideFeedCity(input, deps) {
 // backfill): only evidence-confirmed decisions may overwrite. Returns the row to write (a copy when changed).
 function protectExistingCity(row, decision, existingCity) {
   if (!row || !String(existingCity || "").trim()) return row;
-  if (decision && decision.confirmed && decision.city) return row;
+  if (decision && decision.confirmed && decision.city) {
+    // same municipality under another wording: keep the stored canonical name, don't swap in an alias
+    if (core(decision.city) === core(existingCity) && norm(decision.city) !== norm(existingCity)) { const o = Object.assign({}, row); delete o.venue_city_raw; return o; }
+    return row;
+  }
   const out = Object.assign({}, row);
   delete out.venue_city_raw;
   return out;
