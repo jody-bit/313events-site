@@ -31,6 +31,8 @@ const ALLOWED = [
   "api/cron-enrichment.js",
   // Link usability classification (issue #99, approved by the owner 2026-10-13): extends the existing link-health helper.
   "api/_lib/link-health.js",
+  // Admin queue Stage 4 (owner directive 2026-10-16): read-side BGSU geographic evidence audit; changes no row.
+  "api/_lib/bgsu-geo-audit.js",
   // Admin queue Stage 3 (owner decisions 2026-10-16): read-side filter for the press link-review list.
   "api/_lib/press-queue-filter.js",
   // Admin queue Stage 2 (owner decision 2026-10-16): read-side class for pending rows (Dearborn grouping).
