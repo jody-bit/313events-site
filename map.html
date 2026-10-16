@@ -473,6 +473,7 @@
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/city-resolution.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -725,6 +726,10 @@ const LOCATIONS = [
   {name:"Shelby Township", type:"city", region:"Michigan", lat:42.6642, lng:-83.0341},
   {name:"Mount Clemens", type:"city", region:"Michigan", lat:42.5973, lng:-82.8794},
   {name:"Grand Blanc", type:"city", region:"Michigan", lat:42.9270, lng:-83.6249},
+  // Copied exactly from discovery.js `places` (the project's existing sourced
+  // coordinates) so map.html and discovery agree. Phase 1 city resolution.
+  {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.92},
+  {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
 ];
 
 const CITY_LOOKUP = new Map(
@@ -894,7 +899,8 @@ function matchesFilters(e){
     }
   }
   if(originLocation && radiusMiles !== null){
-    const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
+    const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP) : null;
+    const loc = e.city ? (hit && hit.loc) : CITY_LOOKUP.get('detroit');
     if(!loc) return false;
     if(radiusMiles === 'all'){
       const detroit = CITY_LOOKUP.get('detroit');
@@ -1123,6 +1129,7 @@ function evtRowHtml(e){
           <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
           ${priceTag(e)}
           <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
+          ${sharedPointMunicipality(e)?`<span>${escapeHtml(sharedPointMunicipality(e))}</span>`:''}
           ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
@@ -1186,9 +1193,13 @@ function resolvePlace(e){
     return { key: `v:${vKey}`, lat: precise.lat, lng: precise.lng, label: e.venue, precise: true };
   }
   const cityName = e.city || "Detroit";
-  const loc = CITY_LOOKUP.get(cityName.toLowerCase());
-  if(!loc) return null; // no resolvable location at all — excluded from the map (never guessed)
-  return { key: `c:${cityName.toLowerCase()}`, lat: loc.lat, lng: loc.lng, label: cityName, precise: false };
+  // CityResolution (city-resolution.js) reads "Warren, MI 48092", "Clinton Twp"
+  // etc. as the table city; the event keeps its raw city value untouched. A
+  // city that already matched exactly keeps its previous place key.
+  const hit = CityResolution.resolve(cityName, CITY_LOOKUP);
+  if(!hit) return null; // no resolvable location at all — excluded from the map (never guessed)
+  const label = hit.key === cityName.toLowerCase() ? cityName : hit.loc.name;
+  return { key: `c:${hit.key}`, lat: hit.loc.lat, lng: hit.loc.lng, label, precise: false };
 }
 
 // Rebuilt on every render() from whatever currently matches the active
@@ -1281,6 +1292,17 @@ function eventWhereHtml(e){
   return `<div class="pe-where">${venue}${escapeHtml(street)}</div>`;
 }
 
+// A municipality that shares another city's map point (Grosse Pointe Farms / Shores plot on
+// the Grosse Pointe marker) shows its own source name on the event, never the marker's.
+function sharedPointMunicipality(e){
+  const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP) : null;
+  return hit && hit.alias ? String(e.city).replace(/\s+/g,' ').trim() : '';
+}
+function municipalityHtml(e){
+  const m = sharedPointMunicipality(e);
+  return m ? `<div class="pe-where">${escapeHtml(m)}</div>` : '';
+}
+
 function placePopupHtml(place){
   // No hard cap on how many events render here — the popup's own maxHeight
   // + Leaflet's auto-added scrollbar (see bindPopup() below) let a many-event
@@ -1300,7 +1322,7 @@ function placePopupHtml(place){
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
       <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
-      ${where}
+      ${municipalityHtml(e)}${where}
     </div>
   `;
   }).join('');
