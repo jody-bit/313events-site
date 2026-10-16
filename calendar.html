@@ -1304,8 +1304,7 @@ function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).p
 // reasoning as renderMonth()'s own todayISO: Detroit is UTC-4/-5, so late
 // evening through midnight local time would otherwise read as tomorrow.
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+  return EventDates.detroitClock().iso; // America/Detroit, same as the homepage (2026-10-16)
 }
 
 // Best-effort parse of the free-text time_display field ("7:30 PM",
@@ -1387,14 +1386,13 @@ function timeSortMinutes(timeStr){
 // next upcoming one — never a weekend that's already fully over. Returns 3
 // ISO date strings.
 function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay(); // 0=Sun..6=Sat
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  const c = EventDates.detroitClock();
+  const deltaToFriday = c.dow === 0 ? -2 : 5 - c.dow;
+  const fri = new Date(c.iso + "T12:00:00Z");
+  fri.setUTCDate(fri.getUTCDate() + deltaToFriday);
   return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+    const x = new Date(fri); x.setUTCDate(fri.getUTCDate()+off);
+    return x.toISOString().slice(0,10);
   });
 }
 
@@ -1433,7 +1431,7 @@ function matchesFilters(e){
         if(range && range.end && range.end.h >= range.start.h){
           // The >= guard skips a range that crosses midnight (e.g.
           // 10pm-2am): still legitimately "now" all the way through.
-          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const nowHour = EventDates.detroitClock().hours;
           const endHour = range.end.h + range.end.m/60;
           if(endHour < nowHour) return false;
         }
@@ -1707,8 +1705,7 @@ function renderMonth(){
   // UTC-4/-5, so from evening through midnight local time, the UTC date has
   // already rolled to the next day while it's still "today" here. This
   // matches whatever timezone the visitor's own browser/device is set to.
-  const _now = new Date();
-  const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
+  const todayISO = getTodayISO();
 
   for(let i=0;i<totalCells;i++){
     const cell = document.createElement('div');
