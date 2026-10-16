@@ -237,13 +237,14 @@ async function run() {
     assert.deepStrictEqual(s.moreTitles, seq("Monday", 13, 15), "the rest follows the first block directly");
     assert.strictEqual(s.button, null, "nothing more to show");
 
-    // Tomorrow: the exhibition is listed under tomorrow there, still once.
+    // Tomorrow: the exhibition is an unclassified range (owner decision 2026-10-16: unknown schedule is not daily
+    // availability), so it is NOT listed under tomorrow; it stays in the unrestricted view above.
     page.run("clearAllFilters()");
     page.run("activateWhen('tomorrow')");
     s = stream(page);
-    assert.strictEqual(s.head, "Showing 26 events tomorrow");
+    assert.strictEqual(s.head, "Showing 25 events tomorrow"); // was 26: "Long Run" (a00, an unclassified Oct range) is unverified since the 2026-10-16 owner decision, so it no longer counts as tomorrow
     assert.deepStrictEqual(s.first.concat(s.more).map((g) => g.day).filter((d, i, a) => a.indexOf(d) === i), [day(1)]);
-    assert.strictEqual(s.titles.filter((t) => t === "Long Run").length, 1);
+    assert.strictEqual(s.titles.filter((t) => t === "Long Run").length, 0);
     assert.strictEqual(s.first[0].tomorrow, true);
 
     // Nothing at all: the empty state, and no continuation.
@@ -267,21 +268,21 @@ async function run() {
     assert.strictEqual(page.el("heroStatNumber").textContent, "153");
     assert.strictEqual(page.el("heroStatCaption").textContent, "Current + upcoming events");
     // Supporting figures ignore the visitor's own filters (film + "monday").
-    assert.strictEqual(page.el("heroStatToday").textContent, "31", "still on or to come today");
-    assert.strictEqual(page.el("heroStatNext7").textContent, "79", "today plus six days: today's 31, Sunday's 25, Monday's 15, and two a day for the next four");
+    assert.strictEqual(page.el("heroStatToday").textContent, "30", "still on or to come today (31 before the 2026-10-16 owner decision: the unverified Long Run range no longer counts as today)");
+    assert.strictEqual(page.el("heroStatNext7").textContent, "78", "today plus six days: today's 30, Sunday's 25, Monday's 15, and two a day for the next four");
     assert.strictEqual(page.el("heroStatNeighborhoods").textContent, "2", "Midtown and Corktown");
 
     // Following a figure shows exactly that many: everything else is reset.
     page.run("viewEverything('today')");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { when: "today" })));
     assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(stream(page).head, "Showing 31 events today");
+    assert.strictEqual(stream(page).head, "Showing 30 events today");
     assert.strictEqual(page.url(), "/?when=today");
     page.fire("search", "input", { value: "x" });
     page.run("viewEverything('next7')");
     assert.deepStrictEqual(plain(page.get("state")), plain(D.change(D.defaults(), { when: "next7" })));
     assert.deepStrictEqual(plain(D.window(page.get("state"), { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "today and the six days after it, in Detroit");
-    assert.strictEqual(stream(page).head, "Showing 79 events in the next 7 days");
+    assert.strictEqual(stream(page).head, "Showing 78 events in the next 7 days");
     assert.strictEqual(page.url(), "/?when=next7");
     assert.deepStrictEqual([...SCRIPT.matchAll(/class="hps-label">([^<]*)</g)].map((m) => m[1]), ["Today", "Next 7 days", "Active neighborhoods"], "the hero's three supporting figures (This Week is gone)");
     assert.ok(!/viewThisWeek/.test(SCRIPT));

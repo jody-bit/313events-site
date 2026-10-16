@@ -893,6 +893,9 @@
         });
         return hit && !(w.evening && !isEvening(e.time));
       }
+      // Owner decision 2026-10-16: an unverified multi-day range never matches a date-specific window
+      // (today / tonight / tomorrow / weekend / a picked date); it stays in the unrestricted upcoming list.
+      if (ED && ED.scheduleState(e) === "unverified" && w.mode !== "all") return false;
       if (w.forward) {
         if (end < c.today) return false;                                         // its last day has passed
         if (end === c.today && endedByClock(e.time, c.minutes)) return false;    // last day, and it has ended

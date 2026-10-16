@@ -77,8 +77,9 @@ function run() {
   assert.deepStrictEqual(ED.expand(outside), ["2026-10-03", "2026-10-17"]);
   assert.strictEqual(ED.reviewReason(outside), "occurrence-outside-range");
 
-  // Recurring with no usable dates: coverage kept (legacy range), routed to review.
-  assert.deepStrictEqual(ED.expand(ROWS.recurringNoDates), legacyExpand("2026-10-15", "2026-11-08"));
+  // Recurring with no usable dates: unverified (owner decision 2026-10-16), routed to review, never expanded.
+  assert.deepStrictEqual(ED.expand(ROWS.recurringNoDates), []);
+  assert.strictEqual(ED.scheduleState(ROWS.recurringNoDates), "unverified");
   assert.strictEqual(ED.reviewReason(ROWS.recurringNoDates), "recurring-without-dates");
 
   // ---------------------------------------------------------------
@@ -97,18 +98,21 @@ function run() {
   assert.strictEqual(gbLate[gbLate.length - 1], "2026-12-30", "exhibition still listed through its end date");
   assert.ok(ED.expand(ROWS.glennBarrExhibition).slice(-1)[0] < "2026-12-30", "without a floor the cap ends the list early (why pages pass one)");
   assert.strictEqual(ED.reviewReason(ROWS.glennBarrLegacy), "unclassified-multiday-clock-time");
-  assert.ok(ED.expand(ROWS.glennBarrLegacy, TODAY).length > 1, "legacy row keeps its listings until classified");
+  assert.deepStrictEqual(ED.expand(ROWS.glennBarrLegacy, TODAY), [], "unclassified row is not expanded into daily dates");
+  assert.strictEqual(ED.availabilityOn(ROWS.glennBarrLegacy, "2026-10-20"), "unverified", "but its range stays discoverable as unverified");
 
   // ---------------------------------------------------------------
-  // Kent Myers: unclassified legacy range keeps full coverage and is flagged.
+  // Kent Myers: unclassified range is unverified (not daily), kept, and flagged.
   // ---------------------------------------------------------------
-  assert.deepStrictEqual(ED.expand(ROWS.kentMyers), legacyExpand("2026-11-14", "2027-01-06"));
+  assert.deepStrictEqual(ED.expand(ROWS.kentMyers), []);
+  assert.strictEqual(ED.availabilityOn(ROWS.kentMyers, "2026-12-01"), "unverified");
   assert.strictEqual(ED.reviewReason(ROWS.kentMyers), "unclassified-multiday-clock-time");
   // Classifying it continuous (once its source says so) clears the review flag.
   assert.strictEqual(ED.reviewReason({ ...ROWS.kentMyers, dateSemantics: "continuous" }), null);
 
   // ---------------------------------------------------------------
-  // Backwards compatibility: unclassified rows list exactly as before.
+  // Backwards compatibility: single-date rows and `continuous` rows list exactly as before; an unclassified
+  // multi-day range is unverified and lists no daily dates.
   // ---------------------------------------------------------------
   const starts = ["2026-01-01", "2026-09-30", "2026-10-13", "2026-12-31", "2027-02-28"];
   const spans = [0, 1, 2, 7, 59, 60, 61, 120, 364];
@@ -116,9 +120,10 @@ function run() {
   let compared = 0;
   for (const s of starts) for (const n of spans) for (const f of floors) {
     const end = n === 0 ? undefined : new Date(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10) + n)).toISOString().slice(0, 10);
-    const e = { date: s, endDate: end || s };
+    const e = { date: s, endDate: end || s, dateSemantics: n === 0 ? undefined : "continuous" };
     const multi = !!e.endDate && e.endDate > e.date;
     assert.deepStrictEqual(ED.expand(e, multi ? f : null), legacyExpand(s, e.endDate, multi ? f : null), `${s}+${n} floor ${f}`);
+    if (multi) assert.deepStrictEqual(ED.expand({ date: s, endDate: e.endDate }, f), [], `${s}+${n}: unclassified range is not expanded`);
     compared++;
   }
   assert.ok(compared >= 100);
@@ -167,6 +172,67 @@ function run() {
   for (const page of Object.keys(sel)) assert.ok(sel[page].test(read(page)), `${page}: main query selects date_semantics and occurrence_dates`);
   // recurrence_evidence is internal and must never be selected by a page.
   for (const page of ["index.html", "calendar.html", "map.html"]) assert.ok(!/recurrence_evidence/.test(read(page)), `${page}: does not select recurrence_evidence`);
+
+  // ---------------------------------------------------------------
+  // P0 date reliability (2026-10-16): unknown schedule is never daily availability.
+  // Production fixtures: ids and fields as read on 2026-10-16.
+  // ---------------------------------------------------------------
+  const CIDER = { id: "5bf90f52", title: "Cider in the City", date: "2026-10-11", endDate: "2026-10-18", time: "1:00 PM" };
+  const CIDER_FIXED = { ...CIDER, dateSemantics: "recurring", occurrenceDates: ["2026-10-10", "2026-10-11", "2026-10-17", "2026-10-18"] };
+  const OCT = { id: "oct", date: "2026-10-01", endDate: "2026-10-31", time: "10:00 AM" };
+  const FRI16 = new Date("2026-10-16T16:00:00Z");   // Friday 12:00 PM Detroit
+  const SAT17 = new Date("2026-10-17T16:00:00Z");
+  const todayD = D.change(D.defaults(), { when: "today" });
+  const allD = D.change(D.defaults(), { when: "all" });
+  // 1 Saturday/Sunday-only: published as an Oct 11-18 range it is NOT active on Friday; with evidence it is Sat/Sun only.
+  assert.strictEqual(ED.isActiveOn(CIDER, "2026-10-16"), false);
+  assert.strictEqual(ED.availabilityOn(CIDER, "2026-10-16"), "unverified");
+  assert.strictEqual(D.matches(toEv(CIDER), todayD, { now: FRI16 }), false, "Cider is not on Friday's Today list");
+  assert.strictEqual(D.matches(toEv(CIDER), allD, { now: FRI16 }), true, "but stays in the unrestricted upcoming list");
+  assert.strictEqual(ED.availabilityOn(CIDER_FIXED, "2026-10-16"), null);
+  assert.strictEqual(ED.availabilityOn(CIDER_FIXED, "2026-10-17"), "confirmed");
+  assert.strictEqual(D.matches(toEv(CIDER_FIXED), todayD, { now: SAT17 }), true);
+  assert.strictEqual(D.matches(toEv(CIDER_FIXED), todayD, { now: FRI16 }), false);
+  // Oct 1-31 unclassified: absent from date views, present in the range browse, flagged for review.
+  assert.deepStrictEqual(ED.expand(OCT), []);
+  assert.strictEqual(ED.availabilityOn(OCT, "2026-10-16"), "unverified");
+  assert.strictEqual(ED.availabilityOn(OCT, "2026-11-01"), null);
+  assert.strictEqual(ED.reviewReason(OCT), "unclassified-multiday-clock-time");
+  assert.strictEqual(ED.reviewReason({ ...OCT, isAllDay: true }), "unverified-multiday-schedule");
+  // 2 Friday setup + Saturday opening: only the evidenced public days.
+  assert.deepStrictEqual(ED.expand({ date: "2026-10-16", endDate: "2026-10-18", dateSemantics: "recurring", occurrenceDates: ["2026-10-17", "2026-10-18"] }), ["2026-10-17", "2026-10-18"]);
+  // 3 Friday evening + weekend afternoons: Friday is a listed occurrence.
+  assert.strictEqual(ED.isActiveOn({ date: "2026-10-16", endDate: "2026-10-18", dateSemantics: "recurring", occurrenceDates: ["2026-10-16", "2026-10-17", "2026-10-18"] }, "2026-10-16"), true);
+  // 4 Multiday continuous (exhibition) is not suppressed.
+  assert.strictEqual(ED.availabilityOn({ date: "2026-10-09", endDate: "2026-12-30", dateSemantics: "continuous" }, "2026-10-16"), "ongoing");
+  assert.strictEqual(ED.scheduleState({ date: "2026-10-09", endDate: "2026-12-30", dateSemantics: "continuous" }), "ongoing");
+  // 6 Skipped dates: an excluded day is absent.
+  assert.strictEqual(ED.isActiveOn({ date: "2026-10-01", endDate: "2026-10-31", dateSemantics: "recurring", occurrenceDates: ["2026-10-03", "2026-10-10"] }, "2026-10-04"), false);
+  // 8 Overnight (RA/POSH): one night, listed on its start date only; Thursday-night rows leave Friday.
+  const RA_FRI = { id: "ra", date: "2026-10-16", endDate: "2026-10-17", time: "9:00 PM–2:00 AM" };
+  const RA_THU = { id: "ra2", date: "2026-10-15", endDate: "2026-10-16", time: "8:00 PM–1:00 AM" };
+  assert.strictEqual(ED.scheduleState(RA_FRI), "confirmed");
+  assert.strictEqual(ED.availabilityOn(RA_FRI, "2026-10-16"), "confirmed");
+  assert.strictEqual(ED.availabilityOn(RA_FRI, "2026-10-17"), null);
+  assert.strictEqual(ED.availabilityOn(RA_THU, "2026-10-16"), null, "a Thursday night is not a Friday event");
+  assert.strictEqual(ED.scheduleState({ date: "2026-10-16", endDate: "2026-10-17", time: "11:59 PM–5:00 AM" }), "confirmed");
+  assert.strictEqual(ED.scheduleState({ date: "2026-10-16", endDate: "2026-10-17", time: "10 PM" }), "confirmed", "single evening start, next-day end");
+  // A one-day-longer span that does NOT cross midnight (daytime) is not assumed to be one night.
+  assert.strictEqual(ED.scheduleState({ date: "2026-10-15", endDate: "2026-10-16", time: "11:00 AM" }), "unverified");
+  assert.strictEqual(ED.scheduleState({ date: "2026-10-15", endDate: "2026-10-16", time: "9:00 PM–2:00 AM", isAllDay: true }), "unverified");
+  assert.strictEqual(ED.scheduleState({ date: "2026-10-15", endDate: "2026-10-17", time: "9:00 PM–2:00 AM" }), "unverified", "a 3-day span is never assumed to be one night");
+  // 9 Timezone boundary: the pure ISO-date rule carries no time zone.
+  assert.strictEqual(ED.isActiveOn({ date: "2026-10-16" }, "2026-10-16"), true);
+  assert.strictEqual(ED.isActiveOn({ date: "2026-10-16" }, "2026-10-17"), false);
+  // 12 Source date-range ambiguity: classification wins; the range itself is only a bound.
+  assert.deepStrictEqual(ED.bounds(CIDER_FIXED).dates, ["2026-10-10", "2026-10-11", "2026-10-17", "2026-10-18"]);
+  // 18 Missing operating hours / 22 nothing fabricated: expand never invents dates for unverified rows.
+  assert.deepStrictEqual(ED.expand({ date: "2026-10-01", endDate: "2026-10-31" }), []);
+  assert.strictEqual(ED.availabilityOn({ date: "bad" }, "2026-10-16"), null);
+  // The Discovery windows: weekend picks a Saturday-evidenced row and ignores an unverified range.
+  const weekend = D.change(D.defaults(), { when: "weekend" });
+  assert.strictEqual(D.matches(toEv(CIDER_FIXED), weekend, { now: FRI16 }), true);
+  assert.strictEqual(D.matches(toEv(CIDER), weekend, { now: FRI16 }), false, "unverified range is not a 'this weekend' event");
 
   console.log("PASS: event-dates — single / continuous / recurring / legacy, Glenn Barr, Kent Myers, Harvest Festival, discovery, surfaces");
 }

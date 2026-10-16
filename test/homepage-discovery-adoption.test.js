@@ -44,6 +44,7 @@ const assert = require("assert");
 const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
+globalThis.EventDates = require(`${REPO_DIR}/event-dates.js`); // the page loads event-dates.js before discovery.js; the Node-side D.matches must see the same rule
 const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
 const { makeMockPostgrest } = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
 const { loadPage, inlineScript } = require(`${REPO_DIR}/test/fixtures/fake-dom.js`);
@@ -85,7 +86,7 @@ const ROWS = [
   row("c06", "Big Game", day(20), { category: "sports", venue_city: "Lansing", time_display: "1:00 PM", ticket_url: "https://tickets.example/game" }),
   // began long before the page's eight-day back-buffer
   row("z01", "Long Gone", day(-20), { category: "visual" }),                                                                    // finished: history, never loaded
-  row("z02", "Season Exhibition", day(-200), { end_date: day(120), category: "museum", neighborhood: "Midtown" }),              // STILL RUNNING: current, must be loaded and listed
+  row("z02", "Season Exhibition", day(-200), { end_date: day(120), category: "museum", neighborhood: "Midtown", date_semantics: "continuous" }),              // STILL RUNNING: current, must be loaded and listed
   row("z03", "Closed Yesterday", day(-30), { end_date: day(-1), category: "visual", neighborhood: "Midtown" }),                 // a long run that ended yesterday: history, never loaded
   // never public
   row("p01", "Not Approved", day(0), { status: "pending_review" }),
@@ -226,8 +227,8 @@ async function run() {
     // NEIGHBORHOODS (Corktown, Midtown, Downtown).
     assert.strictEqual(page.el("heroStatNumber").textContent, "15");
     assert.strictEqual(page.el("heroStatCaption").textContent, "Current + upcoming events");
-    assert.strictEqual(page.el("heroStatToday").textContent, "6");
-    assert.strictEqual(page.el("heroStatNext7").textContent, "11");
+    assert.strictEqual(page.el("heroStatToday").textContent, "5"); // was 6: Running Exhibit is an unclassified range (unverified since the 2026-10-16 owner decision), not "today"; Season Exhibition is classified continuous
+    assert.strictEqual(page.el("heroStatNext7").textContent, "9"); // was 11: Running Exhibit and Fall Festival (day 6-8), unclassified ranges, are unverified
     assert.strictEqual(page.el("heroStatNeighborhoods").textContent, "3");
     // The date strip heads the stream: seven days from today, Today and
     // Tomorrow named, each a real button that picks that day.
@@ -295,15 +296,15 @@ async function run() {
 
     whenBtn(page, "tomorrow").click();
     v = view(page);
-    assert.deepStrictEqual(v.rows, [`${heading(day(1))} | Running Exhibit`, `${heading(day(1))} | Out There`, `${heading(day(1))} | Sunday Show`, `${heading(day(1))} | Season Exhibition`], "tomorrow: includes the exhibits still running tomorrow");
-    assert.strictEqual(v.heading, "Showing 4 events tomorrow");
+    assert.deepStrictEqual(v.rows, [`${heading(day(1))} | Out There`, `${heading(day(1))} | Sunday Show`, `${heading(day(1))} | Season Exhibition`], "tomorrow: includes the exhibits still running tomorrow when classified continuous; Running Exhibit (an unclassified range) is unverified and not listed");
+    assert.strictEqual(v.heading, "Showing 3 events tomorrow");
     assert.strictEqual(v.url, "/?when=tomorrow");
 
     whenBtn(page, "weekend").click();
     v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(0)), heading(day(1))], "what is left of this weekend: today and Sunday (Friday has passed)");
-    assert.deepStrictEqual(v.days.map((d) => d.titles), [["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"], ["Out There", "Sunday Show"]], "each exhibit runs both days and is listed once, under the first");
-    assert.strictEqual(v.heading, "Showing 8 events this weekend", "8 events, 8 rows");
+    assert.deepStrictEqual(v.days.map((d) => d.titles), [["Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"], ["Out There", "Sunday Show"]], "a continuous exhibit runs both days and is listed once, under the first; Running Exhibit (unclassified range) is unverified and not listed");
+    assert.strictEqual(v.heading, "Showing 7 events this weekend", "7 events, 7 rows");
     assert.ok(!v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "already-over events are not listed in a forward-looking view");
 
     whenBtn(page, "all").click();
@@ -331,8 +332,8 @@ async function run() {
     assert.deepStrictEqual(v.state, plain(D.change(D.defaults(), { when: "next7" })), "resets search and sets Next 7 Days");
     assert.deepStrictEqual(plain(D.window(v.state, { now: new Date(NOW) })), { mode: "next7", from: day(0), to: day(6) }, "exactly today through the sixth day after it");
     assert.strictEqual(page.el("search").value, "");
-    assert.strictEqual(v.heading, "Showing 11 events in the next 7 days", "the list is the hero's NEXT 7 DAYS figure (11)");
-    assert.deepStrictEqual(v.days.map((d) => d.day), [0, 1, 2, 4, 6].map((n) => heading(day(n))), "nothing past the seventh day (Big Game, on day 20, is not listed)");
+    assert.strictEqual(v.heading, "Showing 9 events in the next 7 days", "the list is the hero's NEXT 7 DAYS figure (9)");
+    assert.deepStrictEqual(v.days.map((d) => d.day), [0, 1, 2, 4].map((n) => heading(day(n))), "Fall Festival (an unclassified three-day range, day 6) is unverified and not listed; nothing past the seventh day (Big Game, on day 20, is not listed)");
     assert.deepStrictEqual(v.tray, ["Next 7 Days"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Next 7 Days");
     assert.strictEqual(v.url, "/?when=next7");
@@ -347,8 +348,8 @@ async function run() {
     assert.strictEqual(v.url, "/?when=today", "no date in the link");
     assert.deepStrictEqual(v.tray, ["Today"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Today");
-    assert.strictEqual(v.heading, "Showing 6 events today");
-    assert.deepStrictEqual(v.titles, ["Running Exhibit", "Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
+    assert.strictEqual(v.heading, "Showing 5 events today");
+    assert.deepStrictEqual(v.titles, ["Afternoon Play", "Jazz at Seven", "Season Exhibition", "Late Set", "Matinee Somewhere"]);
     assert.ok(!v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "events that have already ended today are not listed");
     assert.ok(!v.titles.includes("Augustus Williams Live"));
     assert.strictEqual(page.el("whenDateInput").value, "", "a shortcut blanks the date inputs, like Tonight and Tomorrow");
@@ -358,7 +359,7 @@ async function run() {
       const nextDay = await open("/?when=today", { now: "2026-10-04T19:00:00Z" });
       const nv = view(nextDay);
       assert.deepStrictEqual(nv.days.map((d) => d.day), [heading(day(1))], "the Today link opened on Sunday lists Sunday");
-      assert.deepStrictEqual(sorted(nv.titles), ["Out There", "Running Exhibit", "Season Exhibition", "Sunday Show"]);
+      assert.deepStrictEqual(sorted(nv.titles), ["Out There", "Season Exhibition", "Sunday Show"]);
       assert.strictEqual(nv.url, "/?when=today");
     }
 
@@ -370,8 +371,8 @@ async function run() {
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(0), to: day(0) });
     assert.strictEqual(v.url, `/?when=dates&from=${day(0)}`);
     assert.deepStrictEqual(v.tray, [new Date(day(0) + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })], 'the chip names the date: "Sat, Oct 3"');
-    assert.strictEqual(v.heading, "Showing 8 events Saturday, October 3");
-    assert.ok(v.titles.includes("Morning Market") && v.titles.includes("Finished Fair"), "a picked date shows everything that was on it, over or not");
+    assert.strictEqual(v.heading, "Showing 6 events Saturday, October 3");
+    assert.ok(v.titles.includes("Morning Market") && !v.titles.includes("Finished Fair"), "a picked date shows everything verified on it, over or not; Finished Fair (unclassified range) is unverified");
     assert.ok(!v.titles.includes("Augustus Williams Live"));
     {
       const nextDay = await open(`/?when=dates&from=${day(0)}`, { now: "2026-10-04T19:00:00Z" });
@@ -388,8 +389,8 @@ async function run() {
     page.fire("whenDateEndInput", "change", { value: day(7) });
     v = view(page);
     assert.deepStrictEqual(v.state.when, { mode: "dates", from: day(4), to: day(7) });
-    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`, `${heading(day(6))} | Fall Festival`], "each event once: the exhibition under the range's first day, the festival under its own first day");
-    assert.strictEqual(v.heading, "Showing 3 events Oct 7–Oct 10");
+    assert.deepStrictEqual(v.rows, [`${heading(day(4))} | Wednesday Social`, `${heading(day(4))} | Season Exhibition`], "each event once under its first day; Fall Festival (unclassified three-day range) is unverified and not listed");
+    assert.strictEqual(v.heading, "Showing 2 events Oct 7–Oct 10");
     assert.deepStrictEqual(v.tray, ["Oct 7–Oct 10"]);
     assert.strictEqual(page.el("whenTriggerSub").textContent, "Oct 7–Oct 10");
     assert.strictEqual(v.url, `/?when=dates&from=${day(4)}&to=${day(7)}`);
@@ -406,8 +407,8 @@ async function run() {
     let page = await open(`/?when=dates&from=${day(-2)}`);
     let v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(-2))], "one day: the one that was picked");
-    assert.deepStrictEqual(sorted(v.titles), ["Finished Fair", "Running Exhibit", "Season Exhibition"], "a past date shows the events that were on it, completed or not");
-    assert.strictEqual(v.heading, `Showing 3 events ${new Date(day(-2) + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`);
+    assert.deepStrictEqual(sorted(v.titles), ["Season Exhibition"], "a past date shows the verified events that were on it; unclassified ranges (Finished Fair, Running Exhibit) are unverified");
+    assert.strictEqual(v.heading, `Showing 1 event ${new Date(day(-2) + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`);
     assert.strictEqual(page.el("whenDateInput").value, day(-2));
     assert.strictEqual(v.url, `/?when=dates&from=${day(-2)}`, "and the link is kept as that date, not rewritten to today");
 
@@ -415,7 +416,7 @@ async function run() {
     v = view(page);
     assert.deepStrictEqual(v.days.map((d) => d.day), [heading(day(-2)), heading(day(-1)), heading(day(0))]);
     assert.ok(v.titles.includes("Yesterday Opening") && v.titles.includes("Morning Market"), "a range reaching back includes what has finished");
-    assert.strictEqual(v.heading, "Showing 9 events Oct 1–Oct 3", "Finished Fair, Running Exhibit, Season Exhibition, Yesterday Opening and today's five (not the blocked one)");
+    assert.strictEqual(v.heading, "Showing 7 events Oct 1–Oct 3", "Season Exhibition, Yesterday Opening and today's five, minus unverified ranges (not the blocked one)");
 
     // The forward-looking modes are unchanged by that: nothing over, nothing before today.
     page = await open("/?when=week");
@@ -656,8 +657,8 @@ async function run() {
     assert.deepStrictEqual(v.tray, ["Today", "Free only"]);
     assert.ok(chip(page, "#freeChip").classList.contains("active"));
     assert.strictEqual(page.el("whenDateInput").value, "");
-    assert.strictEqual(v.heading, "Showing 2 events today");
-    assert.deepStrictEqual(sorted(v.titles), ["Matinee Somewhere", "Running Exhibit"], "the same two the card counted — not Morning Market, which is free but ended at 2 PM");
+    assert.strictEqual(v.heading, "Showing 1 event today");
+    assert.deepStrictEqual(sorted(v.titles), ["Matinee Somewhere"], "the one the card counted (Running Exhibit is an unverified range) — not Morning Market, which is free but ended at 2 PM");
     // It adds to whatever else is filtered.
     page.fire("search", "input", { value: "matinee" });
     v = view(page);
@@ -721,9 +722,9 @@ async function run() {
     assert.deepStrictEqual(litCats(page), [], "…which is the neutral panel");
     assert.strictEqual(view(page).titles.length, 12);
     page = await open(`/?when=date&picked=${day(-1)}`);
-    assert.deepStrictEqual(sorted(view(page).titles), ["Finished Fair", "Running Exhibit", "Season Exhibition", "Yesterday Opening"], "an old link to a date now in the past opens that date (was: ignored, showed today)");
+    assert.deepStrictEqual(sorted(view(page).titles), ["Season Exhibition", "Yesterday Opening"], "an old link to a date now in the past opens that date (was: ignored, showed today)");
     page = await open("/?when=now");
-    assert.deepStrictEqual([view(page).state.when.mode, view(page).tray, view(page).heading], ["today", ["Today"], "Showing 6 events today"], "when=now (Calendar's and Map's word) is Today here too");
+    assert.deepStrictEqual([view(page).state.when.mode, view(page).tray, view(page).heading], ["today", ["Today"], "Showing 5 events today"], "when=now (Calendar's and Map's word) is Today here too");
     page = await open("/?radius=all&when=all");
     assert.deepStrictEqual([view(page).tray, page.el("whereTriggerSub").textContent], [["All Upcoming", "Detroit Orbit"], "Detroit Orbit"], "radius=all with no place is the Detroit Orbit");
     assert.ok(!view(page).titles.includes("Out There"));
