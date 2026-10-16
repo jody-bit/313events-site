@@ -93,6 +93,9 @@
 // Requires SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY in the environment.
 
 const path = require("path");
+// DQ-004: links are written hidden (candidate) unless the shared auto rule verifies them; an event
+// created from an article's own text is verified by construction; rejected pairs are never re-created.
+const { evaluateAutoLink, sameTitleCounts, newLinkRow, eventForEvaluation, CREATED_FROM_ARTICLE } = require(path.join(__dirname, "..", "api", "_lib", "editorial-verification"));
 const { buildVenueNameToIdMap, resolveVenueId, normalizeVenueName, upsertVenueKnowledge } = require(path.join(__dirname, "..", "api", "_lib", "venue-lookup"));
 const {
   extractVenuePhraseFromText,
@@ -255,10 +258,12 @@ async function fetchArticleText(url, fetchFn) {
 // including anything this same run has already created, which is exactly
 // what makes cross-article same-event dedup work).
 
-function deepMatchArticleToEvent(searchText, articleDateIso, candidateEvents) {
+function deepMatchArticleToEvent(searchText, articleDateIso, candidateEvents, ctx) {
   const haystack = normalizeAmpersand(searchText);
+  const excluded = ctx && ctx.excluded;
   let best = null;
   for (const ev of candidateEvents) {
+    if (excluded && excluded.has(ev.id)) continue;
     const normTitle = normalizeAmpersand(ev.title);
     if (normTitle.length >= MIN_MATCHABLE_LENGTH && haystack.includes(normTitle)) {
       const dayGap = ev.start_date ? daysBetween(articleDateIso, ev.start_date) : 0;
@@ -275,6 +280,13 @@ function deepMatchArticleToEvent(searchText, articleDateIso, candidateEvents) {
         best = { event: ev, matchType: "venue_date", dayGap };
       }
     }
+  }
+  if (best) {
+    best.verification = evaluateAutoLink(
+      { title: ctx && ctx.articleTitle, excerpt: searchText, publishedAt: articleDateIso },
+      eventForEvaluation(best.event),
+      { matchType: best.matchType, sameTitleCount: ((ctx && ctx.titleCounts) || new Map()).get(normalize(best.event.title)) || 1 }
+    );
   }
   return best;
 }
@@ -912,7 +924,7 @@ async function fetchQueueDefault(SUPABASE_URL, sbHeaders) {
 async function fetchCandidateEventsDefault(SUPABASE_URL, sbHeaders) {
   const floor = new Date(); floor.setDate(floor.getDate() - 30);
   const floorIso = floor.toISOString().slice(0, 10);
-  const url = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${floorIso}&select=id,title,venue_name_raw,venue_id,start_date&limit=2000`;
+  const url = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${floorIso}&select=id,title,venue_name_raw,venue_id,venue_city_raw,start_date,venues(name,city)&limit=2000`;
   const resp = await fetch(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch candidate events: HTTP ${resp.status}`);
   const rows = await resp.json();
@@ -923,17 +935,32 @@ async function fetchCandidateEventsDefault(SUPABASE_URL, sbHeaders) {
 // Same is.null-guarded PATCH + on_conflict join upsert as
 // api/admin-editorial.js's link_event action — a rerun can never duplicate
 // or clobber an existing link.
-async function applyLink(SUPABASE_URL, sbHeaders, articleId, eventId, matchType) {
+async function fetchRejectedPairsDefault(SUPABASE_URL, sbHeaders) {
+  const byId = new Map();
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?verification_status=eq.rejected&select=article_id,event_id`, { headers: sbHeaders });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const rows = await resp.json();
+    for (const r of Array.isArray(rows) ? rows : []) (byId.get(r.article_id) || byId.set(r.article_id, new Set()).get(r.article_id)).add(r.event_id);
+  } catch (err) {
+    console.error("press-coverage-linking: could not load rejected pairs:", err.message);
+  }
+  return byId;
+}
+
+async function applyLink(SUPABASE_URL, sbHeaders, articleId, eventId, matchType, verdict) {
   const patchResp = await fetch(
     `${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${encodeURIComponent(articleId)}&matched_event_id=is.null`,
     { method: "PATCH", headers: { ...sbHeaders, Prefer: "return=minimal" }, body: JSON.stringify({ matched_event_id: eventId, match_type: matchType }) }
   );
   if (!patchResp.ok) return false;
-  await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
+  // ignore-duplicates: an existing pair (any status, including rejected) is never overwritten.
+  const joinResp = await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
     method: "POST",
-    headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-    body: JSON.stringify({ article_id: articleId, event_id: eventId }),
+    headers: { ...sbHeaders, Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify(newLinkRow(articleId, eventId, verdict || { status: "candidate", by: "auto_rule_v1", basis: "no verdict supplied" })),
   });
+  if (!joinResp.ok) console.error("press-coverage-linking: editorial_article_events insert failed:", joinResp.status);
   return true;
 }
 
@@ -1044,6 +1071,7 @@ async function linkPressCoverageQueue({
   fetchCandidateEvents = fetchCandidateEventsDefault,
   fetchArticleTextFn = fetchArticleText,
   applyLinkFn = applyLink,
+  fetchRejectedPairsFn = fetchRejectedPairsDefault,
   createEventFn = createEvent,
   // 2026-10-05: before a candidate is created, the same conservative
   // duplicate check RA candidates get (title identity, +/-2 days, venue as
@@ -1097,6 +1125,8 @@ async function linkPressCoverageQueue({
   if (!queue.length) return counts;
 
   const candidateEvents = await fetchCandidateEvents(SUPABASE_URL, sbHeaders);
+  const rejectedByArticle = (await fetchRejectedPairsFn(SUPABASE_URL, sbHeaders)) || new Map();
+  const candidateTitleCounts = sameTitleCounts(candidateEvents);
   const venueIdMap = await buildVenueIdMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   // Phase A — deep-match every article against real, already-existing DB
@@ -1112,10 +1142,10 @@ async function linkPressCoverageQueue({
     if (bodyText === null) counts.fetchFailed++;
     const searchText = `${article.title || ""} ${article.excerpt || ""} ${bodyText || ""}`;
 
-    const match = deepMatchArticleToEvent(searchText, articleDateIso, candidateEvents);
+    const match = deepMatchArticleToEvent(searchText, articleDateIso, candidateEvents, { excluded: rejectedByArticle.get(article.id), titleCounts: candidateTitleCounts, articleTitle: article.title });
     if (match) {
       if (!dryRun) {
-        const applied = await applyLinkFn(SUPABASE_URL, sbHeaders, article.id, match.event.id, match.matchType);
+        const applied = await applyLinkFn(SUPABASE_URL, sbHeaders, article.id, match.event.id, match.matchType, match.verification);
         if (!applied) {
           counts.stillHuman++;
           counts.stillHumanDetail.push({ articleId: article.id, title: article.title, url: article.url, reasons: ["LINK_WRITE_FAILED"] });
@@ -1276,7 +1306,7 @@ async function linkPressCoverageQueue({
     }
     let anyLinked = false;
     for (const { article } of members) {
-      const applied = await applyLinkFn(SUPABASE_URL, sbHeaders, article.id, created.id, "manual");
+      const applied = await applyLinkFn(SUPABASE_URL, sbHeaders, article.id, created.id, "manual", CREATED_FROM_ARTICLE);
       if (applied) anyLinked = true;
     }
     if (!anyLinked) {

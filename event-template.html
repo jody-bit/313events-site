@@ -857,7 +857,7 @@ function renderEvent(e){
 // of press mentions, so this is never actually fetching much.
 async function loadEditorialLink(id){
   try {
-    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(id)}&select=editorial_articles(title,url,source,published_at)&limit=5`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(id)}&verification_status=eq.verified&select=editorial_articles(title,url,source,published_at)&limit=5`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) return;
     const rows = await resp.json();

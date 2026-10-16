@@ -95,7 +95,10 @@ const TABLES = {
   events: ROWS,
   venues: Array.from({ length: 12 }, (_, i) => ({ id: "v" + i })),
   // Press coverage: an upcoming event, one that is already over today, and the blocked one.
-  editorial_article_events: [["c01", 1], ["a02", 2], ["a06", 3]].map(([id, n]) => ({ event_id: id, editorial_articles: { title: "Preview " + n, url: "https://press.example/" + n, source: "WDET", thumbnail_url: null, published_at: `2026-09-2${n}T12:00:00Z` } })),
+  editorial_article_events: [["c01", 1, "verified"], ["a02", 2, "verified"], ["a06", 3, "verified"],
+    // DQ-004: hidden pairs the page must never show, whatever their status (the database withholds them
+    // from the public key too; the page asks for verified only as a second line of defence).
+    ["c03", 4, "candidate"], ["c04", 5, "rejected"], ["c05", 6, "needs_follow_up"]].map(([id, n, status]) => ({ event_id: id, verification_status: status, editorial_articles: { title: "Preview " + n, url: "https://press.example/" + n, source: "WDET", thumbnail_url: null, published_at: `2026-09-2${n}T12:00:00Z` } })),
 };
 
 // The buttons that exist in the page's static markup and that the script
@@ -248,6 +251,10 @@ async function run() {
     // that is already over today, and never the blocked one.
     const radar = page.el("onRadarCard").innerHTML;
     assert.ok(/Sunday Show/.test(radar) && !/Morning Market/.test(radar) && !/Augustus/.test(radar));
+    // DQ-004: only verified associations are requested and shown ("Preview 4/5/6" are candidate / rejected /
+    // needs-follow-up pairs on listed events and must not appear anywhere on the page).
+    assert.ok(page.requests.filter((r) => r.table === "editorial_article_events").every((r) => decodeURIComponent(r.url).includes("verification_status=eq.verified")), "the homepage asks for verified associations only");
+    assert.ok(!/Preview [456]/.test(page.el("listView").innerHTML + page.el("listMore").innerHTML + radar), "hidden associations are not shown");
 
     // THE LOAD WINDOW (DEBT-008, corrected 2026-10-03). The page asks for
     //   start_date >= today − 8 days   OR   end_date >= today

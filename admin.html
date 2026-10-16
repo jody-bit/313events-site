@@ -300,6 +300,12 @@
         <div class="refresh" style="margin:0 0 12px;"><button id="autoLinkBtn" onclick="autoLinkEditorial()">Auto-Link</button><span class="refresh-status" id="autoLinkStatus"></span></div>
         <div id="editorialList"></div>
       </section>
+      <section class="block" id="linkReviewBlock">
+        <h2>Article–event links to verify</h2>
+        <div class="sub">The site only shows an article as covering an event once that pairing is <b>verified</b>. Pairings the matcher found but could not verify wait here, hidden from the public. Confirm a pairing only if the article is really about that specific event (same event, place and dates); reject it if it is a different event with a similar name. Nothing is deleted: rejected pairings stay on record, are never re-created automatically, and can be reopened.</div>
+        <div class="refresh" style="margin:0 0 12px;"><label><input type="checkbox" id="linkShowRejected" onchange="loadLinkReview()"> Also show rejected</label></div>
+        <div id="linkReviewList"></div>
+      </section>
     </div>
 
     <div class="tab-panel active" data-tab-panel="submissions">
@@ -1654,6 +1660,7 @@ async function loadEditorial() {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
     renderEditorialList(data.articles || []);
+    loadLinkReview();
   } catch (err) {
     document.getElementById('editorialList').innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
   }
@@ -1694,9 +1701,93 @@ async function autoLinkEditorial() {
   }
 }
 
+// ---- DQ-004: article<->event links waiting for verification ----
+let editorialQueueCount = 0;
+let linkReviewCount = 0;
+async function loadLinkReview() {
+  const list = document.getElementById('linkReviewList');
+  if (!list) return;
+  const showRejected = document.getElementById('linkShowRejected') && document.getElementById('linkShowRejected').checked;
+  const status = showRejected ? 'candidate,needs_follow_up,rejected' : 'candidate,needs_follow_up';
+  try {
+    const resp = await fetch('/api/admin-editorial?view=links&status=' + status, { headers: { 'x-admin-secret': SECRET } });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Failed to load links to verify'));
+    renderLinkReview(data.links || []);
+  } catch (err) {
+    list.innerHTML = '<div class="err" style="display:block;">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function linkReviewCard(l) {
+  const a = l.editorial_articles || {};
+  const e = l.events || {};
+  const v = e.venues || {};
+  const venue = e.venue_name_raw || v.name || '';
+  const city = e.venue_city_raw || v.city || '';
+  const published = a.published_at ? new Date(a.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+  const key = escapeAttr(l.article_id) + "','" + escapeAttr(l.event_id);
+  const reopen = l.verification_status === 'rejected';
+  const status = { candidate: 'Candidate', needs_follow_up: 'Needs follow-up', rejected: 'Rejected', verified: 'Verified' }[l.verification_status] || l.verification_status;
+  const history = Array.isArray(l.verification_history) ? l.verification_history : [];
+  const histHtml = history.length
+    ? '<details><summary>History (' + history.length + ')</summary>' + history.map(h => '<div class="meta">' + escapeHtml((h.at || '').slice(0, 16).replace('T', ' ')) + ' · ' + escapeHtml((h.from || 'new') + ' → ' + h.to) + ' · ' + escapeHtml(h.by || '') + (h.basis ? ' · ' + escapeHtml(h.basis) : '') + '</div>').join('') + '</details>'
+    : '';
+  return `
+    <div class="card article-card" id="link-card-${escapeAttr(l.article_id)}-${escapeAttr(l.event_id)}">
+      <div class="ac-body">
+        <div class="meta"><b>${escapeHtml(status)}</b> · ${escapeHtml(l.verification_basis || 'no evidence recorded')}</div>
+        <h3>Article: ${escapeHtml(a.title || '')}</h3>
+        <div class="meta"><b>${escapeHtml(a.source || '')}</b>${published ? ' · ' + escapeHtml(published) : ''} · <a href="${escapeAttr(a.url || '#')}" target="_blank" rel="noopener">read the article</a></div>
+        ${a.excerpt ? `<div class="ac-excerpt">${escapeHtml(a.excerpt)}</div>` : ''}
+        <h3>Event: ${escapeHtml(e.title || '')}</h3>
+        <div class="meta">${escapeHtml([e.start_date, venue, city].filter(Boolean).join(' · '))}</div>
+        ${histHtml}
+        <div class="actions">
+          ${reopen
+            ? `<button class="btn-approve" onclick="decideLink('reopen_link','${key}')">Reopen for review</button>`
+            : `<button class="btn-approve" onclick="decideLink('confirm_link','${key}')">Confirm: article covers this event</button>
+               <button class="btn-dismiss" onclick="decideLink('reject_link','${key}')">Reject: different event</button>
+               ${l.verification_status === 'needs_follow_up' ? '' : `<button onclick="decideLink('follow_up_link','${key}')">Needs follow-up</button>`}`}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLinkReview(links) {
+  const list = document.getElementById('linkReviewList');
+  linkReviewCount = links.filter(l => l.verification_status !== 'rejected').length;
+  setTabBadge('editorial', editorialQueueCount + linkReviewCount);
+  if (!links.length) {
+    list.innerHTML = '<div class="empty">No article–event links waiting for verification.</div>';
+    return;
+  }
+  list.innerHTML = links.map(linkReviewCard).join('');
+}
+
+async function decideLink(action, articleId, eventId) {
+  let note = '';
+  if (action === 'reject_link' || action === 'confirm_link') {
+    note = window.prompt(action === 'reject_link' ? 'Why is this a different event? (kept on record)' : 'Evidence that the article covers this event (kept on record)', '') || '';
+  }
+  try {
+    const resp = await fetch('/api/admin-editorial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ articleId, eventId, action, note }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(errText(data, 'Failed to update the link'));
+    await loadLinkReview();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
 function renderEditorialList(articles) {
   const list = document.getElementById('editorialList');
-  setTabBadge('editorial', articles.length);
+  editorialQueueCount = articles.length;
+  setTabBadge('editorial', articles.length + linkReviewCount);
   if (!articles.length) {
     list.innerHTML = '<div class="empty">Nothing waiting for review. 🎉</div>';
     return;
