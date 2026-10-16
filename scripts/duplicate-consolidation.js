@@ -454,14 +454,22 @@ async function applyMerge(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { survivor, l
     const r1 = await fetchFn(`${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=eq.${encodeURIComponent(loser.id)}`, {
       method: "PATCH", headers: { ...sbHeaders, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ matched_event_id: survivor.id }),
     });
-    const r2 = await fetchFn(`${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(loser.id)}&select=article_id`, { headers: sbHeaders });
+    const r2 = await fetchFn(`${SUPABASE_URL}/rest/v1/editorial_article_events?event_id=eq.${encodeURIComponent(loser.id)}&select=article_id,verification_status,verified_by,verified_at,verification_basis,verification_history`, { headers: sbHeaders });
     let joinOk = true;
     if (r2.ok) {
       const links = await r2.json();
       for (const link of Array.isArray(links) ? links : []) {
         const r3 = await fetchFn(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
           method: "POST", headers: { ...sbHeaders, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" },
-          body: JSON.stringify({ article_id: link.article_id, event_id: survivor.id }),
+          // DQ-004: the link keeps its verification state (a hidden or rejected pair stays that way)
+          // and the move is recorded in its audit trail.
+          body: JSON.stringify({
+            article_id: link.article_id, event_id: survivor.id,
+            verification_status: link.verification_status || "candidate",
+            verified_by: link.verified_by || null, verified_at: link.verified_at || null,
+            verification_basis: link.verification_basis || null,
+            verification_history: (Array.isArray(link.verification_history) ? link.verification_history : []).concat([{ at: new Date().toISOString(), from: link.verification_status || null, to: link.verification_status || "candidate", by: "duplicate_consolidation", basis: `moved from merged duplicate ${loser.id}` }]),
+          }),
         });
         joinOk = joinOk && r3.ok;
       }

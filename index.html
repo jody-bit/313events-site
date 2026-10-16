@@ -7954,7 +7954,7 @@ async function loadEditorialArticles(){
     // link that existed before this change still comes through here too.
     // No server-side order= here since PostgREST can't reliably order by an
     // embedded resource's column — sorted client-side below instead.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?select=event_id,editorial_articles(title,url,source,thumbnail_url,published_at)`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?verification_status=eq.verified&select=event_id,editorial_articles(title,url,source,thumbnail_url,published_at)`;
     const resp = await fetch(url, {
       headers: {
         apikey: SUPABASE_ANON_KEY,

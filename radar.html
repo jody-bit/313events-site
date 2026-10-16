@@ -320,7 +320,7 @@ async function loadArticles(){
     // making this page's fetch fail and show "Couldn't load press coverage
     // right now." The explicit !constraint-name hint pins this embed to the
     // original single-match FK, same relationship this page always used.
-    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,events!editorial_articles_matched_event_id_fkey(id,title,start_date,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status)&order=published_at.desc&limit=2000`;
+    const url = `${SUPABASE_URL}/rest/v1/editorial_articles?select=title,url,source,thumbnail_url,published_at,matched_event_id,editorial_article_events(event_id,verification_status,events(id,title,start_date,venue_id,venue_name_raw,venue_city_raw,venues(name,city),category,status))&editorial_article_events.verification_status=eq.verified&order=published_at.desc&limit=2000`;
     const resp = await fetch(url, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
@@ -328,26 +328,39 @@ async function loadArticles(){
     const rows = await resp.json();
     if(!Array.isArray(rows)) throw new Error('unexpected shape');
 
+    // DQ-004: an article is tied to an event only through a VERIFIED editorial_article_events pair
+    // (the database already returns nothing else to the public key; the filter above is belt and braces).
+    // Unverified, rejected and merely-candidate matches are invisible here, so the article simply shows
+    // in its existing "not yet linked to a listed event" form. The one event shown is the verified,
+    // approved one (the article's primary match when it is among them, else the earliest).
+    function verifiedEventFor(r){
+      const links = Array.isArray(r.editorial_article_events) ? r.editorial_article_events : [];
+      const live = links.filter(l => l && l.verification_status === 'verified' && l.events && l.events.status === 'approved');
+      if(!live.length) return { hadLinks: links.length > 0, event: null };
+      const primary = live.find(l => l.event_id === r.matched_event_id);
+      const chosen = primary || live.slice().sort((a, b) => String(a.events.start_date).localeCompare(String(b.events.start_date)))[0];
+      return { hadLinks: true, event: chosen.events };
+    }
+
     ALL_ITEMS = rows
-      // Keep a row if: it has a usable URL, AND either it was never matched
-      // to an event at all, OR it was matched and that event is still a
-      // live, approved, publicly-visible one (an article matched to an
-      // event that's since been hidden/rejected comes back as events:null
-      // per the RLS note above — drop those rather than show a dead link).
-      .filter(r => safeUrl(r.url) && (!r.matched_event_id || (r.events && r.events.status === 'approved')))
+      .map(r => Object.assign({}, r, { _v: verifiedEventFor(r) }))
+      // Keep a row if it has a usable URL and either has no verified link at all, or has a verified link
+      // to an event that is still live (an event since hidden/rejected comes back as events:null per the
+      // RLS note above — drop those rather than show a dead link).
+      .filter(r => safeUrl(r.url) && (!r._v.hadLinks || r._v.event))
       .map(r => ({
         articleTitle: decodeEntities(r.title),
         articleUrl: safeUrl(r.url),
         source: r.source || 'Local press',
         thumbnailUrl: r.thumbnail_url || null,
         publishedAt: r.published_at || null,
-        event: (r.matched_event_id && r.events) ? {
-          id: r.events.id,
-          title: decodeEntities(r.events.title),
-          date: r.events.start_date,
-          venue: decodeEntities(resolveVenueDisplay(r.events).name) || 'Venue TBA',
-          city: (function(){ const vc = resolveVenueDisplay(r.events).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
-          cat: r.events.category,
+        event: r._v.event ? {
+          id: r._v.event.id,
+          title: decodeEntities(r._v.event.title),
+          date: r._v.event.start_date,
+          venue: decodeEntities(resolveVenueDisplay(r._v.event).name) || 'Venue TBA',
+          city: (function(){ const vc = resolveVenueDisplay(r._v.event).city; return (vc && vc.toLowerCase() !== 'detroit') ? decodeEntities(vc) : undefined; })(),
+          cat: r._v.event.category,
         } : null,
       }));
 

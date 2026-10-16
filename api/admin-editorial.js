@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const path = require("path");
+const { applyDecision } = require("./_lib/editorial-verification");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { fillBlankOrganizerEventUrls } = require("./_lib/organizer-links");
 const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
@@ -125,6 +126,27 @@ function checkAuth(req, res) {
   return true;
 }
 
+// DQ-004: sets one article<->event pair's verification status as an administrator decision, appending
+// the previous state to verification_history (audit trail). Creates the pair when it does not exist
+// (an explicit admin link). Returns { ok, status } or { error }.
+async function setLinkStatus(sbHeaders, articleId, eventId, to, basis) {
+  const a = encodeURIComponent(articleId);
+  const e = encodeURIComponent(eventId);
+  const pairFilter = `article_id=eq.${a}&event_id=eq.${e}`;
+  const cur = await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?${pairFilter}&select=verification_status,verification_history`, { headers: sbHeaders });
+  if (!cur.ok) return { error: "Could not read the link: " + (await cur.text()) };
+  const [current] = await cur.json();
+  const patch = applyDecision(current || null, to, "admin", basis);
+  const resp = current
+    ? await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?${pairFilter}`, { method: "PATCH", headers: { ...sbHeaders, Prefer: "return=minimal" }, body: JSON.stringify(patch) })
+    : await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, { method: "POST", headers: { ...sbHeaders, Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ article_id: articleId, event_id: eventId, ...patch }) });
+  if (!resp.ok) return { error: "Database rejected the link change: " + (await resp.text()) };
+  return { ok: true, status: to, previous: current ? current.verification_status : null };
+}
+
+const LINK_ACTIONS = { confirm_link: "verified", reject_link: "rejected", follow_up_link: "needs_follow_up", reopen_link: "candidate" };
+const REVIEW_STATUSES = new Set(["candidate", "needs_follow_up", "rejected", "verified"]);
+
 module.exports = async (req, res) => {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     res.status(500).json({ error: "Database not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)." });
@@ -139,6 +161,20 @@ module.exports = async (req, res) => {
   };
 
   if (req.method === "GET") {
+    // GET ?view=links[&status=candidate,needs_follow_up] — the DQ-004 review queue of hidden article<->event pairs.
+    if (req.query && req.query.view === "links") {
+      try {
+        const wanted = String(req.query.status || "candidate,needs_follow_up").split(",").map((x) => x.trim()).filter((x) => REVIEW_STATUSES.has(x));
+        if (!wanted.length) { res.status(400).json({ error: "status must be one or more of candidate, needs_follow_up, rejected, verified" }); return; }
+        const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?verification_status=in.(${wanted.join(",")})&select=article_id,event_id,created_at,verification_status,verified_by,verified_at,verification_basis,verification_history,editorial_articles(id,title,url,source,excerpt,published_at,match_type),events(id,title,start_date,venue_name_raw,venue_city_raw,venues(name,city))&order=created_at.desc&limit=300`;
+        const resp = await fetch(url, { headers: sbHeaders });
+        const rows = await resp.json();
+        res.status(resp.ok ? 200 : 502).json(resp.ok ? { links: rows } : { error: rows });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
     try {
       const url = `${SUPABASE_URL}/rest/v1/editorial_articles?matched_event_id=is.null&admin_dismissed=eq.false&select=id,source,title,excerpt,url,thumbnail_url,published_at&order=published_at.desc&limit=100`;
       const resp = await fetch(url, { headers: sbHeaders });
@@ -168,6 +204,37 @@ module.exports = async (req, res) => {
       try {
         const result = await linkPressCoverageQueue({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, repairGenericMetadataFn: repairGenericMetadata });
         res.status(200).json({ ok: true, result });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
+    // DQ-004 review actions on an existing article<->event pair: { articleId, eventId, action, note? }.
+    if (LINK_ACTIONS[action]) {
+      const { eventId, note } = body;
+      if (!articleId || !eventId || typeof eventId !== "string") {
+        res.status(400).json({ error: "Body must include { articleId, eventId, action, note? }" });
+        return;
+      }
+      try {
+        const basis = `admin ${action.replace("_link", "")}${note ? ": " + String(note).slice(0, 500) : ""}`;
+        const out = await setLinkStatus(sbHeaders, articleId, eventId, LINK_ACTIONS[action], basis);
+        if (out.error) { res.status(502).json({ error: out.error }); return; }
+        const a = encodeURIComponent(articleId);
+        if (action === "reject_link") {
+          // The article no longer claims this event: clear its primary match so the public radar and the
+          // Press queue see it as unmatched. The rejected pair row stays, so nothing re-creates it.
+          await fetch(`${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${a}&matched_event_id=eq.${encodeURIComponent(eventId)}`, {
+            method: "PATCH", headers: { ...sbHeaders, Prefer: "return=minimal" }, body: JSON.stringify({ matched_event_id: null, match_type: null }),
+          });
+        } else if (action === "confirm_link") {
+          // First confirmed event becomes the article's primary match, like link_event does.
+          await fetch(`${SUPABASE_URL}/rest/v1/editorial_articles?id=eq.${a}&matched_event_id=is.null`, {
+            method: "PATCH", headers: { ...sbHeaders, Prefer: "return=minimal" }, body: JSON.stringify({ matched_event_id: eventId, match_type: "manual" }),
+          });
+        }
+        res.status(200).json({ ok: true, status: out.status, previous: out.previous });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
@@ -250,17 +317,11 @@ module.exports = async (req, res) => {
         // (migration_021), so an event shows this article's "As seen in"
         // mention whether it was that article's first match or its third.
         // on_conflict makes re-linking the same pair a harmless no-op.
-        const joinResp = await fetch(
-          `${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`,
-          {
-            method: "POST",
-            headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-            body: JSON.stringify({ article_id: articleId, event_id: eventId }),
-          }
-        );
-        if (!joinResp.ok) {
-          const errBody = await joinResp.text();
-          res.status(502).json({ error: "Database rejected the link: " + errBody });
+        // DQ-004: an administrator linking an article to an event is itself the verification, including
+        // when the pair was previously a hidden candidate or rejected (recorded in the audit trail).
+        const joinOut = await setLinkStatus(sbHeaders, articleId, eventId, "verified", "admin link_event");
+        if (joinOut.error) {
+          res.status(502).json({ error: "Database rejected the link: " + joinOut.error });
           return;
         }
         res.status(200).json({ ok: true });
@@ -364,11 +425,7 @@ module.exports = async (req, res) => {
       // matched_event_id above) intact.
       if (linked) {
         try {
-          await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
-            method: "POST",
-            headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-            body: JSON.stringify({ article_id: articleId, event_id: inserted.id }),
-          });
+          await setLinkStatus(sbHeaders, articleId, inserted.id, "verified", "admin create_event");
         } catch {
           // Best-effort — see comment above.
         }
