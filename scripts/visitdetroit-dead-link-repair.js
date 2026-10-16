@@ -45,10 +45,11 @@ function todayIso() {
 async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchImpl = fetch) {
   const url =
     `${SUPABASE_URL}/rest/v1/events` +
-    // Still-running events count too (P0 2026-10-16: Cider, Harvest Festival have start_date in the past), and the
-    // never-checked / least-recently-checked rows come first so the per-run budget rotates through every row.
+    // Still-running events count too (P0 2026-10-16: Cider, Harvest Festival have start_date in the past). Stable
+    // id order: the per-run window rotates over this list by day number (see repairVisitDetroitDeadLinks), because
+    // link_checked_at is written only when an outcome changes and so cannot drive a rotation.
     `?or=(start_date.gte.${todayIso()},end_date.gte.${todayIso()})` +
-    `&order=link_checked_at.asc.nullsfirst,id.asc` +
+    `&order=id.asc` +
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&ticket_url=not.is.null` +
@@ -96,6 +97,7 @@ async function repairVisitDetroitDeadLinks({
   maxChecks = 150,
   deadlineMs = 240000,
   nowFn = Date.now,
+  dayNumber = Math.floor(Date.now() / 86400000),
 } = {}) {
   const startedAt = nowFn();
   const counts = {
@@ -135,8 +137,15 @@ async function repairVisitDetroitDeadLinks({
   }
   const sbHeaders = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
 
-  const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
+  let candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
   counts.totalConsidered = candidates.length;
+  // Deterministic daily window, no writes: start at (day number x maxChecks) modulo the candidate count, so
+  // successive daily runs walk through every row even when the earlier rows write nothing (inconclusive / already ok).
+  if (candidates.length > maxChecks) {
+    const offset = (dayNumber * maxChecks) % candidates.length;
+    candidates = candidates.slice(offset).concat(candidates.slice(0, offset));
+    counts.windowOffset = offset;
+  }
 
   let checked = 0;
   for (const event of candidates) {

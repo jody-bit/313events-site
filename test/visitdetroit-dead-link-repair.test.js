@@ -215,7 +215,23 @@ run().catch((err) => {
   let seen = "";
   await fetchRepairCandidates("https://x.supabase.co", "k", {}, async (u) => { seen = u; return { ok: true, json: async () => [] }; });
   assert.ok(seen.includes("or=(start_date.gte.") && seen.includes(",end_date.gte."), "includes events still running");
-  assert.ok(seen.includes("order=link_checked_at.asc.nullsfirst"), "unchecked first, then oldest check");
+  assert.ok(seen.includes("order=id.asc"), "stable order; rotation is by day number, not by link_checked_at");
   assert.ok(seen.includes("status=neq.rejected"), "rejected rows stay out");
   console.log("PASS: repair candidate selection");
+})().catch((e) => { console.error(e); process.exit(1); });
+
+// P0 2026-10-16 (R&Q section Z): rotation must not depend on writes. First 150 rows all inconclusive; row 151 is still reached on a later day.
+(async () => {
+  const { repairVisitDetroitDeadLinks } = require("../scripts/visitdetroit-dead-link-repair");
+  const rows = Array.from({ length: 400 }, (_, i) => ({ id: "id" + String(i).padStart(4, "0"), title: "T" + i, ticket_url: "https://visitdetroit.com/events/t" + i + "/", link_check_status: null }));
+  const seenIds = new Set();
+  const logger = { log: () => {}, error: () => {} };
+  const heal = async ({ title }) => { seenIds.add(title); return { classification: "inconclusive", repaired: false, newUrl: null }; };
+  for (let day = 0; day < 3; day++) {
+    await repairVisitDetroitDeadLinks({ dryRun: true, logger, SUPABASE_URL: "u", SUPABASE_SERVICE_ROLE_KEY: "k", fetchCandidates: async () => rows.slice(), healFn: heal, dayNumber: day });
+  }
+  assert.ok(seenIds.has("T150"), "row 151 is reached on day 2 although rows 1-150 never write anything");
+  assert.ok(seenIds.has("T399") || seenIds.size === 400, "three daily windows cover all 400 rows (150*3 >= 400)");
+  assert.strictEqual(seenIds.size, 400);
+  console.log("PASS: repair rotation without writes");
 })().catch((e) => { console.error(e); process.exit(1); });
