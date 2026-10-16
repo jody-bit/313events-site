@@ -207,6 +207,10 @@ const V = require(path.join(REPO, "api/_lib/editorial-verification.js"));
   assert.ok(/editorial_article_events\?verification_status=eq\.verified&select=/.test(idx), "homepage asks for verified pairs");
   assert.ok(/editorial_article_events\?event_id=eq\.\$\{encodeURIComponent\(id\)\}&verification_status=eq\.verified/.test(evt), "event page asks for verified pairs");
   assert.ok(/editorial_article_events\.verification_status=eq\.verified/.test(radar) && !/const url = `[^`]*matched_event_id_fkey/.test(radar), "On the Radar takes its event only from verified join rows, not matched_event_id");
+  // R&Q defect (preview b883fb1): outlet chips counted articles the grid hides under "upcoming only" (17 vs 6 cards)
+  assert.ok(/function outletPool\(\)\{[\s\S]*?upcomingOnly \? ALL_ITEMS\.filter/.test(radar), "chip counts come from the same pool the grid shows");
+  assert.ok(/outletPool\(\)\.forEach\(item => counts\.set/.test(radar) && !/ALL_ITEMS\.forEach\(item => counts\.set/.test(radar), "chips no longer count ALL_ITEMS");
+  assert.ok(/upcomingOnly = e\.target\.checked;\s*buildOutletChips\(\);/.test(radar), "chips are rebuilt when the toggle changes");
   // radar's mapping, run for real
   const fn = /function verifiedEventFor\(r\)\{[\s\S]*?\n    \}\n/.exec(radar);
   assert.ok(fn, "radar.html defines verifiedEventFor");

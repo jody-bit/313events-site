@@ -373,13 +373,21 @@ async function loadArticles(){
   }
 }
 
+// Chip counts come from the same items the grid can show (verified-only data, with the "upcoming only"
+// filter applied), so a chip's number is the number of cards its click reveals (DQ-004).
+function outletPool(){
+  const todayIso = getTodayISO();
+  return upcomingOnly ? ALL_ITEMS.filter(i => i.event && i.event.date >= todayIso) : ALL_ITEMS;
+}
+
 function buildOutletChips(){
   const counts = new Map();
-  ALL_ITEMS.forEach(item => counts.set(item.source, (counts.get(item.source)||0) + 1));
+  outletPool().forEach(item => counts.set(item.source, (counts.get(item.source)||0) + 1));
   const outlets = [...counts.keys()].sort((a,b) => counts.get(b) - counts.get(a));
+  [...selectedOutlets].forEach(name => { if(!counts.has(name)) selectedOutlets.delete(name); });
   const chips = document.getElementById('outletChips');
   chips.innerHTML = outlets.map(name => `
-    <button type="button" class="outlet-chip" data-outlet="${escapeHtml(name)}">${escapeHtml(name)} <span style="opacity:.65;">(${counts.get(name)})</span></button>
+    <button type="button" class="outlet-chip${selectedOutlets.has(name) ? ' active' : ''}" data-outlet="${escapeHtml(name)}">${escapeHtml(name)} <span style="opacity:.65;">(${counts.get(name)})</span></button>
   `).join('');
   chips.querySelectorAll('.outlet-chip').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -393,6 +401,7 @@ function buildOutletChips(){
 
 document.getElementById('upcomingOnlyToggle').addEventListener('change', (e) => {
   upcomingOnly = e.target.checked;
+  buildOutletChips();
   render();
 });
 
