@@ -1427,25 +1427,30 @@ async function loadQueue() {
 
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
-    renderList(data.events || []);
+    renderList(data.events || [], data.class_counts, data.actionable_count);
   } catch (err) {
     gateErr.textContent = err.message;
     gateErr.style.display = 'block';
   }
 }
 
-function renderList(events) {
+// Stage 2 grouping labels (api/_lib/pending-classifier.js). Order: what needs a decision first.
+const QUEUE_CLASS_ORDER = ['public_event', 'ambiguous', 'civic_meeting', 'service', 'observance'];
+const QUEUE_CLASS_LABELS = { public_event: 'Events and programs', ambiguous: 'Needs a closer look', civic_meeting: 'Civic & Community: public meetings', service: 'Community services', observance: 'Calendar observances' };
+function renderList(events, classCounts, actionableCount) {
   const list = document.getElementById('list');
   // The tab badge counts the current queue only; the historical view must not inflate it.
-  if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', events.length);
+  // The badge counts only the records that need a person (events and programs, ambiguous); the other groups stay listed below.
+  const badgeCount = (typeof actionableCount === 'number') ? actionableCount : events.length;
+  if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', badgeCount);
   document.getElementById('queueViewStatus').textContent = QUEUE_EXPIRED_VIEW ? events.length + ' ended pending event' + (events.length === 1 ? '' : 's') : '';
   if (!events.length) {
     list.innerHTML = QUEUE_EXPIRED_VIEW ? '<div class="empty">No ended pending events.</div>' : '<div class="empty">No pending submissions. 🎉</div>';
     return;
   }
-  list.innerHTML = events.map(e => `
+  const cardHtml = (e) => `
     <div class="card" id="card-${e.id}">
-      <h3>${escapeHtml(e.title)}</h3>
+      <h3>${escapeHtml(e.title)}${e.queue_class && e.queue_class.cancelled ? ' <span class="meta">(cancelled)</span>' : ''}</h3>
       <div class="meta">
         <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
         Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b><br>
@@ -1460,7 +1465,15 @@ function renderList(events) {
         <button class="btn-reject" onclick="review('${e.id}','reject')">Reject</button>
       </div>
     </div>
-  `).join('');
+  `;
+  if (QUEUE_EXPIRED_VIEW || !events.some(e => e.queue_class)) { list.innerHTML = events.map(cardHtml).join(''); return; }
+  // Grouped view: nothing is hidden or removed. The two groups that need a person are open; the rest are collapsed but complete.
+  list.innerHTML = QUEUE_CLASS_ORDER.map(cls => {
+    const rows = events.filter(e => (e.queue_class && e.queue_class.class) === cls);
+    if (!rows.length) return '';
+    const open = cls === 'public_event' || cls === 'ambiguous';
+    return '<details class="queue-group"' + (open ? ' open' : '') + '><summary><b>' + escapeHtml(QUEUE_CLASS_LABELS[cls]) + '</b> (' + rows.length + ')</summary>' + rows.map(cardHtml).join('') + '</details>';
+  }).join('');
 }
 
 async function review(id, action) {

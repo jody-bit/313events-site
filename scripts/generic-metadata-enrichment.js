@@ -242,6 +242,7 @@ async function repairGenericMetadata({
     descriptionsGenerated: 0,
     poorDescriptionsRepaired: 0,
     poorDescriptionsSkippedNoFacts: 0,
+    poorDescriptionsSkippedCancelled: 0,
     poorDescriptionUrlsPreserved: 0,
     venueNamesResolvedFromAddress: 0,
     digitalHomeLinksRecovered: 0,
@@ -586,8 +587,16 @@ async function repairGenericMetadata({
         descOutcome = ["skipped", "repair_cap"];
       }
       if (verdict.repairable && counts.poorDescriptionsRepaired < MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN) {
-        const generated = buildFactualDescription(event);
-        if (!generated || !descriptionQuality(generated, event.title).ok) {
+        // "X takes place ..." is false for a cancelled or postponed listing: leave that row for a person.
+        // A venue field that holds a sentence (some feeds put the event blurb in LOCATION) is not named in the
+        // generated copy; the date and time facts are still stated.
+        const cancelled = /\b(?:cancell?ed|postponed)\b/i.test(event.title || "");
+        const venueIsProse = !(event.venues && event.venues.name) && typeof event.venue_name_raw === "string" && (event.venue_name_raw.length > 80 || /[!?]|\.\s/.test(event.venue_name_raw));
+        const generated = cancelled ? null : buildFactualDescription(venueIsProse ? { ...event, venue_name_raw: null } : event);
+        if (cancelled) {
+          counts.poorDescriptionsSkippedCancelled++;
+          descOutcome = ["skipped", "cancelled_or_postponed"];
+        } else if (!generated || !descriptionQuality(generated, event.title).ok) {
           counts.poorDescriptionsSkippedNoFacts++;
           descOutcome = ["skipped", "no_facts"];
         } else {
@@ -598,7 +607,11 @@ async function repairGenericMetadata({
             internal_note: ((event.internal_note ? event.internal_note + "\n" : "") +
               `[description-repair ${todayIso()}] replaced ${verdict.quality} description: ${JSON.stringify(prior.slice(0, 300))}`).slice(0, 4000),
           };
-          const urlToKeep = verdict.quality === "bare_url" && isBlank(event.event_url) && isBlank(event.ticket_url) ? prior.trim() : null;
+          // A ticket_url that is not an absolute link (CivicPlus feeds store the calendar's own relative export path,
+          // "/common/modules/iCalendar/iCalendar.aspx?...") is no link to an event, so it does not stop the bare URL
+          // from becoming the event's link. The relative value itself is left exactly as it is.
+          const hasUsableLink = (v) => !isBlank(v) && /^https?:\/\//i.test(String(v).trim());
+          const urlToKeep = verdict.quality === "bare_url" && isBlank(event.event_url) && !hasUsableLink(event.ticket_url) && /^https?:\/\//i.test(prior.trim()) ? prior.trim() : null;
           if (urlToKeep) patch.event_url = urlToKeep;
           if (dryRun) {
             logger.log(`[dry-run] would replace ${verdict.quality} description for event ${event.id}: ${JSON.stringify(prior)} -> "${generated}"${urlToKeep ? " (url kept as event_url)" : ""}`);
