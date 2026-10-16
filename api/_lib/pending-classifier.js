@@ -36,7 +36,7 @@ const EVENT_CATEGORIES = new Set(["music", "fest", "dance", "nightlife", "vendor
 // other source is never given a meeting, observance or service class (a title such as "Board Game Night" or "Book Club
 // Meeting" from another feed must stay an ordinary submission).
 function isDearbornRow(row) {
-  return /dearborn/i.test(String((row && row.source) || ""));
+  return /^\s*city of dearborn(?!\s+heights)\b/i.test(String((row && row.source) || ""));
 }
 
 function classifyPendingRow(row) {

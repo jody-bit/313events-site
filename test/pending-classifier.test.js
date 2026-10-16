@@ -58,12 +58,13 @@ assert.strictEqual(Object.values(out.class_counts).reduce((a, b) => a + b, 0), r
 
 // 4b. Other sources are never grouped as meetings, observances or services (R&Q finding, #138).
 for (const title of ["Bagley Community Council Annual Trunk or Treat", "Board Game Night", "Authority Comedy Night", "Book Club Meeting", "Commission Hill Jazz Brunch", "Diwali Festival of Lights Gala", "Gleaners Food Pantry Volunteer Day", "City Council Meeting"]) {
-  for (const source of ["Eventbrite", "Ticketmaster", "Public submission", "", undefined]) {
+  for (const source of ["Eventbrite", "Ticketmaster", "Public submission", "Dearborn Heights Events", "City of Dearborn Heights", "Dearborn Symphony Orchestra", "", undefined]) {
     const got = classifyAny({ title, source, venue_name_raw: "Venue TBA", category: "community" });
     assert.strictEqual(got.class, "public_event", `${title} from ${source} must stay an ordinary submission`);
   }
 }
 assert.strictEqual(classifyAny({ title: "Pension Board Meeting", source: "City of Dearborn" }).class, "civic_meeting");
+assert.strictEqual(classifyAny({ title: "Pension Board Meeting", source: "  CITY OF DEARBORN" }).class, "civic_meeting", "label matched case-insensitively");
 
 // 5. Endpoint: annotated, no writes; admin.html groups, collapses only the three standing classes.
 async function endpoint() {
