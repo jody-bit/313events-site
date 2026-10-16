@@ -91,6 +91,7 @@ async function repairVisitDetroitDeadLinks({
 } = {}) {
   const counts = {
     totalConsidered: 0,
+    samples: [],
     ok: 0,
     repaired: 0,
     stillDead: 0,
@@ -131,7 +132,9 @@ async function repairVisitDetroitDeadLinks({
   for (const event of candidates) {
     if (!event.ticket_url || !event.ticket_url.trim()) continue; // defensive re-check
 
-    const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn });
+    const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn, requireIdentity: true });
+    // Log what the check actually saw for the first rows (P0 2026-10-16: evidence for stamps we could not reproduce).
+    if (counts.samples.length < 10) counts.samples.push({ id: event.id, url: event.ticket_url, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null, identityConfirmed: result.identityConfirmed === undefined ? null : result.identityConfirmed });
 
     if (result.classification === "inconclusive") {
       counts.inconclusive++;

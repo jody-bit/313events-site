@@ -46,15 +46,20 @@ function classifyUrlCheck(status) {
 // behavior) and reports the FINAL resolved URL, since a repair persists
 // the canonical destination, not a redirecting shim -- "redirects: follow
 // and persist canonical destination when appropriate."
-async function checkUrl(url, { fetchFn = fetch } = {}) {
+async function checkUrl(url, { fetchFn = fetch, withBody = false } = {}) {
   if (!url) return { classification: "inconclusive", status: null, finalUrl: null };
   try {
     const resp = await fetchFn(url, { method: "GET", redirect: "follow" });
-    return {
+    const out = {
       classification: classifyUrlCheck(resp.status),
       status: resp.status,
       finalUrl: resp.url && resp.url !== url ? resp.url : url,
     };
+    // withBody: the caller wants to confirm the page is the right event (see healEventUrl requireIdentity).
+    if (withBody && out.classification === "ok") {
+      try { out.html = await resp.text(); } catch { out.html = null; }
+    }
+    return out;
   } catch (err) {
     return { classification: "inconclusive", status: null, finalUrl: null, error: err.message };
   }
@@ -178,10 +183,18 @@ function classifyRecoveryOutcome({ repaired }) {
 // true -- "revalidate the new URL before clearing the issue," and a
 // strategy's own identity check is necessary but never treated as
 // sufficient on its own.
-async function healEventUrl({ url, title, fetchFn = fetch } = {}) {
-  const initial = await checkUrl(url, { fetchFn });
+// requireIdentity (P0 2026-10-16): a 2xx is only "ok" when the page text contains the event title. A status
+// alone is not proof (a soft-200 or interstitial page looks fine); an unconfirmed page is "inconclusive", which
+// writes nothing. status/finalUrl are returned so a run can log what it actually saw.
+async function healEventUrl({ url, title, fetchFn = fetch, requireIdentity = false } = {}) {
+  const initial = await checkUrl(url, { fetchFn, withBody: requireIdentity });
+  if (requireIdentity && initial.classification === "ok") {
+    const confirmed = !!(title && String(title).trim() && initial.html && htmlContainsTitle(initial.html, title));
+    return { checked: true, classification: confirmed ? "ok" : "inconclusive", repaired: false, newUrl: null, status: initial.status, finalUrl: initial.finalUrl, identityConfirmed: confirmed };
+  }
   if (initial.classification !== "dead") {
-    return { checked: !!url, classification: initial.classification, repaired: false, newUrl: null };
+    const base = { checked: !!url, classification: initial.classification, repaired: false, newUrl: null };
+    return requireIdentity ? Object.assign(base, { status: initial.status, finalUrl: initial.finalUrl }) : base;
   }
 
   const strategy = RECOVERY_STRATEGIES.get(hostnameOf(url));
