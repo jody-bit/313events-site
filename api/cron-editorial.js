@@ -3,6 +3,9 @@ const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-clos
 const path = require("path");
 const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 const { repairGenericMetadata } = require(path.join(__dirname, "..", "scripts", "generic-metadata-enrichment"));
+// DQ-004: a link is only shown publicly once verified. Automatic matches are written as
+// candidates unless auto_rule_v1 passes; a rejected pair is never re-created.
+const { evaluateAutoLink, sameTitleCounts, newLinkRow, eventForEvaluation } = require("./_lib/editorial-verification");
 // Vercel Cron job — pulls a fixed, curated list of local Detroit outlets'
 // own RSS/Atom feeds, stores just enough to point back to each article
 // (title/excerpt/url/source/thumbnail — NEVER the full article body, see
@@ -383,12 +386,17 @@ function daysBetween(isoA, isoB) {
 // this is intentionally conservative (no match beats a wrong match) — the
 // same "silent wrongness" this project has already been burned by once
 // with HTML entities is exactly the failure mode this guards against here.
-function matchArticleToEvent(article, candidateEvents) {
+function matchArticleToEvent(article, candidateEvents, ctx) {
+  // ctx.excluded: Set of event ids this article must never be matched to again (rejected pairs).
+  // ctx.titleCounts: normalized title -> number of candidate events sharing it (generic-title guard).
+  const excluded = ctx && ctx.excluded;
+  const titleCounts = (ctx && ctx.titleCounts) || sameTitleCounts(candidateEvents);
   const haystack = normalize(`${article.title} ${article.excerpt}`);
   const articleDateIso = (article.publishedAt || new Date().toISOString()).slice(0, 10);
 
   let best = null; // { event, matchType, dayGap }
   for (const ev of candidateEvents) {
+    if (excluded && excluded.has(ev.id)) continue;
     const normTitle = normalize(ev.title);
     if (normTitle.length >= MIN_MATCHABLE_LENGTH && haystack.includes(normTitle)) {
       const dayGap = daysBetween(articleDateIso, ev.start_date);
@@ -406,7 +414,49 @@ function matchArticleToEvent(article, candidateEvents) {
       }
     }
   }
+  if (best) {
+    best.verification = evaluateAutoLink(article, eventForEvaluation(best.event), {
+      matchType: best.matchType,
+      sameTitleCount: titleCounts.get(normalize(best.event.title)) || 1,
+    });
+  }
   return best;
+}
+
+// Rejected article<->event pairs (service role). Keyed two ways because the main ingest path knows
+// an article only by url until the upsert returns its id, while the retry pass knows the id.
+// Failing to load them must not stop ingestion, but it is reported so a silent hole is visible.
+async function loadRejectedPairs(sbHeaders) {
+  const byUrl = new Map();
+  const byId = new Map();
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?verification_status=eq.rejected&select=article_id,event_id,editorial_articles(url)`, { headers: sbHeaders });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const rows = await r.json();
+    if (!Array.isArray(rows)) throw new Error("unexpected response shape");
+    for (const row of rows) {
+      (byId.get(row.article_id) || byId.set(row.article_id, new Set()).get(row.article_id)).add(row.event_id);
+      const u = row.editorial_articles && row.editorial_articles.url;
+      if (u) (byUrl.get(u) || byUrl.set(u, new Set()).get(u)).add(row.event_id);
+    }
+    return { byUrl, byId, error: null };
+  } catch (err) {
+    console.error("cron-editorial: could not load rejected editorial pairs:", err.message);
+    return { byUrl, byId, error: err.message };
+  }
+}
+
+// Inserts a link row for an automatic match. ignore-duplicates: an existing pair, whatever its
+// status (verified, hidden, rejected), is left exactly as it is.
+async function insertAutoLinkRows(sbHeaders, rows) {
+  if (!rows.length) return;
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
+    method: "POST",
+    headers: { ...sbHeaders, Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify(rows),
+  });
+  // Not swallowed any more: a failed join write used to leave an article matched but unlinked.
+  if (!r.ok) console.error("cron-editorial: editorial_article_events insert failed:", r.status, await r.text().catch(() => ""));
 }
 
 function toISO(d) {
@@ -455,7 +505,7 @@ async function retryUnmatchedArticles(sbHeaders) {
     // api/admin-events.js's includePending search already makes: a real
     // match still sitting in the submission queue is exactly what this pass
     // is for, not just already-live events.
-    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${toISO(floor)}&select=id,title,venue_name_raw,start_date`;
+    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=in.(approved,pending_review)&start_date=gte.${toISO(floor)}&select=id,title,venue_name_raw,venue_city_raw,start_date,venues(name,city)`;
     const r = await fetch(evUrl, { headers: sbHeaders });
     wideCandidates = await r.json();
     if (!Array.isArray(wideCandidates)) throw new Error("Unexpected response shape loading candidate events");
@@ -466,8 +516,10 @@ async function retryUnmatchedArticles(sbHeaders) {
   let matchedCount = 0;
   let dismissedStaleCount = 0;
   const staleFloor = new Date(now); staleFloor.setDate(staleFloor.getDate() - STALE_ARTICLE_DISMISS_DAYS);
+  const rejected = await loadRejectedPairs(sbHeaders);
+  const wideTitleCounts = sameTitleCounts(wideCandidates);
   for (const article of unmatched) {
-    const match = matchArticleToEvent(article, wideCandidates);
+    const match = matchArticleToEvent(article, wideCandidates, { excluded: rejected.byId.get(article.id), titleCounts: wideTitleCounts });
     if (!match) {
       // See STALE_ARTICLE_DISMISS_DAYS above — an old article that still
       // isn't matching anything gets auto-dismissed instead of sitting in
@@ -505,11 +557,7 @@ async function retryUnmatchedArticles(sbHeaders) {
         }
       );
       if (!patchResp.ok) continue;
-      await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
-        method: "POST",
-        headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-        body: JSON.stringify({ article_id: article.id, event_id: match.event.id }),
-      });
+      await insertAutoLinkRows(sbHeaders, [newLinkRow(article.id, match.event.id, match.verification)]);
       matchedCount++;
     } catch {
       // One bad write never aborts the rest of the pass — same "one bad item
@@ -538,7 +586,7 @@ module.exports = async (req, res) => {
 
   let candidateEvents;
   try {
-    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${toISO(floor)}&start_date=lte.${toISO(ceiling)}&select=id,title,venue_name_raw,start_date`;
+    const evUrl = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${toISO(floor)}&start_date=lte.${toISO(ceiling)}&select=id,title,venue_name_raw,venue_city_raw,start_date,venues(name,city)`;
     const r = await fetch(evUrl, { headers: sbHeaders });
     candidateEvents = await r.json();
     if (!Array.isArray(candidateEvents)) throw new Error("Unexpected response shape loading candidate events");
@@ -547,6 +595,8 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const rejectedPairs = await loadRejectedPairs(sbHeaders);
+  const candidateTitleCounts = sameTitleCounts(candidateEvents);
   const results = [];
   let totalUpserted = 0;
   let totalMatched = 0;
@@ -595,7 +645,8 @@ module.exports = async (req, res) => {
         // header for why. A matched item always survives regardless (it's
         // definitionally event coverage); an unmatched one has to look like
         // event coverage on its own to be worth storing at all.
-        const withMatches = items.map((item) => ({ item, match: matchArticleToEvent(item, candidateEvents) }));
+        const withMatches = items.map((item) => ({ item, match: matchArticleToEvent(item, candidateEvents, { excluded: rejectedPairs.byUrl.get(item.url), titleCounts: candidateTitleCounts }) }));
+        const verdictByUrl = new Map(withMatches.filter(({ match }) => match).map(({ item, match }) => [`${item.url}|${match.event.id}`, match.verification]));
         const skippedNonEvent = withMatches.filter(({ item, match }) => !match && !looksLikeEventCoverage(item)).length;
         const rows = withMatches
           .filter(({ match, item }) => match || looksLikeEventCoverage(item))
@@ -667,15 +718,10 @@ module.exports = async (req, res) => {
                   const withIds = await idLookupResp.json();
                   const idByUrl = new Map(withIds.map((r) => [r.url, r.id]));
                   const joinRows = matchedRows
-                    .map((r) => ({ article_id: idByUrl.get(r.url), event_id: r.matched_event_id }))
+                    .filter((r) => verdictByUrl.has(`${r.url}|${r.matched_event_id}`))
+                    .map((r) => newLinkRow(idByUrl.get(r.url), r.matched_event_id, verdictByUrl.get(`${r.url}|${r.matched_event_id}`)))
                     .filter((jr) => jr.article_id);
-                  if (joinRows.length) {
-                    await fetch(`${SUPABASE_URL}/rest/v1/editorial_article_events?on_conflict=article_id,event_id`, {
-                      method: "POST",
-                      headers: { ...sbHeaders, Prefer: "resolution=merge-duplicates,return=minimal" },
-                      body: JSON.stringify(joinRows),
-                    });
-                  }
+                  await insertAutoLinkRows(sbHeaders, joinRows);
                 }
               } catch {
                 // Join-row write failing never aborts ingestion — the next
@@ -731,3 +777,6 @@ module.exports = async (req, res) => {
     fetchedAt: new Date().toISOString(),
   });
 };
+
+module.exports.matchArticleToEvent = matchArticleToEvent;
+module.exports.loadRejectedPairs = loadRejectedPairs;

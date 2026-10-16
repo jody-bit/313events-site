@@ -75,7 +75,13 @@ const ALLOWED = [
   "api/_lib/feed-city.js",
   "api/_lib/orbit-zip-table.json",
   "api/_lib/orbit-zip-cdp-names.json",
-  "api/cron-visitdetroit.js"
+  "api/cron-visitdetroit.js",
+  // DQ-004 verified-only editorial associations (owner approval 2026-10-16, staging implementation): the shared verification rule,
+  // the admin decisions API, and the additive verification columns + verified-only public read policy.
+  "api/_lib/editorial-verification.js",
+  "api/admin-editorial.js",
+  "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql",
+  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql"
 ];
 
 class ScopeGuardError extends Error {}
