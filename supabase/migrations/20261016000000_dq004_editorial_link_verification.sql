@@ -1,17 +1,14 @@
--- DQ-004 (2026-10-16): verified-only editorial associations.
+-- DQ-004 (2026-10-16): verified-only editorial associations. Migration 1 of 2: columns only.
 --
--- Schema half. Additive and idempotent. Existing rows are NOT classified here: every
--- existing link starts as 'candidate' (hidden) and is classified by the separate,
--- separately approved backfill (supabase/proposed/dq004_backfill_classification.sql).
--- Run order in production: this file (columns only, step A) -> backfill -> public-read
--- policy swap (step B). Both steps are in this file; run step A and B in one transaction
--- together with the backfill so no moment exists where the policy is verified-only but
--- the classification has not been applied (see the release package).
+-- Additive and idempotent. Behaviour does not change when this runs: existing rows all
+-- default to 'candidate' (fail closed), and the public-read policy is untouched until
+-- migration 2 (20261016000001_dq004_editorial_public_read_verified_only.sql).
+-- Production order: this file -> supabase/proposed/dq004_backfill_classification.sql -> migration 2,
+-- then the code deploy is safe (the code selects/inserts these columns, so this file must come first).
 --
--- Rollback:   drop policy "public read verified editorial article events" on editorial_article_events;
---             create policy "public read editorial article events" on editorial_article_events for select using (true);
---             grant select on editorial_article_events to anon, authenticated;   -- restores the old behaviour
---             (the columns are additive and may stay)
+-- Rollback: the columns are additive and may stay. To remove them:
+--   alter table editorial_article_events drop column verification_status, drop column verified_by,
+--     drop column verified_at, drop column verification_basis, drop column verification_history;
 
 -- ---- Step A: columns -------------------------------------------------------------------
 alter table editorial_article_events
@@ -35,14 +32,3 @@ begin
 end $$;
 
 create index if not exists editorial_article_events_status_idx on editorial_article_events (verification_status);
-
--- ---- Step B: public read is verified-only, enforced by the database --------------------
--- The public key may read only verified rows, and only the non-internal columns
--- (verification_basis / history / verified_by stay private to service_role).
-drop policy if exists "public read editorial article events" on editorial_article_events;
-drop policy if exists "public read verified editorial article events" on editorial_article_events;
-create policy "public read verified editorial article events" on editorial_article_events
-  for select using (verification_status = 'verified');
-
-revoke select on editorial_article_events from anon, authenticated;
-grant select (article_id, event_id, created_at, verification_status) on editorial_article_events to anon, authenticated;

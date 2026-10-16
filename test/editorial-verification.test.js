@@ -76,11 +76,13 @@ const V = require(path.join(REPO, "api/_lib/editorial-verification.js"));
   const vrow = V.newLinkRow("a1", "e1", { status: "verified", by: "auto_rule_v1", basis: "ok" });
   assert.ok(vrow.verified_at && vrow.verified_by === "auto_rule_v1");
   const sql = read("supabase/migrations/20261016000000_dq004_editorial_link_verification.sql");
+  const sql2 = read("supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql");
+  assert.ok(!/create policy|revoke /i.test(sql), "migration 1 is columns only: it changes no access");
   assert.ok(/verification_status\s+text\s+not null default 'candidate'/.test(sql), "the column default is candidate: a writer that omits it creates a hidden row");
   assert.ok(/check \(verification_status in \('verified', 'candidate', 'needs_follow_up', 'rejected'\)\)/.test(sql));
-  assert.ok(/for select using \(verification_status = 'verified'\)/.test(sql), "the public key can read verified rows only");
-  assert.ok(/revoke select on editorial_article_events from anon, authenticated;/.test(sql) && /grant select \(article_id, event_id, created_at, verification_status\)/.test(sql), "internal columns are not readable by the public key");
-  assert.ok(!/delete from|drop table|truncate/i.test(sql), "the migration deletes nothing");
+  assert.ok(/for select using \(verification_status = 'verified'\)/.test(sql2), "the public key can read verified rows only");
+  assert.ok(/revoke select on editorial_article_events from anon, authenticated;/.test(sql2) && /grant select \(article_id, event_id, created_at, verification_status\)/.test(sql2), "internal columns are not readable by the public key");
+  assert.ok(!/delete from|drop table|truncate/i.test(sql + sql2), "the migrations delete nothing");
   console.log("PASS: 2. default candidate, provenance recorded, verified-only public policy, internal columns private, nothing deleted");
 
   // ---------------------------------------------------------------------------------------------
