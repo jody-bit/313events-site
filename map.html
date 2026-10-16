@@ -807,8 +807,7 @@ let selectedPlaceKey = null;
 
 function toISO(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 function getTodayISO(){
-  const d = new Date();
-  return toISO(d.getFullYear(), d.getMonth(), d.getDate());
+  return EventDates.detroitClock().iso; // America/Detroit, same as the homepage (2026-10-16)
 }
 
 function parseHour(timeStr){
@@ -857,14 +856,13 @@ function timeSortMinutes(timeStr){
   return range ? range.start.h*60 + range.start.m : Infinity;
 }
 function getWeekendDates(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  const dow = d.getDay();
-  const deltaToFriday = dow === 0 ? -2 : 5 - dow;
-  const fri = new Date(d); fri.setDate(d.getDate() + deltaToFriday);
+  const c = EventDates.detroitClock();
+  const deltaToFriday = c.dow === 0 ? -2 : 5 - c.dow;
+  const fri = new Date(c.iso + "T12:00:00Z");
+  fri.setUTCDate(fri.getUTCDate() + deltaToFriday);
   return [0,1,2].map(off=>{
-    const x = new Date(fri); x.setDate(fri.getDate()+off);
-    return toISO(x.getFullYear(), x.getMonth(), x.getDate());
+    const x = new Date(fri); x.setUTCDate(fri.getUTCDate()+off);
+    return x.toISOString().slice(0,10);
   });
 }
 
@@ -896,7 +894,7 @@ function matchesFilters(e){
       if(whenMode === 'now'){
         const range = parseTimeRange(e.time);
         if(range && range.end && range.end.h >= range.start.h){
-          const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+          const nowHour = EventDates.detroitClock().hours;
           const endHour = range.end.h + range.end.m/60;
           if(endHour < nowHour) return false;
         }
@@ -2035,7 +2033,7 @@ async function fetchLiveEvents() {
   // returns at most its "Max rows" setting (1,000 here) per request no
   // matter what `limit=` asks for, with no error. fetchAllRows() (paged-fetch.js)
   // pages through the whole result instead; `id.asc` makes the order total, which paging needs.
-  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&start_date=gte.${loadFloorISO()}&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
+  const url = `${SUPABASE_URL}/rest/v1/events?status=eq.approved&or=(start_date.gte.${loadFloorISO()},end_date.gte.${getTodayISO()})&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_city_raw,venue_address_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,date_semantics,occurrence_dates&order=start_date.asc,id.asc`;
   const [, result] = await Promise.all([
     loadVenueLatLng(), // must finish before mapSupabaseRow()/resolvePlace() run, but not before this fetch starts
     fetchAllRows(url, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }), // throws if nothing could be loaded

@@ -209,6 +209,22 @@
     return null;
   }
 
+  // America/Detroit wall clock for a given instant (default: now). The calendar and map used the visitor's
+  // device clock for "today"; the homepage already used Detroit time. One definition, so they agree.
+  function detroitClock(now) {
+    var d = now || new Date();
+    var parts = {};
+    new Intl.DateTimeFormat("en-US", { timeZone: "America/Detroit", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false, weekday: "short" }).formatToParts(d)
+      .forEach(function (p) { parts[p.type] = p.value; });
+    var hour = parseInt(parts.hour, 10) % 24;
+    return {
+      iso: parts.year + "-" + parts.month + "-" + parts.day,
+      hours: hour + parseInt(parts.minute, 10) / 60,
+      dow: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(parts.weekday)
+    };
+  }
+
   var EventDates = Object.freeze({
     MAX_SPAN_DAYS: MAX_SPAN_DAYS,
     semanticsOf: semanticsOf,
@@ -217,6 +233,7 @@
     expand: expand,
     isActiveOn: isActiveOn,
     availabilityOn: availabilityOn,
+    detroitClock: detroitClock,
     reviewReason: reviewReason
   });
 
