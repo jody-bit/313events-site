@@ -55,7 +55,30 @@ const REPAIRABLE = new Set(["placeholder", "bare_url", "time_only", "restates_ti
 
 // Sources the repair is rolled out to (staged rollout: one connector first).
 // Widen only after that connector's refresh is proven not to undo the repair.
-const REPAIR_SOURCES = new Set(["GottaGacha"]);
+//
+// Stage 1 of the admin queue modernization (owner decision 2026-10-16): the 15
+// CivicPlus calendar feeds whose iCal DESCRIPTION is only the event's own
+// calendar.aspx?EID= page. Names are the `events.source` values (feed venue_name)
+// as stored in production. api/cron-feeds.js applies decideSourceDescription()
+// to these sources, so the feed's next refresh cannot put the URL back.
+const CIVICPLUS_FEED_SOURCES = [
+  "Mount Clemens Public Library - Adult Events",
+  "Mount Clemens Public Library - Children's Events",
+  "Mount Clemens Public Library - Teen Events",
+  "City of Royal Oak",
+  "Sterling Heights - Library",
+  "Sterling Heights - Parks and Recreation",
+  "Richmond Recreation Calendar",
+  "Redford Township Community Events",
+  "City of Rochester - Events",
+  "Macomb Township Events",
+  "City of Livonia - Community Events",
+  "St. Clair Shores - Events & Programs",
+  "Canton Township Community and Special Events",
+  "City of Wyandotte - City Events",
+  "City of Northville Events",
+];
+const REPAIR_SOURCES = new Set(["GottaGacha", ...CIVICPLUS_FEED_SOURCES]);
 
 // -> { repairable, quality }
 function repairVerdict(event) {
@@ -66,4 +89,4 @@ function repairVerdict(event) {
   return { repairable: REPAIRABLE.has(q) && REPAIR_SOURCES.has(event.source), quality: q };
 }
 
-module.exports = { RANK, REPAIRABLE, REPAIR_SOURCES, classifyStored, classifyIncoming, decideSourceDescription, repairVerdict };
+module.exports = { RANK, REPAIRABLE, REPAIR_SOURCES, CIVICPLUS_FEED_SOURCES, classifyStored, classifyIncoming, decideSourceDescription, repairVerdict };
