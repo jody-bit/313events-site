@@ -13,6 +13,9 @@
 //   4. explicit alias: Grosse Pointe Farms / Shores plot on the Grosse Pointe
 //      centroid (separate municipalities, one shared point)
 //   5. exact, case-insensitive match against the table
+//   6. PHASE 2 entries carry `sources`: a bare name resolves only when the event's source feed
+//      is listed (jurisdiction evidence); an explicit matching state needs no source. The one
+//      string rule: city "Ontario" + venue "Town of Kingsville" -> Kingsville.
 // Anything else (a street address, a typo, an ambiguous word) returns null and
 // stays off the map. The raw source value is never modified: callers keep
 // event.city as stored and use the result only to choose a plot point.
@@ -33,6 +36,12 @@
     "grosse pointe shores": "grosse pointe"
   };
 
+  // A province is not a city. These two Tourism Windsor Essex rows say "Ontario" and name the
+  // Town of Kingsville as the venue (03 Event Intelligence, phase2-matching-rules.csv).
+  var GATED_ALIASES = { "ontario": { to: "kingsville", venue: "town of kingsville" } };
+
+  function lc(x) { return x == null ? "" : String(x).replace(/\s+/g, " ").trim().toLowerCase(); }
+
   function parse(raw) {
     if (raw == null) return { name: "", state: null };
     var s = String(raw).replace(/\s+/g, " ").trim();
@@ -49,15 +58,24 @@
   // lookup: Map<lowercase city name, entry>. Returns {key, loc} or null.
   // key is the canonical lowercase table name, so every spelling of a city
   // lands on the same place.
-  function resolve(raw, lookup) {
+  // ctx (optional): { source, venue } of the event, used only for gated entries.
+  function resolve(raw, lookup, ctx) {
     var p = parse(raw);
     var n = p.name;
     if (!n) return null;
     var alias = null;
+    var gated = GATED_ALIASES[n];
+    if (gated && !p.state) {
+      if (!ctx || lc(ctx.venue) !== gated.venue) return null;
+      n = gated.to;
+    }
     if (ALIASES[n]) { alias = n; n = ALIASES[n]; }
     var loc = lookup.get(n);
     if (!loc) return null;
     if (p.state && REGION_BY_STATE[p.state] !== loc.region) return null;
+    if (loc.sources && !(p.state)) {
+      if (!ctx || loc.sources.indexOf(lc(ctx.source)) < 0) return null;
+    }
     // alias: the real municipality (lowercase) when it shares another city's point
     return { key: n, loc: loc, alias: alias };
   }

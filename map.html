@@ -474,6 +474,7 @@
 <script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/city-resolution.js"></script>
+<script src="/city-table-phase2.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -732,6 +733,10 @@ const LOCATIONS = [
   {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
 ];
 
+// Phase 2: sourced coordinates for 30 more in-orbit cities (city-table-phase2.js), each gated on
+// the event's source feed as jurisdiction evidence (see city-resolution.js).
+PHASE2_CITIES.forEach(c => LOCATIONS.push({name:c.name, type:'city', region:c.region, lat:c.lat, lng:c.lng, sources:c.sources}));
+
 const CITY_LOOKUP = new Map(
   LOCATIONS.filter(l => l.type === 'city').map(l => [l.name.toLowerCase(), l])
 );
@@ -899,7 +904,7 @@ function matchesFilters(e){
     }
   }
   if(originLocation && radiusMiles !== null){
-    const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP) : null;
+    const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP, {source:e.source, venue:e.venue}) : null;
     const loc = e.city ? (hit && hit.loc) : CITY_LOOKUP.get('detroit');
     if(!loc) return false;
     if(radiusMiles === 'all'){
@@ -1196,7 +1201,7 @@ function resolvePlace(e){
   // CityResolution (city-resolution.js) reads "Warren, MI 48092", "Clinton Twp"
   // etc. as the table city; the event keeps its raw city value untouched. A
   // city that already matched exactly keeps its previous place key.
-  const hit = CityResolution.resolve(cityName, CITY_LOOKUP);
+  const hit = CityResolution.resolve(cityName, CITY_LOOKUP, {source:e.source, venue:e.venue});
   if(!hit) return null; // no resolvable location at all — excluded from the map (never guessed)
   const label = hit.key === cityName.toLowerCase() ? cityName : hit.loc.name;
   return { key: `c:${hit.key}`, lat: hit.loc.lat, lng: hit.loc.lng, label, precise: false };
@@ -1295,7 +1300,7 @@ function eventWhereHtml(e){
 // A municipality that shares another city's map point (Grosse Pointe Farms / Shores plot on
 // the Grosse Pointe marker) shows its own source name on the event, never the marker's.
 function sharedPointMunicipality(e){
-  const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP) : null;
+  const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP, {source:e.source, venue:e.venue}) : null;
   return hit && hit.alias ? String(e.city).replace(/\s+/g,' ').trim() : '';
 }
 function municipalityHtml(e){
@@ -1377,7 +1382,7 @@ function renderMap(places){
     // live site (2026-08-30) with a 40-event cluster near Rochester.
     // autoPanPadding gives real breathing room from the window edge (the
     // 5px Leaflet default was letting the popup sit flush against it).
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: 320, autoPanPadding: [24, 24], keepInView: true});
+    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: Math.max(160, Math.min(320, leafletMap.getSize().y - 100)), autoPanPadding: [24, 24], keepInView: true});
     marker.on('click', ()=> selectPlace(place.key));
     markersByKey.set(place.key, marker);
   });
@@ -1435,8 +1440,23 @@ function selectPlace(key, opts){
   if(selectedPlaceKey){
     const marker = markersByKey.get(selectedPlaceKey);
     if(marker){
-      marker.openPopup();
-      leafletMap.panTo(marker.getLatLng());
+      // Recenter first, open the popup once the pan has finished. Opening it first lets
+      // Leaflet's popup auto-pan and this panTo run at the same time (two animated pans,
+      // the second cancelling the first mid-flight); for a place far from the current view,
+      // like Bowling Green on the 380px mobile map, that left the marker off-screen with
+      // no popup. Closing first also stops a marker click's own auto-pan from joining the race.
+      const target = marker.getLatLng();
+      const key = selectedPlaceKey;
+      const openIfStillSelected = ()=>{ if(selectedPlaceKey === key && markersByKey.get(key) === marker && !marker.isPopupOpen()) marker.openPopup(); };
+      marker.closePopup();
+      const offCenter = leafletMap.latLngToContainerPoint(target).distanceTo(leafletMap.getSize().divideBy(2)) > 1;
+      if(offCenter){
+        leafletMap.once('moveend', openIfStillSelected);
+        leafletMap.panTo(target);
+        setTimeout(openIfStillSelected, 700); // moveend can be skipped if the pan is interrupted
+      } else {
+        openIfStillSelected();
+      }
     }
     if(!(opts && opts.fromRail)){
       const row = document.querySelector(`.city-row-head[data-key="${CSS.escape(selectedPlaceKey)}"]`);
