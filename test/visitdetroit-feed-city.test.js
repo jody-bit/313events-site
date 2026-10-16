@@ -1,6 +1,6 @@
 // test/visitdetroit-feed-city.test.js — GEO-003 step 2: VisitDetroit stores a parsed city only when it
-// agrees with the feed's own ZIP and _geoloc (Addendum 2). Disagreement stores no city, which puts the
-// row in Needs Follow-up with the raw address kept. Never assumes a ZIP identifies one municipality.
+// agrees with the feed's own ZIP and _geoloc (Addendum 2). Disagreement stores no city (NULL) and keeps
+// the raw address. Never assumes a ZIP identifies one municipality.
 //
 // Real cases: Sanctuary Church Birmingham (event-intelligence/geo-coverage/geo-003/raw-hits-sanctuary-birmingham-2026-10-16.md):
 // address "Detroit, Michigan 48009", _geoloc 42.5477081,-83.2174755 (Birmingham).
@@ -128,7 +128,7 @@ console.log("PASS: 9. Orbit table loads; CDP names switchable");
     const m = /"([^"]*)",(-?[\d.]+),(-?[\d.]+),/.exec(line);
     if (!m) { none++; continue; }
     const city = m[1].split(",")[0].trim();
-    const d = F.decideFeedCity({ city, zip: F.parseZip(m[1]), lat: parseFloat(m[2]), lng: parseFloat(m[3]) }, { zipTable: real });
+    const d = F.decideFeedCity({ city, zip: F.parseZip(m[1]), lat: parseFloat(m[2]), lng: parseFloat(m[3]) }, { zipTable: real, cdpNames: F.loadCdpNames(), tiers: F.loadZipTiers() });
     if (d.status === "needs_follow_up") { queued++; assert.ok(/Birmingham|48009/.test(m[1] + d.reason)); }
     else if (d.status === "stored") stored++;
   }
@@ -178,5 +178,36 @@ console.log("PASS: 11. evidence tiers (municipality / boundary / cdp_compatible 
   assert.strictEqual(row.venue_city_raw, "Detroit", "input row not mutated");
 }
 console.log("PASS: 12. existing city protected from weaker evidence");
+
+// --- 13. v3 tiers: only `strong` confirms; census_supported and CDP-only are compatible ---
+{
+  const real = F.loadZipTable({ includeCdp: true });
+  const deps = { zipTable: real, cdpNames: F.loadCdpNames(), tiers: F.loadZipTiers() };
+  // every municipality in the real table has a tier on record (no silent default)
+  for (const zip of Object.keys(real)) for (const m of real[zip].municipalities) {
+    const n = String(m).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    assert.ok(deps.tiers[zip] && deps.tiers[zip][n], `tier on record for ${zip} ${m}`);
+  }
+  // 48236: Grosse Pointe Woods is strong; Detroit / St. Clair Shores are census_supported only
+  const gpw = F.decideFeedCity({ city: "Grosse Pointe Woods", zip: "48236" }, deps);
+  assert.strictEqual(gpw.evidence, "municipality"); assert.ok(gpw.confirmed);
+  const det = F.decideFeedCity({ city: "Detroit", zip: "48236" }, deps);
+  assert.strictEqual(det.status, "stored_compatible"); assert.strictEqual(det.evidence, "census_supported"); assert.ok(!det.confirmed);
+  // 48126 lists Detroit at 0.03% (census_supported): compatible, confirmed only by the Detroit boundary
+  assert.strictEqual(F.decideFeedCity({ city: "Detroit", zip: "48126" }, deps).confirmed, false);
+  const inside = F.decideFeedCity({ city: "Detroit", zip: "48126", lat: 42.35, lng: -83.2 }, deps);
+  assert.ok(inside.evidence === "boundary" ? inside.confirmed : !inside.confirmed);
+  // 48009: Birmingham strong, Bloomfield Township census_supported, Detroit contradicted
+  assert.ok(F.decideFeedCity({ city: "Birmingham", zip: "48009" }, deps).confirmed);
+  assert.strictEqual(F.decideFeedCity({ city: "Bloomfield Township", zip: "48009" }, deps).confirmed, false);
+  assert.strictEqual(F.decideFeedCity({ city: "Detroit", zip: "48009" }, deps).status, "needs_follow_up");
+  // a weak match never replaces an existing city
+  const weak = F.protectExistingCity({ venue_city_raw: "Detroit" }, det, "Grosse Pointe Woods");
+  assert.ok(!("venue_city_raw" in weak));
+  // cron default deps carry the tiers
+  const row = vd.rowCityFields("Some Hall, 1 Main St, Detroit, Michigan 48236", { _geoloc: { lat: 42.4, lng: -82.9 } });
+  assert.strictEqual(row._cityDecision.confirmed, false, "cron path uses tiers (Detroit in 48236 is not confirmed by ZIP)");
+}
+console.log("PASS: 13. v3 tiers: only strong confirms");
 
 console.log("\nAll VisitDetroit feed-city tests passed.");

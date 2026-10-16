@@ -1,54 +1,56 @@
 {
- "48001": [
-  "Pearl Beach",
-  "Pearl Beach CDP"
- ],
- "48049": [
-  "Ruby",
-  "Ruby CDP"
- ],
- "48059": [
-  "Lakeport",
-  "Lakeport CDP"
- ],
- "48140": [
-  "Ida",
-  "Ida CDP"
- ],
- "48144": [
-  "Lambertville",
-  "Lambertville CDP"
- ],
- "48161": [
-  "South Monroe",
-  "South Monroe CDP",
-  "West Monroe",
-  "West Monroe CDP"
- ],
- "48162": [
-  "Detroit Beach",
-  "Detroit Beach CDP",
-  "Woodland Beach",
-  "Woodland Beach CDP"
- ],
- "48166": [
-  "Stony Point",
-  "Stony Point CDP"
- ],
- "48178": [
-  "Whitmore Lake",
-  "Whitmore Lake CDP"
- ],
- "48182": [
-  "Temperance",
-  "Temperance CDP"
- ],
- "48189": [
-  "Whitmore Lake",
-  "Whitmore Lake CDP"
- ],
- "48353": [
-  "Hartland",
-  "Hartland CDP"
- ]
+"48001": [
+"pearl beach",
+"pearl beach cdp"
+],
+"48049": [
+"ruby",
+"ruby cdp"
+],
+"48059": [
+"lakeport",
+"lakeport cdp"
+],
+"48140": [
+"ida",
+"ida cdp"
+],
+"48144": [
+"lambertville",
+"lambertville cdp"
+],
+"48161": [
+"south monroe",
+"south monroe cdp",
+"west monroe",
+"west monroe cdp"
+],
+"48162": [
+"detroit beach",
+"detroit beach cdp",
+"woodland beach",
+"woodland beach cdp"
+],
+"48166": [
+"stony point",
+"stony point cdp"
+],
+"48178": [
+"whitmore lake",
+"whitmore lake cdp"
+],
+"48182": [
+"lambertville",
+"lambertville cdp",
+"temperance",
+"temperance cdp"
+],
+"48189": [
+"whitmore lake",
+"whitmore lake cdp"
+],
+"48353": [
+"hartland",
+"hartland cdp"
+]
 }

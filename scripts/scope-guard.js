@@ -75,6 +75,7 @@ const ALLOWED = [
   "api/_lib/feed-city.js",
   "api/_lib/orbit-zip-table.json",
   "api/_lib/orbit-zip-cdp-names.json",
+  "api/_lib/orbit-zip-tiers.json",
   "api/cron-visitdetroit.js",
   // DQ-004 verified-only editorial associations (owner approval 2026-10-16, staging implementation): the shared verification rule,
   // the admin decisions API, and the additive verification columns + verified-only public read policy.

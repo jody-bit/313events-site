@@ -4,9 +4,9 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
-const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
+const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, loadZipTiers, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
 
-// Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v2 table, loaded lazily. A ZIP
+// Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v3 table (with evidence tiers), loaded lazily. A ZIP
 // that is not in it is "no evidence". FEED_CITY_INCLUDE_CDP=0 drops Census-designated-place names (owner decision open).
 let zipTableCache = null;
 function zipTable() { return zipTableCache || (zipTableCache = loadZipTable()); }
@@ -198,13 +198,13 @@ function parseAddress(address) {
 }
 
 // venue_address_raw / venue_city_raw for one hit. The parsed city is stored only when it agrees with the
-// feed's own ZIP and _geoloc (GEO-003 Addendum 2); a mismatch stores no city and the row lands in
-// Needs Follow-up with the street kept. Detroit is stored explicitly, not as NULL, so that a blank city
+// feed's own ZIP and _geoloc (GEO-003 Addendum 2); a mismatch stores no city (NULL) and keeps the street;
+// the admin Needs Follow-up list surfaces it because the city is missing. Detroit is stored explicitly, not as NULL, so that a blank city
 // can mean "unknown" once the map stops defaulting blanks to Detroit.
 function rowCityFields(address, hit, deps) {
   const { street, city, zip } = parseAddress(address);
   const g = (hit && hit._geoloc) || {};
-  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable(), cdpNames: loadCdpNames() });
+  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable(), cdpNames: loadCdpNames(), tiers: loadZipTiers() });
   return { venue_address_raw: street, venue_city_raw: decision.city, _cityDecision: decision };
 }
 
