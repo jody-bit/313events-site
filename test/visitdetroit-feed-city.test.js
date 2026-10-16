@@ -255,4 +255,34 @@ console.log("PASS: 13. v3 tiers: only strong confirms");
 }
 console.log("PASS: 14. post-cron regression (Pontiac, Macomb Center, Oxford, Lake Orion, Rochester, Sanctuary x6)");
 
+// --- 15. owner decision 2026-10-16 13:06Z: canonical storage + ambiguous partial names ---
+{
+  const deps = { zipTable: F.loadZipTable(), cdpNames: F.loadCdpNames(), tiers: F.loadZipTiers() };
+  // confirmed township variants store the canonical municipality name
+  const cl = F.decideFeedCity({ city: "Charter Township Of Clinton", zip: "48038" }, deps);
+  assert.strictEqual(cl.city, "Clinton Township"); assert.ok(cl.confirmed);
+  assert.strictEqual(F.decideFeedCity({ city: "Canton", zip: "48187" }, deps).city, "Canton Township");
+  assert.strictEqual(F.decideFeedCity({ city: "West Bloomfield", zip: "48322" }, deps).city, "West Bloomfield Township");
+  // the cron path writes the canonical name
+  assert.strictEqual(vd.rowCityFields(["Macomb Center", "44575 Garfield Rd", "Charter Township Of Clinton, Michigan 48038"], {}).venue_city_raw, "Clinton Township");
+  // an existing canonical city is never replaced by an alias
+  const alias = { city: "Clinton Township", status: "stored", evidence: "municipality", confirmed: true };
+  assert.strictEqual(F.protectExistingCity({ venue_city_raw: "Clinton Township" }, alias, "Clinton Township").venue_city_raw, "Clinton Township", "same city: unchanged");
+  const aliasDec = { city: "Charter Township of Clinton", status: "stored", confirmed: true };
+  assert.ok(!("venue_city_raw" in F.protectExistingCity({ venue_city_raw: "Charter Township of Clinton" }, aliasDec, "Clinton Township")), "alias never replaces canonical");
+  // ambiguous partial names are preserved as unverified, not confirmed
+  const hl = F.decideFeedCity({ city: "Highland", zip: "48356" }, deps);
+  assert.strictEqual(hl.status, "stored_unverified"); assert.strictEqual(hl.confirmed, false); assert.strictEqual(hl.ambiguousPartial, true); assert.strictEqual(hl.city, "Highland");
+  const bl = { zipTable: { "48302": { municipalities: ["Bloomfield Township", "Bloomfield Hills"] } }, tiers: { "48302": { "bloomfield township": "strong", "bloomfield hills": "strong" } } };
+  const bd = F.decideFeedCity({ city: "Bloomfield", zip: "48302" }, bl);
+  assert.strictEqual(bd.confirmed, false, "bare Bloomfield is not confirmed by a ZIP-table match");
+  assert.strictEqual(F.decideFeedCity({ city: "Bloomfield Hills", zip: "48302" }, bl).confirmed, true, "full name still confirms");
+  // a new unverified city cannot overwrite a verified existing city
+  for (const c of ["Oxford", "Rochester", "Pontiac", "Lake Orion", "Highland", "Davisburg"]) {
+    const d = F.decideFeedCity({ city: c, zip: c === "Pontiac" ? "48320" : "48370" }, deps);
+    if (!d.confirmed) assert.ok(!("venue_city_raw" in F.protectExistingCity({ venue_city_raw: "Birmingham" }, d, "Birmingham")), `${c} cannot overwrite`);
+  }
+}
+console.log("PASS: 15. canonical storage, ambiguous partial names, unverified never overwrites");
+
 console.log("\nAll VisitDetroit feed-city tests passed.");
