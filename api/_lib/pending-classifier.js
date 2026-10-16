@@ -64,7 +64,14 @@ function classifyRows(rows) {
     counts[q.class]++;
     return Object.assign({}, r, { queue_class: q });
   });
-  return { events: out, class_counts: counts };
+  return { events: out, class_counts: counts, actionable_count: actionableCount(counts) };
 }
 
-module.exports = { isDearbornRow, classifyPendingRow, classifyRows, CLASSES, CLASS_LABELS };
+// Rows a person has to decide on: events and programs plus ambiguous ones. The other classes stay listed in their own
+// labelled groups and are never approved, rejected or dismissed by this count. Computed from the counts, never hard-coded.
+const ACTIONABLE_CLASSES = ["public_event", "ambiguous"];
+function actionableCount(classCounts) {
+  return ACTIONABLE_CLASSES.reduce((n, c) => n + ((classCounts && classCounts[c]) || 0), 0);
+}
+
+module.exports = { ACTIONABLE_CLASSES, actionableCount, isDearbornRow, classifyPendingRow, classifyRows, CLASSES, CLASS_LABELS };

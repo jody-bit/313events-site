@@ -1426,7 +1426,7 @@ async function loadQueue() {
 
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
-    renderList(data.events || [], data.class_counts);
+    renderList(data.events || [], data.class_counts, data.actionable_count);
   } catch (err) {
     gateErr.textContent = err.message;
     gateErr.style.display = 'block';
@@ -1436,10 +1436,12 @@ async function loadQueue() {
 // Stage 2 grouping labels (api/_lib/pending-classifier.js). Order: what needs a decision first.
 const QUEUE_CLASS_ORDER = ['public_event', 'ambiguous', 'civic_meeting', 'service', 'observance'];
 const QUEUE_CLASS_LABELS = { public_event: 'Events and programs', ambiguous: 'Needs a closer look', civic_meeting: 'Civic & Community: public meetings', service: 'Community services', observance: 'Calendar observances' };
-function renderList(events, classCounts) {
+function renderList(events, classCounts, actionableCount) {
   const list = document.getElementById('list');
   // The tab badge counts the current queue only; the historical view must not inflate it.
-  if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', events.length);
+  // The badge counts only the records that need a person (events and programs, ambiguous); the other groups stay listed below.
+  const badgeCount = (typeof actionableCount === 'number') ? actionableCount : events.length;
+  if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', badgeCount);
   document.getElementById('queueViewStatus').textContent = QUEUE_EXPIRED_VIEW ? events.length + ' ended pending event' + (events.length === 1 ? '' : 's') : '';
   if (!events.length) {
     list.innerHTML = QUEUE_EXPIRED_VIEW ? '<div class="empty">No ended pending events.</div>' : '<div class="empty">No pending submissions. 🎉</div>';

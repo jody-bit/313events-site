@@ -79,7 +79,8 @@ async function run() {
   const page = require("fs").readFileSync(`${REPO_DIR}/admin.html`, "utf8");
   assert.ok(/id="queueViewBtn"[^>]*onclick="toggleQueueView\(\)"/.test(page), "a button switches to the historical view");
   assert.ok(page.includes("'/api/admin-events' + (QUEUE_EXPIRED_VIEW ? '?expired=1' : '')"), "the button loads ?expired=1");
-  assert.ok(page.includes("if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', events.length);"), "the badge counts the current queue only");
+  // Stage 2 (owner decision 2026-10-16): the badge counts only actionable records, still never in the historical view.
+  assert.ok(page.includes("if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', badgeCount);"), "the badge counts the current queue only");
   console.log("PASS: admin page links to the historical view");
 
   // Paging: 2,300 pending rows with one shared created_at, ended rows scattered through them.

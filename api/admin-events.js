@@ -336,7 +336,7 @@ module.exports = async (req, res) => {
         if (!all.ok) { res.status(502).json({ error: all.error }); return; }
         // Read-side grouping (admin queue Stage 2): each row gets a queue_class annotation; none is dropped or changed.
         const classified = classifyRows(filterPendingQueue(all.rows, expiredView ? "expired" : "current"));
-        res.status(200).json({ events: classified.events, class_counts: classified.class_counts, view: expiredView ? "expired" : "current" });
+        res.status(200).json({ events: classified.events, class_counts: classified.class_counts, actionable_count: classified.actionable_count, view: expiredView ? "expired" : "current" });
         return;
       }
 

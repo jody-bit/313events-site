@@ -11,7 +11,7 @@ require("./fixtures/freeze-clock.js").freezeClock("2026-10-16T16:00:00Z");
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { classifyPendingRow: classifyAny, classifyRows, CLASSES } = require("../api/_lib/pending-classifier.js");
+const { classifyPendingRow: classifyAny, classifyRows, actionableCount, CLASSES } = require("../api/_lib/pending-classifier.js");
 const FX = require("./fixtures/dearborn-pending-titles-2026-10-16.json");
 // The fixture and the cases below are City of Dearborn rows.
 const classifyPendingRow = (r) => classifyAny(Object.assign({ source: "City of Dearborn" }, r));
@@ -66,6 +66,26 @@ for (const title of ["Bagley Community Council Annual Trunk or Treat", "Board Ga
 assert.strictEqual(classifyAny({ title: "Pension Board Meeting", source: "City of Dearborn" }).class, "civic_meeting");
 assert.strictEqual(classifyAny({ title: "Pension Board Meeting", source: "  CITY OF DEARBORN" }).class, "civic_meeting", "label matched case-insensitively");
 
+// 4c. Badge: events plus ambiguous only, computed from live rows, other records stay visible and untouched (owner decision 2026-10-16).
+{
+  const dearborn = FX.flatMap((r) => Array.from({ length: r.count }, (_, i) => ({ id: r.title + i, source: "City of Dearborn", status: "pending_review", title: r.title, venue_name_raw: r.venue_name_raw, category: r.category })));
+  const res = classifyRows(dearborn);
+  assert.strictEqual(res.actionable_count, 51, "48 events/programs + 3 ambiguous");
+  assert.strictEqual(res.events.length - res.actionable_count, 69, "46 meetings + 12 services + 11 observances stay listed");
+  assert.deepStrictEqual([res.class_counts.civic_meeting, res.class_counts.service, res.class_counts.observance], [46, 12, 11]);
+  assert.ok(res.events.every((e) => e.status === "pending_review"), "classification never overrides the submission status");
+  assert.ok(res.events.every((e) => e.queue_class && CLASSES.includes(e.queue_class.class)), "every record sits in exactly one labelled group");
+  // dynamic: adding rows from another source and another Dearborn meeting changes the badge by exactly the actionable ones
+  const more = classifyRows(dearborn.concat([
+    { id: "x1", source: "Eventbrite", status: "pending_review", title: "Book Club Meeting", venue_name_raw: "Venue TBA", category: "community" },
+    { id: "x2", source: "City of Dearborn", status: "pending_review", title: "Zoning Board of Appeals", venue_name_raw: "16901 Michigan Avenue, Dearborn", category: "community" },
+  ]));
+  assert.strictEqual(more.actionable_count, 52, "other-source row counts; a new meeting does not");
+  assert.strictEqual(more.events.length, 122);
+  assert.strictEqual(actionableCount({}), 0);
+  assert.strictEqual(actionableCount(undefined), 0);
+}
+
 // 5. Endpoint: annotated, no writes; admin.html groups, collapses only the three standing classes.
 async function endpoint() {
   process.env.SUPABASE_URL = "https://example.supabase.co";
@@ -88,12 +108,17 @@ async function endpoint() {
   assert.strictEqual(res._body.events.find((e) => e.id === "a").queue_class.class, "civic_meeting");
   assert.strictEqual(res._body.events.find((e) => e.id === "b").queue_class.class, "public_event");
   assert.deepStrictEqual(res._body.class_counts, { public_event: 1, civic_meeting: 1, service: 0, observance: 0, ambiguous: 0 });
+  assert.strictEqual(res._body.actionable_count, 1, "badge value is returned by the endpoint");
   assert.ok(calls.every((c) => c.method === "GET"), "classification performs no writes");
 }
 function page() {
   const html = fs.readFileSync(path.join(REPO_DIR, "admin.html"), "utf8");
   assert.ok(html.includes("Civic & Community: public meetings"));
   assert.ok(html.includes("QUEUE_CLASS_ORDER"));
+  assert.ok(html.includes("setTabBadge('submissions', badgeCount)"), "badge uses the actionable count");
+  assert.ok(html.includes("data.actionable_count"), "UI reads the endpoint's count, not a constant");
+  assert.ok(!/setTabBadge\('submissions', (?:51|120|131)\)/.test(html), "badge is never hard-coded");
+  assert.ok(html.includes("rows.map(cardHtml).join('')"), "every class group lists all of its records");
   assert.ok(html.includes("onclick=\"review('${e.id}','approve')\"") && html.includes("onclick=\"review('${e.id}','reject')\""), "Approve and Reject remain on every card");
 }
 endpoint().then(() => { page(); console.log("pending-classifier: all assertions passed"); }, (e) => { console.error(e); process.exit(1); });
