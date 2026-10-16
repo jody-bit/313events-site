@@ -71,10 +71,40 @@ assert.strictEqual(key("Charter Township Of Clinton"), "c:clinton township");
 assert.strictEqual(key("East Lansing"), "c:east lansing");
 assert.strictEqual(key("Grosse Pointe Farms"), "c:grosse pointe");
 assert.strictEqual(key("Grosse Pointe Shores"), "c:grosse pointe");
+for (const bad of ["Warren, OH", "Troy, NY", "Warren, ZZ", "Windsor, MI", "Toledo, MI"]) {
+  assert.strictEqual(place(bad), null, bad + ": a state that disagrees with the table city must not resolve");
+}
+assert.strictEqual(key("Windsor, ON"), "c:windsor");
+assert.strictEqual(key("Toledo, OH 43604"), "c:toledo");
+assert.strictEqual(key("Warren, mi 48092"), "c:warren");
 for (const bad of ["2810 Russell St.", "Tech   Mount Clemens", "West", "Ottawa", "Maidstone", "Bowling Green"]) {
   assert.strictEqual(place(bad), null, bad + " must stay unresolved (never guessed)");
 }
 console.log("PASS: named cases; malformed records, Ottawa and Phase 2 cities stay unresolved");
+
+// 4b. Grosse Pointe municipalities share one marker but keep their names on its label.
+{
+  const src = html.slice(html.indexOf("function buildPlaces()"), html.indexOf("let leafletMap"));
+  const c2 = { resolvePlace: ctx.resolvePlace, matchesFilters: () => true, timeSortMinutes: () => 0 };
+  const mk = (city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" });
+  const run = (cities) => {
+    c2.EVENTS = cities.map(mk);
+    vm.createContext(c2);
+    vm.runInContext(src + "\nthis.out=buildPlaces();", c2);
+    return [...c2.out.values()];
+  };
+  let out = run(["Grosse Pointe Farms", "Grosse Pointe Shores", "Grosse Pointe Farms"]);
+  assert.strictEqual(out.length, 1);
+  assert.strictEqual(out[0].label, "Grosse Pointe (Farms, Shores)");
+  assert.strictEqual(out[0].events.length, 3);
+  out = run(["Grosse Pointe", "Grosse Pointe Shores"]);
+  assert.strictEqual(out[0].label, "Grosse Pointe (incl. Shores)");
+  out = run(["Grosse Pointe"]);
+  assert.strictEqual(out[0].label, "Grosse Pointe");
+  out = run(["Warren, MI 48092", "Warren"]);
+  assert.strictEqual(out[0].label, "Warren");
+  console.log("PASS: Grosse Pointe municipality names kept on the shared label");
+}
 
 // 5. Source values are preserved: resolution never rewrites the event.
 const ev = { venue: "v", city: "Warren, MI 48092" };
