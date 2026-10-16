@@ -128,7 +128,14 @@
     var country = c.country && c.country !== "US" ? c.country : "";
     var cityPart = c.city;
     if (!c.state && c.zip) { cityPart = [c.city, c.zip].filter(Boolean).join(" "); region = ""; }
-    var parts = [clean(name), c.street, cityPart, region, country].filter(Boolean);
+    // a street that already ends in the city ("123 Woodward Ave, Highland Park" + city
+    // "Highland Park") would repeat it; drop the street's trailing copy
+    var street = c.street;
+    if (street && c.city) {
+      var segs = street.split(",").map(clean);
+      if (segs.length > 1 && normKey(segs[segs.length - 1]) === normKey(c.city)) street = segs.slice(0, -1).join(", ");
+    }
+    var parts = [clean(name), street, cityPart, region, country].filter(Boolean);
     // collapse an adjacent duplicate ("Detroit, Detroit")
     var dedup = [];
     parts.forEach(function (p) { if (!dedup.length || normKey(dedup[dedup.length - 1]) !== normKey(p)) dedup.push(p); });

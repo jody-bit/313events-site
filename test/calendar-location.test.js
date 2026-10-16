@@ -408,6 +408,13 @@ function finish() {
   for (const f of ["calendar.html", "map.html", "radar.html", "venue-template.html", "venues.html", "neighborhoods.html"]) {
     assert.ok(files.includes(f) && !exportsCalendar.test(fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")), `${f} must not contain its own calendar export`);
   }
+  // A street that already ends in the city must not repeat it ("Highland Park, Highland Park").
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "100 Woodward Ave, Highland Park, Highland Park, MI 48203", locEventCity: "Highland Park" }).text,
+    "100 Woodward Ave, Highland Park, MI 48203");
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "100 Woodward Ave, Highland Park", locEventCity: "Highland Park" }).text,
+    "100 Woodward Ave, Highland Park");
   console.log("calendar-location: all assertions passed");
 }
 
