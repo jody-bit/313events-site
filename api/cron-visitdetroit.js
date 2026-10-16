@@ -4,11 +4,12 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
-const { parseZip, decideFeedCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
+const { parseZip, decideFeedCity, loadZipTable } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
 
-// Orbit ZIP -> municipality table (GEO-003 Addendum 2). Empty until the Census-built dataset is loaded;
-// until then only the Detroit boundary check applies. Shape: { "48009": { municipalities: ["Birmingham"] } }.
-const ZIP_TABLE = {};
+// Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v2 table, loaded lazily. A ZIP
+// that is not in it is "no evidence". FEED_CITY_INCLUDE_CDP=0 drops Census-designated-place names (owner decision open).
+let zipTableCache = null;
+function zipTable() { return zipTableCache || (zipTableCache = loadZipTable()); }
 
 // Vercel Cron job — pulls Detroit-area events straight from visitdetroit.com's
 // own Algolia search index, discovered 2026-09-14 while answering Jody's
@@ -203,7 +204,7 @@ function parseAddress(address) {
 function rowCityFields(address, hit, deps) {
   const { street, city, zip } = parseAddress(address);
   const g = (hit && hit._geoloc) || {};
-  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: ZIP_TABLE });
+  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable() });
   return { venue_address_raw: street, venue_city_raw: decision.city, _cityDecision: decision };
 }
 

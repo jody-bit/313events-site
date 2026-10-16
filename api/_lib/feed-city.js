@@ -47,6 +47,32 @@ function clearlyOutsideDetroit(lat, lng) {
   return b.milesFromDetroitBorder(lat, lng) > BORDER_TOLERANCE_MILES;
 }
 
+// The Census-built Orbit ZIP -> municipality table (event-intelligence v2, 229 Detroit-area ZIPs 48001-48393, from the
+// 2020 ZCTA relationship files; evidence per name is in EI's zip-municipality-table-evidence CSV). A ZIP absent from the
+// table is "no evidence", never a contradiction. Names that exist only because Census lists a Census-designated place
+// (28 names in 12 ZIPs) are listed in orbit-zip-cdp-names.json so they can be switched off: the owner's CDP decision is
+// open, so the default keeps them (feeds do use those names) and FEED_CITY_INCLUDE_CDP=0 removes them.
+let orbitTable = null;
+let orbitCdpNames = null;
+function loadZipTable(opts) {
+  const o = opts || {};
+  const envOff = process.env.FEED_CITY_INCLUDE_CDP === "0";
+  const includeCdp = o.includeCdp === undefined ? !envOff : !!o.includeCdp;
+  if (!orbitTable) {
+    orbitTable = require("./orbit-zip-table.json");
+    orbitCdpNames = require("./orbit-zip-cdp-names.json");
+  }
+  if (includeCdp) return orbitTable;
+  const out = {};
+  for (const zip of Object.keys(orbitTable)) {
+    const drop = new Set((orbitCdpNames[zip] || []).map(norm));
+    // drop every spelling that normalizes to a CDP-only name ("Pearl Beach" and "Pearl Beach CDP")
+    for (const n of orbitCdpNames[zip] || []) drop.add(norm(n.replace(/\s+CDP$/i, "")));
+    out[zip] = Object.assign({}, orbitTable[zip], { municipalities: orbitTable[zip].municipalities.filter((m) => !drop.has(norm(m))) });
+  }
+  return out;
+}
+
 // in:  { city, zip, lat, lng }   deps: { zipTable: { "48009": { municipalities: ["Birmingham"] } } }
 // out: { city, status, reason }
 function decideFeedCity(input, deps) {
@@ -76,4 +102,4 @@ function decideFeedCity(input, deps) {
     : { city, status: "stored_unverified", reason: "no ZIP-table or boundary evidence to confirm or contradict" };
 }
 
-module.exports = { parseZip, decideFeedCity, BORDER_TOLERANCE_MILES };
+module.exports = { parseZip, decideFeedCity, loadZipTable, BORDER_TOLERANCE_MILES };

@@ -73,6 +73,8 @@ const ALLOWED = [
   "api/_lib/ingest-eligibility.js",
   // GEO-003 step 2 (owner order 2026-10-16): VisitDetroit stores the feed city only when it agrees with ZIP and _geoloc.
   "api/_lib/feed-city.js",
+  "api/_lib/orbit-zip-table.json",
+  "api/_lib/orbit-zip-cdp-names.json",
   "api/cron-visitdetroit.js"
 ];
 

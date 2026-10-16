@@ -100,4 +100,44 @@ console.log("PASS: 7. border tolerance");
   assert.strictEqual(good.venue_city_raw, "Detroit");
 }
 console.log("PASS: 8. cron row fields");
+// --- 9. the Census-built Orbit table (EI v2, 229 Detroit-area ZIPs) loads, with the CDP choice switchable ---
+{
+  const all = F.loadZipTable({ includeCdp: true });
+  const noCdp = F.loadZipTable({ includeCdp: false });
+  assert.ok(Object.keys(all).length >= 229, "EI's v2 table is loaded");
+  assert.ok(all["48001"].municipalities.includes("Pearl Beach CDP"), "CDP names are present when included");
+  assert.ok(!noCdp["48001"].municipalities.includes("Pearl Beach CDP") && !noCdp["48001"].municipalities.includes("Pearl Beach"), "CDP-only names drop out when excluded");
+  assert.ok(noCdp["48001"].municipalities.includes("Clay Township"), "legal municipalities stay");
+  assert.ok(all["48001"].municipalities.includes("Pearl Beach"), "the loader never mutates the shared table");
+  assert.strictEqual(F.loadZipTable().__proto__, Object.prototype, "default load works with no arguments");
+  const prev = process.env.FEED_CITY_INCLUDE_CDP;
+  process.env.FEED_CITY_INCLUDE_CDP = "0";
+  assert.ok(!F.loadZipTable()["48001"].municipalities.includes("Pearl Beach"), "FEED_CITY_INCLUDE_CDP=0 turns CDP names off");
+  if (prev === undefined) delete process.env.FEED_CITY_INCLUDE_CDP; else process.env.FEED_CITY_INCLUDE_CDP = prev;
+}
+console.log("PASS: 9. Orbit table loads; CDP names switchable");
+
+// --- 10. replay EI's 94 real VisitDetroit rows with the real table: only the 6 Sanctuary rows are queued ---
+{
+  const fs = require("fs");
+  const csv = `${REPO_DIR}/test/fixtures/visitdetroit-94-join-2026-10-16.csv`;
+  const lines = fs.readFileSync(csv, "utf8").trim().split("\n").slice(1);
+  const real = F.loadZipTable({ includeCdp: true });
+  let queued = 0, stored = 0, none = 0;
+  for (const line of lines) {
+    const m = /"([^"]*)",(-?[\d.]+),(-?[\d.]+),/.exec(line);
+    if (!m) { none++; continue; }
+    const city = m[1].split(",")[0].trim();
+    const d = F.decideFeedCity({ city, zip: F.parseZip(m[1]), lat: parseFloat(m[2]), lng: parseFloat(m[3]) }, { zipTable: real });
+    if (d.status === "needs_follow_up") { queued++; assert.ok(/Birmingham|48009/.test(m[1] + d.reason)); }
+    else if (d.status === "stored") stored++;
+  }
+  assert.strictEqual(queued, 6, "only the six Sanctuary Church Birmingham rows are queued");
+  assert.ok(stored >= 79, "Detroit rows are stored as verified now that the ZIP table confirms them (" + stored + ")");
+  // a Detroit claim in a ZIP the table lists for another municipality only
+  const d = F.decideFeedCity({ city: "Detroit", zip: "48009", lat: 42.33, lng: -83.05 }, { zipTable: real });
+  assert.strictEqual(d.status, "needs_follow_up", "48009 does not list Detroit");
+}
+console.log("PASS: 10. real-data replay with the real table");
+
 console.log("\nAll VisitDetroit feed-city tests passed.");
