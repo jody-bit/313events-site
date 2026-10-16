@@ -889,8 +889,11 @@
         // not attendable on any specific date, so no date-specific window
         // matches it. It stays in general browsing (open-ended 'all' window,
         // no upper bound) while the range has not ended, and in search.
-        if (w.to !== null) return false;
-        if (w.forward && end < c.today) return false;
+        if (w.mode !== "all") return false;
+        if (w.forward) {
+          if (end < c.today) return false;
+          if (end === c.today && endedByClock(e.time, c.minutes)) return false;
+        }
         if (w.from !== null && end < w.from) return false;
         return !w.evening;
       }

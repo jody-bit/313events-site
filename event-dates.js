@@ -170,6 +170,20 @@
     return isIso(start) && iso >= start && iso <= endOf(e);
   }
 
+  // What may be said about this event on a selected date (shape shared with Platform's #142):
+  //   "confirmed" / "ongoing"  the schedule is verified and the event is active that day
+  //   "unverified"  the stored range covers the day but its schedule is unverified: a page may
+  //                 offer it in a separate "Dates not confirmed" browse, never as available
+  //   null          not on that date
+  function availabilityOn(e, iso) {
+    if (isActiveOn(e, iso)) return scheduleState(e) === "ongoing" ? "ongoing" : "confirmed";
+    if (scheduleState(e) === "unverified") {
+      var start = startOf(e);
+      if (isIso(start) && iso >= start && iso <= endOf(e)) return "unverified";
+    }
+    return null;
+  }
+
   // Why a person should classify this row, or null. Never a reason to remove
   // it: ambiguity is routed to review, not deleted.
   //   unclassified-multiday-clock-time: legacy range that also states a clock
@@ -202,6 +216,7 @@
     bounds: bounds,
     expand: expand,
     isActiveOn: isActiveOn,
+    availabilityOn: availabilityOn,
     reviewReason: reviewReason
   });
 

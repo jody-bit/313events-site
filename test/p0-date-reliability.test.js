@@ -155,3 +155,28 @@ test("COUNTS: listed-per-day for the fixture set (Fri/Sat/Sun); every row that l
   assert.deepStrictEqual(perDay(FRI).sort(), ["continuousExhibit", "fridayOnly", "overnight"]);
   assert.deepStrictEqual(perDay(SAT).sort(), ["continuousExhibit", "recurringWithExceptions", "weekendRecurring"]);
 });
+
+// ---------------------------------------------------------------- 4. production-shaped cases (shape from Platform's #142)
+test("PRODUCTION SHAPE: Cider in the City (Oct 11-18 range, 1 PM) is not on Friday; with evidence it is Sat/Sun only", () => {
+  const cider = { id: "5bf90f52", date: "2026-10-11", endDate: "2026-10-18", time: "1:00 PM" };
+  const fixed = { ...cider, dateSemantics: "recurring", occurrenceDates: ["2026-10-10", "2026-10-11", "2026-10-17", "2026-10-18"] };
+  assert.strictEqual(on(cider, FRI), false);
+  assert.strictEqual(ED.availabilityOn(cider, FRI), "unverified", "inside its published range, but only as unverified");
+  assert.strictEqual(ED.availabilityOn(cider, "2026-10-19"), null);
+  assert.strictEqual(ED.availabilityOn(fixed, FRI), null);
+  assert.strictEqual(ED.availabilityOn(fixed, SAT), "confirmed");
+});
+test("PRODUCTION SHAPE: Thursday-night overnight row is not a Friday event; the Friday-night one is", () => {
+  const thu = { date: "2026-10-15", endDate: "2026-10-16", time: "8:00 PM–1:00 AM" };
+  const fri = { date: FRI, endDate: SAT, time: "9:00 PM–2:00 AM" };
+  assert.strictEqual(ED.availabilityOn(thu, FRI), null);
+  assert.strictEqual(ED.availabilityOn(fri, FRI), "confirmed");
+  assert.strictEqual(ED.availabilityOn(fri, SAT), null);
+});
+test("DISCOVERY: weekend and date windows ignore unverified ranges; the all window keeps them", () => {
+  const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+  const FRI_NOW = new Date("2026-10-16T16:00:00Z");
+  const cider = { title: "C", venue: "V", cat: "fest", free: false, source: "VisitDetroit", date: "2026-10-11", endDate: "2026-10-18", time: "1:00 PM" };
+  assert.strictEqual(D.matches(cider, D.change(D.defaults(), { when: "weekend" }), { now: FRI_NOW }), false);
+  assert.strictEqual(D.matches(cider, D.change(D.defaults(), { when: "all" }), { now: FRI_NOW }), true);
+});

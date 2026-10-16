@@ -1406,10 +1406,10 @@ function matchesFilters(e){
   if(whenMode){
     const todayIso = getTodayISO();
     if(whenMode === 'weekend'){
-      if(!cachedWeekendDates.includes(e.date)) return false;
+      if(!cachedWeekendDates.some(d => EventDates.isActiveOn(e, d))) return false; // the shared rule, not just the start date (2026-10-16)
     } else {
       // now / today / tonight are all "today", narrowed further below
-      if(e.date !== todayIso) return false;
+      if(!EventDates.isActiveOn(e, todayIso)) return false; // the shared rule, not just the start date (2026-10-16)
       if(whenMode === 'now'){
         // Same fix applied to index.html's default list view (Jody,
         // 2026-08-28: "just because it began already doesn't mean the user
