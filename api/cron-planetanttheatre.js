@@ -126,6 +126,16 @@ const REQUEST_HEADERS = {
   Referer: `https://www.crowdwork.com/v/${VENUE_SLUG}/shows`,
 };
 
+// 2026-10-16: CrowdWork's CEO replied to our allowlist request (the block is a Cloudflare managed challenge) and
+// will add a custom rule that recognizes an X-CrowdWork-Key header they issued to us. The key lives only in the
+// CROWDWORK_KEY environment variable (set in Vercel by the owner); it is never committed, logged or echoed. With
+// no key set the request is exactly the one we sent before, so this change is inert until the variable exists.
+// The User-Agent stays honest, and nothing here tries to get around the challenge other than the rule they offered.
+function buildRequestHeaders(env = process.env) {
+  const key = env.CROWDWORK_KEY && String(env.CROWDWORK_KEY).trim();
+  return key ? { ...REQUEST_HEADERS, "X-CrowdWork-Key": key } : { ...REQUEST_HEADERS };
+}
+
 function decodeEntities(str) {
   if (!str) return str;
   return String(str)
@@ -270,7 +280,7 @@ module.exports = async (req, res) => {
   try {
     const r = await fetch(
       `https://www.crowdwork.com/api/v2/${VENUE_SLUG}/shows?start=${todayISO}`,
-      { headers: REQUEST_HEADERS }
+      { headers: buildRequestHeaders() }
     );
     httpStatus = r.status;
     if (!r.ok) {
@@ -374,3 +384,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ upserted: 0, error: err.message });
   }
 };
+module.exports.buildRequestHeaders = buildRequestHeaders;
