@@ -7,7 +7,7 @@
 -- Nothing is deleted. Defaults for links EI did not individually list: match_type manual -> verified (EI headline check),
 -- otherwise candidate. Every classified row gets verified_by 'audit_2026_10_16' and a one-entry verification_history.
 -- Requires the columns migration (20261016000000) first; the public-read policy swap (20261016000001) runs AFTER this.
--- Expected after the run (production): 181 rows = 94 verified, 11 candidate, 75 needs_follow_up, 1 rejected.
+-- Expected after the run (production): 181 rows = 88 verified, 15 candidate, 77 needs_follow_up, 1 rejected (after EI/R&Q body spot-check, 2026-10-16 03:30Z).
 begin;
 create table if not exists public.editorial_article_events_backup_dq004_20261016 as select * from public.editorial_article_events;
 alter table public.editorial_article_events_backup_dq004_20261016 enable row level security;
@@ -117,6 +117,12 @@ with art(aid, st, basis) as (values
   ('38101fdb','needs_follow_up','EI 2026-10-16 headline review (article body not read): Related subject or venue but not clearly the same event; check article body'),
   ('dc2323af','needs_follow_up','EI 2026-10-16 headline review (article body not read): Related subject or venue but not clearly the same event; check article body')
 ), pair(aid, eid, st, basis) as (values
+  ('33f60b02','e46d1571','candidate','EI/R&Q 2026-10-16 spot-check: publisher returned a 403 bot check, article body could not be read (EI browser and R&Q Mac); stays hidden until the body is read'),
+  ('33f60b02','4bf662f9','candidate','EI/R&Q 2026-10-16 spot-check: publisher returned a 403 bot check, article body could not be read (EI browser and R&Q Mac); stays hidden until the body is read'),
+  ('33f60b02','505d10a7','candidate','EI/R&Q 2026-10-16 spot-check: publisher returned a 403 bot check, article body could not be read (EI browser and R&Q Mac); stays hidden until the body is read'),
+  ('128b5fcd','5dbb97a8','candidate','EI/R&Q 2026-10-16 spot-check: publisher returned a 403 bot check, article body could not be read (EI browser and R&Q Mac); stays hidden until the body is read'),
+  ('fce58ea5','517856ff','needs_follow_up','EI 2026-10-16 article body read: names Dally in the Alley but not an official after-party at Marble Bar; needs evidence'),
+  ('6a2458a4','87808e63','needs_follow_up','R&Q 2026-10-16 article body read: article puts Sweet Endings on Oct 3-4, event is dated Oct 2; needs evidence'),
   ('4ddf1399','7d9368ad','needs_follow_up','EI 2026-10-16 headline-only mismatch (article body not read), needs evidence before it can be called final: Article about Ferndale art; event is Rochester Posed'),
   ('c1fdef72','e1e9358a','needs_follow_up','EI 2026-10-16 headline-only mismatch (article body not read), needs evidence before it can be called final: Article is about Youmacon; event is Furfluencer Extravaganza'),
   ('c1fdef72','2cb556e2','verified','EI 2026-10-16 headline review (article body not read): Headline names Youmacon'),
@@ -176,8 +182,8 @@ begin
   if (select count(*) from public.editorial_article_events where verification_status='rejected' and left(article_id::text,8) <> 'f82a820d') <> 0 then
     raise exception 'DQ-004 backfill: only the Harvest Festival link may be rejected';
   end if;
-  if n_total <> 181 or n_ver <> 94 or n_cand <> 11 or n_nfu <> 75 or n_rej <> 1 then
-    raise exception 'DQ-004 backfill: unexpected counts total=% verified=% candidate=% needs_follow_up=% rejected=% (expected 181/94/11/75/1)', n_total, n_ver, n_cand, n_nfu, n_rej;
+  if n_total <> 181 or n_ver <> 88 or n_cand <> 15 or n_nfu <> 77 or n_rej <> 1 then
+    raise exception 'DQ-004 backfill: unexpected counts total=% verified=% candidate=% needs_follow_up=% rejected=% (expected 181/88/15/77/1)', n_total, n_ver, n_cand, n_nfu, n_rej;
   end if;
 end $$;
 commit;
