@@ -32,7 +32,7 @@
 //   node scripts/visitdetroit-dead-link-repair.js --dry-run  (reports only)
 
 const { healEventUrl, registerRecoveryStrategy, classifyRecoveryOutcome } = require("../api/_lib/link-health");
-const { visitDetroitRecoveryStrategy } = require("../api/_lib/visitdetroit-link-recovery");
+const { visitDetroitRecoveryStrategy, OLD_SHAPE_RE } = require("../api/_lib/visitdetroit-link-recovery");
 
 registerRecoveryStrategy("visitdetroit.com", visitDetroitRecoveryStrategy);
 
@@ -144,6 +144,12 @@ async function repairVisitDetroitDeadLinks({
     }
 
     let patchBody;
+    if (result.classification === "ok" && OLD_SHAPE_RE.test(event.ticket_url)) {
+      // P0 2026-10-16: the bare /<slug>/ form is the known-dead shape (R&Q: 292/292 returned 404 from a
+      // real browser). An "ok" for it is not a verified destination, so never record it as ok.
+      counts.unverifiedOldShape = (counts.unverifiedOldShape || 0) + 1;
+      continue;
+    }
     if (result.classification === "ok") {
       counts.ok++;
       if (event.link_check_status === "ok") continue; // already recorded as ok — nothing changed
