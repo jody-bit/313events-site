@@ -140,4 +140,43 @@ console.log("PASS: 9. Orbit table loads; CDP names switchable");
 }
 console.log("PASS: 10. real-data replay with the real table");
 
+// --- 11. evidence tiers: CDP names are compatibility, not definitive resolution ---
+{
+  const real = F.loadZipTable({ includeCdp: true });
+  const deps = { zipTable: real, cdpNames: F.loadCdpNames() };
+  const cdp = F.decideFeedCity({ city: "Pearl Beach", zip: "48001" }, deps);
+  assert.strictEqual(cdp.status, "stored_compatible");
+  assert.strictEqual(cdp.evidence, "cdp_compatible");
+  assert.strictEqual(cdp.confirmed, false, "a CDP match never counts as confirmed");
+  const inc = F.decideFeedCity({ city: "Algonac", zip: "48001" }, deps);
+  assert.strictEqual(inc.evidence, "municipality");
+  assert.strictEqual(inc.confirmed, true);
+  const det = F.decideFeedCity({ city: "Detroit", zip: "48201", lat: 42.35, lng: -83.06 }, deps);
+  assert.strictEqual(det.status, "stored");
+  assert.ok(det.confirmed, "legitimate Detroit stays accepted");
+  const none = F.decideFeedCity({ city: "Somewhere", zip: "99999" }, deps);
+  assert.strictEqual(none.status, "stored_unverified", "ZIP absent from the table is no evidence, not a contradiction");
+  // CDP switched off: the CDP name is no longer compatible with that ZIP
+  const off = F.decideFeedCity({ city: "Pearl Beach", zip: "48001" }, { zipTable: F.loadZipTable({ includeCdp: false }), cdpNames: F.loadCdpNames() });
+  assert.strictEqual(off.status, "needs_follow_up");
+}
+console.log("PASS: 11. evidence tiers (municipality / boundary / cdp_compatible / none)");
+
+// --- 12. a weaker incoming city never overwrites an existing city ---
+{
+  const row = { external_id: "vd-1", venue_city_raw: "Detroit" };
+  const unverified = { city: "Detroit", status: "stored_unverified", confirmed: false };
+  const compat = { city: "Pearl Beach", status: "stored_compatible", confirmed: false };
+  const confirmed = { city: "Detroit", status: "stored", confirmed: true };
+  const queued = { city: null, status: "needs_follow_up", confirmed: false };
+  assert.ok(!("venue_city_raw" in F.protectExistingCity(row, unverified, "Birmingham")), "unverified claim omitted when a city exists");
+  assert.ok(!("venue_city_raw" in F.protectExistingCity({ venue_city_raw: "Pearl Beach" }, compat, "Algonac")), "CDP-compatible omitted when a city exists");
+  assert.ok(!("venue_city_raw" in F.protectExistingCity({ venue_city_raw: null }, queued, "Birmingham")), "contradiction never writes");
+  assert.strictEqual(F.protectExistingCity(row, confirmed, "Birmingham").venue_city_raw, "Detroit", "confirmed evidence may replace");
+  assert.strictEqual(F.protectExistingCity(row, unverified, "").venue_city_raw, "Detroit", "no existing city: weak value still stored (today's behaviour)");
+  assert.strictEqual(F.protectExistingCity(row, unverified, null).venue_city_raw, "Detroit");
+  assert.strictEqual(row.venue_city_raw, "Detroit", "input row not mutated");
+}
+console.log("PASS: 12. existing city protected from weaker evidence");
+
 console.log("\nAll VisitDetroit feed-city tests passed.");

@@ -12,7 +12,11 @@
 // No evidence either way is NOT a contradiction: the parsed city is kept ("stored_unverified"), which is
 // today's behaviour for non-Detroit cities. This module never invents a city.
 //
-// status: stored | stored_unverified | needs_follow_up | no_city
+// status: stored | stored_compatible | stored_unverified | needs_follow_up | no_city
+// evidence: municipality (ZIP table lists the name as an incorporated/township municipality) | boundary (Detroit
+//   border) | cdp_compatible (name is only a Census-designated place in that ZIP: geographic compatibility, not a
+//   definitive municipality resolution) | none
+// Only `confirmed` (evidence municipality or boundary) may replace a city already stored on the row.
 
 "use strict";
 
@@ -73,33 +77,50 @@ function loadZipTable(opts) {
   return out;
 }
 
+function loadCdpNames() {
+  if (!orbitCdpNames) loadZipTable();
+  return orbitCdpNames;
+}
+
 // in:  { city, zip, lat, lng }   deps: { zipTable: { "48009": { municipalities: ["Birmingham"] } } }
-// out: { city, status, reason }
+// out: { city, status, evidence, confirmed, reason }
 function decideFeedCity(input, deps) {
   const city = (input && input.city ? String(input.city).trim() : "") || null;
-  if (!city) return { city: null, status: "no_city", reason: "feed gave no city text" };
+  if (!city) return { city: null, status: "no_city", evidence: "none", confirmed: false, reason: "feed gave no city text" };
   const table = (deps && deps.zipTable) || {};
   const key = norm(city);
-  let verified = false;
 
+  let evidence = "none";
   const zipRow = input.zip && table[input.zip];
   if (zipRow && Array.isArray(zipRow.municipalities) && zipRow.municipalities.length) {
     if (!zipRow.municipalities.some((m) => norm(m) === key)) {
-      return { city: null, status: "needs_follow_up", reason: `feed city "${city}" is not among ZIP ${input.zip}'s municipalities (${zipRow.municipalities.join(", ")})` };
+      return { city: null, status: "needs_follow_up", evidence: "none", confirmed: false, reason: `feed city "${city}" is not among ZIP ${input.zip}'s municipalities (${zipRow.municipalities.join(", ")})` };
     }
-    verified = true;
+    const cdp = ((deps && deps.cdpNames) || {})[input.zip] || [];
+    const cdpOnly = cdp.some((n) => norm(n) === key || norm(n.replace(/\s+CDP$/i, "")) === key);
+    evidence = cdpOnly ? "cdp_compatible" : "municipality";
   }
 
   if (validPoint(input.lat, input.lng) && key === "detroit") {
     if (clearlyOutsideDetroit(input.lat, input.lng)) {
-      return { city: null, status: "needs_follow_up", reason: `feed city "Detroit" but the coordinates are outside Detroit's border${input.zip ? ` (ZIP ${input.zip})` : ""}` };
+      return { city: null, status: "needs_follow_up", evidence: "none", confirmed: false, reason: `feed city "Detroit" but the coordinates are outside Detroit's border${input.zip ? ` (ZIP ${input.zip})` : ""}` };
     }
-    verified = true;
+    if (evidence !== "municipality") evidence = "boundary";
   }
 
-  return verified
-    ? { city, status: "stored", reason: "feed city agrees with the ZIP and/or coordinates" }
-    : { city, status: "stored_unverified", reason: "no ZIP-table or boundary evidence to confirm or contradict" };
+  if (evidence === "municipality" || evidence === "boundary") return { city, status: "stored", evidence, confirmed: true, reason: "feed city agrees with the ZIP and/or coordinates" };
+  if (evidence === "cdp_compatible") return { city, status: "stored_compatible", evidence, confirmed: false, reason: "feed city is a Census-designated place within the ZIP: compatible, not a definitive municipality" };
+  return { city, status: "stored_unverified", evidence, confirmed: false, reason: "no ZIP-table or boundary evidence to confirm or contradict" };
 }
 
-module.exports = { parseZip, decideFeedCity, loadZipTable, BORDER_TOLERANCE_MILES };
+// A weaker incoming city must never replace a city the row already has (e.g. one corrected by the GEO-003
+// backfill): only evidence-confirmed decisions may overwrite. Returns the row to write (a copy when changed).
+function protectExistingCity(row, decision, existingCity) {
+  if (!row || !String(existingCity || "").trim()) return row;
+  if (decision && decision.confirmed && decision.city) return row;
+  const out = Object.assign({}, row);
+  delete out.venue_city_raw;
+  return out;
+}
+
+module.exports = { parseZip, decideFeedCity, loadZipTable, loadCdpNames, protectExistingCity, BORDER_TOLERANCE_MILES };

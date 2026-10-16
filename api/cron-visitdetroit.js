@@ -1,10 +1,10 @@
 const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
-const { parseZip, decideFeedCity, loadZipTable } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
+const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
 
 // Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v2 table, loaded lazily. A ZIP
 // that is not in it is "no evidence". FEED_CITY_INCLUDE_CDP=0 drops Census-designated-place names (owner decision open).
@@ -204,7 +204,7 @@ function parseAddress(address) {
 function rowCityFields(address, hit, deps) {
   const { street, city, zip } = parseAddress(address);
   const g = (hit && hit._geoloc) || {};
-  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable() });
+  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: zipTable(), cdpNames: loadCdpNames() });
   return { venue_address_raw: street, venue_city_raw: decision.city, _cityDecision: decision };
 }
 
@@ -349,6 +349,7 @@ const visitDetroitHandler = async (req, res) => {
           ? `VisitDetroit lists this as recurring ("${h.readableRepeatRule}") — only this dated occurrence is captured here.`
           : null,
         _dedupeKey: dedupeKey(h.title, dt.startDate),
+        _cityDecision,
       };
     })
     .filter(Boolean);
@@ -394,7 +395,7 @@ const visitDetroitHandler = async (req, res) => {
 
   const newRows = mappedRows.filter((r) => !existingKeys.has(r._dedupeKey));
   const skippedAsDuplicate = mappedRows.length - newRows.length;
-  const rows = newRows.map(({ _dedupeKey, ...rest }) => rest);
+  const rows = newRows.map(({ _dedupeKey, ...rest }) => rest); // keeps _cityDecision until the existing-city check below
 
   if (!rows.length) {
     res.status(200).json({
@@ -419,21 +420,26 @@ const visitDetroitHandler = async (req, res) => {
     // (<=100 ids/request) this also fixes. Any failure aborts this run
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
-    let existingStatusByExternalId;
+    let existingRowsByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      existingRowsByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,venue_city_raw" }
       );
     } catch (lookupErr) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    const rowsWithStatus = rows.map((row) => ({
-      ...row,
-      status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-    }));
+    // GEO-003 safeguard: an incoming city that is not evidence-confirmed never replaces a city the row already has.
+    const rowsWithStatus = rows.map(({ _cityDecision, ...row }) => {
+      const existing = existingRowsByExternalId.get(row.external_id);
+      return {
+        ...protectExistingCity(row, _cityDecision, existing && existing.venue_city_raw),
+        status: (existing && existing.status) || DEFAULT_STATUS,
+      };
+    });
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
