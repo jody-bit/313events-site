@@ -3,7 +3,8 @@ const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-clos
 const path = require("path");
 const { buildVenueNameToIdMap, resolveVenueId, buildVenueDetailsMap, buildLearnedVenueAddressCityMap, resolveVenueAddressCityRepair, resolveVenueFromCandidate } = require("./_lib/venue-lookup");
 const { parseIcsLocation } = require("./_lib/ics-location");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingRows } = require("./_lib/status-lookup");
+const { decideSourceDescription, REPAIR_SOURCES } = require("./_lib/description-strength");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
@@ -809,12 +810,15 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
 // factored out — never silently falls back to an empty map).
 async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   let existingStatusByExternalId;
+  let existingRowsByExternalId;
   try {
-    existingStatusByExternalId = await lookupExistingStatuses(
+    existingRowsByExternalId = await lookupExistingRows(
       SUPABASE_URL,
       SUPABASE_SERVICE_ROLE_KEY,
-      rows.map((r) => r.external_id)
+      rows.map((r) => r.external_id),
+      { select: "external_id,status,title,description,description_source" }
     );
+    existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([externalId, existing]) => [externalId, existing.status]));
   } catch (lookupErr) {
     res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
     return null;
@@ -832,6 +836,16 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     const { _dateConfidence, _publication, _enrichment, _recurring, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
+    // Description strength rule (api/_lib/description-strength.js), for the sources the repair is rolled out to: a
+    // source text that is only a link (or any weaker or blank text) never replaces a stronger stored description,
+    // such as the factual copy the nightly repair wrote. The key is dropped, so the stored value is kept. Other
+    // feeds keep their existing write behaviour. A refreshed source may still update itself when both are good.
+    const stored = existingRowsByExternalId.get(row.external_id);
+    if (stored && stored.description && REPAIR_SOURCES.has(out.source)) {
+      const verdict = decideSourceDescription({ stored: stored.description, storedSource: stored.description_source, incoming: out.description, title: out.title || stored.title });
+      if (!verdict.write) delete out.description;
+      else if (stored.description_source === "generated") out.description_source = null;
+    }
     // A NEW row held by its feed's publication policy says why (api/_lib/feed-publication.js).
     // An existing row keeps its status and its note: this run only writes the note key for a new row.
     if (!existingStatus && _publication && _publication.state !== "verified") out.note = holdNote(_publication);
