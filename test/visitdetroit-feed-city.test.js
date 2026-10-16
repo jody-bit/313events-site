@@ -205,8 +205,10 @@ console.log("PASS: 12. existing city protected from weaker evidence");
   const weak = F.protectExistingCity({ venue_city_raw: "Detroit" }, det, "Grosse Pointe Woods");
   assert.ok(!("venue_city_raw" in weak));
   // cron default deps carry the tiers
-  const row = vd.rowCityFields("Some Hall, 1 Main St, Detroit, Michigan 48236", { _geoloc: { lat: 42.4, lng: -82.9 } });
-  assert.strictEqual(row._cityDecision.confirmed, false, "cron path uses tiers (Detroit in 48236 is not confirmed by ZIP)");
+  const row = vd.rowCityFields(["Some Hall", "1 Main St", "Detroit, Michigan 48236"], {});
+  assert.strictEqual(row._cityDecision.status, "stored_compatible", "cron path uses tiers (Detroit in 48236 is compatible, not confirmed)");
+  assert.strictEqual(row._cityDecision.confirmed, false);
+  assert.strictEqual(row.venue_city_raw, "Detroit");
 }
 console.log("PASS: 13. v3 tiers: only strong confirms");
 
