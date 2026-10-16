@@ -29,6 +29,7 @@ const place = (city) => ctx.resolvePlace({ venue: "v", city });
 // 1. Rules.
 assert.strictEqual(CR.normalize("  Warren,  MI   48092 "), "warren");
 assert.strictEqual(CR.normalize("Detroit, MI"), "detroit");
+assert.strictEqual(CR.normalize("Warren, Michigan 48092"), "warren");
 assert.strictEqual(CR.normalize("Clinton Twp"), "clinton township");
 assert.strictEqual(CR.normalize("Clinton Twp."), "clinton township");
 assert.strictEqual(CR.normalize("Charter Township Of Clinton"), "clinton township");
@@ -71,6 +72,15 @@ assert.strictEqual(key("Charter Township Of Clinton"), "c:clinton township");
 assert.strictEqual(key("East Lansing"), "c:east lansing");
 assert.strictEqual(key("Grosse Pointe Farms"), "c:grosse pointe");
 assert.strictEqual(key("Grosse Pointe Shores"), "c:grosse pointe");
+// Full jurisdiction names as well as abbreviations; conflicting / unknown / ambiguous => unresolved.
+assert.strictEqual(key("Warren, MI"), "c:warren");
+assert.strictEqual(key("Warren, Michigan"), "c:warren");
+assert.strictEqual(key("Troy, MI"), "c:troy");
+assert.strictEqual(key("Toledo, Ohio"), "c:toledo");
+assert.strictEqual(key("Windsor, Ontario"), "c:windsor");
+for (const bad of ["Warren, Ohio", "Troy, New York", "Toledo, Michigan", "Warren, Mich", "Warren, MI, OH", "Warren, XX 48092", "Warren, mi oh", "Warren,", "Warren, Ontario"]) {
+  assert.strictEqual(place(bad), null, bad + " must be unresolved");
+}
 for (const bad of ["Warren, OH", "Troy, NY", "Warren, ZZ", "Windsor, MI", "Toledo, MI"]) {
   assert.strictEqual(place(bad), null, bad + ": a state that disagrees with the table city must not resolve");
 }
@@ -82,28 +92,25 @@ for (const bad of ["2810 Russell St.", "Tech   Mount Clemens", "West", "Ottawa",
 }
 console.log("PASS: named cases; malformed records, Ottawa and Phase 2 cities stay unresolved");
 
-// 4b. Grosse Pointe municipalities share one marker but keep their names on its label.
+// 4b. Grosse Pointe municipalities share the one marker, which keeps the plain label;
+// each event shows its own source municipality instead.
 {
-  const src = html.slice(html.indexOf("function buildPlaces()"), html.indexOf("let leafletMap"));
-  const c2 = { resolvePlace: ctx.resolvePlace, matchesFilters: () => true, timeSortMinutes: () => 0 };
-  const mk = (city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" });
   const run = (cities) => {
-    c2.EVENTS = cities.map(mk);
+    const c2 = { resolvePlace: ctx.resolvePlace, CityResolution: CR, CITY_LOOKUP: ctx.CITY_LOOKUP, escapeHtml: (x) => String(x),
+      matchesFilters: () => true, timeSortMinutes: () => 0, EVENTS: cities.map((city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" })) };
     vm.createContext(c2);
-    vm.runInContext(src + "\nthis.out=buildPlaces();", c2);
-    return [...c2.out.values()];
+    vm.runInContext(html.slice(html.indexOf("function buildPlaces()"), html.indexOf("let leafletMap")) +
+      html.slice(html.indexOf("function sharedPointMunicipality"), html.indexOf("function placePopupHtml")) +
+      "\nthis.out=[...buildPlaces().values()];this.mun=EVENTS.map(municipalityHtml);", c2);
+    return c2;
   };
-  let out = run(["Grosse Pointe Farms", "Grosse Pointe Shores", "Grosse Pointe Farms"]);
-  assert.strictEqual(out.length, 1);
-  assert.strictEqual(out[0].label, "Grosse Pointe (Farms, Shores)");
-  assert.strictEqual(out[0].events.length, 3);
-  out = run(["Grosse Pointe", "Grosse Pointe Shores"]);
-  assert.strictEqual(out[0].label, "Grosse Pointe (incl. Shores)");
-  out = run(["Grosse Pointe"]);
-  assert.strictEqual(out[0].label, "Grosse Pointe");
-  out = run(["Warren, MI 48092", "Warren"]);
-  assert.strictEqual(out[0].label, "Warren");
-  console.log("PASS: Grosse Pointe municipality names kept on the shared label");
+  const r = run(["Grosse Pointe Farms", "Grosse Pointe Shores", "Grosse Pointe", "Warren, MI 48092"]);
+  assert.strictEqual(JSON.stringify(r.out.map((p) => p.label).sort()), JSON.stringify(["Grosse Pointe", "Warren"]), "marker keeps the plain label; no combined label");
+  assert.ok(!r.out.some((p) => /\(/.test(p.label)));
+  assert.strictEqual(r.out.find((p) => p.key === "c:grosse pointe").events.length, 3);
+  assert.strictEqual(JSON.stringify(r.mun), JSON.stringify(['<div class="pe-where">Grosse Pointe Farms</div>', '<div class="pe-where">Grosse Pointe Shores</div>', "", ""]));
+  assert.ok(/sharedPointMunicipality\(e\)\?`<span>/.test(html), "list row shows the municipality");
+  console.log("PASS: Grosse Pointe marker label plain; events show Farms / Shores");
 }
 
 // 5. Source values are preserved: resolution never rewrites the event.

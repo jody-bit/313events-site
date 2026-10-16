@@ -1129,6 +1129,7 @@ function evtRowHtml(e){
           <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
           ${priceTag(e)}
           <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
+          ${sharedPointMunicipality(e)?`<span>${escapeHtml(sharedPointMunicipality(e))}</span>`:''}
           ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
@@ -1198,7 +1199,7 @@ function resolvePlace(e){
   const hit = CityResolution.resolve(cityName, CITY_LOOKUP);
   if(!hit) return null; // no resolvable location at all — excluded from the map (never guessed)
   const label = hit.key === cityName.toLowerCase() ? cityName : hit.loc.name;
-  return { key: `c:${hit.key}`, lat: hit.loc.lat, lng: hit.loc.lng, label, precise: false, alias: hit.alias };
+  return { key: `c:${hit.key}`, lat: hit.loc.lat, lng: hit.loc.lng, label, precise: false };
 }
 
 // Rebuilt on every render() from whatever currently matches the active
@@ -1209,19 +1210,8 @@ function buildPlaces(){
   EVENTS.filter(matchesFilters).forEach(e=>{
     const place = resolvePlace(e);
     if(!place) return;
-    if(!places.has(place.key)) places.set(place.key, {...place, events:[], aliases:new Set(), plain:false});
-    const pl = places.get(place.key);
-    pl.events.push(e);
-    if(place.alias) pl.aliases.add(place.alias); else pl.plain = true;
-  });
-  // Municipalities that share another city's point (Grosse Pointe Farms /
-  // Shores) keep their real names on the shared marker's label.
-  places.forEach(pl => {
-    if(!pl.aliases.size) return;
-    const base = pl.label.toLowerCase();
-    const subs = [...pl.aliases].sort().map(a => a.startsWith(base + ' ') ? a.slice(base.length + 1) : a)
-      .map(t => t.replace(/\b\w/g, ch => ch.toUpperCase()));
-    pl.label = `${pl.label} (${pl.plain ? 'incl. ' : ''}${subs.join(', ')})`;
+    if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
+    places.get(place.key).events.push(e);
   });
   places.forEach(p => p.events.sort((a,b)=> a.date === b.date ? timeSortMinutes(a.time)-timeSortMinutes(b.time) : a.date.localeCompare(b.date)));
   return places;
@@ -1302,6 +1292,17 @@ function eventWhereHtml(e){
   return `<div class="pe-where">${venue}${escapeHtml(street)}</div>`;
 }
 
+// A municipality that shares another city's map point (Grosse Pointe Farms / Shores plot on
+// the Grosse Pointe marker) shows its own source name on the event, never the marker's.
+function sharedPointMunicipality(e){
+  const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP) : null;
+  return hit && hit.alias ? String(e.city).replace(/\s+/g,' ').trim() : '';
+}
+function municipalityHtml(e){
+  const m = sharedPointMunicipality(e);
+  return m ? `<div class="pe-where">${escapeHtml(m)}</div>` : '';
+}
+
 function placePopupHtml(place){
   // No hard cap on how many events render here — the popup's own maxHeight
   // + Leaflet's auto-added scrollbar (see bindPopup() below) let a many-event
@@ -1321,7 +1322,7 @@ function placePopupHtml(place){
     <div class="popup-evt">
       ${eventUrl(e) ? `<a href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>` : `<span>${escapeHtml(e.title)}</span>`}
       <div class="pe-meta">${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}${e.time ? ' · '+escapeHtml(e.time) : ''}</div>
-      ${where}
+      ${municipalityHtml(e)}${where}
     </div>
   `;
   }).join('');
