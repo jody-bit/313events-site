@@ -70,7 +70,10 @@ const ALLOWED = [
   "api/_lib/dearborn-enrichment.js",
   "api/cron-feeds.js",
   // Shared ingestion eligibility rule (owner decision 2026-10-14): feed rows that are definitively over are not inserted.
-  "api/_lib/ingest-eligibility.js"
+  "api/_lib/ingest-eligibility.js",
+  // GEO-003 step 2 (owner order 2026-10-16): VisitDetroit stores the feed city only when it agrees with ZIP and _geoloc.
+  "api/_lib/feed-city.js",
+  "api/cron-visitdetroit.js"
 ];
 
 class ScopeGuardError extends Error {}
