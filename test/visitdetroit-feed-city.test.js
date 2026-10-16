@@ -61,13 +61,14 @@ console.log("PASS: 3. agreeing city is stored (Detroit included)");
   const ok = F.decideFeedCity({ city: "Dearborn", zip: "48126", lat: 42.3223, lng: -83.1763 }, DEPS);
   assert.strictEqual(ok.status, "stored", "48126 lists Detroit and Dearborn, so either city text is consistent with the ZIP");
   const bad = F.decideFeedCity({ city: "Royal Oak", zip: "48126", lat: ROYAL_OAK.lat, lng: ROYAL_OAK.lng }, DEPS);
-  assert.strictEqual(bad.status, "needs_follow_up", "Royal Oak is not among 48126's municipalities");
+  assert.strictEqual(bad.status, "stored_unverified", "Royal Oak is not among 48126's municipalities: kept unverified (post-office name or ZIP error not ruled out), never confirmed");
+  assert.strictEqual(bad.zipMismatch, true); assert.strictEqual(bad.confirmed, false);
 }
 console.log("PASS: 4. multi-municipality ZIPs accept any listed municipality and nothing else");
 
 // --- 5. single-municipality ZIP that disagrees with the city text ---
 {
-  const d = F.decideFeedCity({ city: "Detroit", zip: "48212", lat: 42.4, lng: -83.05 }, DEPS);
+  const d = F.decideFeedCity({ city: "Detroit", zip: "48212", lat: ROYAL_OAK.lat, lng: ROYAL_OAK.lng }, DEPS);
   assert.strictEqual(d.status, "needs_follow_up", "48212 is Hamtramck only");
   assert.strictEqual(d.city, null);
 }
@@ -135,7 +136,7 @@ console.log("PASS: 9. Orbit table loads; CDP names switchable");
   assert.strictEqual(queued, 6, "only the six Sanctuary Church Birmingham rows are queued");
   assert.ok(stored >= 79, "Detroit rows are stored as verified now that the ZIP table confirms them (" + stored + ")");
   // a Detroit claim in a ZIP the table lists for another municipality only
-  const d = F.decideFeedCity({ city: "Detroit", zip: "48009", lat: 42.33, lng: -83.05 }, { zipTable: real });
+  const d = F.decideFeedCity({ city: "Detroit", zip: "48009", lat: 42.5477, lng: -83.2175 }, { zipTable: real });
   assert.strictEqual(d.status, "needs_follow_up", "48009 does not list Detroit");
 }
 console.log("PASS: 10. real-data replay with the real table");
@@ -158,7 +159,8 @@ console.log("PASS: 10. real-data replay with the real table");
   assert.strictEqual(none.status, "stored_unverified", "ZIP absent from the table is no evidence, not a contradiction");
   // CDP switched off: the CDP name is no longer compatible with that ZIP
   const off = F.decideFeedCity({ city: "Pearl Beach", zip: "48001" }, { zipTable: F.loadZipTable({ includeCdp: false }), cdpNames: F.loadCdpNames() });
-  assert.strictEqual(off.status, "needs_follow_up");
+  assert.strictEqual(off.status, "stored_unverified");
+  assert.strictEqual(off.confirmed, false); assert.strictEqual(off.zipMismatch, true);
 }
 console.log("PASS: 11. evidence tiers (municipality / boundary / cdp_compatible / none)");
 
@@ -211,5 +213,46 @@ console.log("PASS: 12. existing city protected from weaker evidence");
   assert.strictEqual(row.venue_city_raw, "Detroit");
 }
 console.log("PASS: 13. v3 tiers: only strong confirms");
+
+// --- 14. POST-CRON REGRESSION (2026-10-16): postal-town / township naming variants must not blank a city ---
+{
+  const real = F.loadZipTable(); const tiers = F.loadZipTiers();
+  const deps = { zipTable: real, cdpNames: F.loadCdpNames(), tiers };
+  const addr = (z) => ["Venue", "1 Main St", z];
+  const dec = (a, hit) => vd.rowCityFields(addr(a), hit || {})._cityDecision;
+  // Macomb Center events: "Charter Township Of Clinton" == Clinton Township
+  const clinton = F.decideFeedCity({ city: "Charter Township Of Clinton", zip: "48038" }, deps);
+  assert.ok(clinton.status !== "needs_follow_up" && clinton.city, "Clinton variant is not queued");
+  assert.ok(!clinton.zipMismatch, "Clinton variant matches the ZIP table, no advisory");
+  // Pontiac shows (48320 is Pontiac-area; coordinates ~42.636,-83.291 are not Detroit)
+  const pontiac = F.decideFeedCity({ city: "Pontiac", zip: "48320", lat: 42.636, lng: -83.291 }, deps);
+  assert.ok(pontiac.city === "Pontiac" && pontiac.status !== "needs_follow_up", "Pontiac keeps its city");
+  assert.strictEqual(pontiac.confirmed, false, "never confirmed by a post-office ZIP alone");
+  // Oxford / Lake Orion / Rochester: never blanked, never confirmed from an unlisted ZIP name
+  for (const [c, z] of [["Oxford", "48370"], ["Lake Orion", "48360"], ["Rochester", "48309"]]) {
+    const d = F.decideFeedCity({ city: c, zip: z }, deps);
+    assert.notStrictEqual(d.status, "needs_follow_up", `${c} ${z} is not queued`);
+    assert.strictEqual(d.city, c, `${c} text preserved`);
+    if (d.zipMismatch) assert.strictEqual(d.confirmed, false, `${c} advisory is never confirmed`);
+  }
+  // Sanctuary Church x6: Detroit claimed in Birmingham's ZIP 48009, coordinates in Birmingham: still rejected
+  for (let i = 0; i < 6; i++) {
+    const d = F.decideFeedCity({ city: "Detroit", zip: "48009", lat: 42.5477081, lng: -83.2174755 }, deps);
+    assert.strictEqual(d.status, "needs_follow_up"); assert.strictEqual(d.city, null); assert.ok(!d.confirmed);
+  }
+  const cron = vd.rowCityFields(["Sanctuary Church", "1 Main St", "Detroit, Michigan 48009"], { _geoloc: { lat: 42.5477081, lng: -83.2174755 } });
+  assert.strictEqual(cron.venue_city_raw == null, true, "Sanctuary row writes no city");
+  // a Detroit claim on a foreign ZIP with coordinates inside Detroit is not rejected on the ZIP alone
+  const dIn = F.decideFeedCity({ city: "Detroit", zip: "48009", lat: 42.3314, lng: -83.0458 }, deps);
+  assert.notStrictEqual(dIn.status, "needs_follow_up", "Detroit coordinates keep a Detroit claim alive");
+  assert.ok(dIn.confirmed === true || dIn.confirmed === false);
+  // existing city protected against advisories and variants
+  const adv = F.decideFeedCity({ city: "Oxford", zip: "48370" }, deps);
+  assert.ok(!("venue_city_raw" in F.protectExistingCity({ venue_city_raw: "Oxford" }, adv, "Oxford Township")), "unverified never overwrites an existing city");
+  // tier distinction survives the variant matching
+  assert.strictEqual(F.decideFeedCity({ city: "Grosse Pointe Woods", zip: "48236" }, deps).confirmed, true);
+  assert.strictEqual(F.decideFeedCity({ city: "Detroit", zip: "48236" }, deps).confirmed, false);
+}
+console.log("PASS: 14. post-cron regression (Pontiac, Macomb Center, Oxford, Lake Orion, Rochester, Sanctuary x6)");
 
 console.log("\nAll VisitDetroit feed-city tests passed.");
