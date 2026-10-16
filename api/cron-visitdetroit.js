@@ -4,6 +4,11 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
+const { parseZip, decideFeedCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
+
+// Orbit ZIP -> municipality table (GEO-003 Addendum 2). Empty until the Census-built dataset is loaded;
+// until then only the Detroit boundary check applies. Shape: { "48009": { municipalities: ["Birmingham"] } }.
+const ZIP_TABLE = {};
 
 // Vercel Cron job — pulls Detroit-area events straight from visitdetroit.com's
 // own Algolia search index, discovered 2026-09-14 while answering Jody's
@@ -179,7 +184,7 @@ function formatTime(hour, minute) {
 // address is Algolia's own [venueName, street, "City, State (zip)"] shape —
 // seen as short as [venueName] alone for a "TBA"-style listing.
 function parseAddress(address) {
-  if (!Array.isArray(address) || !address.length) return { name: null, street: null, city: null };
+  if (!Array.isArray(address) || !address.length) return { name: null, street: null, city: null, zip: null };
   const name = address[0] || null;
   const street = address.length > 2 ? address[1] : null;
   const cityState = address.length > 2 ? address[2] : (address.length === 2 ? address[1] : null);
@@ -188,7 +193,18 @@ function parseAddress(address) {
     const commaIdx = cityState.indexOf(",");
     city = (commaIdx === -1 ? cityState : cityState.slice(0, commaIdx)).trim() || null;
   }
-  return { name, street, city };
+  return { name, street, city, zip: parseZip(cityState) };
+}
+
+// venue_address_raw / venue_city_raw for one hit. The parsed city is stored only when it agrees with the
+// feed's own ZIP and _geoloc (GEO-003 Addendum 2); a mismatch stores no city and the row lands in
+// Needs Follow-up with the street kept. Detroit is stored explicitly, not as NULL, so that a blank city
+// can mean "unknown" once the map stops defaulting blanks to Detroit.
+function rowCityFields(address, hit, deps) {
+  const { street, city, zip } = parseAddress(address);
+  const g = (hit && hit._geoloc) || {};
+  const decision = decideFeedCity({ city, zip, lat: g.lat, lng: g.lng }, deps || { zipTable: ZIP_TABLE });
+  return { venue_address_raw: street, venue_city_raw: decision.city, _cityDecision: decision };
 }
 
 // Conservative cross-source dedupe key — see header comment. Punctuation-
@@ -283,6 +299,7 @@ const visitDetroitHandler = async (req, res) => {
 
   let excludedByCategory = 0;
   let excludedByDate = 0;
+  const cityMismatches = [];
 
   const mappedRows = hits
     .map((h) => {
@@ -292,7 +309,9 @@ const visitDetroitHandler = async (req, res) => {
       const dt = deriveDateTimeFields(h);
       if (!dt) { excludedByDate++; return null; }
 
-      const { name: venueName, street, city } = parseAddress(h.address);
+      const { name: venueName } = parseAddress(h.address);
+      const { venue_address_raw, venue_city_raw, _cityDecision } = rowCityFields(h.address, h);
+      if (_cityDecision.status === "needs_follow_up") cityMismatches.push({ id: h.id, title: h.title, reason: _cityDecision.reason });
 
       return {
         external_id: `vd-${h.id}`,
@@ -300,8 +319,8 @@ const visitDetroitHandler = async (req, res) => {
         description: h.content || null,
         category: cat,
         venue_name_raw: venueName,
-        venue_address_raw: street,
-        venue_city_raw: city && city.toLowerCase() !== "detroit" ? city : null,
+        venue_address_raw,
+        venue_city_raw,
         venue_id: resolveVenueId(venueMap, venueName),
         // See api/_lib/mobile-event.js -- true only when VisitDetroit's own
         // eventCategories (e.g. "Tours") or an unambiguous title keyword
@@ -333,11 +352,14 @@ const visitDetroitHandler = async (req, res) => {
     })
     .filter(Boolean);
 
+  if (cityMismatches.length) console.warn("visitdetroit: city not stored (feed city contradicts ZIP/coordinates):", JSON.stringify(cityMismatches.slice(0, 20)));
+
   if (!mappedRows.length) {
     res.status(200).json({
       upserted: 0,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -379,6 +401,7 @@ const visitDetroitHandler = async (req, res) => {
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -422,6 +445,7 @@ const visitDetroitHandler = async (req, res) => {
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
+      cityMismatches: cityMismatches.length,
       fetchedAt: new Date().toISOString(),
     });
   } catch (err) {
@@ -433,5 +457,6 @@ const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source
 module.exports = withRunLog("visitdetroit", visitDetroitHandler);
 module.exports.detroitParts = detroitParts; // exposed for test/cron-visitdetroit-time-parsing.test.js only
 module.exports.parseAddress = parseAddress;
+module.exports.rowCityFields = rowCityFields;
 module.exports.mapCategory = mapCategory;
 module.exports.deriveDateTimeFields = deriveDateTimeFields; // exposed for scripts/visitdetroit-time-backfill.js and its test only

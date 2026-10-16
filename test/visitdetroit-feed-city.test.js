@@ -1,0 +1,103 @@
+// test/visitdetroit-feed-city.test.js — GEO-003 step 2: VisitDetroit stores a parsed city only when it
+// agrees with the feed's own ZIP and _geoloc (Addendum 2). Disagreement stores no city, which puts the
+// row in Needs Follow-up with the raw address kept. Never assumes a ZIP identifies one municipality.
+//
+// Real cases: Sanctuary Church Birmingham (event-intelligence/geo-coverage/geo-003/raw-hits-sanctuary-birmingham-2026-10-16.md):
+// address "Detroit, Michigan 48009", _geoloc 42.5477081,-83.2174755 (Birmingham).
+//
+// Run: node test/visitdetroit-feed-city.test.js
+"use strict";
+const assert = require("assert");
+const REPO_DIR = process.env.REPO_DIR || process.cwd();
+const F = require(`${REPO_DIR}/api/_lib/feed-city.js`);
+const vd = require(`${REPO_DIR}/api/cron-visitdetroit.js`);
+
+// A tiny injected ZIP table (the real one is the Census-built Orbit dataset, not yet loaded).
+const ZIPS = {
+  "48009": { municipalities: ["Birmingham"] },
+  "48212": { municipalities: ["Hamtramck"] },
+  "48126": { municipalities: ["Detroit", "Dearborn"] },
+};
+const DEPS = { zipTable: ZIPS };
+const DOWNTOWN = { lat: 42.3314, lng: -83.0458 };
+const BIRMINGHAM = { lat: 42.5477081, lng: -83.2174755 };
+const ROYAL_OAK = { lat: 42.4895, lng: -83.1446 };
+
+// --- 1. ZIP and city text come out of the Algolia address shape ---
+assert.strictEqual(F.parseZip("Detroit, Michigan 48009"), "48009");
+assert.strictEqual(F.parseZip("Royal Oak, MI (48067)"), "48067");
+assert.strictEqual(F.parseZip("Detroit, Michigan"), null);
+assert.strictEqual(F.parseZip("Detroit, Michigan 48201-1234"), "48201");
+assert.strictEqual(F.parseZip(null), null);
+{
+  const p = vd.parseAddress(["Sanctuary Church Birmingham", "300 Willits St", "Detroit, Michigan 48009"]);
+  assert.strictEqual(p.city, "Detroit");
+  assert.strictEqual(p.zip, "48009", "parseAddress now also returns the ZIP");
+}
+console.log("PASS: 1. ZIP is parsed from the address");
+
+// --- 2. the Sanctuary case: city text says Detroit, ZIP and coordinates say Birmingham ---
+{
+  const d = F.decideFeedCity({ city: "Detroit", zip: "48009", lat: BIRMINGHAM.lat, lng: BIRMINGHAM.lng }, DEPS);
+  assert.strictEqual(d.city, null, "a contradicted city is not stored");
+  assert.strictEqual(d.status, "needs_follow_up");
+  assert.ok(/Detroit/.test(d.reason) && /48009|outside/.test(d.reason));
+}
+console.log("PASS: 2. Detroit claim contradicted by ZIP and coordinates is queued, not stored");
+
+// --- 3. agreement stores the city, including Detroit itself ---
+{
+  const d = F.decideFeedCity({ city: "Detroit", zip: "48226", lat: DOWNTOWN.lat, lng: DOWNTOWN.lng }, DEPS);
+  assert.deepStrictEqual([d.city, d.status], ["Detroit", "stored"], "Detroit is stored explicitly, so a blank city can later mean unknown");
+  const r = F.decideFeedCity({ city: "Royal Oak", zip: "48067", lat: ROYAL_OAK.lat, lng: ROYAL_OAK.lng }, DEPS);
+  assert.deepStrictEqual([r.city, r.status], ["Royal Oak", "stored_unverified"], "48067 is not in the injected table: nothing contradicts it, nothing confirms it");
+  const b = F.decideFeedCity({ city: "Birmingham", zip: "48009", lat: BIRMINGHAM.lat, lng: BIRMINGHAM.lng }, DEPS);
+  assert.deepStrictEqual([b.city, b.status], ["Birmingham", "stored"]);
+}
+console.log("PASS: 3. agreeing city is stored (Detroit included)");
+
+// --- 4. a ZIP that spans two municipalities is NOT treated as identifying one ---
+{
+  const ok = F.decideFeedCity({ city: "Dearborn", zip: "48126", lat: 42.3223, lng: -83.1763 }, DEPS);
+  assert.strictEqual(ok.status, "stored", "48126 lists Detroit and Dearborn, so either city text is consistent with the ZIP");
+  const bad = F.decideFeedCity({ city: "Royal Oak", zip: "48126", lat: ROYAL_OAK.lat, lng: ROYAL_OAK.lng }, DEPS);
+  assert.strictEqual(bad.status, "needs_follow_up", "Royal Oak is not among 48126's municipalities");
+}
+console.log("PASS: 4. multi-municipality ZIPs accept any listed municipality and nothing else");
+
+// --- 5. single-municipality ZIP that disagrees with the city text ---
+{
+  const d = F.decideFeedCity({ city: "Detroit", zip: "48212", lat: 42.4, lng: -83.05 }, DEPS);
+  assert.strictEqual(d.status, "needs_follow_up", "48212 is Hamtramck only");
+  assert.strictEqual(d.city, null);
+}
+console.log("PASS: 5. city text that contradicts a single-municipality ZIP is queued");
+
+// --- 6. no evidence either way keeps today's behaviour (store the parsed city) but is labelled unverified ---
+{
+  const d = F.decideFeedCity({ city: "Royal Oak", zip: "48073", lat: null, lng: null }, DEPS);
+  assert.deepStrictEqual([d.city, d.status], ["Royal Oak", "stored_unverified"], "ZIP not in the table and no coordinates: cannot contradict");
+  const none = F.decideFeedCity({ city: null, zip: "48073", lat: ROYAL_OAK.lat, lng: ROYAL_OAK.lng }, DEPS);
+  assert.deepStrictEqual([none.city, none.status], [null, "no_city"], "no city text: nothing to store");
+  const junk = F.decideFeedCity({ city: "Detroit", zip: null, lat: "x", lng: NaN }, DEPS);
+  assert.strictEqual(junk.status, "stored_unverified", "unusable coordinates are not evidence");
+}
+console.log("PASS: 6. missing evidence cannot contradict; never invents a city");
+
+// --- 7. coordinates just over the border still agree (the boundary used is simplified) ---
+{
+  const edge = F.decideFeedCity({ city: "Detroit", zip: null, lat: 42.4465, lng: -83.1305 }, DEPS);
+  assert.notStrictEqual(edge.status, "needs_follow_up", "a point within the tolerance of the border is not a contradiction");
+}
+console.log("PASS: 7. border tolerance");
+
+// --- 8. the cron wires it: venue_city_raw comes from decideFeedCity, address is kept ---
+{
+  const row = vd.rowCityFields(["Sanctuary Church Birmingham", "300 Willits St", "Detroit, Michigan 48009"], { _geoloc: BIRMINGHAM }, DEPS);
+  assert.strictEqual(row.venue_city_raw, null);
+  assert.strictEqual(row.venue_address_raw, "300 Willits St", "raw street is kept so the follow-up queue can fix it");
+  const good = vd.rowCityFields(["Fox Theatre", "2211 Woodward Ave", "Detroit, Michigan 48201"], { _geoloc: DOWNTOWN }, DEPS);
+  assert.strictEqual(good.venue_city_raw, "Detroit");
+}
+console.log("PASS: 8. cron row fields");
+console.log("\nAll VisitDetroit feed-city tests passed.");
