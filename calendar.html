@@ -755,6 +755,7 @@
   </div>
 
   <div id="listView"></div>
+  <div id="unconfirmedResults"></div>
 
   <!-- Map view (2026-08-28) — same #leafletMap/#cityRail structure as the
        dedicated map.html page, reused verbatim so a visitor sees the exact
@@ -2205,6 +2206,39 @@ function updateMapStat(places){
     : '';
 }
 
+// Search results for schedule-unverified events (owner decision 2026-10-16). Date cells stay confirmed-occurrence-only,
+// so an unverified range is on no day; when the visitor is searching it is offered here, outside the grid, in its own
+// "Dates not confirmed" section with the published range. Hidden without a search, in the map view, and whenever a
+// date filter (Today/Tonight/Weekend...) is on, because matchesFilters rejects unverified rows under those.
+function renderUnconfirmedResults(){
+  const el = document.getElementById('unconfirmedResults');
+  if(!el) return;
+  if(!query || mode === 'map'){ el.innerHTML = ''; return; }
+  const todayIso = getTodayISO();
+  const seen = new Set();
+  const hits = EVENTS.filter(e=>{
+    if(e.id != null){ if(seen.has(e.id)) return false; seen.add(e.id); }
+    if(EventDates.scheduleState(e) !== 'unverified') return false;
+    if((e.endDate || e.date) < todayIso) return false; // the published range has ended
+    return matchesFilters(e);
+  }).sort((a,b)=> a.date < b.date ? -1 : a.date > b.date ? 1 : (a.title < b.title ? -1 : 1));
+  if(!hits.length){ el.innerHTML = ''; return; }
+  const range = e => e.endDate && e.endDate > e.date
+    ? `${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})} \u2013 ${new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})}` : '';
+  el.innerHTML = `<div class="list-day-group"><div class="list-day-heading">Dates not confirmed</div>` + hits.map(e=>`
+    <div class="evt-row">
+      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-main"><div class="evt-main-body"><div class="evt-text">
+        <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+        <div class="evt-meta">
+          <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+          <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
+        </div>
+        ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}
+      </div></div></div>
+    </div>`).join('') + `</div>`;
+}
+
 function render(){
   updateMonthHeader();
   updateWhenButtons();
@@ -2229,6 +2263,7 @@ function render(){
   } else {
     renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
   }
+  renderUnconfirmedResults();
   syncURL();
 }
 
