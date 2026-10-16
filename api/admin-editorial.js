@@ -1,6 +1,8 @@
 const crypto = require("crypto");
 const path = require("path");
 const { applyDecision } = require("./_lib/editorial-verification");
+const { annotateLinks } = require("./_lib/press-queue-filter");
+const PRESS_LINK_RECOMMENDATIONS = require("../data/press-link-recommendations.json");
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { fillBlankOrganizerEventUrls } = require("./_lib/organizer-links");
 const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
@@ -166,10 +168,12 @@ module.exports = async (req, res) => {
       try {
         const wanted = String(req.query.status || "candidate,needs_follow_up").split(",").map((x) => x.trim()).filter((x) => REVIEW_STATUSES.has(x));
         if (!wanted.length) { res.status(400).json({ error: "status must be one or more of candidate, needs_follow_up, rejected, verified" }); return; }
-        const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?verification_status=in.(${wanted.join(",")})&select=article_id,event_id,created_at,verification_status,verified_by,verified_at,verification_basis,verification_history,editorial_articles(id,title,url,source,excerpt,published_at,match_type),events(id,title,start_date,venue_name_raw,venue_city_raw,venues(name,city))&order=created_at.desc&limit=300`;
+        const url = `${SUPABASE_URL}/rest/v1/editorial_article_events?verification_status=in.(${wanted.join(",")})&select=article_id,event_id,created_at,verification_status,verified_by,verified_at,verification_basis,verification_history,editorial_articles(id,title,url,source,excerpt,published_at,match_type),events(id,title,status,start_date,end_date,is_recurring,venue_name_raw,venue_city_raw,venues(name,city,lat,lng))&order=created_at.desc&limit=300`;
         const resp = await fetch(url, { headers: sbHeaders });
         const rows = await resp.json();
-        res.status(resp.ok ? 200 : 502).json(resp.ok ? { links: rows } : { error: rows });
+        if (!resp.ok) { res.status(502).json({ error: rows }); return; }
+        // Read-side only: every row is returned with a queue annotation (hidden + reason); nothing is dropped or written.
+        res.status(200).json(annotateLinks(rows, PRESS_LINK_RECOMMENDATIONS));
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
