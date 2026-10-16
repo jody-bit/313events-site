@@ -128,7 +128,22 @@
     var country = c.country && c.country !== "US" ? c.country : "";
     var cityPart = c.city;
     if (!c.state && c.zip) { cityPart = [c.city, c.zip].filter(Boolean).join(" "); region = ""; }
-    var parts = [clean(name), c.street, cityPart, region, country].filter(Boolean);
+    // a street that already ends in the city ("318 Highland Street Highland Park" +
+    // city "Highland Park", with or without a comma) would repeat it; drop the street's
+    // trailing copy, but only when a house number and a street name remain
+    var street = c.street;
+    if (street && c.city) {
+      var cityKey = normKey(c.city), words = clean(street.replace(/,/g, " ")).split(" ");
+      var n = cityKey.split(" ").length;
+      if (words.length > n && normKey(words.slice(-n).join(" ")) === cityKey) {
+        var rest = street.replace(/[\s,]+$/, "");
+        // the last n words (and any commas between them) are the city
+        var m = rest.match(new RegExp("[\\s,]+(?:\\S+[\\s,]+){" + (n - 1) + "}\\S+$"));
+        var kept = m ? rest.slice(0, rest.length - m[0].length) : "";
+        if (kept && hasHouseNumber(kept) && /[A-Za-z]/.test(kept.replace(/^\s*\d+[A-Za-z]?\b/, ""))) street = kept;
+      }
+    }
+    var parts = [clean(name), street, cityPart, region, country].filter(Boolean);
     // collapse an adjacent duplicate ("Detroit, Detroit")
     var dedup = [];
     parts.forEach(function (p) { if (!dedup.length || normKey(dedup[dedup.length - 1]) !== normKey(p)) dedup.push(p); });

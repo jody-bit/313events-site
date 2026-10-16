@@ -408,6 +408,33 @@ function finish() {
   for (const f of ["calendar.html", "map.html", "radar.html", "venue-template.html", "venues.html", "neighborhoods.html"]) {
     assert.ok(files.includes(f) && !exportsCalendar.test(fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")), `${f} must not contain its own calendar export`);
   }
+  // A street that already ends in the city must not repeat it ("Highland Park, Highland Park").
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "100 Woodward Ave, Highland Park, Highland Park, MI 48203", locEventCity: "Highland Park" }).text,
+    "100 Woodward Ave, Highland Park, MI 48203");
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "100 Woodward Ave, Highland Park", locEventCity: "Highland Park" }).text,
+    "100 Woodward Ave, Highland Park");
+  // Real production strings: the repeated city is glued to the last street word, no comma.
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "318 Highland Street Highland Park, MI 48203", locEventCity: "Highland Park" }).text,
+    "318 Highland Street, Highland Park, MI 48203");
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "318 Highland Street Highland Park, Highland Park", locEventCity: "Highland Park" }).text,
+    "318 Highland Street, Highland Park");
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "100 Main St Ste 100 Bloomfield Hills, Bloomfield Hills, MI 48304", locEventCity: "Bloomfield Hills" }).text,
+    "100 Main St Ste 100, Bloomfield Hills, MI 48304");
+  // Unchanged: city names that are not a repeat, or would leave no street.
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "35 Warren Ave, Detroit, MI 48201", locEventCity: "Detroit" }).text,
+    "35 Warren Ave, Detroit, MI 48201");
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "211 S Old Woodward Ave, Birmingham, MI 48009", locEventCity: "Birmingham" }).text,
+    "211 S Old Woodward Ave, Birmingham, MI 48009");
+  assert.strictEqual(
+    CL.streetLineForEvent({ venue: "V", locEventAddress: "12 Warren, Warren, MI 48089", locEventCity: "Warren" }).text,
+    "12 Warren, Warren, MI 48089");
   console.log("calendar-location: all assertions passed");
 }
 
