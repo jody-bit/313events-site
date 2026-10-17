@@ -132,10 +132,10 @@ function deriveRow(row, ctx) {
 
   if (origin === "human") reasons.push({ code: "human_submission", text: "Human submission awaiting first review." });
   for (const r of fieldReasons(row)) reasons.push(r);
-  // Owner direction 2026-10-17: a row with no genuine human-decision reason (required date/time, venue, dead link, conflict, duplicate,
-  // ambiguous classification, human origin, source problem) is "ready": it does not wait on a person, is not in the actionable count,
-  // and a missing description (optional enrichment) never changes that. It carries no reason; the description gap is only a note.
-  if (!reasons.length && lane === "person") lane = "ready";
+  // Owner decision 2026-10-17 (option A): a pending row with no genuine reason for a person to decide is still waiting on approval
+  // because nothing publishes it automatically yet, so it stays in Needs a person, labelled "Ready to approve". A missing description
+  // (optional enrichment) never creates a reason or changes that; it is only a note.
+  if (!reasons.length) reasons.push({ code: "ready_to_approve", text: "Ready to approve" });
 
   const sourceLastRun = feed ? feed.last_polled_at || null : (slug && lastRunBySlug && lastRunBySlug.get(slug)) || null;
   return {
@@ -178,7 +178,7 @@ function annotateQueue(rows, opts = {}) {
   }
   const ctx = { feedsById, healthBySlug, lastRunBySlug, nowMs };
 
-  const lane_counts = { person: 0, ready: 0, blocked: 0, auto: null };
+  const lane_counts = { person: 0, blocked: 0, auto: null };
   const blocked_breakdown = { policy_hold: 0, technical: 0 };
   const coverage = { rows: 0, origin_known: 0, source_known: 0, method_known: 0, unmapped: new Map() };
   const blockedSources = new Map();
