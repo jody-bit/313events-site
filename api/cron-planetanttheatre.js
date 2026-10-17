@@ -136,6 +136,19 @@ function buildRequestHeaders(env = process.env) {
   return key ? { ...REQUEST_HEADERS, "X-CrowdWork-Key": key } : { ...REQUEST_HEADERS };
 }
 
+// Diagnostic for a rejected request: whether the key header was attached (a boolean only, never the key or its
+// length), the status, and Cloudflare's own cf-ray / cf-mitigated response headers, so a 403 can be told apart
+// (challenge vs. rule not matching vs. header never sent) from the run record alone.
+function describeUpstream(status, headers, requestHeaders) {
+  const get = (name) => (headers && typeof headers.get === "function" ? headers.get(name) : null) || "none";
+  return {
+    status,
+    keyHeaderSent: Object.prototype.hasOwnProperty.call(requestHeaders || {}, "X-CrowdWork-Key"),
+    cfMitigated: get("cf-mitigated"),
+    cfRay: get("cf-ray"),
+  };
+}
+
 function decodeEntities(str) {
   if (!str) return str;
   return String(str)
@@ -278,15 +291,19 @@ module.exports = async (req, res) => {
   let payload;
   let httpStatus = null;
   try {
+    const requestHeaders = buildRequestHeaders();
     const r = await fetch(
       `https://www.crowdwork.com/api/v2/${VENUE_SLUG}/shows?start=${todayISO}`,
-      { headers: buildRequestHeaders() }
+      { headers: requestHeaders }
     );
     httpStatus = r.status;
     if (!r.ok) {
       const blocked = r.status === 401 || r.status === 403;
-      await finishRun(runHandle, { outcome: blocked ? "blocked" : "failed", http_status: r.status, error_sample: `Fetch failed: HTTP ${r.status}` });
-      res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
+      const d = describeUpstream(r.status, r.headers, requestHeaders);
+      const detail = `key header sent: ${d.keyHeaderSent}; cf-mitigated: ${d.cfMitigated}; cf-ray: ${d.cfRay}`;
+      console.warn("planetanttheatre: upstream rejected request " + JSON.stringify(d));
+      await finishRun(runHandle, { outcome: blocked ? "blocked" : "failed", http_status: r.status, error_sample: `Fetch failed: HTTP ${r.status} (${detail})` });
+      res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}`, keyHeaderSent: d.keyHeaderSent, cfMitigated: d.cfMitigated, cfRay: d.cfRay });
       return;
     }
     payload = await r.json();
@@ -385,3 +402,4 @@ module.exports = async (req, res) => {
   }
 };
 module.exports.buildRequestHeaders = buildRequestHeaders;
+module.exports.describeUpstream = describeUpstream;

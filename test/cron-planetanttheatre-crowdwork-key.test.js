@@ -6,7 +6,7 @@ const assert = require("node:assert");
 
 process.env.SUPABASE_URL = process.env.SUPABASE_URL || "https://example.supabase.co";
 const handler = require("../api/cron-planetanttheatre");
-const { buildRequestHeaders } = handler;
+const { buildRequestHeaders, describeUpstream } = handler;
 
 test("no key: the request headers are the pre-existing honest set", () => {
   const h = buildRequestHeaders({});
@@ -29,4 +29,13 @@ test("the cron fetch uses buildRequestHeaders and the source never embeds a key 
   const src = require("fs").readFileSync(require("path").join(__dirname, "../api/cron-planetanttheatre.js"), "utf8");
   assert.match(src, /headers: buildRequestHeaders\(\)/);
   assert.doesNotMatch(src, /X-CrowdWork-Key"\s*:\s*["'`]/);
+});
+
+test("diagnostic reports only a boolean for the key, plus status and Cloudflare headers", () => {
+  const headers = new Map([["cf-mitigated", "challenge"], ["cf-ray", "abc123-DTW"]]);
+  const withKey = describeUpstream(403, headers, buildRequestHeaders({ CROWDWORK_KEY: "secret-value-xyz" }));
+  assert.deepStrictEqual(withKey, { status: 403, keyHeaderSent: true, cfMitigated: "challenge", cfRay: "abc123-DTW" });
+  assert.doesNotMatch(JSON.stringify(withKey), /secret-value-xyz/);
+  const without = describeUpstream(403, new Map(), buildRequestHeaders({}));
+  assert.deepStrictEqual(without, { status: 403, keyHeaderSent: false, cfMitigated: "none", cfRay: "none" });
 });
