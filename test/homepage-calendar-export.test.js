@@ -18,12 +18,15 @@ const a = html.indexOf("// ---- Add to Calendar ----");
 const b = html.indexOf("// ---- Share ----", a);
 assert.ok(a >= 0 && b > a, "Add to Calendar block not found");
 
-function load(today) {
+// `at` pins the instant (ISO, UTC) the page sees as "now"; default is noon Detroit (16:00Z, EDT) on `today`.
+function load(today, at) {
   const blobs = [];
+  const NOW = new Date(at || `${today}T16:00:00Z`).getTime();
+  class FakeDate extends Date { constructor(...a) { if (a.length) super(...a); else super(NOW); } static now() { return NOW; } }
   const ctx = {
     CalendarLocation: require(`${REPO_DIR}/calendar-location.js`).CalendarLocation, EventDates: require(`${REPO_DIR}/event-dates.js`),
     getTodayISO: () => today,
-    URL: Object.assign(class extends URL {}, { createObjectURL: () => "blob:test" }), URLSearchParams, Date, Math, String, Array, Object, JSON, Number, RegExp,
+    URL: Object.assign(class extends URL {}, { createObjectURL: () => "blob:test" }), URLSearchParams, Date: FakeDate, Math, String, Array, Object, JSON, Number, RegExp,
     Blob: class { constructor(parts) { this.text = parts.join(""); blobs.push(this.text); } },
     window: { location: { href: "https://313.events/" }, open: () => null },
     EVENTS: [], setTimeout, document: undefined,
@@ -32,7 +35,7 @@ function load(today) {
     escapeHtml: (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"),
   };
   vm.createContext(ctx);
-  const api = vm.runInContext(`${html.slice(a, b)}\n;({ buildICS, buildGoogleCalUrl, addToCalendarHtml, markCalendarLocationsReady })`, ctx);
+  const api = vm.runInContext(`${html.slice(a, b)}\n;({ buildICS, buildGoogleCalUrl, addToCalendarHtml, markCalendarLocationsReady, calendarExportAvailable, nextCalendarOccurrence })`, ctx);
   api.blobs = blobs;
   return api;
 }
@@ -97,3 +100,38 @@ console.log("PASS: confirmed recurring exports its next evidenced occurrence");
   assert.strictEqual(prop(P.buildICS(continuous), "DTSTART;VALUE=DATE"), "20261001");
 }
 console.log("PASS: single-day, overnight and continuous exports are unchanged");
+
+// 5. Once every verified occurrence has ended (Detroit time) there is nothing to add: both controls disappear.
+{
+  const show = (e, today, at) => { const P = load(today, at); P.markCalendarLocationsReady(); return /data-cal="google"/.test(P.addToCalendarHtml(e)) && /data-cal="ics"/.test(P.addToCalendarHtml(e)); };
+  const hidden = (e, today, at) => { const P = load(today, at); P.markCalendarLocationsReady(); return P.addToCalendarHtml(e) === ""; };
+  const greenfield = ev({ id: "gf", title: "Greenfield Village Halloween", date: "2026-10-09", endDate: "2026-10-25", time: "5:00 PM-9:00 PM", dateSemantics: "recurring", occurrenceDates: ["2026-10-09", "2026-10-10", "2026-10-24", "2026-10-25"] });
+  // (1) final verified occurrence in the future: kept, exports the next one.
+  assert.ok(show(greenfield, "2026-10-20"), "future final occurrence: buttons stay");
+  assert.strictEqual(prop(load("2026-10-20").buildICS(greenfield), "DTSTART"), "20261024T170000");
+  // (2) final occurrence today: respects the stated end time (EDT: 9 PM = 01:00Z next day).
+  assert.ok(show(greenfield, "2026-10-25", "2026-10-25T23:00:00Z"), "Oct 25 7 PM: still running or ahead, buttons stay");
+  assert.ok(hidden(greenfield, "2026-10-25", "2026-10-26T01:00:00Z"), "Oct 25 9:00 PM: ended, buttons gone");
+  const lateNight = ev({ id: "ln", date: "2026-10-24", endDate: "2026-10-25", time: "10:00 PM-2:00 AM", dateSemantics: "recurring", occurrenceDates: ["2026-10-24", "2026-10-25"] });
+  assert.ok(show(lateNight, "2026-10-26", "2026-10-26T05:30:00Z"), "overnight: Oct 26 1:30 AM EDT the final show is still running");
+  assert.ok(hidden(lateNight, "2026-10-26", "2026-10-26T06:00:00Z"), "overnight: Oct 26 2:00 AM EDT it has ended");
+  // (3) final occurrence ended: both gone, including the Oct 26 example (no stated end: the whole day counts).
+  const noEnd = ev({ id: "gf2", date: "2026-10-20", endDate: "2026-10-25", time: "5:00 PM", dateSemantics: "recurring", occurrenceDates: ["2026-10-24", "2026-10-25"] });
+  assert.ok(show(noEnd, "2026-10-25", "2026-10-26T03:59:00Z"), "no end time: Oct 25 11:59 PM EDT still counts as the day");
+  assert.ok(hidden(noEnd, "2026-10-26", "2026-10-26T04:00:00Z"), "no end time: Oct 26 00:00 EDT, buttons gone");
+  // (4) past and future dates: the next verified future occurrence is exported.
+  assert.strictEqual(prop(load("2026-10-24", "2026-10-25T01:30:00Z").buildICS(greenfield), "DTSTART"), "20261025T170000", "Oct 24 9:30 PM: ended, next is Oct 25");
+  // (5) unverified: hidden whatever the clock says.
+  assert.ok(hidden(stg, "2026-10-16") && hidden(america, "2026-10-16"), "unverified: hidden");
+  // (6) Share and Tickets are not touched by this change.
+  const row = html.slice(html.indexOf("function streamRowHtml("));
+  assert.ok(/\$\{shareButtonHtml\(e\)\}/.test(row) && /Tickets &amp; info/.test(row));
+  // (7) Detroit midnight and DST: Nov 1 2026 falls back (EDT -> EST), Mar 14 2027 springs forward.
+  const fall = ev({ id: "fb", date: "2026-10-31", endDate: "2026-11-01", time: "7:00 PM", dateSemantics: "recurring", occurrenceDates: ["2026-10-31", "2026-11-01"] });
+  assert.ok(show(fall, "2026-11-01", "2026-11-02T04:30:00Z"), "Nov 1 11:30 PM EST: day not over");
+  assert.ok(hidden(fall, "2026-11-02", "2026-11-02T05:00:00Z"), "Nov 2 00:00 EST: over (05:00Z, not 04:00Z)");
+  const spring = ev({ id: "sp", date: "2027-03-13", endDate: "2027-03-14", time: "7:00 PM", dateSemantics: "recurring", occurrenceDates: ["2027-03-13", "2027-03-14"] });
+  assert.ok(show(spring, "2027-03-14", "2027-03-15T03:30:00Z"), "Mar 14 11:30 PM EDT: day not over");
+  assert.ok(hidden(spring, "2027-03-15", "2027-03-15T04:00:00Z"), "Mar 15 00:00 EDT: over");
+}
+console.log("PASS: calendar export is hidden once every verified occurrence has ended (Detroit time, end times, overnight, DST)");

@@ -5635,13 +5635,45 @@ function pad2(n){ return String(n).padStart(2,'0'); }
 // schedule is a published range, not attendable days, so it gets no calendar export (Share and Tickets stay). A
 // recurring event with evidenced occurrence_dates exports its next occurrence, never the stored first date.
 function isDatesUnconfirmed(e){ return EventDates.scheduleState(e) === 'unverified'; }
-// The first evidenced occurrence on or after today (Detroit), else the last one; null for anything not recurring.
+// Detroit wall clock (date + minutes since midnight), so DST and local midnight are handled by the zone, not by the
+// visitor's device offset.
+function detroitNow(){
+  const p = {};
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'})
+    .formatToParts(new Date()).forEach(x=>{ p[x.type] = x.value; });
+  return { iso: `${p.year}-${p.month}-${p.day}`, mins: (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10) };
+}
+function isoPlusOneDay(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  const n = new Date(y, m-1, d+1);
+  return `${n.getFullYear()}-${pad2(n.getMonth()+1)}-${pad2(n.getDate())}`;
+}
+// An occurrence has ended at its stated end time (an end earlier than the start runs past midnight); with no stated
+// end the whole day counts, so it ends at Detroit midnight. No end time is invented.
+function occurrenceEnded(e, occIso, now){
+  const range = parseTimeRange(e.time);
+  if(!range || !range.end) return now.iso > occIso;
+  const startM = range.start.h*60+range.start.m, endM = range.end.h*60+range.end.m;
+  if(endM < startM){ const nx = isoPlusOneDay(occIso); return now.iso > nx || (now.iso === nx && now.mins >= endM); }
+  return now.iso > occIso || (now.iso === occIso && now.mins >= endM);
+}
+// The first evidenced occurrence that has not ended (Detroit), else the last one; null for anything not recurring.
 function nextCalendarOccurrence(e){
   if(EventDates.semanticsOf(e) !== 'recurring') return null;
   const days = EventDates.expand(e);
   if(!days.length) return null;
-  const today = getTodayISO();
-  return days.find(d => d >= today) || days[days.length - 1];
+  const now = detroitNow();
+  return days.find(d => !occurrenceEnded(e, d, now)) || days[days.length - 1];
+}
+// Calendar export needs a verified schedule with at least one occurrence still ahead; once the last verified
+// occurrence has ended there is nothing left to add.
+function calendarExportAvailable(e){
+  if(isDatesUnconfirmed(e)) return false;
+  if(EventDates.semanticsOf(e) !== 'recurring') return true;
+  const days = EventDates.expand(e);
+  if(!days.length) return true;
+  const now = detroitNow();
+  return days.some(d => !occurrenceEnded(e, d, now));
 }
 
 // Returns {allDay:true, startDate, endDate} (endDate exclusive, per the
@@ -5778,7 +5810,7 @@ function icsFilenameFor(e){
 }
 
 function addToCalendarHtml(e){
-  if(isDatesUnconfirmed(e)) return '';
+  if(!calendarExportAvailable(e)) return '';
   const key = calEventKey(e);
   if(!calLocReady){
     CAL_EVENTS.set(key, e);
