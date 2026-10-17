@@ -55,6 +55,7 @@ function load(file, startMarker, endMarker, href) {
   assert.ok(a >= 0 && b > a, `${file}: Add to Calendar block not found`);
   const blobs = [];
   const ctx = {
+    EventDates: require(`${REPO_DIR}/event-dates.js`), getTodayISO: () => "2026-10-16",
     CalendarLocation: CL, URL, URLSearchParams, Date, Math, String, Array, Object, JSON, Number, RegExp,
     Blob: class { constructor(parts) { this.text = parts.join(""); blobs.push(this.text); } },
     window: { location: { href }, open: () => null },

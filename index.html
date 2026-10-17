@@ -5631,11 +5631,26 @@ function timeSortMinutes(timeStr){
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 
+// P0 date reliability (owner decision 2026-10-17): the same rule as the event page. A multiday range with no verified
+// schedule is a published range, not attendable days, so it gets no calendar export (Share and Tickets stay). A
+// recurring event with evidenced occurrence_dates exports its next occurrence, never the stored first date.
+function isDatesUnconfirmed(e){ return EventDates.scheduleState(e) === 'unverified'; }
+// The first evidenced occurrence on or after today (Detroit), else the last one; null for anything not recurring.
+function nextCalendarOccurrence(e){
+  if(EventDates.semanticsOf(e) !== 'recurring') return null;
+  const days = EventDates.expand(e);
+  if(!days.length) return null;
+  const today = getTodayISO();
+  return days.find(d => d >= today) || days[days.length - 1];
+}
+
 // Returns {allDay:true, startDate, endDate} (endDate exclusive, per the
 // iCalendar all-day convention) when no time is parseable at all, or
 // {allDay:false, startDate, startTime, endDate, endTime} (YYYYMMDD /
 // HHMMSS, local) otherwise.
 function eventDateTimeParts(e){
+  const occ = nextCalendarOccurrence(e);
+  if(occ) e = Object.assign({}, e, {date: occ, endDate: occ});
   const [y,m,d] = e.date.split('-').map(Number);
   const range = parseTimeRange(e.time);
   const dateStr = `${y}${pad2(m)}${pad2(d)}`;
@@ -5763,6 +5778,7 @@ function icsFilenameFor(e){
 }
 
 function addToCalendarHtml(e){
+  if(isDatesUnconfirmed(e)) return '';
   const key = calEventKey(e);
   if(!calLocReady){
     CAL_EVENTS.set(key, e);
