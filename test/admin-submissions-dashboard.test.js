@@ -114,8 +114,39 @@ assert.ok(lastSeen.includes("Last seen at source:") && lastSeen.includes("Source
 // secondary notes (optional-field gaps) render quietly and are never a reason
 const withNote = T.subBuild([srv({ lane: "person", lane_kind: null, reasons: [{ code: "no_reason_recorded", text: "No review reason recorded." }], notes: [{ code: "missing_description", text: "No description recorded." }] })], null)[0];
 const noteHtml = T.subRowHtml(withNote, NOW, true);
-assert.ok(noteHtml.includes("Note: No description recorded.") && noteHtml.includes("No review reason recorded"));
+assert.ok(noteHtml.includes("Note: Description not yet available") && noteHtml.includes("No review reason recorded"));
 assert.ok(!withNote._sub.reasons.some((r) => r.code === "missing_description"));
+// REGRESSION (owner 2026-10-17): a description gap is an optional enrichment note, never a reason, never the primary reason,
+// and never changes the lane or the badge. Holds for the new API shape, an older API that still sends it as a reason, and the fallback.
+const onlyDesc = (over) => srv({ lane: "person", lane_kind: null, description: "", ...over });
+for (const shape of [
+  onlyDesc({ reasons: [{ code: "no_reason_recorded", text: "No review reason recorded." }], notes: [{ code: "missing_description", text: "No description recorded." }] }),
+  onlyDesc({ reasons: [{ code: "missing_description", text: "No description recorded." }] }),
+  onlyDesc({ reasons: [{ code: "missing_description", text: "No description recorded." }, { code: "no_reason_recorded", text: "x" }], notes: undefined }),
+]) {
+  const b = T.subBuild([shape], null)[0];
+  assert.ok(!b._sub.reasons.some((r) => r.code === "missing_description"), "description gap is not a reason");
+  assert.strictEqual(b._sub.reasons[0].code, "no_reason_recorded", "primary reason is not the description gap");
+  assert.strictEqual(b._sub.lane, "person", "lane comes from the API, not from the gap");
+  const h2 = T.subRowHtml(b, NOW, true);
+  assert.ok(h2.includes("Note: Description not yet available"), "shown as a quiet secondary note");
+  assert.ok(!h2.includes("No description recorded"), "old wording is gone");
+  assert.ok(!/Why:<\/span> Description/.test(h2));
+}
+// a complete row (has a description) shows no such note
+const fine = T.subBuild([srv({ lane: "person", lane_kind: null, reasons: [{ code: "no_reason_recorded", text: "x" }], description: "Real text" })], null)[0];
+assert.ok(!T.subRowHtml(fine, NOW, true).includes("Description not yet available"));
+// fallback derivation (no server fields): a valid row whose only gap is the description gets no reason from it
+const fb = T.subBuild([{ ...base, id: "fb", source: "Ticketmaster", external_id: "Z1", time_display: "7 PM", venue_name_raw: "Venue", description: "" }], null)[0];
+assert.strictEqual(fb._sub.reasons[0].code, "none_recorded");
+assert.ok(T.subRowHtml(fb, NOW, true).includes("Description not yet available"));
+// a genuine blocking reason stays primary even when the description is also missing
+const mixed = T.subBuild([{ ...base, id: "mx", source: "Venue Submission", venue_name_raw: "V", description: "" }], null)[0];
+assert.ok(mixed._sub.reasons[0].code === "human_submission" || mixed._sub.reasons[0].code === "missing_start_time");
+// counts: the lane/badge count is identical with and without a description
+const c1 = T.subCounts(T.subBuild([srv({ lane: "person", lane_kind: null, description: "" , reasons:[{code:"no_reason_recorded",text:"x"}]})], null));
+const c2 = T.subCounts(T.subBuild([srv({ lane: "person", lane_kind: null, description: "d" , reasons:[{code:"no_reason_recorded",text:"x"}]})], null));
+assert.strictEqual(c1.person, c2.person);
 // every method code the API can emit has a label
 for (const m of ["api", "ics", "rss", "sync", "scrape", "generated", "form", "manual"]) {
   const r2 = T.subBuild([srv({ prov: { ...srv({}).prov, method: { value: m, derived: true } } })], null)[0];

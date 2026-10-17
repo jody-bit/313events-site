@@ -1584,11 +1584,16 @@ function subBuild(events, tower) {
     const fallback = subDeriveProv(e);
     const prov = e.prov && typeof e.prov === 'object' ? subNormServerProv(e.prov, fallback) : fallback;
     let reasons;
+    // Optional enrichment gaps (a missing description) are never a review reason, whatever an API version sends (owner 2026-10-17).
+    const isOptionalGap = r => r && r.code === 'missing_description';
     if (Array.isArray(e.reasons) && e.reasons.length) {
-      reasons = e.reasons.map(r => ({ code: r.code, text: r.text, derived: r.derived !== false, basis: r.basis || 'rule applied by the API to fields on the row' }));
+      reasons = e.reasons.filter(r => !isOptionalGap(r)).map(r => ({ code: r.code, text: r.text, derived: r.derived !== false, basis: r.basis || 'rule applied by the API to fields on the row' }));
+      if (!reasons.length) reasons = [{ code: 'no_reason_recorded', text: 'No review reason recorded', derived: false, basis: 'nothing recorded and no rule matched' }];
     } else reasons = subDeriveReasons(e);
     if (lane.lane === 'blocked' && lane.kind === 'technical' && !lane.why) { const sb = reasons.find(r => r.code === 'source_blocked'); lane.why = sb ? sb.text : 'Source is failing'; }
-    const notes = Array.isArray(e.notes) ? e.notes.filter(n => n && n.text) : [];
+    const notes = (Array.isArray(e.notes) ? e.notes.filter(n => n && n.text) : []).map(n => n.code === 'missing_description' ? { code: n.code, text: 'Description not yet available' } : n);
+    if (Array.isArray(e.reasons) && e.reasons.some(isOptionalGap) && !notes.some(n => n.code === 'missing_description')) notes.push({ code: 'missing_description', text: 'Description not yet available' });
+    if (!notes.some(n => n.code === 'missing_description') && !String(e.description || '').trim()) notes.push({ code: 'missing_description', text: 'Description not yet available' });
     return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, why: lane.why, prov: prov, reasons: reasons, notes: notes } });
   });
 }
