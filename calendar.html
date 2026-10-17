@@ -550,6 +550,7 @@
        were cut off by the cell's overflow:hidden, so the day number and label stack and the count drops its unit word
        (the cell's aria-label still says "N events"; the dot + number is the whole visual count). */
     .daynum{flex-wrap:wrap;gap:0 4px;}
+    .today-label{white-space:nowrap;font-size:8px;letter-spacing:0;}
     .day-count .dc-word{display:none;}
     .pill{display:none;}
     .more-link{display:none;} /* redundant once .day-count shows the total */
@@ -616,7 +617,9 @@
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
 
   @media (max-width:360px){
+    .mobile-triggers .mobile-trigger{padding-left:4px;padding-right:4px;}
     .mobile-triggers .mobile-trigger .mt-sub{font-size:11.5px;}
+    .today-label{font-size:7.5px;}
     .mobile-triggers .mobile-trigger .mt-sub::after{content:none;} /* the caret cost the room "Everywhere" needs at 320px */
   }
   @media (max-width:720px){

@@ -32,10 +32,11 @@ const outside = html.replace(/@media \(max-width:\d+px\)\{[\s\S]*?\n  \}\n/g, ""
 
 assert.ok(/\.day-cell\{min-height:78px;padding:5px 3px 6px;\}/.test(m720), "<=720px: day cell padding tightened");
 assert.ok(/\.daynum\{flex-wrap:wrap;gap:0 4px;\}/.test(m720), "<=720px: day number and TODAY label may stack");
+assert.ok(/\.today-label\{white-space:nowrap;font-size:8px;letter-spacing:0;\}/.test(m720) && /\.today-label\{font-size:7\.5px;\}/.test(m360), "<=720px: the TODAY label stays on one line and shrinks to fit");
 assert.ok(/\.day-count \.dc-word\{display:none;\}/.test(m720), "<=720px: the count drops its unit word");
 assert.ok(!/\.dc-word\{display:none/.test(outside), "the unit word is hidden only inside the <=720px query (desktop unchanged)");
 assert.ok(/\.mobile-trigger\{align-items:center;text-align:center;padding:9px 6px;\}/.test(m720), "<=720px: trigger side padding reduced");
-assert.ok(/\.mobile-triggers \.mobile-trigger \.mt-sub\{font-size:11\.5px;\}/.test(m360) && /::after\{content:none;\}/.test(m360), "<=360px: smaller text and no caret so Everywhere fits");
+assert.ok(/\.mobile-triggers \.mobile-trigger \.mt-sub\{font-size:11\.5px;\}/.test(m360) && /::after\{content:none;\}/.test(m360) && /\.mobile-trigger\{padding-left:4px;padding-right:4px;\}/.test(m360), "<=360px: smaller text, no caret and tighter padding so Everywhere fits");
 assert.ok(/\.pill\{display:none;\}/.test(m720) && /\.more-link\{display:none;\}/.test(m720), "existing <=720px rules kept");
 
 // Markup: the count still carries the number and the full word (desktop text unchanged), and the cell's aria-label is untouched.
