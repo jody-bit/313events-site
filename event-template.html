@@ -482,23 +482,51 @@ function isDatesUnconfirmed(e){
 }
 // #151: an event with evidenced occurrence dates (recurring + occurrence_dates) shows those dates, not its stored
 // range, and Add to Calendar uses the next one. "Today" is America/Detroit, as on the homepage.
-function detroitTodayIso(){
+// Detroit "now": the date and the minutes after midnight in America/Detroit (Intl handles DST).
+function detroitNow(){
   const p = {};
-  new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', year:'numeric', month:'2-digit', day:'2-digit'})
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'})
     .formatToParts(new Date()).forEach(x=>{ p[x.type] = x.value; });
-  return `${p.year}-${p.month}-${p.day}`;
+  return { iso: `${p.year}-${p.month}-${p.day}`, mins: (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10) };
+}
+function detroitTodayIso(){ return detroitNow().iso; }
+function isoPlusOneDay(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  const n = new Date(y, m-1, d+1);
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+// Has this occurrence ended, in Detroit time? An explicit end clock time ends it then (an end earlier than the start
+// is an overnight run that ends the next morning); with no stated end time, the whole day counts and nothing is invented.
+function occurrenceEnded(e, occIso, now){
+  const range = parseTimeRange(e.time);
+  if(!range || !range.end) return now.iso > occIso;
+  const startM = range.start.h * 60 + range.start.m, endM = range.end.h * 60 + range.end.m;
+  if(endM < startM){
+    const nx = isoPlusOneDay(occIso);
+    return now.iso > nx || (now.iso === nx && now.mins >= endM);
+  }
+  return now.iso > occIso || (now.iso === occIso && now.mins >= endM);
 }
 function occurrenceDays(e){
   if(typeof EventDates === 'undefined' || EventDates.semanticsOf(e) !== 'recurring') return null;
   const days = EventDates.expand(e);
   return days.length ? days : null;
 }
-// The occurrence to export: the first on or after today, else the last one that was evidenced.
+// The occurrence to export: the first one that has not ended, else the last one that was evidenced.
 function nextOccurrence(e){
   const days = occurrenceDays(e);
   if(!days) return null;
-  const today = detroitTodayIso();
-  return days.find(d=>d >= today) || days[days.length - 1];
+  const now = detroitNow();
+  return days.find(d=>!occurrenceEnded(e, d, now)) || days[days.length - 1];
+}
+// Add to Calendar is offered only when there is something to add: not for unverified dates, and not when the event has
+// verified occurrence dates and every one of them has ended.
+function calendarExportAvailable(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const days = occurrenceDays(e);
+  if(!days) return true;
+  const now = detroitNow();
+  return days.some(d=>!occurrenceEnded(e, d, now));
 }
 function upcomingOccurrences(e){
   const days = occurrenceDays(e);
@@ -804,8 +832,9 @@ function renderEvent(e){
     }
   }
   // Dates not confirmed (owner decision 2026-10-17, option B): no Add to Calendar at all. An export would either span the
-  // whole stored range or invent a day, and either reads as confirmed attendance. Share stays.
-  if(!isDatesUnconfirmed(e)){
+  // whole stored range or invent a day, and either reads as confirmed attendance. Likewise when every verified
+  // occurrence has ended (owner decision 2026-10-17). Share and Tickets stay.
+  if(calendarExportAvailable(e)){
     actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
     // Blob + download, not a bare `data:` URI — see index.html's identical
     // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari

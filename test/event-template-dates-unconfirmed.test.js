@@ -20,7 +20,11 @@ const src = [
   grab(/function shouldShowSource\([\s\S]*?\n\}\n/, "shouldShowSource"),
   grab(/function truncateText\([\s\S]*?\n\}\n/, "truncateText"),
   grab(/function parseTimeRange\([\s\S]*?\n\}\n/, "parseTimeRange"),
-  grab(/function detroitTodayIso\([\s\S]*?\n\}\n/, "detroitTodayIso"),
+  grab(/function detroitNow\([\s\S]*?\n\}\n/, "detroitNow"),
+  grab(/function detroitTodayIso\([^\n]*\n/, "detroitTodayIso"),
+  grab(/function isoPlusOneDay\([\s\S]*?\n\}\n/, "isoPlusOneDay"),
+  grab(/function occurrenceEnded\([\s\S]*?\n\}\n/, "occurrenceEnded"),
+  grab(/function calendarExportAvailable\([\s\S]*?\n\}\n/, "calendarExportAvailable"),
   grab(/function occurrenceDays\([\s\S]*?\n\}\n/, "occurrenceDays"),
   grab(/function nextOccurrence\([\s\S]*?\n\}\n/, "nextOccurrence"),
   grab(/function upcomingOccurrences\([\s\S]*?\n\}\n/, "upcomingOccurrences"),
@@ -32,8 +36,10 @@ const src = [
 // eslint-disable-next-line no-new-func
 // "Now" is pinned to Fri Oct 16 2026 12:00 Detroit so the occurrence helpers are deterministic.
 const RealDate = Date;
-class FakeDate extends RealDate { constructor(...a) { super(...(a.length ? a : ["2026-10-16T16:00:00Z"])); } }
-const F = new Function("Date", `${src}\nreturn { isDatesUnconfirmed, eventDateTimeParts, buildEventDescription, nextOccurrence, upcomingOccurrences };`)(FakeDate);
+let NOW = "2026-10-16T16:00:00Z";
+const at = (iso) => { NOW = iso; };
+class FakeDate extends RealDate { constructor(...a) { super(...(a.length ? a : [NOW])); } }
+const F = new Function("Date", `${src}\nreturn { isDatesUnconfirmed, eventDateTimeParts, buildEventDescription, nextOccurrence, upcomingOccurrences, calendarExportAvailable };`)(FakeDate);
 
 const ev = (o) => Object.assign({ date: "2026-10-01", endDate: "2026-10-31", time: "9:00 AM", dateSemantics: null, occurrenceDates: null, source: "Manual" }, o);
 
@@ -43,12 +49,14 @@ const cider = ev({});
 assert.strictEqual(F.isDatesUnconfirmed(cider), true);
 assert.ok(!/Dates not confirmed/.test(F.buildEventDescription(cider)), "the export-only description line is gone with the export");
 const actionsSrc = grab(/Dates not confirmed \(owner decision 2026-10-17[\s\S]*?id="evtShareBtn"/, "actions block");
-const guard = actionsSrc.match(/if\(!isDatesUnconfirmed\(e\)\)\{([\s\S]*?)\n  \}\n/);
-assert.ok(guard, "calendar buttons sit inside an !isDatesUnconfirmed(e) guard");
+const guard = actionsSrc.match(/if\(calendarExportAvailable\(e\)\)\{([\s\S]*?)\n  \}\n/);
+assert.ok(guard, "calendar buttons sit inside a calendarExportAvailable(e) guard");
 assert.ok(/buildGoogleCalUrl\(e\)/.test(guard[1]) && /buildICS\(e\)/.test(guard[1]), "both Google and Apple/Outlook are inside the guard");
 assert.ok(!/buildGoogleCalUrl|buildICS/.test(actionsSrc.replace(guard[0], "")), "nothing outside the guard builds a calendar link");
 assert.ok(/id="evtShareBtn"/.test(actionsSrc.slice(actionsSrc.indexOf(guard[0]) + guard[0].length)), "Share is outside the guard and always rendered");
-console.log("PASS: unverified rows get no Add to Calendar controls; Share stays");
+assert.ok(/Tickets & info/.test(html.slice(html.indexOf("Tickets & info") - 200, html.indexOf("Tickets & info") + 50)) && html.indexOf("Tickets & info") < html.indexOf(guard[0]), "Tickets is built before, and outside, the guard");
+assert.ok(/function calendarExportAvailable\(e\)\{\s*if\(isDatesUnconfirmed\(e\)\) return false;/.test(html), "unverified dates never offer a calendar export");
+console.log("PASS: unverified rows get no Add to Calendar controls; Share and Tickets stay");
 
 // 2. Confirmed rows are untouched.
 const single = ev({ date: "2026-10-17", endDate: "2026-10-17", time: "7:30 PM" });
@@ -89,3 +97,54 @@ assert.strictEqual(F.nextOccurrence(cont), null);
 assert.deepStrictEqual(F.eventDateTimeParts(single), { allDay: false, startDate: "20261017", startTime: "193000", endDate: "20261017", endTime: "213000" });
 assert.ok(/dateRangeLabel[\s\S]{0,400}upcomingOccurrences\(e\)/.test(html), "the date label shows the occurrence dates");
 console.log("PASS: occurrence-dated rows show and export their next evidenced occurrence; others unchanged");
+
+// 5. All-past correction (owner decision 2026-10-17): verified occurrence dates that have all ended offer no calendar
+// export. "Now" is pinned per case; all instants are UTC, the rule reads America/Detroit.
+{
+  const rec = (dates, time) => ev({ date: dates[0], endDate: dates[dates.length - 1], time, dateSemantics: "recurring", occurrenceDates: dates });
+  const avail = (e, when) => { at(when); return F.calendarExportAvailable(e); };
+
+  // 5.1 final verified occurrence in the future: available, exports the next one.
+  const future = rec(["2026-10-03", "2026-10-04", "2026-10-24"], "1:00 PM");
+  assert.strictEqual(avail(future, "2026-10-16T16:00:00Z"), true);
+  assert.strictEqual(F.nextOccurrence(future), "2026-10-24", "5.4 past and future dates: the next verified future occurrence");
+  assert.strictEqual(F.eventDateTimeParts(future).startDate, "20261024");
+
+  // 5.2 final occurrence is today: respect the stated end time (EDT, UTC-4).
+  const today = rec(["2026-10-17"], "1:00 PM\u20135:00 PM");
+  assert.strictEqual(avail(today, "2026-10-17T20:59:00Z"), true, "4:59 PM Detroit: still running");
+  assert.strictEqual(avail(today, "2026-10-17T21:00:00Z"), false, "5:00 PM Detroit: ended");
+  const night = rec(["2026-10-17"], "10:00 PM\u20132:00 AM");
+  assert.strictEqual(avail(night, "2026-10-18T03:00:00Z"), true, "11:00 PM Oct 17: running");
+  assert.strictEqual(avail(night, "2026-10-18T05:59:00Z"), true, "1:59 AM Oct 18: overnight still running");
+  assert.strictEqual(avail(night, "2026-10-18T06:00:00Z"), false, "2:00 AM Oct 18: ended");
+  const startOnly = rec(["2026-10-17"], "6:00 PM");
+  assert.strictEqual(avail(startOnly, "2026-10-18T03:59:00Z"), true, "no stated end: the whole day counts, 11:59 PM Detroit");
+  assert.strictEqual(avail(startOnly, "2026-10-18T04:00:00Z"), false, "midnight Detroit: ended");
+
+  // 5.3 every verified occurrence has ended: no export (Greenfield: last date Oct 25, checked on Oct 26).
+  const greenfield = rec(["2026-10-10", "2026-10-24", "2026-10-25"], "6:00 PM");
+  assert.strictEqual(avail(greenfield, "2026-10-26T03:59:00Z"), true, "11:59 PM Oct 25 Detroit");
+  assert.strictEqual(avail(greenfield, "2026-10-26T04:00:00Z"), false, "Oct 26 00:00 Detroit");
+  const cider = rec(["2026-10-17", "2026-10-18"], "1:00 PM");
+  assert.strictEqual(avail(cider, "2026-10-19T16:00:00Z"), false, "Cider on a simulated Oct 19");
+
+  // 5.5 unverified dates stay hidden, and non-recurring rows are unaffected by the new rule.
+  assert.strictEqual(avail(ev({}), "2026-10-16T16:00:00Z"), false, "unverified range: hidden");
+  assert.strictEqual(avail(ev({ date: "2026-10-01", endDate: "2026-10-01", time: "7:30 PM" }), "2026-10-20T16:00:00Z"), true, "single-day: unchanged");
+  assert.strictEqual(avail(ev({ dateSemantics: "continuous" }), "2026-10-16T16:00:00Z"), true, "continuous: unchanged");
+  assert.strictEqual(avail(ev({ date: "2026-10-16", endDate: "2026-10-17", time: "10:00 PM\u20132:00 AM" }), "2026-10-16T16:00:00Z"), true, "overnight single night: unchanged");
+
+  // 5.7 Detroit midnight and daylight-saving boundaries.
+  const dstEnd = rec(["2026-11-01"], "6:00 PM"); // fall back Nov 1 2026 02:00 EDT -> 01:00 EST
+  assert.strictEqual(avail(dstEnd, "2026-11-02T04:59:00Z"), true, "11:59 PM Nov 1 EST (UTC-5)");
+  assert.strictEqual(avail(dstEnd, "2026-11-02T05:00:00Z"), false, "midnight Nov 2 EST, not 04:00Z");
+  const dstStart = rec(["2027-03-13"], "7:00 PM"); // spring forward Mar 14 2027
+  assert.strictEqual(avail(dstStart, "2027-03-14T04:59:00Z"), true, "11:59 PM Mar 13 EST (UTC-5)");
+  assert.strictEqual(avail(dstStart, "2027-03-14T05:00:00Z"), false, "midnight Mar 14");
+  const dstDay = rec(["2027-03-14"], "6:00 PM\u201311:00 PM");
+  assert.strictEqual(avail(dstDay, "2027-03-15T02:59:00Z"), true, "10:59 PM Mar 14 EDT (UTC-4)");
+  assert.strictEqual(avail(dstDay, "2027-03-15T03:00:00Z"), false, "11:00 PM Mar 14 EDT");
+  at("2026-10-16T16:00:00Z");
+}
+console.log("PASS: calendar export is hidden once every verified occurrence has ended (Detroit time, end times, overnight, DST)");
