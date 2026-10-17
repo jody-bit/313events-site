@@ -160,7 +160,6 @@
   .sub-chip.np{font-weight:600;text-transform:none;font-style:italic;}
   .sub-chip[data-derived="1"],.sub-derived{border-bottom:1px dotted var(--ink-soft);cursor:help;}
   .sub-reason{font-size:12.5px;color:var(--ink);margin:2px 0 0;}
-  .sub-ready-note{font-size:12.5px;color:var(--muted,#9aa3ad);margin:4px 0 8px;}
   .sub-ready{color:var(--muted,#9aa3ad);}
   .sub-reason .rc{color:#e8c96b;font-weight:700;}
   .sub-times{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
@@ -1539,7 +1538,7 @@ function subDeriveReasons(row) {
   if (!row.venue_id && !String(row.venue_address_raw || '').trim() && (!venue || /^(venue )?(tba|tbd)$/i.test(venue))) out.push({ code: 'missing_location', text: 'Venue not provided', derived: true, basis: 'no venue, address or name on the row' });
   if (!row.time_display && !row.is_all_day) out.push({ code: 'missing_start_time', text: 'Start time not provided', derived: true, basis: 'no time on the row' });
   if (row.link_check_status === 'dead') out.push({ code: 'link_dead', text: 'Event link failed its last check', derived: false, basis: 'link_check_status on the row' });
-  if (!out.length) out.push({ code: 'reason_not_determined', text: 'Review reason not determined', derived: false, basis: 'pending review with no recorded reason and no positive eligibility evidence' });
+  if (!out.length) out.push({ code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' });
   return out;
 }
 
@@ -1590,28 +1589,23 @@ function subBuild(events, tower) {
     const isOptionalGap = r => r && r.code === 'missing_description';
     if (Array.isArray(e.reasons) && e.reasons.length) {
       reasons = e.reasons.filter(r => !isOptionalGap(r)).map(r => ({ code: r.code, text: r.text, derived: r.derived !== false, basis: r.basis || 'rule applied by the API to fields on the row' }));
-      if (!reasons.length) reasons = [{ code: 'reason_not_determined', text: 'Review reason not determined', derived: false, basis: 'pending review with no recorded reason and no positive eligibility evidence' }];
+      if (!reasons.length) reasons = [{ code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' }];
     } else reasons = subDeriveReasons(e);
-    // Ready needs positive evidence from the API (lane "ready") and no genuine reason. A row with no recorded reason and no
-    // such evidence is unexplained: it stays in Needs a person, never in ready (owner 2026-10-17 20:07Z).
-    const isUnexplained = r => r.code === 'no_reason_recorded' || r.code === 'none_recorded' || r.code === 'ready_to_approve' || r.code === 'reason_not_determined';
-    const serverReady = lane.lane === 'ready';
-    const genuine = reasons.filter(r => !isUnexplained(r));
-    const ready = serverReady && !genuine.length;
-    reasons = genuine.length ? genuine : [ready ? { code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' } : { code: 'reason_not_determined', text: 'Review reason not determined', derived: false, basis: 'pending review with no recorded reason and no positive eligibility evidence' }];
+    // A row with no genuine reason is not a problem: it stays in Needs a person, shown quietly as "Ready to approve" (owner 2026-10-17).
+    reasons = reasons.map(r => (r.code === 'no_reason_recorded' || r.code === 'none_recorded' || r.code === 'ready_to_approve') ? { code: 'ready_to_approve', text: 'Ready to approve', derived: false, basis: 'no review reason recorded and no rule matched' } : r);
     // Unknown lane values from a newer API never drop a row: only blocked is special, everything else is Needs a person.
     if (lane.lane !== 'blocked') lane = Object.assign({}, lane, { lane: 'person' });
     if (lane.lane === 'blocked' && lane.kind === 'technical' && !lane.why) { const sb = reasons.find(r => r.code === 'source_blocked'); lane.why = sb ? sb.text : 'Source is failing'; }
     const notes = (Array.isArray(e.notes) ? e.notes.filter(n => n && n.text) : []).map(n => n.code === 'missing_description' ? { code: n.code, text: 'Description not yet available' } : n);
     if (Array.isArray(e.reasons) && e.reasons.some(isOptionalGap) && !notes.some(n => n.code === 'missing_description')) notes.push({ code: 'missing_description', text: 'Description not yet available' });
     if (!notes.some(n => n.code === 'missing_description') && !String(e.description || '').trim()) notes.push({ code: 'missing_description', text: 'Description not yet available' });
-    return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, ready: ready, why: lane.why, prov: prov, reasons: reasons, notes: notes } });
+    return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, why: lane.why, prov: prov, reasons: reasons, notes: notes } });
   });
 }
 
 function subCounts(rows) {
-  const c = { person: 0, blocked: 0, technical: 0, policy: 0, ready: 0 };
-  rows.forEach(r => { if (r._sub.ready) { c.ready++; return; } c[r._sub.lane]++; if (r._sub.kind) c[r._sub.kind]++; });
+  const c = { person: 0, blocked: 0, technical: 0, policy: 0 };
+  rows.forEach(r => { c[r._sub.lane]++; if (r._sub.kind) c[r._sub.kind]++; });
   return c;
 }
 
@@ -1748,15 +1742,11 @@ function subRender() {
     return;
   }
   const rows = SUB_ROWS.filter(r => r._sub.lane === lane && subMatches(r, SUB_FILTERS, now));
-  const laneTotal = lane === 'person' ? counts.person + counts.ready : counts[lane];
-  status.textContent = rows.length + ' shown' + (rows.length !== laneTotal ? ' of ' + laneTotal : '') + (lane === 'person' && counts.ready ? ' · ' + counts.ready + ' ready to approve (not in the badge)' : '')
+  status.textContent = rows.length + ' shown' + (rows.length !== counts[lane] ? ' of ' + counts[lane] : '')
     + (SUB_EXTRA && SUB_EXTRA.health_error ? ' · Source health could not be read (' + SUB_EXTRA.health_error + '), so technical blocks were not evaluated.' : '')
     + (SUB_EXTRA && SUB_EXTRA.unmapped && SUB_EXTRA.unmapped.length ? ' · ' + SUB_EXTRA.unmapped.length + ' source name' + (SUB_EXTRA.unmapped.length === 1 ? '' : 's') + ' not mapped to an origin or method yet.' : '');
   if (lane === 'person') {
-    const need = rows.filter(r => !r._sub.ready), rdy = rows.filter(r => r._sub.ready);
-    let ph = need.length ? need.map(r => subRowHtml(r, now, true)).join('') : '<div class="empty">Nothing needs investigating right now.</div>';
-    if (rdy.length) ph += '<details class="sub-group sub-readygrp" open><summary><b>Ready to approve</b> (' + rdy.length + ')</summary><div class="sub-ready-note">Positively checked against the current eligibility requirements, with no blocking reason. Ready is not permission to publish; approving is still your call, one event at a time.</div>' + rdy.map(r => subRowHtml(r, now, true)).join('') + '</details>';
-    list.innerHTML = ph;
+    list.innerHTML = rows.length ? rows.map(r => subRowHtml(r, now, true)).join('') : '<div class="empty">Nothing needs a person right now.</div>';
     return;
   }
   // Blocked at source: technical failures first (grouped by source, no actions), then the source-policy hold.
