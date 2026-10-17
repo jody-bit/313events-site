@@ -88,7 +88,7 @@ function fieldReasons(row) {
 // Secondary notes: shown on the row, never a review reason (a description is optional under the publication rules).
 function rowNotes(row) {
   const out = [];
-  if (blank(row.description)) out.push({ code: "missing_description", text: "No description recorded." });
+  if (blank(row.description)) out.push({ code: "missing_description", text: "Description not yet available" });
   return out;
 }
 

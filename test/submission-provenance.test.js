@@ -47,9 +47,18 @@ assert.ok(byId(out, 4).reasons.some((r) => r.code === "human_submission"));
 assert.ok(byId(out, 4).reasons.some((r) => r.code === "missing_city"));
 assert.strictEqual(byId(out, 3).reasons[0].code, "no_reason_recorded");
 for (const e of out.events) assert.ok(e.reasons.length >= 1);
-// a missing description is a note, never a reason (descriptions are optional)
-const noDesc = annotateQueue([Object.assign({}, rows[2], { id: 9, description: "" })], { now: NOW }).events[0];
+// a missing description is a quiet enrichment note, never a reason (owner direction 2026-10-17): an otherwise valid row whose
+// only gap is the description has no review reason from it, is not blocked, and carries the secondary note
+const onlyDesc = Object.assign({}, rows[2], { id: 9, description: "" });
+const noDesc = annotateQueue([onlyDesc], { now: NOW }).events[0];
+assert.ok(!noDesc.reasons.some((r) => r.code === "missing_description"), "description is not a reason");
 assert.strictEqual(noDesc.reasons[0].code, "no_reason_recorded");
+assert.strictEqual(noDesc.lane, "person"); assert.strictEqual(noDesc.lane_kind, null);
+assert.strictEqual(noDesc.notes[0].text, "Description not yet available");
+// genuine blocking reasons are preserved next to a missing description
+const both = annotateQueue([Object.assign({}, onlyDesc, { time_display: "" })], { now: NOW }).events[0];
+assert.strictEqual(both.reasons[0].code, "missing_start_time");
+assert.ok(both.notes.some((n) => n.code === "missing_description"));
 assert.deepStrictEqual(noDesc.notes.map((n) => n.code), ["missing_description"]);
 
 // technical blocked on positive evidence (feed failing / connector streak), reported separately from policy hold
