@@ -568,6 +568,9 @@ function eventDateTimeParts(e){
       endDateStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
     }
   } else {
+    // Technical convention (DEC-028): a start with no stated end gets a two-hour calendar block. It sizes the
+    // calendar entry only; it is not an event end time, is never shown on the page, and plays no part in deciding
+    // whether the event has ended (that uses the stated end, else the end of the Detroit day).
     const endDt = new Date(y, m-1, d, range.start.h, range.start.m + 120);
     endDateStr = `${endDt.getFullYear()}${pad2(endDt.getMonth()+1)}${pad2(endDt.getDate())}`;
     endTime = `${pad2(endDt.getHours())}${pad2(endDt.getMinutes())}00`;
