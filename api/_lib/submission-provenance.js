@@ -82,6 +82,12 @@ function fieldReasons(row) {
   if (blank(row.time_display) && !row.is_all_day) out.push({ code: "missing_start_time", text: "No start time recorded." });
   if (blank(row.venue_name_raw) && !row.no_fixed_venue) out.push({ code: "missing_location", text: "No venue recorded." });
   else if (blank(row.venue_city_raw) && !row.no_fixed_venue) out.push({ code: "missing_city", text: "Venue has no city recorded." });
+  return out;
+}
+
+// Secondary notes: shown on the row, never a review reason (a description is optional under the publication rules).
+function rowNotes(row) {
+  const out = [];
   if (blank(row.description)) out.push({ code: "missing_description", text: "No description recorded." });
   return out;
 }
@@ -134,6 +140,7 @@ function deriveRow(row, ctx) {
     lane_kind: laneKind,
     lane_evidence: blockEvidence,
     reasons,
+    notes: rowNotes(row),
     prov: {
       origin: { value: origin, derived: true },
       source,
@@ -191,7 +198,7 @@ function annotateQueue(rows, opts = {}) {
       const k = String(row.source || "(no source)");
       coverage.unmapped.set(k, (coverage.unmapped.get(k) || 0) + 1);
     }
-    return Object.assign({}, row, { prov: d.prov, lane: d.lane, lane_kind: d.lane_kind, reasons: d.reasons });
+    return Object.assign({}, row, { prov: d.prov, lane: d.lane, lane_kind: d.lane_kind, reasons: d.reasons, notes: d.notes });
   });
 
   return {
@@ -207,4 +214,4 @@ function annotateQueue(rows, opts = {}) {
   };
 }
 
-module.exports = { METHOD_BY_SLUG, originOf, methodOf, sourceOf, fieldReasons, deriveRow, annotateQueue };
+module.exports = { METHOD_BY_SLUG, originOf, methodOf, sourceOf, fieldReasons, rowNotes, deriveRow, annotateQueue };

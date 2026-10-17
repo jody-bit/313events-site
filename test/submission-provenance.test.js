@@ -47,6 +47,10 @@ assert.ok(byId(out, 4).reasons.some((r) => r.code === "human_submission"));
 assert.ok(byId(out, 4).reasons.some((r) => r.code === "missing_city"));
 assert.strictEqual(byId(out, 3).reasons[0].code, "no_reason_recorded");
 for (const e of out.events) assert.ok(e.reasons.length >= 1);
+// a missing description is a note, never a reason (descriptions are optional)
+const noDesc = annotateQueue([Object.assign({}, rows[2], { id: 9, description: "" })], { now: NOW }).events[0];
+assert.strictEqual(noDesc.reasons[0].code, "no_reason_recorded");
+assert.deepStrictEqual(noDesc.notes.map((n) => n.code), ["missing_description"]);
 
 // technical blocked on positive evidence (feed failing / connector streak), reported separately from policy hold
 const failFeeds = [{ id: "f-dearborn", venue_name: "City of Dearborn", feed_format: "ics", last_polled_at: "2026-10-17T12:00:00Z", last_poll_result: "HTTP 503" }];
