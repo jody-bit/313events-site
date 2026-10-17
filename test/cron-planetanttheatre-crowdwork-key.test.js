@@ -27,7 +27,8 @@ test("key present: sent as X-CrowdWork-Key and the User-Agent stays honest", () 
 
 test("the cron fetch uses buildRequestHeaders and the source never embeds a key literal", () => {
   const src = require("fs").readFileSync(require("path").join(__dirname, "../api/cron-planetanttheatre.js"), "utf8");
-  assert.match(src, /headers: buildRequestHeaders\(\)/);
+  assert.match(src, /const requestHeaders = buildRequestHeaders\(\)/);
+  assert.match(src, /headers: requestHeaders/);
   assert.doesNotMatch(src, /X-CrowdWork-Key"\s*:\s*["'`]/);
 });
 
