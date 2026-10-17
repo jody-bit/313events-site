@@ -6079,11 +6079,12 @@ function artFallbackSvg(e){
   return `<svg viewBox="0 0 104 70" preserveAspectRatio="xMidYMid slice"><g fill="none"><circle cx="${cx}" cy="${cy}" r="20" stroke="#2a2a2a"/><circle cx="${cx}" cy="${cy}" r="40" stroke="#232323"/><circle cx="${cx}" cy="${cy}" r="60" stroke="#1c1c1c"/><circle cx="${cx}" cy="${cy}" r="80" stroke="#171717"/></g><circle cx="${dx}" cy="${dy}" r="2" fill="#5c5d58"/></svg>`;
 }
 
-// The day groups for a run of consecutive stream rows. dayTotals is the
-// whole view's count for each day (not just the rows written so far);
-// continuedDay marks a day whose first rows are in the section above.
+// The day groups for a run of consecutive stream rows. Each heading counts the rows listed under it in this section
+// (owner decision 2026-10-17: a header says how many events are displayed there, so a day split across the first
+// block and its continuation reads, for example, 12 and 19, never 31 twice); continuedDay marks a day whose first
+// rows are in the section above.
 const UNVERIFIED_KEY = 'unverified';
-function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continuedDay){
+function streamGroupsHtml(rows, ctx, todayIso, tomorrowIso, continuedDay){
   let html = '';
   let i = 0;
   while(i < rows.length){
@@ -6091,7 +6092,7 @@ function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continued
     let j = i;
     while(j < rows.length && rows[j].day === dayIso) j++;
     if(dayIso === null){
-      const n = dayTotals[UNVERIFIED_KEY] || 0;
+      const n = j - i;
       html += `<div class="list-day-group" data-day="unverified">` +
         `<div class="list-day-heading"><span class="ldh-date">Dates not confirmed</span>${continuedDay === UNVERIFIED_KEY ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${n.toLocaleString('en-US')} event${n===1?'':'s'}</span></div>` +
         rows.slice(i, j).map(r => streamRowHtml(r.event, null, ctx)).join('') +
@@ -6101,7 +6102,7 @@ function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continued
     }
     const label = new Date(dayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     const rel = dayIso === todayIso ? '<span class="ldh-rel is-today">Today</span>' : (dayIso === tomorrowIso ? '<span class="ldh-rel">Tomorrow</span>' : '');
-    const total = dayTotals[dayIso] || 0;
+    const total = j - i;
     html += `<div class="list-day-group" data-day="${dayIso}">` +
       `<div class="list-day-heading">${rel}<span class="ldh-date">${label}</span>${dayIso === continuedDay ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${total.toLocaleString('en-US')} event${total===1?'':'s'}</span></div>` +
       rows.slice(i, j).map(r => streamRowHtml(r.event, dayIso, ctx)).join('') +
@@ -6217,8 +6218,6 @@ function renderList(){
 
   const total = rows.length;
   const shown = Math.min(streamShown, total);
-  const dayTotals = {};
-  rows.forEach(r => { const k = r.day === null ? UNVERIFIED_KEY : r.day; dayTotals[k] = (dayTotals[k] || 0) + 1; });
   const todayIso = getTodayISO();
   const next = new Date(todayIso+"T12:00:00"); next.setDate(next.getDate()+1);
   const tomorrowIso = toISO(next.getFullYear(), next.getMonth(), next.getDate());
@@ -6230,7 +6229,7 @@ function renderList(){
 
   const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
   const restRows = rows.slice(firstRows.length, shown);
-  first.innerHTML = head + streamGroupsHtml(firstRows, dayTotals, ctx, todayIso, tomorrowIso, null);
+  first.innerHTML = head + streamGroupsHtml(firstRows, ctx, todayIso, tomorrowIso, null);
 
   const remaining = total - shown;
   if(!restRows.length && !remaining){
@@ -6247,7 +6246,7 @@ function renderList(){
         <a class="stream-foot-link" href="${escapeHtml(Discovery.href('calendar', state, ctx))}">Open the calendar &rarr;</a>
       </div>`
     : '';
-  more.innerHTML = streamGroupsHtml(restRows, dayTotals, ctx, todayIso, tomorrowIso, lastFirstDay) + foot;
+  more.innerHTML = streamGroupsHtml(restRows, ctx, todayIso, tomorrowIso, lastFirstDay) + foot;
   more.style.display = '';
 }
 

@@ -177,7 +177,7 @@ async function run() {
     // Neighborhoods. The exhibition is in progress, so it is listed under
     // today — once — and says how long it runs.
     assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 11)]);
-    assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "31 events"]], "today's heading is marked Today and counts the whole day, not just the rows shown");
+    assert.deepStrictEqual(s.first.map((g) => [g.day, g.today, g.continued, g.count]), [[day(0), true, false, "12 events"]], "today's heading is marked Today and counts the rows listed under it (12 of the day's 31), not the whole day");
     assert.ok(/Long Run[\s\S]*?<span class="evt-run">Through Nov 2<\/span>/.test(s.html));
     assert.strictEqual(s.titles.filter((t) => t === "Long Run").length, 1);
 
@@ -200,6 +200,9 @@ async function run() {
     assert.strictEqual(s.titles.length, 42);
     assert.deepStrictEqual(s.firstTitles, ["Long Run", ...seq("Tonight", 1, 11)], "the first block does not move");
     assert.deepStrictEqual(s.more.map((g) => [g.day, g.continued]), [[day(0), true], [day(1), false]], "today is continued, not repeated");
+    // Each heading counts the events displayed in its own section: a day split across the two reads 12 and 19, not 31 twice.
+    assert.deepStrictEqual(s.more.map((g) => g.count), ["19 events", "11 events"], "continuation headings count their own rows (19 of today's remaining, 11 of tomorrow shown so far)");
+    assert.ok(s.first.concat(s.more).every((g) => g.count === `${g.titles.length} event${g.titles.length === 1 ? "" : "s"}`), "every heading equals the number of rows listed under it");
     assert.strictEqual(s.note, "42 of 151 shown");
     assert.strictEqual(s.button, "Show 30 more");
     assert.deepStrictEqual([plain(page.get("state")), page.url()], before, "asking for more changes neither the filters nor the address");
@@ -207,6 +210,7 @@ async function run() {
     s = stream(page);
     assert.strictEqual(s.titles.length, 151);
     assert.strictEqual(new Set(s.titles).size, 151, "every event exactly once");
+    assert.ok(s.first.concat(s.more).every((g) => g.count === `${g.titles.length} event${g.titles.length === 1 ? "" : "s"}`), "with everything shown, every heading still equals the rows under it");
     assert.strictEqual(s.button, null, "nothing left to ask for");
     assert.strictEqual(s.note, null);
     assert.deepStrictEqual(s.titles.slice(-2), ["Later 79", "Later 80"], "date order to the end");
