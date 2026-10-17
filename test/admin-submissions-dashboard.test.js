@@ -111,6 +111,11 @@ const unk = T.subRowHtml(sb, NOW, true);
 assert.ok(unk.includes("Origin: Not provided") && unk.includes("Source: Not provided") && unk.includes("Method: Not provided") && unk.includes("Added: Not provided"));
 const lastSeen = T.subRowHtml(T.subBuild([srv({})], null)[0], NOW, true);
 assert.ok(lastSeen.includes("Last seen at source:") && lastSeen.includes("Source last ran:") && lastSeen.includes("Last processed: Not provided"), "source run and last-seen are labelled for what they are; processed stays Not provided");
+// secondary notes (optional-field gaps) render quietly and are never a reason
+const withNote = T.subBuild([srv({ lane: "person", lane_kind: null, reasons: [{ code: "no_reason_recorded", text: "No review reason recorded." }], notes: [{ code: "missing_description", text: "No description recorded." }] })], null)[0];
+const noteHtml = T.subRowHtml(withNote, NOW, true);
+assert.ok(noteHtml.includes("Note: No description recorded.") && noteHtml.includes("No review reason recorded"));
+assert.ok(!withNote._sub.reasons.some((r) => r.code === "missing_description"));
 // every method code the API can emit has a label
 for (const m of ["api", "ics", "rss", "sync", "scrape", "generated", "form", "manual"]) {
   const r2 = T.subBuild([srv({ prov: { ...srv({}).prov, method: { value: m, derived: true } } })], null)[0];

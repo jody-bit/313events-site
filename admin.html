@@ -1588,7 +1588,8 @@ function subBuild(events, tower) {
       reasons = e.reasons.map(r => ({ code: r.code, text: r.text, derived: r.derived !== false, basis: r.basis || 'rule applied by the API to fields on the row' }));
     } else reasons = subDeriveReasons(e);
     if (lane.lane === 'blocked' && lane.kind === 'technical' && !lane.why) { const sb = reasons.find(r => r.code === 'source_blocked'); lane.why = sb ? sb.text : 'Source is failing'; }
-    return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, why: lane.why, prov: prov, reasons: reasons } });
+    const notes = Array.isArray(e.notes) ? e.notes.filter(n => n && n.text) : [];
+    return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, why: lane.why, prov: prov, reasons: reasons, notes: notes } });
   });
 }
 
@@ -1658,6 +1659,7 @@ function subRowHtml(e, nowMs, withActions) {
     + ' · ' + (e.venue_name_raw ? escapeHtml(e.venue_name_raw) : 'Venue ' + SUB_NP.toLowerCase()) + (price ? ' · ' + escapeHtml(price) : '') + '</div>'
     + '<div class="sub-chips">' + chips.join('') + '</div>'
     + reasonHtml
+    + (s.notes && s.notes.length ? '<div class="sub-times">' + s.notes.map(n => 'Note: ' + escapeHtml(n.text)).join(' · ') + '</div>' : '')
     + '<div class="sub-times">' + times.map(escapeHtml).join(' · ') + '</div>'
     + '<details><summary>Details</summary><div class="sub-meta" style="margin-top:6px;">'
     + (e.ticket_url ? '<a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a> ' : '')
