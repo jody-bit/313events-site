@@ -156,6 +156,21 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// The poor-description candidate query. Source names are percent-encoded: they are real `events.source`
+// values and some contain "&" ("St. Clair Shores - Events & Programs"), which unencoded ends the `source`
+// parameter mid-name and makes PostgREST answer HTTP 400. That failed every enrichment run after Stage 1
+// (#136) widened REPAIR_SOURCES, so the poor-description repair never ran (2026-10-17 12:30Z run: partial,
+// "Failed to fetch poor-description candidates: HTTP 400").
+function poorDescriptionCandidatesUrl(SUPABASE_URL, sources = REPAIR_SOURCES_LIST) {
+  const names = [...sources].map((x) => `"${encodeURIComponent(x)}"`).join(",");
+  return `${SUPABASE_URL}/rest/v1/events` +
+    `?start_date=gte.${todayIso()}&status=neq.rejected&followup_dismissed=is.false` +
+    `&description=not.is.null&source=in.(${names})` +
+    `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
+    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
+    `venues(name,address,city,website,facebook_url)&limit=1000`;
+}
+
 async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders) {
   const url =
     `${SUPABASE_URL}/rest/v1/events` +
@@ -175,13 +190,7 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
   // check, so it is applied here). Only staged-rollout sources, upcoming and
   // not rejected. Deduplicated against the blank-field candidates above.
   const seen = new Set(rows.map((r) => r.id));
-  const poorUrl =
-    `${SUPABASE_URL}/rest/v1/events` +
-    `?start_date=gte.${todayIso()}&status=neq.rejected&followup_dismissed=is.false` +
-    `&description=not.is.null&source=in.(${[...REPAIR_SOURCES_LIST].map((x) => `"${x}"`).join(",")})` +
-    `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
-    `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
-    `venues(name,address,city,website,facebook_url)&limit=1000`;
+  const poorUrl = poorDescriptionCandidatesUrl(SUPABASE_URL);
   const poorResp = await fetch(poorUrl, { headers: sbHeaders });
   if (!poorResp.ok) throw new Error(`Failed to fetch poor-description candidates: HTTP ${poorResp.status}`);
   const poorRows = await poorResp.json();
@@ -679,6 +688,7 @@ async function repairGenericMetadata({
 module.exports = {
   repairGenericMetadata,
   fetchEnrichmentCandidates,
+  poorDescriptionCandidatesUrl,
   applyPatch,
   MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN,
   MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN,
