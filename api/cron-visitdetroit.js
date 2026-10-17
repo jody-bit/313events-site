@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { lookupExistingRows } = require("./_lib/status-lookup");
+const { preserveRange } = require("./_lib/range-preservation"); // MC-RANGE: a refresh never narrows a range below evidenced dates
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, loadZipTiers, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
@@ -431,20 +432,30 @@ const visitDetroitHandler = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rows.map((r) => r.external_id),
-        { select: "external_id,status,venue_city_raw" }
+        { select: "external_id,status,venue_city_raw,start_date,end_date,date_semantics,occurrence_dates" }
       );
     } catch (lookupErr) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
     // GEO-003 safeguard: an incoming city that is not evidence-confirmed never replaces a city the row already has.
+    // MC-RANGE: the refresh rolls start/end with the source; evidenced occurrence dates and classified
+    // continuous ranges already stored are never narrowed by it. Only start_date/end_date are touched,
+    // date_semantics / occurrence_dates / recurrence_evidence are still never in the payload.
+    const asOf = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Detroit" }).format(new Date()); // YYYY-MM-DD, Detroit today
+    const rangeConflicts = [];
     const rowsWithStatus = rows.map(({ _cityDecision, ...row }) => {
       const existing = existingRowsByExternalId.get(row.external_id);
+      const range = preserveRange(row, existing, asOf);
+      if (range.action !== "incoming") rangeConflicts.push({ external_id: row.external_id, action: range.action, ...(range.conflict || {}) });
       return {
         ...protectExistingCity(row, _cityDecision, existing && existing.venue_city_raw),
+        start_date: range.start_date,
+        end_date: range.end_date,
         status: (existing && existing.status) || DEFAULT_STATUS,
       };
     });
+    if (rangeConflicts.length) console.warn(`visitdetroit: ${rangeConflicts.length} stored range(s) preserved against the incoming window:`, JSON.stringify(rangeConflicts));
 
     const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
     if (!resp.ok) {
@@ -454,6 +465,7 @@ const visitDetroitHandler = async (req, res) => {
     }
     res.status(200).json({
       upserted: rowsWithStatus.length,
+      rangesPreserved: rangeConflicts.length,
       skippedAsDuplicate,
       excludedByCategory,
       excludedByDate,
