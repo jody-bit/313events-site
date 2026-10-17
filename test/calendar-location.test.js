@@ -54,8 +54,11 @@ function load(file, startMarker, endMarker, href) {
   const b = html.indexOf(endMarker, a);
   assert.ok(a >= 0 && b > a, `${file}: Add to Calendar block not found`);
   const blobs = [];
+  const PINNED = new Date("2026-10-16T16:00:00Z").getTime(); // noon Detroit, the day the fixtures assume
+  class FakeDate extends Date { constructor(...a) { if (a.length) super(...a); else super(PINNED); } static now() { return PINNED; } }
   const ctx = {
-    CalendarLocation: CL, URL, URLSearchParams, Date, Math, String, Array, Object, JSON, Number, RegExp,
+    EventDates: require(`${REPO_DIR}/event-dates.js`), getTodayISO: () => "2026-10-16",
+    CalendarLocation: CL, URL, URLSearchParams, Date: FakeDate, Math, String, Array, Object, JSON, Number, RegExp,
     Blob: class { constructor(parts) { this.text = parts.join(""); blobs.push(this.text); } },
     window: { location: { href }, open: () => null },
     EVENTS: [], setTimeout, document: undefined,
