@@ -474,7 +474,8 @@ function parseTimeRange(timeStr){
   return {start: resolved[0].time, end: resolved.length>1 ? resolved[1].time : null};
 }
 // P0 date reliability (2026-10-16): a multiday range with no verified schedule is a published range, not daily
-// availability. The heading keeps the range and says so; Add to Calendar and the page text never imply specific days.
+// availability. The heading keeps the range and says so; the page offers no calendar export for it (Share stays), so
+// it never implies specific days.
 function isDatesUnconfirmed(e){
   return typeof EventDates !== 'undefined' && EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
     time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) === 'unverified';
@@ -511,7 +512,7 @@ function eventDateTimeParts(e){
   const occ = nextOccurrence(e);
   if(occ) e = Object.assign({}, e, {date: occ, endDate: occ});
   const [y,m,d] = e.date.split('-').map(Number);
-  const range = isDatesUnconfirmed(e) ? null : parseTimeRange(e.time); // unconfirmed: all-day over the published range, no invented hours
+  const range = parseTimeRange(e.time);
   const dateStr = `${y}${pad2(m)}${pad2(d)}`;
   if(!range){
     // All-day: honor the event's real end_date when it spans multiple days
@@ -551,7 +552,6 @@ const icsEscape = CalendarLocation.icsEscape;
 const foldICSLine = CalendarLocation.foldICSLine;
 function buildEventDescription(e){
   const parts = [];
-  if(isDatesUnconfirmed(e)) parts.push('Dates not confirmed; check the organizer for the days it is open.');
   const occDays = upcomingOccurrences(e);
   if(occDays && occDays.length > 1) parts.push('Also on: ' + occDays.slice(1, 6).map(d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short', day:'numeric'})).join(', ') + (occDays.length > 6 ? ` and ${occDays.length - 6} more` : ''));
   if(e.description) parts.push(truncateText(e.description, 300));
@@ -803,13 +803,17 @@ function renderEvent(e){
       actionsHtml += `<a class="btn-secondary" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener noreferrer">Browse on Resident Advisor &rarr;</a>`;
     }
   }
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
-  // Blob + download, not a bare `data:` URI — see index.html's identical
-  // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
-  // and iPhone with the old data: URI approach).
-  const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
-  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  // Dates not confirmed (owner decision 2026-10-17, option B): no Add to Calendar at all. An export would either span the
+  // whole stored range or invent a day, and either reads as confirmed attendance. Share stays.
+  if(!isDatesUnconfirmed(e)){
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
+    // Blob + download, not a bare `data:` URI — see index.html's identical
+    // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
+    // and iPhone with the old data: URI approach).
+    const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
+    const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  }
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
   // No street address -> the calendar entry is not navigable; mark it for QA/enrichment (DEBT-013).

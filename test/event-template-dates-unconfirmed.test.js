@@ -3,8 +3,7 @@
 // P0 date reliability PR-3 (2026-10-16): the event detail page and its Add to Calendar export must not present an
 // unclassified multiday range as daily availability. Extracts the real shipped functions from event-template.html.
 //   - heading text keeps the range and appends " · days not confirmed" for unverified rows only
-//   - Add to Calendar for an unverified row is an all-day entry over the published range (no invented hours),
-//     with a DESCRIPTION line "Dates not confirmed ..."
+//   - an unverified row has no Add to Calendar controls (option B, 2026-10-17); Share stays
 //   - confirmed rows (single date, overnight night, classified) export exactly as before
 // Run: node test/event-template-dates-unconfirmed.test.js
 "use strict";
@@ -38,13 +37,18 @@ const F = new Function("Date", `${src}\nreturn { isDatesUnconfirmed, eventDateTi
 
 const ev = (o) => Object.assign({ date: "2026-10-01", endDate: "2026-10-31", time: "9:00 AM", dateSemantics: null, occurrenceDates: null, source: "Manual" }, o);
 
-// 1. Cider-shaped row: unclassified month range with a start time.
+// 1. Cider-shaped row: unclassified month range with a start time is unverified, and has no calendar export at all
+// (owner decision 2026-10-17, option B): neither a span over the stored range nor a substituted day.
 const cider = ev({});
 assert.strictEqual(F.isDatesUnconfirmed(cider), true);
-const p = F.eventDateTimeParts(cider);
-assert.deepStrictEqual(p, { allDay: true, startDate: "20261001", endDate: "20261101" }, "all-day over the published range (DTEND exclusive), no invented hours");
-assert.ok(/^Dates not confirmed/.test(F.buildEventDescription(cider)), "DESCRIPTION says so");
-console.log("PASS: unverified range exports all-day over the published range with a Dates-not-confirmed description line");
+assert.ok(!/Dates not confirmed/.test(F.buildEventDescription(cider)), "the export-only description line is gone with the export");
+const actionsSrc = grab(/Dates not confirmed \(owner decision 2026-10-17[\s\S]*?id="evtShareBtn"/, "actions block");
+const guard = actionsSrc.match(/if\(!isDatesUnconfirmed\(e\)\)\{([\s\S]*?)\n  \}\n/);
+assert.ok(guard, "calendar buttons sit inside an !isDatesUnconfirmed(e) guard");
+assert.ok(/buildGoogleCalUrl\(e\)/.test(guard[1]) && /buildICS\(e\)/.test(guard[1]), "both Google and Apple/Outlook are inside the guard");
+assert.ok(!/buildGoogleCalUrl|buildICS/.test(actionsSrc.replace(guard[0], "")), "nothing outside the guard builds a calendar link");
+assert.ok(/id="evtShareBtn"/.test(actionsSrc.slice(actionsSrc.indexOf(guard[0]) + guard[0].length)), "Share is outside the guard and always rendered");
+console.log("PASS: unverified rows get no Add to Calendar controls; Share stays");
 
 // 2. Confirmed rows are untouched.
 const single = ev({ date: "2026-10-17", endDate: "2026-10-17", time: "7:30 PM" });
@@ -58,6 +62,7 @@ const weekend = ev({ dateSemantics: "recurring", occurrenceDates: ["2026-10-17",
 assert.strictEqual(F.isDatesUnconfirmed(weekend), false);
 const cont = ev({ dateSemantics: "continuous" });
 assert.strictEqual(F.isDatesUnconfirmed(cont), false);
+assert.deepStrictEqual(F.eventDateTimeParts(ev({ dateSemantics: "continuous", time: null })), { allDay: true, startDate: "20261001", endDate: "20261101" }, "continuous keeps its calendar export over its range");
 const recNoDates = ev({ dateSemantics: "recurring", occurrenceDates: null });
 assert.strictEqual(F.isDatesUnconfirmed(recNoDates), true, "recurring without dates is unverified");
 console.log("PASS: single-date, overnight, recurring-with-dates and continuous rows are not marked and export as before");
