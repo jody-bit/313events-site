@@ -496,3 +496,7 @@ module.exports = async (req, res) => {
 // a single early-return filter. The default export above (Vercel's actual
 // entry point) is unchanged.
 module.exports.shapeForDb = shapeForDb;
+// Exposed for the read-only report (scripts/ticketmaster-report.js,
+// api/_lib/ticketmaster-report.js). The handler above is unchanged.
+module.exports.fetchTicketmasterEvents = fetchTicketmasterEvents;
+module.exports.mapCategory = mapCategory;
