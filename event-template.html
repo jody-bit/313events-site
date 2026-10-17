@@ -115,6 +115,7 @@
   }
   .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;overflow-wrap:anywhere;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
+  .evt-ended{display:inline-block;margin:2px 0 8px;padding:3px 10px;border:1px solid var(--ink-soft);border-radius:var(--radius);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   /* Street address (2026-09-04) — a plain "Get directions" link, distinct
@@ -264,6 +265,7 @@
       <div class="evt-cat-badge" id="evtCatBadge"></div>
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
+      <div class="evt-ended" id="evtEnded" style="display:none;">This event has ended</div>
       <div class="evt-detail-meta" id="evtWhere"></div>
       <a class="evt-address" id="evtAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
@@ -527,6 +529,19 @@ function calendarExportAvailable(e){
   if(!days) return true;
   const now = detroitNow();
   return days.some(d=>!occurrenceEnded(e, d, now));
+}
+// Has the event ended for good? Only when its dates are verified and the final verified occurrence has ended in Detroit
+// time (same rule as occurrenceEnded: stated end, else overnight end, else end of the Detroit day). Unverified dates are
+// never "ended": the page cannot say when, or whether, anything happened. Nothing here infers an end time.
+function eventHasEnded(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const now = detroitNow();
+  const days = occurrenceDays(e);
+  if(days) return days.every(d=>occurrenceEnded(e, d, now));
+  const continuous = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'continuous';
+  const finalIso = continuous ? (e.endDate || e.date) : e.date;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(finalIso || '')) return false;
+  return occurrenceEnded(e, finalIso, now);
 }
 function upcomingOccurrences(e){
   const days = occurrenceDays(e);
@@ -814,6 +829,8 @@ function renderEvent(e){
   priceHtml(e);
 
   // ---- actions ----
+  // Ended-event message: the dates in the heading stay as they are.
+  document.getElementById('evtEnded').style.display = eventHasEnded(e) ? 'inline-block' : 'none';
   const actions = document.getElementById('evtActions');
   let actionsHtml = '';
   // "Tickets & info" uses ticket_url when valid, otherwise event_url.
