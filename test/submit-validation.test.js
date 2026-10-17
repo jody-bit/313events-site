@@ -185,6 +185,16 @@ async function run() {
   }
   console.log("PASS: a non-http(s) ticketUrl is rejected");
 
+  // --- 9b. imageUrl must be a public https link (P0 upload hardening follow-up, 2026-10-17). ---
+  for (const bad of ["http://example.com/a.jpg", "https://127.0.0.1/a.jpg", "https://user:pw@example.com/a.jpg", "javascript:alert(1)"]) {
+    const handler = freshHandler();
+    const res = makeRes();
+    await handler(makeReq({ ...VALID_BASE, imageUrl: bad }), res);
+    assert.strictEqual(res._status, 400, bad);
+    assert.ok(/imageUrl/.test(res._body.error), bad);
+  }
+  console.log("PASS: a non-https or non-public imageUrl is rejected");
+
   // --- 10. Only POST is allowed. ---
   {
     const handler = freshHandler();
