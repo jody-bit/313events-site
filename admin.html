@@ -1554,12 +1554,40 @@ function subLane(row, tower) {
   return { lane: 'person', kind: null, why: null };
 }
 
+// Platform's API (PR #161) supplies stored/derived fields per row: prov{origin:{value,derived},source:{slug,name},method:{value,derived},
+// status,added_at,link_checked_at,last_seen_at_source,source_last_run_at}, lane ('person'|'blocked'), lane_kind ('technical'|'policy_hold'),
+// reasons[{code,text}]. When present they win; this file only normalizes them for display and labels them derived.
+const SUB_METHOD_LABELS = { api: 'API', ics: 'ICS feed', rss: 'RSS feed', sync: 'Sync', scrape: 'Website extraction', generated: 'Generated schedule', form: 'Submission form', manual: 'Manual entry' };
+function subNormServerProv(sp, fallback) {
+  const val = (x) => (x && typeof x === 'object' ? x.value : x);
+  const o = val(sp.origin), m = val(sp.method);
+  const src = sp.source && typeof sp.source === 'object' ? sp.source : (sp.source ? { name: sp.source, slug: null } : {});
+  return {
+    origin: o && o !== 'unknown' ? o : null,
+    originDerived: !(sp.origin && typeof sp.origin === 'object' && sp.origin.derived === false),
+    source: src.name || null, slug: src.slug || null,
+    method: m && m !== 'unknown' ? (SUB_METHOD_LABELS[m] || m) : null,
+    methodDerived: !(sp.method && typeof sp.method === 'object' && sp.method.derived === false),
+    status: sp.status || fallback.status,
+    added_at: sp.added_at || fallback.added_at,
+    link_checked_at: sp.link_checked_at || null,
+    last_seen_at_source: sp.last_seen_at_source || null,
+    source_last_run_at: sp.source_last_run_at || null,
+  };
+}
 function subBuild(events, tower) {
   return (events || []).map(e => {
-    const lane = (e.lane && typeof e.lane === 'object') ? e.lane : (typeof e.lane === 'string' ? { lane: e.lane, kind: e.lane_kind || null, why: e.lane_why || null } : subLane(e, tower));
-    const d = subDeriveProv(e);
-    const prov = e.prov && typeof e.prov === 'object' ? Object.assign({}, d, e.prov, { originDerived: false, methodDerived: false }) : d;
-    const reasons = Array.isArray(e.reasons) && e.reasons.length ? e.reasons : subDeriveReasons(e);
+    let lane;
+    if (e.lane && typeof e.lane === 'object') lane = e.lane;
+    else if (typeof e.lane === 'string') lane = { lane: e.lane, kind: e.lane_kind === 'policy_hold' ? 'policy' : (e.lane_kind || null), why: e.lane_why || null };
+    else lane = subLane(e, tower);
+    const fallback = subDeriveProv(e);
+    const prov = e.prov && typeof e.prov === 'object' ? subNormServerProv(e.prov, fallback) : fallback;
+    let reasons;
+    if (Array.isArray(e.reasons) && e.reasons.length) {
+      reasons = e.reasons.map(r => ({ code: r.code, text: r.text, derived: r.derived !== false, basis: r.basis || 'rule applied by the API to fields on the row' }));
+    } else reasons = subDeriveReasons(e);
+    if (lane.lane === 'blocked' && lane.kind === 'technical' && !lane.why) { const sb = reasons.find(r => r.code === 'source_blocked'); lane.why = sb ? sb.text : 'Source is failing'; }
     return Object.assign({}, e, { _sub: { lane: lane.lane, kind: lane.kind, why: lane.why, prov: prov, reasons: reasons } });
   });
 }
@@ -1615,6 +1643,8 @@ function subRowHtml(e, nowMs, withActions) {
   const added = p.added_at ? (subAgo(p.added_at, nowMs) + ' (' + subDetroit(p.added_at) + ')') : SUB_NP;
   times.push('Added: ' + added);
   if (p.link_checked_at) times.push('Link checked: ' + subDetroit(p.link_checked_at));
+  if (p.last_seen_at_source) times.push('Last seen at source: ' + subDetroit(p.last_seen_at_source));
+  if (p.source_last_run_at) times.push('Source last ran: ' + subDetroit(p.source_last_run_at));
   times.push('Last processed: ' + (p.last_pipeline_at ? subDetroit(p.last_pipeline_at) : SUB_NP));
   // Inside the source-policy hold the standing policy sentence is stated once, in the group banner, not repeated per row.
   let rs = s.kind === 'policy' ? s.reasons.filter(r => r.code !== 'pipeline_hold') : s.reasons;
@@ -1700,7 +1730,9 @@ function subRender() {
     return;
   }
   const rows = SUB_ROWS.filter(r => r._sub.lane === lane && subMatches(r, SUB_FILTERS, now));
-  status.textContent = rows.length + ' shown' + (rows.length !== counts[lane] ? ' of ' + counts[lane] : '');
+  status.textContent = rows.length + ' shown' + (rows.length !== counts[lane] ? ' of ' + counts[lane] : '')
+    + (SUB_EXTRA && SUB_EXTRA.health_error ? ' · Source health could not be read (' + SUB_EXTRA.health_error + '), so technical blocks were not evaluated.' : '')
+    + (SUB_EXTRA && SUB_EXTRA.unmapped && SUB_EXTRA.unmapped.length ? ' · ' + SUB_EXTRA.unmapped.length + ' source name' + (SUB_EXTRA.unmapped.length === 1 ? '' : 's') + ' not mapped to an origin or method yet.' : '');
   if (lane === 'person') {
     list.innerHTML = rows.length ? rows.map(r => subRowHtml(r, now, true)).join('') : '<div class="empty">Nothing needs a person right now.</div>';
     return;
@@ -1750,7 +1782,11 @@ async function loadQueue() {
     if (!resp.ok) throw new Error(errText(data, 'Failed to load queue'));
     document.getElementById('gate').style.display = 'none';
     document.getElementById('queue').style.display = 'block';
-    SUB_EXTRA = { lane_counts: data.lane_counts || null, blocked_sources: data.blocked_sources || null };
+    SUB_EXTRA = {
+      lane_counts: data.lane_counts || null, blocked_sources: data.blocked_sources || null,
+      health_error: data.provenance_health_error || null,
+      unmapped: (data.provenance_coverage && data.provenance_coverage.unmapped_sources) || null,
+    };
     SUB_ROWS = subBuild(data.events || [], TOWER);
     SUB_ENDED = null;
     subRender();

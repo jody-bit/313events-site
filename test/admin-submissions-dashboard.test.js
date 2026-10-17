@@ -88,10 +88,34 @@ assert.strictEqual(T.subLane({ ...base, source: "WDET", external_id: "wdet-1" },
 assert.strictEqual(T.subLane({ ...base, source: "BGSU", external_id: "feed-9" }, tower).lane, "person", "the aggregate feeds slug is never used to blame one feed");
 assert.strictEqual(T.subLane({ ...base, source: "Venue Submission" }, tower).lane, "person");
 
-// 5. Server-supplied fields win.
-const built = T.subBuild([{ ...base, source: "Manual", prov: { origin: "human", method: "Form (stored)" }, lane: "blocked", reasons: [{ code: "needs_evidence", text: "Evidence missing" }] }], null)[0];
-assert.strictEqual(built._sub.prov.origin, "human"); assert.strictEqual(built._sub.prov.originDerived, false);
-assert.strictEqual(built._sub.lane, "blocked"); assert.strictEqual(built._sub.reasons[0].code, "needs_evidence");
+// 5. Server-supplied fields (Platform PR #161 contract, api/_lib/submission-provenance.js) win and are normalized.
+const srv = (over) => ({
+  ...base, id: "s1", source: "City of Dearborn", external_id: "feed-s1", feed_source_id: "f1", time_display: "7 PM", venue_name_raw: "V", venue_city_raw: "Dearborn", description: "d",
+  lane: "blocked", lane_kind: "policy_hold",
+  reasons: [{ code: "dearborn_unclassified", text: "Dearborn row awaiting classification (public event: x)." }],
+  prov: { origin: { value: "automated", derived: true }, source: { slug: "feed-f1", name: "City of Dearborn" }, method: { value: "ics", derived: true },
+    status: "pending_review", added_at: base.created_at, link_checked_at: null, last_seen_at_source: "2026-10-17T05:00:00Z", source_last_run_at: "2026-10-17T06:00:00Z" },
+  ...over,
+});
+let sb = T.subBuild([srv({})], null)[0];
+assert.strictEqual(sb._sub.lane, "blocked"); assert.strictEqual(sb._sub.kind, "policy", "policy_hold maps to the policy hold");
+assert.strictEqual(sb._sub.prov.origin, "automated"); assert.strictEqual(sb._sub.prov.source, "City of Dearborn");
+assert.strictEqual(sb._sub.prov.method, "ICS feed"); assert.strictEqual(sb._sub.prov.originDerived, true);
+assert.strictEqual(sb._sub.reasons[0].derived, true, "server reasons are labelled derived by the UI");
+sb = T.subBuild([srv({ lane: "blocked", lane_kind: "technical", reasons: [{ code: "source_blocked", text: "Source is blocked: 3 failed runs" }] })], null)[0];
+assert.strictEqual(sb._sub.kind, "technical"); assert.ok(sb._sub.why.includes("3 failed runs"));
+sb = T.subBuild([srv({ created_at: null, lane: "person", lane_kind: null, prov: { origin: { value: "unknown", derived: true }, source: { slug: null, name: null }, method: { value: "unknown", derived: true }, status: "pending_review", added_at: null } })], null)[0];
+assert.strictEqual(sb._sub.prov.origin, null, "unknown origin stays Not provided");
+assert.strictEqual(sb._sub.prov.method, null); assert.strictEqual(sb._sub.prov.source, null);
+const unk = T.subRowHtml(sb, NOW, true);
+assert.ok(unk.includes("Origin: Not provided") && unk.includes("Source: Not provided") && unk.includes("Method: Not provided") && unk.includes("Added: Not provided"));
+const lastSeen = T.subRowHtml(T.subBuild([srv({})], null)[0], NOW, true);
+assert.ok(lastSeen.includes("Last seen at source:") && lastSeen.includes("Source last ran:") && lastSeen.includes("Last processed: Not provided"), "source run and last-seen are labelled for what they are; processed stays Not provided");
+// every method code the API can emit has a label
+for (const m of ["api", "ics", "rss", "sync", "scrape", "generated", "form", "manual"]) {
+  const r2 = T.subBuild([srv({ prov: { ...srv({}).prov, method: { value: m, derived: true } } })], null)[0];
+  assert.ok(r2._sub.prov.method && r2._sub.prov.method !== m || m === "api" || m === "sync", "method label for " + m);
+}
 
 // 6. Rendering: Not provided, derived markers, no updated_at as processing, actions rules.
 const row = T.subBuild([{ ...base, id: "r1", source: "Mystery", title: "Dolls <Night>" }], null)[0];
