@@ -48,7 +48,7 @@ function row(id, title, start, extra) {
 }
 const ROWS = [
   // An exhibition that opened three days ago and runs another month.
-  row("a00", "Long Run", day(-3), { end_date: day(30), category: "museum", neighborhood: "Midtown" }),
+  row("a00", "Long Run", day(-3), { end_date: day(30), category: "museum", neighborhood: "Midtown", date_semantics: "continuous" }), // 2026-10-16: classified continuous so these stream tests stay about stream mechanics; unclassified ranges are covered in homepage-discovery-adoption.test.js
   // 30 tonight, 25 tomorrow, 15 on Monday.
   ...Array.from({ length: 30 }, (_, i) => row("t" + pad(i + 1), "Tonight " + pad(i + 1), day(0), i === 0 ? { neighborhood: "Corktown" } : null)),
   ...Array.from({ length: 25 }, (_, i) => row("u" + pad(i + 1), "Sunday " + pad(i + 1), day(1), { category: "theatre" })),

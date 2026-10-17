@@ -5918,23 +5918,39 @@ function streamRows(ctx){
   const floor = loadFloorISO();
   const seen = new Set();
   const rows = [];
+  // Schedule-unverified multiday ranges (owner decision 2026-10-16): not
+  // attendable on any specific day, so they are never listed under a day.
+  // Discovery only lets them through the open-ended default view; they are
+  // collected here and appended once, after every dated row, as their own
+  // group ("Dates not confirmed").
+  const unverifiedRows = [];
   EVENTS.forEach(e=>{
     if(e.id != null){
       if(seen.has(e.id)) return;
       seen.add(e.id);
     }
     if(!Discovery.matches(e, state, ctx)) return;
+    if(EventDates.scheduleState(e) === 'unverified'){ unverifiedRows.push({event: e, day: null}); return; }
     const listableFrom = e.date < floor ? floor : e.date;
-    const day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
+    let day = (w.from && listableFrom < w.from) ? w.from : listableFrom;
+    // An event with evidenced occurrence dates is listed under its next occurrence on or after the window start,
+    // not under the window start itself (Cider: Oct 17, not Fri Oct 16). Continuous events stay under the start.
+    if(EventDates.semanticsOf(e) === 'recurring'){
+      const next = EventDates.expand(e).find(iso => iso >= day);
+      if(next) day = next;
+    }
     if(w.to !== null && day > w.to) return; // only on days before the load window
     rows.push({event: e, day});
   });
   rows.sort((a, b)=> a.day < b.day ? -1 : a.day > b.day ? 1 : timeSortMinutes(a.event.time) - timeSortMinutes(b.event.time));
-  return rows;
+  unverifiedRows.sort((a, b)=> a.event.date < b.event.date ? -1 : a.event.date > b.event.date ? 1 : timeSortMinutes(a.event.time) - timeSortMinutes(b.event.time));
+  return rows.concat(unverifiedRows);
 }
 
 // "Through Oct 24" for an event that runs past the day it is listed under.
 function runNoteHtml(e, dayIso){
+  // Listed under "Dates not confirmed": show the published range, not "Through".
+  if(dayIso === null) return e.endDate && e.endDate > e.date ? `<span class="evt-run">Published ${escapeHtml(formatRangeLabel(e.date, e.endDate))}</span>` : '';
   if(!e.endDate || e.endDate <= dayIso) return '';
   return `<span class="evt-run">Through ${escapeHtml(formatDateLabel(e.endDate))}</span>`;
 }
@@ -6018,6 +6034,7 @@ function artFallbackSvg(e){
 // The day groups for a run of consecutive stream rows. dayTotals is the
 // whole view's count for each day (not just the rows written so far);
 // continuedDay marks a day whose first rows are in the section above.
+const UNVERIFIED_KEY = 'unverified';
 function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continuedDay){
   let html = '';
   let i = 0;
@@ -6025,6 +6042,15 @@ function streamGroupsHtml(rows, dayTotals, ctx, todayIso, tomorrowIso, continued
     const dayIso = rows[i].day;
     let j = i;
     while(j < rows.length && rows[j].day === dayIso) j++;
+    if(dayIso === null){
+      const n = dayTotals[UNVERIFIED_KEY] || 0;
+      html += `<div class="list-day-group" data-day="unverified">` +
+        `<div class="list-day-heading"><span class="ldh-date">Dates not confirmed</span>${continuedDay === UNVERIFIED_KEY ? '<span class="ldh-cont">continued</span>' : ''}<span class="ldh-count">${n.toLocaleString('en-US')} event${n===1?'':'s'}</span></div>` +
+        rows.slice(i, j).map(r => streamRowHtml(r.event, null, ctx)).join('') +
+        `</div>`;
+      i = j;
+      continue;
+    }
     const label = new Date(dayIso+"T12:00:00").toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     const rel = dayIso === todayIso ? '<span class="ldh-rel is-today">Today</span>' : (dayIso === tomorrowIso ? '<span class="ldh-rel">Tomorrow</span>' : '');
     const total = dayTotals[dayIso] || 0;
@@ -6144,7 +6170,7 @@ function renderList(){
   const total = rows.length;
   const shown = Math.min(streamShown, total);
   const dayTotals = {};
-  rows.forEach(r => { dayTotals[r.day] = (dayTotals[r.day] || 0) + 1; });
+  rows.forEach(r => { const k = r.day === null ? UNVERIFIED_KEY : r.day; dayTotals[k] = (dayTotals[k] || 0) + 1; });
   const todayIso = getTodayISO();
   const next = new Date(todayIso+"T12:00:00"); next.setDate(next.getDate()+1);
   const tomorrowIso = toISO(next.getFullYear(), next.getMonth(), next.getDate());
@@ -6164,7 +6190,7 @@ function renderList(){
     more.style.display = 'none';
     return;
   }
-  const lastFirstDay = firstRows.length ? firstRows[firstRows.length - 1].day : null;
+  const lastFirstDay = firstRows.length ? (firstRows[firstRows.length - 1].day === null ? UNVERIFIED_KEY : firstRows[firstRows.length - 1].day) : null;
   const step = Math.min(STREAM_STEP, remaining);
   const foot = remaining
     ? `<div class="stream-foot">
