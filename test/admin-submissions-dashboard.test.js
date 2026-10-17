@@ -75,7 +75,7 @@ assert.ok(r.some((x) => x.code === "human_submission"));
 r = T.subDeriveReasons({ ...base, source: "X", venue_name_raw: "Venue TBA" });
 assert.ok(r.some((x) => x.code === "missing_location") && r.some((x) => x.code === "missing_start_time"));
 r = T.subDeriveReasons({ ...base, source: "X", venue_name_raw: "Place", time_display: "7 PM" });
-assert.strictEqual(JSON.stringify(r.map((x) => x.code)), JSON.stringify(["ready_to_approve"]), "no reason found -> says so, never invents one");
+assert.strictEqual(JSON.stringify(r.map((x) => x.code)), JSON.stringify(["reason_not_determined"]), "no reason found -> says so, never invents one");
 r = T.subDeriveReasons({ ...base, source: "X", venue_name_raw: "Place", time_display: "7 PM", queue_class: { class: "public_event", reason: "x", cancelled: true } });
 assert.ok(r.some((x) => x.code === "cancelled_in_title"), "cancelled wording is surfaced as a derived hint");
 
@@ -114,7 +114,7 @@ assert.ok(lastSeen.includes("Last seen at source:") && lastSeen.includes("Source
 // secondary notes (optional-field gaps) render quietly and are never a reason
 const withNote = T.subBuild([srv({ lane: "person", lane_kind: null, reasons: [{ code: "no_reason_recorded", text: "No review reason recorded." }], notes: [{ code: "missing_description", text: "No description recorded." }] })], null)[0];
 const noteHtml = T.subRowHtml(withNote, NOW, true);
-assert.ok(noteHtml.includes("Note: Description not yet available") && noteHtml.includes("Ready to approve"));
+assert.ok(noteHtml.includes("Note: Description not yet available") && noteHtml.includes("Review reason not determined"));
 assert.ok(!withNote._sub.reasons.some((r) => r.code === "missing_description"));
 // REGRESSION (owner 2026-10-17): a description gap is an optional enrichment note, never a reason, never the primary reason,
 // and never changes the lane or the badge. Holds for the new API shape, an older API that still sends it as a reason, and the fallback.
@@ -126,7 +126,7 @@ for (const shape of [
 ]) {
   const b = T.subBuild([shape], null)[0];
   assert.ok(!b._sub.reasons.some((r) => r.code === "missing_description"), "description gap is not a reason");
-  assert.strictEqual(b._sub.reasons[0].code, "ready_to_approve", "primary reason is not the description gap");
+  assert.strictEqual(b._sub.reasons[0].code, "reason_not_determined", "primary reason is not the description gap");
   assert.strictEqual(b._sub.lane, "person", "lane comes from the API, not from the gap");
   const h2 = T.subRowHtml(b, NOW, true);
   assert.ok(h2.includes("Note: Description not yet available"), "shown as a quiet secondary note");
@@ -138,7 +138,7 @@ const fine = T.subBuild([srv({ lane: "person", lane_kind: null, reasons: [{ code
 assert.ok(!T.subRowHtml(fine, NOW, true).includes("Description not yet available"));
 // fallback derivation (no server fields): a valid row whose only gap is the description gets no reason from it
 const fb = T.subBuild([{ ...base, id: "fb", source: "Ticketmaster", external_id: "Z1", time_display: "7 PM", venue_name_raw: "Venue", description: "" }], null)[0];
-assert.strictEqual(fb._sub.reasons[0].code, "ready_to_approve");
+assert.strictEqual(fb._sub.reasons[0].code, "reason_not_determined");
 assert.ok(T.subRowHtml(fb, NOW, true).includes("Description not yet available"));
 // a genuine blocking reason stays primary even when the description is also missing
 const mixed = T.subBuild([{ ...base, id: "mx", source: "Venue Submission", venue_name_raw: "V", description: "" }], null)[0];
@@ -200,13 +200,25 @@ assert.ok(els["list"].innerHTML.includes("Not tracked yet"), "Handled automatica
 const dash = script.slice(script.indexOf("// ---- Submissions dashboard, Step 1"), script.indexOf("async function review(id, action)"));
 assert.ok(!/method:\s*['"](POST|PUT|PATCH|DELETE)/.test(dash), "dashboard code issues no write requests");
 assert.ok(!/updated_at/.test(dash.replace(/\/\/.*$/gm, "")), "dashboard code never reads updated_at");
-// 9. Ready to approve: stays in Needs a person, counted, quiet (no "Why:" warning label); unknown lane never drops a row.
-const rdy = T.subBuild([srv({ lane: "person", lane_kind: null, reasons: [{ code: "ready_to_approve", text: "Ready to approve" }], notes: [{ code: "missing_description", text: "x" }] })], null)[0];
-const rdyHtml = T.subRowHtml(rdy, NOW, true);
-assert.strictEqual(rdy._sub.lane, "person");
-assert.ok(rdyHtml.includes("Ready to approve") && !rdyHtml.includes("Why: ") && rdyHtml.includes("Description not yet available") && rdyHtml.includes("review("), "ready row: quiet label, description note, actions kept");
-assert.strictEqual(T.subCounts([rdy]).person, 1, "ready rows count in the badge");
-const futureLane = T.subBuild([srv({ lane: "ready", lane_kind: null, reasons: [] })], null)[0];
-assert.strictEqual(futureLane._sub.lane, "person", "unknown lane value falls back to Needs a person");
-assert.strictEqual(T.subCounts([futureLane]).person, 1);
+// 9. Ready lane (owner 2026-10-17 20:07Z): positive evidence only, separate group inside Needs a person, out of the badge.
+const R = (over) => T.subBuild([srv(over)], null)[0];
+const r1 = R({ lane: "ready", lane_kind: null, reasons: [{ code: "ready_to_approve", text: "Ready to approve" }], description: "d" });
+assert.ok(r1._sub.ready && r1._sub.lane === "person", "1. positively eligible, no blockers -> ready");
+const r2 = R({ lane: "ready", lane_kind: null, reasons: [{ code: "ready_to_approve", text: "Ready to approve" }], notes: [{ code: "missing_description", text: "x" }], description: "" });
+assert.ok(r2._sub.ready && T.subRowHtml(r2, NOW, true).includes("Description not yet available"), "2. missing only description -> still ready, quiet note");
+const r3 = R({ lane: "person", lane_kind: null, reasons: [], description: "d" });
+assert.ok(!r3._sub.ready && r3._sub.lane === "person" && r3._sub.reasons[0].code === "reason_not_determined" && T.subRowHtml(r3, NOW, true).includes("Review reason not determined"), "3. unexplained pending -> Needs a person, explained");
+const r3b = R({ lane: "person", lane_kind: null, reasons: [{ code: "ready_to_approve", text: "Ready to approve" }] });
+assert.ok(!r3b._sub.ready, "3b. reason text alone never makes a row ready; the API lane does");
+const r3c = T.subBuild([{ id: 9, title: "t", source: "Manual", status: "pending_review" }], null)[0];
+assert.ok(!r3c._sub.ready, "3c. locally derived rows are never ready");
+const r4 = R({ lane: "person", lane_kind: null, reasons: [{ code: "missing_location", text: "Venue not provided" }] });
+const r4b = R({ lane: "ready", lane_kind: null, reasons: [{ code: "missing_location", text: "Venue not provided" }] });
+assert.ok(!r4._sub.ready && r4._sub.reasons[0].code === "missing_location" && !r4b._sub.ready && r4b._sub.reasons[0].code === "missing_location", "4. genuine blocker keeps its classification; ready with a blocker is not ready");
+const r4c = R({ lane: "blocked", lane_kind: "policy_hold", reasons: [{ code: "pipeline_hold", text: "x" }] });
+assert.ok(r4c._sub.lane === "blocked" && r4c._sub.kind === "policy", "4b. blocked lane unchanged");
+const r5 = R({ lane: "someday", lane_kind: null, reasons: [] });
+assert.ok(r5._sub.lane === "person" && !r5._sub.ready, "5. unknown lane -> visible fallback in Needs a person, never ready, never dropped");
+const cnt = T.subCounts([r1, r2, r3, r4, r5, r4c]);
+assert.strictEqual(cnt.ready, 2); assert.strictEqual(cnt.person, 3, "badge counts only rows needing a person, not ready rows"); assert.strictEqual(cnt.blocked, 1);
 console.log("admin-submissions-dashboard: all assertions passed");
