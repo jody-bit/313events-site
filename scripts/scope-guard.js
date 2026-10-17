@@ -31,6 +31,8 @@ const ALLOWED = [
   "api/cron-enrichment.js",
   // Link usability classification (issue #99, approved by the owner 2026-10-13): extends the existing link-health helper.
   "api/_lib/link-health.js",
+  // P0 link integrity (owner directive 2026-10-16 16:55Z): VisitDetroit importer stores the live /events/<slug>/ URL; changes no existing row.
+  "api/_lib/visitdetroit-link-recovery.js",
   // Admin queue Stage 4 (owner directive 2026-10-16): read-side BGSU geographic evidence audit; changes no row.
   "api/_lib/bgsu-geo-audit.js",
   // Admin queue Stage 3 (owner decisions 2026-10-16): read-side filter for the press link-review list.
