@@ -330,6 +330,18 @@ All entries below are reconstructed from decisions already made and recorded in 
 
 ---
 
+### DEC-028 — Calendar exports give a start-only event a two-hour block (technical convention)
+
+**Date:** 2026-10-17
+**Decision:** When an event has a stated start time and no stated end time, the Google Calendar link and the .ics file use a two-hour block (start + 120 minutes) so the entry has a duration. This is a technical convention of the export, not event data: it is never displayed as the event's end, never written back to the event, and never used to decide whether an event has ended. "Ended" uses the stated end time when there is one, otherwise the end of the America/Detroit day.
+**Context:** iCalendar and Google Calendar need a DTEND for a timed entry. Most of the sources the site lists publish a start only (gallery hours, sets, screenings, ticketed starts). The owner asked on 2026-10-17 that the default be documented rather than left as an unexplained constant.
+**Alternatives considered:** An all-day entry (rejected: it claims the whole day, which the source never said and the owner has ruled out for exports); a zero-length entry (rejected: calendars render it inconsistently); no export (rejected: loses a useful feature for confirmed events).
+**Reason:** Two hours is a neutral middle ground that never calls the event all day and never claims a precise end.
+**Consequences:** Implemented in the end-time fallback of `eventDateTimeParts()` in `event-template.html` and in `index.html`. Examples seen in review: a 1:00 PM start exports to 3:00 PM; a 10:00 AM start to 12:00 PM. Any future change to the duration, or to showing it as an end time, is a new decision. Related: a verified-time model (time-confidence work) may later supply real end times; that is a separate, unauthorized follow-up.
+**Related backlog items:** none (convention only).
+
+---
+
 ## Open, not yet decided
 
 These have been *raised* and researched but are explicitly **not** settled — listed here only so they aren't rediscovered as if new. See `PRODUCT.md`'s "Product decisions required" section and `BACKLOG.md` for the tracked items.

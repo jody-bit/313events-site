@@ -474,15 +474,73 @@ function parseTimeRange(timeStr){
   return {start: resolved[0].time, end: resolved.length>1 ? resolved[1].time : null};
 }
 // P0 date reliability (2026-10-16): a multiday range with no verified schedule is a published range, not daily
-// availability. The heading keeps the range and says so; Add to Calendar and the page text never imply specific days.
+// availability. The heading keeps the range and says so; the page offers no calendar export for it (Share stays), so
+// it never implies specific days.
 function isDatesUnconfirmed(e){
   return typeof EventDates !== 'undefined' && EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
     time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) === 'unverified';
 }
+// #151: an event with evidenced occurrence dates (recurring + occurrence_dates) shows those dates, not its stored
+// range, and Add to Calendar uses the next one. "Today" is America/Detroit, as on the homepage.
+// Detroit "now": the date and the minutes after midnight in America/Detroit (Intl handles DST).
+function detroitNow(){
+  const p = {};
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'})
+    .formatToParts(new Date()).forEach(x=>{ p[x.type] = x.value; });
+  return { iso: `${p.year}-${p.month}-${p.day}`, mins: (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10) };
+}
+function detroitTodayIso(){ return detroitNow().iso; }
+function isoPlusOneDay(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  const n = new Date(y, m-1, d+1);
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+// Has this occurrence ended, in Detroit time? An explicit end clock time ends it then (an end earlier than the start
+// is an overnight run that ends the next morning); with no stated end time, the whole day counts and nothing is invented.
+function occurrenceEnded(e, occIso, now){
+  const range = parseTimeRange(e.time);
+  if(!range || !range.end) return now.iso > occIso;
+  const startM = range.start.h * 60 + range.start.m, endM = range.end.h * 60 + range.end.m;
+  if(endM < startM){
+    const nx = isoPlusOneDay(occIso);
+    return now.iso > nx || (now.iso === nx && now.mins >= endM);
+  }
+  return now.iso > occIso || (now.iso === occIso && now.mins >= endM);
+}
+function occurrenceDays(e){
+  if(typeof EventDates === 'undefined' || EventDates.semanticsOf(e) !== 'recurring') return null;
+  const days = EventDates.expand(e);
+  return days.length ? days : null;
+}
+// The occurrence to export: the first one that has not ended, else the last one that was evidenced.
+function nextOccurrence(e){
+  const days = occurrenceDays(e);
+  if(!days) return null;
+  const now = detroitNow();
+  return days.find(d=>!occurrenceEnded(e, d, now)) || days[days.length - 1];
+}
+// Add to Calendar is offered only when there is something to add: not for unverified dates, and not when the event has
+// verified occurrence dates and every one of them has ended.
+function calendarExportAvailable(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const days = occurrenceDays(e);
+  if(!days) return true;
+  const now = detroitNow();
+  return days.some(d=>!occurrenceEnded(e, d, now));
+}
+function upcomingOccurrences(e){
+  const days = occurrenceDays(e);
+  if(!days) return null;
+  const today = detroitTodayIso();
+  const up = days.filter(d=>d >= today);
+  return up.length ? up : [days[days.length - 1]];
+}
 function pad2(n){ return String(n).padStart(2,'0'); }
 function eventDateTimeParts(e){
+  const occ = nextOccurrence(e);
+  if(occ) e = Object.assign({}, e, {date: occ, endDate: occ});
   const [y,m,d] = e.date.split('-').map(Number);
-  const range = isDatesUnconfirmed(e) ? null : parseTimeRange(e.time); // unconfirmed: all-day over the published range, no invented hours
+  const range = parseTimeRange(e.time);
   const dateStr = `${y}${pad2(m)}${pad2(d)}`;
   if(!range){
     // All-day: honor the event's real end_date when it spans multiple days
@@ -510,6 +568,9 @@ function eventDateTimeParts(e){
       endDateStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
     }
   } else {
+    // Technical convention (DEC-028): a start with no stated end gets a two-hour calendar block. It sizes the
+    // calendar entry only; it is not an event end time, is never shown on the page, and plays no part in deciding
+    // whether the event has ended (that uses the stated end, else the end of the Detroit day).
     const endDt = new Date(y, m-1, d, range.start.h, range.start.m + 120);
     endDateStr = `${endDt.getFullYear()}${pad2(endDt.getMonth()+1)}${pad2(endDt.getDate())}`;
     endTime = `${pad2(endDt.getHours())}${pad2(endDt.getMinutes())}00`;
@@ -522,7 +583,8 @@ const icsEscape = CalendarLocation.icsEscape;
 const foldICSLine = CalendarLocation.foldICSLine;
 function buildEventDescription(e){
   const parts = [];
-  if(isDatesUnconfirmed(e)) parts.push('Dates not confirmed; check the organizer for the days it is open.');
+  const occDays = upcomingOccurrences(e);
+  if(occDays && occDays.length > 1) parts.push('Also on: ' + occDays.slice(1, 6).map(d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short', day:'numeric'})).join(', ') + (occDays.length > 6 ? ` and ${occDays.length - 6} more` : ''));
   if(e.description) parts.push(truncateText(e.description, 300));
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
@@ -557,7 +619,7 @@ function buildGoogleCalUrl(e){
 function shareEvent(e){
   const dateLabel = dateRangeLabel(e, 'short');
   const bits = [e.title, e.venue].filter(Boolean).join(' — ');
-  const when = [dateLabel, e.time].filter(Boolean).join(' ');
+  const when = [dateLabel, isDatesUnconfirmed(e) ? '' : e.time].filter(Boolean).join(' ');
   const text = when ? `${bits} (${when})` : bits;
   const url = window.location.href;
   if(navigator.share){ navigator.share({title: e.title, text, url}).catch(()=>{}); return; }
@@ -660,6 +722,11 @@ function mapRow(row) {
 // prominent evtWhen heading, 'short' for the share-sheet text.
 function dateRangeLabel(e, weekdayStyle){
   const opts = {weekday: weekdayStyle, month: weekdayStyle === 'long' ? 'long' : 'short', day: 'numeric'};
+  const occDays = upcomingOccurrences(e);
+  if(occDays){
+    const fmt = d=>new Date(d+"T12:00:00").toLocaleDateString('en-US', opts);
+    return occDays.slice(0, 4).map(fmt).join(' · ') + (occDays.length > 4 ? ` · +${occDays.length - 4} more` : '');
+  }
   const start = new Date(e.date+"T12:00:00").toLocaleDateString('en-US', opts);
   if(!e.endDate || e.endDate <= e.date) return start;
   const end = new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US', opts);
@@ -721,7 +788,7 @@ function renderEvent(e){
   badge.textContent = cat.label;
   badge.style.background = cat.color;
   document.getElementById('evtTitle').textContent = e.title;
-  document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
+  document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this
   // event resolved to a real venues row (venue_id) — stays plain text for
   // the "Venue TBA"/unmatched cases rather than linking to a guessed page.
@@ -767,13 +834,18 @@ function renderEvent(e){
       actionsHtml += `<a class="btn-secondary" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener noreferrer">Browse on Resident Advisor &rarr;</a>`;
     }
   }
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
-  // Blob + download, not a bare `data:` URI — see index.html's identical
-  // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
-  // and iPhone with the old data: URI approach).
-  const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
-  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  // Dates not confirmed (owner decision 2026-10-17, option B): no Add to Calendar at all. An export would either span the
+  // whole stored range or invent a day, and either reads as confirmed attendance. Likewise when every verified
+  // occurrence has ended (owner decision 2026-10-17). Share and Tickets stay.
+  if(calendarExportAvailable(e)){
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
+    // Blob + download, not a bare `data:` URI — see index.html's identical
+    // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
+    // and iPhone with the old data: URI approach).
+    const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
+    const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  }
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
   // No street address -> the calendar entry is not navigable; mark it for QA/enrichment (DEBT-013).
