@@ -20,10 +20,11 @@ const feeds = [{ id: "f-dearborn", venue_name: "City of Dearborn", feed_format: 
 let out = annotateQueue(rows, { feeds, runs: [], now: NOW, evaluateSources });
 const byId = (o, id) => o.events.find((e) => e.id === id);
 assert.strictEqual(byId(out, 1).lane, "blocked"); assert.strictEqual(byId(out, 1).lane_kind, "policy_hold");
-assert.strictEqual(byId(out, 3).lane, "person", "unknown source health is not blocked");
+assert.notStrictEqual(byId(out, 3).lane, "blocked", "unknown source health is not blocked");
 assert.strictEqual(out.blocked_breakdown.technical, 0);
 assert.strictEqual(out.blocked_breakdown.policy_hold, 2);
-assert.strictEqual(out.lane_counts.person + out.lane_counts.blocked, rows.length);
+assert.strictEqual(out.lane_counts.person + out.lane_counts.ready + out.lane_counts.blocked, rows.length);
+assert.strictEqual(out.actionable_review_count, out.lane_counts.person, "ready rows are not in the actionable count");
 assert.strictEqual(out.lane_counts.auto, null, "handled-automatically is not computed here");
 
 // provenance values
@@ -45,19 +46,20 @@ assert.strictEqual(byId(out, 3).prov.added_at, "2026-10-16T10:00:00Z");
 assert.strictEqual(byId(out, 2).reasons.find((r) => r.code === "missing_start_time").code, "missing_start_time");
 assert.ok(byId(out, 4).reasons.some((r) => r.code === "human_submission"));
 assert.ok(byId(out, 4).reasons.some((r) => r.code === "missing_city"));
-assert.strictEqual(byId(out, 3).reasons[0].code, "no_reason_recorded");
-for (const e of out.events) assert.ok(e.reasons.length >= 1);
+assert.strictEqual(byId(out, 3).lane, "ready"); assert.deepStrictEqual(byId(out, 3).reasons, []);
+for (const e of out.events) assert.ok(e.lane === "ready" ? e.reasons.length === 0 : e.reasons.length >= 1);
 // a missing description is a quiet enrichment note, never a reason (owner direction 2026-10-17): an otherwise valid row whose
 // only gap is the description has no review reason from it, is not blocked, and carries the secondary note
 const onlyDesc = Object.assign({}, rows[2], { id: 9, description: "" });
 const noDesc = annotateQueue([onlyDesc], { now: NOW }).events[0];
 assert.ok(!noDesc.reasons.some((r) => r.code === "missing_description"), "description is not a reason");
-assert.strictEqual(noDesc.reasons[0].code, "no_reason_recorded");
-assert.strictEqual(noDesc.lane, "person"); assert.strictEqual(noDesc.lane_kind, null);
+assert.deepStrictEqual(noDesc.reasons, []);
+assert.strictEqual(noDesc.lane, "ready", "a description-only gap never puts a row in Needs a person"); assert.strictEqual(noDesc.lane_kind, null);
+assert.strictEqual(annotateQueue([onlyDesc], { now: NOW }).actionable_review_count, 0);
 assert.strictEqual(noDesc.notes[0].text, "Description not yet available");
 // genuine blocking reasons are preserved next to a missing description
 const both = annotateQueue([Object.assign({}, onlyDesc, { time_display: "" })], { now: NOW }).events[0];
-assert.strictEqual(both.reasons[0].code, "missing_start_time");
+assert.strictEqual(both.reasons[0].code, "missing_start_time"); assert.strictEqual(both.lane, "person");
 assert.ok(both.notes.some((n) => n.code === "missing_description"));
 assert.deepStrictEqual(noDesc.notes.map((n) => n.code), ["missing_description"]);
 
@@ -70,7 +72,7 @@ const runs = [1, 2, 3].map((i) => ({ source_slug: "localist", outcome: "success"
 const vercelConfig = { crons: [{ path: "/api/cron-localist", schedule: "0 * * * *" }] };
 out = annotateQueue(rows, { feeds, runs, vercelConfig, now: NOW, evaluateSources });
 assert.strictEqual(byId(out, 3).lane, "blocked"); assert.strictEqual(byId(out, 3).lane_kind, "technical", "fetched 0 on 3 runs = failing");
-assert.strictEqual(byId(out, 5).lane, "person", "a source with no run log is not blocked");
+assert.notStrictEqual(byId(out, 5).lane, "blocked", "a source with no run log is not blocked");
 assert.ok(byId(out, 3).prov.source_last_run_at, "source last run is the SOURCE run time");
 
 // pure on its input

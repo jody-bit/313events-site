@@ -132,7 +132,10 @@ function deriveRow(row, ctx) {
 
   if (origin === "human") reasons.push({ code: "human_submission", text: "Human submission awaiting first review." });
   for (const r of fieldReasons(row)) reasons.push(r);
-  if (!reasons.length) reasons.push({ code: "no_reason_recorded", text: "No review reason recorded." });
+  // Owner direction 2026-10-17: a row with no genuine human-decision reason (required date/time, venue, dead link, conflict, duplicate,
+  // ambiguous classification, human origin, source problem) is "ready": it does not wait on a person, is not in the actionable count,
+  // and a missing description (optional enrichment) never changes that. It carries no reason; the description gap is only a note.
+  if (!reasons.length && lane === "person") lane = "ready";
 
   const sourceLastRun = feed ? feed.last_polled_at || null : (slug && lastRunBySlug && lastRunBySlug.get(slug)) || null;
   return {
@@ -175,7 +178,7 @@ function annotateQueue(rows, opts = {}) {
   }
   const ctx = { feedsById, healthBySlug, lastRunBySlug, nowMs };
 
-  const lane_counts = { person: 0, blocked: 0, auto: null };
+  const lane_counts = { person: 0, ready: 0, blocked: 0, auto: null };
   const blocked_breakdown = { policy_hold: 0, technical: 0 };
   const coverage = { rows: 0, origin_known: 0, source_known: 0, method_known: 0, unmapped: new Map() };
   const blockedSources = new Map();
@@ -206,6 +209,7 @@ function annotateQueue(rows, opts = {}) {
     lane_counts,
     blocked_breakdown,
     blocked_sources: [...blockedSources.values()].sort((a, b) => b.affected - a.affected),
+    actionable_review_count: lane_counts.person,
     provenance_coverage: {
       rows: coverage.rows, origin_known: coverage.origin_known, source_known: coverage.source_known, method_known: coverage.method_known,
       unmapped_sources: [...coverage.unmapped].map(([source, count]) => ({ source, count })).sort((a, b) => b.count - a.count),
