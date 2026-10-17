@@ -213,6 +213,7 @@ assert.strictEqual(T.subCounts([futureLane]).person, 1);
 const odd = T.subBuild([srv({ lane: "blocked", lane_kind: "mystery", reasons: [{ code: "x", text: "y" }] }), srv({ lane: "blocked", lane_kind: null, reasons: [] })], null);
 assert.ok(odd.every((r) => r._sub.lane === "person" && r._sub.kind === null), "unfamiliar or missing blocked kind -> Needs a person");
 const oc = T.subCounts(odd);
+assert.ok(odd.every((r) => r._sub.reasons[0].code === "blocked_kind_unrecognized") && T.subRowHtml(odd[1], NOW, true).includes("block type is not recognised") && !T.subRowHtml(odd[1], NOW, true).includes("Ready to approve"), "explained, never shown as Ready to approve");
 assert.strictEqual(oc.blocked, 0); assert.strictEqual(oc.person, 2, "count equals rows shown");
 const okB = T.subBuild([srv({ lane: "blocked", lane_kind: "technical", reasons: [{ code: "source_blocked", text: "s" }] }), srv({ lane: "blocked", lane_kind: "policy_hold", reasons: [] })], null);
 assert.ok(okB[0]._sub.lane === "blocked" && okB[0]._sub.kind === "technical" && okB[1]._sub.lane === "blocked" && okB[1]._sub.kind === "policy", "known blocked kinds unchanged");

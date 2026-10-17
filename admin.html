@@ -1596,7 +1596,10 @@ function subBuild(events, tower) {
     // Unknown lane values from a newer API never drop a row: only blocked is special, everything else is Needs a person.
     if (lane.lane !== 'blocked') lane = Object.assign({}, lane, { lane: 'person' });
     // The Blocked lane draws only technical and policy kinds; any other kind goes to Needs a person so the count equals the rows shown.
-    if (lane.lane === 'blocked' && lane.kind !== 'technical' && lane.kind !== 'policy') lane = Object.assign({}, lane, { lane: 'person', kind: null, why: null });
+    if (lane.lane === 'blocked' && lane.kind !== 'technical' && lane.kind !== 'policy') {
+      lane = Object.assign({}, lane, { lane: 'person', kind: null, why: null });
+      reasons = [{ code: 'blocked_kind_unrecognized', text: 'Marked blocked at source, but the block type is not recognised; needs a person to look', derived: true, basis: 'API lane is blocked with a lane_kind this page does not know' }].concat(reasons.filter(r => r.code !== 'ready_to_approve'));
+    }
     if (lane.lane === 'blocked' && lane.kind === 'technical' && !lane.why) { const sb = reasons.find(r => r.code === 'source_blocked'); lane.why = sb ? sb.text : 'Source is failing'; }
     const notes = (Array.isArray(e.notes) ? e.notes.filter(n => n && n.text) : []).map(n => n.code === 'missing_description' ? { code: n.code, text: 'Description not yet available' } : n);
     if (Array.isArray(e.reasons) && e.reasons.some(isOptionalGap) && !notes.some(n => n.code === 'missing_description')) notes.push({ code: 'missing_description', text: 'Description not yet available' });
