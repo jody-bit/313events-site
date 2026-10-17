@@ -512,6 +512,12 @@
     padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
   }
   .es-action:hover{background:var(--panel-hover);}
+  .es-title{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.02em;text-transform:uppercase;}
+  .es-copy{margin-top:6px;}
+  .es-action{text-transform:uppercase;letter-spacing:.04em;}
+  .es-submit{margin-top:16px;font-size:13px;}
+  .es-submit a{color:var(--accent);font-weight:700;letter-spacing:.02em;text-decoration:none;white-space:nowrap;}
+  .es-submit a:hover{text-decoration:underline;}
 
   footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
@@ -1853,7 +1859,7 @@ function showDayPanel(iso){
   const label = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   if(!events.length){
-    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${emptyStateMessage()}</div>`;
+    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${unconfirmedSearchHits().length ? 'No confirmed events on this day. Matching events with unconfirmed dates are listed below.' : emptyStateMessage()}</div>`;
   } else {
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
@@ -1934,20 +1940,25 @@ function renderList(dateList){
         </div>
       `).join('') + `</div>`;
   }
-  el.innerHTML = any ? html : `<div class="empty-state">${emptyStateMessage(dateList ? null : fmtMonth(current))}</div>`;
+  el.innerHTML = any ? html : (unconfirmedSearchHits().length ? '' : `<div class="empty-state">${emptyStateMessage()}</div>`);
 }
 
-// Shared empty-state copy for both the list and day-panel views. Per the
-// brief: never a dead end — always paired with concrete actions to widen
-// the search, not just a flat "nothing here."
-function emptyStateMessage(scopeLabel){
-  const actions = [];
-  if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
-  if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
-  if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
-  if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
-  const scope = scopeLabel ? ` in ${escapeHtml(scopeLabel)}` : '';
-  return `Nothing on the signal here${scope}.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
+// Shared empty-state copy for the list, day-panel and map-rail views. Per the brief: never a dead end — a reset, a way
+// back to the search box, and the submission workflow for an event we do not list. It is only drawn when nothing
+// matches at all (the list view also checks the "Dates not confirmed" search section first).
+function emptyStateMessage(){
+  return `<div class="es-title">NOTHING FOUND IN THE DETROIT ORBIT.</div>
+    <div class="es-copy">Try a different search or reset your filters.</div>
+    <div class="es-actions"><button type="button" class="es-action" onclick="tryAgainSearch()">TRY AGAIN</button><button type="button" class="es-action" onclick="clearAllFilters()">RESET FILTERS</button></div>
+    <div class="es-submit"><span>Don't see your event?</span> <a href="submit.html">SUBMIT AN EVENT &rarr;</a></div>`;
+}
+// TRY AGAIN: back to the search box with its text selected, so the next keystroke replaces the search.
+function tryAgainSearch(){
+  const input = document.getElementById('search');
+  if(!input) return;
+  input.scrollIntoView({behavior:'smooth', block:'center'});
+  input.focus();
+  input.select();
 }
 
 // ---- Map view (net-new, 2026-08-28) ----
@@ -2210,18 +2221,23 @@ function updateMapStat(places){
 // so an unverified range is on no day; when the visitor is searching it is offered here, outside the grid, in its own
 // "Dates not confirmed" section with the published range. Hidden without a search, in the map view, and whenever a
 // date filter (Today/Tonight/Weekend...) is on, because matchesFilters rejects unverified rows under those.
-function renderUnconfirmedResults(){
-  const el = document.getElementById('unconfirmedResults');
-  if(!el) return;
-  if(!query || mode === 'map'){ el.innerHTML = ''; return; }
+// The schedule-unverified events matching the current search, for the section below and for the empty state (which
+// must not claim "nothing found" while this section has results). Empty without a search and in the map view.
+function unconfirmedSearchHits(){
+  if(!query || mode === 'map') return [];
   const todayIso = getTodayISO();
   const seen = new Set();
-  const hits = EVENTS.filter(e=>{
+  return EVENTS.filter(e=>{
     if(e.id != null){ if(seen.has(e.id)) return false; seen.add(e.id); }
     if(EventDates.scheduleState(e) !== 'unverified') return false;
     if((e.endDate || e.date) < todayIso) return false; // the published range has ended
     return matchesFilters(e);
   }).sort((a,b)=> a.date < b.date ? -1 : a.date > b.date ? 1 : (a.title < b.title ? -1 : 1));
+}
+function renderUnconfirmedResults(){
+  const el = document.getElementById('unconfirmedResults');
+  if(!el) return;
+  const hits = unconfirmedSearchHits();
   if(!hits.length){ el.innerHTML = ''; return; }
   const range = e => e.endDate && e.endDate > e.date
     ? `${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})} \u2013 ${new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})}` : '';
