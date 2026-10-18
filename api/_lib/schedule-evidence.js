@@ -17,17 +17,8 @@
 //   - A blocked or failed page changes nothing (it is reported as blocked, never as "no schedule").
 "use strict";
 
-// The OWNER-CORRECTION reader lives in event-contract.js only once Platform's #210 merges (origin/main does not have it
-// yet). Use it when present; otherwise fall back to the same reader (same marker, same line shape) so this module
-// works on today's main. When #210 is on main the fallback is never used; delete it then.
-const contract = require("./event-contract");
-function fallbackOwnerCorrectedFields(note) {
-  const out = new Set();
-  if (typeof note !== "string" || !note.includes("OWNER-CORRECTION")) return out;
-  for (const m of note.matchAll(/^OWNER-CORRECTION\s+\S+\s+\S+\s+fields=([a-z_,]+)/gm)) for (const f of m[1].split(",")) out.add(f);
-  return out;
-}
-const ownerCorrectedFields = typeof contract.ownerCorrectedFields === "function" ? contract.ownerCorrectedFields : fallbackOwnerCorrectedFields;
+// The OWNER-CORRECTION reader is the canonical one from event-contract.js (#210); there is no second implementation here.
+const { ownerCorrectedFields } = require("./event-contract");
 
 const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
 const MONTH_RE = "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\.?";
@@ -320,7 +311,7 @@ function toEntrySchedule(proposal, { timezone } = {}) {
 }
 
 module.exports = {
-  toEntrySchedule, isOvernight, fallbackOwnerCorrectedFields,
+  toEntrySchedule, isOvernight,
   TIER_RANK, RANK_OWNER_CORRECTION, RANK_VERIFIED,
   extractSeasonRange, extractWeeklyHours, extractClosedDates, extractOperatingNotes, extractFromPage,
   rankOf, lockedByOwner, compareToStored, proposeSchedule, buildCalendar,

@@ -251,27 +251,24 @@ console.log("PASS: 12. partial pages merge per day; same-day disagreements and s
 }
 console.log("PASS: 13. quotes, URLs and retrieval times are kept; blocked pages add nothing");
 
-// 14. the OWNER-CORRECTION fallback reader matches the canonical one when it exists (#210)
+// 14. lockedByOwner uses the canonical OWNER-CORRECTION reader (#210) with no local copy
 {
+  const canonical = require("../api/_lib/event-contract").ownerCorrectedFields;
+  assert.strictEqual(typeof canonical, "function");
+  assert.strictEqual(se.fallbackOwnerCorrectedFields, undefined, "the temporary fallback reader is gone");
   const notes = [
     'OWNER-CORRECTION 2026-10-18T10:00:00Z e1 fields=time_display,category | {"actor":"admin","changes":[]}',
     "no marker here",
     "OWNER-CORRECTION malformed line",
-    'x\\nOWNER-CORRECTION 2026-10-18T10:00:00Z e2 fields=title | {}\\nOWNER-CORRECTION 2026-10-19T10:00:00Z e3 fields=venue_name_raw | {}',
+    'x\nOWNER-CORRECTION 2026-10-18T10:00:00Z e2 fields=title | {}\nOWNER-CORRECTION 2026-10-19T10:00:00Z e3 fields=time_display | {}',
+    "OWNER-CORRECTION 2026-10-18T10:00:00Z e4 fields=description | {}",
     null,
   ];
-  const canonical = require("../api/_lib/event-contract").ownerCorrectedFields;
-  if (typeof canonical === "function") {
-    for (const n of notes) {
-      const a = [...canonical(n)].sort(), b = [...se.fallbackOwnerCorrectedFields(n)].sort();
-      // the canonical reader also adds locked columns (venue_id with venue_name_raw) and drops unknown fields; compare on the schedule field
-      assert.strictEqual(a.includes("time_display"), b.includes("time_display"), "parity for time_display on: " + n);
-    }
-    console.log("PASS: 14. fallback matches the canonical OWNER-CORRECTION reader; delete the fallback");
-  } else {
-    assert.ok(se.fallbackOwnerCorrectedFields(notes[0]).has("time_display"));
-    assert.strictEqual(se.fallbackOwnerCorrectedFields(notes[1]).size, 0);
-    assert.strictEqual(se.fallbackOwnerCorrectedFields(notes[4]).size, 0);
-    console.log("PASS: 14. canonical reader not on main yet (#210); fallback behaves as documented");
-  }
+  for (const n of notes) assert.strictEqual(se.lockedByOwner(n, "time_display"), canonical(n).has("time_display"), "parity on: " + n);
+  assert.strictEqual(se.lockedByOwner(notes[0], "time_display"), true);
+  assert.strictEqual(se.lockedByOwner(notes[1], "time_display"), false);
+  assert.strictEqual(se.lockedByOwner(notes[2], "time_display"), false);
+  assert.strictEqual(se.lockedByOwner(notes[4], "time_display"), false);
+  assert.strictEqual(se.lockedByOwner(null, "time_display"), false);
+  console.log("PASS: 14. schedule evidence uses the canonical OWNER-CORRECTION reader; marker fixtures agree");
 }
