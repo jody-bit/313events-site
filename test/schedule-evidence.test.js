@@ -157,3 +157,121 @@ console.log("PASS: 7. closures override recurring hours; Erebus calendar matches
   assert.deepStrictEqual(se.toEntrySchedule({ proposed: {} }), { explicitClosuresOverrideHours: true, provenance: {} }, "no evidence, no fields");
 }
 console.log("PASS: 8. proposal maps to the seasonal entry schedule shape");
+
+// 9. real-world date and schedule formats (synthetic text in the styles pages use)
+{
+  const day = (t) => se.extractWeeklyHours(t).byDay;
+  assert.deepStrictEqual(day("Fri & Sat 7pm-midnight"), { 5: "7:00 PM-12:00 AM", 6: "7:00 PM-12:00 AM" });
+  assert.deepStrictEqual(day("Fridays and Saturdays, 7 p.m. to 11 p.m."), { 5: "7:00 PM-11:00 PM", 6: "7:00 PM-11:00 PM" });
+  assert.deepStrictEqual(day("Open Thursday through Sunday 6-10 pm"), { 0: "6:00 PM-10:00 PM", 4: "6:00 PM-10:00 PM", 5: "6:00 PM-10:00 PM", 6: "6:00 PM-10:00 PM" });
+  assert.deepStrictEqual(day("Mon-Fri 9am-5pm; Sat 10am-2pm"), { 1: "9:00 AM-5:00 PM", 2: "9:00 AM-5:00 PM", 3: "9:00 AM-5:00 PM", 4: "9:00 AM-5:00 PM", 5: "9:00 AM-5:00 PM", 6: "10:00 AM-2:00 PM" });
+  assert.deepStrictEqual(day("Weekends from noon to 5 PM"), { 0: "12:00 PM-5:00 PM", 6: "12:00 PM-5:00 PM" });
+  assert.deepStrictEqual(Object.keys(day("Weekdays 4-9 PM")).map(Number), [1, 2, 3, 4, 5]);
+  assert.strictEqual(Object.keys(day("nightly 7 PM to 11 PM")).length, 7);
+  assert.strictEqual(se.extractWeeklyHours("Open Fridays and Saturdays."), null, "days without times are not hours");
+  assert.strictEqual(se.extractWeeklyHours("Weekends 11-2 PM"), null, "an ambiguous meridiem is refused, not guessed");
+  assert.strictEqual(se.extractWeeklyHours("Sat 7-10"), null, "a closing time with no AM/PM is not evidence");
+  assert.strictEqual(se.extractSeasonRange("Open Oct. 3 - Nov. 1", Y).start, "2026-10-03");
+  assert.strictEqual(se.extractSeasonRange("October 3 through November 1, 2026", Y).end, "2026-11-01");
+  assert.strictEqual(se.extractSeasonRange("Opening night: September 18th. Closes Nov 7.", Y).end, "2026-11-07");
+}
+console.log("PASS: 9. varied weekly-hours and season formats");
+
+// 10. overnight hours
+{
+  const w = se.extractWeeklyHours("Fri 7pm-12 AM, Sat 6pm-2am, Sun 6-11 PM");
+  assert.deepStrictEqual(w.overnight, { 5: true, 6: true });
+  assert.strictEqual(w.byDay[6], "6:00 PM-2:00 AM");
+  assert.strictEqual(se.isOvernight("7:00 PM-12:00 AM"), true);
+  assert.strictEqual(se.isOvernight("6:00 PM-11:00 PM"), false);
+  const cal = se.buildCalendar({ season: { start: "2026-10-23", end: "2026-10-25" }, weeklyHours: w.byDay });
+  assert.deepStrictEqual(cal.map((d) => [d.date, d.overnight]), [["2026-10-23", true], ["2026-10-24", true], ["2026-10-25", false]]);
+  const page = se.extractFromPage({ url: "https://a.example", tier: "media", text: "Fri & Sat 7pm-midnight" }, Y);
+  assert.deepStrictEqual(se.proposeSchedule({ pages: [page], stored: {}, internalNote: "" }).proposed.weekly_hours.overnight_days, [5, 6]);
+}
+console.log("PASS: 10. overnight hours are flagged");
+
+// 11. explicit closures and exceptions
+{
+  assert.deepStrictEqual(se.extractClosedDates("Open daily except Oct. 19 and Nov. 2-5.", Y).dates, ["2026-10-19", "2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05"]);
+  assert.deepStrictEqual(se.extractClosedDates("Closed Oct. 31.", Y).dates, ["2026-10-31"]);
+  assert.deepStrictEqual(se.extractClosedDates("No shows Nov. 26.", Y).dates, ["2026-11-26"]);
+  assert.strictEqual(se.extractClosedDates("Closed Sundays.", Y), null, "a closed weekday with no dates is not a dated closure");
+  assert.strictEqual(se.extractClosedDates("Closes Nov. 7.", Y), null, "'closes' (season end) is not a closure");
+  // two pages list different closures: both are kept (a longer list is not a disagreement)
+  const a = se.extractFromPage({ url: "https://a.example", tier: "media", text: "Dark Oct. 19." }, Y);
+  const b = se.extractFromPage({ url: "https://b.example", tier: "media", text: "Closed Nov. 2-3." }, Y);
+  assert.deepStrictEqual(se.proposeSchedule({ pages: [a, b], stored: {}, internalNote: "" }).proposed.closed_dates.value, ["2026-10-19", "2026-11-02", "2026-11-03"]);
+}
+console.log("PASS: 11. explicit closures and exceptions");
+
+// 12. conflicts and partial metadata
+{
+  // partial pages merge per day
+  const a = se.extractFromPage({ url: "https://a.example", tier: "media", text: "Fri & Sat 7pm-midnight" }, Y);
+  const b = se.extractFromPage({ url: "https://b.example", tier: "media", text: "Sunday: 6 PM - 11 PM" }, Y);
+  const merged = se.proposeSchedule({ pages: [a, b], stored: {}, internalNote: "" });
+  assert.deepStrictEqual(Object.keys(merged.proposed.weekly_hours.value).map(Number).sort(), [0, 5, 6]);
+  assert.strictEqual(merged.conflicts.length, 0);
+  // the same day with different hours on two pages is one conflict naming the day, with both quotes
+  const c = se.extractFromPage({ url: "https://c.example", tier: "official", text: "Saturday: 5 PM - 10 PM" }, Y);
+  const clash = se.proposeSchedule({ pages: [a, c], stored: {}, internalNote: "" });
+  assert.strictEqual(clash.conflicts.length, 1);
+  assert.deepStrictEqual(clash.conflicts[0].days, [6]);
+  assert.strictEqual(clash.conflicts[0].candidates.length, 2);
+  assert.ok(!clash.proposed.weekly_hours);
+  // one page contradicting itself is also routed to review
+  const self = se.extractFromPage({ url: "https://d.example", tier: "media", text: "Saturday 6-10 PM. Saturday 7-11 PM." }, Y);
+  assert.strictEqual(self.weekly_hours, null, "a day with two hours on one page yields no hours at all");
+  // hours only: season and closures are unsupported, not guessed
+  const only = se.proposeSchedule({ pages: [a], stored: {}, internalNote: "" });
+  assert.deepStrictEqual(only.unsupported.sort(), ["closed_dates", "season"]);
+  assert.ok(only.proposed.weekly_hours);
+  // no page at all
+  assert.deepStrictEqual(se.proposeSchedule({ pages: [], stored: {}, internalNote: "" }).unsupported.sort(), ["closed_dates", "season", "weekly_hours"]);
+}
+console.log("PASS: 12. partial pages merge per day; same-day disagreements and self-contradiction go to review");
+
+// 13. evidence is preserved on every proposed field
+{
+  const page = se.extractFromPage({ url: "https://e.example/x", tier: "media", retrieved_at: "2026-10-18T15:30:00Z", text: "Runs Sept. 18 - Nov. 7. Fri 7pm-midnight. Dark: Oct. 19." }, Y);
+  const r = se.proposeSchedule({ pages: [page], stored: {}, internalNote: "" });
+  for (const f of ["season", "weekly_hours", "closed_dates"]) {
+    const ev = r.proposed[f].evidence[0];
+    assert.strictEqual(ev.url, "https://e.example/x");
+    assert.strictEqual(ev.retrieved_at, "2026-10-18T15:30:00Z");
+    assert.ok(ev.quote && ev.quote.length > 3, f + " carries its quote");
+    assert.ok(["advertised_season", "advertised_hours", "listed_closures"].includes(r.proposed[f].kind));
+  }
+  // a blocked page contributes no value and is listed
+  const blocked = se.extractFromPage({ url: "https://f.example", tier: "official", blocked: "robots_unavailable" }, Y);
+  const r2 = se.proposeSchedule({ pages: [blocked], stored: {}, internalNote: "" });
+  assert.deepStrictEqual(r2.blocked, [{ url: "https://f.example", reason: "robots_unavailable" }]);
+  assert.deepStrictEqual(r2.proposed, {});
+}
+console.log("PASS: 13. quotes, URLs and retrieval times are kept; blocked pages add nothing");
+
+// 14. the OWNER-CORRECTION fallback reader matches the canonical one when it exists (#210)
+{
+  const notes = [
+    'OWNER-CORRECTION 2026-10-18T10:00:00Z e1 fields=time_display,category | {"actor":"admin","changes":[]}',
+    "no marker here",
+    "OWNER-CORRECTION malformed line",
+    'x\\nOWNER-CORRECTION 2026-10-18T10:00:00Z e2 fields=title | {}\\nOWNER-CORRECTION 2026-10-19T10:00:00Z e3 fields=venue_name_raw | {}',
+    null,
+  ];
+  const canonical = require("../api/_lib/event-contract").ownerCorrectedFields;
+  if (typeof canonical === "function") {
+    for (const n of notes) {
+      const a = [...canonical(n)].sort(), b = [...se.fallbackOwnerCorrectedFields(n)].sort();
+      // the canonical reader also adds locked columns (venue_id with venue_name_raw) and drops unknown fields; compare on the schedule field
+      assert.strictEqual(a.includes("time_display"), b.includes("time_display"), "parity for time_display on: " + n);
+    }
+    console.log("PASS: 14. fallback matches the canonical OWNER-CORRECTION reader; delete the fallback");
+  } else {
+    assert.ok(se.fallbackOwnerCorrectedFields(notes[0]).has("time_display"));
+    assert.strictEqual(se.fallbackOwnerCorrectedFields(notes[1]).size, 0);
+    assert.strictEqual(se.fallbackOwnerCorrectedFields(notes[4]).size, 0);
+    console.log("PASS: 14. canonical reader not on main yet (#210); fallback behaves as documented");
+  }
+}

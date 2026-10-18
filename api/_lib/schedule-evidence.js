@@ -21,12 +21,13 @@
 // yet). Use it when present; otherwise fall back to the same reader (same marker, same line shape) so this module
 // works on today's main. When #210 is on main the fallback is never used; delete it then.
 const contract = require("./event-contract");
-const ownerCorrectedFields = typeof contract.ownerCorrectedFields === "function" ? contract.ownerCorrectedFields : function fallbackOwnerCorrectedFields(note) {
+function fallbackOwnerCorrectedFields(note) {
   const out = new Set();
   if (typeof note !== "string" || !note.includes("OWNER-CORRECTION")) return out;
   for (const m of note.matchAll(/^OWNER-CORRECTION\s+\S+\s+\S+\s+fields=([a-z_,]+)/gm)) for (const f of m[1].split(",")) out.add(f);
   return out;
-};
+}
+const ownerCorrectedFields = typeof contract.ownerCorrectedFields === "function" ? contract.ownerCorrectedFields : fallbackOwnerCorrectedFields;
 
 const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
 const MONTH_RE = "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\.?";
@@ -43,13 +44,6 @@ function iso(year, month, day) {
   if (!month || day < 1 || day > 31) return null;
   const d = new Date(Date.UTC(year, month - 1, day));
   return d.getUTCMonth() === month - 1 ? d.toISOString().slice(0, 10) : null;
-}
-
-// "7:30 PM" / "7 pm" / "12:00 AM (Midnight)" -> "7:30 PM" (H:MM AM/PM, the site's time_display shape)
-function normTime(h, m, ap) {
-  const hh = Number(h);
-  if (!(hh >= 1 && hh <= 12)) return null;
-  return `${hh}:${m || "00"} ${ap.toUpperCase()}`;
 }
 
 // -> { start, end, quote } | null. Needs both ends in one "A to B" range with explicit months.
@@ -81,21 +75,88 @@ function extractSplitSeason(text, year) {
   return { start, end, quote: t.slice(open.index, from + last.index + last[0].length) };
 }
 
-// Weekly hours lines such as "Monday – Thursday: 7:30 PM – 10:30 PM", "Friday: 7:00 PM – 12:00 AM (Midnight)".
-// -> { byDay: {0..6: "7:30 PM - 10:30 PM"}, quotes: [...] } | null. Days not stated are absent, never filled.
-function extractWeeklyHours(text) {
-  const dayAlt = DAYS.join("|");
-  const re = new RegExp(`\\b(${dayAlt})s?(?:\\s*(?:-|–|—|to|through)\\s*(${dayAlt})s?)?\\s*:?\\s*(\\d{1,2})(?::(\\d{2}))?\\s*(AM|PM)\\s*(?:-|–|—|to)\\s*(\\d{1,2})(?::(\\d{2}))?\\s*(AM|PM)`, "gi");
-  const byDay = {}, quotes = [];
-  for (const m of String(text || "").matchAll(re)) {
-    const a = DAYS.findIndex((d) => d.toLowerCase() === m[1].toLowerCase());
-    const b = m[2] ? DAYS.findIndex((d) => d.toLowerCase() === m[2].toLowerCase()) : a;
-    const open = normTime(m[3], m[4], m[5]), close = normTime(m[6], m[7], m[8]);
-    if (!open || !close || a < 0 || b < 0) continue;
-    for (let i = a, n = 0; n < 7; n++, i = (i + 1) % 7) { byDay[i] = `${open}-${close}`; if (i === b) break; }
-    quotes.push(m[0]);
+// ---- clock times ----------------------------------------------------------------------------------------------
+// "7:30 PM", "7pm", "7 p.m.", "noon", "midnight" -> minutes since 00:00, or null. A bare hour without a meridiem is
+// returned as { hour, minute, ap: null } so a range can inherit the closing meridiem ("7-11 PM").
+const TIME_PART = "(?:noon|midnight|(\\d{1,2})(?::(\\d{2}))?\\s*(a\\.?m\\.?|p\\.?m\\.?)?)";
+function parseClock(word, h, m, ap) {
+  const w = String(word || "").toLowerCase();
+  if (w === "noon") return { min: 12 * 60, ap: "PM", named: true };
+  if (w === "midnight") return { min: 0, ap: "AM", named: true };
+  const hh = Number(h), mm = m ? Number(m) : 0;
+  if (!(hh >= 1 && hh <= 12) || mm > 59) return null;
+  return { hour: hh, minute: mm, ap: ap ? (/^a/i.test(ap) ? "AM" : "PM") : null };
+}
+function toMin(c) { return c.min !== undefined ? c.min : (c.hour % 12) * 60 + c.minute + (c.ap === "PM" ? 720 : 0); }
+function fmtMin(min) {
+  const h24 = Math.floor(min / 60) % 24, m = min % 60, ap = h24 >= 12 ? "PM" : "AM", h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  return `${h12}:${String(m).padStart(2, "0")} ${ap}`;
+}
+// open/close clocks -> { hours: "7:00 PM-12:00 AM", overnight } | null. A bare opening hour inherits the closing meridiem
+// ("7-11 PM"); an ambiguous inheritance (close PM but opening hour larger, "11-2 PM") is refused, never guessed.
+function resolveRange(o, c) {
+  if (!o || !c) return null;
+  if (c.ap === null) return null;                      // a closing time with no meridiem is not evidence
+  let open = { ...o };
+  if (open.ap === null && open.min === undefined) {
+    open.ap = c.ap;
+    if (c.min === undefined && toMin(open) >= toMin(c) && c.ap === "AM" && open.hour !== 12) open.ap = "PM";   // "11-2 AM" -> 11 PM to 2 AM
+    else if (c.min === undefined && toMin(open) >= toMin(c) && c.ap === "PM") return null;                      // "11-2 PM": ambiguous
   }
-  return quotes.length ? { byDay, quotes } : null;
+  const om = toMin(open), cm = toMin(c);
+  if (om === cm) return null;
+  return { hours: `${fmtMin(om)}-${fmtMin(cm)}`, overnight: cm < om };
+}
+
+const DAY_ABBR = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+const DAY_WORD = "(?:Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sun|Mon|Tues|Tue|Wed|Thurs|Thur|Thu|Fri|Sat)s?\\b\\.?";
+const DAY_ANY = `(?:${DAY_WORD})`;
+const GROUP_WORD = "(?:weekends?|weekdays?|nightly|daily|every\\s+(?:day|night|evening))";
+const SPEC_RE = new RegExp(`\\b(?:${GROUP_WORD}|${DAY_ANY}(?:\\s*(?:-|–|—|to|through|thru)\\s*${DAY_ANY}|(?:\\s*(?:,|&|and|\\+)\\s*${DAY_ANY})+)?)`, "gi");
+const SEP = "\\s*(?:-|–|—|to|until|till)\\s*";
+const RANGE_RE = new RegExp(`^[^0-9A-Za-z]{0,3}(?:(?:from|open|opens|at|hours)\\s+){0,2}[^0-9A-Za-z]{0,3}${TIME_PART}${SEP}${TIME_PART}`, "i");
+function dayIdx(w) { return DAY_ABBR[String(w).slice(0, 3).toLowerCase()]; }
+function expandSpec(spec) {
+  const t = spec.toLowerCase();
+  if (/weekends?/.test(t)) return [6, 0];                 // weekend = Saturday and Sunday (no Friday)
+  if (/weekdays?/.test(t)) return [1, 2, 3, 4, 5];
+  if (/nightly|daily|every/.test(t)) return [0, 1, 2, 3, 4, 5, 6];
+  const names = [...spec.matchAll(new RegExp(DAY_ANY, "gi"))].map((m) => dayIdx(m[0]));
+  if (!names.length || names.some((d) => d === undefined)) return [];
+  if (/(?:-|–|—|\bto\b|through|thru)/i.test(spec) && names.length === 2) {
+    const out = []; for (let d = names[0], n = 0; n < 7; n++, d = (d + 1) % 7) { out.push(d); if (d === names[1]) break; } return out;
+  }
+  return [...new Set(names)];
+}
+
+// Weekly hours from lines/sentences such as "Monday – Thursday: 7:30 PM – 10:30 PM", "Fri & Sat 7pm-midnight",
+// "Fridays and Saturdays, 7 p.m. to 11 p.m.", "weekends from 6-10 PM", "nightly 7 PM to 2 AM".
+// -> { byDay: {0..6: "7:30 PM-10:30 PM"}, overnight: {day: true}, quotes } | null. Days not stated are absent, never filled.
+// A day given two different hours inside one page is dropped from byDay and reported in `ambiguous`.
+function extractWeeklyHours(text) {
+  const t = String(text || "");
+  const byDay = {}, overnight = {}, quotes = [], seen = {}, ambiguous = [];
+  for (const m of t.matchAll(SPEC_RE)) {
+    const after = t.slice(m.index + m[0].length, m.index + m[0].length + 60);
+    const r = RANGE_RE.exec(after);
+    if (!r) continue;
+    // TIME_PART groups: (1,2,3) open, (4,5,6) close; "noon"/"midnight" words are matched separately
+    const openNamed = /^(?:[^0-9A-Za-z]|from|open|opens|at|hours)*\b(noon|midnight)\b/i.exec(after);
+    const closeNamed = new RegExp(`${SEP}(noon|midnight)\\b`, "i").exec(after);
+    const oc = openNamed ? parseClock(openNamed[1]) : parseClock(null, r[1], r[2], r[3]);
+    const cc = closeNamed ? parseClock(closeNamed[1]) : parseClock(null, r[4], r[5], r[6]);
+    const res = resolveRange(oc, cc);
+    if (!res) continue;
+    const days = expandSpec(m[0]);
+    if (!days.length) continue;
+    for (const d of days) {
+      if (seen[d] !== undefined && seen[d] !== res.hours) { ambiguous.push(d); delete byDay[d]; delete overnight[d]; continue; }
+      if (ambiguous.includes(d)) continue;
+      seen[d] = res.hours; byDay[d] = res.hours; if (res.overnight) overnight[d] = true;
+    }
+    quotes.push((m[0] + after.slice(0, r.index + r[0].length)).trim());
+  }
+  return quotes.length && Object.keys(byDay).length ? { byDay, overnight, quotes, ambiguous } : null;
 }
 
 // Closed / dark dates. Looks only inside a sentence that contains "dark" or "closed" and lists dates after it.
@@ -103,9 +164,9 @@ function extractWeeklyHours(text) {
 function extractClosedDates(text, year) {
   const sentences = String(text || "").split(/(?<=[.!?])\s+(?=[A-Z])|\n+/);
   for (const s of sentences) {
-    const k = /\b(dark|closed)\b[^:]*[:\-–]?\s*(.*)$/i.exec(s);
+    const k = /\b(dark|closed|except(?:ing)?|not open|no (?:shows|performances|tours|events))\b/i.exec(s);
     if (!k) continue;
-    const tail = k[2] || "";
+    const tail = s.slice(k.index + k[0].length);
     const dates = new Set();
     const re = new RegExp(`${MONTH_RE}\\s+(\\d{1,2})(?:\\s*(?:-|–|—)\\s*(\\d{1,2}))?`, "gi");
     for (const m of tail.matchAll(re)) {
@@ -163,18 +224,32 @@ function proposeSchedule({ pages, stored, internalNote }) {
 
   const fields = [
     ["season", (p) => p.season && { value: { start: p.season.start, end: p.season.end }, quote: p.season.quote }, "season"],
-    ["weekly_hours", (p) => p.weekly_hours && { value: p.weekly_hours.byDay, quote: p.weekly_hours.quotes.join(" | ") }, "time_display"],
+    ["weekly_hours", (p) => p.weekly_hours && { value: p.weekly_hours.byDay, overnight: p.weekly_hours.overnight, ambiguous: p.weekly_hours.ambiguous, quote: p.weekly_hours.quotes.join(" | ") }, "time_display"],
     ["closed_dates", (p) => p.closed_dates && { value: p.closed_dates.dates, quote: p.closed_dates.quote }, null],
   ];
   for (const [field, pick, lockField] of fields) {
     const cands = [];
     for (const p of usable) { const v = pick(p); if (v) cands.push({ ...v, url: p.url, tier: p.tier, retrieved_at: p.retrieved_at }); }
+    if (field === "weekly_hours") for (const p of usable) if (p.weekly_hours && p.weekly_hours.ambiguous.length) out.conflicts.push({ field, days: p.weekly_hours.ambiguous, reason: "two different hours for one day on one page", candidates: [{ url: p.url, quote: p.weekly_hours.quotes.join(" | ") }] });
     if (!cands.length) { out.unsupported.push(field); continue; }
     if (lockField && lockedByOwner(internalNote, lockField)) { out.kept.push({ field, reason: "OWNER-CORRECTION lock" }); continue; }
     // closed dates from different pages are cumulative (a longer list is not a disagreement); season and hours must agree.
-    let value, evidence = cands, agree = true;
+    let value, evidence = cands, agree = true, extra = {};
     if (field === "closed_dates") value = [...new Set(cands.flatMap((c) => c.value))].sort();
-    else {
+    else if (field === "weekly_hours") {
+      // Partial pages merge per day (one page may give Fri/Sat, another the rest). A day with two different hours is a conflict.
+      const perDay = {}, overnightDays = new Set();
+      for (const c of cands) for (const [d, h] of Object.entries(c.value)) (perDay[d] = perDay[d] || new Map()).set(h, c);
+      for (const c of cands) for (const d of Object.keys(c.overnight || {})) overnightDays.add(Number(d));
+      const clash = Object.entries(perDay).filter(([, m]) => m.size > 1);
+      if (clash.length) {
+        agree = false;
+        out.conflicts.push({ field, days: clash.map(([d]) => Number(d)), candidates: cands.map((c) => ({ value: c.value, url: c.url, quote: c.quote })) });
+      } else {
+        value = Object.fromEntries(Object.entries(perDay).map(([d, m]) => [d, [...m.keys()][0]]));
+        extra = { overnight_days: [...overnightDays].sort() };
+      }
+    } else {
       const key = (c) => JSON.stringify(c.value);
       const top = Math.max(...cands.map((c) => TIER_RANK[c.tier] || 0));
       const strongest = cands.filter((c) => (TIER_RANK[c.tier] || 0) === top);
@@ -193,10 +268,19 @@ function proposeSchedule({ pages, stored, internalNote }) {
       value,
       evidence: evidence.map((c) => ({ url: c.url, tier: c.tier, retrieved_at: c.retrieved_at, quote: c.quote })),
       confidence: new Set(cands.map((c) => c.url)).size >= 3 ? "high" : new Set(cands.map((c) => c.url)).size === 2 ? "medium-high" : "medium",
+      ...extra,
       kind: field === "weekly_hours" ? "advertised_hours" : field === "season" ? "advertised_season" : "listed_closures",
     };
   }
   return out;
+}
+
+// "7:00 PM-12:00 AM" -> true when the closing time is at or before the opening time (it ends after midnight).
+function isOvernight(hours) {
+  const m = /^(\d{1,2}):(\d{2}) (AM|PM)-(\d{1,2}):(\d{2}) (AM|PM)$/.exec(String(hours || ""));
+  if (!m) return false;
+  const a = parseClock(null, m[1], m[2], m[3]), b = parseClock(null, m[4], m[5], m[6]);
+  return !!(a && b) && toMin(b) < toMin(a);
 }
 
 // Expands a proposal into a day list: recurring weekly hours inside the season, minus explicit closures.
@@ -211,7 +295,7 @@ function buildCalendar({ season, weeklyHours, closedDates, from }) {
     const d = new Date(t), day = d.toISOString().slice(0, 10);
     if (closed.has(day)) { out.push({ date: day, open: false, hours: null, dark: true }); continue; }
     const h = weeklyHours[d.getUTCDay()];
-    if (h) out.push({ date: day, open: true, hours: h, dark: false });
+    if (h) out.push({ date: day, open: true, hours: h, dark: false, overnight: isOvernight(h) });
   }
   return out;
 }
@@ -236,7 +320,7 @@ function toEntrySchedule(proposal, { timezone } = {}) {
 }
 
 module.exports = {
-  toEntrySchedule,
+  toEntrySchedule, isOvernight, fallbackOwnerCorrectedFields,
   TIER_RANK, RANK_OWNER_CORRECTION, RANK_VERIFIED,
   extractSeasonRange, extractWeeklyHours, extractClosedDates, extractOperatingNotes, extractFromPage,
   rankOf, lockedByOwner, compareToStored, proposeSchedule, buildCalendar,
