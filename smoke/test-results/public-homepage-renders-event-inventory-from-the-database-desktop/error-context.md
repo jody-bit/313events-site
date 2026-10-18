@@ -1,0 +1,460 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "313.events — back to today" [level=1] [ref=e4]:
+      - link "313.events — back to today" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "313.events" [ref=e6]
+    - navigation "Primary" [ref=e7]:
+      - link "Events" [ref=e8] [cursor=pointer]:
+        - /url: /
+      - link "Calendar" [ref=e9] [cursor=pointer]:
+        - /url: calendar.html
+      - link "Map" [ref=e10] [cursor=pointer]:
+        - /url: map.html
+      - link "Venues" [ref=e11] [cursor=pointer]:
+        - /url: venues.html
+      - link "Neighborhoods" [ref=e12] [cursor=pointer]:
+        - /url: neighborhoods.html
+      - link "On the Radar" [ref=e13] [cursor=pointer]:
+        - /url: radar.html
+      - link "About" [ref=e14] [cursor=pointer]:
+        - /url: about.html
+    - generic [ref=e15]:
+      - button "Search events and venues" [ref=e16] [cursor=pointer]:
+        - img [ref=e17]
+      - link "Submit an event" [ref=e20] [cursor=pointer]:
+        - /url: submit.html
+        - generic [ref=e21]: +
+        - generic [ref=e22]: Submit Event
+  - region "THE CITY IS ON." [ref=e23]:
+    - generic [ref=e24]:
+      - img [ref=e26]
+      - img [ref=e28]
+      - img "A concert crowd at dusk, backlit by stage lights and video screens." [ref=e30]
+      - img [ref=e32]
+      - img [ref=e34]
+      - img [ref=e36]
+      - img [ref=e38]
+      - img [ref=e40]
+      - img [ref=e42]
+      - img [ref=e44]
+      - img [ref=e46]
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - generic [ref=e49]: THE CITY
+        - generic [ref=e51]: IS ON
+      - generic [ref=e52]:
+        - button "14 Current + upcoming events" [ref=e53] [cursor=pointer]:
+          - generic [ref=e54]: "14"
+          - generic [ref=e55]: Current + upcoming events
+        - generic [ref=e56]:
+          - button "0 Today" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: "0"
+            - generic [ref=e59]: Today
+          - button "· 5 Next 7 days" [ref=e60] [cursor=pointer]:
+            - text: ·
+            - generic [ref=e61]: "5"
+            - generic [ref=e62]: Next 7 days
+          - button "· 0 Active neighborhoods" [ref=e63] [cursor=pointer]:
+            - text: ·
+            - generic [ref=e64]: "0"
+            - generic [ref=e65]: Active neighborhoods
+  - generic [ref=e66]:
+    - generic [ref=e67]:
+      - button "When Anytime" [ref=e68] [cursor=pointer]:
+        - img [ref=e69]
+        - generic [ref=e71]:
+          - generic [ref=e72]: When
+          - generic [ref=e73]: Anytime
+        - img [ref=e74]
+      - button "Where Everywhere" [ref=e76] [cursor=pointer]:
+        - img [ref=e77]
+        - generic [ref=e80]:
+          - generic [ref=e81]: Where
+          - generic [ref=e82]: Everywhere
+        - img [ref=e83]
+      - button "What All types" [ref=e85] [cursor=pointer]:
+        - img [ref=e86]
+        - generic [ref=e91]:
+          - generic [ref=e92]: What
+          - generic [ref=e93]: All types
+        - img [ref=e94]
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - img [ref=e98]
+          - generic [ref=e101]: Search
+          - textbox "Search events, venues, or neighborhoods" [ref=e102]:
+            - /placeholder: Search events, venues, or keywords…
+        - button "Show results" [ref=e103] [cursor=pointer]:
+          - img [ref=e104]
+    - generic [ref=e106]:
+      - group "Quick dates" [ref=e107]:
+        - button "Today" [ref=e108] [cursor=pointer]
+        - button "Tonight" [ref=e109] [cursor=pointer]
+        - button "This Weekend" [ref=e110] [cursor=pointer]
+        - button "Next 7 Days" [ref=e111] [cursor=pointer]
+        - button "Pick Dates" [ref=e112] [cursor=pointer]
+      - group "Quick categories" [ref=e113]:
+        - button "All Events" [pressed] [ref=e114] [cursor=pointer]
+        - button "Music" [ref=e115] [cursor=pointer]
+        - button "Visual Arts" [ref=e116] [cursor=pointer]
+        - button "Film" [ref=e117] [cursor=pointer]
+        - button "Theatre & Comedy" [ref=e118] [cursor=pointer]
+        - button "Food & Markets" [ref=e119] [cursor=pointer]
+        - button "Community" [ref=e120] [cursor=pointer]
+        - button "More" [ref=e121] [cursor=pointer]
+  - generic [ref=e123]:
+    - region "Don't Miss" [ref=e124]:
+      - generic [ref=e125]:
+        - heading "Don't Miss" [level=2] [ref=e126]: Don't Miss
+        - paragraph [ref=e128]: Extraordinary events. Handpicked for this moment.
+      - generic [ref=e130]:
+        - link "A wooden cider press pouring fresh cider beside baskets of apples and pumpkins, with a red barn and hayride at sunset. Detroit Orbit Fall Guide Cider mills. Pumpkin patches. Orchards. Donuts. Hayrides. Find your fall. Explore fall →" [ref=e131] [cursor=pointer]:
+          - /url: /fall
+          - img "A wooden cider press pouring fresh cider beside baskets of apples and pumpkins, with a red barn and hayride at sunset." [ref=e132]
+          - generic [ref=e135]:
+            - generic [ref=e136]: Detroit Orbit Fall Guide
+            - generic [ref=e137]: Cider mills. Pumpkin patches. Orchards. Donuts. Hayrides. Find your fall.
+            - generic [ref=e138]: Explore fall →
+        - link "Glowing jack-o'-lanterns and a scarecrow beside a foggy path leading visitors toward a haunted manor under a full moon. Halloween in the Orbit Haunts. Horror. Ghosts. Oddities. Family fun. Halloween across the Detroit Orbit. Get spooky →" [ref=e139] [cursor=pointer]:
+          - /url: /halloween
+          - img "Glowing jack-o'-lanterns and a scarecrow beside a foggy path leading visitors toward a haunted manor under a full moon." [ref=e140]
+          - generic [ref=e143]:
+            - generic [ref=e144]: Halloween in the Orbit
+            - generic [ref=e145]: Haunts. Horror. Ghosts. Oddities. Family fun. Halloween across the Detroit Orbit.
+            - generic [ref=e146]: Get spooky →
+        - link "Red and orange autumn maples above a river at sunset, with the Detroit skyline on the horizon. Fall Colors Trails. Parks. Scenic drives. Waterfronts. Find the Detroit Orbit at peak color. Chase color →" [ref=e147] [cursor=pointer]:
+          - /url: /fall-color
+          - img "Red and orange autumn maples above a river at sunset, with the Detroit skyline on the horizon." [ref=e148]
+          - generic [ref=e151]:
+            - generic [ref=e152]: Fall Colors
+            - generic [ref=e153]: Trails. Parks. Scenic drives. Waterfronts. Find the Detroit Orbit at peak color.
+            - generic [ref=e154]: Chase color →
+    - generic [ref=e155]:
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - generic [ref=e158]:
+            - heading "What's Happening" [level=2] [ref=e159]
+            - paragraph [ref=e160]: 14 current + upcoming events, in date order.
+            - link "View full calendar →" [ref=e161] [cursor=pointer]:
+              - /url: /calendar.html
+          - group "Pick a day" [ref=e162]:
+            - generic [ref=e163]:
+              - button "Today Oct 18" [ref=e164] [cursor=pointer]:
+                - generic [ref=e165]: Today
+                - generic [ref=e166]: Oct 18
+              - button "Tomorrow Oct 19" [ref=e167] [cursor=pointer]:
+                - generic [ref=e168]: Tomorrow
+                - generic [ref=e169]: Oct 19
+              - button "Tue Oct 20" [ref=e170] [cursor=pointer]:
+                - generic [ref=e171]: Tue
+                - generic [ref=e172]: Oct 20
+              - button "Wed Oct 21" [ref=e173] [cursor=pointer]:
+                - generic [ref=e174]: Wed
+                - generic [ref=e175]: Oct 21
+              - button "Thu Oct 22" [ref=e176] [cursor=pointer]:
+                - generic [ref=e177]: Thu
+                - generic [ref=e178]: Oct 22
+              - button "Fri Oct 23" [ref=e179] [cursor=pointer]:
+                - generic [ref=e180]: Fri
+                - generic [ref=e181]: Oct 23
+              - button "Sat Oct 24" [ref=e182] [cursor=pointer]:
+                - generic [ref=e183]: Sat
+                - generic [ref=e184]: Oct 24
+            - button "Later days" [ref=e185] [cursor=pointer]: ›
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - generic [ref=e188]: Fri, Oct 23
+            - generic [ref=e189]: 3 events
+          - generic [ref=e190]:
+            - generic [ref=e191]:
+              - generic [ref=e192]: 8:00
+              - generic [ref=e193]: PM
+            - generic [ref=e194]:
+              - img [ref=e195]
+              - generic [ref=e202]: Night
+            - generic [ref=e204]: Whethan — Warehouse.Wavs Tour
+            - generic [ref=e206]:
+              - generic [ref=e207]:
+                - link "Google Cal" [ref=e208] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Whethan+%E2%80%94+Warehouse.Wavs+Tour&dates=20261023T200000%2F20261023T220000&details=Via+19hz.info%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Majestic+Theatre&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e209] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/4b84bb03-e95c-4823-82b8-df629aa4c80d
+              - button "Share" [ref=e210] [cursor=pointer]
+            - generic [ref=e211]:
+              - generic [ref=e212]: Majestic Theatre
+              - generic [ref=e214]: via 19hz.info
+            - generic [ref=e217]: Nightlife & Club
+          - generic [ref=e219]:
+            - generic [ref=e220]: See paxahau.com
+            - generic [ref=e221]:
+              - img [ref=e222]
+              - generic [ref=e229]: Night
+            - generic [ref=e231]: "Paxahau presents: ACRAZE"
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - link "Google Cal" [ref=e235] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Paxahau+presents%3A+ACRAZE&dates=20261023%2F20261024&details=Via+Paxahau%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Venue+TBA+%28Paxahau%29&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e236] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/8d640347-4b6b-400a-9c2e-fcc4f1acbde6
+              - button "Share" [ref=e237] [cursor=pointer]
+            - generic [ref=e238]:
+              - generic [ref=e239]: Venue TBA (Paxahau)
+              - generic [ref=e241]: via Paxahau
+            - generic [ref=e244]: Nightlife & Club
+          - generic [ref=e246]:
+            - generic [ref=e247]: Evening
+            - generic [ref=e248]:
+              - img [ref=e249]
+              - generic [ref=e256]: Night
+            - generic [ref=e258]: "Anime Rave: Halloween Edition"
+            - generic [ref=e260]:
+              - generic [ref=e261]:
+                - link "Google Cal" [ref=e262] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Anime+Rave%3A+Halloween+Edition&dates=20261023%2F20261024&details=Via+Resident+Advisor%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Elektricity&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e263] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/4caffac5-4d00-4dfa-bd36-57404408b9a6
+              - button "Share" [ref=e264] [cursor=pointer]
+            - generic [ref=e265]:
+              - generic [ref=e266]: Elektricity
+              - generic [ref=e268]: via Resident Advisor
+            - generic [ref=e271]: Nightlife & Club
+        - generic [ref=e273]:
+          - generic [ref=e274]:
+            - generic [ref=e275]: Sat, Oct 24
+            - generic [ref=e276]: 2 events
+          - generic [ref=e277]:
+            - generic [ref=e278]:
+              - generic [ref=e279]: 8:00
+              - generic [ref=e280]: PM
+            - generic [ref=e281]:
+              - img [ref=e282]
+              - generic [ref=e289]: Theatre
+            - generic [ref=e291]: Jo Koy — Koy Meets World Tour
+            - generic [ref=e293]:
+              - generic [ref=e294]:
+                - link "Google Cal" [ref=e295] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Jo+Koy+%E2%80%94+Koy+Meets+World+Tour&dates=20261024T200000%2F20261024T220000&details=Details%3A+https%3A%2F%2F313.events%2F&location=Fox+Theatre&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e296] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/1129a070-c06e-486c-9ac6-36841a7f8746
+              - button "Share" [ref=e297] [cursor=pointer]
+            - generic [ref=e299]: Fox Theatre
+            - generic [ref=e302]: Theatre & Comedy
+          - generic [ref=e304]:
+            - generic [ref=e305]: Evening
+            - generic [ref=e306]:
+              - img [ref=e307]
+              - generic [ref=e314]: Night
+            - generic [ref=e316]: Wonkyween
+            - generic [ref=e318]:
+              - generic [ref=e319]:
+                - link "Google Cal" [ref=e320] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Wonkyween&dates=20261024%2F20261025&details=Via+Resident+Advisor%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Elektricity&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e321] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/f0eb4d42-02b4-47f4-8ee7-94d6f77943c5
+              - button "Share" [ref=e322] [cursor=pointer]
+            - generic [ref=e323]:
+              - generic [ref=e324]: Elektricity
+              - generic [ref=e326]: via Resident Advisor
+            - generic [ref=e329]: Nightlife & Club
+        - generic [ref=e331]:
+          - generic [ref=e332]:
+            - generic [ref=e333]: Thu, Oct 29
+            - generic [ref=e334]: 1 event
+          - generic [ref=e335]:
+            - generic [ref=e336]: Evening
+            - generic [ref=e337]:
+              - img [ref=e338]
+              - generic [ref=e345]: Night
+            - generic [ref=e347]: The Occasional Thursday Party w/ DJ Craze + Friends
+            - generic [ref=e349]:
+              - generic [ref=e350]:
+                - link "Google Cal" [ref=e351] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=The+Occasional+Thursday+Party+w%2F+DJ+Craze+%2B+Friends&dates=20261029%2F20261030&details=Via+Resident+Advisor+%2F+Marble+Bar%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Marble+Bar&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e352] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/b791a65c-18f9-408a-abc8-e4c353a8078d
+              - button "Share" [ref=e353] [cursor=pointer]
+            - generic [ref=e354]:
+              - generic [ref=e355]: Marble Bar
+              - generic [ref=e357]: via Resident Advisor / Marble Bar
+            - generic [ref=e360]: Nightlife & Club
+        - generic [ref=e362]:
+          - generic [ref=e363]:
+            - generic [ref=e364]: Fri, Oct 30
+            - generic [ref=e365]: 5 events
+          - generic [ref=e366]:
+            - generic [ref=e367]: See paxahau.com
+            - generic [ref=e368]:
+              - img [ref=e369]
+              - generic [ref=e376]: Night
+            - generic [ref=e378]: Devault x Fallon
+            - generic [ref=e380]:
+              - generic [ref=e381]:
+                - link "Google Cal" [ref=e382] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Devault+x+Fallon&dates=20261030%2F20261031&details=Via+Paxahau%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Venue+TBA+%28Paxahau%29&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e383] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/cd6483dc-7977-4502-ac4b-7d84859be5f0
+              - button "Share" [ref=e384] [cursor=pointer]
+            - generic [ref=e385]:
+              - generic [ref=e386]: Venue TBA (Paxahau)
+              - generic [ref=e388]: via Paxahau
+            - generic [ref=e391]: Nightlife & Club
+          - generic [ref=e393]:
+            - generic [ref=e394]: Evening
+            - generic [ref=e395]:
+              - img [ref=e396]
+              - generic [ref=e403]: Night
+            - generic [ref=e405]: Samhain XXVI Weekend
+            - generic [ref=e407]:
+              - generic [ref=e408]:
+                - link "Google Cal" [ref=e409] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Samhain+XXVI+Weekend&dates=20261030%2F20261031&details=Via+Resident+Advisor%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Tangent+Gallery&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e410] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/bb205a15-c65d-4df9-9013-5459503a9bad
+              - button "Share" [ref=e411] [cursor=pointer]
+            - generic [ref=e412]:
+              - generic [ref=e413]: Tangent Gallery
+              - generic [ref=e415]: via Resident Advisor
+            - generic [ref=e418]: Nightlife & Club
+          - generic [ref=e420]:
+            - generic [ref=e421]: Evening
+            - generic [ref=e422]:
+              - img [ref=e423]
+              - generic [ref=e430]: Night
+            - generic [ref=e432]: I.T. presents Beyond
+            - generic [ref=e434]:
+              - generic [ref=e435]:
+                - link "Google Cal" [ref=e436] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=I.T.+presents+Beyond&dates=20261030%2F20261031&details=Via+Resident+Advisor%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Tangent+Gallery&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e437] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/62ba3bc0-baa9-45da-bc9f-dfd175c1f554
+              - button "Share" [ref=e438] [cursor=pointer]
+            - generic [ref=e439]:
+              - generic [ref=e440]: Tangent Gallery
+              - generic [ref=e442]: via Resident Advisor
+            - generic [ref=e445]: Nightlife & Club
+          - generic [ref=e447]:
+            - generic [ref=e448]: Evening
+            - generic [ref=e449]:
+              - img [ref=e450]
+              - generic [ref=e457]: Night
+            - generic [ref=e459]: Lucky Rabbit
+            - generic [ref=e461]:
+              - generic [ref=e462]:
+                - link "Google Cal" [ref=e463] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Lucky+Rabbit&dates=20261030%2F20261031&details=Via+Resident+Advisor%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Venue+TBA+%28secret+loft%2C+revealed+to+ticket+holders%29&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e464] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/256b79b3-b27f-4a5c-abc4-0cafeb08ab14
+              - button "Share" [ref=e465] [cursor=pointer]
+            - generic [ref=e466]:
+              - generic [ref=e467]: Venue TBA (secret loft, revealed to ticket holders)
+              - generic [ref=e469]: via Resident Advisor
+            - generic [ref=e472]: Nightlife & Club
+          - generic [ref=e474]:
+            - generic [ref=e475]: Evening
+            - generic [ref=e476]:
+              - img [ref=e477]
+              - generic [ref=e484]: Night
+            - generic [ref=e486]: "Choptober: Devils Night Edition"
+            - generic [ref=e488]:
+              - generic [ref=e489]:
+                - link "Google Cal" [ref=e490] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Choptober%3A+Devils+Night+Edition&dates=20261030%2F20261031&details=Via+Resident+Advisor%0ADetails%3A+https%3A%2F%2F313.events%2F&location=Elektricity&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e491] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/54acd990-92b2-4eb9-b44d-f1c3f29ed896
+              - button "Share" [ref=e492] [cursor=pointer]
+            - generic [ref=e493]:
+              - generic [ref=e494]: Elektricity
+              - generic [ref=e496]: via Resident Advisor
+            - generic [ref=e499]: Nightlife & Club
+        - generic [ref=e501]:
+          - generic [ref=e502]:
+            - generic [ref=e503]: Sat, Oct 31
+            - generic [ref=e504]: 1 event
+          - generic [ref=e505]:
+            - generic [ref=e506]:
+              - generic [ref=e507]: 8:00
+              - generic [ref=e508]: PM
+            - generic [ref=e509]:
+              - img [ref=e510]
+              - generic [ref=e517]: Music
+            - generic [ref=e519]: Assala Nasri
+            - generic [ref=e521]:
+              - generic [ref=e522]:
+                - link "Google Cal" [ref=e523] [cursor=pointer]:
+                  - /url: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Assala+Nasri&dates=20261031T200000%2F20261031T220000&details=Details%3A+https%3A%2F%2F313.events%2F&location=Fox+Theatre&ctz=America%2FDetroit
+                - link "· Apple/Outlook" [ref=e524] [cursor=pointer]:
+                  - /url: blob:http://127.0.0.1:41783/c3fc46bd-b182-4160-a623-6801ff9f5f98
+              - button "Share" [ref=e525] [cursor=pointer]
+            - generic [ref=e527]: Fox Theatre
+            - generic [ref=e530]: Music
+      - generic [ref=e533]:
+        - button "Show 2 more" [ref=e534] [cursor=pointer]
+        - generic [ref=e535]: 12 of 14 shown
+        - link "Open the calendar →" [ref=e536] [cursor=pointer]:
+          - /url: /calendar.html
+    - region "Explore the Detroit Orbit" [ref=e537]:
+      - generic [ref=e538]:
+        - heading "Explore the Detroit Orbit" [level=2] [ref=e539]
+        - paragraph [ref=e540]: Events across Detroit and beyond.
+        - link "View map →" [ref=e541] [cursor=pointer]:
+          - /url: map.html
+      - generic [ref=e542]:
+        - generic [ref=e543]: MI · OH · ON — the border is not a boundary
+        - generic [ref=e544]:
+          - generic [ref=e549]: 25 mi
+          - generic [ref=e550]: 50 mi
+          - generic [ref=e552]:
+            - text: Detroit
+            - generic [ref=e553]: "14"
+        - generic [ref=e554]:
+          - generic [ref=e555]:
+            - generic [ref=e556]: "14"
+            - paragraph [ref=e557]: events across the Detroit Orbit
+          - button "Use my location →" [ref=e558] [cursor=pointer]
+  - contentinfo [ref=e559]:
+    - paragraph [ref=e560]: Always confirm dates, times, and venues before making plans.
+    - paragraph [ref=e561]:
+      - link "About" [ref=e562] [cursor=pointer]:
+        - /url: about.html
+      - text: ·
+      - link "Submit an Event" [ref=e563] [cursor=pointer]:
+        - /url: submit.html
+      - text: ·
+      - link "Editorial Policy" [ref=e564] [cursor=pointer]:
+        - /url: editorial-policy.html
+      - text: ·
+      - link "Terms" [ref=e565] [cursor=pointer]:
+        - /url: terms.html
+      - text: ·
+      - link "Privacy" [ref=e566] [cursor=pointer]:
+        - /url: privacy.html
+      - text: ·
+      - link "Copyright / DMCA" [ref=e567] [cursor=pointer]:
+        - /url: copyright.html
+      - text: ·
+      - link "Photo Credits" [ref=e568] [cursor=pointer]:
+        - /url: /copyright#photo-credits
+      - text: ·
+      - link "Accessibility" [ref=e569] [cursor=pointer]:
+        - /url: accessibility.html
+      - text: ·
+      - link "Contact" [ref=e570] [cursor=pointer]:
+        - /url: mailto:jody@sentientproductions.com
+    - paragraph [ref=e571]:
+      - link "Data sources" [ref=e572] [cursor=pointer]:
+        - /url: sources.html
+      - text: ·
+      - link "Add to Home Screen" [ref=e573] [cursor=pointer]:
+        - /url: install.html
+    - paragraph [ref=e574]:
+      - link "Follow @313.thecityison on Instagram" [ref=e575] [cursor=pointer]:
+        - /url: https://www.instagram.com/313.thecityison/
+    - paragraph [ref=e576]:
+      - text: © 2026 Sentient Productions LLC. All rights reserved.
+      - text: 313.events is a product of Sentient Productions LLC.
+      - text: Detroit, Michigan
+```

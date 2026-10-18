@@ -103,6 +103,10 @@
     {
       "path": "/api/cron-antonartcenter",
       "schedule": "15 14 * * *"
+    },
+    {
+      "path": "/api/cron-ticketmaster",
+      "schedule": "0 10 * * *"
     }
   ],
   "functions": {
@@ -119,6 +123,9 @@
       "maxDuration": 60
     },
     "api/cron-localist.js": {
+      "maxDuration": 120
+    },
+    "api/cron-ticketmaster.js": {
       "maxDuration": 120
     },
     "api/cron-antonartcenter.js": {

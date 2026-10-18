@@ -173,53 +173,84 @@ function formatTime(dateObj) {
   return `${hour}:${m} ${ap}`;
 }
 
-// Returns { events, complete, reason, httpStatus, totalElements, pagesFetched }.
-// `events` is exactly what the loop below has always returned. The extra
-// fields exist only so the run can be logged honestly (source reliability
-// PR 1): a page that fails, or a result set larger than the 5-page cap, makes
-// the run "partial" instead of a silent success. Publication is unchanged: a
-// partial result is still written, as before.
-async function fetchTicketmasterEvents() {
-  const today = new Date();
-  const endWindow = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000); // 90 days out
-  const startDateTime = today.toISOString().slice(0, 19) + "Z";
-  const endDateTime = endWindow.toISOString().slice(0, 19) + "Z";
+// Returns { events, complete, reason, httpStatus, totalElements, pagesFetched, windows }.
+// `events` is every event seen. The extra fields exist so the run can be logged honestly (source reliability PR 1):
+// a page that fails, or a window Ticketmaster will not page through, makes the run "partial" instead of a silent
+// success.
+//
+// TRUNCATION (REL-3 Ticketmaster fix, 2026-10-18): the Discovery API will not page past size*page = 1,000, so one
+// 90-day query silently sees at most 1,000 events however many exist. The query now starts as one window over the
+// whole 90 days and, when a window reports more than 1,000 results, splits it in half and queries each half, down to
+// one day. A window that still exceeds 1,000 at one day, an exhausted request budget, or a failed page makes the run
+// "partial" and says so; nothing is silently dropped. Rows are de-duplicated by id (windows overlap at their edges).
+const PAGE_SIZE = 200;
+const MAX_PAGES = 5;                       // size*page must stay under 1,000
+const WINDOW_RESULT_CAP = PAGE_SIZE * MAX_PAGES;
+const MAX_REQUESTS = 40;                   // per run; ~4 requests/second keeps this well inside the 5/s API limit
+const REQUEST_GAP_MS = 250;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-  const MAX_PAGES = 5;
-  const allEvents = [];
-  const info = { complete: true, reason: null, httpStatus: null, totalElements: null, pagesFetched: 0 };
-  for (let page = 0; page < MAX_PAGES; page++) {
+const isoSecond = (ms) => new Date(ms).toISOString().slice(0, 19) + "Z";
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchTicketmasterEvents(opts) {
+  const now = (opts && opts.now) || Date.now();
+  const gap = opts && opts.gapMs != null ? opts.gapMs : (process.env.TICKETMASTER_REQUEST_GAP_MS != null ? Number(process.env.TICKETMASTER_REQUEST_GAP_MS) : REQUEST_GAP_MS);
+  const byId = new Map();
+  const info = { complete: true, reason: null, httpStatus: null, totalElements: null, pagesFetched: 0, requests: 0, windows: 0, abort: false };
+  const incomplete = (reason) => { info.complete = false; if (!info.reason) info.reason = reason; };
+
+  async function getPage(startMs, endMs, page) {
+    if (info.requests >= MAX_REQUESTS) { incomplete(`request budget of ${MAX_REQUESTS} reached`); info.abort = true; return null; }
+    if (info.requests > 0 && gap) await sleep(gap);
     const url = new URL("https://app.ticketmaster.com/discovery/v2/events.json");
     url.searchParams.set("apikey", TICKETMASTER_API_KEY);
     url.searchParams.set("latlong", `${CENTER_LAT},${CENTER_LON}`);
     url.searchParams.set("radius", String(TM_QUERY_RADIUS_MILES));
     url.searchParams.set("unit", "miles");
-    url.searchParams.set("startDateTime", startDateTime);
-    url.searchParams.set("endDateTime", endDateTime);
-    url.searchParams.set("size", "200");
+    url.searchParams.set("startDateTime", isoSecond(startMs));
+    url.searchParams.set("endDateTime", isoSecond(endMs));
+    url.searchParams.set("size", String(PAGE_SIZE));
     url.searchParams.set("page", String(page));
-
     const r = await fetch(url.toString());
-    if (!r.ok) {
-      info.complete = false;
-      info.httpStatus = r.status;
-      info.reason = `page ${page} failed: HTTP ${r.status}`;
-      break;
-    }
-    const data = await r.json();
-    info.pagesFetched += 1;
+    info.requests += 1;
     info.httpStatus = r.status;
-    const events = (data._embedded && data._embedded.events) || [];
-    allEvents.push(...events);
-    const totalPages = (data.page && data.page.totalPages) || 1;
-    if (data.page && typeof data.page.totalElements === "number") info.totalElements = data.page.totalElements;
-    if (page + 1 >= totalPages) break;
-    if (page + 1 >= MAX_PAGES) {
-      info.complete = false;
-      info.reason = `result set has ${totalPages} pages; only the first ${MAX_PAGES} were fetched`;
+    if (r.ok) info.pagesFetched += 1; // successful pages only: "blocked" means the very first page was refused
+    if (!r.ok) {
+      incomplete(`page ${page} failed: HTTP ${r.status} (window ${isoSecond(startMs)}..${isoSecond(endMs)})`);
+      if (r.status === 401 || r.status === 403 || r.status === 429) info.abort = true; // key or quota problem: stop, do not hammer
+      return null;
     }
+    return r.json();
   }
-  return { events: allEvents, ...info };
+
+  async function fetchWindow(startMs, endMs, isRoot) {
+    if (info.abort) return;
+    const first = await getPage(startMs, endMs, 0);
+    if (!first) return;
+    const total = first.page && typeof first.page.totalElements === "number" ? first.page.totalElements : null;
+    if (isRoot) info.totalElements = total;
+    if (total != null && total > WINDOW_RESULT_CAP && endMs - startMs > DAY_MS) {
+      const mid = startMs + Math.floor((endMs - startMs) / 2);
+      await fetchWindow(startMs, mid, false);
+      await fetchWindow(mid, endMs, false);
+      return;
+    }
+    info.windows += 1;
+    const take = (data) => { for (const e of (data._embedded && data._embedded.events) || []) if (e && e.id && !byId.has(e.id)) byId.set(e.id, e); };
+    take(first);
+    const totalPages = (first.page && first.page.totalPages) || 1;
+    for (let page = 1; page < Math.min(totalPages, MAX_PAGES); page++) {
+      const data = await getPage(startMs, endMs, page);
+      if (!data) return;
+      take(data);
+    }
+    if (totalPages > MAX_PAGES) incomplete(`window ${isoSecond(startMs)}..${isoSecond(endMs)} has ${total} results and cannot be split further; only the first ${WINDOW_RESULT_CAP} were fetched`);
+  }
+
+  await fetchWindow(now, now + 90 * DAY_MS, true);
+  const { abort, ...rest } = info;
+  return { events: Array.from(byId.values()), ...rest };
 }
 
 function shapeForDb(e, venueMap) {
@@ -325,6 +356,80 @@ function shapeForDb(e, venueMap) {
   };
 }
 
+
+// FIELD PROTECTION (REL-3 Ticketmaster fix, 2026-10-18; DEBT-011 / D1).
+// The merge-duplicates upsert sets every key it is sent, so a daily run would revert any correction made to a stored
+// Ticketmaster row (title, time, venue, address, city, category, image, ticket link) by an admin or a P0 repair. For a
+// row that already exists, only the fields that are Ticketmaster's own live facts are sent, and only when Ticketmaster
+// actually supplies a value: ticket_status (onsale, offsale, cancelled, postponed, rescheduled). Everything else keeps its
+// stored value. (An upsert that merely omits keys cannot do this, because NOT NULL columns such as title are checked
+// on the proposed row first, so stored rows get a column-only UPDATE: see refreshTicketStatus.) A new event is sent in full.
+// Date, time, price and venue changes are not applied to a stored row: the dry-run reports them for review. Widening this list
+// needs an owner decision (and the #185 owner-correction marker once it exists).
+const LIVE_FIELDS_FOR_EXISTING = ["ticket_status"];
+
+// Stored vs incoming, for the dry-run report. `description` is never compared: it is never sent for a stored row.
+const DIFF_FIELDS = ["title", "category", "venue_name_raw", "venue_address_raw", "venue_city_raw", "start_date", "time_display", "price_from", "ticket_url", "image_url", "ticket_status"];
+const norm = (v) => (v === null || v === undefined || v === "" ? null : typeof v === "number" ? v : String(v).trim());
+function diffAgainstStored(row, stored) {
+  const diff = {};
+  for (const f of DIFF_FIELDS) {
+    const inc = norm(row[f]);
+    const cur = norm(stored[f]);
+    if (inc === null && f !== "ticket_status") continue; // a blank incoming value changes nothing
+    if (typeof inc === "number" || typeof cur === "number") { if (Number(inc) === Number(cur)) continue; }
+    else if (inc === cur) continue;
+    diff[f] = { stored: cur, incoming: inc };
+  }
+  return diff;
+}
+
+async function fetchStoredRows(ids) {
+  const stored = new Map();
+  const cols = ["external_id", "status", "internal_note", "description"].concat(DIFF_FIELDS).join(",");
+  for (let i = 0; i < ids.length; i += 100) {
+    const chunk = ids.slice(i, i + 100);
+    const url = `${SUPABASE_URL}/rest/v1/events?select=${cols}&source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})`;
+    const r = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
+    if (!r.ok) throw new Error(`stored-row lookup failed: HTTP ${r.status}`);
+    for (const row of await r.json()) stored.set(row.external_id, row);
+  }
+  return stored;
+}
+
+
+// Refreshes ticket_status on stored Ticketmaster rows, one UPDATE per (status value, chunk of <=100 ids). It touches
+// only that column. Rows with no status from Ticketmaster are skipped (a blank never overwrites a stored value).
+async function refreshTicketStatus(existingRows) {
+  const byStatus = new Map();
+  for (const row of existingRows) {
+    if (!row.ticket_status) continue;
+    if (!byStatus.has(row.ticket_status)) byStatus.set(row.ticket_status, []);
+    byStatus.get(row.ticket_status).push(row.external_id);
+  }
+  let updated = 0;
+  const failed = [];
+  for (const [status, ids] of byStatus) {
+    for (let i = 0; i < ids.length; i += 100) {
+      const chunk = ids.slice(i, i + 100);
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/events?source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})`, {
+          method: "PATCH",
+          headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ ticket_status: status }),
+        });
+        if (r.ok) updated += chunk.length;
+        else failed.push(`${status}: HTTP ${r.status} ${(await r.text()).slice(0, 200)}`);
+      } catch (e) {
+        failed.push(`${status}: ${e.message}`);
+      }
+    }
+  }
+  return { updated, failed };
+}
+
+const DRY_DIFF_LIST_CAP = 200;
+
 const DEFAULT_STATUS = "approved";
 const SOURCE_SLUG = SLUGS.ticketmaster; // see api/_lib/source-slugs.js
 
@@ -334,9 +439,13 @@ module.exports = async (req, res) => {
   // Run logging (source reliability PR 1, 2026-10-11): this connector wrote
   // no source_runs row before, so "ran and wrote nothing", "blocked" and
   // "never ran" were indistinguishable. Logging only; no publication change.
-  const runHandle = await startRun(SOURCE_SLUG);
+  // DRY RUN (?dry=1, same cron auth): fetch, parse and compare with the stored rows, and report. No events write
+  // and no run-log row (a dry run must not look like a real run to the healthcheck and the freshness checks).
+  const dry = String((req.query && req.query.dry) || (new URL(req.url || "/", "http://x").searchParams.get("dry")) || "") === "1";
+  const runHandle = dry ? null : await startRun(SOURCE_SLUG);
 
   if (!TICKETMASTER_API_KEY) {
+    if (dry) { res.status(200).json({ dry_run: true, error: "TICKETMASTER_API_KEY not configured" }); return; }
     await finishRun(runHandle, { outcome: "failed", error_sample: "TICKETMASTER_API_KEY not configured" });
     res.status(200).json({ upserted: 0, error: "TICKETMASTER_API_KEY not configured" });
     return;
@@ -351,6 +460,7 @@ module.exports = async (req, res) => {
   try {
     ({ events: raw, ...fetchInfo } = await fetchTicketmasterEvents());
   } catch (err) {
+    if (dry) { res.status(200).json({ dry_run: true, error: "Ticketmaster fetch failed: " + err.message }); return; }
     await finishRun(runHandle, { outcome: "failed", error_sample: "Ticketmaster fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Ticketmaster fetch failed: " + err.message });
     return;
@@ -398,6 +508,37 @@ module.exports = async (req, res) => {
   }
   const rows = Array.from(seen.values());
 
+  if (dry) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) { res.status(200).json({ dry_run: true, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" }); return; }
+    let stored;
+    try { stored = await fetchStoredRows(rows.map((r) => r.external_id)); }
+    catch (e) { res.status(502).json({ dry_run: true, error: e.message }); return; }
+    let wouldInsert = 0, unchanged = 0, wouldUpdateLive = 0;
+    const heldFieldCounts = {}, diffs = [];
+    for (const row of rows) {
+      const cur = stored.get(row.external_id);
+      if (!cur) { wouldInsert += 1; continue; }
+      const d = diffAgainstStored(row, cur);
+      const names = Object.keys(d);
+      if (!names.length) { unchanged += 1; continue; }
+      const applied = names.filter((f) => LIVE_FIELDS_FOR_EXISTING.includes(f));
+      const held = names.filter((f) => !LIVE_FIELDS_FOR_EXISTING.includes(f));
+      if (applied.length) wouldUpdateLive += 1;
+      for (const f of held) heldFieldCounts[f] = (heldFieldCounts[f] || 0) + 1;
+      if (diffs.length < DRY_DIFF_LIST_CAP) diffs.push({ external_id: row.external_id, title: cur.title, status: cur.status, applied: applied.length ? applied : undefined, held, fields: d });
+    }
+    res.status(200).json({
+      dry_run: true, wrote_events: false, wrote_run_log: false,
+      fetch: { complete: fetchInfo.complete, reason: fetchInfo.reason, http_status: fetchInfo.httpStatus, total_elements: fetchInfo.totalElements, requests: fetchInfo.requests, windows: fetchInfo.windows, events_seen: raw.length, rows_parsed: rows.length },
+      would_insert: wouldInsert, would_update_live_fields: wouldUpdateLive, unchanged_or_held_only: unchanged,
+      live_fields_for_existing: LIVE_FIELDS_FOR_EXISTING,
+      held_field_differences: heldFieldCounts,
+      differences_listed: diffs.length, differences: diffs,
+      note: "Differences in held fields are NOT written to stored events; they are listed for review.",
+    });
+    return;
+  }
+
   if (!rows.length) {
     await logFinish({ records_parsed: 0, records_written: 0 });
     res.status(200).json({ upserted: 0, fetchedAt: new Date().toISOString() });
@@ -429,61 +570,57 @@ module.exports = async (req, res) => {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
       return;
     }
-    // DESCRIPTION SAFEGUARD (2026-10-04, Product Owner decision before the
-    // first successful run since 2026-09-04): a description already stored
-    // on an event is never replaced by this connector.
-    //   - NEW event (no row with this external_id): Ticketmaster's `info`
-    //     is sent as the description when it supplies one, as before.
-    //   - EXISTING event: the `description` key is left out of the row
-    //     entirely — not sent as null — so the upsert's merge leaves the
-    //     stored value exactly as it is, whatever Ticketmaster says today.
-    // Why: `description: e.info || undefined` (shapeForDb above) was added
-    // on 2026-09-05 and has never completed a write in production (BUG-007).
-    // In the meantime 529 of the 604 upcoming Ticketmaster events were given
-    // researched descriptions by hand, and 73 more a generated one; the
-    // first run that worked would have overwritten every one of those that
-    // Ticketmaster has `info` for, and again every day after.
-    // "Existing" is read from the status lookup just above, which has an
-    // entry for exactly the rows that are already stored — no extra query.
-    // That lookup is fail-closed (a failure aborts the run before any
-    // write), so a stored event can never be mistaken for a new one.
-    // Deliberate consequence: a stored event whose description is still
-    // blank does not pick up Ticketmaster's text here; the enrichment job
-    // fills blanks. Every other field is unchanged by this safeguard — see
-    // DEBT-011 in project/BACKLOG.md for title, time, price, image, address
-    // and venue.
-    const rowsWithStatus = rows.map((row) => {
-      if (!existingStatusByExternalId.has(row.external_id)) {
-        return { ...row, status: DEFAULT_STATUS };
+    // FIELD PROTECTION (2026-10-18, supersedes the description-only safeguard of 2026-10-04, BUG-007 / DEBT-011).
+    // That safeguard omitted just `description` from an existing row's upsert. It could not be widened the same way:
+    // PostgreSQL checks NOT NULL on the proposed INSERT row before it looks for the conflict, so an upsert that omits
+    // `title` fails outright (reproduced by the fake database, SQLSTATE 23502). So the two kinds of row travel
+    // differently:
+    //   - NEW event (no row with this external_id): upserted in full, with Ticketmaster's `info` as the description
+    //     when it supplies one, exactly as before.
+    //   - EXISTING event: never upserted. Only its ticket_status is refreshed, by an UPDATE of that one column, so
+    //     title, description, time, venue, address, city, category, image, price and ticket link keep their stored
+    //     values: corrections made by an admin or a P0 repair cannot be reverted by a daily run. The status is
+    //     whatever the moderator last set and is never touched.
+    // "Existing" is read from the fail-closed status lookup just above, which has an entry for exactly the rows that
+    // are already stored, so a stored event can never be mistaken for a new one.
+    // Differences in the other fields (reschedules, price, venue) are not applied; ?dry=1 lists them for review.
+    const newRows = [];
+    const existingRows = [];
+    for (const row of rows) {
+      if (existingStatusByExternalId.has(row.external_id)) existingRows.push(row);
+      else newRows.push({ ...row, status: DEFAULT_STATUS });
+    }
+
+    let written = 0;
+    if (newRows.length) {
+      // Upsert on external_id — see the unique index in supabase/schema.sql.
+      const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, newRows);
+      if (!resp.ok) {
+        const errText = await resp.text();
+        await logFinish({
+          outcome: "failed",
+          http_status: resp.status,
+          records_parsed: rows.length,
+          records_written: resp.written,
+          error_sample: "Supabase upsert failed: " + errText,
+        });
+        res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
+        return;
       }
-      const stored = {
-        ...row,
-        status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
-      };
-      delete stored.description;
-      return stored;
-    });
+      written += newRows.length;
+    }
 
-    // Upsert on external_id — see the unique index in supabase/schema.sql.
-    // merge-duplicates updates existing rows (e.g. a venue/time change)
-    // instead of erroring or duplicating on re-runs.
-    const resp = await upsertEventRows(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, rowsWithStatus);
-
-    if (!resp.ok) {
-      const errText = await resp.text();
-      await logFinish({
-        outcome: "failed",
-        http_status: resp.status,
-        records_parsed: rows.length,
-        records_written: resp.written,
-        error_sample: "Supabase upsert failed: " + errText,
-      });
-      res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
+    const patch = await refreshTicketStatus(existingRows);
+    written += patch.updated;
+    if (patch.failed.length) {
+      const msg = `ticket_status refresh failed for ${patch.failed.length} stored rows: ${patch.failed[0]}`;
+      await logFinish({ outcome: "partial", records_parsed: rows.length, records_written: written, error_sample: msg });
+      res.status(502).json({ upserted: written, error: msg });
       return;
     }
 
-    await logFinish({ records_parsed: rows.length, records_written: rowsWithStatus.length });
-    res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
+    await logFinish({ records_parsed: rows.length, records_written: written });
+    res.status(200).json({ upserted: written, inserted: newRows.length, status_refreshed: patch.updated, fetchedAt: new Date().toISOString() });
   } catch (err) {
     await logFinish({ outcome: "failed", records_parsed: rows.length, error_sample: err.message });
     res.status(500).json({ upserted: 0, error: err.message });
@@ -496,3 +633,6 @@ module.exports = async (req, res) => {
 // a single early-return filter. The default export above (Vercel's actual
 // entry point) is unchanged.
 module.exports.shapeForDb = shapeForDb;
+module.exports.fetchTicketmasterEvents = fetchTicketmasterEvents;
+module.exports.refreshTicketStatus = refreshTicketStatus;
+module.exports.diffAgainstStored = diffAgainstStored;

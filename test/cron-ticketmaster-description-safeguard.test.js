@@ -1,34 +1,21 @@
 // test/cron-ticketmaster-description-safeguard.test.js — Ticketmaster never
-// replaces a description that is already stored on an event.
+// replaces a stored event's corrected fields (description, title, time, venue,
+// address, city, category, image, price, ticket link).
 //
-// WHY (2026-10-04, found auditing the WP 0.7 recovery before it shipped)
-// `description: e.info || undefined` was added to the connector on
-// 2026-09-05 and has never completed a write in production: from that day
-// every Ticketmaster batch was rejected (BUG-007). During the outage 529 of
-// the 604 upcoming Ticketmaster events were given researched descriptions by
-// hand and 73 a generated one. The first run that worked would have replaced
-// every one of those Ticketmaster has `info` for — and done it again daily.
+// HISTORY. 2026-10-04 (BUG-007): the connector omitted only `description` from
+// an existing row's upsert, because 529 of 604 upcoming Ticketmaster events had
+// been given researched descriptions by hand. 2026-10-18 (REL-3 Ticketmaster
+// fix, DEBT-011 / D1): the same protection now covers every field. Omitting
+// more keys from an upsert cannot work (PostgreSQL checks NOT NULL on the
+// proposed row before the conflict, so an upsert without `title` fails with
+// 23502), so a stored event is no longer upserted at all: only its
+// ticket_status is refreshed, by a column-only UPDATE. A NEW event is still
+// upserted in full, with Ticketmaster's `info` as its description.
 //
-// THE RULE (Product Owner, 2026-10-04)
-//   new event       Ticketmaster's description is sent when it supplies one
-//   existing event  the `description` key is OMITTED from the upsert row, so
-//                   the stored value survives — whatever it is, and whatever
-//                   Ticketmaster says
-// "Existing" comes from the status lookup the connector already performs; no
-// additional database request is made.
-//
-// WHAT THIS TEST SHOWS, with the connector's real handler against the fake
-// database that rejects what production rejects:
-//   1. both behaviours, on the request itself and on the stored rows, for a
-//      realistic mix of new and stored events;
-//   2. the rows that result differ in shape, are refused as one request, and
-//      are written by the shared batching helper as uniform requests;
-//   3. a run of only-stored events and a run of only-new events are each one
-//      request;
-//   4. a description written by hand between two runs survives the next run;
-//   5. no extra database request is made, and if the status lookup fails
-//      nothing is written at all;
-//   6. more optional fields than `description` (more row shapes) still write.
+// The earlier version of this file also asserted that a stored event's title,
+// time, price and address were refreshed from Ticketmaster (section 1c). That
+// is the behaviour this change deliberately ends; those assertions now pin the
+// opposite. Every description assertion is kept.
 //
 // Plain Node assert, no dependencies.
 // Run: node test/cron-ticketmaster-description-safeguard.test.js
@@ -63,25 +50,31 @@ const upstreamOf = (events) => (url) => (url.startsWith(TM_URL) ? json({ _embedd
 const hasDescriptionKey = (row) => Object.prototype.hasOwnProperty.call(row, "description");
 const lookups = (db) => db.log.filter((r) => r.table === "events" && r.method === "GET");
 
+
+const patches = (db) => db.log.filter((r) => r.table === "events" && r.method === "PATCH");
+const idsOf = (request) => decodeURIComponent(request.url.match(/external_id=in\.\((.*)\)/)[1]).split(",");
+process.env.TICKETMASTER_REQUEST_GAP_MS = "0";
+
 async function run() {
   // =========================================================================
-  // 1 + 2. A realistic run: some events new, some already stored
+  // 1. A realistic run: some events new, some already stored
   // =========================================================================
   {
     const RESEARCHED = "Tribute act Chest Fever recreates The Band's farewell concert for its 50th anniversary.";
     const GENERATED = "A rock show at Fixture Hall.";
+    const corrected = { title: "Chest Fever (corrected)", time_display: "7:00 PM", venue_name_raw: "Corrected Hall", venue_address_raw: "1 Hand-entered St", venue_city_raw: "Corrected City", category: "theatre", image_url: "https://img.example/hand.jpg", price_from: 20, ticket_url: "https://tickets.example/hand", ticket_status: "offsale" };
     const events = [
       tmEvent("new-with-info", "New Band One", { info: "Doors at 6:30. All ages." }),
       tmEvent("new-without-info", "New Band Two"),
       tmEvent("old-researched", "Chest Fever", { info: "Please note: no re-entry. Bag policy applies." }),
       tmEvent("old-generated", "Stored Band G", { info: "General admission, standing." }),
       tmEvent("old-blank", "Stored Band B", { info: "Seated show." }),
-      tmEvent("old-rejected", "Stored Band R | Suite Package", { info: "Package includes parking." }),
+      tmEvent("old-rejected", "Stored Band R | Suite Package", { info: "Package includes parking.", dates: { start: { localDate: "2026-10-09", localTime: "19:30:00" }, status: { code: "cancelled" } } }),
       tmEvent("old-no-info", "Stored Band N"),
     ];
     const { tables, db } = world({
       events: [
-        stored("old-researched", { description: RESEARCHED }),
+        stored("old-researched", { description: RESEARCHED, ...corrected }),
         stored("old-generated", { description: GENERATED, description_source: "generated" }),
         stored("old-blank"),
         stored("old-rejected", { description: "Hidden duplicate listing.", status: "rejected" }),
@@ -91,63 +84,59 @@ async function run() {
     });
     const res = await runConnector("cron-ticketmaster.js");
 
-    // --- 2. the batching helper: mixed shapes, refused as one, written as two
-    const outcome = await assertHeterogeneousAndNowWritten("Ticketmaster safeguard", db, tables, res, 7);
-    assert.strictEqual(outcome.shapes, 2, "one shape with a description (new event that has `info`), one without (everything else)");
-    assert.strictEqual(outcome.requests, 2);
-    assert.strictEqual(tables.events.length, 7, "five updated in place, two inserted, no duplicate rows");
-    const carrying = eventWrites(db).map((request) => JSON.parse(request.body)).filter((rows) => hasDescriptionKey(rows[0]));
-    assert.strictEqual(carrying.length, 1, "exactly one request carries descriptions");
-    assert.deepStrictEqual(carrying[0].map((row) => row.external_id), ["new-with-info"], "and it holds only the new event that has `info`");
+    // --- the two NEW events: batching helper, mixed shapes, written as two uniform requests
+    const outcome = await assertHeterogeneousAndNowWritten("Ticketmaster safeguard", db, tables, { ...res, _body: { upserted: 2 } }, 2);
+    assert.strictEqual(outcome.shapes, 2, "one shape with a description (new event that has `info`), one without");
+    assert.deepStrictEqual(sentRows(db).map((r) => r.external_id).sort(), ["new-with-info", "new-without-info"], "ONLY new events are upserted");
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.upserted, 7, "2 inserted + 5 stored rows refreshed");
+    assert.strictEqual(res._body.inserted, 2);
+    assert.strictEqual(tables.events.length, 7, "two inserted, no duplicate rows");
 
     // --- 1a. NEW events: Ticketmaster's description when it supplies one
-    assert.strictEqual(sentRow(db, "new-with-info").description, "Doors at 6:30. All ages.");
-    assert.strictEqual(byId(tables, "new-with-info").description, "Doors at 6:30. All ages.", "a new event is stored with Ticketmaster's description");
+    assert.strictEqual(byId(tables, "new-with-info").description, "Doors at 6:30. All ages.");
     assert.strictEqual(byId(tables, "new-with-info").status, "approved");
     assert.strictEqual(hasDescriptionKey(sentRow(db, "new-without-info")), false, "no `info`, no key — never an explicit null");
     assert.strictEqual(byId(tables, "new-without-info").description, null);
 
-    // --- 1b. EXISTING events: the key is omitted, the stored value survives
-    for (const id of ["old-researched", "old-generated", "old-blank", "old-rejected", "old-no-info"]) {
-      assert.strictEqual(hasDescriptionKey(sentRow(db, id)), false, `${id}: the description key is not sent at all for a stored event`);
-    }
+    // --- 1b. EXISTING events: description survives, whatever Ticketmaster says
     assert.strictEqual(byId(tables, "old-researched").description, RESEARCHED, "a hand-researched description is not replaced by Ticketmaster's `info`");
-    assert.strictEqual(byId(tables, "old-researched").description_source, null);
     assert.strictEqual(byId(tables, "old-generated").description, GENERATED, "nor is a generated one");
     assert.strictEqual(byId(tables, "old-generated").description_source, "generated", "so its provenance label stays true");
     assert.strictEqual(byId(tables, "old-rejected").description, "Hidden duplicate listing.");
     assert.strictEqual(byId(tables, "old-rejected").status, "rejected", "and a moderator's rejection still survives");
     assert.strictEqual(byId(tables, "old-no-info").description, "Hand-written, and Ticketmaster has nothing to say.");
-    // The deliberate consequence of "omit for every existing event": a stored
-    // event with a blank description is left blank by this connector (the
-    // enrichment job fills blanks). Pinned so a change to it is a decision.
     assert.strictEqual(byId(tables, "old-blank").description, null, "a stored blank is left for enrichment, not filled from `info`");
 
-    // --- 1c. nothing else about an existing row's update changed
-    const refreshed = byId(tables, "old-researched");
-    assert.strictEqual(refreshed.title, "Chest Fever", "the title is still refreshed");
-    assert.strictEqual(refreshed.time_display, "7:30 PM", "the time is still refreshed");
-    assert.strictEqual(refreshed.price_from, 35);
-    assert.strictEqual(refreshed.venue_address_raw, "2115 Woodward Ave");
-    assert.strictEqual(refreshed.ticket_status, "onsale");
-    assert.strictEqual(refreshed.id, "row-old-researched", "updated in place");
-    // An existing row is sent with exactly the keys a no-`info` row always had.
-    assert.deepStrictEqual(Object.keys(sentRow(db, "old-researched")).sort(), Object.keys(sentRow(db, "new-without-info")).sort());
-    assert.deepStrictEqual(
-      Object.keys(sentRow(db, "new-with-info")).sort(),
-      [...Object.keys(sentRow(db, "new-without-info")), "description"].sort(),
-      "a new event with `info` differs from the rest by the description key and nothing else"
-    );
+    // --- 1c. NEW (2026-10-18): every other field of a stored row is protected too
+    const kept = byId(tables, "old-researched");
+    for (const [field, value] of Object.entries(corrected)) {
+      if (field === "ticket_status") continue;
+      assert.strictEqual(kept[field], value, `${field}: a stored correction is not reverted by Ticketmaster`);
+    }
+    assert.strictEqual(kept.ticket_status, "onsale", "ticket_status is Ticketmaster's own live fact and IS refreshed");
+    assert.strictEqual(kept.id, "row-old-researched", "updated in place");
+    assert.strictEqual(byId(tables, "old-blank").title, "stored title", "the title of a stored row is not replaced");
+    assert.strictEqual(byId(tables, "old-blank").time_display, "8:00 PM");
+    assert.strictEqual(byId(tables, "old-rejected").ticket_status, "cancelled", "a cancellation is picked up even on a row a moderator rejected");
+    assert.strictEqual(byId(tables, "old-rejected").status, "rejected", "without touching its moderation status");
 
-    // --- 5a. no additional database request: one lookup, as before
+    // --- the update requests: column-only, grouped by value, never a row upsert
+    const bodies = patches(db).map((r) => JSON.parse(r.body));
+    assert.ok(bodies.every((b) => JSON.stringify(Object.keys(b)) === '["ticket_status"]'), "every UPDATE carries ticket_status and nothing else");
+    assert.strictEqual(patches(db).length, 2, "one UPDATE per status value: onsale (4 rows) and cancelled (1 row)");
+    assert.ok(patches(db).every((r) => r.headers.Prefer === "return=minimal"));
+    assert.deepStrictEqual(patches(db).flatMap(idsOf).sort(), ["old-blank", "old-generated", "old-no-info", "old-rejected", "old-researched"]);
+
+    // --- 5a. one lookup, as before: existence is read from the one status lookup
     assert.strictEqual(lookups(db).length, 1, "existence is read from the one status lookup the connector already made");
     assert.ok(lookups(db)[0].url.endsWith("&select=external_id,status"), "which still selects only external_id and status");
   }
-  console.log("PASS: a new event gets Ticketmaster's description; a stored event's description key is omitted and its text survives");
-  console.log("PASS: the resulting two row shapes are refused as one request and written by the batching helper as two uniform requests");
+  console.log("PASS: a new event gets Ticketmaster's description; a stored event keeps every field and only its ticket_status is refreshed");
+  console.log("PASS: new events are written as uniform requests; stored events are never upserted");
 
   // =========================================================================
-  // 3a. Every event already stored: one shape, one request, nothing replaced
+  // 3a. Every event already stored: no upsert at all
   // =========================================================================
   {
     const events = [
@@ -161,13 +150,12 @@ async function run() {
     });
     const res = await runConnector("cron-ticketmaster.js");
     assert.deepStrictEqual([res._status, res._body.upserted], [200, 3]);
-    assert.strictEqual(eventWrites(db).length, 1, "all stored: every row has the same shape, so it is a single request");
-    assert.strictEqual(shapeCount(sentRows(db)), 1);
-    assert.ok(sentRows(db).every((row) => !hasDescriptionKey(row)), "and no description is sent");
+    assert.strictEqual(eventWrites(db).length, 0, "all stored: no row upsert");
+    assert.strictEqual(patches(db).length, 1, "one UPDATE for the shared status");
     assert.deepStrictEqual(tables.events.map((r) => r.description), ["Researched one.", "Researched two.", "Researched three."]);
-    assert.deepStrictEqual(tables.events.map((r) => r.title), ["Stored One", "Stored Two", "Stored Three"], "while the rows were updated");
+    assert.deepStrictEqual(tables.events.map((r) => r.title), ["stored title", "stored title", "stored title"], "titles are no longer refreshed");
   }
-  console.log("PASS: a run of only stored events is one uniform request that carries no description");
+  console.log("PASS: a run of only stored events sends no upsert and one column-only UPDATE");
 
   // =========================================================================
   // 3b. Every event new, all with `info`: unchanged from before
@@ -178,6 +166,7 @@ async function run() {
     const res = await runConnector("cron-ticketmaster.js");
     assert.deepStrictEqual([res._status, res._body.upserted], [200, 2]);
     assert.strictEqual(eventWrites(db).length, 1);
+    assert.strictEqual(patches(db).length, 0);
     assert.strictEqual(eventWrites(db)[0].url, `${SUPABASE_URL}/rest/v1/events?on_conflict=external_id`);
     assert.strictEqual(eventWrites(db)[0].headers.Prefer, UPSERT_PREFER);
     assert.deepStrictEqual(tables.events.map((r) => r.description), ["Text one.", "Text two."]);
@@ -186,12 +175,12 @@ async function run() {
   console.log("PASS: a run of only new events stores Ticketmaster's descriptions in one request");
 
   // =========================================================================
-  // 4. Across two runs: what a person writes in between is kept
+  // 4. Across runs: what a person writes in between is kept
   // =========================================================================
   {
     let day = 1;
     const feed = () => {
-      const returning = tmEvent("two-runs", "Returning Band", { info: day === 1 ? "Doors at 7." : "Doors at 7. UPDATED: bag policy in effect." });
+      const returning = tmEvent("two-runs", day === 1 ? "Returning Band" : "Returning Band (new title)", { info: day === 1 ? "Doors at 7." : "Doors at 7. UPDATED: bag policy in effect." });
       const later = tmEvent("arrives-later", "Later Band", { info: day === 3 ? "Doors at 8 (time changed)." : "New on day two." });
       return day === 1 ? [returning] : [returning, later];
     };
@@ -201,30 +190,23 @@ async function run() {
     assert.deepStrictEqual([first._status, first._body.upserted], [200, 1]);
     assert.strictEqual(byId(tables, "two-runs").description, "Doors at 7.", "day one: new, so Ticketmaster's description is stored");
 
-    // A moderator replaces it; Ticketmaster changes its own text too.
+    // A moderator corrects the description and the title; Ticketmaster changes its own text too.
     byId(tables, "two-runs").description = "Researched: the band's first Detroit show since 2019.";
+    byId(tables, "two-runs").title = "Returning Band (owner-corrected)";
     day = 2;
-
-    const writesBefore = eventWrites(db).length;
     const second = await runConnector("cron-ticketmaster.js");
     assert.deepStrictEqual([second._status, second._body.upserted], [200, 2]);
-    assert.strictEqual(byId(tables, "two-runs").description, "Researched: the band's first Detroit show since 2019.", "day two: stored now, so the hand-written description is kept");
+    assert.strictEqual(byId(tables, "two-runs").description, "Researched: the band's first Detroit show since 2019.", "day two: the hand-written description is kept");
+    assert.strictEqual(byId(tables, "two-runs").title, "Returning Band (owner-corrected)", "and so is the corrected title, though Ticketmaster now says something else");
     assert.strictEqual(byId(tables, "arrives-later").description, "New on day two.", "while the event that is new on day two gets Ticketmaster's");
-    const secondRun = eventWrites(db).slice(writesBefore);
-    assert.strictEqual(secondRun.length, 2, "day two is two shapes — stored (no description) and new (description) — so two requests");
-    for (const request of secondRun) assert.strictEqual(shapeCount(JSON.parse(request.body)), 1, "each of them uniform");
     assert.strictEqual(tables.events.length, 2, "and no duplicate row");
 
-    // Even Ticketmaster's OWN earlier text is not refreshed once stored: the
-    // rule is "never replace a stored description", not "never replace a
-    // hand-written one" — the connector cannot tell them apart.
     day = 3;
     const third = await runConnector("cron-ticketmaster.js");
     assert.deepStrictEqual([third._status, third._body.upserted], [200, 2]);
     assert.strictEqual(byId(tables, "arrives-later").description, "New on day two.", "day three: Ticketmaster changed its text; the stored one stays");
-    assert.strictEqual(byId(tables, "two-runs").description, "Researched: the band's first Detroit show since 2019.");
   }
-  console.log("PASS: a description written by hand between runs survives the next run; day two's mixed shapes are two uniform requests");
+  console.log("PASS: a description or title corrected between runs survives the next runs");
 
   // =========================================================================
   // 5b. The lookup that says "existing" is fail-closed
@@ -238,60 +220,96 @@ async function run() {
     });
     const res = await runConnector("cron-ticketmaster.js");
     assert.strictEqual(res._status, 502, "a failed lookup aborts the run");
-    assert.strictEqual(eventWrites(db).length, 0, "before any event write — a stored event can never be treated as new");
+    assert.strictEqual(eventWrites(db).length + patches(db).length, 0, "before any event write — a stored event can never be treated as new");
     assert.strictEqual(byId(tables, "fc-old").description, "Researched.");
     assert.strictEqual(tables.events.length, 1);
   }
-  console.log("PASS: if the status lookup fails nothing is written, so a stored description cannot be overwritten by mistake");
+  console.log("PASS: if the status lookup fails nothing is written, so a stored event cannot be overwritten by mistake");
 
   // =========================================================================
-  // 6. More shapes: the safeguard together with another optional field
+  // 6. A blank status from Ticketmaster never erases the stored one
   // =========================================================================
   {
-    // `address: {}` has no line1, so venue_address_raw is omitted for those
-    // events — a second, independent source of differing shapes.
-    const noLine1 = { _embedded: { venues: [{ name: "Fixture Hall", city: { name: "Detroit" }, address: {}, location: { latitude: "42.3387", longitude: "-83.0524" } }] } };
+    const noStatus = tmEvent("blank-status", "Stored", { dates: { start: { localDate: "2026-10-09", localTime: "19:30:00" } } });
+    const { tables, db } = world({ events: [stored("blank-status", { ticket_status: "cancelled" })], upstream: upstreamOf([noStatus]) });
+    const res = await runConnector("cron-ticketmaster.js");
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(patches(db).length, 0, "nothing to send, nothing sent");
+    assert.strictEqual(byId(tables, "blank-status").ticket_status, "cancelled");
+  }
+  console.log("PASS: a blank ticket_status from Ticketmaster does not erase a stored one");
+
+  // =========================================================================
+  // 7. A failed status UPDATE is reported, not hidden
+  // =========================================================================
+  {
+    const { db, tables } = world({
+      events: [stored("p-1")], upstream: upstreamOf([tmEvent("p-1", "Stored"), tmEvent("p-new", "New")]),
+      failure: (request) => (request.table === "events" && request.method === "PATCH" ? 500 : null),
+    });
+    const res = await runConnector("cron-ticketmaster.js");
+    assert.strictEqual(res._status, 502);
+    assert.match(res._body.error, /ticket_status refresh failed for 1 stored rows/);
+    assert.strictEqual(tables.source_runs.at(-1).outcome, "partial");
+    assert.ok(byId(tables, "p-new"), "the new event was still written");
+  }
+  console.log("PASS: a failed ticket_status UPDATE logs partial and answers 502, with the new events still written");
+
+  // =========================================================================
+  // 8. Dry run: reads and reports, writes nothing, logs no run
+  // =========================================================================
+  {
     const events = [
-      tmEvent("m-new-info", "New, info", { info: "Text." }),
-      tmEvent("m-new-info-noaddr", "New, info, no street", { info: "Text.", ...noLine1 }),
-      tmEvent("m-new-plain", "New, plain"),
-      tmEvent("m-old-info", "Stored, info", { info: "Ticketmaster text." }),
-      tmEvent("m-old-info-noaddr", "Stored, info, no street", { info: "Ticketmaster text.", ...noLine1 }),
-      tmEvent("m-old-plain-noaddr", "Stored, no street", noLine1),
+      tmEvent("d-new", "New Dry"),
+      tmEvent("d-same", "Same", { dates: { start: { localDate: "2026-10-09", localTime: "20:00:00" }, status: { code: "onsale" } } }),
+      tmEvent("d-moved", "Moved Show", { dates: { start: { localDate: "2026-11-01", localTime: "19:30:00" }, status: { code: "rescheduled" } } }),
     ];
     const { tables, db } = world({
       events: [
-        stored("m-old-info", { description: "Researched A.", venue_address_raw: "1 Hand-entered St" }),
-        stored("m-old-info-noaddr", { description: "Researched B.", venue_address_raw: "2 Hand-entered St" }),
-        stored("m-old-plain-noaddr", { description: "Researched C.", venue_address_raw: "3 Hand-entered St" }),
+        stored("d-same", { title: "Same", venue_name_raw: "Fixture Hall", venue_city_raw: "Detroit", venue_address_raw: "2115 Woodward Ave", price_from: 35, ticket_status: "onsale", image_url: "https://s1.ticketm.net/dam/a/d-same.jpg", ticket_url: null }),
+        stored("d-moved", { title: "Moved Show", ticket_status: "onsale" }),
       ],
       upstream: upstreamOf(events),
     });
-    const res = await runConnector("cron-ticketmaster.js");
-    const outcome = await assertHeterogeneousAndNowWritten("Ticketmaster safeguard, several shapes", db, tables, res, 6);
-    // description? x street address? :  new+info+addr | new+info | plain+addr (new plain, stored with addr) | no desc, no addr (stored)
-    assert.strictEqual(outcome.shapes, 4);
-    assert.strictEqual(outcome.requests, 4, "four shapes, four uniform requests, every row written");
-    assert.strictEqual(tables.events.length, 6);
-    assert.deepStrictEqual(
-      ["m-old-info", "m-old-info-noaddr", "m-old-plain-noaddr"].map((id) => byId(tables, id).description),
-      ["Researched A.", "Researched B.", "Researched C."],
-      "every stored description survives, whichever request its row travelled in"
-    );
-    assert.strictEqual(byId(tables, "m-new-info").description, "Text.");
-    assert.strictEqual(byId(tables, "m-new-info-noaddr").description, "Text.");
-    assert.strictEqual(byId(tables, "m-new-plain").description, null);
-    for (const row of sentRows(db)) {
-      assert.strictEqual(hasDescriptionKey(row), row.external_id.startsWith("m-new-info"), `${row.external_id}: description key present only on new events with info`);
-    }
-    // Out of scope for the safeguard, and unchanged by it (DEBT-011): other
-    // fields still follow Ticketmaster, including a street address it has.
-    assert.strictEqual(byId(tables, "m-old-info").venue_address_raw, "2115 Woodward Ave");
-    assert.strictEqual(byId(tables, "m-old-info-noaddr").venue_address_raw, "2 Hand-entered St", "an omitted field keeps its stored value, as before");
+    const before = JSON.stringify(tables);
+    const calls = [];
+    process.env.SUPABASE_URL = SUPABASE_URL;
+    const res = await runConnector("cron-ticketmaster.js", { query: { dry: "1" } });
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.dry_run, true);
+    assert.strictEqual(res._body.would_insert, 1);
+    assert.strictEqual(res._body.would_update_live_fields, 1, "d-moved: ticket_status onsale -> rescheduled would be written");
+    assert.ok(res._body.differences.some((d) => d.external_id === "d-moved" && d.held.includes("start_date") && d.applied.includes("ticket_status")), "the new date is listed as HELD, the status as applied");
+    assert.strictEqual(JSON.stringify(tables), before, "no table changed, including source_runs");
+    assert.strictEqual(eventWrites(db).length + patches(db).length, 0, "no event write of any kind");
+    assert.strictEqual(tables.source_runs.length, 0, "and no run-log row, so a dry run cannot look like a real run");
   }
-  console.log("PASS: with a second optional field in play the rows form four shapes; all are written and every stored description survives");
+  console.log("PASS: ?dry=1 reports would-insert / would-update and held differences, and writes nothing");
 
-  console.log("\nAll Ticketmaster description-safeguard checks passed.");
+  // =========================================================================
+  // 9. Window splitting: over 1,000 results are fetched in halves
+  // =========================================================================
+  {
+    const days = (u) => { const q = new URL(u).searchParams; return (Date.parse(q.get("endDateTime")) - Date.parse(q.get("startDateTime"))) / 86400000; };
+    const seen = [];
+    const { tables } = world({
+      upstream: (u) => {
+        if (!u.startsWith(TM_URL)) return null;
+        seen.push(days(u));
+        const total = days(u) > 60 ? 1400 : 600;
+        const id = `win-${new URL(u).searchParams.get("startDateTime")}-${new URL(u).searchParams.get("page")}`;
+        return json({ _embedded: { events: days(u) > 60 ? [] : [tmEvent(id, "Window " + id)] }, page: { totalPages: Math.ceil(total / 200), totalElements: total } });
+      },
+    });
+    const res = await runConnector("cron-ticketmaster.js");
+    assert.strictEqual(res._status, 200);
+    assert.ok(seen.some((d) => d > 60) && seen.filter((d) => d <= 60).length >= 6, "the 90-day window was split and both halves were paged (3 pages each)");
+    assert.ok(tables.events.length >= 6, "events from both halves were stored");
+    assert.strictEqual(tables.source_runs.at(-1).outcome, "success");
+  }
+  console.log("PASS: a window with more than 1,000 results is split and every half is paged");
+
+  console.log("\nAll Ticketmaster field-protection checks passed.");
 }
 
 run().catch((err) => { console.error(err); process.exit(1); });
