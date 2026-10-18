@@ -61,7 +61,7 @@ const stored = (id, extra) => ({
 
 const upstreamOf = (events) => (url) => (url.startsWith(TM_URL) ? json({ _embedded: { events: typeof events === "function" ? events() : events }, page: { totalPages: 1 } }) : null);
 const hasDescriptionKey = (row) => Object.prototype.hasOwnProperty.call(row, "description");
-const lookups = (db) => db.log.filter((r) => r.table === "events" && r.method === "GET");
+const lookups = (db) => db.log.filter((r) => r.table === "events" && r.method === "GET" && !r.url.includes("internal_note=like.")); // the shared upsert writer's owner-correction read (#185) is not a status lookup
 
 async function run() {
   // =========================================================================
