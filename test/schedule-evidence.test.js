@@ -65,7 +65,16 @@ console.log("PASS: 2. a blocked page is reported blocked and does not stop other
   assert.ok(r.proposed.closed_dates.evidence.every((e) => e.url && e.quote && e.retrieved_at));
 }
 // known limit: an opening date and a closing date in separate sentences are not joined into a season
-assert.strictEqual(se.extractSeasonRange("Erebus opens Friday, Sept. 18. Daily through Nov. 7.", Y), null);
+// 3b. opening and closing in separate sentences (WXYZ-style wording) are joined, with the spanning quote
+{
+  const sp = se.extractSeasonRange(MEDIA_TEXT, Y);
+  assert.deepStrictEqual([sp.start, sp.end], ["2026-09-18", "2026-11-07"]);
+  assert.ok(sp.quote.startsWith("opens on Friday, Sept. 18") && sp.quote.endsWith("through Nov. 7"));
+  assert.strictEqual(se.extractSeasonRange("Erebus opens Friday, Sept. 18. Tickets online.", Y), null, "no closing date, no season");
+  assert.strictEqual(se.extractSeasonRange("Erebus runs daily through Nov. 7.", Y), null, "no opening date, no season");
+  assert.strictEqual(se.extractSeasonRange("Opens Sept. 18. " + "x".repeat(450) + " through Nov. 7", Y), null, "closing date too far from the opening date");
+  assert.strictEqual(se.extractSeasonRange("Opens Nov. 7 and runs through Sept. 18", Y), null, "end before start is refused");
+}
 console.log("PASS: 3. season corroboration sets confidence; hours stay advertised hours");
 
 // 4. disagreement is one conflict with both quotes, nothing chosen

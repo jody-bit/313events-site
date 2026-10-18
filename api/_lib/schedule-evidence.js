@@ -56,9 +56,29 @@ function normTime(h, m, ap) {
 function extractSeasonRange(text, year) {
   const re = new RegExp(`${MONTH_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?\\s*(?:,?\\s*${year})?\\s*(?:-|–|—|to|through|until)\\s*${MONTH_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?`, "i");
   const m = re.exec(String(text || ""));
-  if (!m) return null;
-  const start = iso(year, monthNum(m[1]), Number(m[2])), end = iso(year, monthNum(m[3]), Number(m[4]));
-  return start && end && start <= end ? { start, end, quote: m[0] } : null;
+  if (m) {
+    const start = iso(year, monthNum(m[1]), Number(m[2])), end = iso(year, monthNum(m[3]), Number(m[4]));
+    return start && end && start <= end ? { start, end, quote: m[0] } : null;
+  }
+  return extractSplitSeason(text, year);
+}
+
+// Opening and closing dates in separate sentences ("opens Friday, Sept. 18 ... runs every day through Nov. 7").
+// Needs an explicit opening phrase and an explicit closing phrase within 400 characters, both with month and day.
+// The closing date is taken from the LAST closing phrase in that window (a "from Oct. 1 ... through Nov. 7" detail
+// does not replace the opening date). Quote is the joined text span, so nothing is stated without its words.
+function extractSplitSeason(text, year) {
+  const t = String(text || "");
+  const open = new RegExp(`\\b(?:opens?|opening night|begins?|starts?)\\b[^.\\n]{0,40}?${MONTH_RE}\\s+(\\d{1,2})`, "i").exec(t);
+  if (!open) return null;
+  const from = open.index + open[0].length;
+  const window = t.slice(from, from + 400);
+  const close = [...window.matchAll(new RegExp(`\\b(?:through|until|to|closes?|ends?)\\b[^.\\n]{0,25}?${MONTH_RE}\\s+(\\d{1,2})`, "gi"))];
+  if (!close.length) return null;
+  const last = close[close.length - 1];
+  const start = iso(year, monthNum(open[1]), Number(open[2])), end = iso(year, monthNum(last[1]), Number(last[2]));
+  if (!start || !end || start > end) return null;
+  return { start, end, quote: t.slice(open.index, from + last.index + last[0].length) };
 }
 
 // Weekly hours lines such as "Monday – Thursday: 7:30 PM – 10:30 PM", "Friday: 7:00 PM – 12:00 AM (Midnight)".
