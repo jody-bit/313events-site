@@ -498,6 +498,9 @@ module.exports = async (req, res) => {
         if (wantApprove) {
           if (row.status === "approved") {
             approveBlock.blocked = { failed_gate: "already_approved", codes: [], why: "This event is already approved." };
+          } else if (row.status !== "pending_review") {
+            // Only the review queue is approved from here. A rejected or hidden event is brought back with the existing restore action.
+            approveBlock.blocked = { failed_gate: "not_pending", codes: [], why: "Only events waiting for review can be approved here. Use Restore for a rejected or hidden event." };
           } else if (row.source === "Resident Advisor" && !row.time_display && body.acknowledgeMissingTime !== true) {
             approveBlock.blocked = { failed_gate: "missing_time", codes: ["MISSING_START_TIME"], why: "This Resident Advisor event has no verified start time. Add the time, or approve it without one on purpose." };
           } else {
@@ -508,7 +511,7 @@ module.exports = async (req, res) => {
             if (blockers.length) {
               approveBlock.blocked = { failed_gate: "publication_gate", codes: blockers.map((i) => i.code), why: blockers.map((i) => i.message || i.code).join("; ") };
             } else {
-              const a = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}`, {
+              const a = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.pending_review`, {
                 method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved" }),
               });
               const approved = await a.json().catch(() => null);

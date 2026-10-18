@@ -141,6 +141,13 @@ async function run() {
     const fixed = await call(held, { id: "evt-1", action: "save_correction", row_version: stored(held).updated_at, fields: { venue_city_raw: "Detroit" }, approve: true });
     assert.strictEqual(fixed.res._body.approve.done, true, JSON.stringify(fixed.res._body.approve));
 
+    // a rejected or hidden event cannot be approved through this action (restore is the path), but the correction is kept
+    const rej = { events: [row({ status: "rejected" })] };
+    const r = await call(rej, { id: "evt-1", action: "save_correction", row_version: V1, fields: { description: "Corrected words here." }, approve: true });
+    assert.strictEqual(r.res._body.approve.blocked.failed_gate, "not_pending");
+    assert.strictEqual(stored(rej).status, "rejected", "still rejected");
+    assert.strictEqual(stored(rej).description, "Corrected words here.");
+
     // a hand-submitted row (no external_id, no source) is not blocked by identity codes
     const manual = { events: [row({ external_id: null, source: null })] };
     const m = await call(manual, { id: "evt-1", action: "save_correction", row_version: V1, fields: { title: "Hand Submitted Show" }, approve: true });
