@@ -52,7 +52,7 @@ const lookups = (db) => db.log.filter((r) => r.table === "events" && r.method ==
 
 
 const patches = (db) => db.log.filter((r) => r.table === "events" && r.method === "PATCH");
-const idsOf = (request) => decodeURIComponent(request.url.match(/external_id=in\.\((.*)\)/)[1]).split(",");
+const idsOf = (request) => decodeURIComponent(request.url.match(/external_id=in\.\(([^)]*)\)/)[1]).split(",");
 process.env.TICKETMASTER_REQUEST_GAP_MS = "0";
 
 async function run() {
@@ -125,7 +125,7 @@ async function run() {
     const bodies = patches(db).map((r) => JSON.parse(r.body));
     assert.ok(bodies.every((b) => JSON.stringify(Object.keys(b)) === '["ticket_status"]'), "every UPDATE carries ticket_status and nothing else");
     assert.strictEqual(patches(db).length, 2, "one UPDATE per status value: onsale (4 rows) and cancelled (1 row)");
-    assert.ok(patches(db).every((r) => r.headers.Prefer === "return=minimal"));
+    assert.ok(patches(db).every((r) => r.headers.Prefer === "return=representation" && /or=\(ticket_status\.is\.null,ticket_status\.neq\./.test(decodeURIComponent(r.url))), "an UPDATE only reaches rows whose stored status differs");
     assert.deepStrictEqual(patches(db).flatMap(idsOf).sort(), ["old-blank", "old-generated", "old-no-info", "old-rejected", "old-researched"]);
 
     // --- 5a. one lookup, as before: existence is read from the one status lookup
@@ -195,7 +195,7 @@ async function run() {
     byId(tables, "two-runs").title = "Returning Band (owner-corrected)";
     day = 2;
     const second = await runConnector("cron-ticketmaster.js");
-    assert.deepStrictEqual([second._status, second._body.upserted], [200, 2]);
+    assert.deepStrictEqual([second._status, second._body.upserted], [200, 1], "only the new event is written; the stored one's status already matches");
     assert.strictEqual(byId(tables, "two-runs").description, "Researched: the band's first Detroit show since 2019.", "day two: the hand-written description is kept");
     assert.strictEqual(byId(tables, "two-runs").title, "Returning Band (owner-corrected)", "and so is the corrected title, though Ticketmaster now says something else");
     assert.strictEqual(byId(tables, "arrives-later").description, "New on day two.", "while the event that is new on day two gets Ticketmaster's");
@@ -203,7 +203,7 @@ async function run() {
 
     day = 3;
     const third = await runConnector("cron-ticketmaster.js");
-    assert.deepStrictEqual([third._status, third._body.upserted], [200, 2]);
+    assert.deepStrictEqual([third._status, third._body.upserted], [200, 0], "day three: both are stored with matching statuses, nothing to write");
     assert.strictEqual(byId(tables, "arrives-later").description, "New on day two.", "day three: Ticketmaster changed its text; the stored one stays");
   }
   console.log("PASS: a description or title corrected between runs survives the next runs");
@@ -238,6 +238,24 @@ async function run() {
     assert.strictEqual(byId(tables, "blank-status").ticket_status, "cancelled");
   }
   console.log("PASS: a blank ticket_status from Ticketmaster does not erase a stored one");
+
+  // =========================================================================
+  // 6b. A status that already matches is not rewritten (no updated_at bump on ~600 rows a day)
+  // =========================================================================
+  {
+    const { tables } = world({
+      events: [stored("same", { ticket_status: "onsale", updated_at: "2026-10-01T00:00:00Z" }), stored("changed", { ticket_status: "offsale", updated_at: "2026-10-01T00:00:00Z" }), stored("nulled", { ticket_status: null, updated_at: "2026-10-01T00:00:00Z" })],
+      upstream: upstreamOf([tmEvent("same", "S"), tmEvent("changed", "C"), tmEvent("nulled", "N")]),
+    });
+    const res = await runConnector("cron-ticketmaster.js");
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.status_refreshed, 2, "only the two rows whose status actually differed were written");
+    assert.strictEqual(byId(tables, "same").updated_at, "2026-10-01T00:00:00Z", "an unchanged row is not touched");
+    assert.notStrictEqual(byId(tables, "changed").updated_at, "2026-10-01T00:00:00Z");
+    assert.strictEqual(byId(tables, "changed").ticket_status, "onsale");
+    assert.strictEqual(byId(tables, "nulled").ticket_status, "onsale", "a stored NULL counts as different");
+  }
+  console.log("PASS: a ticket_status that already matches is not rewritten");
 
   // =========================================================================
   // 7. A failed status UPDATE is reported, not hidden

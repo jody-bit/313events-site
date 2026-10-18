@@ -398,8 +398,8 @@ async function fetchStoredRows(ids) {
 }
 
 
-// Refreshes ticket_status on stored Ticketmaster rows, one UPDATE per (status value, chunk of <=100 ids). It touches
-// only that column. Rows with no status from Ticketmaster are skipped (a blank never overwrites a stored value).
+// Refreshes ticket_status on stored Ticketmaster rows, one UPDATE per (status value, chunk of <=100 ids), only where the
+// stored value differs. It touches only that column. Rows with no status from Ticketmaster are skipped (a blank never overwrites a stored value).
 async function refreshTicketStatus(existingRows) {
   const byStatus = new Map();
   for (const row of existingRows) {
@@ -413,12 +413,14 @@ async function refreshTicketStatus(existingRows) {
     for (let i = 0; i < ids.length; i += 100) {
       const chunk = ids.slice(i, i + 100);
       try {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/events?source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})`, {
+        // Only rows whose stored status differs are written (a stored NULL counts as different), so a daily run does not
+        // bump updated_at on every row. Representation is requested only to count the rows that really changed.
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/events?source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})&or=(ticket_status.is.null,ticket_status.neq.${encodeURIComponent(status)})&select=external_id`, {
           method: "PATCH",
-          headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+          headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json", Prefer: "return=representation" },
           body: JSON.stringify({ ticket_status: status }),
         });
-        if (r.ok) updated += chunk.length;
+        if (r.ok) { const changed = await r.json(); updated += Array.isArray(changed) ? changed.length : 0; }
         else failed.push(`${status}: HTTP ${r.status} ${(await r.text()).slice(0, 200)}`);
       } catch (e) {
         failed.push(`${status}: ${e.message}`);

@@ -103,10 +103,6 @@
     {
       "path": "/api/cron-antonartcenter",
       "schedule": "15 14 * * *"
-    },
-    {
-      "path": "/api/cron-ticketmaster",
-      "schedule": "0 10 * * *"
     }
   ],
   "functions": {
