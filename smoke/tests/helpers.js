@@ -20,10 +20,21 @@ async function stubExternals(page) {
   });
 }
 
+// Vercel deployment-protection bypass (optional, encrypted CI secret). Sent ONLY to the target origin, never to fonts,
+// Leaflet or tile hosts.
+function bypassHeaders() {
+  return process.env.SMOKE_BYPASS_SECRET ? { "x-vercel-protection-bypass": process.env.SMOKE_BYPASS_SECRET } : {};
+}
+async function applyBypass(page, baseURL) {
+  if (!process.env.SMOKE_BYPASS_SECRET || !baseURL) return;
+  const origin = new URL(baseURL).origin;
+  await page.route(origin + "/**", (route) => route.continue({ headers: { ...route.request().headers(), ...bypassHeaders() } }));
+}
+
 // Reads the deployment's own /config.js and refuses to run unless it points at staging. This is the guard that keeps
 // the suite (and, later, the mutating admin tests) off production data.
 async function readConfig(baseURL) {
-  const ctx = await request.newContext({ baseURL });
+  const ctx = await request.newContext({ baseURL, extraHTTPHeaders: bypassHeaders() }); // origin-scoped: baseURL is the target
   const resp = await ctx.get("/config.js");
   const text = await resp.text();
   await ctx.dispose();
@@ -32,8 +43,13 @@ async function readConfig(baseURL) {
   return JSON.parse(m[1]);
 }
 
-function assertTarget(cfg) {
-  if (MODE === "mock") return;
+function assertTarget(cfg, baseURL) {
+  if (MODE === "mock") {
+    // Mock mode skips the staging-database check, so it must only ever talk to the local mock server.
+    const host = new URL(baseURL).hostname;
+    if (host !== "127.0.0.1" && host !== "localhost") throw new Error("REFUSING TO RUN: SMOKE_MODE=mock requires a loopback base URL, got " + host + ".");
+    return;
+  }
   if (String(cfg.supabaseUrl).includes(PRODUCTION_REF)) throw new Error("REFUSING TO RUN: /config.js points at the PRODUCTION database. This suite targets Preview/staging only.");
   if (!String(cfg.supabaseUrl).includes(EXPECTED_REF)) throw new Error("REFUSING TO RUN: /config.js supabaseUrl (" + cfg.supabaseUrl + ") is not the expected staging project " + EXPECTED_REF + ".");
   if (cfg.environment === "production") throw new Error("REFUSING TO RUN: /config.js reports environment=production.");
@@ -51,7 +67,7 @@ async function upcomingFromApi(cfg, limit) {
 }
 
 const test = base.extend({
-  cfg: [async ({ baseURL }, use) => { const cfg = await readConfig(baseURL); assertTarget(cfg); await use(cfg); }, { scope: "test" }],
+  cfg: [async ({ baseURL }, use) => { const cfg = await readConfig(baseURL); assertTarget(cfg, baseURL); await use(cfg); }, { scope: "test" }],
   errors: async ({ page }, use) => {
     const errs = [];
     page.on("pageerror", (e) => errs.push("pageerror: " + e.message));
@@ -59,4 +75,4 @@ const test = base.extend({
   },
 });
 
-module.exports = { test, expect, stubExternals, upcomingFromApi, MODE };
+module.exports = { test, expect, stubExternals, applyBypass, assertTarget, upcomingFromApi, MODE };

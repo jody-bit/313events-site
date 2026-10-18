@@ -9,13 +9,12 @@ module.exports = defineConfig({
   expect: { timeout: 15000 },
   fullyParallel: false,
   workers: 1,
-  retries: process.env.CI ? 1 : 0, // one retry is logged by the reporter; a test that needs it is reported as flaky
+  retries: 0, // a retry turns a flaky failure into a pass; failures are investigated, not rerun (DoD). Revisit after the 10-clean-run stability gate.
   reporter: [["list"], ["json", { outputFile: process.env.SMOKE_REPORT || "smoke-report.json" }]],
   use: {
     baseURL: process.env.SMOKE_BASE_URL,
-    // Only if the Preview has Vercel deployment protection on: the bypass secret comes from an encrypted CI secret,
-    // never from source.
-    extraHTTPHeaders: process.env.SMOKE_BYPASS_SECRET ? { "x-vercel-protection-bypass": process.env.SMOKE_BYPASS_SECRET } : {},
+    // The optional Vercel bypass header is NOT set here: extraHTTPHeaders would send the secret to every third-party host
+    // the pages load. tests/helpers.js attaches it to requests for the target origin only.
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     launchOptions: process.env.SMOKE_CHROMIUM ? { executablePath: process.env.SMOKE_CHROMIUM } : {},

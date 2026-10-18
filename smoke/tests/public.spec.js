@@ -1,9 +1,9 @@
 // Public-site browser smoke (REL-1 W1). Every test asserts RENDERED DATA that is cross-checked against the same
 // public API the pages read, not just a 200. Read-only: GETs and typing into search boxes. No form is submitted.
 "use strict";
-const { test, expect, stubExternals, upcomingFromApi } = require("./helpers");
+const { test, expect, stubExternals, applyBypass, upcomingFromApi } = require("./helpers");
 
-test.beforeEach(async ({ page }) => { await stubExternals(page); });
+test.beforeEach(async ({ page, baseURL }) => { await applyBypass(page, baseURL); await stubExternals(page); });
 
 test("config.js targets the expected non-production database", async ({ cfg }) => {
   expect(cfg.supabaseUrl).toBeTruthy();
@@ -43,12 +43,26 @@ test("homepage search returns the matching event and a nonsense query returns no
   await expect(page.locator("a.evt-title-link")).toHaveCount(0);
 });
 
-test("calendar renders event entries for the loaded data", async ({ page, errors }) => {
+test("calendar shows the API's upcoming events in their own month", async ({ page, cfg, errors }) => {
+  // Cross-check against the API: page to the month of the first upcoming event (which may not be the current month)
+  // and require that month's grid to contain at least one of that month's API events by title.
+  const api = await upcomingFromApi(cfg, 40);
+  expect(api.rows.length).toBeGreaterThan(0);
+  const first = api.rows[0].start_date.slice(0, 7);
+  const sameMonth = api.rows.filter((r) => r.start_date.slice(0, 7) === first).map((r) => String(r.title).trim());
+  const now = new Date();
+  const [y, m] = first.split("-").map(Number);
+  const steps = (y - now.getFullYear()) * 12 + (m - 1 - now.getMonth());
+  expect(Math.abs(steps), "first upcoming event is outside the calendar's navigable range").toBeLessThanOrEqual(12);
   await page.goto("/calendar");
-  const pills = page.locator(".pill .t");
+  await expect(page.locator("#calGrid")).toBeAttached();
+  for (let i = 0; i < Math.abs(steps); i++) await page.locator(steps > 0 ? "#nextBtn" : "#prevBtn").click();
+  const pills = page.locator("#calGrid .pill .t");
   // Attached, not visible: at phone width the month grid shows counts instead of titled pills (see PR #157).
   await expect(pills.first()).toBeAttached();
-  expect(await pills.count()).toBeGreaterThan(0);
+  const shown = (await pills.allTextContents()).map((t) => t.trim().toLowerCase());
+  const hit = sameMonth.filter((t) => shown.some((s) => s.includes(t.toLowerCase()) || t.toLowerCase().includes(s)));
+  expect(hit.length, "none of this month's API events (" + sameMonth.slice(0, 5).join(" | ") + ") appear on the calendar grid").toBeGreaterThan(0);
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
