@@ -5153,6 +5153,69 @@
    "approval": {
     "by": "Jody Tyree",
     "at": "2026-10-11"
+   },
+   "schedule": {
+    "season": {
+     "start": "2026-09-18",
+     "end": "2026-11-07",
+     "timezone": "America/Detroit"
+    },
+    "weeklyHours": {
+     "mon": "7:30 PM-10:30 PM",
+     "tue": "7:30 PM-10:30 PM",
+     "wed": "7:30 PM-10:30 PM",
+     "thu": "7:30 PM-10:30 PM",
+     "fri": "7:00 PM-12:00 AM",
+     "sat": "6:00 PM-12:00 AM",
+     "sun": "6:00 PM-11:00 PM"
+    },
+    "darkDays": [
+     "2026-10-05",
+     "2026-10-06",
+     "2026-10-12",
+     "2026-10-19",
+     "2026-11-02",
+     "2026-11-03",
+     "2026-11-04",
+     "2026-11-05"
+    ],
+    "explicitClosuresOverrideHours": true,
+    "provenance": {
+     "season": {
+      "confidence": "Corroborated by three sources",
+      "sources": [
+       "Michigan Haunted Houses listing (owner-supplied)",
+       "WXYZ 2026 metro Detroit haunted-house roundup",
+       "thescarefactor.com"
+      ],
+      "retrievedAt": "2026-10-18"
+     },
+     "weeklyHours": {
+      "confidence": "Owner-supplied, external verification pending",
+      "sources": [
+       "Michigan Haunted Houses listing (owner-supplied)"
+      ],
+      "retrievedAt": null
+     },
+     "darkDays": {
+      "confidence": "One secondary source",
+      "sources": [
+       "WXYZ 2026 metro Detroit haunted-house roundup"
+      ],
+      "retrievedAt": "2026-10-18",
+      "note": "Oct 5-6 and Oct 12 are past; kept in the record. Forward dark days: Oct 19 and Nov 2-5."
+     },
+     "ticketingCalendar": {
+      "confidence": "Not independently read",
+      "sources": [
+       "FearTicket booking calendar (renders dynamically)"
+      ],
+      "retrievedAt": null
+     }
+    },
+    "recordedBy": "Jody Tyree (owner), Erebus schedule decision 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbMBEHg3sDh3Z1WKv76DRUgR); applied by editor",
+    "recordedAt": "2026-10-18",
+    "followUp": "Read the ticketing calendar directly; if authoritative evidence contradicts this schedule, correct the affected dates promptly."
    }
   },
   {
