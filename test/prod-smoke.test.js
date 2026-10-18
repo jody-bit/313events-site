@@ -21,7 +21,7 @@ function makeFetch(over) {
     if (u.pathname === "/config.js") return mk(200, 'window.__313_CONFIG = ' + JSON.stringify({ environment: "production", supabaseUrl: "https://" + REF + ".supabase.co", supabaseAnonKey: "anon-key" }) + ";");
     if (u.pathname === "/rest/v1/events_public") return mk(206, JSON.stringify([{ id: "e1", title: "Jazz & Blues" }]), { "content-range": "0-0/2300" });
     if (u.pathname === "/") return mk(200, "<html>paged-fetch.js" + big + "</html>");
-    if (u.pathname === "/calendar") return mk(200, "<html>calendar" + big + "</html>");
+    if (u.pathname === "/calendar") return mk(200, '<html><div id="calGrid"></div>' + big + "</html>");
     if (u.pathname === "/map") return mk(200, "<html>leaflet" + big + "</html>");
     if (u.pathname === "/event.html") return mk(200, '<title id="pageTitle">Jazz &amp; Blues — Friday — 313.events</title>');
     if (u.pathname === "/sitemap.xml") return mk(200, "<urlset>" + "<loc>a</loc>".repeat(20) + "</urlset>");
@@ -37,7 +37,7 @@ function makeFetch(over) {
   let f = makeFetch();
   let r = await S.runSmoke({ base: BASE, fetchImpl: f, commit: "abc1234" });
   assert.strictEqual(r.ok, true, S.format(r));
-  assert.strictEqual(r.evidence.deployment_id, "iad1::abc-123");
+  assert.strictEqual(r.evidence.vercel_request_id, "iad1::abc-123");
   assert.strictEqual(r.evidence.commit, "abc1234");
   assert.ok(r.checks.length >= 8);
   // read-only: every request is a GET, and the only credential is the public anon key on the REST call
@@ -52,6 +52,7 @@ function makeFetch(over) {
     ["inventory empty", { "/rest/v1/events_public": (u, mk) => mk(200, "[]", { "content-range": "*/0" }) }, "events_public returns upcoming events (count above floor)"],
     ["homepage truncated", { "/": (u, mk) => mk(200, "<html></html>") }, "homepage loads with its data client"],
     ["event page shows another title", { "/event.html": (u, mk) => mk(200, '<title id="pageTitle">Event details — 313.events</title>') }, "event detail page serves the event's own title"],
+    ["calendar page without its grid (nav text only)", { "/calendar": (u, mk) => mk(200, "<html><nav>calendar</nav>" + "x".repeat(5000) + "</html>") }, "calendar page loads"],
     ["sitemap empty", { "/sitemap.xml": (u, mk) => mk(200, "<urlset></urlset>") }, "sitemap lists events"],
     ["admin API open", { "/api/admin-events": (u, mk) => mk(200, "{}") }, "admin API refuses anonymous callers"],
   ];

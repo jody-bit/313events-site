@@ -6,10 +6,10 @@
 // Run from a machine with internet access (GitHub Actions, R&Q's Mac); the agent sandbox cannot reach 313.events.
 //
 //   node scripts/prod-smoke.js [--base https://313.events] [--min-events N] [--out report.json]
-//   env: SMOKE_COMMIT_SHA, SMOKE_PR, SMOKE_APPROVAL  (recorded in the report as release evidence, never validated)
+//   env: SMOKE_COMMIT_SHA, SMOKE_PR, SMOKE_DISPATCHED_BY  (recorded in the report as release evidence, never validated; dispatched_by is who ran it, NOT an owner release approval)
 //
 // Exit 0 = all checks passed; 1 = at least one failed; 2 = could not run. The report names the deployment id
-// (x-vercel-id header), the commit if supplied, every check with its evidence, and the execution time, for the
+// (x-vercel-id header, a per-request tracing id, not a deployment id), the commit if supplied, every check with its evidence, and the execution time, for the
 // release-evidence template in project/DEFINITION_OF_DONE.md.
 "use strict";
 const fs = require("fs");
@@ -29,12 +29,12 @@ async function runSmoke(opts) {
   const doFetch = opts.fetchImpl || fetch;
   const started = Date.now();
   const checks = [];
-  const evidence = { base, deployment_id: null, commit: opts.commit || null, pr: opts.pr || null, approval: opts.approval || null };
+  const evidence = { base, vercel_request_id: null, commit: opts.commit || null, pr: opts.pr || null, dispatched_by: opts.dispatchedBy || null };
 
   async function get(url, headers) {
     const t0 = Date.now();
     const resp = await doFetch(url, { method: "GET", headers: headers || {}, redirect: "follow" });
-    if (!evidence.deployment_id && resp.headers && resp.headers.get) evidence.deployment_id = resp.headers.get("x-vercel-id") || null;
+    if (!evidence.vercel_request_id && resp.headers && resp.headers.get) evidence.vercel_request_id = resp.headers.get("x-vercel-id") || null;
     return { resp, ms: Date.now() - t0 };
   }
   async function check(name, fn) {
@@ -72,13 +72,13 @@ async function runSmoke(opts) {
     return total + " upcoming events (floor " + minEvents + ")";
   });
 
-  for (const [name, p, mark] of [["homepage loads with its data client", "/", "paged-fetch.js"], ["calendar page loads", "/calendar", "calendar"], ["map page loads", "/map", "leaflet"]]) {
+  for (const [name, p, mark] of [["homepage loads with its data client", "/", "paged-fetch.js"], ["calendar page loads", "/calendar", 'id="calGrid"'], ["map page loads", "/map", "leaflet"]]) {
     await check(name, async () => {
       const { resp } = await get(base + p);
       need(resp.status === 200, "status " + resp.status);
       const html = await resp.text();
       need(html.length > 5000, "page body is only " + html.length + " bytes");
-      need(html.toLowerCase().includes(mark), "expected marker '" + mark + "' not found in page");
+      need(html.toLowerCase().includes(mark.toLowerCase()), "expected marker '" + mark + "' not found in page");
       return html.length + " bytes";
     });
   }
@@ -113,7 +113,7 @@ async function runSmoke(opts) {
 }
 
 function format(report) {
-  const lines = ["prod-smoke " + (report.ok ? "PASS" : "FAIL") + "  base=" + report.evidence.base + "  deployment=" + (report.evidence.deployment_id || "unknown") + "  commit=" + (report.evidence.commit || "not supplied") + "  " + report.duration_ms + "ms"];
+  const lines = ["prod-smoke " + (report.ok ? "PASS" : "FAIL") + "  base=" + report.evidence.base + "  deployment=" + (report.evidence.vercel_request_id || "unknown") + "  commit=" + (report.evidence.commit || "not supplied") + "  " + report.duration_ms + "ms"];
   for (const c of report.checks) lines.push((c.ok ? "  ok   " : "  FAIL ") + c.name + (c.detail ? "  (" + c.detail + ")" : ""));
   return lines.join("\n");
 }
@@ -123,7 +123,7 @@ module.exports = { runSmoke, format, DEFAULT_BASE, DEFAULT_MIN_EVENTS, PRODUCTIO
 if (require.main === module) {
   const a = process.argv.slice(2);
   const arg = (k, d) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : d; };
-  runSmoke({ base: arg("--base", DEFAULT_BASE), minEvents: arg("--min-events", DEFAULT_MIN_EVENTS), commit: process.env.SMOKE_COMMIT_SHA, pr: process.env.SMOKE_PR, approval: process.env.SMOKE_APPROVAL })
+  runSmoke({ base: arg("--base", DEFAULT_BASE), minEvents: arg("--min-events", DEFAULT_MIN_EVENTS), commit: process.env.SMOKE_COMMIT_SHA, pr: process.env.SMOKE_PR, dispatchedBy: process.env.SMOKE_DISPATCHED_BY })
     .then((r) => { console.log(format(r)); const out = arg("--out", ""); if (out) fs.writeFileSync(out, JSON.stringify(r, null, 2)); process.exit(r.ok ? 0 : 1); })
     .catch((e) => { console.error("prod-smoke could not run: " + e.message); process.exit(2); });
 }

@@ -38,8 +38,10 @@ jobs:
         env:
           SMOKE_COMMIT_SHA: ${{ inputs.commit_sha }}
           SMOKE_PR: ${{ inputs.pr }}
-          SMOKE_APPROVAL: ${{ github.actor }} dispatched ${{ github.run_id }}
-        run: node scripts/prod-smoke.js --base "${{ inputs.base_url }}" --min-events "${{ inputs.min_events }}" --out prod-smoke-report.json
+          SMOKE_DISPATCHED_BY: ${{ github.actor }} (run ${{ github.run_id }})
+          SMOKE_BASE_URL: ${{ inputs.base_url }}
+          SMOKE_MIN_EVENTS: ${{ inputs.min_events }}
+        run: node scripts/prod-smoke.js --base "$SMOKE_BASE_URL" --min-events "$SMOKE_MIN_EVENTS" --out prod-smoke-report.json
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
