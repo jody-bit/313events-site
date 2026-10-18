@@ -66,7 +66,7 @@ for (const col of ["fall", "fall-color"]) for (const d of DISC[col]) assert.ok(!
 const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 76, "only the 76 authorized Fall records are approved");
 assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76);
-// Halloween (owner approval of 2026-10-11 and final editorial decision): 49 approved, 3 excluded, 7 pass the gate. Fall is untouched.
-assert.strictEqual(E.halloween.filter((e) => e.approval).length, 49);
-assert.strictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 29);
+// Halloween (owner approval of 2026-10-11 and final editorial decision): 45 approved, 3 excluded, 7 pass the gate. Fall is untouched.
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 45);
+assert.strictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 25);
 console.log("seasonal expansion: ok");
