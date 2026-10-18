@@ -1,0 +1,76 @@
+name: Browser smoke
+
+# REL-1 W1 (#197). Two jobs, neither is a required check yet (W4 #200 makes checks mandatory only after a stability window).
+#
+#  selftest  Runs on PRs that touch smoke/ or this workflow. Proves the Playwright suite passes against an offline mock
+#            site AND fails when the inventory is empty or the API is down. No secrets, no network beyond npm.
+#  preview   Manual (workflow_dispatch). Runs the suite against a deployed Preview/staging URL. Refuses to run unless the
+#            deployment's own /config.js names the staging database. Optional encrypted secret SMOKE_BYPASS_SECRET is
+#            only needed if the Preview has Vercel deployment protection enabled.
+
+on:
+  pull_request:
+    paths: ['smoke/**', '.github/workflows/smoke.yml']
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Preview or staging URL, e.g. https://313events-site-git-branch-team.vercel.app'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: smoke/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Suite passes on the good mock and fails on the empty and broken mocks
+        run: node selftest.js
+
+  preview:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: smoke/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run the smoke suite against the deployed URL
+        env:
+          SMOKE_BASE_URL: ${{ inputs.base_url }}
+          SMOKE_BYPASS_SECRET: ${{ secrets.SMOKE_BYPASS_SECRET }}
+        run: npx playwright test
+      - name: Upload report and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-report
+          path: |
+            smoke/smoke-report.json
+            smoke/test-results/
+          if-no-files-found: ignore
