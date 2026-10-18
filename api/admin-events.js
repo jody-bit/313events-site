@@ -117,6 +117,28 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = require("./_lib/environment").siteUrl();
 const { filterPendingQueue } = require("./_lib/pending-queue");
 const { classifyRows } = require("./_lib/pending-classifier");
+const { annotateQueue } = require("./_lib/submission-provenance");
+const { evaluateSources } = require("./_lib/source-health");
+
+async function buildProvenance(rows, headers) {
+  let feeds = [];
+  let runs = [];
+  let readError = null;
+  try {
+    const since = encodeURIComponent(new Date(Date.now() - 30 * 86400000).toISOString());
+    const [f, r] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/feed_sources?select=id,venue_name,feed_format,status,last_polled_at,last_poll_result&limit=1000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
+    ]);
+    if (f.ok) feeds = await f.json(); else readError = `feed_sources HTTP ${f.status}`;
+    if (r.ok) runs = await r.json(); else readError = `${readError ? readError + "; " : ""}source_runs HTTP ${r.status}`;
+  } catch (err) { readError = err.message; }
+  let vercelConfig = null;
+  try { vercelConfig = require("../vercel.json"); } catch (_) {}
+  const out = annotateQueue(rows, { feeds, runs, vercelConfig, evaluateSources });
+  if (readError && !out.health_error) out.health_error = readError;
+  return out;
+}
 
 function escapeHtmlForEmail(str) {
   return String(str == null ? "" : str)
@@ -336,7 +358,14 @@ module.exports = async (req, res) => {
         if (!all.ok) { res.status(502).json({ error: all.error }); return; }
         // Read-side grouping (admin queue Stage 2): each row gets a queue_class annotation; none is dropped or changed.
         const classified = classifyRows(filterPendingQueue(all.rows, expiredView ? "expired" : "current"));
-        res.status(200).json({ events: classified.events, class_counts: classified.class_counts, actionable_count: classified.actionable_count, view: expiredView ? "expired" : "current" });
+        // Submissions Dashboard Step 1 (additive, read-only): provenance, lane and reasons per row. Existing keys are unchanged.
+        // Source health inputs (30-day source_runs, approved feeds) are best effort; without them rows are never called blocked.
+        const provenance = await buildProvenance(classified.events, sbHeaders);
+        res.status(200).json({
+          events: provenance.events, class_counts: classified.class_counts, actionable_count: classified.actionable_count, view: expiredView ? "expired" : "current",
+          lane_counts: provenance.lane_counts, blocked_breakdown: provenance.blocked_breakdown, blocked_sources: provenance.blocked_sources,
+          provenance_coverage: provenance.provenance_coverage, provenance_health_error: provenance.health_error,
+        });
         return;
       }
 
