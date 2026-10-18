@@ -197,7 +197,8 @@ T.SUB_FILTERS.lane = "auto"; T.subRender();
 assert.ok(els["list"].innerHTML.includes("Not tracked yet"), "Handled automatically does not guess");
 
 // 8. Read-only: the dashboard code performs no writes except the existing review() call.
-const dash = script.slice(script.indexOf("// ---- Submissions dashboard, Step 1"), script.indexOf("async function review(id, action)"));
+const dash = script.slice(script.indexOf("// ---- Submissions dashboard, Step 1"), script.indexOf("// ---- Review-queue editing"));
+// The editing module (#185, own test: admin-review-queue-edit.test.js) is the one deliberate write path besides review().
 assert.ok(!/method:\s*['"](POST|PUT|PATCH|DELETE)/.test(dash), "dashboard code issues no write requests");
 assert.ok(!/updated_at/.test(dash.replace(/\/\/.*$/gm, "")), "dashboard code never reads updated_at");
 // 9. Ready to approve: stays in Needs a person, counted, quiet (no "Why:" warning label); unknown lane never drops a row.
