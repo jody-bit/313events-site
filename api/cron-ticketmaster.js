@@ -386,7 +386,7 @@ function diffAgainstStored(row, stored) {
 
 async function fetchStoredRows(ids) {
   const stored = new Map();
-  const cols = ["external_id", "status", "internal_note", "description"].concat(DIFF_FIELDS).join(",");
+  const cols = ["id", "external_id", "status", "internal_note", "description", "venue_id"].concat(DIFF_FIELDS).join(",");
   for (let i = 0; i < ids.length; i += 100) {
     const chunk = ids.slice(i, i + 100);
     const url = `${SUPABASE_URL}/rest/v1/events?select=${cols}&source=eq.Ticketmaster&external_id=in.(${chunk.map(encodeURIComponent).join(",")})`;
@@ -429,6 +429,19 @@ async function refreshTicketStatus(existingRows) {
 }
 
 const DRY_DIFF_LIST_CAP = 200;
+// Previously corrected rows (Event Intelligence, 2026-10-18): the dry-run shows each one's stored values next to what
+// Ticketmaster says, so the owner can see that a run leaves them alone. Matched by the start of the row id.
+const FIXTURE_ID_PREFIXES = ["0b6b0237", "d2d2f14d", "c03e0db6", "634fbd6a", "48e6e18e", "c5f6b1b5", "355a0734"];
+const PROTECTED_VIEW = ["status", "title", "time_display", "venue_id", "venue_address_raw", "venue_city_raw", "image_url", "price_from", "ticket_url", "description"];
+
+// Stored upcoming approved Ticketmaster rows (id, title, date) for the "no longer returned by the API" report.
+async function fetchStoredUpcoming() {
+  const today = new Date().toISOString().slice(0, 10);
+  const url = `${SUPABASE_URL}/rest/v1/events?source=eq.Ticketmaster&status=eq.approved&start_date=gte.${today}&select=external_id,title,start_date&order=start_date.asc&limit=5000`;
+  const r = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } });
+  if (!r.ok) throw new Error(`stored-upcoming lookup failed: HTTP ${r.status}`);
+  return r.json();
+}
 
 const DEFAULT_STATUS = "approved";
 const SOURCE_SLUG = SLUGS.ticketmaster; // see api/_lib/source-slugs.js
@@ -510,31 +523,44 @@ module.exports = async (req, res) => {
 
   if (dry) {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) { res.status(200).json({ dry_run: true, error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" }); return; }
-    let stored;
-    try { stored = await fetchStoredRows(rows.map((r) => r.external_id)); }
+    let stored, storedUpcoming;
+    try { stored = await fetchStoredRows(rows.map((r) => r.external_id)); storedUpcoming = await fetchStoredUpcoming(); }
     catch (e) { res.status(502).json({ dry_run: true, error: e.message }); return; }
-    let wouldInsert = 0, unchanged = 0, wouldUpdateLive = 0;
-    const heldFieldCounts = {}, diffs = [];
+    let wouldInsert = 0, unchanged = 0, wouldUpdateLive = 0, matchesRetired = 0;
+    const heldFieldCounts = {}, wouldOverwriteNonNull = {}, wouldFillBlank = {}, diffs = [], fixtures = [];
     for (const row of rows) {
       const cur = stored.get(row.external_id);
       if (!cur) { wouldInsert += 1; continue; }
+      if (cur.status === "rejected") matchesRetired += 1;
       const d = diffAgainstStored(row, cur);
       const names = Object.keys(d);
+      const isFixture = FIXTURE_ID_PREFIXES.some((p) => String(cur.id).startsWith(p));
+      if (isFixture) fixtures.push({ id: cur.id, external_id: row.external_id, stored: Object.fromEntries(PROTECTED_VIEW.map((f) => [f, cur[f] === undefined ? null : cur[f]])), incoming_differs: d, live_run_writes: LIVE_FIELDS_FOR_EXISTING.filter((f) => row[f] !== null && row[f] !== undefined && row[f] !== "") });
       if (!names.length) { unchanged += 1; continue; }
       const applied = names.filter((f) => LIVE_FIELDS_FOR_EXISTING.includes(f));
       const held = names.filter((f) => !LIVE_FIELDS_FOR_EXISTING.includes(f));
       if (applied.length) wouldUpdateLive += 1;
-      for (const f of held) heldFieldCounts[f] = (heldFieldCounts[f] || 0) + 1;
+      for (const f of held) {
+        heldFieldCounts[f] = (heldFieldCounts[f] || 0) + 1;
+        if (d[f].stored === null) wouldFillBlank[f] = (wouldFillBlank[f] || 0) + 1; else wouldOverwriteNonNull[f] = (wouldOverwriteNonNull[f] || 0) + 1;
+      }
       if (diffs.length < DRY_DIFF_LIST_CAP) diffs.push({ external_id: row.external_id, title: cur.title, status: cur.status, applied: applied.length ? applied : undefined, held, fields: d });
     }
+    const returned = new Set(rows.map((r) => r.external_id));
+    const notReturned = storedUpcoming.filter((r) => !returned.has(r.external_id));
     res.status(200).json({
       dry_run: true, wrote_events: false, wrote_run_log: false,
       fetch: { complete: fetchInfo.complete, reason: fetchInfo.reason, http_status: fetchInfo.httpStatus, total_elements: fetchInfo.totalElements, requests: fetchInfo.requests, windows: fetchInfo.windows, events_seen: raw.length, rows_parsed: rows.length },
       would_insert: wouldInsert, would_update_live_fields: wouldUpdateLive, unchanged_or_held_only: unchanged,
+      api_events_matching_rejected_rows: matchesRetired,
       live_fields_for_existing: LIVE_FIELDS_FOR_EXISTING,
       held_field_differences: heldFieldCounts,
+      held_would_overwrite_non_null: wouldOverwriteNonNull,
+      held_would_fill_blank: wouldFillBlank,
       differences_listed: diffs.length, differences: diffs,
-      note: "Differences in held fields are NOT written to stored events; they are listed for review.",
+      fixtures,
+      stored_upcoming_not_returned_by_api: { count: notReturned.length, sample: notReturned.slice(0, 50), note: "Reported only. Nothing is rejected or hidden automatically." },
+      note: "Differences in held fields are NOT written to stored events; a live run refreshes ticket_status only. Images are never added to stored rows.",
     });
     return;
   }
