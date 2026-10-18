@@ -7,7 +7,7 @@
 // Run: node test/schedule-evidence-pass.test.js
 "use strict";
 const assert = require("assert");
-const { runPass, missingFields, fullyHeld, sourcesFor } = require("../scripts/schedule-evidence-pass.js");
+const { runPass, createStaticFetcher, missingFields, fullyHeld, sourcesFor } = require("../scripts/schedule-evidence-pass.js");
 const { createEvidenceFetcher } = require("../api/_lib/evidence-fetch.js");
 
 const NOW = () => new Date("2026-10-18T16:00:00Z");
@@ -140,6 +140,19 @@ const cand = (id, extra = {}) => ({ id, kind: "seasonal", group: "haunted", inte
   const capped = mk({ "https://k.test/robots.txt": { status: 404 }, "https://k.test/1": { status: 200, body: "x" }, "https://k.test/2": { status: 200, body: "x" } }, [], { maxPages: 1 });
   run = await runPass({ candidates: [cand("1")], sources: [src("a", "https://k.test/1"), src("b", "https://k.test/2")], fetcher: capped, pipeline, now: NOW });
   assert.deepStrictEqual(run.candidates[0].pages.map((p) => p.outcome), ["ok", "page_cap"], "the fetcher's page cap bounds a run");
+
+  // 10. offline real-text manifest: original retrieved_at preserved, no network, entries without text or timestamp are not evidence
+  const sf = createStaticFetcher([
+    { id: "m1", url: "https://m.test/a", tier: "media", retrieved_at: "2026-10-17T09:00:00Z", text: "Season: 2026-09-18 to 2026-11-07", applies_to: ["haunted"] },
+    { id: "m2", url: "https://m.test/b", tier: "official", retrieved_at: "2026-10-17T09:05:00Z", blocked: "robots", applies_to: ["haunted"] },
+    { id: "m3", url: "https://m.test/c", tier: "media", text: "Season: 2026-01-01 to 2026-01-02", applies_to: ["haunted"] },
+    { id: "m4", url: "https://m.test/d", tier: "media", retrieved_at: "2026-10-17T09:10:00Z", applies_to: ["haunted"] },
+  ]);
+  global.fetch = () => { throw new Error("offline run must not touch the network"); };
+  run = await runPass({ candidates: [cand("c1")], sources: [src("m1", "https://m.test/a"), src("m2", "https://m.test/b", "official"), src("m3", "https://m.test/c"), src("m4", "https://m.test/d")], fetcher: sf, pipeline, now: NOW });
+  const ev10 = run.candidates[0].result.proposed.season.evidence;
+  assert.deepStrictEqual(ev10.map((e) => [e.url, e.retrieved_at]), [["https://m.test/a", "2026-10-17T09:00:00Z"]], "only the page with text and a timestamp is evidence, with its original retrieved_at");
+  assert.deepStrictEqual(run.candidates[0].pages.map((p) => p.outcome), ["ok", "blocked", "bad_url", "bad_url"]);
 
   console.log("schedule-evidence-pass: all assertions passed");
 })().catch((e) => { console.error(e); process.exit(1); });

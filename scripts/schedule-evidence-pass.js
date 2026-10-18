@@ -22,7 +22,8 @@
 //   6. Publication safety: candidates are deep-frozen; the output holds proposals only and never carries status,
 //      published, featured or approval fields. The proposal file declares `writes: 0`.
 //
-// CLI: node scripts/schedule-evidence-pass.js --candidates candidates.json --out proposal.json
+// CLI: node scripts/schedule-evidence-pass.js --candidates candidates.json --out proposal.json [--pages manifest.json]
+//      --pages runs offline on already-retrieved real page text (see createStaticFetcher); no network at all.
 //      candidates.json: [{ id, kind: "event"|"seasonal", group, internal_note, stored: {season,weekly_hours,closed_dates} }]
 //      (--supabase reads event candidates by GET using SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY; no writes.)
 
@@ -137,6 +138,27 @@ function summarize(entries) {
   return s;
 }
 
+// Offline source text: a manifest of pages somebody already retrieved (R&Q or the Mac, from a real browser or fetch).
+// Each entry: { id, url, tier, retrieved_at, text | file, blocked?: "robots"|"dynamic"|"fetch_failed", applies_to?, candidate_ids? }.
+// It replaces the live fetcher with one that serves those texts with their ORIGINAL retrieved_at; the same extraction,
+// proposal and safety rules apply. Network is never touched. `file` paths resolve relative to baseDir.
+function createStaticFetcher(manifest, baseDir) {
+  const byUrl = new Map();
+  for (const e of manifest) byUrl.set(e.url, e);
+  return {
+    async fetchPage(url) {
+      const e = byUrl.get(url);
+      if (!e) return { ok: false, url, outcome: "bad_url" };
+      if (e.blocked) return { ok: false, url, outcome: e.blocked === "robots" ? "blocked" : "http_error", status: null };
+      let text = e.text;
+      try { if (typeof text !== "string" && e.file) text = fs.readFileSync(path.resolve(baseDir || ".", e.file), "utf8"); } catch (err) { return { ok: false, url, outcome: "network_error", error: err.message }; }
+      if (typeof text !== "string" || !e.retrieved_at) return { ok: false, url, outcome: "bad_url" }; // no text or no timestamp: not evidence
+      return { ok: true, url, status: 200, text, retrieved_at: e.retrieved_at };
+    },
+    pagesFetched: () => 0,
+  };
+}
+
 // Supabase candidate read: GET only.
 async function readEventCandidates(fetchImpl, base, key, limit) {
   const url = `${base}/rest/v1/events?select=id,title,start_date,end_date,time_display,internal_note,status&status=eq.approved&end_date=gte.${new Date().toISOString().slice(0, 10)}&limit=${limit}`;
@@ -150,7 +172,8 @@ function arg(name) { const i = process.argv.indexOf(name); return i > -1 ? proce
 async function main() {
   const out = arg("--out");
   if (!out) { console.error("usage: schedule-evidence-pass.js --candidates <file.json> | --supabase  --out <proposal.json>"); process.exit(2); }
-  const sources = JSON.parse(fs.readFileSync(path.join(__dirname, "../api/_lib/schedule-evidence-sources.json"), "utf8")).sources;
+  let sources = [];
+  if (!arg("--pages")) sources = JSON.parse(fs.readFileSync(path.join(__dirname, "../api/_lib/schedule-evidence-sources.json"), "utf8")).sources;
   let pipeline;
   try { pipeline = require("../api/_lib/schedule-evidence.js"); } catch (e) { console.error("api/_lib/schedule-evidence.js is not on this branch (EI #216): " + e.message); process.exit(2); }
   let candidates;
@@ -160,10 +183,16 @@ async function main() {
     if (!base || !key) { console.error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required for --supabase (read-only GET)"); process.exit(2); }
     candidates = await readEventCandidates(global.fetch, base, key, Number(arg("--limit")) || 25);
   } else { console.error("need --candidates or --supabase"); process.exit(2); }
-  const run = await runPass({ candidates, sources, fetcher: createEvidenceFetcher(), pipeline });
+  let fetcher = createEvidenceFetcher();
+  if (arg("--pages")) {
+    const manifest = JSON.parse(fs.readFileSync(arg("--pages"), "utf8"));
+    fetcher = createStaticFetcher(manifest, path.dirname(path.resolve(arg("--pages"))));
+    sources = manifest.map(({ text, file, ...src }) => src); // offline run: the manifest is the source list
+  }
+  const run = await runPass({ candidates, sources, fetcher, pipeline });
   fs.writeFileSync(out, JSON.stringify(run, null, 2));
   console.log(`schedule-evidence pass: ${JSON.stringify(run.summary)} writes=0 -> ${out}`);
 }
 
-module.exports = { runPass, missingFields, fullyHeld, sourcesFor, summarize, LIMITS, FIELDS };
+module.exports = { runPass, createStaticFetcher, missingFields, fullyHeld, sourcesFor, summarize, LIMITS, FIELDS };
 if (require.main === module) main().catch((e) => { console.error(e); process.exit(1); });
