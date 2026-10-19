@@ -698,7 +698,7 @@ function mapRow(row) {
     locVenueZip: row.venues && row.venues.zip_code ? row.venues.zip_code : undefined,
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     // See migration_034_clothing_optional.sql.
     clothingOptional: !!row.is_clothing_optional,

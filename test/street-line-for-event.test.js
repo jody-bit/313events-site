@@ -110,7 +110,7 @@ assert.strictEqual((cal.match(/\$\{streetLineHtml\(e\)\}/g) || []).length, 2, "b
     grab(/function mapSupabaseRow\(row\) \{[\s\S]*?\n\}\n/),
     grab(/function streetLineHtml\(e\)\{[\s\S]*?\n\}\n/),
   ].join("\n");
-  const ctx = { CalendarLocation: CL, decodeEntities: (x) => x, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), CATS: {}, console };
+  const ctx = { CalendarLocation: CL, EventDates: require(`${REPO_DIR}/event-dates.js`), decodeEntities: (x) => x, escapeHtml: (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;"), CATS: {}, console };
   vm.createContext(ctx);
   vm.runInContext(code + "\nthis.map = mapSupabaseRow; this.html = streetLineHtml;", ctx);
   const row = (o) => Object.assign({ id: "1", start_date: "2026-10-20", title: "T", category: "music" }, o);

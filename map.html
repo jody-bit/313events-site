@@ -1932,7 +1932,7 @@ function mapSupabaseRow(row) {
     canonicalLat: vd.lat,
     canonicalLng: vd.lng,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
     ticketUrl: row.ticket_url || undefined,
