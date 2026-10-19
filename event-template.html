@@ -331,6 +331,17 @@ function escapeHtml(str) {
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML;
 }
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
+}
 function safeUrl(url) {
   if (!url) return '';
   try {
@@ -703,12 +714,12 @@ function mapRow(row) {
     // See migration_034_clothing_optional.sql.
     clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — index.html/calendar.html/map.html
     // each already have a function called eventUrl(e) (the internal
     // event.html permalink); keeping this field's name distinct everywhere
     // avoids colliding with that. See migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     priceFrom: row.price_from ?? undefined,
     ticketStatus: row.ticket_status || undefined,
   };

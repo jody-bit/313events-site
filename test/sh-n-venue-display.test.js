@@ -222,7 +222,7 @@ async function run() {
   // --- Criterion 13: unrelated event metadata fields still present in each
   // mapping function (a light smoke check that surrounding code wasn't
   // clobbered by the surgical edits above) ---
-  assert.ok(/ticketUrl: row\.ticket_url \|\| undefined/.test(calendarHtml), "calendar.html lost an unrelated field (ticketUrl)");
+  assert.ok(/ticketUrl: absWebUrl\(row\.ticket_url\)/.test(calendarHtml), "calendar.html lost an unrelated field (ticketUrl)");
   assert.ok(/priceFrom: row\.price_from/.test(calendarHtml), "calendar.html lost an unrelated field (priceFrom)");
   assert.ok(/ticketStatus: row\.ticket_status \|\| undefined/.test(eventTemplateHtml), "event-template.html lost an unrelated field (ticketStatus)");
   assert.ok(/clothingOptional: !!row\.is_clothing_optional/.test(eventTemplateHtml), "event-template.html lost an unrelated field (clothingOptional)");
