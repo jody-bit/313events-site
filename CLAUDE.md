@@ -79,3 +79,7 @@ next session will reconstruct context: what's done, what's uncommitted,
 what's blocked, and what needs the owner's decision. Verify claims against
 a fresh `git fetch` and the GitHub PR/issue list before trusting them —
 handoffs can go stale between being written and being read.
+
+## Definition of Done
+
+Every work package must meet `project/DEFINITION_OF_DONE.md` (automated tests, CI, deployed-environment smoke tests, read-only production smoke, release evidence, R&Q acceptance). R&Q enforces it.
