@@ -23,6 +23,7 @@ const { partitionExpired } = require("./_lib/ingest-eligibility");
 // Congregation-specific rule) — that's shared logic other consumers
 // (press-coverage matching) also depend on, and changing it is a separate
 // decision.
+const { resolveLinkField } = require("./_lib/link-field");
 const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
@@ -451,6 +452,15 @@ function applyFeedDefaultCity(rows, rowsWithNoStatedLocation) {
   return filled;
 }
 
+// Q17: "3 source links not usable (feed_path 3)" for the run log, or "" when every link was fine.
+function rejectedLinkNote(rows) {
+  const list = rows && rows.rejectedLinks;
+  if (!list || !list.length) return "";
+  const byReason = {};
+  for (const r of list) byReason[r.reason] = (byReason[r.reason] || 0) + 1;
+  return `${list.length} source link${list.length === 1 ? "" : "s"} not usable as a ticket link (${Object.entries(byReason).map(([k, n]) => `${k} ${n}`).join(", ")}); example ${list[0].raw.slice(0, 80)}`;
+}
+
 // Converts parsed ICS VEVENTs into rows shaped for the `events` table,
 // scoped to one feed_source (which supplies default category, and — for
 // every feed_source EXCEPT one flagged location_per_event (migration_043,
@@ -467,6 +477,7 @@ function applyFeedDefaultCity(rows, rowsWithNoStatedLocation) {
 // name.
 function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap) {
   const rows = [];
+  rows.rejectedLinks = []; // Q17: source links not usable as a ticket link, for the run log (never silent)
   const rowsWithNoStatedLocation = new Set(); // BUG-012: see applyFeedDefaultCity
   const seenUids = new Set();
   const policy = policyFor(feedSource); // api/_lib/feed-publication.js: null for almost every feed
@@ -521,6 +532,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
           venue_city_raw: null,
         };
 
+    const link = resolveLinkField(ev.url, feedSource.feed_url);
     const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
@@ -581,7 +593,9 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // source rather than papering over it downstream.
       is_all_day: start.hour === null,
       time_display: timeDisplay,
-      ticket_url: ev.url || null,
+      // Q17: an absolute http(s) event page, a site-relative path resolved against this feed's own site, or null. A
+      // CivicPlus calendar-feed path is not an event page (api/_lib/link-field.js); the rejection is reported, not hidden.
+      ticket_url: link.url,
       image_url: ev.image || null,
       // Just the feed's own organization/venue name, matching every other
       // single-venue cron's convention (e.g. cron-trinosophes.js's
@@ -622,6 +636,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     // stripped before the write (upsertParsedRows).
     if (policy) row._publication = classify(row, { start, end }, policy);
     if (ev.recurring || ev.recurrenceId) row._recurring = true; // internal marker for api/_lib/ingest-eligibility.js; stripped before the write
+    if (link.url === null && link.raw) rows.rejectedLinks.push({ external_id: row.external_id, raw: link.raw, reason: link.reason });
     rows.push(row);
   }
   // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,
@@ -752,6 +767,7 @@ function parseRssPubDate(pubDate) {
 // as a real DTSTART.
 function rssEventsToRows(rssItems, feedSource, venueMap) {
   const rows = [];
+  rows.rejectedLinks = []; // Q17, see icsEventsToRows
   for (const item of rssItems) {
     if (!item.title && !item.description) continue; // nothing to even derive a category/title from
     if (isLikelyNotARealEvent({ title: item.title })) continue;
@@ -764,6 +780,7 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
 
     const uidOrHash = item.guid || item.link || `${dateStr}-${(item.title || "").slice(0, 40)}`;
 
+    const link = resolveLinkField(item.link, feedSource.feed_url);
     const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: item.title || "Untitled event",
@@ -778,7 +795,7 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
       end_date: null,
       is_all_day: true, // no reliable per-event time signal in generic RSS — never invented
       time_display: null,
-      ticket_url: item.link || null,
+      ticket_url: link.url,
       image_url: null,
       source: feedSource.venue_name,
       feed_source_id: feedSource.id,
@@ -792,6 +809,7 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
       _dateConfidence: explicit ? "extracted" : "pubdate-fallback",
     };
 
+    if (link.url === null && link.raw) rows.rejectedLinks.push({ external_id: row.external_id, raw: link.raw, reason: link.reason });
     rows.push(row);
   }
   return rows;
@@ -964,6 +982,7 @@ const handleRequest = async (req, res) => {
             pollResult = outcome.upserted && !outcome.failed
               ? `${outcome.pollResult}${lowConfidenceCount ? ` (${lowConfidenceCount} with a pubDate-fallback date, needs human verification)` : ""}`
               : outcome.pollResult;
+            { const linkNote = rejectedLinkNote(rows); if (linkNote) pollResult += ` [${linkNote}]`; }
           }
         }
       } else if (feedSource.feed_format !== "ics") {
@@ -1001,6 +1020,7 @@ const handleRequest = async (req, res) => {
             totalUpserted += outcome.upserted;
             totalSkippedPast += outcome.skippedPast || 0;
             pollResult = enrichNote ? `${outcome.pollResult} (${enrichNote})` : outcome.pollResult;
+            { const linkNote = rejectedLinkNote(rows); if (linkNote) pollResult += ` [${linkNote}]`; }
           }
         }
       }
