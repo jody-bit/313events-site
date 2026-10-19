@@ -14,6 +14,7 @@ and no-hit, calendar entries, map ready/complete/plotted, event detail page, sub
   CI secret `SMOKE_BYPASS_SECRET` (never in code or issues).
 
 ## Run
+- **Against a Vercel-protected Preview, signed in (no bypass secret, no settings change):** `cd smoke && npm ci && npx playwright install chromium`, then `SMOKE_BASE_URL=https://<preview> SMOKE_STORAGE_STATE=$HOME/.313-smoke-state.json node signin.js` (a visible browser opens; sign in to Vercel if asked), then `SMOKE_BASE_URL=https://<preview> SMOKE_STORAGE_STATE=$HOME/.313-smoke-state.json npx playwright test`. Delete the state file afterwards.
 - **Prove the suite has teeth (offline, no secrets):** `cd smoke && npm ci && npx playwright install chromium && node selftest.js`.
   Passes on a good mock site, must fail when the mock inventory is empty or the API returns 500.
 - **Against a deployed Preview/staging:** `SMOKE_BASE_URL=https://<preview> npx playwright test`, or the manual workflow

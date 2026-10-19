@@ -13,6 +13,8 @@ module.exports = defineConfig({
   reporter: [["list"], ["json", { outputFile: process.env.SMOKE_REPORT || "smoke-report.json" }]],
   use: {
     baseURL: process.env.SMOKE_BASE_URL,
+    // Signed-in Vercel session for a protected Preview (written by signin.js on the operator's machine; never committed).
+    storageState: process.env.SMOKE_STORAGE_STATE || undefined,
     // The optional Vercel bypass header is NOT set here: extraHTTPHeaders would send the secret to every third-party host
     // the pages load. tests/helpers.js attaches it to requests for the target origin only.
     trace: "retain-on-failure",

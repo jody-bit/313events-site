@@ -31,10 +31,16 @@ async function applyBypass(page, baseURL) {
   await page.route(origin + "/**", (route) => route.continue({ headers: { ...route.request().headers(), ...bypassHeaders() } }));
 }
 
+// Optional signed-in Vercel session (SMOKE_STORAGE_STATE = a Playwright storage-state file written by signin.js on the operator's
+// machine). Cookies are scoped to the Vercel domain by the browser; nothing is stored in the repo.
+function storage() {
+  return process.env.SMOKE_STORAGE_STATE ? { storageState: process.env.SMOKE_STORAGE_STATE } : {};
+}
+
 // Reads the deployment's own /config.js and refuses to run unless it points at staging. This is the guard that keeps
 // the suite (and, later, the mutating admin tests) off production data.
 async function readConfig(baseURL) {
-  const ctx = await request.newContext({ baseURL, extraHTTPHeaders: bypassHeaders() }); // origin-scoped: baseURL is the target
+  const ctx = await request.newContext({ baseURL, extraHTTPHeaders: bypassHeaders(), ...storage() }); // origin-scoped: baseURL is the target
   const resp = await ctx.get("/config.js");
   const text = await resp.text();
   await ctx.dispose();
