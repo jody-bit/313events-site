@@ -189,12 +189,15 @@ async function run() {
     const tok = "20261019-150000-bbbbbb";
     fs.writeFileSync(path.join(work, `ra-sync/inbox/complete-${tok}.json`), JSON.stringify({ runToken: tok, action: "complete", runId: "r", events: [] }));
     git(work, "add", "-A"); git(work, "commit", "-q", "-m", "payload"); git(work, "push", "-q", "origin", "ra-sync-inbox");
-    assert.strictEqual(bridge.runReconcile(Object.assign({ now: () => Date.now() + 2 * 3600 * 1000 }, opts)), 1);
+    // the clock is pinned to the payload commit's own time: run-all.js may shift Date, but git commit times are real
+    const commitMs = Number(git(work, "log", "-1", "--format=%ct").trim()) * 1000;
+    const later = { now: () => commitMs + 2 * 3600 * 1000 };
+    assert.strictEqual(bridge.runReconcile(Object.assign({}, later, opts)), 1);
     assert.ok(errs.some((m) => m.includes(`complete-${tok}`)));
-    assert.strictEqual(bridge.runReconcile(opts), 0, "inside the grace period it is not reported");
+    assert.strictEqual(bridge.runReconcile(Object.assign({ now: () => commitMs + 5 * 60 * 1000 }, opts)), 0, "inside the grace period it is not reported");
     // once the response tag exists it is clean
     git(work, "tag", "-a", `ra-sync/complete-response/${tok}`, "-m", "{}"); git(work, "push", "-q", "origin", `refs/tags/ra-sync/complete-response/${tok}`);
-    assert.strictEqual(bridge.runReconcile(Object.assign({ now: () => Date.now() + 2 * 3600 * 1000 }, opts)), 0);
+    assert.strictEqual(bridge.runReconcile(Object.assign({}, later, opts)), 0);
     fs.rmSync(dir, { recursive: true, force: true });
   }
 
