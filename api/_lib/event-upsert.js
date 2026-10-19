@@ -82,6 +82,7 @@
 "use strict";
 
 const { fillBlankOrganizerEventUrls } = require("./organizer-links");
+const { OWNER_CORRECTION_MARKER, OWNER_EDITABLE_FIELDS, protectOwnerCorrections } = require("./event-contract");
 
 const DEFAULT_TABLE = "events";
 const LAST_SEEN_COLUMN = "last_seen_at_source";
@@ -162,11 +163,43 @@ function groupRowsByKeyShape(rows) {
 //
 // options: { table, onConflict, prefer } — defaults are the events upsert
 // every connector performs.
+// OWNER CORRECTIONS (#185 increment 1). A field a person has corrected (marker in events.internal_note, see
+// api/_lib/event-contract.js) must not be written over by a source on the next run. Before an events upsert, the few
+// corrected rows are read once and, for rows in this batch that match, each locked field is set to its stored value, so
+// merge-duplicates rewrites what is already there. The read is FAIL-CLOSED like the status lookup: if it cannot be
+// completed nothing is written, because a write without it could revert a correction.
+const CORRECTION_PAGE_LIMIT = 1000;
+async function loadOwnerCorrections(supabaseUrl, serviceRoleKey) {
+  const cols = ["external_id", "internal_note", "venue_id"].concat(OWNER_EDITABLE_FIELDS).join(",");
+  const r = await fetch(`${supabaseUrl}/rest/v1/events?select=${cols}&internal_note=like.*${OWNER_CORRECTION_MARKER}*&external_id=not.is.null&limit=${CORRECTION_PAGE_LIMIT}`, {
+    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
+  });
+  // A refusal (HTTP error, unusable body, too many rows) is reported as a failed write; a thrown network error from
+  // fetch propagates to the connector exactly as the write's own fetch would.
+  const refuse = (message) => Object.assign(new Error(message), { ownerCorrectionRefused: true });
+  if (!r.ok) throw refuse(`owner-correction lookup failed: HTTP ${r.status}`);
+  let list;
+  try { list = await r.json(); } catch (e) { throw refuse("owner-correction lookup returned an unreadable body"); }
+  if (!Array.isArray(list)) throw refuse("owner-correction lookup returned an unusable body");
+  if (list.length >= CORRECTION_PAGE_LIMIT) throw refuse(`more than ${CORRECTION_PAGE_LIMIT} corrected events; the lookup must be paged before it can be trusted`);
+  return new Map(list.map((row) => [row.external_id, row]));
+}
+
 async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
   if (!Array.isArray(rows)) throw new TypeError("event-upsert: rows must be an array");
   const table = (options && options.table) || DEFAULT_TABLE;
   const onConflict = (options && options.onConflict) || DEFAULT_ON_CONFLICT;
   const prefer = (options && options.prefer) || DEFAULT_PREFER;
+
+  if (table === DEFAULT_TABLE) {
+    try {
+      rows = protectOwnerCorrections(Array.from(rows), await loadOwnerCorrections(supabaseUrl, serviceRoleKey)).rows;
+    } catch (err) {
+      if (!(err && err.ownerCorrectionRefused)) throw err;
+      const message = err.message;
+      return { ok: false, status: 502, written: 0, attempted: rows.length, groups: [{ keys: null, rowCount: rows.length, ok: false, status: 502, error: message }], failedRows: Array.from(rows), text: async () => message };
+    }
+  }
 
   const stamp = table === DEFAULT_TABLE && lastSeenStampEnabled() ? new Date().toISOString() : null;
   const input = stamp ? Array.from(rows).map((row) => (row && typeof row === "object" && !Array.isArray(row) ? Object.assign({}, row, { [LAST_SEEN_COLUMN]: stamp }) : row)) : Array.from(rows);
