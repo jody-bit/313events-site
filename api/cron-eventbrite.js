@@ -4,6 +4,7 @@ const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup")
 const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { classifyNightlife, mayClassify, nightlifeNote } = require("./_lib/nightlife-classifier"); // #177: advertised dance-music events, new and pending rows only
 const { upsertEventRows } = require("./_lib/event-upsert");
 
 // Vercel Cron job — the `eventbrite-org` adapter anticipated by
@@ -196,14 +197,21 @@ function parseEvent(e) {
     `Category not mappable from Eventbrite's own taxonomy (event: "${title}") -- needs manual categorization.`,
   ];
   if (isOnline) notes.push("Online event -- no physical venue to report.");
+  // #177 (owner 2026-10-19): every Eventbrite row is catch-all, so each is offered to the Nightlife rule. It changes the
+  // category and the breadcrumb only; the row stays pending_review for a person (the rule never approves).
+  const timeDisplay = formatTimeDisplay(startLocal, endLocal);
+  const nightlife = classifyNightlife({ title, description, venue_name_raw: venueName || "", time_display: timeDisplay });
+  const isNightlife = nightlife.decision === "nightlife";
+  if (isNightlife) notes.splice(0, 1, nightlifeNote(nightlife));
+  else if (nightlife.decision === "hold") notes.push(nightlifeNote(nightlife));
 
   return {
     external_id: `eventbrite-${e.id}`,
     title,
     description,
-    category: AMBIGUOUS_CATEGORY,
+    category: isNightlife ? "nightlife" : AMBIGUOUS_CATEGORY,
     start_date: startLocal.slice(0, 10),
-    time_display: formatTimeDisplay(startLocal, endLocal),
+    time_display: timeDisplay,
     is_recurring: !!e.is_series,
     is_all_day: false, // see header -- no such field exists on this source
     is_free: e.is_free === true,
@@ -215,6 +223,7 @@ function parseEvent(e) {
     internal_note: notes.join(" "),
     _rawVenueName: venueName, // consumed by the handler, stripped before upsert
     _defaultStatusForRow: AMBIGUOUS_STATUS,
+    _nightlifeClassified: isNightlife, // consumed by the handler, stripped before upsert
   };
 }
 
@@ -384,7 +393,9 @@ module.exports = async (req, res) => {
       return;
     }
     const rowsWithStatus = rows.map((row) => {
-      const { _defaultStatusForRow, ...rest } = row;
+      const { _defaultStatusForRow, _nightlifeClassified, ...rest } = row;
+      // #177: Nightlife only on a row that is new or still pending_review; an approved or rejected row keeps the catch-all.
+      if (_nightlifeClassified && !mayClassify(existingStatusByExternalId.get(row.external_id))) rest.category = AMBIGUOUS_CATEGORY;
       // An existing row's internal_note belongs to people and to the
       // duplicate machinery (DUP_MERGED_INTO / DUP_DISTINCT live there). It is
       // never rewritten from here; the connector's note is a breadcrumb for NEW rows only.

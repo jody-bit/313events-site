@@ -82,6 +82,7 @@
 const { milesFromDetroitBorder } = require("./detroit-boundary");
 const { knownCity } = require("./orbit-cities");
 const { isLikelyNotARealEvent } = require("./non-event-filter");
+const { classifyNightlife, nightlifeNote } = require("./nightlife-classifier"); // #177: advertised dance-music events, new rows only here
 
 const HORIZON_DAYS = 90;
 const MIN_RUN_DAYS = 3;
@@ -581,11 +582,16 @@ function rowsForEvent({ event: e, instanceWrappers, place, tenant, windowStart, 
   for (const unit of units) {
     const lastDay = unit.endDate || unit.startDate;
     if (lastDay < windowStart || unit.startDate > windowEnd) continue;
+    // #177 (owner 2026-10-19): a catch-all row is offered to the Nightlife rule. It changes the category and the breadcrumb of
+    // a NEW row only: mergeWithStored() sends an existing row's stored category back, so nothing already stored is reclassified,
+    // and the status is never touched (the rule never approves).
+    const nightlife = category ? null : classifyNightlife({ title, description, venue_name_raw: place && place.name, time_display: unit.timeDisplay });
+    const isNightlife = !!nightlife && nightlife.decision === "nightlife";
     rows.push({
       external_id: `localist-${tenant.tenantSlug}-${unit.id}`,
       title,
       description,
-      category: category || AMBIGUOUS_CATEGORY,
+      category: category || (isNightlife ? "nightlife" : AMBIGUOUS_CATEGORY),
       start_date: unit.startDate,
       // Sent even when null: a row that used to be a run and is now a single
       // day must lose its end date.
@@ -600,7 +606,11 @@ function rowsForEvent({ event: e, instanceWrappers, place, tenant, windowStart, 
       event_url: cleanString(e.localist_url),
       image_url: cleanString(e.photo_url),
       source: tenant.source,
-      internal_note: category ? null : `Category not mappable from this tenant's Localist event types or the title (event: "${title}").`,
+      internal_note: category
+        ? null
+        : isNightlife
+          ? nightlifeNote(nightlife)
+          : `Category not mappable from this tenant's Localist event types or the title (event: "${title}").` + (nightlife && nightlife.decision === "hold" ? " " + nightlifeNote(nightlife) : ""),
       _rawVenueName: place.name,
       venue_address_raw: place.street,
       venue_city_raw: place.city,
