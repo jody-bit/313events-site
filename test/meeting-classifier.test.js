@@ -79,6 +79,8 @@ const live = [
   ["administrative", { title: "Mayor Hammoud's Briefing Session", source: "City of Dearborn" }],
   ["administrative", { title: "Disability Commission Meets", source: "City of Dearborn" }],
   ["administrative", { title: "Parks & Recreation Commission Meets", source: "City of Dearborn" }],
+  ["administrative", { title: "Senior Citizen Commission Meets", source: "City of Dearborn" }],
+  ["administrative", { title: "Senior Citizens Commission", source: "City of Dearborn" }],
   ["civic_public", { title: "Fire Department Open House", source: "City of Dearborn" }],
 ];
 live.forEach(([want, r]) => {
