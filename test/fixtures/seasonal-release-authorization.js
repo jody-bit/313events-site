@@ -10,7 +10,11 @@
 //    records that also satisfy every factual and image requirement are public. That public set (29) is pinned here, by id, independent of
 //    the data: HALLOWEEN_PUBLISHED.
 "use strict";
+// 3. Batch seasonal-release-2 (2026-10-19, gate 5, "Approve all three", Jody Tyree): three records pinned HERE by id, independent of the data,
+//    approval AUTH_BATCH2. DRAFT: Jody confirms these approval blocks in PR review. Batch 1 above stays CLOSED and is not changed.
 const AUTH = { by: "Jody Tyree", at: "2026-10-12" };
+const AUTH_BATCH2 = { by: "Jody Tyree", at: "2026-10-19" };
+const BATCH2 = ["fall/goodison-cider-mill", "fall/damouni-orchards", "fall-color/kensington-metropark"];
 const AUTH_HALLOWEEN = { by: "Jody Tyree", at: "2026-10-11" };
 // The 29 Halloween records that pass every gate item (official 2026 evidence, relevance, identity, an authorized image route with rights, and the
 // approval): the first seven (the original seven: owner photos, or linked images on the owner's risk acceptance) plus the 22 content-verified records
@@ -39,6 +43,7 @@ function batch76(ED) { return new Set(ED.read("RELEASE_BATCH_1.json").records.ma
 // Every record that may be PUBLIC: the 76 plus the pinned Halloween 29.
 function authorized(ED) {
   const s = batch76(ED);
+  BATCH2.forEach((k) => s.add(k));
   HALLOWEEN_PUBLISHED.forEach((id) => s.add("halloween/" + id));
   return s;
 }
@@ -52,7 +57,8 @@ function checkApproval(assert, slug, e, set) {
     else assert.deepStrictEqual(e.approval, AUTH_HALLOWEEN, key + ": carries exactly the Halloween owner approval");
     return;
   }
-  if (set.has(key)) assert.deepStrictEqual(e.approval, AUTH, key + ": carries exactly the authorized approval");
+  if (BATCH2.includes(key)) assert.deepStrictEqual(e.approval, AUTH_BATCH2, key + ": carries exactly the batch-2 approval");
+  else if (set.has(key)) assert.deepStrictEqual(e.approval, AUTH, key + ": carries exactly the authorized approval");
   else assert.ok(!e.approval, key + ": no approval outside the authorized batch");
 }
-module.exports = { AUTH, AUTH_HALLOWEEN, HALLOWEEN_PUBLISHED, HALLOWEEN_ILLUSTRATED, HALLOWEEN_EXCLUDED, batch76, authorized, halloweenApproved, checkApproval };
+module.exports = { AUTH, AUTH_BATCH2, BATCH2, AUTH_HALLOWEEN, HALLOWEEN_PUBLISHED, HALLOWEEN_ILLUSTRATED, HALLOWEEN_EXCLUDED, batch76, authorized, halloweenApproved, checkApproval };

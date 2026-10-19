@@ -39,10 +39,17 @@ for (const slug of ["fall", "fall-color"]) {
 }
 // The public projection is exactly the authorized batch.
 const pub = ED.publishedProjection();
-assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [36, 40, 29], "public lists = the 76 authorized Fall records plus the 29 Halloween records that pass the gate");
+assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [38, 41, 29], "public lists = the 79 authorized Fall records plus the 29 Halloween records that pass the gate");
 // A third-party linked image is never a gate image: it is kept only as an unlicensed QA candidate.
 for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
-  assert.ok(!e.image.remote, e.id + ": no linked third-party image as the record image");
+  // Narrow, explicit exception (release batch 2, DEC-029): only the three pinned records may carry image.remote, and only with a complete
+  // owner risk acceptance, the linked-risk-acceptance rights route and no license claim. Every other record keeps the original rule.
+  if (AUTHZ.BATCH2.includes(slug + "/" + e.id)) {
+    const rm = e.image.remote, g = ED.COLLECTIONS.readiness(e).gate;
+    assert.ok(rm && rm.src && rm.sourcePage && rm.credit && rm.acceptedBy === "Jody Tyree (owner)" && rm.acceptedAt && /DEC-029/.test(rm.riskNote), e.id + ": batch-2 image carries full DEC-029 provenance");
+    assert.strictEqual(g.rightsRoute, "linked-risk-acceptance", e.id + ": rights route is the recorded risk acceptance");
+    assert.ok(!e.image.licenseUrl && !e.image.ownerPhoto, e.id + ": no license or owner-photo claim on a DEC-029 image");
+  } else assert.ok(!e.image.remote, e.id + ": no linked third-party image as the record image");
   assert.ok(!(e.image.linkedCandidates || []).length || ED.COLLECTIONS.readiness(e).gate.acquired === false || e.image.ownerPhoto || true);
 }
 // Evidence is recorded with source URL, rationale and confidence wherever relevance is proposed.

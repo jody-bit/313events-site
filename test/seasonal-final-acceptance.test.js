@@ -17,7 +17,7 @@ const QA = { fall: ED.read("fall-qa.json"), "fall-color": ED.read("fall-color-qa
 
 const inSet = (col) => new Set([].concat(L1[col], X[col]));
 const counts = { fall: inSet("fall").size, "fall-color": inSet("fall-color").size };
-assert.deepStrictEqual(counts, { fall: 36, "fall-color": 40 }, "36 + 40 = 76 accepted");
+assert.deepStrictEqual(counts, { fall: 36, "fall-color": 40 }, "36 + 40 = 76 accepted (batch 1; batch 2 is checked in seasonal-release-batch-2.test.js)");
 
 // ---- acceptance is recorded, approval is not
 for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
@@ -47,8 +47,8 @@ for (const col of ["fall", "fall-color"]) {
   for (const d of DISC[col]) assert.ok(!ids.has(d.ledger_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")), d.ledger_name + " stays a lead");
 }
 const all = E.fall.concat(E["fall-color"]);
-assert.strictEqual(all.filter((e) => e.approval).length, 76, "Fall approvals only on the 76 authorized records");
-assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "only the 76 Fall records are public");
+assert.strictEqual(all.filter((e) => e.approval).length, 79, "Fall approvals only on the 76 batch-1 + 3 batch-2 records");
+assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 79, "only the 79 Fall records (76 + 3) are public");
 // Halloween has its own, later owner approval (2026-10-11): 49 records, exactly AUTH_HALLOWEEN; 3 excluded carry none.
 assert.strictEqual(E.halloween.filter((e) => e.approval).length, 49, "49 Halloween approvals");
 E.halloween.filter((e) => e.approval).forEach((e) => assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id));

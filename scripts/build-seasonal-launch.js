@@ -33,7 +33,10 @@ const heldIds = (col) => new Set(Object.keys((proposal.held || {})[col] || {}));
 // Expansion batch (launch-expansion.json, written by scripts/prepare-expansion.js): reviewed records, hand-curated and flagged as proposed.
 const expansion = (() => { try { return read("launch-expansion.json"); } catch (e) { return { batch: null, collections: {} }; } })();
 const expansionIds = (col) => new Set((expansion.collections || {})[col] || []);
-const handIds = (col) => new Set([...curatedIds(col), ...expansionIds(col), ...heldIds(col)]);
+// Release batch 2 (release-2.json, owner gate 5 on 2026-10-19): three hand-curated records with DEC-029 image provenance. Kept exactly as authored.
+const release2 = (() => { try { return read("release-2.json"); } catch (e) { return { collections: {} }; } })();
+const release2Ids = (col) => new Set((release2.collections || {})[col] || []);
+const handIds = (col) => new Set([...curatedIds(col), ...expansionIds(col), ...heldIds(col), ...release2Ids(col)]);
 const lib = read("photo-library.json");
 const reg = read("candidates.json");
 const entriesFile = read("entries.json");
