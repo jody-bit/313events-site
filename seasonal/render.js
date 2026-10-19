@@ -82,7 +82,7 @@
     var owner = !viaLink && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
     var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
     if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
-    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>';
+    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
   function card(col, e, opts) {
     opts = opts || {};

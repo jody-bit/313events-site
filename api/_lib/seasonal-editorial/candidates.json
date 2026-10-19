@@ -24,7 +24,7 @@
    "inventory_note": "Cider/orchard",
    "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 4 image rights; 5 explicit approval.",
    "flags": [],
    "entry_id": "almar-orchards"
   },

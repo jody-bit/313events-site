@@ -2162,15 +2162,28 @@
    "status": "CONTENT_VERIFIED",
    "summary": "Almar Orchards in Flushing. Official page lists fresh donuts, apple tastings, Scrumpy Skedaddle orchard run, playground.",
    "image": {
-    "src": "/assets/seasonal/fall-card-2.webp",
-    "alternates": [
-     "/assets/seasonal/fall-card-5.webp"
-    ],
+    "src": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+    "alternates": [],
     "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
+    "source": "Almar Orchards website history-hdr.jpg (2901x1475, scanned archival print of the farm store, date and photographer unknown); crop x=279..2901 full height resized to 1920x1080 by Experience, then to a 1280x720 WebP card by scripts/ingest-approved-image.py",
+    "illustrative": false,
+    "historic": true,
+    "provenance": {
+     "sourcePage": "https://www.almar-orchards.com/",
+     "originalUrl": "https://www.almar-orchards.com/wp-content/uploads/2018/10/history-hdr.jpg",
+     "retrievedAt": "2026-10-19",
+     "kind": "archival photograph, date unknown, photographer unknown",
+     "rights": "Not cleared. DEC-029 owner risk acceptance is NOT recorded for this image; the record stays unpublished until the owner records it.",
+     "reviewed": "Experience, ALMAR-ASSESSMENT.md and PREP-NOTES.md, 2026-10-19"
+    },
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+     "bytes": 66716,
+     "sha256": "86a2811cee0217dc29ee028d0fc251d226330f096dbd3f9cacc1de65d6be6a30",
+     "width": 1280,
+     "height": 720,
+     "acquiredAt": "2026-10-19"
+    }
    },
    "evidence": [
     {

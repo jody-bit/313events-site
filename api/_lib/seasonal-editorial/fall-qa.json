@@ -190,14 +190,14 @@
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
+     "image": true,
      "rights": false,
      "approval": false
     },
-    "image_route": null,
+    "image_route": "acquired-file",
     "rights_route": null,
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
+     "Gate 4, image rights: not complete for the chosen image route.",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -208,14 +208,14 @@
    "manifest": {
     "destination_id": "almar-orchards",
     "destination_name": "Almar Orchards",
-    "primary_image": "/assets/seasonal/fall-card-2.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "fallback_image": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
     "alternative_images": [
-     "gen-fall-5",
+     "gen-fall-4",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -225,9 +225,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-2",
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -237,9 +237,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
