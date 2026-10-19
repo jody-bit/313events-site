@@ -201,7 +201,8 @@ async function run() {
     assert.ok(Array.isArray(upsertedRows) && upsertedRows.length === 1);
     const row = upsertedRows[0];
     assert.strictEqual(row.ticket_url, null);
-    assert.strictEqual(row.event_url, null);
+    assert.strictEqual(row.ticket_url, null, "ticket_url stays NULL on purpose (HALO sells no advance tickets)");
+    assert.strictEqual(row.event_url, "https://www.thehalodetroit.com/currentevents", "owner decision 2026-10-19: no event link -> HALO's own website");
     assert.strictEqual(row.ticket_status, "door", "no action link at all must default to ticket_status='door', not null");
   }
   console.log("PASS: a listing with no action link at all defaults to ticket_status='door' (confirmed HALO site-wide pay-at-the-door characteristic)");

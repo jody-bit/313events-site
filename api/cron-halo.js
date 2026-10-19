@@ -58,6 +58,8 @@ function timingSafeStringEqual(a, b) {
 const SOURCE_URL = "https://www.thehalodetroit.com/currentevents";
 const SOURCE_SLUG = SLUGS.halo; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "HALO Detroit";
+// HALO's own events page: the page this connector scrapes (robots.txt places no restriction), confirmed live 2026-09-28.
+const HALO_WEBSITE_URL = SOURCE_URL;
 const VENUE_CITY = "Detroit";
 const DEFAULT_STATUS = "approved";
 
@@ -283,16 +285,21 @@ const haloHandler = async (req, res) => {
   // function that's about the VENUE, not about what a specific event's
   // page showed -- every other branch above is still driven purely by
   // that event's own scraped action button, unchanged.
+  //
+  // 2026-10-19 (Jody, site owner): "for halo blank links just send people to their website ... they usually just have a cover
+  // charge at the door and do not sell tickets." So a door event with no event-specific link gets event_url = HALO's own events
+  // page (HALO_WEBSITE_URL, the page this connector reads), shown as "Venue website". ticket_url stays NULL on purpose (it is
+  // not a ticket link and NULL is not a defect); an event-specific link, when the page has one, still wins.
   function ticketFieldsFor(e) {
     const url = resolveHaloUrl(e.actionHref);
-    if (!url) return { ticket_url: null, event_url: null, ticket_status: "door" };
+    if (!url) return { ticket_url: null, event_url: HALO_WEBSITE_URL, ticket_status: "door" };
     if (e.actionLabel === "buy tickets" || e.actionLabel === "get tickets") {
       return { ticket_url: url, event_url: null, ticket_status: null };
     }
     if (e.actionLabel === "rsvp" || e.actionLabel === "details") {
       return { ticket_url: null, event_url: url, ticket_status: "rsvp_no_advance_sale" };
     }
-    return { ticket_url: null, event_url: null, ticket_status: "door" };
+    return { ticket_url: null, event_url: HALO_WEBSITE_URL, ticket_status: "door" };
   }
 
   const rawRows = parsed.map((e) => ({
@@ -387,3 +394,4 @@ const haloHandler = async (req, res) => {
 module.exports = haloHandler;
 module.exports.parseHaloEvents = parseHaloEvents; // exposed for test/cron-halo-ticket-status.test.js only
 module.exports.resolveHaloUrl = resolveHaloUrl;
+module.exports.HALO_WEBSITE_URL = HALO_WEBSITE_URL;

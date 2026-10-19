@@ -64,7 +64,7 @@ console.log("PASS: STG Season-Long and America: 250 Years (unverified) get no Ad
 {
   const row = html.slice(html.indexOf("function streamRowHtml("));
   const actions = row.slice(row.indexOf('<div class="evt-actions">'), row.indexOf("${affiliateDisclosureHtml(e)}"));
-  assert.ok(/Tickets &amp; info/.test(actions) && /\$\{shareButtonHtml\(e\)\}/.test(actions), "tickets link and Share render in the row");
+  assert.ok(/eventLinkLabel\(e\)/.test(actions) && /Tickets & info/.test(html) && /\$\{shareButtonHtml\(e\)\}/.test(actions), "tickets link and Share render in the row");
   assert.ok(/\$\{addToCalendarHtml\(e\)\}/.test(actions), "the calendar span is the only control that goes away");
 }
 console.log("PASS: Share and Tickets stay in the row");
@@ -125,7 +125,7 @@ console.log("PASS: single-day, overnight and continuous exports are unchanged");
   assert.ok(hidden(stg, "2026-10-16") && hidden(america, "2026-10-16"), "unverified: hidden");
   // (6) Share and Tickets are not touched by this change.
   const row = html.slice(html.indexOf("function streamRowHtml("));
-  assert.ok(/\$\{shareButtonHtml\(e\)\}/.test(row) && /Tickets &amp; info/.test(row));
+  assert.ok(/\$\{shareButtonHtml\(e\)\}/.test(row) && /eventLinkLabel\(e\)/.test(row));
   // (7) Detroit midnight and DST: Nov 1 2026 falls back (EDT -> EST), Mar 14 2027 springs forward.
   const fall = ev({ id: "fb", date: "2026-10-31", endDate: "2026-11-01", time: "7:00 PM", dateSemantics: "recurring", occurrenceDates: ["2026-10-31", "2026-11-01"] });
   assert.ok(show(fall, "2026-11-01", "2026-11-02T04:30:00Z"), "Nov 1 11:30 PM EST: day not over");

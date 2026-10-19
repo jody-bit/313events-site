@@ -1142,7 +1142,7 @@ function evtRowHtml(e){
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
         ${EventDates.scheduleState(e) === 'unverified' ? `<div class="note">Published ${escapeHtml(new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))} \u2013 ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-        ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+        ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(eventLinkLabel(e))}</a>`:''}
         ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
         ${affiliateDisclosureHtml(e)}
         ${ticketStatusNoteHtml(e)}
@@ -1960,10 +1960,24 @@ const TICKET_STATUS_NOTES = {
 };
 function ticketStatusNoteHtml(e){
   if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && !haloVenueLinkLabel(e)) return '';
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
+}
+
+// HALO Detroit sells no advance tickets (owner decision 2026-10-19): its events without a ticket link point to the venue's own
+// website, labelled for what it is. Keep this function identical in index.html, calendar.html, map.html and event-template.html
+// (test/halo-venue-link.test.js checks they match).
+function haloVenueLinkLabel(e){
+  if(e.source !== 'HALO Detroit' || (e.ticketUrl && safeUrl(e.ticketUrl)) || !(e.eventPageUrl && safeUrl(e.eventPageUrl))) return '';
+  if(e.ticketStatus === 'door') return 'Venue website';
+  if(e.ticketStatus === 'rsvp_no_advance_sale') return 'Event information';
+  return '';
+}
+function eventLinkLabel(e){
+  if(e.free) return 'More info';
+  return haloVenueLinkLabel(e) || 'Tickets & info';
 }
 
 // Same 8-day back-buffer floor as index.html's loadFloorISO() (not
