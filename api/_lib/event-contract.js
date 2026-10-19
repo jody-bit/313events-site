@@ -107,7 +107,7 @@ function isoDay(v) {
 // authorized, shared with LGP-2 #176), ingestion must not write over a field named in it. ownerCorrectedFields()
 // reads the marker; protectOwnerCorrections() applies it to a batch of rows about to be upserted.
 const OWNER_CORRECTION_MARKER = "OWNER-CORRECTION";
-const OWNER_EDITABLE_FIELDS = Object.freeze(["title", "description", "category", "venue_name_raw", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display"]);
+const OWNER_EDITABLE_FIELDS = Object.freeze(["title", "description", "category", "venue_name_raw", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display", "price_from"]);
 // A corrected venue name must not be re-resolved to a different venue by the next run.
 const OWNER_LOCK_ALSO = Object.freeze({ venue_name_raw: ["venue_id"] });
 const OWNER_CORRECTION_LINE = new RegExp("^" + OWNER_CORRECTION_MARKER + "\\s+\\S+\\s+\\S+\\s+fields=([a-z_,]+)", "gm");
@@ -167,6 +167,15 @@ function validateCorrection(fields, current) {
   if (!fields || typeof fields !== "object" || Array.isArray(fields) || !Object.keys(fields).length) return { errors: [{ field: null, message: "fields must name at least one field to correct" }], changes };
   for (const [field, raw] of Object.entries(fields)) {
     if (!OWNER_EDITABLE_FIELDS.includes(field)) { errors.push({ field, message: "not a field that can be corrected in this version" }); continue; }
+    if (field === "price_from") {
+      // A number (or numeric text) in dollars; 0 is a real price, blank is not accepted (a correction never clears).
+      const n = typeof raw === "number" ? raw : (typeof raw === "string" && raw.trim() !== "" ? Number(raw) : NaN);
+      if (!Number.isFinite(n) || n < 0 || n > 100000) { errors.push({ field, message: "must be a price from 0 to 100000" }); continue; }
+      const cur = current ? current[field] : null;
+      if (cur !== null && cur !== undefined && Number(cur) === n) continue;
+      changes.push({ field, before: cur === undefined ? null : cur, after: n });
+      continue;
+    }
     if (typeof raw !== "string") { errors.push({ field, message: "must be text" }); continue; }
     const value = raw.trim();
     if (!value) { errors.push({ field, message: "cannot be blank; a correction replaces a value, it does not clear it" }); continue; }
