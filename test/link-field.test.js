@@ -68,39 +68,76 @@ async function run() {
     const snapshot = JSON.stringify(bad);
     const out = normalizeRowLinks(bad);
     assert.strictEqual(JSON.stringify(bad), snapshot, "the caller's row is not mutated");
-    assert.strictEqual(out.ticket_url, null, "ticket_url is source-authoritative: written as null");
-    assert.ok(!("event_url" in out), "event_url is protect-from-blank: omitted so the stored value stands");
+    assert.ok(!("ticket_url" in out), "an unusable ticket_url is omitted so the stored value stands");
+    assert.ok(!("event_url" in out), "an unusable event_url is omitted so the stored value stands");
+    for (const blank of ["", "   "]) {
+      assert.ok(!("ticket_url" in normalizeRowLinks(event("nl", { ticket_url: blank }))), `a blank link (${JSON.stringify(blank)}) is omitted`);
+    }
+    assert.strictEqual(normalizeRowLinks(event("nl", { ticket_url: null })).ticket_url, null, "an explicit null is left as the connector sent it (HALO clears a link on purpose)");
     const bare = event("n");
     assert.strictEqual(normalizeRowLinks(bare), bare);
     assert.ok(!("ticket_url" in normalizeRowLinks(bare)), "a row without the key does not gain one");
     assert.strictEqual(normalizeRowLinks(null), null);
   }
-  console.log("PASS: rows are copied, never mutated; ticket_url becomes null, event_url is omitted, absent keys stay absent");
+  console.log("PASS: rows are copied, never mutated; an unusable link is omitted, an explicit null is kept, absent keys stay absent");
 
   // --- 3. through the shared writer ---------------------------------------------------------------------------------
   {
     const { tables } = freshDb([
-      event("feed-1", { ticket_url: FEED, event_url: "https://royaloakmi.com/e/1" }), // 565 shape, stored
-      event("text-1", { ticket_url: "https://example.com/real" }),
+      event("feed-1", { ticket_url: FEED, event_url: "https://royaloakmi.com/e/1" }), // 565 shape, stored; the repair clears it
+      event("valid-1", { ticket_url: "https://example.com/real", event_url: "https://example.com/real-e" }),
+      event("valid-2", { ticket_url: "https://example.com/real2" }),
     ]);
     const rows = [
       event("feed-1", { ticket_url: FEED, event_url: "Pay at the door" }),
-      event("text-1", { ticket_url: "Pay at the door" }),
+      event("valid-1", { ticket_url: "Pay at the door", event_url: "//example.com/x" }), // rejected incoming over valid stored
+      event("valid-2", { ticket_url: "https://royaloakmi.com" + FEED }),                  // absolute feed URL over valid stored
       event("new-1", { ticket_url: "https://royaloakmi.com" + FEED }),
       event("ok-1", { ticket_url: "https://example.com/ok" }),
+      event("none-1", { ticket_url: null }),
     ];
     const input = JSON.stringify(rows);
     const resp = await upsertEventRows(URL_BASE, KEY, rows);
     assert.ok(resp.ok, "the write succeeds");
     assert.strictEqual(JSON.stringify(rows), input, "the connector's rows are not mutated");
     const by = (id) => tables.events.find((r) => r.external_id === id);
-    assert.strictEqual(by("feed-1").ticket_url, null, "a refresh clears a stored feed path");
-    assert.strictEqual(by("feed-1").event_url, "https://royaloakmi.com/e/1", "an unusable event_url never overwrites a stored one");
-    assert.strictEqual(by("text-1").ticket_url, null, "price text is not stored as a link");
-    assert.strictEqual(by("new-1").ticket_url, null, "a new row with a feed URL stores no link");
+    assert.strictEqual(by("valid-1").ticket_url, "https://example.com/real", "a rejected incoming ticket_url never overwrites a valid stored one");
+    assert.strictEqual(by("valid-1").event_url, "https://example.com/real-e", "nor does a rejected event_url");
+    assert.strictEqual(by("valid-2").ticket_url, "https://example.com/real2", "an absolute feed URL does not replace a valid stored link either");
+    assert.strictEqual(by("feed-1").ticket_url, FEED, "a stored feed path is left for the guarded repair, a refresh does not rewrite it");
+    assert.strictEqual(by("new-1").ticket_url == null, true, "a new row with a feed URL stores no link");
     assert.strictEqual(by("ok-1").ticket_url, "https://example.com/ok", "a good link is stored as sent");
+    assert.strictEqual(by("none-1").ticket_url == null, true);
   }
-  console.log("PASS: through upsertEventRows — feed paths and price text are never stored, a refresh clears stored feed paths, good links are untouched");
+
+  // --- 3b. regression matrix: stored valid link vs each kind of incoming value, and repeated ingestion ---------------------
+  {
+    const STORED = "https://tickets.example.org/e/100";
+    const cases = [
+      ["invalid incoming (feed path)", { ticket_url: FEED }, STORED],
+      ["invalid incoming (price text)", { ticket_url: "Pay at the door" }, STORED],
+      ["invalid incoming (protocol-relative)", { ticket_url: "//tickets.example.org/e/9" }, STORED],
+      ["missing incoming (blank)", { ticket_url: "  " }, STORED],
+      ["missing incoming (undefined)", { ticket_url: undefined }, STORED],
+      ["missing incoming (key absent)", {}, STORED],
+      ["verified replacement (organizer moved the page)", { ticket_url: "https://tickets.example.org/e/100-new" }, "https://tickets.example.org/e/100-new"],
+      ["same value again", { ticket_url: STORED }, STORED],
+    ];
+    for (const [name, incoming, expected] of cases) {
+      const { tables } = freshDb([event("m-1", { ticket_url: STORED, title: "Keep me" })]);
+      const first = await upsertEventRows(URL_BASE, KEY, [event("m-1", { title: "Keep me", ...incoming })]);
+      assert.ok(first.ok, `${name}: write accepted`);
+      const afterFirst = JSON.stringify(tables.events);
+      assert.strictEqual(tables.events.length, 1, `${name}: no event added or discarded`);
+      assert.strictEqual(tables.events[0].ticket_url, expected, `${name}: stored ticket_url`);
+      assert.strictEqual(tables.events[0].title, "Keep me", `${name}: the event is intact`);
+      const second = await upsertEventRows(URL_BASE, KEY, [event("m-1", { title: "Keep me", ...incoming })]);
+      assert.ok(second.ok);
+      assert.strictEqual(JSON.stringify(tables.events).replace(/"updated_at":"[^"]*",?/g, ""), afterFirst.replace(/"updated_at":"[^"]*",?/g, ""), `${name}: repeated ingestion changes nothing`);
+    }
+  }
+  console.log("PASS: stored valid link vs invalid, missing and valid-replacement incoming values; repeated ingestion is idempotent; no event is discarded");
+  console.log("PASS: through upsertEventRows — rejected links never overwrite a stored link, new rows store none, good links are untouched");
 
   // --- 4. an owner-corrected link is never replaced -----------------------------------------------------------------
   {

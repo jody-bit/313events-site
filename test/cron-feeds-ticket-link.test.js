@@ -36,13 +36,14 @@ function rss(items) {
 
 async function runFeed(feedSource, body) {
   const handler = freshHandler();
-  let upserted = null;
+  let upserted = [];
   global.fetch = async (url, opts = {}) => {
     if (url.includes("/rest/v1/feed_sources")) return { ok: true, status: 200, json: async () => [feedSource] };
     if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
     if (url === feedSource.feed_url) return { ok: true, status: 200, text: async () => body };
-    if (url.includes("/rest/v1/events") && opts.method === "POST") { upserted = JSON.parse(opts.body); return strictWriteResponse(url, opts); }
+    // rows with different key shapes go out as separate requests, so collect every POST
+    if (url.includes("/rest/v1/events") && opts.method === "POST") { upserted.push(...JSON.parse(opts.body)); return strictWriteResponse(url, opts); }
     if (url.includes("/rest/v1/")) return { ok: true, status: 200, json: async () => [] };
     throw new Error("unmocked URL: " + url);
   };
@@ -68,10 +69,8 @@ async function run() {
       { uid: "abs", url: "https://www.royaloakmi.com/Calendar.aspx?EID=912" },
       { uid: "rel", url: "/Calendar.aspx?EID=913" },
     ]));
-    assert.strictEqual(byTitle(rows, "feedpath").ticket_url, null, "the CivicPlus feed path is not stored");
-    assert.strictEqual(byTitle(rows, "absfeed").ticket_url, null, "nor is its absolute form");
-    assert.strictEqual(byTitle(rows, "text").ticket_url, null, "price text is not a link");
-    assert.strictEqual(byTitle(rows, "none").ticket_url, null);
+    for (const t of ["feedpath", "absfeed", "text"]) assert.ok(!("ticket_url" in byTitle(rows, t)), `${t}: a rejected link is left out of the write, so it can never replace a stored link`);
+    assert.ok(!("ticket_url" in byTitle(rows, "none")), "a missing source link is left out of the write too, so it cannot erase a stored link");
     assert.strictEqual(byTitle(rows, "abs").ticket_url, "https://www.royaloakmi.com/Calendar.aspx?EID=912", "a real event page is kept");
     assert.strictEqual(byTitle(rows, "rel").ticket_url, "https://www.royaloakmi.com/Calendar.aspx?EID=913", "a site-relative event page resolves against the feed's own site");
     assert.strictEqual(rows.length, 6, "no event is dropped for a bad link");
@@ -86,7 +85,7 @@ async function run() {
     const rssSource = { id: "fs-rss", venue_name: "Some Org", default_category: "community", feed_url: "https://rss.example/feed.xml", feed_format: "rss", status: "approved" };
     const { rows } = await runFeed(rssSource, rss([{ id: "good", link: "https://rss.example/e/1" }, { id: "feedlink", link: "https://rss.example/calendar.rss" }, { id: "rel", link: "/e/2" }]));
     assert.strictEqual(byTitle(rows, "good concert").ticket_url, "https://rss.example/e/1");
-    assert.strictEqual(byTitle(rows, "feedlink concert").ticket_url, null);
+    assert.ok(!("ticket_url" in byTitle(rows, "feedlink concert")), "RSS: a rejected link is left out of the write");
     assert.strictEqual(byTitle(rows, "rel concert").ticket_url, "https://rss.example/e/2");
   }
   console.log("PASS: RSS — same rule");

@@ -594,7 +594,8 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       is_all_day: start.hour === null,
       time_display: timeDisplay,
       // Q17: an absolute http(s) event page, a site-relative path resolved against this feed's own site, or null. A
-      // CivicPlus calendar-feed path is not an event page (api/_lib/link-field.js); the rejection is reported, not hidden.
+      // CivicPlus calendar-feed path is not an event page (api/_lib/link-field.js); the rejection is reported, not hidden, and
+      // the field is then left out of the write so it never replaces a stored link.
       ticket_url: link.url,
       image_url: ev.image || null,
       // Just the feed's own organization/venue name, matching every other
@@ -636,7 +637,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     // stripped before the write (upsertParsedRows).
     if (policy) row._publication = classify(row, { start, end }, policy);
     if (ev.recurring || ev.recurrenceId) row._recurring = true; // internal marker for api/_lib/ingest-eligibility.js; stripped before the write
-    if (link.url === null && link.raw) rows.rejectedLinks.push({ external_id: row.external_id, raw: link.raw, reason: link.reason });
+    if (link.url === null) {
+      if (link.raw) rows.rejectedLinks.push({ external_id: row.external_id, raw: link.raw, reason: link.reason });
+      delete row.ticket_url; // a rejected or missing source link never overwrites a stored one; a new row gets the column default (null)
+    }
     rows.push(row);
   }
   // BUG-012: see feedDefaultCity above. Runs once the whole fetch is known,
@@ -809,7 +813,10 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
       _dateConfidence: explicit ? "extracted" : "pubdate-fallback",
     };
 
-    if (link.url === null && link.raw) rows.rejectedLinks.push({ external_id: row.external_id, raw: link.raw, reason: link.reason });
+    if (link.url === null) {
+      if (link.raw) rows.rejectedLinks.push({ external_id: row.external_id, raw: link.raw, reason: link.reason });
+      delete row.ticket_url; // a rejected or missing source link never overwrites a stored one; a new row gets the column default (null)
+    }
     rows.push(row);
   }
   return rows;

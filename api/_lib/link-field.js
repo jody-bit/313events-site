@@ -52,19 +52,19 @@ function resolveLinkField(value, baseUrl) {
   return { url: null, raw, reason: "not_a_link" };
 }
 
-// Applies the rule to one row without mutating it. ticket_url is source-authoritative, so an unusable value is written as
-// null (a refresh clears a stored feed path). event_url is protect-from-blank (event-contract FIELD_POLICY), so an unusable
-// value is omitted and the stored one stands. A field the row does not carry is left absent.
+// Applies the rule to one row without mutating it. An unusable value is OMITTED from the write for both fields, so a rejected
+// incoming link can never overwrite a valid stored one (merge-duplicates leaves an omitted column alone; a new row gets the
+// column default, null). A field the row does not
+// carry is left absent. Existing stored feed paths are cleared by the guarded repair, not by a refresh.
 function normalizeRowLinks(row) {
   if (row === null || typeof row !== "object" || Array.isArray(row)) return row;
   let out = row;
   for (const field of ["ticket_url", "event_url"]) {
-    if (!(field in row) || row[field] === undefined || row[field] === null) continue;
+    if (!(field in row)) continue;
     const clean = normalizeLinkField(row[field]);
     if (clean === row[field]) continue;
     if (out === row) out = { ...row };
     if (clean !== null) out[field] = clean;
-    else if (field === "ticket_url") out[field] = null;
     else delete out[field];
   }
   return out;
