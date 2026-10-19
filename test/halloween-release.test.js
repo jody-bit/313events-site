@@ -1,9 +1,9 @@
 // test/halloween-release.test.js — the Halloween 2026 owner approval and final editorial decision.
-//   * all 52 inventory records are preserved; 49 carry exactly the owner's approval (2026-10-11); 3 duplicate/closed records are excluded
+//   * all 52 inventory records are preserved; 45 carry exactly the owner's approval (2026-10-11); 7 duplicate/closed/ended records are excluded
 //     with their history preserved and carry no approval
 //   * the documented factual corrections are applied
-//   * the publication gate still decides: exactly 29 records are public, each with official 2026 evidence and an authorized image route
-//     (7 original: owner photos or linked images; 22 on the owner's established labelled-illustration route)
+//   * the publication gate still decides: exactly 25 records are public, each with official 2026 evidence and an authorized image route
+//     (7 original: owner photos or linked images; 18 on the owner's established labelled-illustration route)
 //   * linked images are never represented as licensed; held records are never public; the closed Fall batch is untouched
 "use strict";
 const assert = require("assert");
@@ -34,11 +34,11 @@ assert.strictEqual(H.length, 52);
 assert.deepStrictEqual(Object.keys(rel.records).sort(), H.map((e) => e.id).sort(), "release data covers exactly the 52 inventory records");
 assert.deepStrictEqual(Object.keys(batch.records.reduce((o, r) => (o[r.id] = 1, o), {})).sort(), H.map((e) => e.id).sort());
 
-// 2. approvals: 49 exactly the owner's, 3 excluded none
+// 2. approvals: 45 exactly the owner's, 7 excluded none
 const excluded = H.filter((e) => e.disposition);
 assert.deepStrictEqual(excluded.map((e) => e.id).sort(), Object.keys(AUTHZ.HALLOWEEN_EXCLUDED).sort(), "the three duplicate/closed records");
 for (const e of H) AUTHZ.checkApproval(assert, "halloween", e, new Set());
-assert.strictEqual(H.filter((e) => e.approval).length, 49);
+assert.strictEqual(H.filter((e) => e.approval).length, 45);
 for (const e of H.filter((e) => e.approval)) { assert.ok(e.editorialAccepted && e.editorialAccepted.at === "2026-10-11", e.id + ": editorial acceptance recorded"); assert.ok(/does not waive the publication gate/.test(e.editorialAccepted.scope)); }
 
 // 3. exclusion keeps history; the guard keeps them out even if an approval were added
@@ -54,7 +54,7 @@ assert.strictEqual(byId["scarehouse-windsor-immersive-dinner"].disposition.of, "
 assert.strictEqual(byId["windsor-essex-yard-haunt-map"].disposition.of, "halloween-hunt-the-haunts");
 assert.strictEqual(byId["exit-13-haunted-house"].disposition.type, "closed");
 
-// 4. exactly 29 public, each with every gate item and an authorized image route; the rest held with a reason
+// 4. exactly 25 public, each with every gate item and an authorized image route; the rest held with a reason
 const pubIds = H.filter(C.isPublic).map((e) => e.id).sort();
 assert.deepStrictEqual(pubIds, AUTHZ.HALLOWEEN_PUBLISHED);
 for (const id of pubIds) {
@@ -64,18 +64,18 @@ for (const id of pubIds) {
   assert.ok(byId[id].evidence.some((x) => x.level === "official" && x.websiteChecked === true), id + ": factual verification is not waived (official-page read recorded)");
   assert.strictEqual(byId[id].status, "PUBLISHED");
 }
-assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 49, 29, 20, 3]);
+assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 45, 25, 20, 7]);
 for (const r of batch.records.filter((r) => r.category === "held")) { assert.ok(r.reasons.length >= 1 && r.reasons.every((x) => x.length > 20), r.id + ": held with an exact reason"); assert.ok(!C.isPublic(byId[r.id])); }
 const states = H.reduce((o, e) => (o[e.status] = (o[e.status] || 0) + 1, o), {});
-assert.deepStrictEqual(states, { PUBLISHED: 29, HOLD_UNVERIFIED: 23 });
+assert.deepStrictEqual(states, { PUBLISHED: 25, HOLD_UNVERIFIED: 27 });
 // the 20 held records are held for FACTUAL verification (no official 2026 evidence, or only indirect evidence); the illustration route is not recorded on them
 const held = H.filter((e) => !e.disposition && !C.isPublic(e));
 assert.strictEqual(held.length, 20);
 for (const e of held) { const g = C.gate(e); assert.ok(!g.official || !g.relevance, e.id + ": held for factual verification"); assert.notStrictEqual(g.imageRoute, "illustration", e.id + ": no illustration route on an unverified record"); }
-assert.deepStrictEqual(Object.keys(rel.records).filter((id) => rel.records[id].tier === "verified").sort(), AUTHZ.HALLOWEEN_ILLUSTRATED.slice().sort());
+assert.deepStrictEqual(Object.keys(rel.records).filter((id) => rel.records[id].tier === "verified" && !rel.records[id].disposition).sort(), AUTHZ.HALLOWEEN_ILLUSTRATED.slice().sort());
 
-// 4b. the owner's established illustration decision (2026-10-12): the 22 verified records without an authorized photo publish on the labelled route
-assert.strictEqual(AUTHZ.HALLOWEEN_ILLUSTRATED.length, 22);
+// 4b. the owner's established illustration decision (2026-10-12): the 18 verified records without an authorized photo publish on the labelled route
+assert.strictEqual(AUTHZ.HALLOWEEN_ILLUSTRATED.length, 18);
 for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
   const e = byId[id], im = e.image, g = C.gate(e);
   if (PHOTO_B2.has(id)) { // since replaced by a licensed photograph (photography batch 2); the credit must reach the public card
@@ -145,7 +145,7 @@ assert.ok(!/\$\d/.test(JSON.stringify(projection)), "no price appears on any pub
 const html = fs.readFileSync(path.join(root, "halloween.html"), "utf8");
 assert.ok(/sold out for 2026/i.test(html), "the built page shows the sold-out advisory");
 const htmlIds = [...new Set([...html.matchAll(/data-entry="([^"]+)"/g)].map((m) => m[1]))].sort();
-assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds exactly the 29");
+assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds exactly the 25");
 
 // 6b. mobile word-breaking fix (shared by all three seasonal pages): cards with a 10+ letter word carry the size hint
 {

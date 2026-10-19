@@ -49,10 +49,10 @@ for (const col of ["fall", "fall-color"]) {
 const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 76, "Fall approvals only on the 76 authorized records");
 assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 76, "only the 76 Fall records are public");
-// Halloween has its own, later owner approval (2026-10-11): 49 records, exactly AUTH_HALLOWEEN; 3 excluded carry none.
-assert.strictEqual(E.halloween.filter((e) => e.approval).length, 49, "49 Halloween approvals");
+// Halloween has its own, later owner approval (2026-10-11): 45 records, exactly AUTH_HALLOWEEN; 3 excluded carry none.
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 45, "45 Halloween approvals");
 E.halloween.filter((e) => e.approval).forEach((e) => assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id));
-assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned 29 Halloween records are public");
+assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned 25 Halloween records are public");
 
 // ---- the original 15 are unchanged (name, city, description, link, image, credit, Don't Miss)
 // Re-pinned 2026-10-12 with owner approval (photography batch 1, commit 5813bfec): franklin-cider-mill and plymouth-orchards-and-cider-mill
