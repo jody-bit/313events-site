@@ -23,7 +23,7 @@ const { partitionExpired } = require("./_lib/ingest-eligibility");
 // Congregation-specific rule) — that's shared logic other consumers
 // (press-coverage matching) also depend on, and changing it is a separate
 // decision.
-const { resolveLinkField } = require("./_lib/link-field");
+const { resolveLinkField, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
 const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
@@ -458,7 +458,7 @@ function rejectedLinkNote(rows) {
   if (!list || !list.length) return "";
   const byReason = {};
   for (const r of list) byReason[r.reason] = (byReason[r.reason] || 0) + 1;
-  return `${list.length} source link${list.length === 1 ? "" : "s"} not usable as a ticket link (${Object.entries(byReason).map(([k, n]) => `${k} ${n}`).join(", ")}); example ${list[0].raw.slice(0, 80)}`;
+  return `${list.length} source link${list.length === 1 ? "" : "s"} not usable as a ticket link (${Object.entries(byReason).map(([k, n]) => `${k} ${n}`).join(", ")}); example ${sanitizeLinkForLog(list[0].raw).slice(0, 80)}`;
 }
 
 // Converts parsed ICS VEVENTs into rows shaped for the `events` table,
@@ -939,6 +939,7 @@ const handleRequest = async (req, res) => {
   }
 
   let totalUpserted = 0;
+  const linkLog = createRejectionLog({ limit: 20 }); // Q17: at most 20 sanitized rejected links logged per run, the rest aggregated
   let totalSkippedPast = 0;
   const results = [];
 
@@ -982,7 +983,7 @@ const handleRequest = async (req, res) => {
             pollResult = outcome.upserted && !outcome.failed
               ? `${outcome.pollResult}${lowConfidenceCount ? ` (${lowConfidenceCount} with a pubDate-fallback date, needs human verification)` : ""}`
               : outcome.pollResult;
-            { const linkNote = rejectedLinkNote(rows); if (linkNote) pollResult += ` [${linkNote}]`; }
+            { const linkNote = rejectedLinkNote(rows); if (linkNote) pollResult += ` [${linkNote}]`; linkLog.record(feedSource, rows.rejectedLinks); }
           }
         }
       } else if (feedSource.feed_format !== "ics") {
@@ -1020,7 +1021,7 @@ const handleRequest = async (req, res) => {
             totalUpserted += outcome.upserted;
             totalSkippedPast += outcome.skippedPast || 0;
             pollResult = enrichNote ? `${outcome.pollResult} (${enrichNote})` : outcome.pollResult;
-            { const linkNote = rejectedLinkNote(rows); if (linkNote) pollResult += ` [${linkNote}]`; }
+            { const linkNote = rejectedLinkNote(rows); if (linkNote) pollResult += ` [${linkNote}]`; linkLog.record(feedSource, rows.rejectedLinks); }
           }
         }
       }
@@ -1032,6 +1033,7 @@ const handleRequest = async (req, res) => {
     await patchFeedSource(feedSource.id, { last_polled_at: new Date().toISOString(), last_poll_result: pollResult }, sbHeaders);
   }
 
-  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, results, fetchedAt: new Date().toISOString() });
+  linkLog.flush();
+  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, results, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });

@@ -76,6 +76,8 @@ async function run() {
     assert.strictEqual(byTitle(rows, "rel").ticket_url, "https://www.royaloakmi.com/Calendar.aspx?EID=913", "a site-relative event page resolves against the feed's own site");
     assert.strictEqual(rows.length, 6, "no event is dropped for a bad link");
     const text = JSON.stringify(body);
+    assert.strictEqual(body.linkRejections.logged, 3, "the run reports the three bounded diagnostics it logged");
+    assert.deepStrictEqual(body.linkRejections.totalsBySourceAndReason.map((t) => [t.source, t.reason, t.count]).sort(), [["fs-ro", "feed_path", 2], ["fs-ro", "not_a_link", 1]]);
     assert.ok(/3 source links not usable/.test(text) && /feed_path 2/.test(text) && /not_a_link 1/.test(text), `the run log names the rejections: ${text}`);
   }
   console.log("PASS: ICS — feed paths and price text are not stored, good and resolvable links are, no event is dropped, the rejection is in the run log");

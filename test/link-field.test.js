@@ -8,7 +8,7 @@
 const assert = require("assert");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { normalizeLinkField, resolveLinkField, normalizeRowLinks } = require(`${REPO_DIR}/api/_lib/link-field.js`);
+const { normalizeLinkField, resolveLinkField, normalizeRowLinks, sanitizeLinkForLog, createRejectionLog } = require(`${REPO_DIR}/api/_lib/link-field.js`);
 const { upsertEventRows } = require(`${REPO_DIR}/api/_lib/event-upsert.js`);
 const contract = require(`${REPO_DIR}/api/_lib/event-contract.js`);
 const { makeMockPostgrest, eventsSchema } = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
@@ -110,6 +110,42 @@ async function run() {
     assert.strictEqual(tables.events.find((r) => r.external_id === "own-1").ticket_url, "https://example.com/fixed", "the owner correction survives a feed refresh");
   }
   console.log("PASS: an owner-corrected ticket_url still wins over the feed");
+
+  // --- 5. diagnostics: sanitized, bounded, aggregated ---------------------------------------------------------------
+  {
+    const clean = sanitizeLinkForLog("https://user:hunter2@x.org/e/1?token=abc123&email=jo@x.org&catID=7&sig=zz#frag");
+    assert.ok(!/hunter2|abc123|jo@x\.org|zz|frag|user:/.test(clean), `credentials, tokens, email and fragment are redacted: ${clean}`);
+    assert.ok(/catID=7/.test(clean), "a harmless parameter stays useful");
+    assert.strictEqual(sanitizeLinkForLog("/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23"), "/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23");
+    assert.strictEqual(sanitizeLinkForLog("/a?api_key=SECRET&x=1"), "/a?api_key=[redacted]&x=1", "a relative value is masked too");
+    assert.ok(!/@/.test(sanitizeLinkForLog("Email jo@x.org to pay at the door")) && /\[email\]/.test(sanitizeLinkForLog("Email jo@x.org")));
+    assert.ok(!/555/.test(sanitizeLinkForLog("Call (313) 555-0142 for tickets")), "phone numbers are masked");
+    assert.ok(!/[0-9a-f]{24}/.test(sanitizeLinkForLog("https://x.org/t/0123456789abcdef0123456789abcdef/e")), "long token-like path segments are masked");
+    assert.ok(sanitizeLinkForLog("x".repeat(500)).length <= 121, "long values are cut");
+    assert.strictEqual(sanitizeLinkForLog(undefined), "");
+
+    const lines = [];
+    const rl = createRejectionLog({ limit: 20, log: (l) => lines.push(l) });
+    const a = { id: "fs-a", venue_name: "City A" }, b = { id: "fs-b", venue_name: "City B" };
+    rl.record(a, Array.from({ length: 15 }, (_, i) => ({ raw: `/p/${i}?token=t${i}`, reason: "feed_path" })));
+    rl.record(b, Array.from({ length: 10 }, () => ({ raw: "Pay at the door", reason: "not_a_link" })));
+    rl.record(a, [{ raw: "/x?token=late", reason: "feed_path" }]);
+    rl.flush();
+    const detail = lines.filter((l) => l.includes("rejected_ticket_link source="));
+    assert.strictEqual(detail.length, 20, "at most 20 individual values are logged per run");
+    assert.ok(detail.every((l) => /source=fs-[ab] reason=(feed_path|not_a_link) value=/.test(l)), "each line carries source, reason, value");
+    assert.ok(!lines.join("\n").includes("token=t"), "no raw token value reaches the log");
+    assert.ok(!lines.join("\n").includes("late"), "values past the limit are not logged");
+    const agg = lines.filter((l) => l.includes("rejected_ticket_link_aggregate"));
+    assert.deepStrictEqual(agg.sort(), [
+      "[feeds] rejected_ticket_link_aggregate source=fs-a reason=feed_path count=1",
+      "[feeds] rejected_ticket_link_aggregate source=fs-b reason=not_a_link count=5",
+    ].sort(), "the rest are aggregated by source and reason, without values");
+    const sum = rl.summary();
+    assert.strictEqual(sum.logged, 20);
+    assert.strictEqual(sum.totalsBySourceAndReason.reduce((n, t) => n + t.count, 0), 26, "totals account for every rejection");
+  }
+  console.log("PASS: rejected links are logged sanitized, at most 20 per run, the rest aggregated by source and reason without values");
 
   console.log("\nAll link-field.test.js checks passed.");
 }
