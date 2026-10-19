@@ -564,14 +564,41 @@ async function checkJsonValidation(path) {
   return "400 as expected";
 }
 
+// Fetches the short-lived upload token the endpoint now requires (P0 hardening, 2026-10-17).
+async function fetchUploadToken() {
+  const resp = await fetch(`${BASE_URL}/api/upload-image`);
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok || !data.token) throw new Error(`could not obtain an upload token, got ${resp.status}`);
+  return data.token;
+}
+
+// A minimal valid 1x1 JPEG: the endpoint now inspects the bytes, so filler bytes are rejected.
+const TINY_JPEG = Buffer.from(
+  "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
+  "base64"
+);
+
 async function checkUploadImageValidation() {
+  const noToken = await fetch(`${BASE_URL}/api/upload-image`, {
+    method: "POST",
+    headers: { "Content-Type": "image/jpeg" },
+    body: TINY_JPEG,
+  });
+  if (noToken.status !== 401) throw new Error(`expected 401 for an upload with no token, got ${noToken.status}`);
+  const token = await fetchUploadToken();
   const resp = await fetch(`${BASE_URL}/api/upload-image`, {
     method: "POST",
-    headers: { "Content-Type": "text/plain" },
+    headers: { "Content-Type": "text/plain", "X-Upload-Token": token },
     body: "not an image",
   });
   if (resp.status !== 400) throw new Error(`expected 400 for a non-image body, got ${resp.status}`);
-  return "400 as expected";
+  const spoof = await fetch(`${BASE_URL}/api/upload-image`, {
+    method: "POST",
+    headers: { "Content-Type": "image/png", "X-Upload-Token": token },
+    body: "not an image pretending to be a png",
+  });
+  if (spoof.status !== 400) throw new Error(`expected 400 for non-image bytes labelled image/png, got ${spoof.status}`);
+  return "401 without a token, 400 for a non-image and for spoofed bytes";
 }
 
 // 2026-09-05, added after Jody's friend hit "No image data received." on
@@ -592,11 +619,11 @@ async function checkUploadImageValidation() {
 const UPLOAD_BUCKET = "event-flyers";
 
 async function checkUploadImageSuccess() {
-  const bytes = new Uint8Array(256).fill(1); // real non-empty bytes, real image/jpeg content-type
+  const token = await fetchUploadToken();
   const resp = await fetch(`${BASE_URL}/api/upload-image`, {
     method: "POST",
-    headers: { "Content-Type": "image/jpeg" },
-    body: bytes,
+    headers: { "Content-Type": "image/jpeg", "X-Upload-Token": token },
+    body: TINY_JPEG,
   });
   if (!resp.ok) {
     const body = await resp.text().catch(() => "");

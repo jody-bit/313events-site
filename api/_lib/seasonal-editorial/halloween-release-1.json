@@ -301,6 +301,16 @@
           "/assets/seasonal/halloween-card-7.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "City of Dearborn listed Fri Oct 16 to Sun Oct 18, 7 PM; the final night is Oct 18. Retained as a non-public record.",
+        "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+        "recordedAt": "2026-10-18",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "sanilac-museums-haunted-village": {
@@ -319,6 +329,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "Museum calendar listed Saturdays Oct 10 and 17, 7-9 PM only; both dates have passed. Retained as a non-public record.",
+        "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+        "recordedAt": "2026-10-18",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "distracted-haunted-house": {
@@ -532,6 +552,16 @@
           "/assets/seasonal/halloween-card-2.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "Jane's Walk site listed a single walk, Saturday Oct 17, 11 AM-12 PM; it has passed. Retained as a non-public record.",
+        "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+        "recordedAt": "2026-10-18",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "sandwich-town-ghost-tour": {
@@ -548,6 +578,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "Sandwich Town BIA event page listed a single tour, Oct 17, 7:30-9:30 PM; it has passed. Retained as a non-public record.",
+        "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+        "recordedAt": "2026-10-18",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "rotten-manor": {

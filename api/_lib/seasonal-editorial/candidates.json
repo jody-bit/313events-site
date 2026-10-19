@@ -24,7 +24,7 @@
    "inventory_note": "Cider/orchard",
    "status": "CONTENT_VERIFIED",
    "published_id": null,
-   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval.",
+   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 4 image rights; 5 explicit approval.",
    "flags": [],
    "entry_id": "almar-orchards"
   },
@@ -162,9 +162,9 @@
    "name": "Damouni Orchards",
    "location": "Flint, MI",
    "inventory_note": "Orchard",
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "published_id": null,
-   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval.",
+   "reason": "Gate state PUBLISHED. All gate items recorded.",
    "flags": [],
    "entry_id": "damouni-orchards"
   },
@@ -268,9 +268,9 @@
    "name": "Goodison Cider Mill",
    "location": "Rochester, MI",
    "inventory_note": "Cider/orchard",
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "published_id": null,
-   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval.",
+   "reason": "Gate state PUBLISHED. All gate items recorded.",
    "flags": [],
    "entry_id": "goodison-cider-mill"
   },
@@ -299,21 +299,6 @@
    "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 1 official verification; 2 relevance; 3 image; 5 explicit approval.",
    "flags": [],
    "entry_id": "jennys-farm-stand-and-cider-mill"
-  },
-  {
-   "collection": "fall",
-   "inventory_no": "20",
-   "section": null,
-   "name": "JK’s Farmhouse Ciders / Almar Orchards",
-   "location": "Flushing, MI",
-   "inventory_note": "Same destination as Almar",
-   "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
-   "flags": [
-    "duplicate of another entry; merge before publishing"
-   ],
-   "entry_id": "jks-farmhouse-ciders-almar-orchards"
   },
   {
    "collection": "fall",
@@ -1946,9 +1931,9 @@
    "name": "Dearborn Haunted Trail",
    "location": "Dearborn, MI",
    "inventory_note": "Haunted woodland trail",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "dearborn-haunted-trail",
@@ -1971,7 +1956,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1986,9 +1971,9 @@
    "name": "Sanilac Museum's Haunted Village",
    "location": "Port Sanilac, MI",
    "inventory_note": "Haunted historic village; radius check",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "radius check needed"
    ],
@@ -2011,7 +1996,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -3053,9 +3038,9 @@
    "name": "Spooky Jane's Walk",
    "location": "Windsor–Essex, ON",
    "inventory_note": "Haunted-history walking tours",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -3077,7 +3062,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "ghosts-history"
@@ -3092,9 +3077,9 @@
    "name": "Sandwich Town Ghost Tour",
    "location": "Windsor, ON",
    "inventory_note": "Historical ghost walk",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -3116,7 +3101,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "ghosts-history"
@@ -3464,9 +3449,9 @@
    "name": "Kensington Metropark",
    "location": "Milford, MI",
    "inventory_note": "Lake / forest / drive",
-   "status": "CONTENT_VERIFIED",
+   "status": "PUBLISHED",
    "published_id": "kensington-metropark",
-   "reason": "Gate state CONTENT_VERIFIED. Outstanding: 3 image; 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "entry_id": "kensington-metropark"
   },
