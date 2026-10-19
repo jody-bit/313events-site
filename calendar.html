@@ -50,7 +50,7 @@
     --panel-hover:#272727;
     --ink:#F2F0E8;         /* warm white — primary text */
     --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
-    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
+    --ink-dim:#8a8b85;     /* dim concrete — otherMonth / disabled text */
     --line:#2c2c2c;
     --line-soft:#212121;
     --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
@@ -326,7 +326,7 @@
      dims slightly as a temporal cue. Events, pills, and counts stay at full
      opacity so nothing reads as "disabled". Doesn't apply to .today, which
      has its own treatment, or otherMonth cells (already dimmed via panel-alt). */
-  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.55;}
+  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.75;}
   .today-label{
     font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.05em;
     color:var(--accent);text-transform:uppercase;

@@ -44,7 +44,7 @@
   :root{
     --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
@@ -108,6 +108,8 @@
     display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
     padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
   }
+  /* Dark badge text fails 4.5:1 on these three category colors; white passes (5.4 to 5.9:1). */
+  .evt-cat-badge[data-cat="music"],.evt-cat-badge[data-cat="food"],.evt-cat-badge[data-cat="gaming"]{color:#fff;}
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
@@ -787,6 +789,7 @@ function renderEvent(e){
   const badge = document.getElementById('evtCatBadge');
   badge.textContent = cat.label;
   badge.style.background = cat.color;
+  badge.dataset.cat = e.cat || '';
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this
