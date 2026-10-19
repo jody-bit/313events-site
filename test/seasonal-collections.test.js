@@ -352,9 +352,19 @@ for (const [slug, route] of Object.entries(routes)) {
 
 // ---- 8. scope guard (B4): deterministic base (origin/main), explicit allow-list, loud on missing evidence
 // Unit tests for the guard itself are in test/scope-guard.test.js. Here the real branch is checked.
+// On a checkout whose HEAD is exactly origin/main (main itself, or a fresh branch with no commits yet) there is no
+// change to guard, so the guard's deliberate "empty diff" failure is not evidence of a problem. That case is decided
+// by comparing commit ids, never by catching the error: a missing base, unrelated history or an empty diff on any
+// other HEAD still fails loudly.
 {
-  const r = GUARD.check({ cwd: root }); // throws (fails this test) if origin/main is unavailable or the diff is empty
-  assert.deepStrictEqual(r.violations, [], "protected files changed outside the allow-list: " + r.violations.join(", "));
-  assert.ok(r.changed.length > 0);
+  const sha = (ref) => { try { return execFileSync("git", ["rev-parse", "--verify", "--quiet", ref + "^{commit}"], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim(); } catch (e) { return ""; } };
+  const baseSha = sha(process.env.SCOPE_GUARD_BASE || GUARD.DEFAULT_BASE);
+  if (baseSha && baseSha === sha("HEAD")) {
+    console.log("seasonal-collections: HEAD is the scope-guard base; nothing to guard");
+  } else {
+    const r = GUARD.check({ cwd: root }); // throws (fails this test) if origin/main is unavailable or the diff is empty
+    assert.deepStrictEqual(r.violations, [], "protected files changed outside the allow-list: " + r.violations.join(", "));
+    assert.ok(r.changed.length > 0);
+  }
 }
 console.log("seasonal-collections: ok");

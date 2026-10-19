@@ -335,7 +335,7 @@ function check(name, fn) {
     const bodies = [];
     try {
       delete process.env.EVENTS_LAST_SEEN_AT_SOURCE;
-      global.fetch = async (url, init) => { bodies.push(init.body); return { ok: true, status: 201, text: async () => "" }; };
+      global.fetch = async (url, init) => { if (String(url).includes("internal_note=like.")) return { ok: true, status: 200, json: async () => [], text: async () => "[]" }; /* #185 owner-correction read */ bodies.push(init.body); return { ok: true, status: 201, text: async () => "" }; };
       await upsertEventRows("https://example.test", "k", rows);
       assert.ok(!bodies[0].includes("last_seen_at_source"), "OFF by default: request body unchanged");
 
@@ -350,6 +350,7 @@ function check(name, fn) {
       bodies.length = 0;
       let n = 0;
       global.fetch = async (url, init) => {
+        if (String(url).includes("internal_note=like.")) return { ok: true, status: 200, json: async () => [], text: async () => "[]" }; // #185 owner-correction read
         bodies.push(init.body);
         n += 1;
         if (n === 1) return { ok: false, status: 400, text: async () => '{"code":"PGRST204","message":"Could not find the \'last_seen_at_source\' column of \'events\' in the schema cache"}' };
@@ -361,7 +362,7 @@ function check(name, fn) {
       assert.strictEqual(bodies.length, 2);
       assert.ok(!bodies[1].includes("last_seen_at_source"), "resent without the column");
 
-      global.fetch = async () => ({ ok: false, status: 400, text: async () => "some other validation error" });
+      global.fetch = async (url) => (String(url).includes("internal_note=like.") ? { ok: true, status: 200, json: async () => [], text: async () => "[]" } : { ok: false, status: 400, text: async () => "some other validation error" });
       const other = await upsertEventRows("https://example.test", "k", rows);
       assert.strictEqual(other.ok, false);
       assert.strictEqual(await other.text(), "some other validation error", "other errors are reported unchanged");

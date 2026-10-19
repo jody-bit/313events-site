@@ -75,12 +75,12 @@ async function run() {
   assert.strictEqual(isExpiredPending({ start_date: "2026-10-14" }, "2026-10-14"), false);
   assert.strictEqual(isExpiredPending({ start_date: "2026-10-13" }, "2026-10-14"), true);
 
-  // The admin page offers the historical view (a visible button) and keeps it out of the tab badge.
+  // The admin page offers the historical view (History lane) and keeps it out of the tab badge.
   const page = require("fs").readFileSync(`${REPO_DIR}/admin.html`, "utf8");
-  assert.ok(/id="queueViewBtn"[^>]*onclick="toggleQueueView\(\)"/.test(page), "a button switches to the historical view");
-  assert.ok(page.includes("'/api/admin-events' + (QUEUE_EXPIRED_VIEW ? '?expired=1' : '')"), "the button loads ?expired=1");
-  // Stage 2 (owner decision 2026-10-16): the badge counts only actionable records, still never in the historical view.
-  assert.ok(page.includes("if (!QUEUE_EXPIRED_VIEW) setTabBadge('submissions', badgeCount);"), "the badge counts the current queue only");
+  assert.ok(/data-lane="history" onclick="subSetLane\('history'\)"/.test(page), "a lane switches to the historical view");
+  assert.ok(page.includes("fetch('/api/admin-events?expired=1'"), "the History lane loads ?expired=1");
+  // The badge counts the Needs a person lane of the current queue only, never the historical view.
+  assert.ok(page.includes("setTabBadge('submissions', counts.person)") && !/SUB_ENDED[^;]*setTabBadge/.test(page), "the badge counts the current queue only");
   console.log("PASS: admin page links to the historical view");
 
   // Paging: 2,300 pending rows with one shared created_at, ended rows scattered through them.

@@ -100,6 +100,129 @@ function isoDay(v) {
   return new Date(t).toISOString().slice(0, 10) === v ? Math.floor(t / MS_PER_DAY) : null;
 }
 
+// ---- owner corrections (REL-001 / #185 increment 1) --------------------------------------------------------------
+// A person's correction of a stored event is recorded as one audit line in the private `internal_note` (no migration):
+//   OWNER-CORRECTION <iso time> <editor> fields=<comma list> | <field>: "<old>" -> "<new>"; ...
+// The `fields=` list is the marker. It is the INTERIM lock: until a dedicated lock column exists (separately
+// authorized, shared with LGP-2 #176), ingestion must not write over a field named in it. ownerCorrectedFields()
+// reads the marker; protectOwnerCorrections() applies it to a batch of rows about to be upserted.
+const OWNER_CORRECTION_MARKER = "OWNER-CORRECTION";
+const OWNER_EDITABLE_FIELDS = Object.freeze(["title", "description", "category", "venue_name_raw", "venue_address_raw", "venue_city_raw", "ticket_url", "event_url", "time_display", "price_from"]);
+// A corrected venue name must not be re-resolved to a different venue by the next run.
+const OWNER_LOCK_ALSO = Object.freeze({ venue_name_raw: ["venue_id"] });
+const OWNER_CORRECTION_LINE = new RegExp("^" + OWNER_CORRECTION_MARKER + "\\s+\\S+\\s+\\S+\\s+fields=([a-z_,]+)", "gm");
+
+// -> Set of column names a person has corrected (including the columns locked with them). Never throws.
+function ownerCorrectedFields(internalNote) {
+  const out = new Set();
+  if (typeof internalNote !== "string" || !internalNote.includes(OWNER_CORRECTION_MARKER)) return out;
+  for (const m of internalNote.matchAll(OWNER_CORRECTION_LINE)) {
+    for (const f of m[1].split(",")) {
+      if (!OWNER_EDITABLE_FIELDS.includes(f)) continue;
+      out.add(f);
+      for (const extra of OWNER_LOCK_ALSO[f] || []) out.add(extra);
+    }
+  }
+  return out;
+}
+
+// rows: rows about to be upserted; corrected: Map(external_id -> { internal_note, <stored columns> }).
+// For every locked field the row's value is replaced by the STORED value (never omitted: a NOT NULL column such as
+// title is checked on the proposed row first, so an omitted key would fail the whole row). A stored blank locks the
+// field by omitting the key. Rows not in the map are returned untouched. -> { rows, protectedRows }
+function protectOwnerCorrections(rows, corrected) {
+  if (!(corrected instanceof Map) || !corrected.size) return { rows: rows, protectedRows: 0 };
+  let protectedRows = 0;
+  const out = rows.map((row) => {
+    const stored = row && typeof row === "object" && !blank(row.external_id) ? corrected.get(row.external_id) : null;
+    if (!stored) return row;
+    const locked = ownerCorrectedFields(stored.internal_note);
+    if (!locked.size) return row;
+    const next = { ...row };
+    let touched = false;
+    for (const f of locked) {
+      if (!(f in next)) continue;
+      touched = true;
+      if (blank(stored[f])) delete next[f]; else next[f] = stored[f];
+    }
+    if (touched) protectedRows++;
+    return next;
+  });
+  return { rows: out, protectedRows };
+}
+
+// ---- the correction itself: validate, describe, record -------------------------------------------------------
+const CORRECTION_LIMITS = Object.freeze({ title: [3, 200], description: [1, 5000], venue_name_raw: [1, 200], venue_address_raw: [1, 300], venue_city_raw: [1, 120], time_display: [1, 100], ticket_url: [1, 2000], event_url: [1, 2000], category: [1, 40], note: 200 });
+const AUDIT_VALUE_MAX = 2000;
+
+function isHttpUrl(v) {
+  try { const u = new URL(v); return u.protocol === "http:" || u.protocol === "https:"; } catch { return false; }
+}
+
+// fields: the requested { field: value }; current: the stored row. -> { errors: [{field,message}], changes: [{field,before,after}] }
+// A value equal to the stored one is ignored. A blank value is an error (a correction replaces; it never clears).
+// `category` is checked by the database enum (the app's category allow-lists must equal it; test/category-contract.test.js).
+function validateCorrection(fields, current) {
+  const errors = [], changes = [];
+  if (!fields || typeof fields !== "object" || Array.isArray(fields) || !Object.keys(fields).length) return { errors: [{ field: null, message: "fields must name at least one field to correct" }], changes };
+  for (const [field, raw] of Object.entries(fields)) {
+    if (!OWNER_EDITABLE_FIELDS.includes(field)) { errors.push({ field, message: "not a field that can be corrected in this version" }); continue; }
+    if (field === "price_from") {
+      // A number (or numeric text) in dollars; 0 is a real price, blank is not accepted (a correction never clears).
+      const n = typeof raw === "number" ? raw : (typeof raw === "string" && raw.trim() !== "" ? Number(raw) : NaN);
+      if (!Number.isFinite(n) || n < 0 || n > 100000) { errors.push({ field, message: "must be a price from 0 to 100000" }); continue; }
+      const cur = current ? current[field] : null;
+      if (cur !== null && cur !== undefined && Number(cur) === n) continue;
+      changes.push({ field, before: cur === undefined ? null : cur, after: n });
+      continue;
+    }
+    if (typeof raw !== "string") { errors.push({ field, message: "must be text" }); continue; }
+    const value = raw.trim();
+    if (!value) { errors.push({ field, message: "cannot be blank; a correction replaces a value, it does not clear it" }); continue; }
+    const [min, max] = CORRECTION_LIMITS[field];
+    if (value.length < min || value.length > max) { errors.push({ field, message: `must be ${min}-${max} characters` }); continue; }
+    if ((field === "ticket_url" || field === "event_url") && !isHttpUrl(value)) { errors.push({ field, message: "must be a valid http(s) link" }); continue; }
+    const before = current ? current[field] : null;
+    if (typeof before === "string" && before.trim() === value) continue;
+    changes.push({ field, before: before === undefined ? null : before, after: value });
+  }
+  return { errors, changes };
+}
+
+const clip = (v) => (typeof v === "string" && v.length > AUDIT_VALUE_MAX ? v.slice(0, AUDIT_VALUE_MAX) + "…[truncated]" : v);
+
+// One audit line. Single line by construction (JSON escapes newlines); see the marker format above.
+function buildOwnerCorrectionLine({ at, editId, actor, changes, note }) {
+  const fields = changes.map((c) => c.field).join(",");
+  const detail = { actor: actor || "admin", changes: changes.map((c) => ({ f: c.field, b: clip(c.before), a: clip(c.after) })) };
+  if (note) detail.note = String(note).slice(0, CORRECTION_LIMITS.note);
+  return `${OWNER_CORRECTION_MARKER} ${at} ${editId} fields=${fields} | ${JSON.stringify(detail)}`;
+}
+
+function appendNoteLine(existingNote, line) {
+  return blank(existingNote) ? line : String(existingNote).replace(/\s+$/, "") + "\n" + line;
+}
+
+// -> [{ edit_id, at, actor, field, before, after, note }], oldest first. Unreadable lines are skipped, never thrown.
+function parseOwnerEdits(internalNote) {
+  const out = [];
+  if (typeof internalNote !== "string" || !internalNote.includes(OWNER_CORRECTION_MARKER)) return out;
+  for (const line of internalNote.split("\n")) {
+    const m = /^OWNER-CORRECTION\s+(\S+)\s+(\S+)\s+fields=[a-z_,]+ \| (.*)$/.exec(line);
+    if (!m) continue;
+    let d; try { d = JSON.parse(m[3]); } catch { continue; }
+    if (!d || !Array.isArray(d.changes)) continue;
+    for (const c of d.changes) out.push({ edit_id: m[2], at: m[1], actor: d.actor || null, field: c.f, before: c.b === undefined ? null : c.b, after: c.a === undefined ? null : c.a, note: d.note || null });
+  }
+  return out;
+}
+
+// Row annotation for the review queue: nothing from internal_note itself leaves the server.
+function ownerCorrectionView(row) {
+  const note = row && row.internal_note;
+  return { owner_corrected: Array.from(ownerCorrectedFields(note)).filter((f) => OWNER_EDITABLE_FIELDS.includes(f)), edits: parseOwnerEdits(note) };
+}
+
 function issue(code, field, severity, message) { return { code, field: field || null, severity, message: message || code }; }
 
 // ---- the rules -------------------------------------------------------------
@@ -294,4 +417,6 @@ function applyPublicationGate(rows, opts = {}) {
 module.exports = {
   GATE_VERSION, DECISION, ELIGIBILITY, SEVERITY, FIELD_POLICY,
   evaluateEvent, applyPublicationGate, sanitizeRow, isoDay,
+  OWNER_CORRECTION_MARKER, OWNER_EDITABLE_FIELDS, ownerCorrectedFields, protectOwnerCorrections,
+  validateCorrection, buildOwnerCorrectionLine, appendNoteLine, parseOwnerEdits, ownerCorrectionView,
 };
