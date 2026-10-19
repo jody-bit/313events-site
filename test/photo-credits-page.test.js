@@ -43,10 +43,18 @@ for (const e of data.entries.filter((x) => /illustration|risk/.test(x.image_kind
 assert.ok(!/Goodison|Damouni|Kensington Metropark/.test(page), "risk-accepted organizer images are not listed");
 
 // Share-alike note on CC BY-SA rows
-for (const e of publicEntries.filter((x) => x.sharealike)) {
+for (const e of publicEntries.filter((x) => /BY-SA/.test(x.license))) {
   const li = page.slice(page.indexOf(`id="credit-${e.collection}-${e.id}"`)).split("</li>")[0];
   assert.ok(/same license/.test(li), `${e.id}: share-alike note`);
 }
+
+// every CC BY-SA row carries the ShareAlike line (18 today); owner-photo rows use the approved public sentence
+assert.strictEqual(publicEntries.filter((x) => /BY-SA/.test(x.license)).length, 18, "18 BY-SA rows");
+for (const id of ["diehls-orchard-and-cider-mill", "highland-state-recreation-area"]) {
+  const li = page.slice(page.indexOf(`id="credit-`), page.length).split("</li>").find((x) => x.includes(id));
+  assert.ok(li.includes("Photography &copy; Miriam Vukich. Taken for 313.events and used with the photographer&rsquo;s authorization. Cropped and resized for display."), id + ": approved public sentence");
+}
+assert.ok(!/acquired block/.test(page), "no internal wording on the page");
 
 // the build refuses a required entry with no wording, or one that is not public
 {

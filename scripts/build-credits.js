@@ -63,7 +63,10 @@ function row(e) {
     bits.push(`Photography &copy; ${esc(e.credited_name || e.holder)}. Taken for 313.events and used with the photographer&rsquo;s authorization.`);
   }
   if (e.modification_disclosure) bits.push(esc(e.modification_disclosure));
-  if (e.sharealike) bits.push("Adaptations are shared under the same license.");
+  // Derived from the license name so the flag cannot drift from the license.
+  if (/BY-SA/.test(e.license || "")) bits.push("Adaptations are shared under the same license.");
+  const text = bits.join(" ");
+  if (/acquired block|internal/i.test(text)) throw new Error(`${e.collection}/${e.id}: internal wording would be published`);
   return `      <li class="legal-li" id="${esc(anchor)}"><strong>${esc(e.destination)}</strong> &mdash; ${bits.join(" ")}</li>`;
 }
 

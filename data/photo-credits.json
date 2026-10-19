@@ -366,12 +366,13 @@
    "authorization": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
    "authorization_recorded": "2026-10-12",
    "photo_id": "313p-9cdd1fd7",
-   "modification_disclosure": "Resized/cropped to card format (see acquired block)",
+   "modification_disclosure": "Cropped and resized for display.",
    "recommended_listing": "voluntary (photographer credit confirmed by owner 2026-10-13; not a licence term)",
    "verification": {
     "state": "OWNER_AUTHORIZATION_ON_FILE"
    },
-   "public": true
+   "public": true,
+   "internal_modification_note": "Resized/cropped to card format (see acquired block)"
   },
   {
    "collection": "fall",
@@ -704,7 +705,7 @@
    "attribution_required_by_license": true,
    "required_wording": "Photo by JoannaPoe, CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Tom_Walker's_Grist_Mill_01.jpg)",
    "modification_disclosure": "Cropped to 3:2 and resized; converted to WebP.",
-   "sharealike": false,
+   "sharealike": true,
    "rights_verified_from": null,
    "rights_verified_at": "2026-10-12",
    "recommended_listing": "required",
@@ -1348,7 +1349,7 @@
    "attribution_required_by_license": true,
    "required_wording": "Photo by Michael Barera, CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Detroit_May_2023_01_(Dequindre_Cut).jpg)",
    "modification_disclosure": "Cropped to 3:2 and resized; converted to WebP.",
-   "sharealike": false,
+   "sharealike": true,
    "rights_verified_from": null,
    "rights_verified_at": "2026-10-12",
    "recommended_listing": "required",
@@ -1408,12 +1409,13 @@
    "authorization": "Owner confirmation (project thread, 2026-10-12): Miriam Vukich photographed this destination specifically for 313.events and authorized commercial use of the photograph.",
    "authorization_recorded": "2026-10-12",
    "photo_id": "313p-7ad1f6a5",
-   "modification_disclosure": "Resized/cropped to card format (see acquired block)",
+   "modification_disclosure": "Cropped and resized for display.",
    "recommended_listing": "voluntary (photographer credit confirmed by owner 2026-10-13; not a licence term)",
    "verification": {
     "state": "OWNER_AUTHORIZATION_ON_FILE"
    },
-   "public": true
+   "public": true,
+   "internal_modification_note": "Resized/cropped to card format (see acquired block)"
   },
   {
    "collection": "fall-color",
@@ -1526,7 +1528,7 @@
    "attribution_required_by_license": true,
    "required_wording": "Photo by Mbrickn, CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Mallard_Lake_Foliage.jpg)",
    "modification_disclosure": "Cropped to 3:2 and resized; converted to WebP.",
-   "sharealike": false,
+   "sharealike": true,
    "rights_verified_from": null,
    "rights_verified_at": "2026-10-12",
    "recommended_listing": "required",
@@ -1832,7 +1834,7 @@
    "attribution_required_by_license": true,
    "required_wording": "Photo by TheKuLeR, CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/), via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Hollystaterec.jpg)",
    "modification_disclosure": "Cropped to 3:2 and resized; converted to WebP.",
-   "sharealike": false,
+   "sharealike": true,
    "rights_verified_from": null,
    "rights_verified_at": "2026-10-12",
    "recommended_listing": "required",
@@ -2233,7 +2235,7 @@
    "attribution_required_by_license": true,
    "required_wording": "Photo by Jmslagle, CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/), via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Farnsworth_Metropark.jpg)",
    "modification_disclosure": "Cropped to 3:2; converted to WebP.",
-   "sharealike": false,
+   "sharealike": true,
    "rights_verified_from": null,
    "rights_verified_at": "2026-10-12",
    "recommended_listing": "required",
