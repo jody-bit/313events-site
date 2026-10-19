@@ -177,6 +177,67 @@ function responseTagName(action, runToken) {
 }
 
 // ---------------------------------------------------------------------
+// ra-sync-inbox transport (2026-10-19 owner-approved target architecture)
+//
+// Payloads live on the dedicated `ra-sync-inbox` branch, never on main.
+// The device sends a repository_dispatch (or an operator uses
+// workflow_dispatch to replay) naming {action, runToken, sha}; this
+// script, which always runs from main's checkout so only reviewed code
+// ever holds CRON_SECRET, reads that one file out of the inbox branch.
+// ---------------------------------------------------------------------
+
+const INBOX_BRANCH = "ra-sync-inbox";
+const SHA_RE = /^[0-9a-f]{40}$/;
+const ACTION_RE = /^(start|complete|promote)$/;
+const RUN_TOKEN_RE = /^[A-Za-z0-9._-]+$/;
+
+// entryFromDispatch({ action, runToken, sha }) -> { filePath, action, runToken, sha }
+// Strict allow-list validation of everything the dispatch carries. These
+// values reach git argv and a file path, so anything off-pattern is
+// rejected up front (throws) instead of being sanitized.
+function entryFromDispatch(input) {
+  const { action, runToken, sha } = input || {};
+  if (typeof action !== "string" || !ACTION_RE.test(action)) {
+    throw new Error(`dispatch action must be start, complete or promote, got ${JSON.stringify(action)}`);
+  }
+  if (typeof runToken !== "string" || !RUN_TOKEN_RE.test(runToken) || runToken.includes("..")) {
+    throw new Error(`dispatch runToken is not a valid token: ${JSON.stringify(runToken)}`);
+  }
+  if (typeof sha !== "string" || !SHA_RE.test(sha)) {
+    throw new Error(`dispatch sha must be a full 40-character lowercase commit sha, got ${JSON.stringify(sha)}`);
+  }
+  const filePath = `ra-sync/inbox/${action}-${runToken}.json`;
+  if (extractInboxFiles([filePath]).length !== 1) {
+    throw new Error(`dispatch resolved to a path outside the inbox pattern: ${filePath}`);
+  }
+  return { filePath, action, runToken, sha };
+}
+
+// readInboxPayload({ execFn, entry }) -> raw JSON text
+// Reads exactly one file at one commit, and only if that commit is on the
+// inbox branch (ancestor-of-tip check), so a dispatch cannot point the
+// relay at content from any other branch.
+function readInboxPayload({ execFn, entry }) {
+  execFn("git", ["fetch", "--no-tags", "origin", `+refs/heads/${INBOX_BRANCH}:refs/remotes/origin/${INBOX_BRANCH}`]);
+  try {
+    execFn("git", ["merge-base", "--is-ancestor", entry.sha, `refs/remotes/origin/${INBOX_BRANCH}`]);
+  } catch {
+    throw new Error(`commit ${entry.sha} is not on the ${INBOX_BRANCH} branch -- refusing to relay it`);
+  }
+  return execFn("git", ["show", `${entry.sha}:${entry.filePath}`]);
+}
+
+// findUnrelayed({ inboxPaths, tagNames, now, graceMs }) -> entries lacking a response tag
+// Pure reconcile helper: an inbox payload with no response tag after the
+// grace period means a dispatch or a relay was lost. Report-only.
+function findUnrelayed({ inboxPaths, tagNames, ageMsByPath = {}, graceMs = 60 * 60 * 1000 }) {
+  const tags = new Set(tagNames);
+  return extractInboxFiles(inboxPaths).filter(
+    (e) => !tags.has(responseTagName(e.action, e.runToken)) && (ageMsByPath[e.filePath] == null || ageMsByPath[e.filePath] >= graceMs)
+  );
+}
+
+// ---------------------------------------------------------------------
 // I/O, all injectable
 // ---------------------------------------------------------------------
 
@@ -284,7 +345,7 @@ async function main() {
     return;
   }
   if (!eventPath || !fs.existsSync(eventPath)) {
-    console.error(`GITHUB_EVENT_PATH (${eventPath}) not found -- this script only runs inside the push-triggered workflow.`);
+    console.error(`GITHUB_EVENT_PATH (${eventPath}) not found -- this script only runs inside the RA Sync Bridge workflow.`);
     process.exitCode = 1;
     return;
   }
@@ -295,26 +356,75 @@ async function main() {
   const execFn = (cmd, args) => execFileSync(cmd, args, { cwd, encoding: "utf8" });
 
   const eventPayload = JSON.parse(fs.readFileSync(eventPath, "utf8"));
+  const eventName = process.env.GITHUB_EVENT_NAME || "push";
 
-  // Primary: a direct git diff between the push's before/after SHAs --
-  // see changedFilesFromGitDiff's own header for why this replaced
-  // trusting the event's commits[].added lists.
-  let changedFiles = changedFilesFromGitDiff({ execFn, before: eventPayload.before, after: eventPayload.after });
-
-  // Fallback, new-branch case only (before === ZERO_SHA, nothing to
-  // diff against): fall back to whatever commits[].added the event
-  // itself reports, better-than-nothing for a case this repo's own
-  // ra-bridge-client.js never actually triggers (it only ever pushes to
-  // the existing main branch).
-  if (changedFiles.length === 0 && eventPayload.before === ZERO_SHA) {
-    const commits = Array.isArray(eventPayload.commits) ? eventPayload.commits : [];
-    changedFiles = commits.flatMap((c) => (Array.isArray(c && c.added) ? c.added : []));
+  if (eventName === "schedule") {
+    // Report-only reconcile: every payload on the inbox branch should have
+    // a response tag after a grace period. A missing one means a dispatch
+    // or relay was lost; fail the job (GitHub notifies on failure) and
+    // name the runTokens. Recovery is a manual workflow_dispatch replay,
+    // which is idempotent. Nothing is relayed or written here.
+    execFn("git", ["fetch", "--no-tags", "origin", `+refs/heads/${INBOX_BRANCH}:refs/remotes/origin/${INBOX_BRANCH}`]);
+    const inboxPaths = execFn("git", ["ls-tree", "-r", "--name-only", `refs/remotes/origin/${INBOX_BRANCH}`, "--", "ra-sync/inbox"])
+      .split("\n").map((l) => l.trim()).filter(Boolean);
+    const tagNames = execFn("git", ["ls-remote", "--tags", "origin", "refs/tags/ra-sync/*"])
+      .split("\n").map((l) => (l.split("\trefs/tags/")[1] || "").trim()).filter(Boolean);
+    const ageMsByPath = {};
+    for (const p of inboxPaths) {
+      const ct = Number(execFn("git", ["log", "-1", "--format=%ct", `refs/remotes/origin/${INBOX_BRANCH}`, "--", p]).trim());
+      if (ct) ageMsByPath[p] = Date.now() - ct * 1000;
+    }
+    const missing = findUnrelayed({ inboxPaths, tagNames, ageMsByPath });
+    if (missing.length > 0) {
+      console.error(`RA SYNC RECONCILE: ${missing.length} payload(s) on ${INBOX_BRANCH} have no response tag: ${missing.map((e) => e.action + "-" + e.runToken).join(", ")}. Replay each with the workflow_dispatch input (action, runToken).`);
+      process.exitCode = 1;
+    } else {
+      console.log(`RA sync reconcile: ${inboxPaths.length} payload(s) on ${INBOX_BRANCH}, all relayed.`);
+    }
+    return;
   }
 
-  const entries = extractInboxFiles(changedFiles);
+  let entries;
+  let readFileFn = (p, enc) => fs.readFileSync(path.join(cwd, p), enc);
+
+  if (eventName === "repository_dispatch" || eventName === "workflow_dispatch") {
+    // ra-sync-inbox path. repository_dispatch carries client_payload;
+    // workflow_dispatch (manual replay) carries inputs. A replay with no
+    // sha uses the inbox branch tip.
+    const src = eventName === "repository_dispatch" ? eventPayload.client_payload : eventPayload.inputs;
+    const probe = Object.assign({}, src);
+    if (!probe.sha && eventName === "workflow_dispatch") {
+      execFn("git", ["fetch", "--no-tags", "origin", `+refs/heads/${INBOX_BRANCH}:refs/remotes/origin/${INBOX_BRANCH}`]);
+      probe.sha = execFn("git", ["rev-parse", `refs/remotes/origin/${INBOX_BRANCH}`]).trim();
+    }
+    let entry;
+    try {
+      entry = entryFromDispatch(probe);
+    } catch (err) {
+      console.error(`Rejected ${eventName}: ${err.message}`);
+      process.exitCode = 1;
+      return;
+    }
+    entries = [entry];
+    readFileFn = (_p, _enc) => readInboxPayload({ execFn, entry });
+  } else {
+    // Legacy transport (payload pushed to main), kept until the owner
+    // authorizes the cutover and the follow-up removal PR. Primary: a
+    // direct git diff between the push's before/after SHAs -- see
+    // changedFilesFromGitDiff's own header for why this replaced trusting
+    // the event's commits[].added lists.
+    let changedFiles = changedFilesFromGitDiff({ execFn, before: eventPayload.before, after: eventPayload.after });
+
+    // Fallback, new-branch case only (before === ZERO_SHA).
+    if (changedFiles.length === 0 && eventPayload.before === ZERO_SHA) {
+      const commits = Array.isArray(eventPayload.commits) ? eventPayload.commits : [];
+      changedFiles = commits.flatMap((c) => (Array.isArray(c && c.added) ? c.added : []));
+    }
+    entries = extractInboxFiles(changedFiles);
+  }
 
   if (entries.length === 0) {
-    console.log("No new ra-sync/inbox/{start,complete}-*.json files in this push -- nothing to relay.");
+    console.log("No new ra-sync/inbox/{start,complete,promote}-*.json files in this event -- nothing to relay.");
     return;
   }
 
@@ -325,7 +435,7 @@ async function main() {
     cronSecret,
     fetchFn: fetch,
     execFn,
-    readFileFn: (p, enc) => fs.readFileSync(path.join(cwd, p), enc),
+    readFileFn,
     log: (msg) => console.log(msg),
   };
 
@@ -342,6 +452,10 @@ async function main() {
 }
 
 module.exports = {
+  INBOX_BRANCH,
+  entryFromDispatch,
+  readInboxPayload,
+  findUnrelayed,
   extractInboxFiles,
   changedFilesFromGitDiff,
   ZERO_SHA,

@@ -16,6 +16,32 @@ name: RA Sync Bridge
 # egress policy blocks it end to end), while a GitHub Actions runner can.
 
 on:
+  # ra-sync-inbox transport (owner-approved 2026-10-19). The device writes
+  # the payload to the ra-sync-inbox branch, then sends this dispatch.
+  # repository_dispatch and workflow_dispatch always run THIS file as it
+  # exists on the default branch, so only reviewed code holds CRON_SECRET.
+  repository_dispatch:
+    types: [ra-sync-payload]
+  # Manual replay of one payload (idempotent: skipped if its response tag
+  # already exists). Inputs are validated by the script before use.
+  workflow_dispatch:
+    inputs:
+      action:
+        description: start, complete or promote
+        required: true
+      runToken:
+        description: the payload's runToken
+        required: true
+      sha:
+        description: inbox-branch commit holding the payload (blank = branch tip)
+        required: false
+  # Report-only daily reconcile: fails the job if a payload on the inbox
+  # branch has no response tag after a grace period. Relays nothing.
+  schedule:
+    - cron: '45 14 * * *'
+  # LEGACY transport (payload pushed to main). Stays until the owner
+  # authorizes the cutover; a follow-up PR removes it. It is what causes a
+  # production redeploy per payload, which the inbox branch avoids.
   push:
     branches: [main]
     paths:
