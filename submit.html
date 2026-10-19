@@ -698,9 +698,13 @@ imageUrlToggleBtn.addEventListener('click', () => {
 });
 
 async function uploadFlyerImage(file){
+  // The endpoint requires a short-lived signed token it issues on GET (anonymous clients that post straight to it are refused).
+  const tokenResp = await fetch('/api/upload-image', { cache: 'no-store' });
+  const tokenBody = await tokenResp.json().catch(() => ({}));
+  if(!tokenResp.ok || !tokenBody.token) throw new Error('Photo upload is unavailable right now — please try again.');
   const resp = await fetch('/api/upload-image', {
     method: 'POST',
-    headers: { 'Content-Type': file.type },
+    headers: { 'Content-Type': file.type, 'X-Upload-Token': tokenBody.token },
     body: file,
   });
   const result = await resp.json().catch(() => ({}));

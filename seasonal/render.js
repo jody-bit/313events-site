@@ -71,7 +71,7 @@
   var OWNER_CREDIT = /^(Photography \u00a9 |313\.events archive$)/;
   function creditLine(e) {
     var img = e.image, r = linkedOf(img);
-    if (r && pickSrc(img) === r.src) return '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
+    if (r && pickSrc(img) === r.src) return !r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
     if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
     return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
   }
@@ -82,7 +82,7 @@
     var owner = !viaLink && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
     var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
     if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
-    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : "") + '</div>';
+    return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
   function card(col, e, opts) {
     opts = opts || {};
