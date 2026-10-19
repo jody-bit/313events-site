@@ -56,7 +56,9 @@ permissions:
 # run is mid-API-call against a live sync session; cancelling it partway
 # would abandon that call with no response tag ever pushed.
 concurrency:
-  group: ra-sync-bridge
+  # The report-only reconcile gets its own group: GitHub keeps one pending run
+  # per group, so a queued reconcile must never displace a pending relay.
+  group: ra-sync-bridge-${{ github.event_name == 'schedule' && 'reconcile' || 'relay' }}
   cancel-in-progress: false
 
 jobs:

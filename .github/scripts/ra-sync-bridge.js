@@ -237,6 +237,35 @@ function findUnrelayed({ inboxPaths, tagNames, ageMsByPath = {}, graceMs = 60 * 
   );
 }
 
+// runReconcile({ execFn, log, error, now }) -> exit code (0 ok, 1 payloads missing a response tag)
+// Report-only: relays nothing, writes nothing. Before the inbox branch exists
+// (the state between merging this code and the authorized cutover) there is
+// nothing to reconcile, so it logs and succeeds instead of failing the daily job.
+function runReconcile({ execFn, log, error, now = Date.now }) {
+  const heads = execFn("git", ["ls-remote", "--heads", "origin", `refs/heads/${INBOX_BRANCH}`]);
+  if (!heads.trim()) {
+    log(`RA sync reconcile: branch ${INBOX_BRANCH} does not exist yet (cutover not done); nothing to reconcile.`);
+    return 0;
+  }
+  execFn("git", ["fetch", "--no-tags", "origin", `+refs/heads/${INBOX_BRANCH}:refs/remotes/origin/${INBOX_BRANCH}`]);
+  const inboxPaths = execFn("git", ["ls-tree", "-r", "--name-only", `refs/remotes/origin/${INBOX_BRANCH}`, "--", "ra-sync/inbox"])
+    .split("\n").map((l) => l.trim()).filter(Boolean);
+  const tagNames = execFn("git", ["ls-remote", "--tags", "origin", "refs/tags/ra-sync/*"])
+    .split("\n").map((l) => (l.split("\trefs/tags/")[1] || "").trim()).filter(Boolean);
+  const ageMsByPath = {};
+  for (const p of inboxPaths) {
+    const ct = Number(execFn("git", ["log", "-1", "--format=%ct", `refs/remotes/origin/${INBOX_BRANCH}`, "--", p]).trim());
+    if (ct) ageMsByPath[p] = now() - ct * 1000;
+  }
+  const missing = findUnrelayed({ inboxPaths, tagNames, ageMsByPath });
+  if (missing.length > 0) {
+    error(`RA SYNC RECONCILE: ${missing.length} payload(s) on ${INBOX_BRANCH} have no response tag: ${missing.map((e) => e.action + "-" + e.runToken).join(", ")}. Replay each with the workflow_dispatch input (action, runToken).`);
+    return 1;
+  }
+  log(`RA sync reconcile: ${inboxPaths.length} payload(s) on ${INBOX_BRANCH}, all relayed.`);
+  return 0;
+}
+
 // ---------------------------------------------------------------------
 // I/O, all injectable
 // ---------------------------------------------------------------------
@@ -359,28 +388,7 @@ async function main() {
   const eventName = process.env.GITHUB_EVENT_NAME || "push";
 
   if (eventName === "schedule") {
-    // Report-only reconcile: every payload on the inbox branch should have
-    // a response tag after a grace period. A missing one means a dispatch
-    // or relay was lost; fail the job (GitHub notifies on failure) and
-    // name the runTokens. Recovery is a manual workflow_dispatch replay,
-    // which is idempotent. Nothing is relayed or written here.
-    execFn("git", ["fetch", "--no-tags", "origin", `+refs/heads/${INBOX_BRANCH}:refs/remotes/origin/${INBOX_BRANCH}`]);
-    const inboxPaths = execFn("git", ["ls-tree", "-r", "--name-only", `refs/remotes/origin/${INBOX_BRANCH}`, "--", "ra-sync/inbox"])
-      .split("\n").map((l) => l.trim()).filter(Boolean);
-    const tagNames = execFn("git", ["ls-remote", "--tags", "origin", "refs/tags/ra-sync/*"])
-      .split("\n").map((l) => (l.split("\trefs/tags/")[1] || "").trim()).filter(Boolean);
-    const ageMsByPath = {};
-    for (const p of inboxPaths) {
-      const ct = Number(execFn("git", ["log", "-1", "--format=%ct", `refs/remotes/origin/${INBOX_BRANCH}`, "--", p]).trim());
-      if (ct) ageMsByPath[p] = Date.now() - ct * 1000;
-    }
-    const missing = findUnrelayed({ inboxPaths, tagNames, ageMsByPath });
-    if (missing.length > 0) {
-      console.error(`RA SYNC RECONCILE: ${missing.length} payload(s) on ${INBOX_BRANCH} have no response tag: ${missing.map((e) => e.action + "-" + e.runToken).join(", ")}. Replay each with the workflow_dispatch input (action, runToken).`);
-      process.exitCode = 1;
-    } else {
-      console.log(`RA sync reconcile: ${inboxPaths.length} payload(s) on ${INBOX_BRANCH}, all relayed.`);
-    }
+    process.exitCode = runReconcile({ execFn, log: (m) => console.log(m), error: (m) => console.error(m) });
     return;
   }
 
@@ -456,6 +464,7 @@ module.exports = {
   entryFromDispatch,
   readInboxPayload,
   findUnrelayed,
+  runReconcile,
   extractInboxFiles,
   changedFilesFromGitDiff,
   ZERO_SHA,

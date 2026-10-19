@@ -124,6 +124,9 @@ Recovery and observability:
   triggers GitHub's failure notification, if any payload on the branch has
   no response tag after one hour. It relays nothing.
 - A relay failure still pushes an `ok:false` response tag and fails the job.
+  That runToken is then spent (its tag exists, so a replay is skipped): the
+  device resubmits the run with a new runToken, as it does today.
+- Until the branch exists the reconcile logs that and succeeds.
 
 Vercel: `vercel.json` has `git.deploymentEnabled: {"ra-sync-inbox": false}`
 so payload commits create no deployment; every other branch is unaffected.

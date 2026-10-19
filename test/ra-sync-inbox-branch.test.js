@@ -167,6 +167,37 @@ async function run() {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 
+  // ---- scheduled reconcile on a throwaway repository: absent branch is a clean no-op; a missing tag is reported ----
+  {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ra-inbox-rec-"));
+    const origin = path.join(dir, "origin.git"), work = path.join(dir, "work"), runner = path.join(dir, "runner");
+    git(dir, "init", "-q", "--bare", "-b", "main", origin);
+    git(dir, "clone", "-q", origin, work);
+    git(work, "config", "user.email", "t@t"); git(work, "config", "user.name", "t");
+    fs.writeFileSync(path.join(work, "README.md"), "main\n");
+    git(work, "add", "-A"); git(work, "commit", "-q", "-m", "main"); git(work, "push", "-q", "origin", "main");
+    git(dir, "clone", "-q", origin, runner); git(runner, "config", "user.email", "bot@t"); git(runner, "config", "user.name", "bot");
+    const execFn = (cmd, args) => execFileSync(cmd, args, { cwd: runner, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    const logs = [], errs = [];
+    const opts = { execFn, log: (m) => logs.push(m), error: (m) => errs.push(m) };
+    // before the cutover the branch does not exist: exit 0, no crash
+    assert.strictEqual(bridge.runReconcile(opts), 0);
+    assert.ok(logs.some((m) => /does not exist yet/.test(m)));
+    // a payload with no response tag, past the grace period, is reported
+    git(work, "checkout", "-q", "--orphan", "ra-sync-inbox"); git(work, "rm", "-rqf", ".");
+    fs.mkdirSync(path.join(work, "ra-sync/inbox"), { recursive: true });
+    const tok = "20261019-150000-bbbbbb";
+    fs.writeFileSync(path.join(work, `ra-sync/inbox/complete-${tok}.json`), JSON.stringify({ runToken: tok, action: "complete", runId: "r", events: [] }));
+    git(work, "add", "-A"); git(work, "commit", "-q", "-m", "payload"); git(work, "push", "-q", "origin", "ra-sync-inbox");
+    assert.strictEqual(bridge.runReconcile(Object.assign({ now: () => Date.now() + 2 * 3600 * 1000 }, opts)), 1);
+    assert.ok(errs.some((m) => m.includes(`complete-${tok}`)));
+    assert.strictEqual(bridge.runReconcile(opts), 0, "inside the grace period it is not reported");
+    // once the response tag exists it is clean
+    git(work, "tag", "-a", `ra-sync/complete-response/${tok}`, "-m", "{}"); git(work, "push", "-q", "origin", `refs/tags/ra-sync/complete-response/${tok}`);
+    assert.strictEqual(bridge.runReconcile(Object.assign({ now: () => Date.now() + 2 * 3600 * 1000 }, opts)), 0);
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+
   // ---- workflow + vercel.json contracts ----
   {
     const wf = fs.readFileSync(path.join(root, ".github/workflows/ra-sync-bridge.yml"), "utf8");
@@ -174,6 +205,7 @@ async function run() {
     assert.ok(wf.includes("workflow_dispatch:") && wf.includes("schedule:"), "manual replay and reconcile triggers");
     assert.ok(!/^\s+ref:/m.test(wf), "checkout stays on the default branch (reviewed code only holds CRON_SECRET)");
     assert.ok(wf.includes(client.DISPATCH_EVENT_TYPE));
+    assert.ok(/group: ra-sync-bridge-\$\{\{ github\.event_name == 'schedule' && 'reconcile' \|\| 'relay' \}\}/.test(wf), "the reconcile has its own concurrency group");
     const vj = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
     const de = vj.git && vj.git.deploymentEnabled;
     assert.deepStrictEqual(de, { "ra-sync-inbox": false }, "only the inbox branch is excluded from deployments; every other branch keeps its Preview");
