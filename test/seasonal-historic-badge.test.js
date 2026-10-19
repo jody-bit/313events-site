@@ -44,4 +44,22 @@ assert.strictEqual(ai.src, ai.acquired.file);
 const f = path.join(root, ai.acquired.file.replace(/^\//, ""));
 assert.strictEqual(fs.statSync(f).size, ai.acquired.bytes);
 assert.strictEqual(require("crypto").createHash("sha256").update(fs.readFileSync(f)).digest("hex"), ai.acquired.sha256);
+// QA review mode: the badge can be reviewed in a preview (/fall?qa=1). The QA dataset carries Almar's archival option as the default,
+// toEntry passes historic through for that option only, and no other record's QA card changes.
+{
+  const QA = require(path.join(root, "api/_lib/seasonal-editorial/qa-client.js"));
+  const qa = require(path.join(root, "api/_lib/seasonal-editorial/fall-qa.json"));
+  const rec = qa.records.find((r) => r.id === "almar-orchards");
+  assert.strictEqual(rec.image_options[0].id, "archival-almar-orchards");
+  assert.strictEqual(rec.image_options[0].historic, true);
+  assert.ok(!rec.public && rec.launch === null, "Almar stays non-public and is not a launch record");
+  const e = QA.toEntry(rec, undefined);
+  assert.strictEqual(e.image.historic, true);
+  assert.ok(/Historic photo/.test(R.card(ED.COLLECTIONS.COLLECTIONS.fall, e, {})), "QA card shows the badge");
+  assert.ok(!("historic" in QA.toEntry(rec, "gen-fall-1").image), "choosing the illustration drops it");
+  for (const slug of ["fall", "fall-color", "halloween"]) {
+    const d = require(path.join(root, "api/_lib/seasonal-editorial/" + slug + "-qa.json"));
+    for (const r of d.records) for (const o of r.image_options) if (o.historic) assert.strictEqual(r.id, "almar-orchards", slug + "/" + r.id + ": only Almar carries a historic option");
+  }
+}
 console.log("seasonal historic badge: ok");

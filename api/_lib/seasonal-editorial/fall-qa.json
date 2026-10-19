@@ -209,21 +209,37 @@
     "destination_id": "almar-orchards",
     "destination_name": "Almar Orchards",
     "primary_image": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
+    "primary_image_type": "archival_acquired",
+    "primary_image_credit": "Kept in the private record (not drawn on the card)",
+    "primary_image_rights_status": "Not cleared. DEC-029 owner risk acceptance is NOT recorded for this image; the record stays unpublished until the owner records it.",
     "fallback_image": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
     "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
     "alternative_images": [
+     "gen-fall-1",
      "gen-fall-4",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
+    {
+     "id": "archival-almar-orchards",
+     "type": "archival_acquired",
+     "src": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+     "source": "Almar Orchards website history-hdr.jpg (2901x1475, scanned archival print of the farm store, date and photographer unknown); crop x=279..2901 full height resized to 1920x1080 by Experience, then to a 1280x720 WebP card by scripts/ingest-approved-image.py",
+     "credit": "Kept in the private record (not drawn on the card)",
+     "rights_status": "Not cleared. DEC-029 owner risk acceptance is NOT recorded for this image; the record stays unpublished until the owner records it.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "historic": true,
+     "warnings": [
+      "Archival photograph: shown with the Historic photo badge and no credit line. Rights not cleared; DEC-029 risk acceptance not recorded for this image."
+     ],
+     "image_kind": "photo"
+    },
     {
      "id": "gen-fall-1",
      "type": "generated_illustrative",
