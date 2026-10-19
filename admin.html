@@ -163,6 +163,20 @@
   .sub-ready{color:var(--muted,#9aa3ad);}
   .sub-reason .rc{color:#e8c96b;font-weight:700;}
   .sub-times{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+  .sub-edit-btn{background:var(--panel-alt);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit;margin-left:6px;}
+  .sub-edit-panel{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel-alt);}
+  .sub-edit-panel fieldset{border:0;margin:0 0 10px;padding:0;min-width:0;}
+  .sub-edit-panel legend{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);padding:0 0 4px;}
+  .sub-edit-panel label{display:block;font-size:12px;color:var(--ink-soft);margin:6px 0 2px;}
+  .sub-edit-panel input,.sub-edit-panel textarea{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:7px 8px;font:inherit;font-size:13px;}
+  .sub-edit-panel textarea{min-height:90px;resize:vertical;}
+  .sub-edit-panel .changed{border-color:var(--accent);}
+  .sub-edit-evidence{font-size:12px;color:var(--ink-soft);margin:8px 0;padding:8px 10px;border:1px dashed var(--line);border-radius:6px;overflow-wrap:anywhere;}
+  .sub-edit-diff,.sub-edit-msg{font-size:12.5px;margin:6px 0;overflow-wrap:anywhere;}
+  .sub-edit-msg.err{color:#e8a0a0;}
+  .sub-edit-msg.ok{color:var(--ok);}
+  .sub-edit-msg.warn{color:#e8c96b;}
+  .sub-edited{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
   .sub-row details summary{cursor:pointer;color:var(--ink-soft);font-size:12px;margin-top:6px;}
   .sub-row .actions{margin-top:8px;}
   .sub-note{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;padding:10px 12px;border:1px dashed var(--line);border-radius:8px;}
@@ -351,7 +365,7 @@
     <div class="tab-panel active" data-tab-panel="submissions">
       <section class="block" style="margin-top:0;">
         <h2>Submissions</h2>
-        <div class="sub">Where each pending record came from, why it is waiting, and who has to act. Technical failures and source-policy holds are kept apart from decisions that need a person. Read-only: Approve and Reject behave exactly as before and no publication decision changes here.</div>
+        <div class="sub">Where each pending record came from, why it is waiting, and who has to act. Technical failures and source-policy holds are kept apart from decisions that need a person. Approve and Reject behave as before. Edit saves a correction and never approves unless you choose Save and approve.</div>
         <div class="sub-lanes" id="subLanes" role="tablist" aria-label="Submission lanes">
           <button type="button" class="sub-lane active" role="tab" data-lane="person" onclick="subSetLane('person')">Needs a person <span class="n" id="subN-person">0</span></button>
           <button type="button" class="sub-lane" role="tab" data-lane="blocked" onclick="subSetLane('blocked')">Blocked at source <span class="n" id="subN-blocked">0</span></button>
@@ -1676,12 +1690,14 @@ function subRowHtml(e, nowMs, withActions) {
     + reasonHtml
     + (s.notes && s.notes.length ? '<div class="sub-times">' + s.notes.map(n => 'Note: ' + escapeHtml(n.text)).join(' · ') + '</div>' : '')
     + '<div class="sub-times">' + times.map(escapeHtml).join(' · ') + '</div>'
+    + subEditedHtml(e)
     + '<details><summary>Details</summary><div class="sub-meta" style="margin-top:6px;">'
     + (e.ticket_url ? '<a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">tickets</a> ' : '')
     + (e.event_url && e.event_url !== e.ticket_url ? '<a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">event page</a> ' : '')
     + (e.submitter_org_name || e.submitter_email ? '<br>Submitted by: <b>' + escapeHtml(e.submitter_org_name || SUB_NP) + '</b> (' + escapeHtml(e.submitter_email || SUB_NP) + ')' : '')
     + '<br>Description: ' + (e.description ? escapeHtml(e.description) : SUB_NP) + '</div></details>'
-    + (withActions ? '<div class="actions"><button class="btn-approve" onclick="review(\'' + escapeAttr(e.id) + '\',\'approve\')">Approve</button><button class="btn-reject" onclick="review(\'' + escapeAttr(e.id) + '\',\'reject\')">Reject</button></div>' : '')
+    + (withActions ? '<div class="actions"><button class="btn-approve" onclick="review(\'' + escapeAttr(e.id) + '\',\'approve\')">Approve</button><button class="btn-reject" onclick="review(\'' + escapeAttr(e.id) + '\',\'reject\')">Reject</button><button type="button" class="sub-edit-btn" id="subeditbtn-' + escapeAttr(e.id) + '" aria-expanded="' + (SUB_EDIT[e.id] && SUB_EDIT[e.id].open ? 'true' : 'false') + '" onclick="subEditOpen(\'' + escapeAttr(e.id) + '\')">Edit</button></div>' : '')
+    + (withActions ? subEditNoticeHtml(e) + subEditPanelHtml(e) : '')
     + '</div>';
 }
 
@@ -1819,6 +1835,173 @@ function subTowerArrived() { if (SUB_ROWS.length) { SUB_ROWS = subBuild(SUB_ROWS
 const QUEUE_CLASS_ORDER = ['public_event', 'ambiguous', 'civic_meeting', 'service', 'observance'];
 const QUEUE_CLASS_LABELS = { public_event: 'Events and programs', ambiguous: 'Needs a closer look', civic_meeting: 'Civic & Community: public meetings', service: 'Community services', observance: 'Calendar observances' };
 
+
+// ---- Review-queue editing (#185 increment 1) ----
+// Saves go through POST /api/admin-events {action:'save_correction'}. A save is a correction: it replaces a value and is
+// recorded by the API; it never clears a value and never approves unless "Save and approve" is used. The page shows only
+// what the API returns: row_version, owner_corrected[], edits[]. The recorded actor is the shared "admin" secret, so no
+// person's name is ever shown. There is no stored as-ingested snapshot yet, so the evidence block says "Recorded values".
+const SUB_EDIT_GROUPS = [
+  { title: 'What and when', fields: [
+    { key: 'title', label: 'Title', type: 'text' },
+    { key: 'category', label: 'Category', type: 'text' },
+    { key: 'time_display', label: 'Time (for example 9:00 PM)', type: 'text' } ] },
+  { title: 'Where', fields: [
+    { key: 'venue_name_raw', label: 'Venue name', type: 'text' },
+    { key: 'venue_address_raw', label: 'Venue address', type: 'text' },
+    { key: 'venue_city_raw', label: 'Venue city', type: 'text' } ] },
+  { title: 'Links', fields: [
+    { key: 'ticket_url', label: 'Ticket link', type: 'url' },
+    { key: 'event_url', label: 'Event link', type: 'url' } ] },
+  { title: 'Description', fields: [
+    { key: 'description', label: 'Description', type: 'textarea' } ] },
+];
+const SUB_EDIT_LABELS = {};
+SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => { SUB_EDIT_LABELS[f.key] = f.label.replace(/ \(.*\)$/, ''); }));
+SUB_EDIT_LABELS.venue_id = 'Venue link';
+const SUB_EDIT = {};   // id -> { open, draft:{field:value}, notice, noticeKind, busy }
+
+function subEditFind(id) { return SUB_ROWS.find(r => r.id === id) || (SUB_ENDED || []).find(r => r.id === id) || null; }
+function subEditValue(e, key) { const d = SUB_EDIT[e.id] && SUB_EDIT[e.id].draft; return d && key in d ? d[key] : (e[key] == null ? '' : String(e[key])); }
+function subEditLabel(k) { return SUB_EDIT_LABELS[k] || k; }
+
+function subEditedHtml(e) {
+  const oc = Array.isArray(e.owner_corrected) ? e.owner_corrected : [];
+  if (!oc.length) return '';
+  return '<div class="sub-edited">Edited by owner: ' + escapeHtml(oc.map(subEditLabel).join(', ')) + '. Importers will not overwrite these fields.</div>';
+}
+function subEditNoticeHtml(e) {
+  const st = SUB_EDIT[e.id];
+  if (!st || !st.notice || st.open) return '';
+  return '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" role="status">' + escapeHtml(st.notice) + '</div>';
+}
+function subEditHistoryHtml(e) {
+  const eds = Array.isArray(e.edits) ? e.edits : [];
+  if (!eds.length) return '<div>No corrections recorded.</div>';
+  return '<ul style="margin:4px 0 0;padding-left:18px;">' + eds.map(x => '<li>' + escapeHtml(subEditLabel(x.field)) + ': ' + escapeHtml(x.before == null ? SUB_NP : x.before) + ' → ' + escapeHtml(x.after == null ? SUB_NP : x.after)
+    + ' (' + (x.at ? escapeHtml(subDetroit(x.at)) : SUB_NP) + ', by admin)</li>').join('') + '</ul>';
+}
+function subEditPanelHtml(e) {
+  const st = SUB_EDIT[e.id];
+  if (!st || !st.open) return '';
+  const id = escapeAttr(e.id), p = e._sub.prov;
+  const groups = SUB_EDIT_GROUPS.map(g => '<fieldset><legend>' + escapeHtml(g.title) + '</legend>' + g.fields.map(f => {
+    const fid = 'subedit-' + id + '-' + f.key, v = subEditValue(e, f.key);
+    const ctl = f.type === 'textarea'
+      ? '<textarea id="' + fid + '" data-field="' + f.key + '" oninput="subEditInput(\'' + id + '\')">' + escapeHtml(v) + '</textarea>'
+      : '<input id="' + fid + '" data-field="' + f.key + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + escapeAttr(v) + '" oninput="subEditInput(\'' + id + '\')">';
+    return '<label for="' + fid + '">' + escapeHtml(f.label) + '</label>' + ctl;
+  }).join('') + '</fieldset>').join('');
+  const evidence = '<div class="sub-edit-evidence"><b>Recorded values.</b> The original as-imported copy is not stored yet, so earlier values are only available from the corrections below.'
+    + '<br>Source: ' + escapeHtml(p.source || SUB_NP) + ' · Method: ' + escapeHtml(p.method || SUB_NP)
+    + (e.event_url ? '<br>Event link: <a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.event_url) + '</a>' : '')
+    + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
+    + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
+  return '<div class="sub-edit-panel" role="group" aria-label="Edit event" onkeydown="if(event.key===\'Escape\'){subEditClose(\'' + id + '\');}">'
+    + groups + evidence
+    + '<div class="sub-edit-diff" id="subeditdiff-' + id + '" aria-live="polite"></div>'
+    + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="subeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
+    + '<div class="actions"><button type="button" class="btn-approve" id="subeditsave-' + id + '" onclick="subEditSave(\'' + id + '\',false)">Save correction</button>'
+    + '<button type="button" class="btn-approve" id="subeditapprove-' + id + '" onclick="subEditSave(\'' + id + '\',true)">Save and approve</button>'
+    + '<button type="button" class="sub-edit-btn" onclick="subEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+
+// What the form would change, from the live inputs (or the draft when the inputs are not on screen).
+function subEditChanges(e) {
+  const changes = [], blanks = [];
+  SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => {
+    const v = subEditValue(e, f.key).trim(), cur = e[f.key] == null ? '' : String(e[f.key]).trim();
+    if (v === cur) return;
+    if (v === '') { blanks.push(f.key); return; }
+    changes.push({ field: f.key, before: cur, after: v });
+  }));
+  return { changes: changes, blanks: blanks };
+}
+function subEditDiffRefresh(id) {
+  const e = subEditFind(id); if (!e) return;
+  const r = subEditChanges(e), diff = document.getElementById('subeditdiff-' + id);
+  document.querySelectorAll('#card-' + id + ' [data-field]').forEach(inp => {
+    const cur = e[inp.dataset.field] == null ? '' : String(e[inp.dataset.field]);
+    inp.classList.toggle('changed', inp.value.trim() !== cur.trim());
+  });
+  let html = r.changes.length ? 'Will change ' + r.changes.length + ' field' + (r.changes.length === 1 ? '' : 's') + ': ' + r.changes.map(c => escapeHtml(subEditLabel(c.field)) + ': ' + escapeHtml(c.before || SUB_NP) + ' → ' + escapeHtml(c.after)).join('; ') : 'No changes yet.';
+  if (r.blanks.length) html += '<br><span class="sub-edit-msg warn">A correction replaces a value; it cannot clear one yet. Not saved: ' + escapeHtml(r.blanks.map(subEditLabel).join(', ')) + '.</span>';
+  if (diff) diff.innerHTML = html;
+  const st = SUB_EDIT[id], dis = !r.changes.length || r.blanks.length > 0 || (st && st.busy);
+  ['subeditsave-', 'subeditapprove-'].forEach(pre => { const b = document.getElementById(pre + id); if (b) b.disabled = !!dis; });
+}
+function subEditInput(id) {
+  const st = SUB_EDIT[id]; if (!st) return;
+  st.draft = st.draft || {};
+  document.querySelectorAll('#card-' + id + ' [data-field]').forEach(inp => { st.draft[inp.dataset.field] = inp.value; });
+  subEditDiffRefresh(id);
+}
+function subEditOpen(id) {
+  const e = subEditFind(id); if (!e) return;
+  SUB_EDIT[id] = Object.assign(SUB_EDIT[id] || {}, { open: true, notice: '', noticeKind: '' });
+  subRender();
+  subEditDiffRefresh(id);
+  const first = document.getElementById('subedit-' + id + '-title'); if (first && first.focus) first.focus();
+}
+function subEditClose(id) {
+  if (SUB_EDIT[id]) { SUB_EDIT[id].open = false; SUB_EDIT[id].draft = null; SUB_EDIT[id].notice = ''; }
+  subRender();
+  const b = document.getElementById('subeditbtn-' + id); if (b && b.focus) b.focus();
+}
+// Rebuild the derived lane data after the API returned new field values.
+function subEditApply(id, patch) {
+  const apply = list => list && list.map(r => r.id === id ? subBuild([Object.assign({}, r, patch)], TOWER)[0] : r);
+  SUB_ROWS = apply(SUB_ROWS);
+  if (SUB_ENDED) SUB_ENDED = apply(SUB_ENDED);
+}
+async function subEditSave(id, approve) {
+  const e = subEditFind(id), st = SUB_EDIT[id]; if (!e || !st) return;
+  subEditInput(id);
+  const r = subEditChanges(e);
+  if (!r.changes.length || r.blanks.length) { subEditDiffRefresh(id); return; }
+  const rv = e.row_version || null;
+  if (!rv) { st.notice = 'This page did not receive a version for the event. Reload the queue and try again.'; st.noticeKind = 'err'; subRender(); return; }
+  const fields = {}; r.changes.forEach(c => { fields[c.field] = c.after; });
+  st.busy = true; subEditDiffRefresh(id);
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id: id, action: 'save_correction', row_version: rv, fields: fields, approve: !!approve }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    st.busy = false;
+    if (resp.status === 409) {
+      // Someone or something changed the event after this page loaded. Show the current values; keep what was typed.
+      if (data.current) subEditApply(id, Object.assign({}, data.current, { row_version: data.row_version || (data.current && data.current.updated_at) || null }));
+      st.notice = 'This event changed since you opened it, so nothing was saved. The current values are loaded; your typed text is kept. Check it and save again.'; st.noticeKind = 'warn'; st.open = true;
+      subRender(); subEditDiffRefresh(id); return;
+    }
+    if (!resp.ok) {
+      st.notice = (data.field ? subEditLabel(data.field) + ': ' : '') + errText(data, 'Save failed') + ' Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+      subRender(); subEditDiffRefresh(id); return;
+    }
+    const prior = Array.isArray(e.edits) ? e.edits : [];
+    const at = new Date().toISOString();
+    const added = (data.changes || []).map(c => ({ edit_id: data.edit_id, at: at, actor: 'admin', field: c.field, before: c.before, after: c.after }));
+    const ap = data.approve || {};
+    if (ap.done) {
+      SUB_ROWS = SUB_ROWS.filter(x => x.id !== id); if (SUB_ENDED) SUB_ENDED = SUB_ENDED.filter(x => x.id !== id);
+      delete SUB_EDIT[id]; subRender(); return;
+    }
+    subEditApply(id, Object.assign({}, data.event || {}, { row_version: data.row_version || rv, owner_corrected: data.owner_corrected || e.owner_corrected || [], edits: prior.concat(added) }));
+    const n = (data.changes || []).length;
+    let msg = 'Saved ' + n + ' correction' + (n === 1 ? '' : 's') + '. The event is still awaiting review.', kind = 'ok';
+    if (ap.requested && ap.blocked) { msg += ' Not approved: ' + (ap.blocked.why || 'a publication check failed') + (ap.blocked.codes && ap.blocked.codes.length ? ' (' + ap.blocked.codes.join(', ') + ')' : '') + '.'; kind = 'warn'; }
+    SUB_EDIT[id] = { open: false, draft: null, notice: msg, noticeKind: kind };
+    subRender();
+    const b = document.getElementById('subeditbtn-' + id); if (b && b.focus) b.focus();
+  } catch (err) {
+    st.busy = false; st.notice = 'Save failed: ' + err.message + '. Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+    subRender(); subEditDiffRefresh(id);
+  }
+}
+
 async function review(id, action) {
   const card = document.getElementById('card-' + id);
   card.style.opacity = '0.5';
@@ -1831,6 +2014,7 @@ async function review(id, action) {
     const data = await resp.json();
     if (!resp.ok) throw new Error(errText(data, 'Action failed'));
     card.remove();
+    delete SUB_EDIT[id];
     SUB_ROWS = SUB_ROWS.filter(r => r.id !== id);
     if (SUB_ENDED) SUB_ENDED = SUB_ENDED.filter(r => r.id !== id);
     subRender();
