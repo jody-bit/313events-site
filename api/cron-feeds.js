@@ -6,6 +6,7 @@ const { parseIcsLocation } = require("./_lib/ics-location");
 const { lookupExistingRows } = require("./_lib/status-lookup");
 const { decideSourceDescription, REPAIR_SOURCES } = require("./_lib/description-strength");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { fillBlankSourceCalendarLinks } = require("./_lib/source-calendar-links");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { policyFor, classify, holdNote } = require("./_lib/feed-publication");
@@ -613,6 +614,9 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // Times, which lands pending_review because IT is an unvetted general
       // calendar, not a single approved venue.
       feed_source_id: feedSource.id,
+      // Internal marker (stripped before the write, upsertParsedRows): the feed's approved website, used only as the blank-only
+      // fallback link when the source supplies no per-event link (api/_lib/source-calendar-links.js).
+      _calendarUrl: feedSource.website || null,
     };
 
     // SH.1 (Metadata Self-Healing, 2026-09-21) — this connector has always
@@ -803,6 +807,7 @@ function rssEventsToRows(rssItems, feedSource, venueMap) {
       image_url: null,
       source: feedSource.venue_name,
       feed_source_id: feedSource.id,
+      _calendarUrl: feedSource.website || null, // internal marker, stripped before the write (see the ICS builder above)
       // Visible, honest flag distinguishing the two ways this row's date
       // was produced — never silently indistinguishable from a real ICS
       // DTSTART. explicit._confidence is read by the caller below to pick
@@ -858,7 +863,7 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
   const rowsWithStatus = keep.map((row) => {
     // _dateConfidence/_ is an internal marker only (rssEventsToRows), never
     // sent to Supabase as a column.
-    const { _dateConfidence, _publication, _enrichment, _recurring, ...cleanRow } = row;
+    const { _dateConfidence, _publication, _enrichment, _recurring, _calendarUrl, ...cleanRow } = row;
     const existingStatus = existingStatusByExternalId.get(row.external_id);
     const out = { ...cleanRow, status: existingStatus || statusForRow(row) };
     // Description strength rule (api/_lib/description-strength.js), for the sources the repair is rolled out to: a
@@ -891,7 +896,10 @@ async function upsertParsedRows(rows, statusForRow, sbHeaders, res) {
     // partial write from being read as a clean one by the caller.
     return { pollResult: `Parsed ${rows.length} event${rows.length === 1 ? "" : "s"} but Supabase upsert failed: ${errText}`, skippedPast, upserted: upsertResp.written, failed: true };
   }
-  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}`, upserted: keep.length, skippedPast };
+  // Blank-only source calendar-page fallback for events this source gave no link at all (api/_lib/source-calendar-links.js).
+  const fallback = await fillBlankSourceCalendarLinks(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, keep);
+  const fallbackNote = fallback.patched ? `; ${fallback.patched} given the source calendar page as a fallback link` : "";
+  return { pollResult: `${rows.length} event${rows.length === 1 ? "" : "s"} found${skippedNote}${fallbackNote}`, upserted: keep.length, skippedPast };
 }
 
 async function patchFeedSource(id, patch, sbHeaders) {
