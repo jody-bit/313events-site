@@ -14,12 +14,12 @@ execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal-launch.j
 
 const entries = E("entries.json");
 const disc = E("discovered-destinations.json").collections;
-const counts = { fall: 71 + (disc.fall || []).length, "fall-color": 129 + (disc["fall-color"] || []).length };
+const counts = { fall: 70 + (disc.fall || []).length, "fall-color": 129 + (disc["fall-color"] || []).length };
 for (const slug of ["fall", "fall-color"]) {
   const qa = E(slug + "-qa.json");
   assert.strictEqual(qa.collection, slug);
   assert.strictEqual(qa.records.length, counts[slug], slug + ": every inventory row (and each discovered destination) is a QA record");
-  assert.strictEqual(qa.records.filter((r) => !r.discovered).length, slug === "fall" ? 71 : 129, slug + ": all inventory rows present");
+  assert.strictEqual(qa.records.filter((r) => !r.discovered).length, slug === "fall" ? 70 : 129, slug + ": all inventory rows present");
   assert.strictEqual(new Set(qa.records.map((r) => r.id + "|" + r.name)).size, counts[slug], slug + ": no duplicate QA records");
   for (const r of qa.records) {
     assert.strictEqual(r.public, AUTHZ.authorized(ED).has(slug + "/" + r.id), r.id + ": public only if authorized");
@@ -31,7 +31,7 @@ for (const slug of ["fall", "fall-color"]) {
     for (const o of r.image_options) if (o.illustrative) assert.strictEqual(o.depicts_actual_destination, false, r.id + " generated art is not a destination photo");
     for (const o of r.image_options) if (o.type === "owner_photo_atmospheric") assert.ok(o.warnings.some((w) => /does NOT depict/.test(w)), r.id + " atmospheric photo is labelled");
   }
-  assert.strictEqual(entries[slug].length, slug === "fall" ? 71 : 129, slug + ": discovered destinations are not records until the owner adds them");
+  assert.strictEqual(entries[slug].length, slug === "fall" ? 70 : 129, slug + ": discovered destinations are not records until the owner adds them");
   for (const e of entries[slug]) {
     AUTHZ.checkApproval(assert, slug, e, AUTHZ.authorized(ED));
     assert.strictEqual(ED.COLLECTIONS.readiness(e).state === "PUBLISHED", AUTHZ.authorized(ED).has(slug + "/" + e.id), e.id + ": published only if authorized");
@@ -39,10 +39,17 @@ for (const slug of ["fall", "fall-color"]) {
 }
 // The public projection is exactly the authorized batch.
 const pub = ED.publishedProjection();
-assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [36, 40, 29], "public lists = the 76 authorized Fall records plus the 29 Halloween records that pass the gate");
+assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [38, 41, 25], "public lists = the 79 authorized Fall records plus the 25 Halloween records that pass the gate");
 // A third-party linked image is never a gate image: it is kept only as an unlicensed QA candidate.
 for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
-  assert.ok(!e.image.remote, e.id + ": no linked third-party image as the record image");
+  // Narrow, explicit exception (release batch 2, DEC-029): only the three pinned records may carry image.remote, and only with a complete
+  // owner risk acceptance, the linked-risk-acceptance rights route and no license claim. Every other record keeps the original rule.
+  if (AUTHZ.BATCH2.includes(slug + "/" + e.id)) {
+    const rm = e.image.remote, g = ED.COLLECTIONS.readiness(e).gate;
+    assert.ok(rm && rm.src && rm.sourcePage && rm.credit && rm.acceptedBy === "Jody Tyree (owner)" && rm.acceptedAt && /DEC-029/.test(rm.riskNote), e.id + ": batch-2 image carries full DEC-029 provenance");
+    assert.strictEqual(g.rightsRoute, "linked-risk-acceptance", e.id + ": rights route is the recorded risk acceptance");
+    assert.ok(!e.image.licenseUrl && !e.image.ownerPhoto, e.id + ": no license or owner-photo claim on a DEC-029 image");
+  } else assert.ok(!e.image.remote, e.id + ": no linked third-party image as the record image");
   assert.ok(!(e.image.linkedCandidates || []).length || ED.COLLECTIONS.readiness(e).gate.acquired === false || e.image.ownerPhoto || true);
 }
 // Evidence is recorded with source URL, rationale and confidence wherever relevance is proposed.

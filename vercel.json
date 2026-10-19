@@ -1,4 +1,9 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "ra-sync-inbox": false
+    }
+  },
   "crons": [
     {
       "path": "/api/cron-trinosophes",
