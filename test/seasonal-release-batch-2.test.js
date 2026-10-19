@@ -32,6 +32,14 @@ assert.strictEqual(d.image.illustrative, false);
 const f = path.join(root, a.file.replace(/^\//, ""));
 assert.ok(fs.existsSync(f) && fs.statSync(f).size === a.bytes, "Damouni file exists with the recorded size");
 assert.strictEqual(require("crypto").createHash("sha256").update(fs.readFileSync(f)).digest("hex"), a.sha256, "sha matches the file");
+// The public Damouni card is a plain photograph: no hotlink, no illustrative badge, no visible credit (provenance stays private).
+{
+  const pc = ED.publicEntry(d), R = require(path.join(root, "seasonal/render.js"));
+  assert.ok(!pc.image.remote && !pc.image.credit && pc.image.illustrative === false, "public Damouni image carries no remote or credit");
+  const html = R.card(Object.assign({}, ED.COLLECTIONS.COLLECTIONS.fall, { entries: [pc] }), pc, {});
+  assert.ok(!/Illustrative image|sc-credit|damouniorchards\.com\/cdn/.test(html), "Damouni card: no badge, credit line or hotlink");
+  assert.ok(html.includes(a.file), "Damouni card draws the repo file");
+}
 // Public pages.
 assert.ok(fs.readFileSync(path.join(root, "fall.html"), "utf8").includes("damouni-orchards"));
 assert.ok(fs.readFileSync(path.join(root, "fall-color.html"), "utf8").includes("kensington-metropark"));
