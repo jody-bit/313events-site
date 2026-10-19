@@ -37,7 +37,9 @@ function rss(items) {
 async function runFeed(feedSource, body) {
   const handler = freshHandler();
   let upserted = [];
+  const patches = [];
   global.fetch = async (url, opts = {}) => {
+    if (url.includes("/rest/v1/feed_sources") && opts.method === "PATCH") { patches.push(opts.body); return { ok: true, status: 204, json: async () => [], text: async () => "" }; }
     if (url.includes("/rest/v1/feed_sources")) return { ok: true, status: 200, json: async () => [feedSource] };
     if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [] };
     if (url.includes("/rest/v1/events") && (!opts.method || opts.method === "GET")) return { ok: true, status: 200, json: async () => [] };
@@ -50,8 +52,32 @@ async function runFeed(feedSource, body) {
   const res = makeRes();
   await handler({ headers: {} }, res);
   assert.strictEqual(res._status, 200);
-  return { rows: upserted, body: res._body };
+  return { rows: upserted, body: res._body, patches };
 }
+// ---- the secret must reach no surface: log line, feed poll note (stored + in the response), run response ----------------
+async function leakCheck() {
+  const SECRETS = ["sk_live_51HabcDEF123456789", "abc123NESTEDSECRET", "zzzzzzzzzzzz", "hunter2", "tok_ABCDEFGHIJKL"];
+  const source = { id: "fs-leak", venue_name: "City Leak", default_category: "community", feed_url: "https://feed.example/leak.ics", feed_format: "ics", status: "approved", location_per_event: true };
+  const body = ics([
+    { uid: "unlisted", url: "https://x.org/common/modules/iCalendar/iCalendar.aspx?x=sk_live_51HabcDEF123456789" },
+    { uid: "nested", url: "https://x.org/e?next=https://b.org/y?token=abc123NESTEDSECRET" },
+    { uid: "malformed", url: "https://x.org/%zz?q=1&x=sk_live_zzzzzzzzzzzz" },
+    { uid: "userinfo", url: "https://user:hunter2@x.org/cal.ics" },
+    { uid: "other", url: "/common/modules/iCalendar/iCalendar.aspx?feed=calendar&tok=tok_ABCDEFGHIJKL" },
+  ]);
+  const logged = [];
+  const realLog = console.log;
+  console.log = (...a) => { logged.push(a.join(" ")); };
+  let result;
+  try { result = await runFeed(source, body); } finally { console.log = realLog; }
+  const surfaces = { "log lines": logged.join("\n"), "response": JSON.stringify(result.body), "stored poll note": result.patches.join("\n") };
+  for (const [name, text] of Object.entries(surfaces)) {
+    for (const secret of SECRETS) assert.ok(!text.includes(secret), `${name} must not contain ${secret}`);
+  }
+  assert.ok(/rejected_ticket_link source=fs-leak/.test(surfaces["log lines"]), "the rejections are still logged");
+  assert.ok(/not usable as a ticket link/.test(surfaces["stored poll note"]), "the poll note still reports them");
+}
+
 const byTitle = (rows, t) => rows.find((r) => r.title === t);
 
 async function run() {
@@ -89,6 +115,9 @@ async function run() {
     assert.strictEqual(byTitle(rows, "rel concert").ticket_url, "https://rss.example/e/2");
   }
   console.log("PASS: RSS — same rule");
+
+  await leakCheck();
+  console.log("PASS: secrets in an unlisted parameter, a nested URL, a malformed percent value, userinfo or a feed path reach no log line, poll note or response");
 
   console.log("\nAll cron-feeds-ticket-link.test.js checks passed.");
 }

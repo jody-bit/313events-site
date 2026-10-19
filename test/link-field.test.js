@@ -150,28 +150,39 @@ async function run() {
 
   // --- 5. diagnostics: sanitized, bounded, aggregated ---------------------------------------------------------------
   {
-    const clean = sanitizeLinkForLog("https://user:hunter2@x.org/e/1?token=abc123&email=jo@x.org&catID=7&sig=zz#frag");
-    assert.ok(!/hunter2|abc123|jo@x\.org|zz|frag|user:/.test(clean), `credentials, tokens, email and fragment are redacted: ${clean}`);
-    assert.ok(/catID=7/.test(clean), "a harmless parameter stays useful");
-    assert.strictEqual(sanitizeLinkForLog("/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23"), "/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23");
-    assert.strictEqual(sanitizeLinkForLog("/a?api_key=SECRET&x=1"), "/a?api_key=[redacted]&x=1", "a relative value is masked too");
-    assert.ok(!/@/.test(sanitizeLinkForLog("Email jo@x.org to pay at the door")) && /\[email\]/.test(sanitizeLinkForLog("Email jo@x.org")));
-    assert.ok(!/555/.test(sanitizeLinkForLog("Call (313) 555-0142 for tickets")), "phone numbers are masked");
-    assert.ok(!/[0-9a-f]{24}/.test(sanitizeLinkForLog("https://x.org/t/0123456789abcdef0123456789abcdef/e")), "long token-like path segments are masked");
+    // host + path only: the query string, fragment and credentials never reach a log line, poll note or response.
+    assert.strictEqual(sanitizeLinkForLog("https://user:hunter2@x.org/e/1?token=abc123&email=jo@x.org&catID=7&sig=zz#frag"), "https://x.org/e/1");
+    assert.strictEqual(sanitizeLinkForLog("/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23"), "/common/modules/iCalendar/iCalendar.aspx", "the feed path is still identifiable");
+    assert.strictEqual(sanitizeLinkForLog("Pay at the door"), "Pay at the door");
+    const leaks = [
+      ["unlisted parameter name", "https://a.org/e?x=sk_live_51HabcDEF123456789", "sk_live"],
+      ["unlisted parameter name, relative", "/p?x=eyJhbGciOiJIUzI1NiJ9.abc.def", "eyJhbGci"],
+      ["nested URL token", "https://a.org/e?next=https://b.org/x?token=abc123SECRET", "abc123SECRET"],
+      ["nested URL token, encoded", "https://a.org/e?next=https%3A%2F%2Fb.org%2Fx%3Ftoken%3Dabc123SECRET", "abc123SECRET"],
+      ["malformed percent fallback", "https://a.org/%zz?token=abc&x=sk_live_zzzzzzzzzzzz", "sk_live"],
+      ["unparseable text", "bad%zz?next=http://q/?t=SECRETVALUE#f", "SECRETVALUE"],
+      ["userinfo", "https://user:hunter2@a.org/e", "hunter2"],
+      ["userinfo without scheme", "user:hunter2@host.com/x", "hunter2"],
+      ["secret-shaped path segment", "/a/sk_live_ABCDEFGH12345/b", "sk_live"],
+      ["long hex path segment", "https://x.org/t/0123456789abcdef0123456789abcdef/e", "0123456789abcdef"],
+      ["email", "Email jo@x.org to pay", "jo@x.org"],
+      ["phone", "Call (313) 555-0142 for tickets", "555-0142"],
+    ];
+    for (const [name, input, secret] of leaks) assert.ok(!sanitizeLinkForLog(input).includes(secret), `${name}: ${JSON.stringify(sanitizeLinkForLog(input))} must not contain ${secret}`);
     assert.ok(sanitizeLinkForLog("x".repeat(500)).length <= 121, "long values are cut");
     assert.strictEqual(sanitizeLinkForLog(undefined), "");
 
     const lines = [];
     const rl = createRejectionLog({ limit: 20, log: (l) => lines.push(l) });
     const a = { id: "fs-a", venue_name: "City A" }, b = { id: "fs-b", venue_name: "City B" };
-    rl.record(a, Array.from({ length: 15 }, (_, i) => ({ raw: `/p/${i}?token=t${i}`, reason: "feed_path" })));
+    rl.record(a, Array.from({ length: 15 }, (_, i) => ({ raw: `/p/${i}?token=tok${i}`, reason: "feed_path" })));
     rl.record(b, Array.from({ length: 10 }, () => ({ raw: "Pay at the door", reason: "not_a_link" })));
     rl.record(a, [{ raw: "/x?token=late", reason: "feed_path" }]);
     rl.flush();
     const detail = lines.filter((l) => l.includes("rejected_ticket_link source="));
     assert.strictEqual(detail.length, 20, "at most 20 individual values are logged per run");
     assert.ok(detail.every((l) => /source=fs-[ab] reason=(feed_path|not_a_link) value=/.test(l)), "each line carries source, reason, value");
-    assert.ok(!lines.join("\n").includes("token=t"), "no raw token value reaches the log");
+    assert.ok(!lines.join("\n").includes("tok0") && !lines.join("\n").includes("token="), "no query string or token value reaches the log");
     assert.ok(!lines.join("\n").includes("late"), "values past the limit are not logged");
     const agg = lines.filter((l) => l.includes("rejected_ticket_link_aggregate"));
     assert.deepStrictEqual(agg.sort(), [

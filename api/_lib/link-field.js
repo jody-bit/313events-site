@@ -74,27 +74,29 @@ function normalizeRowLinks(row) {
 // A rejected value can still carry credentials, tokens or personal data (a signed URL, ?email=, user:pass@host). The value
 // is logged only after sanitizeLinkForLog, and only for the first `limit` rejections of a run; the rest are counted by
 // source and reason, with no value.
-const SENSITIVE_PARAM = /token|key|secret|pass|pwd|auth|sig|session|sid|code|e-?mail|phone|user|login|credential|jwt|bearer|hash|ticket|order|account/i;
+// A rejected link is logged as host + path ONLY. The query string and fragment are dropped in every branch, so a secret cannot
+// reach a log line, a feed poll note or the run response by hiding in a parameter, whatever its name, or in a URL nested in a
+// parameter, or in text that fails URL parsing. Credentials in the authority (user:pass@host) are dropped, and secret-shaped
+// runs, emails and phone-like numbers are masked wherever they appear (path included).
+const SECRET_SHAPE = /(?:\b(?:sk|pk|rk|whsec|ghp|gho|xox[abp])_[A-Za-z0-9_]{6,}|\beyJ[A-Za-z0-9_-]{8,}(?:\.[A-Za-z0-9_-]+)*|\bAKIA[0-9A-Z]{12,}|[A-Za-z0-9_-]{24,})/g;
 const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const NUMBERISH = /\+?\d[\d\s().-]{8,}\d/g;
 const LOG_VALUE_MAX = 120;
 
 function sanitizeLinkForLog(value) {
-  let v = typeof value === "string" ? value.trim() : String(value === undefined || value === null ? "" : value);
-  let out = null;
+  const v = typeof value === "string" ? value.trim() : String(value === undefined || value === null ? "" : value);
+  let out;
   try {
     const u = new URL(v);
-    u.username = ""; u.password = ""; u.hash = "";
-    for (const [k] of Array.from(u.searchParams.entries())) {
-      if (SENSITIVE_PARAM.test(k)) u.searchParams.set(k, "[redacted]");
-    }
-    u.pathname = u.pathname.split("/").map((seg) => (/^[0-9a-f-]{24,}$/i.test(seg) || /^[A-Za-z0-9_-]{32,}$/.test(seg) ? "[redacted]" : seg)).join("/");
-    out = decodeURIComponent(u.toString()).replace(/%5Bredacted%5D/gi, "[redacted]");
+    out = `${u.protocol}//${u.host}${u.pathname}`; // URL parsing already separates userinfo, query and fragment
   } catch {
-    // Not an absolute URL (relative path, price text): sanitize as text. Query values of sensitive keys are masked too.
-    out = v.replace(/([?&;])([^=&;\s]+)=([^&;\s]*)/g, (m, sep, k, val) => (SENSITIVE_PARAM.test(k) ? `${sep}${k}=[redacted]` : m));
+    // Not an absolute URL (relative path, price text, malformed): cut at the first ? or #, drop any userinfo, no decoding.
+    out = v
+      .split(/[?#]/)[0]
+      .replace(/[a-z][a-z0-9+.-]*:\/\/[^\s/]*@/gi, "")
+      .replace(/(^|[\s/])[^\s/@]*:[^\s/@]*@(?=[^\s/@]+)/g, "$1");
   }
-  out = out.replace(EMAIL, "[email]").replace(NUMBERISH, "[number]");
+  out = out.replace(/(^|\/)[0-9a-f-]{24,}(?=\/|$)/gi, "$1[redacted]").replace(EMAIL, "[email]").replace(SECRET_SHAPE, "[redacted]").replace(NUMBERISH, "[number]");
   return out.length > LOG_VALUE_MAX ? out.slice(0, LOG_VALUE_MAX) + "…" : out;
 }
 
