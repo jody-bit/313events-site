@@ -47,6 +47,7 @@ const crypto = require("crypto");
 //     of an incomplete record.
 //   hide:           approved -> rejected (takes an already-live event off the site)
 //   restore:        rejected -> approved (undo a hide, or reverse a reject)
+//   save_correction: { id, action: "save_correction", row_version, fields, approve?, note? }  (#185; see below)
 //   update_fields:  { id, action: "update_fields", fields: { description?, venue_address_raw?,
 //                     venue_city_raw?, ticket_url?, event_url?, time_display? } } — fills in a
 //                     gap the "Needs follow-up" section flagged. Only ever fills a blank field
@@ -117,6 +118,28 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const SITE_URL = require("./_lib/environment").siteUrl();
 const { filterPendingQueue } = require("./_lib/pending-queue");
 const { classifyRows } = require("./_lib/pending-classifier");
+const { annotateQueue } = require("./_lib/submission-provenance");
+const { evaluateSources } = require("./_lib/source-health");
+
+async function buildProvenance(rows, headers) {
+  let feeds = [];
+  let runs = [];
+  let readError = null;
+  try {
+    const since = encodeURIComponent(new Date(Date.now() - 30 * 86400000).toISOString());
+    const [f, r] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/feed_sources?select=id,venue_name,feed_format,status,last_polled_at,last_poll_result&limit=1000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status&started_at=gte.${since}&order=started_at.desc&limit=5000`, { headers }),
+    ]);
+    if (f.ok) feeds = await f.json(); else readError = `feed_sources HTTP ${f.status}`;
+    if (r.ok) runs = await r.json(); else readError = `${readError ? readError + "; " : ""}source_runs HTTP ${r.status}`;
+  } catch (err) { readError = err.message; }
+  let vercelConfig = null;
+  try { vercelConfig = require("../vercel.json"); } catch (_) {}
+  const out = annotateQueue(rows, { feeds, runs, vercelConfig, evaluateSources });
+  if (readError && !out.health_error) out.health_error = readError;
+  return out;
+}
 
 function escapeHtmlForEmail(str) {
   return String(str == null ? "" : str)
@@ -336,7 +359,17 @@ module.exports = async (req, res) => {
         if (!all.ok) { res.status(502).json({ error: all.error }); return; }
         // Read-side grouping (admin queue Stage 2): each row gets a queue_class annotation; none is dropped or changed.
         const classified = classifyRows(filterPendingQueue(all.rows, expiredView ? "expired" : "current"));
-        res.status(200).json({ events: classified.events, class_counts: classified.class_counts, actionable_count: classified.actionable_count, view: expiredView ? "expired" : "current" });
+        // Submissions Dashboard Step 1 (additive, read-only): provenance, lane and reasons per row. Existing keys are unchanged.
+        // Source health inputs (30-day source_runs, approved feeds) are best effort; without them rows are never called blocked.
+        const provenance = await buildProvenance(classified.events, sbHeaders);
+        // #185: per row, the version to send back with a correction and what a person has already corrected. Additive.
+        const { ownerCorrectionView } = require("./_lib/event-contract");
+        const withCorrections = provenance.events.map((e) => ({ ...e, row_version: e.updated_at || null, ...ownerCorrectionView(e) }));
+        res.status(200).json({
+          events: withCorrections, class_counts: classified.class_counts, actionable_count: classified.actionable_count, view: expiredView ? "expired" : "current",
+          lane_counts: provenance.lane_counts, blocked_breakdown: provenance.blocked_breakdown, blocked_sources: provenance.blocked_sources,
+          provenance_coverage: provenance.provenance_coverage, provenance_health_error: provenance.health_error,
+        });
         return;
       }
 
@@ -395,6 +428,108 @@ module.exports = async (req, res) => {
           const ok = await markDistinct(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, first, second);
           res.status(ok ? 200 : 502).json({ ok });
         }
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+      return;
+    }
+
+    // save_correction (REL-001 / #185 increment 1, Jody 2026-10-18): a person's correction of a stored event. Unlike
+    // update_fields it OVERWRITES, so it is recorded: one append-only audit line in internal_note (no migration) that
+    // doubles as the owner-correction marker honoured by ingestion (api/_lib/event-contract.js, event-upsert.js). It is
+    // guarded by a row version (updated_at) checked inside the UPDATE itself, so a concurrent change is a 409 and nothing
+    // is lost. `approve:true` is a separate, gated last step: the correction is kept even when approval is refused.
+    // Contract: project files platform/issue-185-increment-1/PLATFORM-CONTRACT.md. No status change without approve:true.
+    if (action === "save_correction") {
+      const contract = require("./_lib/event-contract");
+      const { row_version: rowVersion, fields, note } = body;
+      const wantApprove = body.approve === true;
+      if (!id || typeof rowVersion !== "string" || !rowVersion) {
+        res.status(400).json({ error: "Body must include { id, action: 'save_correction', row_version, fields: { ... } }" });
+        return;
+      }
+      if (note != null && (typeof note !== "string" || note.length > 200)) {
+        res.status(400).json({ error: "note must be text of at most 200 characters", field: "note" });
+        return;
+      }
+      const publicRow = (row) => { if (!row) return row; const { internal_note, ...rest } = row; return rest; }; // the audit text itself is not echoed
+      try {
+        const read = async () => {
+          const r = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&select=*`, { headers: sbHeaders });
+          const rows = r.ok ? await r.json() : null;
+          return { ok: r.ok, row: Array.isArray(rows) ? rows[0] : null };
+        };
+        const cur = await read();
+        if (!cur.ok) { res.status(502).json({ error: "Could not read the event" }); return; }
+        if (!cur.row) { res.status(404).json({ error: "Event not found" }); return; }
+        const conflict = (row) => res.status(409).json({ error: "row changed", message: "This event changed after it was loaded. Nothing was saved. Reload it and apply the correction again.", current: publicRow(row), row_version: row.updated_at, ...contract.ownerCorrectionView(row) });
+        if (cur.row.updated_at !== rowVersion) { conflict(cur.row); return; }
+
+        const check = contract.validateCorrection(fields, cur.row);
+        if (check.errors.length) {
+          res.status(400).json({ error: "invalid correction", field: check.errors[0].field, errors: check.errors });
+          return;
+        }
+
+        let row = cur.row;
+        const approveBlock = { requested: wantApprove, done: false, blocked: null };
+        const statusBefore = cur.row.status;
+        let editId = null;
+        if (check.changes.length) {
+          const now = new Date().toISOString();
+          editId = `e-${now.replace(/[-:.]/g, "").slice(0, 15)}Z-${crypto.randomBytes(2).toString("hex")}`;
+          const line = contract.buildOwnerCorrectionLine({ at: now, editId, actor: "admin", changes: check.changes, note });
+          const patch = { internal_note: contract.appendNoteLine(cur.row.internal_note, line), updated_at: now };
+          for (const c of check.changes) patch[c.field] = c.after;
+          // The version check is part of the UPDATE: if the row changed since it was read, zero rows match.
+          const w = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&updated_at=eq.${encodeURIComponent(rowVersion)}`, {
+            method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify(patch),
+          });
+          const written = await w.json().catch(() => null);
+          if (!w.ok) {
+            const bad = written && written.code === "22P02";
+            res.status(bad ? 400 : 502).json(bad ? { error: "invalid correction", field: "category", errors: [{ field: "category", message: "not a known category" }] } : { error: "Could not save the correction", detail: written });
+            return;
+          }
+          if (!Array.isArray(written) || !written[0]) { const again = await read(); if (again.row) { conflict(again.row); } else { res.status(404).json({ error: "Event not found" }); } return; }
+          row = written[0];
+        }
+
+        if (wantApprove) {
+          if (row.status === "approved") {
+            approveBlock.blocked = { failed_gate: "already_approved", codes: [], why: "This event is already approved." };
+          } else if (row.status !== "pending_review") {
+            // Only the review queue is approved from here. A rejected or hidden event is brought back with the existing restore action.
+            approveBlock.blocked = { failed_gate: "not_pending", codes: [], why: "Only events waiting for review can be approved here. Use Restore for a rejected or hidden event." };
+          } else if (row.source === "Resident Advisor" && !row.time_display && body.acknowledgeMissingTime !== true) {
+            approveBlock.blocked = { failed_gate: "missing_time", codes: ["MISSING_START_TIME"], why: "This Resident Advisor event has no verified start time. Add the time, or approve it without one on purpose." };
+          } else {
+            // The same publication gate ingestion uses. Identity and source codes describe how a row arrived, not whether
+            // it is fit to publish, so a hand-submitted row (no external_id) is not blocked by them.
+            const verdict = contract.evaluateEvent(row, {});
+            const blockers = verdict.issues.filter((i) => i.severity !== "info" && !["IDENTITY_MISSING", "SOURCE_MISSING"].includes(i.code));
+            if (blockers.length) {
+              approveBlock.blocked = { failed_gate: "publication_gate", codes: blockers.map((i) => i.code), why: blockers.map((i) => i.message || i.code).join("; ") };
+            } else {
+              const a = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.pending_review`, {
+                method: "PATCH", headers: { ...sbHeaders, Prefer: "return=representation" }, body: JSON.stringify({ status: "approved" }),
+              });
+              const approved = await a.json().catch(() => null);
+              if (a.ok && Array.isArray(approved) && approved[0]) {
+                row = approved[0];
+                approveBlock.done = true;
+                await notifyEventLive(row);
+              } else {
+                approveBlock.blocked = { failed_gate: "write_failed", codes: [], why: "The correction was saved but the approval could not be written." };
+              }
+            }
+          }
+        }
+
+        res.status(200).json({
+          ok: true, edit_id: editId, event: publicRow(row), row_version: row.updated_at, changes: check.changes,
+          ...contract.ownerCorrectionView(row), status_before: statusBefore, status_after: row.status, approve: approveBlock,
+        });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
@@ -762,7 +897,7 @@ let genericCounts = null;
     }
 
     if (!id || !["approve", "reject", "hide", "restore"].includes(action)) {
-      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
+      res.status(400).json({ error: "Body must include { id, action: 'approve'|'reject'|'hide'|'restore'|'update_fields'|'save_correction'|'dismiss_followup'|'undo_dismiss_followup'|'auto_repair_venue'|'merge_duplicate'|'not_duplicate' }" });
       return;
     }
 
