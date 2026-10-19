@@ -167,11 +167,13 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
 // Re-pinned 2026-10-13 with owner authorization (project thread, Wiard's Country Fair photo integration): wiards-orchards's
 // `image` block only changed, replacing the temporary AI-generated illustration with an owner-authorized original
 // photograph; name, city, summary, website, categories, evidence, approval and status untouched. Pin before: 678f6049...
+// Re-pinned 2026-10-19 (data-only distance field, Editorial final change set DISTANCE-DATA-CHANGE-FINAL-2026-10-19.json, Orbit inclusion decisions):
+// black-oak-heritage-park gains a private `distance` object; no other field of the 76 changes. Pin before: 23757ef9...
 {
   const set = AUTHZ.batch76(ED), recs = [];
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "23757ef9fec372e84e107df3f26095a3bea2d3341e882ebed68a333e49443f47", "the 76 approved Fall / Fall Colors records are unchanged");
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "49e2a2b086e1064cc99bfec5b907ae64e0ba5f1851971f17d56a7cf04170ecda", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");

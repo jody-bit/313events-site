@@ -6958,6 +6958,11 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official page states the 2026 season opens September 12, 2026 and runs through October 31, 2026. https://fieldoffear.com/ read 2026-10-12."
    },
+   "distance": {
+    "miles": 64.5,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (Monclova, OH town/city point, not an official address)"
+   },
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
     "at": "2026-10-11",
@@ -7245,6 +7250,11 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official home page describes the all-new 2026 'Ritual Horrors' experience (read 2026-10-12, https://feardistracted.com/). The show calendar on that page is an image only; the 2026 dates below come from the official ticketing page linked from the site (https://app.hauntpay.com/events/distracted-haunted-house-tickets-2021, read 2026-10-12), which lists 2026 dates despite the '2021' in its URL."
    },
+   "distance": {
+    "miles": 65.7,
+    "outside75": false,
+    "note": "Miles from Detroit's municipal border (DEC-003 boundary check by Platform); coordinates approximate (Bowling Green, OH town/city point, not an official address)"
+   },
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
     "at": "2026-10-11",
@@ -7422,6 +7432,11 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official Metroparks Toledo page carries a 2026 footer and 'Updated: 10/07/2026' listings for Eerie Manor Tours (read 2026-10-12, https://metroparkstoledo.com/eeriemanor)."
    },
+   "distance": {
+    "miles": 58.4,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (Toledo, OH town/city point, not an official address)"
+   },
    "website": "https://metroparkstoledo.com/eeriemanor",
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
@@ -7513,6 +7528,11 @@
     "checkedAt": "2026-10-12",
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official Fort Meigs pages list Garrison Ghost Walk dates in 2026 with ticket sales starting September 9, 2026 (read 2026-10-12, https://fortmeigs.org/ghostwalk/ and https://fortmeigs.org/). Official shop has a listing for the Oct 16, 2026 7:45 pm walk (https://shop.fortmeigs.org/products/garrison-ghost-walk-friday-october-16-2026-7-45-pm, search result only)."
+   },
+   "distance": {
+    "miles": 61.3,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (Perrysburg, OH town/city point, not an official address)"
    },
    "editorialAccepted": {
     "by": "Jody Tyree (owner)",
@@ -8538,6 +8558,11 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official Jane's Walk site lists the fall 2026 Spooky Jane's Walk 'From Tombstones to Trading Post', Saturday Oct 17, 2026, 11:00 AM-12:00 PM, $25 via Eventbrite. https://www.windsorjaneswalk.ca/ (read 2026-10-12); detail corroborated by https://windsorite.ca/events/spooky-janes-walk-from-tombstones-to-trading-post/ (secondary)."
    },
+   "distance": {
+    "miles": 3,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (Sandwich Town, Windsor ON: start at St. John's Church, 3305 Sandwich St; end Duff-Baby Mansion, 221 Mill St; addresses from secondary listing windsorite.ca, official page says only 'Windsor')"
+   },
    "website": "https://www.windsorjaneswalk.ca/",
    "disposition": {
     "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
@@ -8621,6 +8646,11 @@
     "checkedAt": "2026-10-12",
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Sandwich Town BIA's event page lists the Sandwich Town Ghost Tour on October 17, 2026, 7:30-9:30 pm, $20. Other 2026 ghost events on its events page; the July page lists monthly tours with 'Halloween tours' details to come. https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/ and https://sandwichtown.ca/events/ (read 2026-10-12)."
+   },
+   "distance": {
+    "miles": 2.5,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (Windsor, ON town/city point, not an official address)"
    },
    "website": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
    "disposition": {
@@ -11139,6 +11169,11 @@
      }
     ],
     "unresolved": []
+   },
+   "distance": {
+    "miles": 4.2,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (Windsor, ON town/city point, not an official address)"
    },
    "expansionCandidate": {
     "batch": "expansion-1",
