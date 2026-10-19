@@ -74,7 +74,7 @@ function normalizeRowLinks(row) {
 // A rejected value can still carry credentials, tokens or personal data (a signed URL, ?email=, user:pass@host). The value
 // is logged only after sanitizeLinkForLog, and only for the first `limit` rejections of a run; the rest are counted by
 // source and reason, with no value.
-// A rejected link is logged as host + path ONLY. The query string and fragment are dropped in every branch, so a secret cannot
+// A rejected link is logged as host + path ONLY, or a placeholder when it is not a URL or a site-relative path. The query string and fragment are dropped in every branch, so a secret cannot
 // reach a log line, a feed poll note or the run response by hiding in a parameter, whatever its name, or in a URL nested in a
 // parameter, or in text that fails URL parsing. Credentials in the authority (user:pass@host) are dropped, and secret-shaped
 // runs, emails and phone-like numbers are masked wherever they appear (path included).
@@ -83,18 +83,24 @@ const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const NUMBERISH = /\+?\d[\d\s().-]{8,}\d/g;
 const LOG_VALUE_MAX = 120;
 
+const UNPARSEABLE = "[unparseable value]";
+
+// -> "https://host/path" for an absolute URL, "/path" for a site-relative path, otherwise the placeholder. Never the raw input.
 function sanitizeLinkForLog(value) {
-  const v = typeof value === "string" ? value.trim() : String(value === undefined || value === null ? "" : value);
+  const v = typeof value === "string" ? value.trim() : "";
   let out;
+  if (!v) return "";
   try {
-    const u = new URL(v);
-    out = `${u.protocol}//${u.host}${u.pathname}`; // URL parsing already separates userinfo, query and fragment
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) {
+      const u = new URL(v);
+      out = `${u.protocol}//${u.host}${u.pathname}`; // URL parsing separates userinfo, query and fragment, which are all dropped
+    } else if (v.startsWith("/") && !v.startsWith("//")) {
+      out = new URL(v, "http://relative.invalid").pathname; // a site-relative path: path only, no decoding, a bad percent sequence cannot throw
+    } else {
+      return UNPARSEABLE; // price text, protocol-relative, bare host, mailto:, malformed: nothing from the input is echoed
+    }
   } catch {
-    // Not an absolute URL (relative path, price text, malformed): cut at the first ? or #, drop any userinfo, no decoding.
-    out = v
-      .split(/[?#]/)[0]
-      .replace(/[a-z][a-z0-9+.-]*:\/\/[^\s/]*@/gi, "")
-      .replace(/(^|[\s/])[^\s/@]*:[^\s/@]*@(?=[^\s/@]+)/g, "$1");
+    return UNPARSEABLE;
   }
   out = out.replace(/(^|\/)[0-9a-f-]{24,}(?=\/|$)/gi, "$1[redacted]").replace(EMAIL, "[email]").replace(SECRET_SHAPE, "[redacted]").replace(NUMBERISH, "[number]");
   return out.length > LOG_VALUE_MAX ? out.slice(0, LOG_VALUE_MAX) + "…" : out;

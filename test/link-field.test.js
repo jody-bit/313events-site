@@ -153,7 +153,11 @@ async function run() {
     // host + path only: the query string, fragment and credentials never reach a log line, poll note or response.
     assert.strictEqual(sanitizeLinkForLog("https://user:hunter2@x.org/e/1?token=abc123&email=jo@x.org&catID=7&sig=zz#frag"), "https://x.org/e/1");
     assert.strictEqual(sanitizeLinkForLog("/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23"), "/common/modules/iCalendar/iCalendar.aspx", "the feed path is still identifiable");
-    assert.strictEqual(sanitizeLinkForLog("Pay at the door"), "Pay at the door");
+    assert.strictEqual(sanitizeLinkForLog("https://a.org/e#access_token=zzz"), "https://a.org/e", "a fragment is dropped");
+    for (const unparseable of ["Pay at the door", "bad%zz?next=http://q/?t=SECRETVALUE#f", "//h.org/x?t=SECRETVALUE", "https://", "mailto:a@b.co", "javascript:alert(1)", "user:hunter2@host.com/x"]) {
+      assert.strictEqual(sanitizeLinkForLog(unparseable), "[unparseable value]", `unparseable input is replaced by a placeholder, never echoed: ${unparseable}`);
+    }
+    assert.strictEqual(sanitizeLinkForLog("https://a.org/%zz?x=1"), "https://a.org/%zz", "a malformed percent sequence in a parseable URL cannot throw or leak the query");
     const leaks = [
       ["unlisted parameter name", "https://a.org/e?x=sk_live_51HabcDEF123456789", "sk_live"],
       ["unlisted parameter name, relative", "/p?x=eyJhbGciOiJIUzI1NiJ9.abc.def", "eyJhbGci"],
