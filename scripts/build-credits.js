@@ -58,7 +58,7 @@ function row(e) {
   } else if (e.source === "Wikimedia Commons") {
     const who = esc(e.credited_name || e.holder);
     const lic = e.license_url ? `<a href="${esc(e.license_url)}" rel="noopener">${esc(e.license)}</a>` : esc(e.license);
-    bits.push(`Photo by ${who}, ${lic}, via <a href="${esc(e.source_url)}" rel="noopener">Wikimedia Commons</a>. No credit is required by this license.`);
+    bits.push(`Photo by ${who}, ${lic}, via <a href="${esc(e.source_url)}" rel="noopener">Wikimedia Commons</a>. No credit is required.`);
   } else {
     bits.push(`Photography &copy; ${esc(e.credited_name || e.holder)}. Taken for 313.events and used with the photographer&rsquo;s authorization.`);
   }
