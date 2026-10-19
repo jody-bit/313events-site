@@ -1041,6 +1041,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1479 Ranch Rd., Holly, MI 48442. Season/hours as stated: Aug 15-Oct 31 daily 9am-6pm; Nov 1-22 Sat/Sun 12-5pm; weekend hayrides Sep 12-Oct 18; pony rides Sep 26-Oct 17. Flags: page says no U-pick apples."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.diehlsorchard.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19. Hayrides now weekends Sep 12-Oct 25 (earlier note: Sep 12-Oct 18); pony rides weekends Sep 26-Oct 18 (earlier note: Sep 26-Oct 17). Hours Aug 15-Oct 31 daily 9-6 and Nov 1-22 Sat/Sun 12-5 unchanged. Private evidence only; the public summary has no ride dates."
     }
    ],
    "relevance": {
@@ -7891,6 +7899,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official event page lists 'Brick or Treat' for October 1 to October 31, 2026, open during attraction hours (read 2026-10-12, https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/ and https://www.legolanddiscoverycenter.com/michigan/). Dates as stated: October 1 to October 31, 2026, during attraction hours (hours vary; the page's posted hours are 10am-6pm with last entry 4:30pm for the day read, not necessarily all October days)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19. Page still lists Oct 1-31, 2026 during attraction hours, but now says the center is temporarily closed to guests Monday Oct 26 to Wednesday Oct 28, 2026, so the event will not run those days. Private evidence only; the public summary is unchanged."
     }
    ],
    "relevance": {
@@ -7967,6 +7983,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official Halloween Happenings page lists the Ooky Spooky Light Show among October 2026 events (read 2026-10-12, https://sloanlongway.org/halloween/); the Longway Planetarium page carries the same show listing. Dates as stated: Official wording: Tuesday through Sunday at 4 p.m., plus select Fridays and Saturdays at 6 p.m.; no 6 p.m. public show on October 10 due to the Halloween Extravaganza. No full date range stated."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://sloanlongway.org/halloween/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19. Page now says no 6 p.m. public show on October 23 (the earlier note said October 10, now past). Times 'Tues - Sun @ 4 p.m. | Select Fridays & Saturdays @ 6 p.m.' unchanged; no year on the listing. The Sloan Longway calendar lists 6 p.m. shows Oct 24, 30, 31. Private evidence only; the public summary is unchanged."
     }
    ],
    "website": "https://sloanlongway.org/halloween/",
