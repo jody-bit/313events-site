@@ -11,7 +11,7 @@ const fs = require("fs");
 const path = require("path");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { SOURCE_CALENDAR_PAGES, calendarFallbackFor, fillBlankSourceCalendarLinks } = require(`${REPO_DIR}/api/_lib/source-calendar-links.js`);
+const { SOURCE_CALENDAR_PAGES, FEED_CALENDAR_PAGE_OVERRIDES, looksLikeCalendarPage, calendarFallbackFor, fillBlankSourceCalendarLinks } = require(`${REPO_DIR}/api/_lib/source-calendar-links.js`);
 const { upsertEventRows } = require(`${REPO_DIR}/api/_lib/event-upsert.js`);
 
 const BASE = "https://example.supabase.co";
@@ -59,10 +59,29 @@ function recorder(matchedCounts) {
     { feed_source_id: "fs-1", source: "X", _calendarUrl: "ftp://x.gov/cal" },
     { feed_source_id: "fs-1", source: "X", _calendarUrl: "https://x.gov/common/modules/iCalendar/iCalendar.aspx?feed=calendar" }, // a feed endpoint
     { feed_source_id: "fs-1", source: "X", _calendarUrl: "https://x.gov/feed.ics" },
+    { feed_source_id: "fs-1", source: "X", _calendarUrl: "https://www.livonia.gov/" },                  // a bare homepage is never filled
+    { feed_source_id: "fs-1", source: "X", _calendarUrl: "https://www.livonia.gov" },
+    { feed_source_id: "fs-1", source: "X", _calendarUrl: "https://www.livonia.gov/departments/parks" }, // a section page, not a calendar
     { source: "X", _calendarUrl: "https://x.gov/calendar" }]) {                                         // marker without a feed id: no target
     assert.strictEqual(calendarFallbackFor(bad), null, "no target for " + JSON.stringify(bad));
   }
   console.log("PASS: only a valid absolute http(s) calendar page, from an approved feed or the registry, becomes a target");
+
+  // 2b. what counts as a calendar page, the override map, and precedence
+  {
+    for (const ok of ["https://www.dearborn.gov/calendar", "https://www.romi.gov/calendar.aspx", "https://x.gov/events/", "https://x.gov/Calendar/Month", "https://x.gov/community-calendar", "https://x.gov/whats-on"]) assert.ok(looksLikeCalendarPage(ok), ok);
+    for (const no of ["https://www.livonia.gov/", "https://www.livonia.gov", "https://x.gov/home", "https://x.gov/index.html", "https://x.gov/departments/parks", "https://x.gov/events-and-programs", "https://x.gov/?page=calendar", "x.gov/calendar", "/calendar", "", null, 5]) assert.ok(!looksLikeCalendarPage(no), String(no));
+    assert.deepStrictEqual(Object.keys(FEED_CALENDAR_PAGE_OVERRIDES), [], "no override until Event Intelligence quotes a verified URL");
+    assert.ok(Object.isFrozen(FEED_CALENDAR_PAGE_OVERRIDES));
+    // an override wins over the feed's own website, applies when the website is a bare homepage, and must itself be a valid page
+    const row = { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/" };
+    assert.strictEqual(calendarFallbackFor(row), null, "homepage website and no override: no fallback");
+    const ov = { "City of Livonia - Community Events": "https://www.livonia.gov/calendar.aspx" };
+    assert.deepStrictEqual(calendarFallbackFor(row, ov), { by: "source", key: "City of Livonia - Community Events", url: "https://www.livonia.gov/calendar.aspx", label: "City of Livonia - Community Events" });
+    assert.strictEqual(calendarFallbackFor({ ...row, _calendarUrl: "https://www.livonia.gov/events" }, ov).url, "https://www.livonia.gov/calendar.aspx", "override beats the website");
+    assert.strictEqual(calendarFallbackFor(row, { "City of Livonia - Community Events": "https://www.livonia.gov/feed.ics" }), null, "an override that is a feed endpoint is ignored");
+    console.log("PASS: a bare homepage is never filled; only a calendar-looking website or an explicit verified override is");
+  }
 
   // 3. the write: blank-only filter on BOTH link fields, event_url only, scoped to the source, one PATCH per source
   {
@@ -73,12 +92,13 @@ function recorder(matchedCounts) {
       { source: "HALO Detroit" },
       { source: "Some other connector", ticket_url: "https://x.org/t" },
     ];
-    const out = await fillBlankSourceCalendarLinks(BASE, KEY, rows, fetchImpl);
+    const out = await fillBlankSourceCalendarLinks(BASE, KEY, rows, fetchImpl, new Date("2026-10-19T23:30:00Z"));
     assert.strictEqual(calls.length, 2, "one PATCH per source, none for a source with no registered page");
     for (const c of calls) {
       assert.strictEqual(c.method, "PATCH");
       const q = decodeURIComponent(c.url);
-      assert.ok(q.includes("and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.))"), "BOTH fields must be blank: " + q);
+      assert.ok(q.includes("and=(or(ticket_url.is.null,ticket_url.eq.),or(event_url.is.null,event_url.eq.),or(start_date.gte.2026-10-19,end_date.gte.2026-10-19))"), "BOTH fields blank, and not past: " + q);
+      assert.ok(q.includes("status=eq.approved"), "approved rows only: " + q);
       assert.deepStrictEqual(Object.keys(c.body), ["event_url"], "the payload is event_url alone; ticket_url is never written");
       assert.ok(!/ticket_url["']?\s*:/.test(JSON.stringify(c.body)));
     }
@@ -94,16 +114,23 @@ function recorder(matchedCounts) {
   {
     // Evaluate the exact predicate the request sends, over rows in every link state.
     const blank = (v) => v === null || v === undefined || v === "";
-    const matches = (r) => blank(r.ticket_url) && blank(r.event_url);
+    const TODAY = "2026-10-19";
+    const matches = (r) => r.status === "approved" && blank(r.ticket_url) && blank(r.event_url) && ((r.start_date || "") >= TODAY || (r.end_date || "") >= TODAY);
+    const live = { status: "approved", start_date: "2026-10-30", ticket_url: null, event_url: null };
     const states = [
-      [{ ticket_url: null, event_url: null }, true], [{ ticket_url: "", event_url: "" }, true], [{}, true],
-      [{ ticket_url: "https://t.example/1", event_url: null }, false],
-      [{ ticket_url: null, event_url: "https://e.example/1" }, false],
-      [{ ticket_url: "https://t.example/1", event_url: "https://e.example/1" }, false],
-      [{ ticket_url: "", event_url: "https://e.example/1" }, false],
+      [live, true], [{ ...live, ticket_url: "", event_url: "" }, true], [{ status: "approved", start_date: "2026-10-30" }, true],
+      [{ ...live, start_date: "2026-10-19" }, true],                               // today is not past
+      [{ ...live, start_date: "2026-09-01", end_date: "2026-11-01" }, true],       // a run still in progress
+      [{ ...live, start_date: "2026-10-18" }, false],                              // over yesterday
+      [{ ...live, start_date: "2026-01-01", end_date: "2026-01-02" }, false],
+      [{ ...live, status: "pending_review" }, false], [{ ...live, status: "rejected" }, false],
+      [{ ...live, ticket_url: "https://t.example/1" }, false],
+      [{ ...live, event_url: "https://e.example/1" }, false],
+      [{ ...live, ticket_url: "https://t.example/1", event_url: "https://e.example/1" }, false],
+      [{ ...live, ticket_url: "", event_url: "https://e.example/1" }, false],
     ];
     for (const [r, want] of states) assert.strictEqual(matches(r), want, JSON.stringify(r));
-    console.log("PASS: a row with either link already set is never in the PATCH's reach");
+    console.log("PASS: a row with either link set, a non-approved row, or a past event is never in the PATCH's reach");
   }
 
   // 5. failure never fails a run; a non-ok response counts nothing
