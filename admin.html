@@ -425,7 +425,7 @@
     <div class="tab-panel" data-tab-panel="live">
       <section class="block" style="margin-top:0;">
         <h2>Live events</h2>
-        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — and remove it if it doesn't fit the brand. Removing is reversible from "Recently hidden" below.</div>
+        <div class="sub">Search anything currently live on the site — from any source, including automated feeds — correct a wrong value with Edit, or remove it if it doesn't fit the brand. A correction keeps the event live and importers will not overwrite the corrected fields. Removing is reversible from "Recently hidden" below.</div>
         <div class="search-row">
           <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
           <button onclick="searchLiveEvents()">Search</button>
@@ -2622,24 +2622,146 @@ async function searchLiveEvents() {
   }
 }
 
-function renderLiveResults(events) {
-  const results = document.getElementById('liveResults');
-  if (!events.length) {
-    results.innerHTML = '<div class="empty">No live events match that search.</div>';
-    return;
-  }
-  results.innerHTML = events.map(e => `
-    <div class="card" id="live-card-${e.id}">
+// Live events: results are kept so an Edit panel can be drawn beside Remove. Corrections go through the same
+// save_correction action as the review queue (see "Review-queue editing"); a live event stays live, nothing is approved.
+let LIVE_ROWS = [];
+const LIVE_EDIT = {};   // id -> { open, draft:{field:value}, notice, noticeKind, busy }
+function liveRowVersion(e) { return e.row_version || e.updated_at || null; }
+function liveFind(id) { return LIVE_ROWS.find(r => r.id === id) || null; }
+function liveValue(e, key) { const d = LIVE_EDIT[e.id] && LIVE_EDIT[e.id].draft; return d && key in d ? d[key] : (e[key] == null ? '' : String(e[key])); }
+function liveCardHtml(e) {
+  const id = escapeAttr(e.id), st = LIVE_EDIT[e.id];
+  const notice = st && st.notice && !st.open ? '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" role="status">' + escapeHtml(st.notice) + '</div>' : '';
+  return `
+    <div class="card" id="live-card-${id}">
       <h3>${escapeHtml(e.title)}</h3>
       <div class="meta">
         <b>${escapeHtml(e.category)}</b> · ${escapeHtml(e.start_date)}${e.time_display ? ' · ' + escapeHtml(e.time_display) : ''}<br>
         Venue: <b>${escapeHtml(e.venue_name_raw || 'TBA')}</b> · Source: <b>${escapeHtml(e.source || 'Manual')}</b>
       </div>
+      ${subEditedHtml(e)}${notice}${livePanelHtml(e)}
       <div class="actions">
-        <button class="btn-hide" id="hide-btn-${e.id}" onclick="hideEvent('${e.id}')">Remove from site</button>
+        <button class="sub-edit-btn" id="liveeditbtn-${id}" onclick="liveEditOpen('${id}')"${st && st.open ? ' aria-expanded="true"' : ' aria-expanded="false"'}>Edit</button>
+        <button class="btn-hide" id="hide-btn-${id}" onclick="hideEvent('${id}')">Remove from site</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+}
+function renderLiveResults(events) {
+  const results = document.getElementById('liveResults');
+  LIVE_ROWS = events;
+  if (!events.length) {
+    results.innerHTML = '<div class="empty">No live events match that search.</div>';
+    return;
+  }
+  results.innerHTML = events.map(liveCardHtml).join('');
+}
+function liveRender(id) {
+  const e = liveFind(id), card = document.getElementById('live-card-' + id);
+  if (!e || !card) return;
+  const tmp = document.createElement('div'); tmp.innerHTML = liveCardHtml(e).trim();
+  card.replaceWith(tmp.firstChild);
+}
+function livePanelHtml(e) {
+  const st = LIVE_EDIT[e.id];
+  if (!st || !st.open) return '';
+  const id = escapeAttr(e.id);
+  const groups = SUB_EDIT_GROUPS.map(g => '<fieldset><legend>' + escapeHtml(g.title) + '</legend>' + g.fields.map(f => {
+    const fid = 'liveedit-' + id + '-' + f.key, v = liveValue(e, f.key);
+    const ctl = f.type === 'textarea'
+      ? '<textarea id="' + fid + '" data-field="' + f.key + '" oninput="liveEditInput(\'' + id + '\')">' + escapeHtml(v) + '</textarea>'
+      : '<input id="' + fid + '" data-field="' + f.key + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + escapeAttr(v) + '" oninput="liveEditInput(\'' + id + '\')">';
+    return '<label for="' + fid + '">' + escapeHtml(f.label) + '</label>' + ctl;
+  }).join('') + '</fieldset>').join('');
+  const evidence = '<div class="sub-edit-evidence"><b>Recorded values.</b> Source: ' + escapeHtml(e.source || SUB_NP)
+    + (e.event_url ? '<br>Event link: <a href="' + escapeAttr(e.event_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.event_url) + '</a>' : '')
+    + (e.ticket_url ? '<br>Ticket link: <a href="' + escapeAttr(e.ticket_url) + '" target="_blank" rel="noopener">' + escapeHtml(e.ticket_url) + '</a>' : '')
+    + '<br>Corrections so far:' + subEditHistoryHtml(e) + '</div>';
+  return '<div class="sub-edit-panel" role="group" aria-label="Edit live event" onkeydown="if(event.key===\'Escape\'){liveEditClose(\'' + id + '\');}">'
+    + groups + evidence
+    + '<div class="sub-edit-diff" id="liveeditdiff-' + id + '" aria-live="polite"></div>'
+    + '<div class="sub-edit-msg ' + escapeAttr(st.noticeKind || '') + '" id="liveeditmsg-' + id + '" role="status">' + (st.notice ? escapeHtml(st.notice) : '') + '</div>'
+    + '<div class="actions"><button type="button" class="btn-approve" id="liveeditsave-' + id + '" onclick="liveEditSave(\'' + id + '\')">Save correction</button>'
+    + '<button type="button" class="sub-edit-btn" onclick="liveEditClose(\'' + id + '\')">Cancel</button></div></div>';
+}
+function liveEditChanges(e) {
+  const changes = [], blanks = [];
+  SUB_EDIT_GROUPS.forEach(g => g.fields.forEach(f => {
+    const v = liveValue(e, f.key).trim(), cur = e[f.key] == null ? '' : String(e[f.key]).trim();
+    if (v === cur) return;
+    if (v === '') { blanks.push(f.key); return; }
+    changes.push({ field: f.key, before: cur, after: v });
+  }));
+  return { changes: changes, blanks: blanks };
+}
+function liveEditDiffRefresh(id) {
+  const e = liveFind(id); if (!e) return;
+  const r = liveEditChanges(e), diff = document.getElementById('liveeditdiff-' + id);
+  document.querySelectorAll('#live-card-' + id + ' [data-field]').forEach(inp => {
+    const cur = e[inp.dataset.field] == null ? '' : String(e[inp.dataset.field]);
+    inp.classList.toggle('changed', inp.value.trim() !== cur.trim());
+  });
+  let html = r.changes.length ? 'Will change ' + r.changes.length + ' field' + (r.changes.length === 1 ? '' : 's') + ': ' + r.changes.map(c => escapeHtml(subEditLabel(c.field)) + ': ' + escapeHtml(c.before || SUB_NP) + ' → ' + escapeHtml(c.after)).join('; ') + '. The event stays live.' : 'No changes yet.';
+  if (r.blanks.length) html += '<br><span class="sub-edit-msg warn">A correction replaces a value; it cannot clear one yet. Not saved: ' + escapeHtml(r.blanks.map(subEditLabel).join(', ')) + '.</span>';
+  if (diff) diff.innerHTML = html;
+  const st = LIVE_EDIT[id], b = document.getElementById('liveeditsave-' + id);
+  if (b) b.disabled = !r.changes.length || r.blanks.length > 0 || !!(st && st.busy);
+}
+function liveEditInput(id) {
+  const st = LIVE_EDIT[id]; if (!st) return;
+  st.draft = st.draft || {};
+  document.querySelectorAll('#live-card-' + id + ' [data-field]').forEach(inp => { st.draft[inp.dataset.field] = inp.value; });
+  liveEditDiffRefresh(id);
+}
+function liveEditOpen(id) {
+  if (!liveFind(id)) return;
+  LIVE_EDIT[id] = Object.assign(LIVE_EDIT[id] || {}, { open: true, notice: '', noticeKind: '' });
+  liveRender(id); liveEditDiffRefresh(id);
+  const first = document.getElementById('liveedit-' + id + '-title'); if (first && first.focus) first.focus();
+}
+function liveEditClose(id) {
+  if (LIVE_EDIT[id]) { LIVE_EDIT[id].open = false; LIVE_EDIT[id].draft = null; LIVE_EDIT[id].notice = ''; }
+  liveRender(id);
+  const b = document.getElementById('liveeditbtn-' + id); if (b && b.focus) b.focus();
+}
+async function liveEditSave(id) {
+  const e = liveFind(id), st = LIVE_EDIT[id]; if (!e || !st) return;
+  liveEditInput(id);
+  const r = liveEditChanges(e);
+  if (!r.changes.length || r.blanks.length) { liveEditDiffRefresh(id); return; }
+  const rv = liveRowVersion(e);
+  if (!rv) { st.notice = 'This page did not receive a version for the event. Search again and retry.'; st.noticeKind = 'err'; liveRender(id); return; }
+  const fields = {}; r.changes.forEach(c => { fields[c.field] = c.after; });
+  st.busy = true; liveEditDiffRefresh(id);
+  const replace = row => { LIVE_ROWS = LIVE_ROWS.map(x => x.id === id ? Object.assign({}, x, row) : x); };
+  try {
+    const resp = await fetch('/api/admin-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': SECRET },
+      body: JSON.stringify({ id: id, action: 'save_correction', row_version: rv, fields: fields }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    st.busy = false;
+    if (resp.status === 409) {
+      if (data.current) replace(Object.assign({}, data.current, { row_version: data.row_version || data.current.updated_at || null }));
+      st.notice = 'This event changed since you searched, so nothing was saved. The current values are loaded; your typed text is kept. Check it and save again.'; st.noticeKind = 'warn'; st.open = true;
+      liveRender(id); liveEditDiffRefresh(id); return;
+    }
+    if (!resp.ok) {
+      st.notice = (data.field ? subEditLabel(data.field) + ': ' : '') + errText(data, 'Save failed') + ' Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+      liveRender(id); liveEditDiffRefresh(id); return;
+    }
+    const prior = Array.isArray(e.edits) ? e.edits : [];
+    const at = new Date().toISOString();
+    const added = (data.changes || []).map(c => ({ edit_id: data.edit_id, at: at, actor: 'admin', field: c.field, before: c.before, after: c.after }));
+    replace(Object.assign({}, data.event || {}, { row_version: data.row_version || rv, owner_corrected: data.owner_corrected || e.owner_corrected || [], edits: prior.concat(added) }));
+    const n = (data.changes || []).length;
+    LIVE_EDIT[id] = { open: false, draft: null, notice: 'Saved ' + n + ' correction' + (n === 1 ? '' : 's') + '. The event is still live, and importers will not overwrite the corrected fields.', noticeKind: 'ok' };
+    liveRender(id);
+    const b = document.getElementById('liveeditbtn-' + id); if (b && b.focus) b.focus();
+  } catch (err) {
+    st.busy = false; st.notice = 'Save failed: ' + err.message + '. Nothing was saved.'; st.noticeKind = 'err'; st.open = true;
+    liveRender(id); liveEditDiffRefresh(id);
+  }
 }
 
 // Two-step confirm, inline (no native confirm() dialogs): first click arms
