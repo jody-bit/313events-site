@@ -11,7 +11,7 @@
 //   - blank-only, enforced in the database: the PATCH filter requires BOTH ticket_url and event_url to be NULL or empty, so
 //     an existing link of either kind (a source's, a person's, another connector's) is structurally impossible to overwrite.
 //   - the page is the source's own calendar page and nothing else, in this order of authority: (1) an explicit, verified
-//     entry in FEED_CALENDAR_PAGE_OVERRIDES (per events.source), (2) an entry in SOURCE_CALENDAR_PAGES for a single-venue
+//     entry in FEED_CALENDAR_PAGE_OVERRIDES (per feed website host), (2) an entry in SOURCE_CALENDAR_PAGES for a single-venue
 //     connector, (3) the feed_sources.website a person approved in admin.html (carried on the row as the internal marker
 //     `_calendarUrl`) ONLY if it is itself a calendar or event-listing page by path (looksLikeCalendarPage). A bare homepage
 //     is never filled: "the town's website" is not a link to the event. A value that is not an absolute http(s) page (or is
@@ -31,10 +31,18 @@ const SOURCE_CALENDAR_PAGES = Object.freeze({
   "Redford Theatre": "https://redfordtheatre.com/events/",
 });
 
-// Feed sources whose approved website is not itself a calendar page: events.source -> the verified calendar or
-// event-listing page (Event Intelligence quotes each URL from the source's own site). Empty until EI supplies them; a
-// source with no entry here and no calendar-looking website gets no fallback.
-const FEED_CALENDAR_PAGE_OVERRIDES = Object.freeze({});
+// Feed sources whose approved website is a bare homepage: the feed website's host (lowercase, no "www.") -> the verified
+// calendar page (Event Intelligence, CITY-EVENT-CALENDAR-URLS-FOR-253-2026-10-19.md). Keyed by host because the website
+// is what a person approved in admin.html and the host does not depend on the feed's display name. Only pages EI fetched
+// and saw listing current events are here; the rest wait for the Mac check. A host with no entry and a homepage website
+// gets no fallback.
+const FEED_CALENDAR_PAGE_OVERRIDES = Object.freeze({
+  "redfordtwp.gov": "https://www.redfordtwp.gov/calendar.aspx",
+});
+
+const hostKey = (value) => {
+  try { return new URL(String(value)).hostname.toLowerCase().replace(/^www\./, ""); } catch { return null; }
+};
 
 // Path words that make a URL a calendar or event-listing page rather than a homepage or a section index.
 const CALENDAR_SEGMENT = /^(?:calendar|calendars|event-calendar|events-calendar|community-calendar|events?|upcoming-events|whats-on|whats-happening|happenings)$/i;
@@ -51,13 +59,14 @@ function looksLikeCalendarPage(value) {
 
 const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
-// -> { by: "feed_source_id" | "source", key, url, label } or null. Pure.
+// -> { by: "feed_source_id" | "source", key, url, label } or null. Pure. `overrides` is injectable for tests.
 function calendarFallbackFor(row, overrides = FEED_CALENDAR_PAGE_OVERRIDES) {
   if (!row || typeof row !== "object") return null;
   const source = typeof row.source === "string" ? row.source : null;
-  if (source && has(overrides, source)) {
-    const page = normalizeLinkField(overrides[source]);
-    if (page) return { by: "source", key: source, url: page, label: source };
+  const host = hostKey(row._calendarUrl);
+  if (host && row.feed_source_id && has(overrides, host)) {
+    const page = normalizeLinkField(overrides[host]);
+    if (page) return { by: "feed_source_id", key: String(row.feed_source_id), url: page, label: source || String(row.feed_source_id) };
   }
   if (source && has(SOURCE_CALENDAR_PAGES, source)) {
     const page = normalizeLinkField(SOURCE_CALENDAR_PAGES[source]);
