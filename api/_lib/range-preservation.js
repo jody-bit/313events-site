@@ -14,6 +14,10 @@
 //     start = earliest of (incoming start, first occurrence); end = latest of (incoming end, last
 //     occurrence). The range is only ever widened TO an evidenced date, never past one. Days inside the
 //     range stay unattendable, because date_semantics (not the range) says which days count.
+//     EXCEPTION (end only): when recurrence_evidence.complete === true, the organizer's published run is
+//     fully evidenced, so a feed end past the last occurrence is a rolling window, not the event's end
+//     (Greenfield Hallowe'en: last night Oct 25, feed end rolled to Nov 15). The end is then clipped TO the
+//     last evidenced occurrence. Without that flag (absent, false, anything else) nothing is ever clipped.
 //   - continuous: the existing classified range is authoritative where the source went narrower.
 //     end = later of (incoming, existing); start = earlier of (incoming, existing). A source that is
 //     further out than what is stored still extends the row (source evidence); one that is narrower is
@@ -26,6 +30,12 @@
 const ISO_RE = /^\d{4}-\d{2}-\d{2}$/;
 const isIso = (s) => typeof s === "string" && ISO_RE.test(s);
 
+// Only an explicit boolean true counts; the flag is set by a reviewed change set, never by a connector.
+function runIsComplete(existing) {
+  const ev = existing && existing.recurrence_evidence;
+  return !!ev && typeof ev === "object" && ev.complete === true;
+}
+
 function evidencedOccurrences(existing) {
   const raw = existing && existing.occurrence_dates;
   if (!Array.isArray(raw)) return [];
@@ -34,7 +44,7 @@ function evidencedOccurrences(existing) {
 
 // incoming: { start_date, end_date|null }; existing: the stored row's { start_date, end_date, date_semantics,
 // occurrence_dates } or undefined; asOf: ISO "today" (Detroit) used only to tell roll-off from a real shortening.
-// Returns { start_date, end_date, action, conflict|null } where action is "incoming" | "widened-to-evidence" | "held-existing".
+// Returns { start_date, end_date, action, conflict|null } where action is "incoming" | "widened-to-evidence" | "clipped-to-evidence" | "held-existing".
 function preserveRange(incoming, existing, asOf) {
   const inStart = incoming.start_date;
   const inEnd = incoming.end_date && isIso(incoming.end_date) && incoming.end_date > inStart ? incoming.end_date : inStart;
@@ -54,8 +64,17 @@ function preserveRange(incoming, existing, asOf) {
   if (sem === "recurring") {
     const occ = evidencedOccurrences(existing);
     if (!occ.length) return passthrough();
+    const last = occ[occ.length - 1];
     const start = occ[0] < inStart ? occ[0] : inStart;
-    const end = occ[occ.length - 1] > inEnd ? occ[occ.length - 1] : inEnd;
+    if (runIsComplete(existing) && inEnd > last) {
+      return keep(start, last, "clipped-to-evidence", {
+        kind: "incoming-end-beyond-complete-evidenced-occurrences",
+        incoming: [inStart, inEnd],
+        evidenced_occurrences: occ,
+        stored: [exStart, exEnd],
+      });
+    }
+    const end = last > inEnd ? last : inEnd;
     if (start === inStart && end === inEnd) return passthrough();
     return keep(start, end, "widened-to-evidence", {
       kind: "incoming-range-excludes-evidenced-occurrences",

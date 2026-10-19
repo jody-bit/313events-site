@@ -432,7 +432,7 @@ const visitDetroitHandler = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rows.map((r) => r.external_id),
-        { select: "external_id,status,venue_city_raw,start_date,end_date,date_semantics,occurrence_dates" }
+        { select: "external_id,status,venue_city_raw,start_date,end_date,date_semantics,occurrence_dates,recurrence_evidence" }
       );
     } catch (lookupErr) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
