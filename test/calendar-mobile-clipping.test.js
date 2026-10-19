@@ -48,4 +48,6 @@ assert.ok(/todayLabel\.textContent = '● TODAY';/.test(html), "TODAY label text
 const count = (n) => `${n}${" EVENT" + (n === 1 ? "" : "S")}`;
 assert.strictEqual(count(1), "1 EVENT");
 assert.strictEqual(count(3), "3 EVENTS");
+// List view: a long unbroken word (URL-like title, venue or link text) wraps inside the row instead of widening the page.
+assert.ok(/\.evt-text\{min-width:0;flex:1 1 auto;overflow-wrap:anywhere;\}/.test(html), "list rows wrap long unbroken text");
 console.log("PASS: calendar phone-width clipping fixes in place; desktop rules unchanged");
