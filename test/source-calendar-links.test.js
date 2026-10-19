@@ -71,15 +71,24 @@ function recorder(matchedCounts) {
   {
     for (const ok of ["https://www.dearborn.gov/calendar", "https://www.romi.gov/calendar.aspx", "https://x.gov/events/", "https://x.gov/Calendar/Month", "https://x.gov/community-calendar", "https://x.gov/whats-on"]) assert.ok(looksLikeCalendarPage(ok), ok);
     for (const no of ["https://www.livonia.gov/", "https://www.livonia.gov", "https://x.gov/home", "https://x.gov/index.html", "https://x.gov/departments/parks", "https://x.gov/events-and-programs", "https://x.gov/?page=calendar", "x.gov/calendar", "/calendar", "", null, 5]) assert.ok(!looksLikeCalendarPage(no), String(no));
-    assert.deepStrictEqual(Object.keys(FEED_CALENDAR_PAGE_OVERRIDES), [], "no override until Event Intelligence quotes a verified URL");
+    assert.deepStrictEqual(FEED_CALENDAR_PAGE_OVERRIDES, { "redfordtwp.gov": "https://www.redfordtwp.gov/calendar.aspx" }, "only EI-confirmed pages are hard-coded");
     assert.ok(Object.isFrozen(FEED_CALENDAR_PAGE_OVERRIDES));
-    // an override wins over the feed's own website, applies when the website is a bare homepage, and must itself be a valid page
-    const row = { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/" };
-    assert.strictEqual(calendarFallbackFor(row), null, "homepage website and no override: no fallback");
-    const ov = { "City of Livonia - Community Events": "https://www.livonia.gov/calendar.aspx" };
-    assert.deepStrictEqual(calendarFallbackFor(row, ov), { by: "source", key: "City of Livonia - Community Events", url: "https://www.livonia.gov/calendar.aspx", label: "City of Livonia - Community Events" });
-    assert.strictEqual(calendarFallbackFor({ ...row, _calendarUrl: "https://www.livonia.gov/events" }, ov).url, "https://www.livonia.gov/calendar.aspx", "override beats the website");
-    assert.strictEqual(calendarFallbackFor(row, { "City of Livonia - Community Events": "https://www.livonia.gov/feed.ics" }), null, "an override that is a feed endpoint is ignored");
+    // Redford: its homepage website resolves to the confirmed calendar page, scoped to that feed
+    const red = { source: "Redford Township Community Events", feed_source_id: "fs-red", _calendarUrl: "https://www.redfordtwp.gov/" };
+    assert.deepStrictEqual(calendarFallbackFor(red), { by: "feed_source_id", key: "fs-red", url: "https://www.redfordtwp.gov/calendar.aspx", label: "Redford Township Community Events" });
+    assert.strictEqual(calendarFallbackFor({ ...red, _calendarUrl: "https://redfordtwp.gov" }).url, "https://www.redfordtwp.gov/calendar.aspx", "host match ignores www and path");
+    assert.strictEqual(calendarFallbackFor({ ...red, feed_source_id: null }), null, "no feed id: no target");
+    // the held cities get nothing while their website is a bare homepage
+    for (const site of ["https://www.livonia.gov/", "https://www.romi.gov/", "https://www.cantonmi.gov/", "https://www.madisonheightsmi.gov/", "https://www.sterlingheights.gov/", "https://www.gardencitymi.org/", "https://www.macomb-mi.gov/"]) {
+      assert.strictEqual(calendarFallbackFor({ source: "City", feed_source_id: "fs-x", _calendarUrl: site }), null, site);
+    }
+    // an override wins over the feed's own website, and must itself be a valid page
+    const ov = { "livonia.gov": "https://www.livonia.gov/calendar.aspx" };
+    const liv = { source: "City of Livonia - Community Events", feed_source_id: "fs-1", _calendarUrl: "https://www.livonia.gov/" };
+    assert.strictEqual(calendarFallbackFor(liv), null, "homepage website and no override: no fallback");
+    assert.strictEqual(calendarFallbackFor(liv, ov).url, "https://www.livonia.gov/calendar.aspx");
+    assert.strictEqual(calendarFallbackFor({ ...liv, _calendarUrl: "https://www.livonia.gov/events" }, ov).url, "https://www.livonia.gov/calendar.aspx", "override beats the website");
+    assert.strictEqual(calendarFallbackFor(liv, { "livonia.gov": "https://www.livonia.gov/feed.ics" }), null, "an override that is a feed endpoint is ignored");
     console.log("PASS: a bare homepage is never filled; only a calendar-looking website or an explicit verified override is");
   }
 
