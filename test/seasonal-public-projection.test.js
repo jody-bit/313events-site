@@ -97,9 +97,9 @@ for (const slug of ["fall", "fall-color", "halloween"]) {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(ED.publishedProjection(), pe);
   for (const slug of C.ORDER) for (const e of pe[slug]) assert.deepStrictEqual(e, ED.publicEntry(all[slug].find((x) => x.id === e.id)), "shipped entry is the public form of its private record");
-  assert.strictEqual(pe.fall.length + pe["fall-color"].length, 76, "exactly the 76 authorized Fall records are published");
+  assert.strictEqual(pe.fall.length + pe["fall-color"].length, 79, "exactly the 79 authorized Fall records (76 + 3) are published");
   assert.deepStrictEqual(pe.halloween.map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "Halloween publishes exactly the 25 records that pass the gate");
-  assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 101);
+  assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 104);
 }
 // 6. the 15 launch records carry exactly the authorized approval and are public (nothing else was approved)
 for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[slug]) {

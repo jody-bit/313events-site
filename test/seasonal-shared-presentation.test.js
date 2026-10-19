@@ -16,8 +16,8 @@ assert.deepStrictEqual(SLUGS.slice().sort(), ["fall", "fall-color", "halloween"]
 const pub = Object.fromEntries(SLUGS.map((s) => [s, DATA.published(DATA.COLLECTIONS[s])]));
 
 // 1. release counts are preserved
-assert.strictEqual(pub.fall.length, 36, "FALL IS ON.");
-assert.strictEqual(pub["fall-color"].length, 40, "FALL COLORS.");
+assert.strictEqual(pub.fall.length, 38, "FALL IS ON.");
+assert.strictEqual(pub["fall-color"].length, 41, "FALL COLORS.");
 assert.strictEqual(pub.halloween.length, 25, "THE DARK ORBIT.");
 
 // 2. one stylesheet, one renderer: the three pages load the identical shared assets and the identical page shell
@@ -92,4 +92,4 @@ for (const s of SLUGS) {
 const fingerprint = (h) => h.replace(/>[^<]*</g, "><").replace(/"[^"]*"/g, '""');
 const fp = (s) => fingerprint(R.card(DATA.COLLECTIONS[s], pub[s].find((e) => !e.website && e.image.src) || pub[s][0]));
 assert.ok(R.card && fp("fall").startsWith("<li") && fp("halloween").startsWith("<li"));
-console.log("ok   seasonal shared presentation: fall 36 · fall-color 40 · halloween 25; " + selectors.length + " collection-neutral selectors");
+console.log("ok   seasonal shared presentation: fall 38 · fall-color 41 · halloween 25; " + selectors.length + " collection-neutral selectors");

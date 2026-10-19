@@ -205,7 +205,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **11 rows. Official page read once; fall-color relevance and a second read still to do.** Delhi Metropark; Lake Erie Metropark; Lake St. Clair Metropark; Bald Mountain State Recreation Area; Pontiac Lake State Recreation Area; Seven Lakes State Park; Independence Oaks County Park; Brighton State Recreation Area; Island Lake State Recreation Area; Algonac State Park; Sterling State Park.
 - **97 inventory rows have not been read at all** (still HOLD_UNVERIFIED).
 
-The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 185 other fall and fall-color records stay out of this batch (7 `CONTENT_VERIFIED`, 117 `HOLD_UNVERIFIED`, 0 `READY_FOR_REVIEW`). 
+The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 185 other fall and fall-color records stay out of this batch (4 `CONTENT_VERIFIED`, 117 `HOLD_UNVERIFIED`, 0 `READY_FOR_REVIEW`). 
 
 ## Image sources audited, in your priority order
 

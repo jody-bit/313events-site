@@ -565,55 +565,6 @@
    }
   },
   {
-   "id": "goodison-cider-mill",
-   "name": "Goodison Cider Mill",
-   "city": "Rochester",
-   "region": "MI",
-   "categories": [
-    "cider-donuts"
-   ],
-   "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Goodison Cider Mill in Rochester. Official page lists fresh-pressed cider, donuts, pistachio nut bread, pies.",
-   "image": {
-    "src": "/assets/seasonal/fall-card-4.webp",
-    "alternates": [
-     "/assets/seasonal/fall-card-7.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
-   },
-   "evidence": [
-    {
-     "level": "official",
-     "websiteChecked": true,
-     "url": "https://www.goodisoncidermill.com/",
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-     "note": "Official page read 2026-10-11. Address as stated: 4295 Orion Road, Rochester, MI 48306. Season/hours as stated: Labor Day weekend to Christmas Eve; Sep-Oct daily 9am-6pm; page copyright 2024, no 2026 mention. Flags: page possibly stale (copyright 2024); official URL inferred by direct fetch, not by listing link."
-    }
-   ],
-   "website": "https://www.goodisoncidermill.com/",
-   "relevance": {
-    "confirmed": true,
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-    "note": "Official page lists fall farm activities: fresh-pressed cider, donuts, pistachio nut bread, pies",
-    "confidence": "high",
-    "evidence": [
-     {
-      "source_url": "https://www.goodisoncidermill.com/",
-      "source_kind": "official-website",
-      "statement_paraphrase": "Official page lists: fresh-pressed cider, donuts, pistachio nut bread, pies"
-     }
-    ],
-    "unresolved": []
-   }
-  },
-  {
    "id": "dexter-cider-mill",
    "name": "Dexter Cider Mill",
    "city": "Dexter",
@@ -2575,61 +2526,6 @@
     "miles": 32,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Lyon Township/South Lyon area (general geographic knowledge))"
-   }
-  },
-  {
-   "id": "damouni-orchards",
-   "name": "Damouni Orchards",
-   "city": "Flint",
-   "region": "MI",
-   "categories": [
-    "cider-donuts",
-    "farm-experiences"
-   ],
-   "featured": false,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Damouni Orchards in Flint. Official page lists U-pick Honeycrisp and Gala apples, country store, Coop Tasting Room, cider donuts pre-order.",
-   "image": {
-    "src": "/assets/seasonal/fall-card-8.webp",
-    "alternates": [
-     "/assets/seasonal/fall-card-3.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
-   },
-   "evidence": [
-    {
-     "level": "official",
-     "websiteChecked": true,
-     "url": "https://www.damouniorchards.com",
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-     "note": "Official page read 2026-10-11. Address as stated: 2391 W Reid Road, Flint, MI 48507. Season/hours as stated: Apple season hours in effect, no end date; Coop Tasting Room Sun-Thu 10-6, Fri-Sat 10-8; U-pick 7 days. Classic Car Show 'Saturday, Sept 27th' (no year). Flags: car show date ambiguous (Sept 27, 2026 is a Sunday); no 2026 season dates."
-    }
-   ],
-   "website": "https://www.damouniorchards.com",
-   "relevance": {
-    "confirmed": true,
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-    "note": "Operating U-pick apple orchard in apple season with country store and tasting room.",
-    "confidence": "high",
-    "evidence": [
-     {
-      "source_url": "https://www.damouniorchards.com",
-      "source_kind": "official-website",
-      "statement_paraphrase": "Operating U-pick apple orchard in apple season with country store and tasting room."
-     }
-    ],
-    "unresolved": []
-   },
-   "distance": {
-    "miles": 56,
-    "outside75": false,
-    "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Flint/Mundy Twp area (general geographic knowledge))"
    }
   },
   {
@@ -5063,6 +4959,156 @@
    "approval": {
     "by": "Jody Tyree",
     "at": "2026-10-12"
+   }
+  },
+  {
+   "id": "goodison-cider-mill",
+   "name": "Goodison Cider Mill",
+   "city": "Rochester",
+   "region": "MI",
+   "categories": [
+    "cider-donuts"
+   ],
+   "featured": false,
+   "status": "PUBLISHED",
+   "summary": "Goodison Cider Mill in Rochester. Official page lists fresh-pressed cider, donuts, pistachio nut bread, pies.",
+   "image": {
+    "src": "/assets/seasonal/fall-card-4.webp",
+    "alternates": [
+     "/assets/seasonal/fall-card-7.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "remote": {
+     "src": "https://goodisoncidermill.com/wp-content/uploads/2020/11/goodison-cider-mill-2020.jpg",
+     "sourcePage": "https://goodisoncidermill.com/",
+     "credit": "Goodison Cider Mill (official site)",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-19",
+     "hideCredit": true,
+     "riskNote": "Owner accepted the copyright risk (DEC-029); no permission from the rights holder is on file. Remove promptly if the owner asks."
+    }
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.goodisoncidermill.com/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 4295 Orion Road, Rochester, MI 48306. Season/hours as stated: Labor Day weekend to Christmas Eve; Sep-Oct daily 9am-6pm; page copyright 2024, no 2026 mention. Flags: page possibly stale (copyright 2024); official URL inferred by direct fetch, not by listing link."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.goodisoncidermill.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products: read of the official page 2026-10-19; no change found to the entry's claims",
+     "note": "Official page re-read 2026-10-19. Page copyright still 2024."
+    }
+   ],
+   "website": "https://www.goodisoncidermill.com/",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Official page lists fall farm activities: fresh-pressed cider, donuts, pistachio nut bread, pies",
+    "confidence": "high",
+    "evidence": [
+     {
+      "source_url": "https://www.goodisoncidermill.com/",
+      "source_kind": "official-website",
+      "statement_paraphrase": "Official page lists: fresh-pressed cider, donuts, pistachio nut bread, pies"
+     }
+    ],
+    "unresolved": []
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-19"
+   }
+  },
+  {
+   "id": "damouni-orchards",
+   "name": "Damouni Orchards",
+   "city": "Flint",
+   "region": "MI",
+   "categories": [
+    "cider-donuts",
+    "farm-experiences"
+   ],
+   "featured": false,
+   "status": "PUBLISHED",
+   "summary": "Damouni Orchards in Flint. Official page lists U-pick Honeycrisp and Gala apples, country store, Coop Tasting Room, cider donuts pre-order.",
+   "image": {
+    "src": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp",
+    "alternates": [],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "Damouni Orchards official site photo IMG_9472.jpg (5712x4284); full-width 16:9 crop (y=481..3694) resized to 1920x1080 by Experience, then to a 1280x720 WebP card by scripts/ingest-approved-image.py",
+    "credit": "Damouni Orchards (official site)",
+    "illustrative": false,
+    "remote": {
+     "src": "https://www.damouniorchards.com/cdn/shop/files/IMG_9472.jpg",
+     "sourcePage": "https://www.damouniorchards.com/",
+     "credit": "Damouni Orchards (official site)",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-19",
+     "riskNote": "Owner accepted the copyright risk (DEC-029); no permission from the rights holder is on file. Hosted copy of a crop of the official-site photo IMG_9472.jpg (5712x4284). Remove promptly if the owner asks."
+    },
+    "acquired": {
+     "file": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp",
+     "bytes": 348304,
+     "sha256": "fbb93e6283566f565f2a9cf7dfebac41fe93fdc9a0dcabcc1e1f101c66c75f2c",
+     "width": 1280,
+     "height": 720,
+     "acquiredAt": "2026-10-19"
+    }
+   },
+   "evidence": [
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.damouniorchards.com",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 2391 W Reid Road, Flint, MI 48507. Season/hours as stated: Apple season hours in effect, no end date; Coop Tasting Room Sun-Thu 10-6, Fri-Sat 10-8; U-pick 7 days. Classic Car Show 'Saturday, Sept 27th' (no year). Flags: car show date ambiguous (Sept 27, 2026 is a Sunday); no 2026 season dates."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.damouniorchards.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products: read of the official page 2026-10-19; no change found to the entry's claims",
+     "note": "Official page re-read 2026-10-19; card claims (U-pick, country store, tasting room) unchanged."
+    }
+   ],
+   "website": "https://www.damouniorchards.com",
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Operating U-pick apple orchard in apple season with country store and tasting room.",
+    "confidence": "high",
+    "evidence": [
+     {
+      "source_url": "https://www.damouniorchards.com",
+      "source_kind": "official-website",
+      "statement_paraphrase": "Operating U-pick apple orchard in apple season with country store and tasting room."
+     }
+    ],
+    "unresolved": []
+   },
+   "distance": {
+    "miles": 56,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Flint/Mundy Twp area (general geographic knowledge))"
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-19"
    }
   }
  ],
@@ -8590,98 +8636,6 @@
   }
  ],
  "fall-color": [
-  {
-   "id": "kensington-metropark",
-   "name": "Kensington Metropark",
-   "city": "Milford",
-   "region": "MI",
-   "categories": [
-    "trails-woods",
-    "parks-gardens"
-   ],
-   "featured": true,
-   "status": "CONTENT_VERIFIED",
-   "summary": "Kensington Metropark in Milford. Listed features: hiking, biking, horseback riding, golf.",
-   "website": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
-   "image": {
-    "src": "/assets/seasonal/fall-color-card-1.webp",
-    "alternates": [
-     "/assets/seasonal/fall-color-card-2.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true,
-    "linkedCandidates": [
-     {
-      "src": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
-      "sourcePage": "https://www.metroparks.com/kensington-metropark/",
-      "credit": "Huron-Clinton Metroparks",
-      "acceptedBy": "Jody Tyree (owner)",
-      "acceptedAt": "2026-10-11",
-      "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
-      "note": "Official Metroparks Kensington page image, 1920x1080. Chosen from Google Images results."
-     }
-    ]
-   },
-   "evidence": [
-    {
-     "level": "inventory+search",
-     "note": "Fall-color inventory. Metro Parent and local guides cite fall foliage and trails; no official foliage report found, so no peak-color claim is made.",
-     "url": "https://www.metroparks.com",
-     "websiteChecked": false
-    },
-    {
-     "level": "official",
-     "websiteChecked": true,
-     "url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-     "note": "Official page read 2026-10-11. Address as stated: 4570 Huron River Parkway, Milford, MI 48381. Season/hours as stated: park 6am-10pm; $10 daily vehicle pass or annual pass. Flags: page has stale-season text; I-96 construction delay notice on page; Toboggan disc golf course closed to public Aug 3-Sep 4, 2026; pumpkin patch/Farm Center fall activity."
-    }
-   ],
-   "migration": {
-    "legacyStatus": "published",
-    "legacyBranch": "feature/halloween-completion",
-    "legacyCommit": "7e094df",
-    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
-    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
-   },
-   "relevance": {
-    "confirmed": true,
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-    "note": "Forested lake park with documented scenic loop and nature trails, plus a system-level Metroparks page recommending trails and paddling for fall color. No Kensington-specific official fall-color statement was read.",
-    "confidence": "medium",
-    "evidence": [
-     {
-      "source_url": "https://www.metroparks.com/fall-in-for-some-family-fun-at-your-metroparks/",
-      "source_kind": "agency-guide",
-      "statement_paraphrase": "Metroparks system page describes the fall color spread across trees and suggests hiking, biking or paddling to see it reflected on the water; it names no specific park."
-     },
-     {
-      "source_url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
-      "source_kind": "official-park-page",
-      "statement_paraphrase": "Park page documents a lake-ringed park with a paved loop with hills, wooded nature trails and a nature center; it says nothing about fall color. A pumpkin patch and fall-season hours are listed."
-     },
-     {
-      "source_url": "https://patch.com/michigan/stclairshores/too-early-for-fall-colors-think-again_6ab5c584",
-      "source_kind": "third-party",
-      "statement_paraphrase": "A 2013 Patch article lists Kensington among popular nearby places to see fall color. Secondary only, seen via search snippet, not read in full."
-     }
-    ],
-    "unresolved": [
-     "A search summary attributed an 'autumn color tour' statement for the Kent Lake loop to metroparks.com, but I could not find it on the pages I read; verify before using",
-     "No official Metroparks fall-color report for this park read"
-    ]
-   },
-   "distance": {
-    "miles": 32,
-    "outside75": false,
-    "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from Milford area general location; not read from an official page)"
-   }
-  },
   {
    "id": "stony-creek-metropark",
    "name": "Stony Creek Metropark",
@@ -17757,6 +17711,119 @@
      "note": "Official page could not be read on 2026-10-11: Not yet reviewed against an official source. Not verified."
     }
    ]
+  },
+  {
+   "id": "kensington-metropark",
+   "name": "Kensington Metropark",
+   "city": "Milford",
+   "region": "MI",
+   "categories": [
+    "trails-woods",
+    "parks-gardens"
+   ],
+   "featured": false,
+   "status": "PUBLISHED",
+   "summary": "Kensington Metropark in Milford. Listed features: hiking, biking, horseback riding, golf.",
+   "website": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+   "image": {
+    "src": "/assets/seasonal/fall-color-card-1.webp",
+    "alternates": [
+     "/assets/seasonal/fall-color-card-2.webp"
+    ],
+    "placeholder": "/assets/placeholders/event-800.webp",
+    "source": "313.events supplied collection graphic (AI-generated), cropped",
+    "credit": "313.events",
+    "license": "Supplied by 313.events; generation tool and terms not recorded",
+    "illustrative": true,
+    "linkedCandidates": [
+     {
+      "src": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
+      "sourcePage": "https://www.metroparks.com/kensington-metropark/",
+      "credit": "Huron-Clinton Metroparks",
+      "acceptedBy": "Jody Tyree (owner)",
+      "acceptedAt": "2026-10-11",
+      "riskNote": "Owner accepted the copyright risk; no permission from the rights holder is on file. Remove promptly if the owner asks.",
+      "note": "Official Metroparks Kensington page image, 1920x1080. Chosen from Google Images results."
+     }
+    ],
+    "remote": {
+     "src": "https://www.metroparks.com/wp-content/uploads/2021/08/PG_0023_Kensington.jpg",
+     "sourcePage": "https://www.metroparks.com/kensington-metropark/",
+     "credit": "Huron-Clinton Metroparks",
+     "acceptedBy": "Jody Tyree (owner)",
+     "acceptedAt": "2026-10-11",
+     "hideCredit": true,
+     "riskNote": "Owner accepted the copyright risk (DEC-029); no permission from the rights holder is on file. Remove promptly if the owner asks."
+    }
+   },
+   "evidence": [
+    {
+     "level": "inventory+search",
+     "note": "Fall-color inventory. Metro Parent and local guides cite fall foliage and trails; no official foliage report found, so no peak-color claim is made.",
+     "url": "https://www.metroparks.com",
+     "websiteChecked": false
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+     "checkedAt": "2026-10-11",
+     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+     "note": "Official page read 2026-10-11. Address as stated: 4570 Huron River Parkway, Milford, MI 48381. Season/hours as stated: park 6am-10pm; $10 daily vehicle pass or annual pass. Flags: page has stale-season text; I-96 construction delay notice on page; Toboggan disc golf course closed to public Aug 3-Sep 4, 2026; pumpkin patch/Farm Center fall activity."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products: read of the official page 2026-10-19; no change found to the entry's claims",
+     "note": "Official page re-read 2026-10-19: 6 am-10 pm, office 8 am-6 pm, $10 pass, 4570 Huron River Pkwy, Milford. No fall-color statement; card makes no color claim."
+    }
+   ],
+   "migration": {
+    "legacyStatus": "published",
+    "legacyBranch": "feature/halloween-completion",
+    "legacyCommit": "7e094df",
+    "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
+    "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
+   },
+   "relevance": {
+    "confirmed": true,
+    "checkedAt": "2026-10-11",
+    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
+    "note": "Forested lake park with documented scenic loop and nature trails, plus a system-level Metroparks page recommending trails and paddling for fall color. No Kensington-specific official fall-color statement was read.",
+    "confidence": "medium",
+    "evidence": [
+     {
+      "source_url": "https://www.metroparks.com/fall-in-for-some-family-fun-at-your-metroparks/",
+      "source_kind": "agency-guide",
+      "statement_paraphrase": "Metroparks system page describes the fall color spread across trees and suggests hiking, biking or paddling to see it reflected on the water; it names no specific park."
+     },
+     {
+      "source_url": "https://www.metroparks.com/parks-and-trails/kensington-metropark/",
+      "source_kind": "official-park-page",
+      "statement_paraphrase": "Park page documents a lake-ringed park with a paved loop with hills, wooded nature trails and a nature center; it says nothing about fall color. A pumpkin patch and fall-season hours are listed."
+     },
+     {
+      "source_url": "https://patch.com/michigan/stclairshores/too-early-for-fall-colors-think-again_6ab5c584",
+      "source_kind": "third-party",
+      "statement_paraphrase": "A 2013 Patch article lists Kensington among popular nearby places to see fall color. Secondary only, seen via search snippet, not read in full."
+     }
+    ],
+    "unresolved": [
+     "A search summary attributed an 'autumn color tour' statement for the Kent Lake loop to metroparks.com, but I could not find it on the pages I read; verify before using",
+     "No official Metroparks fall-color report for this park read"
+    ]
+   },
+   "distance": {
+    "miles": 32,
+    "outside75": false,
+    "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, from Milford area general location; not read from an official page)"
+   },
+   "approval": {
+    "by": "Jody Tyree",
+    "at": "2026-10-19"
+   }
   }
  ]
 }

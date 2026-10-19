@@ -71,7 +71,7 @@
   var OWNER_CREDIT = /^(Photography \u00a9 |313\.events archive$)/;
   function creditLine(e) {
     var img = e.image, r = linkedOf(img);
-    if (r && pickSrc(img) === r.src) return '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
+    if (r && pickSrc(img) === r.src) return !r.credit ? "" : '<p class="sc-credit"><a href="' + esc(r.sourcePage) + '" target="_blank" rel="noopener noreferrer">Photo: ' + esc(r.credit) + '</a></p>';
     if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
     return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
   }
