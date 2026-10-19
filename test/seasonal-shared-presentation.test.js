@@ -18,7 +18,7 @@ const pub = Object.fromEntries(SLUGS.map((s) => [s, DATA.published(DATA.COLLECTI
 // 1. release counts are preserved
 assert.strictEqual(pub.fall.length, 38, "FALL IS ON.");
 assert.strictEqual(pub["fall-color"].length, 41, "FALL COLORS.");
-assert.strictEqual(pub.halloween.length, 29, "THE DARK ORBIT.");
+assert.strictEqual(pub.halloween.length, 25, "THE DARK ORBIT.");
 
 // 2. one stylesheet, one renderer: the three pages load the identical shared assets and the identical page shell
 const pages = Object.fromEntries(SLUGS.map((s) => [s, read(s + ".html")]));
@@ -92,4 +92,4 @@ for (const s of SLUGS) {
 const fingerprint = (h) => h.replace(/>[^<]*</g, "><").replace(/"[^"]*"/g, '""');
 const fp = (s) => fingerprint(R.card(DATA.COLLECTIONS[s], pub[s].find((e) => !e.website && e.image.src) || pub[s][0]));
 assert.ok(R.card && fp("fall").startsWith("<li") && fp("halloween").startsWith("<li"));
-console.log("ok   seasonal shared presentation: fall 38 · fall-color 41 · halloween 29; " + selectors.length + " collection-neutral selectors");
+console.log("ok   seasonal shared presentation: fall 38 · fall-color 41 · halloween 25; " + selectors.length + " collection-neutral selectors");

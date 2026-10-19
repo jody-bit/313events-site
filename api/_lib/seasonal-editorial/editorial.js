@@ -124,7 +124,8 @@ function publicEntry(e) {
   // "Illustrative image" fallback badge and no visible credit. The source, credit and risk acceptance stay in the private record.
   const selfHosted = !!(im.remote && im.remote.src && im.acquired && im.acquired.file && im.acquired.file === im.src);
   if (im.illustrative !== true && im.credit && !(im.remote && im.remote.src)) out.image.credit = im.credit;
-  if (im.remote && im.remote.src && !selfHosted) out.image.remote = { src: im.remote.src, sourcePage: im.remote.sourcePage, credit: im.remote.credit };
+  // Owner decision 2026-10-19: a linked photo may be drawn with no visible credit line (hideCredit); the credit stays in the private record.
+  if (im.remote && im.remote.src && !selfHosted) out.image.remote = im.remote.hideCredit === true ? { src: im.remote.src, sourcePage: im.remote.sourcePage } : { src: im.remote.src, sourcePage: im.remote.sourcePage, credit: im.remote.credit };
   return out;
 }
 // The public projection: entries that are declared and derived PUBLISHED, in their public form, and nothing else.

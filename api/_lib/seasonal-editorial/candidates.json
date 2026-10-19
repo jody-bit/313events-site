@@ -1946,9 +1946,9 @@
    "name": "Dearborn Haunted Trail",
    "location": "Dearborn, MI",
    "inventory_note": "Haunted woodland trail",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "dearborn-haunted-trail",
@@ -1971,7 +1971,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1986,9 +1986,9 @@
    "name": "Sanilac Museum's Haunted Village",
    "location": "Port Sanilac, MI",
    "inventory_note": "Haunted historic village; radius check",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "radius check needed"
    ],
@@ -2011,7 +2011,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -3053,9 +3053,9 @@
    "name": "Spooky Jane's Walk",
    "location": "Windsor–Essex, ON",
    "inventory_note": "Haunted-history walking tours",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -3077,7 +3077,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "ghosts-history"
@@ -3092,9 +3092,9 @@
    "name": "Sandwich Town Ghost Tour",
    "location": "Windsor, ON",
    "inventory_note": "Historical ghost walk",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -3116,7 +3116,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "ghosts-history"

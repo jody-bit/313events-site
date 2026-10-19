@@ -4988,6 +4988,7 @@
      "credit": "Goodison Cider Mill (official site)",
      "acceptedBy": "Jody Tyree (owner)",
      "acceptedAt": "2026-10-19",
+     "hideCredit": true,
      "riskNote": "Owner accepted the copyright risk (DEC-029); no permission from the rights holder is on file. Remove promptly if the owner asks."
     }
    },
@@ -6473,10 +6474,10 @@
     }
    ],
    "disposition": {
-    "type": "closed",
-    "reason": "Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record.",
     "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
-    "recordedAt": "2026-10-12"
+    "recordedAt": "2026-10-12",
+    "type": "closed",
+    "reason": "Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record."
    }
   },
   {
@@ -7024,7 +7025,7 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Haunted woodland trail",
    "image": {
     "src": "/assets/seasonal/halloween-card-3.webp",
@@ -7085,14 +7086,15 @@
     "note": "City of Dearborn announcement states the trail returns to Ford Field Park Friday Oct. 16 through Sunday Oct. 18, 2026, opening at 7 p.m. https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18 read 2026-10-12."
    },
    "website": "https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18",
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "City of Dearborn listed Fri Oct 16 to Sun Oct 18, 7 PM; the final night is Oct 18. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -7104,7 +7106,7 @@
     "haunted-attractions"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Evening trick-or-treating and spooky trails (family-friendly and scarier) at the Sanilac County Historical Museum village in Port Sanilac.",
    "image": {
     "src": "/assets/seasonal/halloween-card-7.webp",
@@ -7165,14 +7167,15 @@
     "note": "Museum's official calendar lists Haunted Village on Saturdays October 10 and 17, 7-9 p.m. (the page text does not print the year; the weekday/date pairing matches 2026 and the page lists 2026 events like a Nov 7 lecture). https://sanilaccountymuseum.org/calendar-of-events/ read 2026-10-12."
    },
    "website": "https://sanilaccountymuseum.org/calendar-of-events/",
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "Museum calendar listed Saturdays Oct 10 and 17, 7-9 PM only; both dates have passed. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -7811,11 +7814,11 @@
     }
    ],
    "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12",
     "type": "duplicate",
     "of": "scarehouse-windsor",
-    "reason": "Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record.",
-    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
-    "recordedAt": "2026-10-12"
+    "reason": "Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record."
    }
   },
   {
@@ -8361,11 +8364,11 @@
     }
    ],
    "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12",
     "type": "duplicate",
     "of": "halloween-hunt-the-haunts",
-    "reason": "Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record.",
-    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
-    "recordedAt": "2026-10-12"
+    "reason": "Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record."
    }
   },
   {
@@ -8472,7 +8475,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
    "image": {
     "src": "/assets/seasonal/photos/halloween/halloween__spooky-janes-walk__commons-01__card.webp",
@@ -8536,14 +8539,15 @@
     "note": "Official Jane's Walk site lists the fall 2026 Spooky Jane's Walk 'From Tombstones to Trading Post', Saturday Oct 17, 2026, 11:00 AM-12:00 PM, $25 via Eventbrite. https://www.windsorjaneswalk.ca/ (read 2026-10-12); detail corroborated by https://windsorite.ca/events/spooky-janes-walk-from-tombstones-to-trading-post/ (secondary)."
    },
    "website": "https://www.windsorjaneswalk.ca/",
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "Jane's Walk site listed a single walk, Saturday Oct 17, 11 AM-12 PM; it has passed. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -8555,7 +8559,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Historical ghost walk",
    "image": {
     "src": "/assets/seasonal/photos/halloween/halloween__sandwich-town-ghost-tour__commons-01__card.webp",
@@ -8619,14 +8623,15 @@
     "note": "Sandwich Town BIA's event page lists the Sandwich Town Ghost Tour on October 17, 2026, 7:30-9:30 pm, $20. Other 2026 ghost events on its events page; the July page lists monthly tours with 'Halloween tours' details to come. https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/ and https://sandwichtown.ca/events/ (read 2026-10-12)."
    },
    "website": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "Sandwich Town BIA event page listed a single tour, Oct 17, 7:30-9:30 PM; it has passed. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   }
  ],
@@ -17747,6 +17752,7 @@
      "credit": "Huron-Clinton Metroparks",
      "acceptedBy": "Jody Tyree (owner)",
      "acceptedAt": "2026-10-11",
+     "hideCredit": true,
      "riskNote": "Owner accepted the copyright risk (DEC-029); no permission from the rights holder is on file. Remove promptly if the owner asks."
     }
    },

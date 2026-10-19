@@ -40,6 +40,16 @@ assert.strictEqual(require("crypto").createHash("sha256").update(fs.readFileSync
   assert.ok(!/Illustrative image|sc-credit|damouniorchards\.com\/cdn/.test(html), "Damouni card: no badge, credit line or hotlink");
   assert.ok(html.includes(a.file), "Damouni card draws the repo file");
 }
+// Goodison and Kensington (owner decision 2026-10-19, "Remove credit"): the linked photo draws with no visible credit line; the credit stays private.
+for (const [slug, id] of [["fall", "goodison-cider-mill"], ["fall-color", "kensington-metropark"]]) {
+  const e = E[slug].find((x) => x.id === id), pc = ED.publicEntry(e), R = require(path.join(root, "seasonal/render.js"));
+  assert.strictEqual(e.image.remote.hideCredit, true, id + ": hideCredit recorded");
+  assert.ok(e.image.remote.credit, id + ": credit kept in the private record");
+  assert.ok(pc.image.remote && pc.image.remote.src && pc.image.remote.sourcePage && !pc.image.remote.credit, id + ": public remote has no credit");
+  assert.ok(!/sc-credit|Photo:/.test(R.card(Object.assign({}, ED.COLLECTIONS.COLLECTIONS[slug], { entries: [pc] }), pc, {})), id + ": no visible credit line");
+}
+// Other linked-image records keep their credit line (Halloween owner-accepted links are unchanged).
+for (const e of E.halloween.filter((x) => x.image && x.image.remote && x.image.remote.src && ED.COLLECTIONS.isPublic(x))) assert.ok(ED.publicEntry(e).image.remote.credit, e.id + ": credit kept");
 // Public pages.
 assert.ok(fs.readFileSync(path.join(root, "fall.html"), "utf8").includes("damouni-orchards"));
 assert.ok(fs.readFileSync(path.join(root, "fall-color.html"), "utf8").includes("kensington-metropark"));

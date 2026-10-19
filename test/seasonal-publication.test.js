@@ -57,18 +57,18 @@ for (const k of migrated) assert.ok(review.includes("`" + k.split("/")[1] + "`")
   for (const s of DATA.ORDER) for (const e of entries[s].filter((x) => x.migration && DATA.isPublic(x))) AUTHZ.checkApproval(assert, s, e, AUTHZ.authorized(ED));
 }
 for (const id of Object.keys(SIX)) assert.ok(review.includes(SIX[id]), "the review states the current state of " + id);
-// The other 46 Halloween records are new and carry no legacy status. 23 of them pass every gate item (verified 2026 operation plus a recorded image route:
-// Hush, Azra and HallowGlow with linked images, and 20 on the labelled-illustration route). The other 23 are held or excluded.
+// The other 46 Halloween records are new and carry no legacy status. 19 of them pass every gate item (verified 2026 operation plus a recorded image route:
+// Hush, Azra and HallowGlow with linked images, and 16 on the labelled-illustration route). The other 27 are held or excluded.
 assert.strictEqual(entries.halloween.filter((e) => !e.migration).length, 46);
 assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED.filter((id) => !SIX[id]));
-assert.strictEqual(entries.halloween.filter((e) => !e.migration && !DATA.isPublic(e)).length, 23);
+assert.strictEqual(entries.halloween.filter((e) => !e.migration && !DATA.isPublic(e)).length, 27);
 
 // ---- the public projection (B1/B6)
 {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(Object.keys(pe), DATA.ORDER);
   for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok((() => { const priv = ED.entries()[slug].find((x) => x.id === e.id); return DATA.isPublic(priv) && JSON.stringify(e) === JSON.stringify(ED.publicEntry(priv)); })(), "published-entries.js holds an entry that is not PUBLISHED, or not in public form: " + e.id);
-  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 108, "only the 79 authorized Fall records (76 + 3) and the 29 gate-passing Halloween records are public");
+  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 104, "only the 79 authorized Fall records (76 + 3) and the 25 gate-passing Halloween records are public");
   assert.deepStrictEqual([].concat(...DATA.ORDER.map((s) => pe[s].map((e) => s + "/" + e.id))).sort(), [...AUTHZ.authorized(ED)].sort(), "the public entries are exactly the authorized set");
   assert.deepStrictEqual(ED.publishedProjection(), pe, "published-entries.js equals the projection of the private data");
   // a hypothetical approval moves an entry into the projection, and ONLY that entry (checked on a copy; nothing is written)
