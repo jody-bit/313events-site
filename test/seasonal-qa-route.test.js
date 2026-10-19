@@ -59,7 +59,7 @@ for (const slug of ["fall", "fall-color"]) {
     assert.strictEqual(r.statusCode, 200, slug + " " + env);
     const d = JSON.parse(r.body);
     assert.strictEqual(d.collection, slug);
-    assert.strictEqual(d.records.filter((x) => !x.discovered).length, { fall: 71, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
+    assert.strictEqual(d.records.filter((x) => !x.discovered).length, { fall: 70, "fall-color": 129 }[slug], slug + " has one QA record per inventory row");
     const authSet = AUTHZ.authorized(require(path.join(root, "api/_lib/seasonal-editorial/editorial.js")));
     assert.ok(d.records.every((x) => x.public === authSet.has(slug + "/" + x.id)), slug + ": public only if authorized");
     assert.ok(!/Hush|Slay Nights/.test(r.body));

@@ -154,6 +154,9 @@ const built = { fall: [], "fall-color": [] };
 for (const col of ["fall", "fall-color"]) {
   let n = 0;
   for (const item of launch.collections[col]) {
+    // Owner decision 2026-10-19 (Almar duplicate): this research row is a duplicate of the canonical Almar Orchards record and is
+    // no longer in the inventory ledger. The research file stays untouched as history; the generator skips the consolidated row.
+    if (col === "fall" && item.ledger_name === "JK’s Farmhouse Ciders / Almar Orchards") continue;
     const row = reg.candidates.find((c) => c.collection === col && c.name === item.ledger_name && c.location === item.ledger_location);
     if (!row) throw new Error("no ledger row for " + col + " " + item.ledger_name);
     const key = keyFor(row);

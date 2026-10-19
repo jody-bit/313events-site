@@ -14,7 +14,7 @@ execFileSync(process.execPath, [path.join(root, "scripts/build-release-batch.js"
 const B = ED.read("RELEASE_BATCH_1.json");
 const E = ED.entries();
 assert.deepStrictEqual([B.counts.total, B.counts.fall, B.counts["fall-color"], B.counts.original15], [76, 36, 40, 15]);
-assert.deepStrictEqual([B.excluded.held, B.excluded.discoveredLeads], [124, 37]);
+assert.deepStrictEqual([B.excluded.held, B.excluded.discoveredLeads], [123, 37]);
 assert.ok(/^APPLIED/.test(B.status) && /Jody Tyree/.test(B.status), "the batch is marked applied by the owner's authorization");
 assert.strictEqual(new Set(B.records.map((r) => r.collection + "/" + r.id)).size, 76, "no duplicates");
 

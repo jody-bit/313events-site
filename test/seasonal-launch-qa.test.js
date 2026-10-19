@@ -14,12 +14,12 @@ execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal-launch.j
 
 const entries = E("entries.json");
 const disc = E("discovered-destinations.json").collections;
-const counts = { fall: 71 + (disc.fall || []).length, "fall-color": 129 + (disc["fall-color"] || []).length };
+const counts = { fall: 70 + (disc.fall || []).length, "fall-color": 129 + (disc["fall-color"] || []).length };
 for (const slug of ["fall", "fall-color"]) {
   const qa = E(slug + "-qa.json");
   assert.strictEqual(qa.collection, slug);
   assert.strictEqual(qa.records.length, counts[slug], slug + ": every inventory row (and each discovered destination) is a QA record");
-  assert.strictEqual(qa.records.filter((r) => !r.discovered).length, slug === "fall" ? 71 : 129, slug + ": all inventory rows present");
+  assert.strictEqual(qa.records.filter((r) => !r.discovered).length, slug === "fall" ? 70 : 129, slug + ": all inventory rows present");
   assert.strictEqual(new Set(qa.records.map((r) => r.id + "|" + r.name)).size, counts[slug], slug + ": no duplicate QA records");
   for (const r of qa.records) {
     assert.strictEqual(r.public, AUTHZ.authorized(ED).has(slug + "/" + r.id), r.id + ": public only if authorized");
@@ -31,7 +31,7 @@ for (const slug of ["fall", "fall-color"]) {
     for (const o of r.image_options) if (o.illustrative) assert.strictEqual(o.depicts_actual_destination, false, r.id + " generated art is not a destination photo");
     for (const o of r.image_options) if (o.type === "owner_photo_atmospheric") assert.ok(o.warnings.some((w) => /does NOT depict/.test(w)), r.id + " atmospheric photo is labelled");
   }
-  assert.strictEqual(entries[slug].length, slug === "fall" ? 71 : 129, slug + ": discovered destinations are not records until the owner adds them");
+  assert.strictEqual(entries[slug].length, slug === "fall" ? 70 : 129, slug + ": discovered destinations are not records until the owner adds them");
   for (const e of entries[slug]) {
     AUTHZ.checkApproval(assert, slug, e, AUTHZ.authorized(ED));
     assert.strictEqual(ED.COLLECTIONS.readiness(e).state === "PUBLISHED", AUTHZ.authorized(ED).has(slug + "/" + e.id), e.id + ": published only if authorized");

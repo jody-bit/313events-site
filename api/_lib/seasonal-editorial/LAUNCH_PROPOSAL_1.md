@@ -8,7 +8,7 @@ Private. Generated 2026-10-11 by `scripts/build-launch-proposal.js` from `entrie
 
 | Collection | Proposed | Your own photo | Labelled illustration | Inventory rows | Not yet proposed |
 |---|---|---|---|---|---|
-| /fall (Fall Is On.) | 10 | 2 | 6 | 71 | 61 |
+| /fall (Fall Is On.) | 10 | 2 | 6 | 70 | 60 |
 | /fall-color (Chase the Color) | 5 | 1 | 2 | 129 | 124 |
 
 Every proposed record has: a verified name and location taken from its official page, the official source URL, a recorded relevance note, and an image by a recorded route. No hours, admission, dates or accessibility appear on any card (none are displayed, so none are asserted). Season dates seen on official pages are kept in the evidence notes only.
@@ -205,7 +205,7 @@ Preview: open `/fall?qa=1&launch=1` and `/fall-color?qa=1&launch=1` on a Vercel 
 - **11 rows. Official page read once; fall-color relevance and a second read still to do.** Delhi Metropark; Lake Erie Metropark; Lake St. Clair Metropark; Bald Mountain State Recreation Area; Pontiac Lake State Recreation Area; Seven Lakes State Park; Independence Oaks County Park; Brighton State Recreation Area; Island Lake State Recreation Area; Algonac State Park; Sterling State Park.
 - **97 inventory rows have not been read at all** (still HOLD_UNVERIFIED).
 
-The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 185 other fall and fall-color records stay out of this batch (4 `CONTENT_VERIFIED`, 117 `HOLD_UNVERIFIED`, 0 `READY_FOR_REVIEW`). 
+The integration branch's own reads (`launch-verification.json`, 50 destinations) and records are preserved as authored: 184 other fall and fall-color records stay out of this batch (4 `CONTENT_VERIFIED`, 116 `HOLD_UNVERIFIED`, 0 `READY_FOR_REVIEW`). 
 
 ## Image sources audited, in your priority order
 
