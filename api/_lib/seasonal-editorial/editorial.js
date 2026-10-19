@@ -119,6 +119,10 @@ function publicEntry(e) {
   if (im.alternates && im.alternates.length) out.image.alternates = im.alternates.slice();
   if (im.placeholder) out.image.placeholder = im.placeholder;
   out.image.illustrative = im.illustrative === true;
+  // Opt-in: an archival photograph is labelled "Historic photo" on its card. Only an explicit true carries; nothing else changes.
+  // Owner rule (2026-10-19): historic:true ONLY for an image that is verifiably archival or historical. Never for a contemporary
+  // photograph that merely looks vintage. Attribution stays in the centralized Photo Credits system, not on the card.
+  if (im.historic === true && im.illustrative !== true) out.image.historic = true;
   // A photograph is shown with its credit line; an illustration carries the "Illustrative image" label instead.
   // A self-hosted copy (the repo file IS the card image, DEC-029 risk acceptance, no license) is drawn as a plain photograph: no hotlink, no
   // "Illustrative image" fallback badge and no visible credit. The source, credit and risk acceptance stay in the private record.

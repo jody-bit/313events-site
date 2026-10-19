@@ -228,8 +228,12 @@ for (const col of ["fall", "fall-color"]) {
     const dest = destPhotos(col, c);
     // An openly licensed photograph (third-party license route, e.g. Wikimedia Commons) is its own option type and is the record's default.
     const licensed = !!(e && e.image && e.image.illustrative === false && !e.image.ownerPhoto && e.image.license && /^https:\/\//.test(e.image.licenseUrl || ""));
-    const defaultPick = e && e.image && e.image.ownerPhoto ? e.image.ownerPhoto.photoId : (licensed ? "commons-" + e.id : null);
+    // An archival photograph (image.historic === true, repo file, not an illustration) is its own QA option so the "Historic photo" badge can be reviewed in a preview. It carries no rights claim.
+    const archival = !!(e && e.image && e.image.historic === true && e.image.illustrative === false && e.image.acquired && e.image.acquired.file === e.image.src);
+    const defaultPick = e && e.image && e.image.ownerPhoto ? e.image.ownerPhoto.photoId : (archival ? "archival-" + e.id : (licensed ? "commons-" + e.id : null));
     dest.forEach((p) => opts.push(photoOpt(p, "owner_photo_destination")));
+    if (archival) opts.unshift({ id: "archival-" + e.id, type: "archival_acquired", src: e.image.src, source: e.image.source, credit: "Kept in the private record (not drawn on the card)", rights_status: (e.image.provenance && e.image.provenance.rights) || "Not cleared",
+      illustrative: false, depicts_actual_destination: true, historic: true, warnings: ["Archival photograph: shown with the Historic photo badge and no credit line. Rights not cleared; DEC-029 risk acceptance not recorded for this image."], image_kind: "photo" });
     if (licensed) opts.unshift({ id: "commons-" + e.id, type: "licensed_third_party", src: e.image.src, source: e.image.source, credit: e.image.credit, rights_status: e.image.license + " (" + e.image.licenseUrl + ")",
       illustrative: false, depicts_actual_destination: true, warnings: [], image_kind: "photo", rights_basis: "third-party-license", license_url: e.image.licenseUrl, source_page: e.image.commons && e.image.commons.filePage });
     let primary;
