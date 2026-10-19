@@ -39,6 +39,8 @@ const ALLOWED = [
   "api/_lib/press-queue-filter.js",
   // Admin queue Stage 2 (owner decision 2026-10-16): read-side class for pending rows (Dearborn grouping).
   "api/_lib/pending-classifier.js",
+  // All-caps title proposal (shadow mode, EI 2026-10-19): pure function, nothing calls it yet.
+  "api/_lib/title-case.js",
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
