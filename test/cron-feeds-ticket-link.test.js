@@ -56,13 +56,15 @@ async function runFeed(feedSource, body) {
 }
 // ---- the secret must reach no surface: log line, feed poll note (stored + in the response), run response ----------------
 async function leakCheck() {
-  const SECRETS = ["sk_live_51HabcDEF123456789", "abc123NESTEDSECRET", "zzzzzzzzzzzz", "hunter2", "tok_ABCDEFGHIJKL"];
+  const SECRETS = ["sk_live_51HabcDEF123456789", "abc123NESTEDSECRET", "zzzzzzzzzzzz", "hunter2", "tok_ABCDEFGHIJKL", "abc123def456", "hunter22"];
   const source = { id: "fs-leak", venue_name: "City Leak", default_category: "community", feed_url: "https://feed.example/leak.ics", feed_format: "ics", status: "approved", location_per_event: true };
   const body = ics([
     { uid: "unlisted", url: "https://x.org/common/modules/iCalendar/iCalendar.aspx?x=sk_live_51HabcDEF123456789" },
     { uid: "nested", url: "https://x.org/e?next=https://b.org/y?token=abc123NESTEDSECRET" },
     { uid: "malformed", url: "https://x.org/%zz?q=1&x=sk_live_zzzzzzzzzzzz" },
     { uid: "userinfo", url: "https://user:hunter2@x.org/cal.ics" },
+    { uid: "pathtoken", url: "https://a.com/ical/abc123def456/feed.ics" },
+    { uid: "schemeless", url: "user:hunter22@host/path" },
     { uid: "other", url: "/common/modules/iCalendar/iCalendar.aspx?feed=calendar&tok=tok_ABCDEFGHIJKL" },
   ]);
   const logged = [];

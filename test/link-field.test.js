@@ -154,7 +154,10 @@ async function run() {
     assert.strictEqual(sanitizeLinkForLog("https://user:hunter2@x.org/e/1?token=abc123&email=jo@x.org&catID=7&sig=zz#frag"), "https://x.org/e/1");
     assert.strictEqual(sanitizeLinkForLog("/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=23"), "/common/modules/iCalendar/iCalendar.aspx", "the feed path is still identifiable");
     assert.strictEqual(sanitizeLinkForLog("https://a.org/e#access_token=zzz"), "https://a.org/e", "a fragment is dropped");
-    for (const unparseable of ["Pay at the door", "bad%zz?next=http://q/?t=SECRETVALUE#f", "//h.org/x?t=SECRETVALUE", "https://", "mailto:a@b.co", "javascript:alert(1)", "user:hunter2@host.com/x"]) {
+    assert.strictEqual(sanitizeLinkForLog("https://a.com/ical/9f8e7d6c5b4a/feed.ics"), "https://a.com/ical/[redacted]/feed.ics", "an id-like path segment is masked, the shape stays readable");
+    assert.strictEqual(sanitizeLinkForLog("/common/modules/iCalendar/iCalendar.aspx"), "/common/modules/iCalendar/iCalendar.aspx", "words and file names are kept");
+    assert.strictEqual(sanitizeLinkForLog("https://a.org/Calendar.aspx"), "https://a.org/Calendar.aspx");
+    for (const unparseable of ["Pay at the door", "bad%zz?next=http://q/?t=SECRETVALUE#f", "//h.org/x?t=SECRETVALUE", "https://", "mailto:a@b.co", "javascript:alert(1)", "user:hunter2@host.com/x", "user:hunter22@host/path", "token=abc&x=sk_live_zzzzzzzzzzzz", "http://[::1"]) {
       assert.strictEqual(sanitizeLinkForLog(unparseable), "[unparseable value]", `unparseable input is replaced by a placeholder, never echoed: ${unparseable}`);
     }
     assert.strictEqual(sanitizeLinkForLog("https://a.org/%zz?x=1"), "https://a.org/%zz", "a malformed percent sequence in a parseable URL cannot throw or leak the query");
@@ -169,6 +172,11 @@ async function run() {
       ["userinfo without scheme", "user:hunter2@host.com/x", "hunter2"],
       ["secret-shaped path segment", "/a/sk_live_ABCDEFGH12345/b", "sk_live"],
       ["long hex path segment", "https://x.org/t/0123456789abcdef0123456789abcdef/e", "0123456789abcdef"],
+      ["short path token", "/ical/abc123def456/feed.ics", "abc123def456"],
+      ["short path token, absolute", "https://a.com/ical/9f8e7d6c5b4a/feed.ics", "9f8e7d6c5b4a"],
+      ["scheme-less userinfo with a longer password", "user:hunter22@host/path", "hunter22"],
+      ["bare name=value text", "token=abc&x=sk_live_zzzzzzzzzzzz", "abc"],
+      ["unterminated IPv6 host", "http://[::1", "::1"],
       ["email", "Email jo@x.org to pay", "jo@x.org"],
       ["phone", "Call (313) 555-0142 for tickets", "555-0142"],
     ];

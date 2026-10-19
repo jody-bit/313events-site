@@ -84,6 +84,12 @@ const NUMBERISH = /\+?\d[\d\s().-]{8,}\d/g;
 const LOG_VALUE_MAX = 120;
 
 const UNPARSEABLE = "[unparseable value]";
+// A path segment that mixes letters and digits for 8+ characters (before any file extension) looks like an id or a token
+// (/ical/9f8e7d6c5b4a/feed.ics), so it is masked; words, plain numbers and file names such as iCalendar.aspx are kept.
+const maskPath = (pathname) => pathname.split("/").map((seg) => {
+  const base = seg.split(".")[0];
+  return /[A-Za-z]/.test(base) && /\d/.test(base) && /^[A-Za-z0-9_-]{8,}$/.test(base) ? "[redacted]" + seg.slice(base.length) : seg;
+}).join("/");
 
 // -> "https://host/path" for an absolute URL, "/path" for a site-relative path, otherwise the placeholder. Never the raw input.
 function sanitizeLinkForLog(value) {
@@ -93,11 +99,11 @@ function sanitizeLinkForLog(value) {
   try {
     if (/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) {
       const u = new URL(v);
-      out = `${u.protocol}//${u.host}${u.pathname}`; // URL parsing separates userinfo, query and fragment, which are all dropped
+      out = `${u.protocol}//${u.host}${maskPath(u.pathname)}`; // URL parsing separates userinfo, query and fragment, which are all dropped
     } else if (v.startsWith("/") && !v.startsWith("//")) {
-      out = new URL(v, "http://relative.invalid").pathname; // a site-relative path: path only, no decoding, a bad percent sequence cannot throw
+      out = maskPath(new URL(v, "http://relative.invalid").pathname); // site-relative: path only, no decoding, a bad percent sequence cannot throw
     } else {
-      return UNPARSEABLE; // price text, protocol-relative, bare host, mailto:, malformed: nothing from the input is echoed
+      return UNPARSEABLE; // price text, protocol-relative, bare host, scheme-less user:pass@host, mailto:, malformed: nothing from the input is echoed
     }
   } catch {
     return UNPARSEABLE;
