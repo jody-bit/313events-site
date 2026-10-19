@@ -2202,7 +2202,49 @@
     "miles": 65,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Flushing MI area (general geographic knowledge, not from official page))"
-   }
+   },
+   "aliases": [
+    "JK's Farmhouse Ciders"
+   ],
+   "mergedRecords": [
+    {
+     "id": "jks-farmhouse-ciders-almar-orchards",
+     "inventory_no": "20",
+     "mergedBy": "owner decision Jody 2026-10-19T16:00:50Z",
+     "originalStatus": "HOLD_UNVERIFIED",
+     "originalFlags": [
+      "duplicate of another entry; merge before publishing",
+      "duplicate",
+      "name differs",
+      "stale page",
+      "Duplicate of Almar Orchards"
+     ],
+     "originalRelevanceNote": "Not confirmed: Same destination as Almar Orchards; the JK's brand appears only as product names on the Almar page.",
+     "evidence": {
+      "url": "https://almar-orchards.com",
+      "checkedAt": "2026-10-11",
+      "level": "official"
+     },
+     "associatedProductBrand": "JK's Farmhouse Ciders",
+     "verifiedProductFacts": [
+      "hard cider tastings",
+      "JK's Scrumpy cider",
+      "JK's Farmhouse Haybaler drinking vinegars"
+     ],
+     "namingNote": "Phrase 'JK's Farmhouse Ciders' not on home page or /scrumpy/; site uses 'JK's Scrumpy'. localdifference.org lists JK's Organic Farmhouse Ciders as a partner entry (third party).",
+     "associatedProductBrandSite": "https://jksfarmhouseciders.com/our-farm (source page of the linked candidate image below; no content from it is used)",
+     "linkedCandidateImage": {
+      "image": "https://images.squarespace-cdn.com/content/v1/61666618f2101f65ee6f29ec/9a1b3571-2e9d-444a-9ee5-972f8affd26c/IMG_2851.png",
+      "sourcePage": "https://jksfarmhouseciders.com/our-farm",
+      "credit": "JK's Farmhouse Ciders / Almar Orchards (official site)",
+      "size": "2500x1666",
+      "foundOn": "2026-10-11",
+      "foundVia": "Google Images (Chrome)",
+      "status": "LINKED_CANDIDATE",
+      "note": "Moved here from the removed inventory row; not adopted; image rights unresolved."
+     }
+    }
+   ]
   },
   {
    "id": "apple-lane-orchard",
@@ -2736,61 +2778,6 @@
     "miles": 43,
     "outside75": false,
     "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Dexter MI area (general geographic knowledge))"
-   }
-  },
-  {
-   "id": "jks-farmhouse-ciders-almar-orchards",
-   "name": "JK's Farmhouse Ciders / Almar Orchards",
-   "city": "Flushing",
-   "region": "MI",
-   "categories": [
-    "cider-donuts",
-    "farm-experiences"
-   ],
-   "featured": false,
-   "status": "HOLD_UNVERIFIED",
-   "summary": "JK's Farmhouse Ciders / Almar Orchards in Flushing. Official page lists hard cider tastings, JK's Scrumpy cider, JK's Farmhouse Haybaler drinking vinegars.",
-   "image": {
-    "src": "/assets/seasonal/fall-card-4.webp",
-    "alternates": [
-     "/assets/seasonal/fall-card-7.webp"
-    ],
-    "placeholder": "/assets/placeholders/event-800.webp",
-    "source": "313.events supplied collection graphic (AI-generated), cropped",
-    "credit": "313.events",
-    "license": "Supplied by 313.events; generation tool and terms not recorded",
-    "illustrative": true
-   },
-   "evidence": [
-    {
-     "level": "official",
-     "websiteChecked": true,
-     "url": "https://almar-orchards.com",
-     "checkedAt": "2026-10-11",
-     "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-     "note": "Official page read 2026-10-11. Address as stated: 1431 Duffield Rd, Flushing, MI 48433. Season/hours as stated: Same as Almar Orchards: fall Mon-Sat 9-6, Sun 10-6; no year stated. Flags: duplicate; name differs; stale page; Duplicate of Almar Orchards."
-    }
-   ],
-   "website": "https://almar-orchards.com",
-   "relevance": {
-    "confirmed": false,
-    "checkedAt": "2026-10-11",
-    "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-    "note": "Not confirmed: Same destination as Almar Orchards; the JK's brand appears only as product names on the Almar page. Awaiting editorial judgment.",
-    "confidence": "medium",
-    "evidence": [
-     {
-      "source_url": "https://almar-orchards.com",
-      "source_kind": "official-website",
-      "statement_paraphrase": "Same destination as Almar Orchards; the JK's brand appears only as product names on the Almar page."
-     }
-    ],
-    "unresolved": []
-   },
-   "distance": {
-    "miles": 65,
-    "outside75": false,
-    "note": "Straight-line miles from Detroit centre; coordinates approximate (approximate, Flushing MI area (general geographic knowledge))"
    }
   },
   {

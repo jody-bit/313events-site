@@ -41,7 +41,7 @@ for (const col of ["fall", "fall-color"]) for (const id of inSet(col)) {
 // ---- held and leads stay out
 for (const col of ["fall", "fall-color"]) {
   const held = E[col].filter((e) => !inSet(col).has(e.id));
-  assert.strictEqual(held.length, col === "fall" ? 35 : 89, col + ": held records");
+  assert.strictEqual(held.length, col === "fall" ? 34 : 89, col + ": held records");
   for (const e of held) assert.ok(!e.editorialAccepted, e.id + ": held records carry no acceptance");
   const ids = new Set(E[col].map((e) => e.id));
   for (const d of DISC[col]) assert.ok(!ids.has(d.ledger_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")), d.ledger_name + " stays a lead");

@@ -302,21 +302,6 @@
   },
   {
    "collection": "fall",
-   "inventory_no": "20",
-   "section": null,
-   "name": "JK’s Farmhouse Ciders / Almar Orchards",
-   "location": "Flushing, MI",
-   "inventory_note": "Same destination as Almar",
-   "status": "HOLD_UNVERIFIED",
-   "published_id": null,
-   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: 2 relevance; 3 image; 5 explicit approval.",
-   "flags": [
-    "duplicate of another entry; merge before publishing"
-   ],
-   "entry_id": "jks-farmhouse-ciders-almar-orchards"
-  },
-  {
-   "collection": "fall",
    "inventory_no": "21",
    "section": null,
    "name": "Kreps Apple Barn & Cider Mill",

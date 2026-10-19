@@ -208,7 +208,7 @@ for (const slug of DATA.ORDER) {
   }
   assert.deepStrictEqual(DATA.published(col).map((e) => e.id), col.entries.filter((e) => e.status === "PUBLISHED").map((e) => e.id));
 }
-assert.strictEqual(allEntries, 252, "71 fall + 52 halloween + 129 fall-color records: one private record per inventory row");
+assert.strictEqual(allEntries, 251, "70 fall + 52 halloween + 129 fall-color records: one private record per inventory row");
 // Release state: only the 76 destinations the owner authorized carry the explicit approval, so only they are public.
 {
   const set = AUTHZ.authorized(ED), n = { fall: 0, halloween: 0, "fall-color": 0 };
@@ -324,8 +324,8 @@ for (const slug of DATA.ORDER) {
 
 // ---- 6. candidate registry (private): all 252 rows preserved, ledger = five-state vocabulary, none public
 const reg = JSON.parse(fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/candidates.json"), "utf8")).candidates;
-const counts = { fall: 71, halloween: 52, "fall-color": 129 };
-assert.strictEqual(reg.length, 252);
+const counts = { fall: 70, halloween: 52, "fall-color": 129 };
+assert.strictEqual(reg.length, 251);
 for (const slug of DATA.ORDER) {
   const rows = reg.filter((c) => c.collection === slug), col = PRIVATE[slug];
   assert.strictEqual(rows.length, counts[slug], slug + " inventory rows tracked");
