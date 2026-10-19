@@ -427,7 +427,7 @@
         <h2>Live events</h2>
         <div class="sub">Search anything currently live on the site — from any source, including automated feeds — correct a wrong value with Edit, or remove it if it doesn't fit the brand. A correction keeps the event live and importers will not overwrite the corrected fields. Removing is reversible from "Recently hidden" below.</div>
         <div class="search-row">
-          <input type="text" id="liveSearchInput" placeholder="Search by event title…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
+          <input type="text" id="liveSearchInput" placeholder="Search by title, venue or source…" onkeydown="if(event.key==='Enter') searchLiveEvents()">
           <button onclick="searchLiveEvents()">Search</button>
         </div>
         <div id="liveResults"></div>
@@ -2611,7 +2611,7 @@ async function searchLiveEvents() {
   if (!q) { results.innerHTML = ''; return; }
   results.innerHTML = '<div class="empty">Searching…</div>';
   try {
-    const resp = await fetch('/api/admin-events?search=' + encodeURIComponent(q), {
+    const resp = await fetch('/api/admin-events?match=any&search=' + encodeURIComponent(q), {
       headers: { 'x-admin-secret': SECRET },
     });
     const data = await resp.json();

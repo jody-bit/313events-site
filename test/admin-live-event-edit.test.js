@@ -126,5 +126,7 @@ nextResponse = { status: 200, body: { ok: true, edit_id: "e-1", event: row({ tit
   sandbox.fetch = async () => { throw new Error("offline"); };
   await T.liveEditSave("lv1");
   assert.ok(/offline/.test(T.LIVE_EDIT.lv1.notice) && T.LIVE_EDIT.lv1.open === true);
+  // 10. Live search asks Platform for the wide match (title, venue or source) so an editor can find an event by venue.
+  assert.ok(/\/api\/admin-events\?match=any&search=/.test(script), "live search sends match=any");
   console.log("admin-live-event-edit: all assertions passed");
 })().catch((e) => { console.error(e); process.exit(1); });
