@@ -83,6 +83,7 @@
 
 const { fillBlankOrganizerEventUrls } = require("./organizer-links");
 const { OWNER_CORRECTION_MARKER, OWNER_EDITABLE_FIELDS, protectOwnerCorrections } = require("./event-contract");
+const { normalizeRowLinks } = require("./link-field");
 
 const DEFAULT_TABLE = "events";
 const LAST_SEEN_COLUMN = "last_seen_at_source";
@@ -192,6 +193,8 @@ async function upsertEventRows(supabaseUrl, serviceRoleKey, rows, options) {
   const prefer = (options && options.prefer) || DEFAULT_PREFER;
 
   if (table === DEFAULT_TABLE) {
+    // Q17: only an absolute http(s) event page is stored in a link field (api/_lib/link-field.js).
+    rows = Array.from(rows).map(normalizeRowLinks);
     try {
       rows = protectOwnerCorrections(Array.from(rows), await loadOwnerCorrections(supabaseUrl, serviceRoleKey)).rows;
     } catch (err) {

@@ -190,14 +190,14 @@
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
+     "image": true,
      "rights": false,
      "approval": false
     },
-    "image_route": null,
+    "image_route": "acquired-file",
     "rights_route": null,
     "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
+     "Gate 4, image rights: not complete for the chosen image route.",
      "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
     ],
     "caveats": [],
@@ -208,26 +208,42 @@
    "manifest": {
     "destination_id": "almar-orchards",
     "destination_name": "Almar Orchards",
-    "primary_image": "/assets/seasonal/fall-card-2.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-2.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+    "primary_image_type": "archival_acquired",
+    "primary_image_credit": "Kept in the private record (not drawn on the card)",
+    "primary_image_rights_status": "Not cleared. DEC-029 owner risk acceptance is NOT recorded for this image; the record stays unpublished until the owner records it.",
+    "fallback_image": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-4.webp",
     "alternative_images": [
-     "gen-fall-5",
+     "gen-fall-1",
+     "gen-fall-4",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
     ],
-    "image_status": "generated_default",
+    "image_status": "owner_photo",
     "editorial_approval_status": "not_approved"
    },
    "image_options": [
     {
-     "id": "gen-fall-2",
+     "id": "archival-almar-orchards",
+     "type": "archival_acquired",
+     "src": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
+     "source": "Almar Orchards website history-hdr.jpg (2901x1475, scanned archival print of the farm store, date and photographer unknown); crop x=279..2901 full height resized to 1920x1080 by Experience, then to a 1280x720 WebP card by scripts/ingest-approved-image.py",
+     "credit": "Kept in the private record (not drawn on the card)",
+     "rights_status": "Not cleared. DEC-029 owner risk acceptance is NOT recorded for this image; the record stays unpublished until the owner records it.",
+     "illustrative": false,
+     "depicts_actual_destination": true,
+     "historic": true,
+     "warnings": [
+      "Archival photograph: shown with the Historic photo badge and no credit line. Rights not cleared; DEC-029 risk acceptance not recorded for this image."
+     ],
+     "image_kind": "photo"
+    },
+    {
+     "id": "gen-fall-1",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-2.webp",
+     "src": "/assets/seasonal/photos/fall/fall__almar-orchards__archival-01__card.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -237,9 +253,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-5",
+     "id": "gen-fall-4",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-5.webp",
+     "src": "/assets/seasonal/fall-card-4.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1729,30 +1745,27 @@
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.damouniorchards.com). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "car show date ambiguous (Sept 27, 2026 is a Sunday)",
-     "no 2026 season dates"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.damouniorchards.com), two independent reads. Relevance (recorded): Operating U-pick apple orchard in apple season with country store and tasting room. Season and hours are not shown on the card.",
+    "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
-     "approval": false
+     "image": true,
+     "rights": true,
+     "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    "image_route": "acquired-file",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -1760,14 +1773,14 @@
    "manifest": {
     "destination_id": "damouni-orchards",
     "destination_name": "Damouni Orchards",
-    "primary_image": "/assets/seasonal/fall-card-8.webp",
+    "primary_image": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp",
     "primary_image_type": "generated_illustrative",
     "primary_image_credit": "313.events",
     "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-8.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-3.webp",
+    "fallback_image": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp",
+    "secondary_fallback_image": "/assets/seasonal/fall-card-5.webp",
     "alternative_images": [
-     "gen-fall-3",
+     "gen-fall-5",
      "313p-be0183cc",
      "313p-805e745a",
      "313p-a89627e6"
@@ -1777,9 +1790,9 @@
    },
    "image_options": [
     {
-     "id": "gen-fall-8",
+     "id": "gen-fall-2",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-8.webp",
+     "src": "/assets/seasonal/photos/fall/fall__damouni-orchards__official-01__card.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -1789,9 +1802,9 @@
      "image_kind": "generated-artwork"
     },
     {
-     "id": "gen-fall-3",
+     "id": "gen-fall-5",
      "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-3.webp",
+     "src": "/assets/seasonal/fall-card-5.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",
@@ -3046,30 +3059,27 @@
    "verification": {
     "status": "verified",
     "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://www.goodisoncidermill.com/). Relevance to the collection proposed from the page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "page possibly stale (copyright 2024)",
-     "official URL inferred by direct fetch, not by listing link"
-    ]
+    "detail": "Official page read 2026-10-11 (https://www.goodisoncidermill.com/), two independent reads. Relevance (recorded): Official page lists fall farm activities: fresh-pressed cider, donuts, pistachio nut bread, pies Season and hours are not shown on the card.",
+    "flags": []
    },
-   "public": false,
+   "public": true,
    "publication": {
-    "declared_status": "CONTENT_VERIFIED",
-    "state": "CONTENT_VERIFIED",
+    "declared_status": "PUBLISHED",
+    "state": "PUBLISHED",
     "gate": {
      "official": true,
      "relevance": true,
-     "image": false,
-     "rights": false,
-     "approval": false
+     "image": true,
+     "rights": true,
+     "approval": true
     },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
+    "image_route": "linked",
+    "rights_route": "linked-risk-acceptance",
+    "outstanding": [],
+    "caveats": [
+     "Image rights: the owner's recorded acceptance of the copyright risk is NOT confirmed usage rights. No rights-holder permission is on file.",
+     "A linked image depends on the source site continuing to serve it; the generated card is the fallback."
     ],
-    "caveats": [],
     "legacy": null
    },
    "recorded_alternatives": [],
@@ -3400,154 +3410,6 @@
      "id": "gen-fall-6",
      "type": "generated_illustrative",
      "src": "/assets/seasonal/fall-card-6.webp",
-     "source": "313.events supplied Fall graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
-     "warnings": [],
-     "image_kind": "generated-artwork"
-    },
-    {
-     "id": "313p-be0183cc",
-     "type": "owner_photo_atmospheric",
-     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0126__card.webp",
-     "source": "313.events owner photo archive, captured 2019-11-04",
-     "credit": "313.events archive",
-     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
-     "illustrative": false,
-     "depicts_actual_destination": false,
-     "subject": "Morningside neighborhood entrance sign with pumpkins and potted mums, fall trees behind",
-     "warnings": [
-      "Atmospheric photo: does NOT depict this destination"
-     ],
-     "image_kind": "photo",
-     "rights_basis": "owner-authorization",
-     "license_url": null
-    },
-    {
-     "id": "313p-805e745a",
-     "type": "owner_photo_atmospheric",
-     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0215__card.webp",
-     "source": "313.events owner photo archive, captured 2020-09-10",
-     "credit": "313.events archive",
-     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
-     "illustrative": false,
-     "depicts_actual_destination": false,
-     "subject": "Dutch Girl Donuts storefront sign with people lined up outside",
-     "warnings": [
-      "Atmospheric photo: does NOT depict this destination"
-     ],
-     "image_kind": "photo",
-     "rights_basis": "owner-authorization",
-     "license_url": null
-    },
-    {
-     "id": "313p-a89627e6",
-     "type": "owner_photo_atmospheric",
-     "src": "/assets/seasonal/editorial/fall/atmospheric__fall__d0220__card.webp",
-     "source": "313.events owner photo archive, captured 2020-09-10",
-     "credit": "313.events archive",
-     "rights_status": "Owner-authorized: photographer granted use to 313.events owner",
-     "illustrative": false,
-     "depicts_actual_destination": false,
-     "subject": "Box of assorted glazed and frosted donuts",
-     "warnings": [
-      "Atmospheric photo: does NOT depict this destination"
-     ],
-     "image_kind": "photo",
-     "rights_basis": "owner-authorization",
-     "license_url": null
-    }
-   ]
-  },
-  {
-   "id": "jks-farmhouse-ciders-almar-orchards",
-   "discovered": false,
-   "inventory_no": "20",
-   "name": "JK's Farmhouse Ciders / Almar Orchards",
-   "city": "Flushing",
-   "region": "MI",
-   "categories": [
-    "cider-donuts",
-    "farm-experiences"
-   ],
-   "category_source": "record",
-   "advisory": null,
-   "summary": "JK's Farmhouse Ciders / Almar Orchards in Flushing. Official page lists hard cider tastings, JK's Scrumpy cider, JK's Farmhouse Haybaler drinking vinegars.",
-   "official_site": "https://almar-orchards.com",
-   "website": "https://almar-orchards.com",
-   "dates_hours": null,
-   "verification": {
-    "status": "partial",
-    "official_site_checked": true,
-    "detail": "Official page read 2026-10-11 (https://almar-orchards.com). Relevance to the collection NOT confirmed: Same destination as Almar Orchards; the JK's brand appears only as product names on the Almar page. Season and hours are not shown on the card; the as-stated values are kept in the private record.",
-    "flags": [
-     "duplicate of another entry; merge before publishing",
-     "duplicate",
-     "name differs",
-     "stale page",
-     "Duplicate of Almar Orchards"
-    ]
-   },
-   "public": false,
-   "publication": {
-    "declared_status": "HOLD_UNVERIFIED",
-    "state": "HOLD_UNVERIFIED",
-    "gate": {
-     "official": true,
-     "relevance": false,
-     "image": false,
-     "rights": false,
-     "approval": false
-    },
-    "image_route": null,
-    "rights_route": null,
-    "outstanding": [
-     "Gate 2, relevance to the collection: not confirmed (needs a note, date and reviewer).",
-     "Gate 3/4, image: the current image is a generated illustrative card with no recorded illustration route. Record the labelled-illustration block (illustrationImage in editorial.js), or add a real image with recorded rights (acquired file, owner photo, or linked image).",
-     "Gate 5, explicit publication approval: not recorded. Only the approving person adds approval {by, at}."
-    ],
-    "caveats": [],
-    "legacy": null
-   },
-   "recorded_alternatives": [],
-   "launch": null,
-   "manifest": {
-    "destination_id": "jks-farmhouse-ciders-almar-orchards",
-    "destination_name": "JK’s Farmhouse Ciders / Almar Orchards",
-    "primary_image": "/assets/seasonal/fall-card-4.webp",
-    "primary_image_type": "generated_illustrative",
-    "primary_image_credit": "313.events",
-    "primary_image_rights_status": "supplied by 313.events; generation tool and terms not recorded",
-    "fallback_image": "/assets/seasonal/fall-card-4.webp",
-    "secondary_fallback_image": "/assets/seasonal/fall-card-7.webp",
-    "alternative_images": [
-     "gen-fall-7",
-     "313p-be0183cc",
-     "313p-805e745a",
-     "313p-a89627e6"
-    ],
-    "image_status": "generated_default",
-    "editorial_approval_status": "not_approved"
-   },
-   "image_options": [
-    {
-     "id": "gen-fall-4",
-     "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-4.webp",
-     "source": "313.events supplied Fall graphic (AI-generated), cropped",
-     "credit": "313.events",
-     "rights_status": "supplied by 313.events; generation tool and terms not recorded",
-     "illustrative": true,
-     "depicts_actual_destination": false,
-     "warnings": [],
-     "image_kind": "generated-artwork"
-    },
-    {
-     "id": "gen-fall-7",
-     "type": "generated_illustrative",
-     "src": "/assets/seasonal/fall-card-7.webp",
      "source": "313.events supplied Fall graphic (AI-generated), cropped",
      "credit": "313.events",
      "rights_status": "supplied by 313.events; generation tool and terms not recorded",

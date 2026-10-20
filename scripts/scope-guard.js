@@ -26,7 +26,7 @@ const ALLOWED = [
   // RA link and start-time fix (PR #74): the RA link helper and the missing-time approval guard.
   "api/_lib/ra-links.js", "api/admin-events.js",
   // #185 increment 1 (owner-correction lock in the shared events writer; owner GO for the draft 2026-10-18 05:05Z, release needs R&Q + owner word).
-  "api/_lib/event-contract.js", "api/_lib/event-upsert.js",
+  "api/_lib/event-contract.js", "api/_lib/event-upsert.js", "api/_lib/link-field.js",
   // The QA route and the private seasonal editorial data (fail-closed outside preview/development).
   "api/seasonal-qa.js",
   // Description enrichment per-record outcomes (issue #100, approved by the owner 2026-10-13): the enrichment cron passes them to the run log.
@@ -73,6 +73,8 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/launch-verification.json",
   "api/_lib/seasonal-editorial/linked-images.json",
   "api/_lib/seasonal-editorial/photo-library.json",
+  // Release batch 2 (owner gate 5, 2026-10-19): the pinned three-record list and its generated batch record.
+  "api/_lib/seasonal-editorial/release-2.json", "api/_lib/seasonal-editorial/RELEASE_BATCH_2.json",
   "api/_lib/seasonal-editorial/qa-client.js",
   "api/_lib/seasonal-editorial/verification-2026-10-11.json",
   // City of Dearborn feed publication policy (Event Intelligence, draft PR #77): inert until a feed_sources row exists. cron-feeds.js: one-line change passing the policy to classify().

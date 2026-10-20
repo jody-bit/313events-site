@@ -44,7 +44,7 @@
   :root{
     --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
@@ -108,6 +108,8 @@
     display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
     padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
   }
+  /* Dark badge text fails 4.5:1 on these three category colors; white passes (5.4 to 5.9:1). */
+  .evt-cat-badge[data-cat="music"],.evt-cat-badge[data-cat="food"],.evt-cat-badge[data-cat="gaming"]{color:#fff;}
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
@@ -115,6 +117,7 @@
   }
   .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;overflow-wrap:anywhere;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
+  .evt-ended{display:inline-block;margin:2px 0 8px;padding:3px 10px;border:1px solid var(--ink-soft);border-radius:var(--radius);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   /* Street address (2026-09-04) — a plain "Get directions" link, distinct
@@ -264,6 +267,7 @@
       <div class="evt-cat-badge" id="evtCatBadge"></div>
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
+      <div class="evt-ended" id="evtEnded" style="display:none;">This event has ended</div>
       <div class="evt-detail-meta" id="evtWhere"></div>
       <a class="evt-address" id="evtAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
@@ -539,6 +543,19 @@ function calendarExportAvailable(e){
   const now = detroitNow();
   return days.some(d=>!occurrenceEnded(e, d, now));
 }
+// Has the event ended for good? Only when its dates are verified and the final verified occurrence has ended in Detroit
+// time (same rule as occurrenceEnded: stated end, else overnight end, else end of the Detroit day). Unverified dates are
+// never "ended": the page cannot say when, or whether, anything happened. Nothing here infers an end time.
+function eventHasEnded(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const now = detroitNow();
+  const days = occurrenceDays(e);
+  if(days) return days.every(d=>occurrenceEnded(e, d, now));
+  const continuous = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'continuous';
+  const finalIso = continuous ? (e.endDate || e.date) : e.date;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(finalIso || '')) return false;
+  return occurrenceEnded(e, finalIso, now);
+}
 function upcomingOccurrences(e){
   const days = occurrenceDays(e);
   if(!days) return null;
@@ -709,7 +726,7 @@ function mapRow(row) {
     locVenueZip: row.venues && row.venues.zip_code ? row.venues.zip_code : undefined,
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     // See migration_034_clothing_optional.sql.
     clothingOptional: !!row.is_clothing_optional,
@@ -798,6 +815,7 @@ function renderEvent(e){
   const badge = document.getElementById('evtCatBadge');
   badge.textContent = cat.label;
   badge.style.background = cat.color;
+  badge.dataset.cat = e.cat || '';
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this
@@ -825,6 +843,8 @@ function renderEvent(e){
   priceHtml(e);
 
   // ---- actions ----
+  // Ended-event message: the dates in the heading stay as they are.
+  document.getElementById('evtEnded').style.display = eventHasEnded(e) ? 'inline-block' : 'none';
   const actions = document.getElementById('evtActions');
   let actionsHtml = '';
   // "Tickets & info" uses ticket_url when valid, otherwise event_url.

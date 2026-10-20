@@ -28,7 +28,7 @@
     var o = option(rec, choiceId);
     var fb = [rec.manifest.fallback_image, rec.manifest.secondary_fallback_image].filter(function (u) { return u && u !== o.src; });
     return { id: rec.id, name: rec.name, city: rec.city, region: rec.region, categories: rec.categories, summary: rec.summary, website: rec.website, advisory: rec.advisory || undefined,
-      image: { src: o.src, illustrative: o.illustrative, fallbacks: fb } };
+      image: o.historic === true ? { src: o.src, illustrative: o.illustrative, historic: true, fallbacks: fb } : { src: o.src, illustrative: o.illustrative, fallbacks: fb } };
   }
   function badge(rec) {
     var vs = rec.verification.status, p = vs === "partial" || vs === "verified", st = rec.publication ? rec.publication.state : "";
@@ -49,7 +49,7 @@
     return '<p class="sc-qa-line">Recorded alternatives (not selectable): ' + esc(a.map(function (x) { return x.image_link + " (" + x.why_not_chosen + ")"; }).join(" · ")) + '</p>';
   }
   function typeLabel(o) {
-    var base = { licensed_third_party: "Openly licensed photo of this place", owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)" }[o.type] || o.type;
+    var base = { licensed_third_party: "Openly licensed photo of this place", owner_photo_destination: "Your photo of this place", owner_photo_atmospheric: "Your atmospheric photo (not this place)", generated_illustrative: "Generated artwork", linked_official: "Linked official image (unverified)", linked_third_party: "Linked third-party image (unverified)", archival_acquired: "Archival photograph (Historic photo), rights not cleared" }[o.type] || o.type;
     return (o.image_kind === "promo-art" ? base + " · promotional artwork" : base) + (o.proposal ? " · PROPOSED, not adopted" + (o.proposal.recommended ? " (recommended)" : "") : "") + (o.parked ? " · PARKED, not used by the launch record" : "");
   }
   // Rights and provenance for one option. Recorded risk acceptance is shown as exactly that, never as usage rights.
