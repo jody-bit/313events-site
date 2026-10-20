@@ -17,6 +17,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
+  "api/_lib/source-health.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
