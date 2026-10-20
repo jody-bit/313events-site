@@ -266,7 +266,9 @@ function formatTimeDisplay(eventDate, startTime, endTime) {
     };
     if (endTime) {
       const end = new Date(`${eventDate}T${endTime}`);
-      if (!isNaN(end.getTime()) && end.getTime() !== start.getTime()) {
+      // An end of exactly 23:59 is an end-of-day filler (same rule as #250/#257), not a stated end time.
+      const placeholderEnd = end.getHours() === 23 && end.getMinutes() === 59;
+      if (!isNaN(end.getTime()) && end.getTime() !== start.getTime() && !placeholderEnd) {
         return `${fmt(start)} – ${fmt(end)}`;
       }
     }
