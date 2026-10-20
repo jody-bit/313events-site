@@ -498,7 +498,11 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
     let timeDisplay = null;
     if (start.hour !== null) {
       const startStr = formatIcsTime(start.hour, start.minute);
-      const endStr = (end && end.hour !== null && end.date === start.date) ? formatIcsTime(end.hour, end.minute) : null;
+      // A same-day DTEND of exactly 23:59 is the feeds' end-of-day filler (Richmond, Redford, Madison Heights, Macomb Twp,
+      // Garden City: "12:00 PM – 11:59 PM"), not a published end. Keep the start only; the calendar export then uses its
+      // 2-hour default. Any other end time is kept as given. Same narrow rule as cron-visitdetroit.js.
+      const placeholderEnd = !!end && end.hour === 23 && end.minute === 59;
+      const endStr = (end && end.hour !== null && end.date === start.date && !placeholderEnd) ? formatIcsTime(end.hour, end.minute) : null;
       timeDisplay = endStr ? `${startStr} – ${endStr}` : startStr;
     }
 
