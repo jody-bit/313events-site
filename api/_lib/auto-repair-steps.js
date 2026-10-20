@@ -113,7 +113,7 @@ function assembleResponse(run) {
     n("redfordMetadata", "fieldsWritten") + n("genericEnrichment", "fieldsWritten") +
     n("visitDetroitDeadLinks", "fieldsWritten") + n("venueRawReparse", "written");
   const vd = val("visitDetroitDeadLinks");
-  const stepsOut = run.results.map(({ key, label, status, startedAt, ms, error, partial }) => ({ key, label, status, startedAt, ms, error, partial: !!partial }));
+  const stepsOut = run.results.map(({ key, label, status, startedAt, ms, error, partial, writesSent, writesInFlight }) => ({ key, label, status, startedAt, ms, error, partial: !!partial, writesSent: writesSent || 0, writesInFlight: writesInFlight || 0 }));
   const response = {
     ok: true,
     ...(venueCounts || {}),

@@ -204,6 +204,28 @@ const tiny = (ms = 150) => Object.fromEntries(Object.keys(AUTO_REPAIR_TIMEOUTS).
   }
   console.log("PASS G: no writes after timeout, no step retries, Step 6 stops and defers instead of miscounting");
 
+  // --- in-flight write at timeout is reported, never silently undercounted ---
+  {
+    global.fetch = (url, init = {}) => new Promise((_, rej) => init.signal && init.signal.addEventListener("abort", () => rej(init.signal.reason), { once: true }));
+    const loaders = fastLoaders({ dossinMetadata: () => async () => { await fetch("https://db.example/patch", { method: "PATCH" }); return { written: 1, writtenIds: ["x"] }; } });
+    const r = await runAutoRepair({ ...creds, loaders, timeouts: tiny(80) });
+    const st = r.steps.find((x) => x.key === "dossinMetadata");
+    assert.strictEqual(st.status, STATUS.TIMED_OUT);
+    assert.strictEqual(st.writesInFlight, 1);
+    assert.strictEqual(st.writesSent, 1);
+    assert.ok(/1 write\(s\) were in flight and may have landed/.test(r.dossinMetadataError));
+  }
+  console.log("PASS: a write on the wire at timeout is reported as in-flight / unknown");
+
+  // --- runtime margin declared in repo config; no Node 20.3-only API ---
+  {
+    const v = JSON.parse(require("fs").readFileSync(`${REPO_DIR}/vercel.json`, "utf8"));
+    const md = v.functions["api/admin-events.js"].maxDuration;
+    assert.ok(md >= AUTO_REPAIR_BUDGET_MS / 1000 + 30, "admin-events maxDuration leaves 30 s over the budget");
+    assert.ok(!/AbortSignal\.any/.test(require("fs").readFileSync(`${REPO_DIR}/api/_lib/step-runner.js`, "utf8").replace(/\/\/.*$/gm, "")), "no AbortSignal.any dependency");
+  }
+  console.log("PASS: admin-events maxDuration declared (>= budget + 30 s), no Node-20.3-only API");
+
   // --- E. feeds poller respects its budget ---
   {
     process.env.SUPABASE_URL = creds.SUPABASE_URL;

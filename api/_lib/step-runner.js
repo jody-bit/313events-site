@@ -19,6 +19,16 @@ const { AsyncLocalStorage } = require("node:async_hooks");
 const als = new AsyncLocalStorage();
 const GUARD = Symbol.for("313events.stepRunner.fetchGuard");
 
+// AbortSignal.any needs Node 20.3+; no engines are pinned in this repo, so combine by hand.
+function anySignal(signals) {
+  const c = new AbortController();
+  for (const sig of signals) {
+    if (sig.aborted) { c.abort(sig.reason); break; }
+    sig.addEventListener("abort", () => c.abort(sig.reason), { once: true });
+  }
+  return c.signal;
+}
+
 function installFetchGuard() {
   if (typeof globalThis.fetch !== "function" || globalThis.fetch[GUARD]) return;
   const original = globalThis.fetch;
@@ -29,7 +39,16 @@ function installFetchGuard() {
     const signals = [ctx.signal];
     if (ctx.requestTimeoutMs) signals.push(AbortSignal.timeout(ctx.requestTimeoutMs));
     if (init && init.signal) signals.push(init.signal);
-    return original(input, { ...(init || {}), signal: AbortSignal.any(signals) });
+    const p = original(input, { ...(init || {}), signal: anySignal(signals) });
+    const method = String((init && init.method) || (input && input.method) || "GET").toUpperCase();
+    if (method !== "GET" && method !== "HEAD") {
+      // Track writes so a timeout can say how many were on the wire (they may still land).
+      ctx.stats.writesSent++;
+      ctx.stats.writesInFlight++;
+      const done = () => { ctx.stats.writesInFlight--; };
+      p.then(done, done);
+    }
+    return p;
   };
   guarded[GUARD] = true;
   globalThis.fetch = guarded;
@@ -67,14 +86,16 @@ async function runSteps(steps, { budgetMs, now = Date.now, minRemainingMs = 5000
     const controller = new AbortController();
     const started = now();
     const entry = { ...base, startedAt: new Date(started).toISOString() };
+    const stats = { writesSent: 0, writesInFlight: 0, inFlightAtTimeout: 0 };
     let timer;
     const timeout = new Promise((resolve) => {
       timer = setTimeout(() => {
+        stats.inFlightAtTimeout = stats.writesInFlight; // snapshot before the abort settles them
         controller.abort(new Error(`step "${step.key}" timed out after ${Math.round(limit)} ms`));
         resolve({ timedOut: true });
       }, limit);
     });
-    const ctx = { signal: controller.signal, requestTimeoutMs: step.requestTimeoutMs || null };
+    const ctx = { signal: controller.signal, requestTimeoutMs: step.requestTimeoutMs || null, stats };
     const work = als
       .run(ctx, () =>
         step.run({
@@ -87,9 +108,15 @@ async function runSteps(steps, { budgetMs, now = Date.now, minRemainingMs = 5000
     const outcome = await Promise.race([work, timeout]);
     clearTimeout(timer);
     entry.ms = now() - started;
+    entry.writesSent = stats.writesSent;
+    entry.writesInFlight = outcome.timedOut ? stats.inFlightAtTimeout || 0 : 0;
     if (outcome.timedOut) {
       entry.status = STATUS.TIMED_OUT;
       entry.error = `Timed out after ${Math.round(limit)} ms`;
+      if (stats.inFlightAtTimeout > 0) {
+        // A write already on the wire when the step was aborted can still land and is not in any count.
+        entry.error += `; ${stats.inFlightAtTimeout} write(s) were in flight and may have landed (counts for this step are unknown)`;
+      }
       work.catch(() => {}); // late settlement is ignored; the aborted signal blocks further requests
     } else if (outcome.error) {
       entry.status = STATUS.FAILED;

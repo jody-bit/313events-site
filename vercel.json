@@ -111,6 +111,9 @@
     }
   ],
   "functions": {
+    "api/admin-events.js": {
+      "maxDuration": 300
+    },
     "api/event-meta.js": {
       "includeFiles": "event-template.html"
     },
