@@ -4154,6 +4154,10 @@
   .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;}
   .evt-link:hover{color:var(--accent);}
   .evt-link::after{content:'→';}
+  /* ~44px tap areas for the card-row controls; invisible, no layout or visual change. */
+  .evt-link, .evt-cal a, .evt-share{position:relative;}
+  .evt-link::before, .evt-share::after{content:"";position:absolute;inset:-16.5px -6px;}
+  .evt-cal a::after{content:"";position:absolute;inset:-16.5px 0;}
   .evt-editorial-mention{
     display:inline-flex;align-items:baseline;gap:7px;margin:5px 0 0;padding:0;
     background:none;border:none;text-decoration:none;max-width:100%;
