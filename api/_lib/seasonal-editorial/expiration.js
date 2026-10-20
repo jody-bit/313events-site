@@ -39,7 +39,7 @@ function validDisposition(d) {
 // slugs -> entries (the shape of entries.json). today: YYYY-MM-DD. Returns { today, items, counts, failures }.
 function expirationReport(byCollection, today) {
   if (!validDate(today)) throw new Error("expirationReport needs today as YYYY-MM-DD");
-  const items = [], counts = { published: 0, SEASON_ENDED: 0, REVIEW_DUE: 0, INSUFFICIENT_EVIDENCE: 0, dispositionMissing: 0 };
+  const items = [], counts = { published: 0, SEASON_ENDED: 0, REVIEW_DUE: 0, INSUFFICIENT_EVIDENCE: 0, dispositionMissing: 0, unpublishNotApplied: 0 };
   for (const slug of Object.keys(byCollection || {})) {
     for (const e of byCollection[slug] || []) {
       if (!e || e.status !== "PUBLISHED") continue; // only what is publicly shown can be stale
@@ -57,17 +57,22 @@ function expirationReport(byCollection, today) {
       }
       const needsDisposition = states.includes("SEASON_ENDED") && !validDisposition(e.expiryDisposition);
       if (needsDisposition) counts.dispositionMissing++;
-      if (states.length) items.push({ collection: slug, id: e.id, name: e.name, states, seasonEnd: end, reviewOn: validDate(e.reviewOn) ? e.reviewOn : null, expiryDisposition: e.expiryDisposition || null, needsDisposition, reasons });
+      // A decision to unpublish must land in the SAME change as the status change: an ended entry that records
+      // `unpublish` but is still PUBLISHED is an inconsistent state and fails the build.
+      const unpublishNotApplied = states.includes("SEASON_ENDED") && validDisposition(e.expiryDisposition) && e.expiryDisposition.action === "unpublish";
+      if (unpublishNotApplied) counts.unpublishNotApplied++;
+      if (states.length) items.push({ collection: slug, id: e.id, name: e.name, states, seasonEnd: end, reviewOn: validDate(e.reviewOn) ? e.reviewOn : null, expiryDisposition: e.expiryDisposition || null, needsDisposition, unpublishNotApplied, reasons });
     }
   }
-  const failures = items.filter((i) => i.needsDisposition).map((i) => i.collection + "/" + i.id + " ended " + i.seasonEnd + " but is still PUBLISHED with no valid disposition");
+  const failures = items.filter((i) => i.needsDisposition).map((i) => i.collection + "/" + i.id + " ended " + i.seasonEnd + " but is still PUBLISHED with no valid disposition")
+    .concat(items.filter((i) => i.unpublishNotApplied).map((i) => i.collection + "/" + i.id + " ended " + i.seasonEnd + " has expiryDisposition unpublish but is still PUBLISHED (the status change must land in the same PR)"));
   return { today, items, counts, failures };
 }
 
 function formatReport(r, opts) {
   const verbose = !!(opts && opts.verbose), L = [];
   L.push("Seasonal expiration report (report-only; nothing is hidden or unpublished) — today " + r.today + " America/Detroit");
-  L.push("published " + r.counts.published + " | SEASON_ENDED " + r.counts.SEASON_ENDED + " | REVIEW_DUE " + r.counts.REVIEW_DUE + " | INSUFFICIENT_EVIDENCE " + r.counts.INSUFFICIENT_EVIDENCE + " | ended without disposition " + r.counts.dispositionMissing);
+  L.push("published " + r.counts.published + " | SEASON_ENDED " + r.counts.SEASON_ENDED + " | REVIEW_DUE " + r.counts.REVIEW_DUE + " | INSUFFICIENT_EVIDENCE " + r.counts.INSUFFICIENT_EVIDENCE + " | ended without disposition " + r.counts.dispositionMissing + " | unpublish decided but still published " + r.counts.unpublishNotApplied);
   for (const st of ["SEASON_ENDED", "REVIEW_DUE"]) {
     const rows = r.items.filter((i) => i.states.includes(st));
     if (!rows.length) continue;

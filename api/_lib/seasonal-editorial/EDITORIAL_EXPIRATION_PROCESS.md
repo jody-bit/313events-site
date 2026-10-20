@@ -15,7 +15,7 @@ Nothing expires on its own. Collection pages are a static list generated from `e
 Operating dates are not opening hours: do not derive one from the other.
 
 ## The one failure
-A SEASON_ENDED entry that is still PUBLISHED and has no valid `expiryDisposition` fails `node scripts/build-seasonal.js` (and `--check`). Missing or uncertain dates never fail.
+A SEASON_ENDED entry that is still PUBLISHED and has no valid `expiryDisposition` fails `node scripts/build-seasonal.js` (and `--check`). Missing or uncertain dates never fail. The build also fails for a SEASON_ENDED entry whose `expiryDisposition.action` is `unpublish` but that is still PUBLISHED, so an unpublish decision and its status change must land in the same PR.
 
 ## Steps for Editorial
 1. Before an attraction's expected end, read the official source; record `season.end` + `season.endSource` (or `reviewOn` if the final date is not yet stated).
