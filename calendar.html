@@ -50,7 +50,7 @@
     --panel-hover:#272727;
     --ink:#F2F0E8;         /* warm white — primary text */
     --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
-    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
+    --ink-dim:#8a8b85;     /* dim concrete — otherMonth / disabled text */
     --line:#2c2c2c;
     --line-soft:#212121;
     --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
@@ -326,7 +326,7 @@
      dims slightly as a temporal cue. Events, pills, and counts stay at full
      opacity so nothing reads as "disabled". Doesn't apply to .today, which
      has its own treatment, or otherMonth cells (already dimmed via panel-alt). */
-  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.55;}
+  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.75;}
   .today-label{
     font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.05em;
     color:var(--accent);text-transform:uppercase;
@@ -370,7 +370,7 @@
      file's comment for the full reasoning. */
   .evt-main-body{display:flex;gap:10px;align-items:flex-start;min-width:0;}
   .evt-thumb{flex:0 0 auto;width:52px;height:52px;object-fit:cover;border-radius:var(--radius);background:var(--panel-alt);}
-  .evt-text{min-width:0;flex:1 1 auto;}
+  .evt-text{min-width:0;flex:1 1 auto;overflow-wrap:anywhere;}
   .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
   /* 2026-08-28: same title-link + description-excerpt treatment added to
      index.html — see that file's comments for the full reasoning. */
@@ -545,7 +545,13 @@
   footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
 
   @media (max-width:720px){
-    .day-cell{min-height:78px;}
+    .day-cell{min-height:78px;padding:5px 3px 6px;}
+    /* Seven columns at phone width leave a cell about 47px of text room. "N EVENTS" and "TODAY" beside the day number
+       were cut off by the cell's overflow:hidden, so the day number and label stack and the count drops its unit word
+       (the cell's aria-label still says "N events"; the dot + number is the whole visual count). */
+    .daynum{flex-wrap:wrap;gap:0 4px;}
+    .today-label{white-space:nowrap;font-size:8px;letter-spacing:0;}
+    .day-count .dc-word{display:none;}
     .pill{display:none;}
     .more-link{display:none;} /* redundant once .day-count shows the total */
     #monthLabel{min-width:0;}
@@ -610,10 +616,17 @@
   }
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
 
+  @media (max-width:360px){
+    .mobile-triggers .mobile-trigger{padding-left:4px;padding-right:4px;}
+    .mobile-triggers .mobile-trigger .mt-sub{font-size:11.5px;}
+    .today-label{font-size:7.5px;}
+    .mobile-triggers .mobile-trigger .mt-sub::after{content:none;} /* the caret cost the room "Everywhere" needs at 320px */
+  }
   @media (max-width:720px){
     .discovery-shell{padding:10px 10px 0;background:none;border:none;}
-    .mobile-trigger{align-items:center;text-align:center;}
+    .mobile-trigger{align-items:center;text-align:center;padding:9px 6px;} /* 12px side padding cut "Everywhere" to "Everywh…" at 375px */
     .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
+    .mobile-trigger .mt-sub{font-size:12px;}
 
     .sheet-backdrop{
       /* z-index 900+ (not the old 39/40) — Leaflet's own panes go up to
@@ -1745,7 +1758,7 @@ function renderMonth(){
     if(events.length){
       const count = document.createElement('div');
       count.className = 'day-count';
-      count.innerHTML = `<span class="dot"></span>${events.length} EVENT${events.length===1?'':'S'}`;
+      count.innerHTML = `<span class="dot"></span><span>${events.length}<span class="dc-word"> EVENT${events.length===1?'':'S'}</span></span>`;
       cell.appendChild(count);
     }
 
@@ -2939,7 +2952,7 @@ function mapSupabaseRow(row) {
     canonicalLat: vd.lat,
     canonicalLng: vd.lng,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
     ticketUrl: row.ticket_url || undefined,
