@@ -17,6 +17,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Schedule-evidence Stage 1 support (owner approval 2026-10-18 14:58Z): pure robots.txt parser and read-only polite fetcher; no callers, no writes.
+  "api/_lib/robots.js", "api/_lib/evidence-fetch.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
