@@ -1925,6 +1925,14 @@
      "checkedAt": "2026-10-19",
      "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
      "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Fall 2026 hours Sun-Thu 10-8, Fri-Sat 10-10; closed Nov 2-5 and Nov 9-26; Country Christmas 2026 Nov 27-Dec 20; Cider Donut Hut linked. Headline bonus weekend \"November 4-6\" still conflicts with Nov 6-8."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.threecedarsfarm.org/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: second-source read through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Official page read 2026-10-19: headline 'bonus weekend November 4-6' conflicts with hours section 'Bonus Weekend: Nov 6-8'. Nov 4-6, 2026 is Wed-Fri and overlaps the page's own 'Closed November 2-5'; Nov 6-8 is Fri-Sun and fits the closures. Working date Nov 6-8 on the basis of the official page's internal consistency only; not confirmed with the farm (no call made)."
     }
    ],
    "website": "https://www.threecedarsfarm.org/",
@@ -2104,6 +2112,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1215 White Lake Rd, Highland Township, MI 48356. Season/hours as stated: opening day Fri Sept 25, 2026; Fri/Sat evenings; Sat/Sun 10am-6pm. Flags: weekend-only."
+    },
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": "https://www.michigan.org/event/bonadeo-farms",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: second-source read through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Second source read 2026-10-19 (state tourism listing (Pure Michigan)): Saturdays and Sundays 10AM-6PM; haunted house Fri/Sat evenings dusk-11PM; dates Oct 19-31, 2026 (as returned by fetch summary) Source: https://www.michigan.org/event/bonadeo-farms. As returned by fetch summary; Fetch summary states year 2026 and dates listed from Sept 25 onward; consistent with official Sept 25, 2026 opening and weekend hours. Summary noted a 2:40pm time-field oddity; confirm hours via farm."
     }
    ],
    "website": "https://bonadeofarms.com/",
@@ -4342,6 +4358,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 6175 Daly Rd., Dexter, MI 48130. Flags: 2026 dates and hours not on page read; prices not shown; blastcornmaze.com had a self-signed certificate error and was not read."
+    },
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": "https://annarborobserver.com/event/blast-corn-maze-nixon-farms/2026-10-09/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: second-source read through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Second source read 2026-10-19 (local media event listing (near-official)): Every Fri.-Sun., Sept. 19-Nov. 1. 11 a.m.-9 p.m. (Sat.), 11 a.m.-7 p.m. (Sun.), & 5-9 p.m. (Fri.) (as returned by fetch summary) Source: https://annarborobserver.com/event/blast-corn-maze-nixon-farms/2026-10-09/. As returned by fetch summary; URL path is the 2026-10-09 occurrence and summary says Oct 9, 2026 is a Friday 5-9pm, consistent with the listed pattern (Sept 19, 2026 is a Saturday). Third-party calendar, not organizer."
     }
    ],
    "website": "https://www.nixonfarmsdexter.com",
@@ -7020,6 +7044,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official site lists three weekends of October dates, 7-11 PM, but does not print the year; the venue's 'The Howling Haunted Trail 2026' ticketing page (hauntpay) and Pure Michigan event listing both show the 2026 season. https://www.thehowlinghauntedtrail.com/ read 2026-10-12; https://app.hauntpay.com/events/the-howling-haunted-trail-2026 read 2026-10-12. Dates as stated: October 9 & 10, October 16 & 17, October 23 & 24, 7-11 PM each night (as listed on official site; year 2026 per ticketing page and Pure Michigan listing)"
+    },
+    {
+     "level": "inventory+search",
+     "websiteChecked": false,
+     "url": "https://app.hauntpay.com/events/the-howling-haunted-trail-2026",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: second-source read through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Second source read 2026-10-19 (organizer ticketing page (hauntpay)): Friday, October 23, 2026, at 7:00 PM EDT (as returned by fetch summary) Source: https://app.hauntpay.com/events/the-howling-haunted-trail-2026. As returned by fetch summary; Confirms year 2026 and one night (Oct 23); page says six nights total but other dates not listed in summary. Same ticketing page already cited in first pass. michigan.org listing fetch failed."
     }
    ],
    "relevance": {

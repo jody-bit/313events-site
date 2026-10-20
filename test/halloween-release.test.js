@@ -171,11 +171,13 @@ assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds
 // diehls-orchard-and-cider-mill gains one appended `evidence` entry (private); no other field of the 76 changes. Pin before: 23757ef9...
 // Re-pinned again 2026-10-19 (second commit): the 2026-10-19 revalidation stamp is appended as one private `evidence` entry to each confirmed
 // record (REVALIDATION-RESULTS-2026-10-19.csv, 79 rows); for the 76, only `evidence` arrays grow. Pin before: eb089628...
+// Re-pinned a third time 2026-10-19 (second-source evidence notes, EVIDENCE-ONLY-SECOND-SOURCE-CHANGE-2026-10-19.json): three of the 76
+// (bonadeo-farms, nixon-farms-blast-corn-maze, three-cedars-farm) gain one appended private `evidence` entry each; no other field changes. Pin before: ad4bf492...
 {
   const set = AUTHZ.batch76(ED), recs = [];
   for (const s of ["fall", "fall-color"]) for (const e of all[s]) if (set.has(s + "/" + e.id)) recs.push(s + "/" + e.id + JSON.stringify(e));
   recs.sort();
   assert.strictEqual(recs.length, 76);
-  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "ad4bf492016ee49702c33996e22cfd52cb65d04eff9001d4065e056d9747b2d0", "the 76 approved Fall / Fall Colors records are unchanged");
+  assert.strictEqual(crypto.createHash("sha256").update(recs.join("\n")).digest("hex"), "481168b95d081353586e2949208b30b0947128956753f789c0b6e20415a2348d", "the 76 approved Fall / Fall Colors records are unchanged");
 }
 console.log("halloween-release: ok");
