@@ -7802,7 +7802,7 @@ function mapSupabaseRow(row) {
     // below fills locEventAddress / locVenue* in after the first render.
     locEventCity: row.venue_city ? decodeEntities(row.venue_city) : undefined,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     // See migration_034_clothing_optional.sql — a distinct content-nature
     // flag from any age restriction (which stays free-text in note/
