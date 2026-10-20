@@ -17,6 +17,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Seasonal expiration safeguard, report-first (owner decision 2026-10-20).
+  "api/_lib/seasonal-editorial/expiration.js", "api/_lib/seasonal-editorial/EDITORIAL_EXPIRATION_PROCESS.md",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
