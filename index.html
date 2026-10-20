@@ -4158,6 +4158,15 @@
   .evt-link, .evt-cal a, .evt-share{position:relative;}
   .evt-link::before, .evt-share::after{content:"";position:absolute;inset:-16.5px -6px;}
   .evt-cal a::after{content:"";position:absolute;inset:-16.5px 0;}
+  /* Phones (480px and under): action lines are only ~18px apart, so invisible areas would overlap and
+     hijack taps. Give each control a real 44px-tall box instead and drop the invisible areas. */
+  @media (max-width:480px){
+    .evt-actions{row-gap:0;}
+    .evt-link, .evt-cal a, .evt-share{display:inline-flex;align-items:center;min-height:44px;}
+    .evt-share{min-width:44px;}
+    .evt-cal a + a::before{content:'·';margin-right:.6ch;}
+    .evt-link::before, .evt-share::after, .evt-cal a::after{content:none;}
+  }
   .evt-editorial-mention{
     display:inline-flex;align-items:baseline;gap:7px;margin:5px 0 0;padding:0;
     background:none;border:none;text-decoration:none;max-width:100%;

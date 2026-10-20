@@ -346,6 +346,7 @@
   .evt-link::after{content:'→';}
   .evt-link{position:relative;}
   .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
+  @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{

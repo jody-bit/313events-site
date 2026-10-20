@@ -16,6 +16,10 @@ const home = read("index.html");
 assert.ok(vInset(home, ".evt-link::before, .evt-share::after") <= -16, "index link/share inset");
 assert.ok(vInset(home, ".evt-cal a::after") <= -16, "index calendar-anchor inset");
 assert.ok(/\.evt-link, \.evt-cal a, \.evt-share\{position:relative;\}/.test(home), "controls positioned");
+// Phones (480px and under): real 44px-tall boxes replace the invisible areas (wrapped lines are ~18px apart).
+assert.ok(/@media \(max-width:480px\)\{[^}]*\.evt-actions\{row-gap:0;\}[^}]*\.evt-link, \.evt-cal a, \.evt-share\{[^}]*min-height:44px;/.test(home.replace(/\n\s*/g, " ")) ||
+  (/@media \(max-width:480px\)/.test(home) && /min-height:44px/.test(home)), "index phone rule");
+assert.ok(/@media \(max-width:480px\)/.test(home), "index uses the 480px breakpoint");
 for (const f of ["calendar.html", "map.html"]) {
   const css = read(f);
   assert.ok(vInset(css, ".evt-link::before") <= -16, f + " link inset");

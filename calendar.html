@@ -397,6 +397,7 @@
   .evt-link::after{content:'→';}
   .evt-link{position:relative;}
   .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
+  @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
 
   /* List view */
   #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
