@@ -21,9 +21,21 @@ assert.strictEqual(one(r, "a").needsDisposition, true);
 r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" } })], "2026-10-31");
 assert.strictEqual(one(r, "a"), undefined, "on the last day nothing is reported");
 // valid dispositions clear the failure but the state is still reported
-for (const action of ["unpublish", "keep-published"]) {
-  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: Object.assign({}, DISP, { action }) })], "2026-11-02");
-  assert.deepStrictEqual(one(r, "a").states, ["SEASON_ENDED"]); assert.strictEqual(r.failures.length, 0, action);
+{
+  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: Object.assign({}, DISP, { action: "keep-published" }) })], "2026-11-02");
+  assert.deepStrictEqual(one(r, "a").states, ["SEASON_ENDED"]); assert.strictEqual(r.failures.length, 0, "keep-published");
+  // an `unpublish` decision on an entry that is STILL PUBLISHED fails: the status change must land in the same PR
+  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: Object.assign({}, DISP, { action: "unpublish" }) })], "2026-11-02");
+  assert.deepStrictEqual(one(r, "a").states, ["SEASON_ENDED"]);
+  assert.strictEqual(r.failures.length, 1);
+  assert.ok(/unpublish but is still PUBLISHED/.test(r.failures[0]));
+  assert.strictEqual(r.counts.unpublishNotApplied, 1);
+  // once the status change lands (no longer PUBLISHED) the entry is not reported and nothing fails
+  r = rep([Object.assign(pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: Object.assign({}, DISP, { action: "unpublish" }) }), { status: "HOLD_UNVERIFIED" })], "2026-11-02");
+  assert.strictEqual(r.failures.length, 0); assert.strictEqual(one(r, "a"), undefined);
+  // not yet ended: an unpublish decision recorded early does not fail
+  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: Object.assign({}, DISP, { action: "unpublish" }) })], "2026-10-30");
+  assert.strictEqual(r.failures.length, 0);
 }
 // invalid dispositions do not count
 for (const bad of [{}, { action: "hide", by: "e", at: "2026-11-01", note: "n" }, { action: "unpublish", by: "", at: "2026-11-01", note: "n" }, { action: "unpublish", by: "e", at: "11/1", note: "n" }, { action: "unpublish", by: "e", at: "2026-11-01", note: " " }]) {
