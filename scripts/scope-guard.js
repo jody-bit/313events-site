@@ -17,6 +17,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Single-source cron reliability (cron-oldmiami, cron-redford-theatre, cron-eventbrite): per-request timeout and run budget helper.
+  "api/_lib/run-budget.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
