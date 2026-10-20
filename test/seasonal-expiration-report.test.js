@@ -22,12 +22,12 @@ r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" } })], "2026
 assert.strictEqual(one(r, "a"), undefined, "on the last day nothing is reported");
 // valid dispositions clear the failure but the state is still reported
 for (const action of ["unpublish", "keep-published"]) {
-  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, disposition: Object.assign({}, DISP, { action }) })], "2026-11-02");
+  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: Object.assign({}, DISP, { action }) })], "2026-11-02");
   assert.deepStrictEqual(one(r, "a").states, ["SEASON_ENDED"]); assert.strictEqual(r.failures.length, 0, action);
 }
 // invalid dispositions do not count
 for (const bad of [{}, { action: "hide", by: "e", at: "2026-11-01", note: "n" }, { action: "unpublish", by: "", at: "2026-11-01", note: "n" }, { action: "unpublish", by: "e", at: "11/1", note: "n" }, { action: "unpublish", by: "e", at: "2026-11-01", note: " " }]) {
-  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, disposition: bad })], "2026-11-02");
+  r = rep([pub({ id: "a", season: { end: "2026-10-31", endSource: "s" }, expiryDisposition: bad })], "2026-11-02");
   assert.strictEqual(r.failures.length, 1, JSON.stringify(bad));
 }
 // missing final operating dates: informational only, never a failure
@@ -41,7 +41,7 @@ assert.ok(!one(r, "f").states.includes("REVIEW_DUE"), "future review is not due"
 assert.ok(one(r, "p").states.includes("REVIEW_DUE") && one(r, "t").states.includes("REVIEW_DUE"), "past and same-day reviews are due");
 assert.strictEqual(r.failures.length, 0, "review due never fails");
 // states are separate and can combine
-r = rep([pub({ id: "c", season: { end: "2026-10-31", endSource: "s" }, reviewOn: "2026-10-30", disposition: DISP })], "2026-11-01");
+r = rep([pub({ id: "c", season: { end: "2026-10-31", endSource: "s" }, reviewOn: "2026-10-30", expiryDisposition: DISP })], "2026-11-01");
 assert.deepStrictEqual(one(r, "c").states, ["SEASON_ENDED", "REVIEW_DUE"]);
 // unpublished entries are out of scope
 assert.strictEqual(rep([{ id: "h", status: "HOLD_UNVERIFIED", season: { end: "2020-01-01", endSource: "s" } }], "2026-11-01").items.length, 0);
@@ -79,15 +79,25 @@ assert.strictEqual(X.expirationReport(withEnd, "2026-11-08").failures.length, 1,
 const before = ED.publishedProjection();
 const counts = (p) => Object.fromEntries(Object.keys(p).map((k) => [k, p[k].length]));
 const e0 = ED.entries();
-for (const slug of Object.keys(e0)) for (const e of e0[slug]) if (e.status === "PUBLISHED") { e.season = { end: "2020-01-01", endSource: "test" }; e.reviewOn = "2020-01-01"; e.disposition = DISP; }
+for (const slug of Object.keys(e0)) for (const e of e0[slug]) if (e.status === "PUBLISHED") { e.season = { end: "2020-01-01", endSource: "test" }; e.reviewOn = "2020-01-01"; e.expiryDisposition = DISP; }
 const fs = require("fs");
 for (const slug of Object.keys(e0)) {
   const projected = e0[slug].filter(ED.COLLECTIONS.isPublic).map(ED.publicEntry);
   assert.deepStrictEqual(projected, before[slug], slug + ": identical public projection with the new private fields set (ended entries still shown, nothing leaked)");
 }
 assert.deepStrictEqual(counts(before), { fall: 38, halloween: 25, "fall-color": 41 }, "published counts unchanged (38/25/41 on main)");
-assert.ok(!/"(season|reviewOn|disposition|schedule)":/.test(fs.readFileSync(path.join(__dirname, "..", "seasonal/published-entries.js"), "utf8")), "private fields absent from the generated public file");
+assert.ok(!/"(season|reviewOn|expiryDisposition|schedule)":/.test(fs.readFileSync(path.join(__dirname, "..", "seasonal/published-entries.js"), "utf8")), "private fields absent from the generated public file");
 // the committed data carries no season.end yet, so today the report changes nothing
 const nowReport = X.expirationReport(real, "2026-11-08");
 assert.strictEqual(nowReport.counts.SEASON_ENDED, 0); assert.strictEqual(nowReport.counts.published, 104);
 console.log("seasonal-expiration-report: all assertions passed");
+
+// The Halloween release tooling treats `disposition` on an entry as its EXCLUSION marker (closed / duplicate). The expiry
+// safeguard must never reuse that key: its decision field is `expiryDisposition`.
+{
+  const src = fs.readFileSync(path.join(__dirname, "..", "api/_lib/seasonal-editorial/expiration.js"), "utf8");
+  assert.ok(!/[.\s]disposition\b\s*[;,)=\]]/.test(src.replace(/\/\/.*$/gm, "").replace(/"[^"\n]*"/g, '""')), "expiration.js must not read an entry's `disposition` key");
+  const e = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "api/_lib/seasonal-editorial/entries.json"), "utf8"));
+  for (const slug of Object.keys(e)) for (const x of e[slug]) if (x.expiryDisposition) assert.strictEqual(x.disposition, undefined, "an expiryDisposition must not come with an exclusion marker");
+}
+console.log("PASS: expiry decision key does not collide with the Halloween exclusion marker");

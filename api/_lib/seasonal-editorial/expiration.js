@@ -8,7 +8,7 @@
 //                     from a generic date range, an incomplete schedule, or a private schedule whose provenance is secondary.
 //   season.endSource  where the final date was read (evidence reference). A season.end without it counts as unverified.
 //   reviewOn          YYYY-MM-DD when editorial verification must occur.
-//   disposition       { action: "unpublish" | "keep-published", by, at: YYYY-MM-DD, note } — the explicit editorial decision for
+//   expiryDisposition { action: "unpublish" | "keep-published", by, at: YYYY-MM-DD, note } — the explicit editorial decision for
 //                     a verified-ended entry that is still published.
 //
 // Report states (separate, an entry can carry more than one):
@@ -55,9 +55,9 @@ function expirationReport(byCollection, today) {
         else if (e.schedule && e.schedule.season && e.schedule.season.end) reasons.push("private schedule has an end date (" + e.schedule.season.end + ") but it is not recorded as a verified season.end");
         else reasons.push("no verified final operating date recorded");
       }
-      const needsDisposition = states.includes("SEASON_ENDED") && !validDisposition(e.disposition);
+      const needsDisposition = states.includes("SEASON_ENDED") && !validDisposition(e.expiryDisposition);
       if (needsDisposition) counts.dispositionMissing++;
-      if (states.length) items.push({ collection: slug, id: e.id, name: e.name, states, seasonEnd: end, reviewOn: validDate(e.reviewOn) ? e.reviewOn : null, disposition: e.disposition || null, needsDisposition, reasons });
+      if (states.length) items.push({ collection: slug, id: e.id, name: e.name, states, seasonEnd: end, reviewOn: validDate(e.reviewOn) ? e.reviewOn : null, expiryDisposition: e.expiryDisposition || null, needsDisposition, reasons });
     }
   }
   const failures = items.filter((i) => i.needsDisposition).map((i) => i.collection + "/" + i.id + " ended " + i.seasonEnd + " but is still PUBLISHED with no valid disposition");
@@ -72,7 +72,7 @@ function formatReport(r, opts) {
     const rows = r.items.filter((i) => i.states.includes(st));
     if (!rows.length) continue;
     L.push("", st + " (" + rows.length + ")");
-    for (const i of rows) L.push("  " + i.collection + "/" + i.id + " — " + i.name + (st === "SEASON_ENDED" ? " — ended " + i.seasonEnd + (i.disposition ? " — disposition: " + i.disposition.action : " — NEEDS DISPOSITION") : " — review on " + i.reviewOn));
+    for (const i of rows) L.push("  " + i.collection + "/" + i.id + " — " + i.name + (st === "SEASON_ENDED" ? " — ended " + i.seasonEnd + (i.expiryDisposition ? " — disposition: " + i.expiryDisposition.action : " — NEEDS DISPOSITION") : " — review on " + i.reviewOn));
   }
   const ins = r.items.filter((i) => i.states.includes("INSUFFICIENT_EVIDENCE"));
   if (ins.length) {

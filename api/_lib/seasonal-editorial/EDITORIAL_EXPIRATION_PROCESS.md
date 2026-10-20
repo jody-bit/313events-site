@@ -5,7 +5,7 @@ Nothing expires on its own. Collection pages are a static list generated from `e
 ## Private fields on an entry in `entries.json` (optional; none is shown publicly)
 - `season.end` (YYYY-MM-DD) and `season.endSource` (where it was read). Populate ONLY when the attraction's own authoritative source states the final operating date. Never from a generic date range, an incomplete schedule, a secondary roundup, or an inaccessible source (an unreachable site is not evidence of closure). A private `schedule` is not a `season.end`.
 - `reviewOn` (YYYY-MM-DD): when editorial verification must happen.
-- `disposition`: `{ "action": "unpublish" | "keep-published", "by": "...", "at": "YYYY-MM-DD", "note": "..." }`.
+- `expiryDisposition`: `{ "action": "unpublish" | "keep-published", "by": "...", "at": "YYYY-MM-DD", "note": "..." }`.
 
 ## Report
 `node scripts/seasonal-expiration-report.js [--verbose] [--today YYYY-MM-DD]`
@@ -15,12 +15,12 @@ Nothing expires on its own. Collection pages are a static list generated from `e
 Operating dates are not opening hours: do not derive one from the other.
 
 ## The one failure
-A SEASON_ENDED entry that is still PUBLISHED and has no valid `disposition` fails `node scripts/build-seasonal.js` (and `--check`). Missing or uncertain dates never fail.
+A SEASON_ENDED entry that is still PUBLISHED and has no valid `expiryDisposition` fails `node scripts/build-seasonal.js` (and `--check`). Missing or uncertain dates never fail.
 
 ## Steps for Editorial
 1. Before an attraction's expected end, read the official source; record `season.end` + `season.endSource` (or `reviewOn` if the final date is not yet stated).
 2. After the end date the report lists it under SEASON_ENDED and the build fails until a disposition exists.
-3. Record the decision as `disposition`. `unpublish`: also prepare the status change in the same PR and send it for owner review (the PR is the proposed unpublish; nothing is executed automatically). `keep-published`: say why (for example the attraction extended its season) and update `season.end`.
+3. Record the decision as `expiryDisposition` (not `disposition`, which the Halloween release tooling already uses as its exclusion marker). `unpublish`: also prepare the status change in the same PR and send it for owner review (the PR is the proposed unpublish; nothing is executed automatically). `keep-published`: say why (for example the attraction extended its season) and update `season.end`.
 4. The change goes through R&Q exact-head validation and a separate owner merge GO. Nothing deploys without it.
 
 ## Planned reviews (proposals only, for owner review)
