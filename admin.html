@@ -1174,6 +1174,14 @@ async function autoRepairFollowup() {
       // recovery -- itself failed (e.g. the live Squarespace feed was
       // unreachable). That failure must never be silently absorbed into
       // what otherwise reads as a clean success line.
+      // #256: steps now run under a time budget. A run that did not finish
+      // every step says so and names each step that did not complete.
+      if (data.partial) {
+        const notDone = (data.steps || []).filter((st) => st.status !== 'completed')
+          .map((st) => `${st.label} (${String(st.status).replace(/_/g, ' ')})`);
+        summary += ` PARTIAL RUN — not all steps completed${notDone.length ? ': ' + notDone.join(', ') : ''}. Run Auto-Repair again to continue.`;
+        statusEl.classList.add('refresh-error');
+      }
       if (data.outerLimitsDescriptionError) {
         summary += ` Outer Limits description repair failed: ${data.outerLimitsDescriptionError}.`;
         statusEl.classList.add('refresh-error');

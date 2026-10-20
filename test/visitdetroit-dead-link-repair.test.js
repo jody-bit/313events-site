@@ -109,7 +109,8 @@ async function run() {
       { id: "evt-4", external_id: "vd-4", title: "Healthy Event", ticket_url: "https://visitdetroit.com/events/healthy-event/", link_check_status: "ok" },
     ];
     const healFn = async () => ({ checked: true, classification: "ok", repaired: false, newUrl: null });
-    const applyPatchFn = async () => { applyPatchCalled = true; return true; };
+    let stampBody = null;
+    const applyPatchFn = async (_u, _h, _id, _url, body) => { applyPatchCalled = true; stampBody = body; return true; };
     const counts = await repairVisitDetroitDeadLinks({
       SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
       fetchCandidates: async () => candidates,
@@ -117,9 +118,13 @@ async function run() {
     });
     assert.strictEqual(counts.ok, 1);
     assert.strictEqual(counts.written, 0);
-    assert.strictEqual(applyPatchCalled, false, "nothing changed -- no need to re-write the same status");
+    assert.strictEqual(counts.fieldsWritten, 0);
+    assert.deepStrictEqual(counts.writtenIds, []);
+    assert.strictEqual(counts.stamped, 1, "#256: the check time is stamped so rechecks rotate");
+    assert.strictEqual(applyPatchCalled, true);
+    assert.deepStrictEqual(stampBody && Object.keys(stampBody), ["link_checked_at"], "stamp is one column only, status/url untouched");
   }
-  console.log("PASS: an already-ok link that was already recorded as ok produces no redundant write");
+  console.log("PASS: an already-ok link recorded as ok only gets its check time stamped (not counted as a repair)");
 
   // ============================================================
   // 5. Concurrent-change safety: applyPatchFn returning false (filter no

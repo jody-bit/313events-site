@@ -50,6 +50,11 @@ async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sb
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&ticket_url=not.is.null` +
     `&select=id,external_id,title,ticket_url,link_check_status` +
+    // Deterministic, priority-first order (#256): never-checked rows first,
+    // then 'dead' (may now be repairable), then 'ok'; least recently checked
+    // first inside each group. A run that stops at its time budget therefore
+    // defers the lowest-value rechecks instead of an arbitrary subset.
+    `&order=link_check_status.asc.nullsfirst,link_checked_at.asc.nullsfirst,id.asc` +
     `&limit=1000`;
   const resp = await fetchImpl(url, { headers: sbHeaders });
   if (!resp.ok) throw new Error(`Failed to fetch VisitDetroit link-repair candidates: HTTP ${resp.status}`);
@@ -88,8 +93,13 @@ async function repairVisitDetroitDeadLinks({
   applyPatchFn = applyPatch,
   healFn = healEventUrl,
   fetchFn = fetch,
+  shouldStop = () => false,
 } = {}) {
   const counts = {
+    stoppedEarly: false,
+    stamped: 0,
+    deferred: 0,
+    checked: 0,
     totalConsidered: 0,
     ok: 0,
     repaired: 0,
@@ -128,10 +138,26 @@ async function repairVisitDetroitDeadLinks({
   const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
   counts.totalConsidered = candidates.length;
 
-  for (const event of candidates) {
+  for (let i = 0; i < candidates.length; i++) {
+    const event = candidates[i];
+    if (shouldStop()) {
+      // Budget/timeout reached: remaining candidates are deferred, not
+      // counted as checked or inconclusive, and nothing further is written.
+      counts.stoppedEarly = true;
+      counts.deferred = candidates.length - i;
+      break;
+    }
     if (!event.ticket_url || !event.ticket_url.trim()) continue; // defensive re-check
 
     const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn });
+    if (shouldStop()) {
+      // The step was aborted mid-request: the result is an abort artifact,
+      // not evidence about the link. Discard it without any write.
+      counts.stoppedEarly = true;
+      counts.deferred = candidates.length - i;
+      break;
+    }
+    counts.checked++;
 
     if (result.classification === "inconclusive") {
       counts.inconclusive++;
@@ -144,9 +170,12 @@ async function repairVisitDetroitDeadLinks({
     }
 
     let patchBody;
+    let stampOnly = false;
     if (result.classification === "ok") {
       counts.ok++;
-      if (event.link_check_status === "ok") continue; // already recorded as ok — nothing changed
+      // Status already recorded: stamp only the check time (one column) so the least-recently-checked
+      // ordering rotates through every row instead of re-checking the same oldest rows each run (#256).
+      if (event.link_check_status === "ok") stampOnly = true;
       patchBody = { link_check_status: "ok", link_checked_at: new Date().toISOString() };
     } else if (result.repaired) {
       counts.repaired++;
@@ -157,7 +186,7 @@ async function repairVisitDetroitDeadLinks({
       };
     } else {
       counts.stillDead++;
-      if (event.link_check_status === "dead") continue; // already recorded as dead — nothing changed
+      if (event.link_check_status === "dead") stampOnly = true;
       patchBody = { link_check_status: "dead", link_checked_at: new Date().toISOString() };
     }
 
@@ -166,8 +195,11 @@ async function repairVisitDetroitDeadLinks({
       continue;
     }
 
+    if (stampOnly) patchBody = { link_checked_at: patchBody.link_checked_at };
     const applied = await applyPatchFn(SUPABASE_URL, sbHeaders, event.id, event.ticket_url, patchBody, fetchFn);
-    if (applied) {
+    if (applied && stampOnly) {
+      counts.stamped++; // bookkeeping only: not a repair, not in written/fieldsWritten/writtenIds
+    } else if (applied) {
       counts.written++;
       counts.fieldsWritten += Object.keys(patchBody).length;
       counts.writtenIds.push(event.id);
