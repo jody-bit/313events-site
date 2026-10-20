@@ -162,4 +162,18 @@ function review(e) {
   return { id: e.id, name: e.name, declared: e.status, state: r.state, gate: g, outstanding, caveats, imageRoute: g.imageRoute, rightsRoute: g.rightsRoute };
 }
 
-module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, publicEntry, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };
+// Operating calendar from an entry's private `schedule`: every season date from `from` (default season start) to the season end, with the
+// weekly hours for its weekday; an explicit dark day overrides the recurring hours (open: false, hours: null). Dates are plain YYYY-MM-DD.
+function scheduleCalendar(entry, from) {
+  const sc = entry && entry.schedule;
+  if (!sc) return [];
+  const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"], dark = new Set(sc.darkDays || []), out = [];
+  const end = Date.parse(sc.season.end + "T00:00:00Z");
+  for (let t = Date.parse((from && from > sc.season.start ? from : sc.season.start) + "T00:00:00Z"); t <= end; t += 86400000) {
+    const date = new Date(t).toISOString().slice(0, 10), isDark = dark.has(date), hours = sc.weeklyHours[DAYS[new Date(t).getUTCDay()]] || null;
+    out.push({ date, open: !isDark && !!hours, hours: isDark ? null : hours, dark: isDark });
+  }
+  return out;
+}
+
+module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, publicEntry, scheduleCalendar, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };
