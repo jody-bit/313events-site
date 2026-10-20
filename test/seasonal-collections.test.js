@@ -20,7 +20,7 @@ const PRIVATE = ED.allCollections(); // every record, published or not (private 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 assert.deepStrictEqual(DATA.ORDER, ["fall", "halloween", "fall-color"]);
-assert.deepStrictEqual(DATA.STATES, ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED"]);
+assert.deepStrictEqual(DATA.STATES, ["HOLD_UNVERIFIED", "CONTENT_VERIFIED", "IMAGE_PENDING", "READY_FOR_REVIEW", "PUBLISHED", "ENDED"]);
 const routes = { fall: "/fall", halloween: "/halloween", "fall-color": "/fall-color" };
 
 // A complete record, built from a real file on disk, for gate tests only.

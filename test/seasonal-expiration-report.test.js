@@ -91,7 +91,7 @@ assert.strictEqual(X.expirationReport(withEnd, "2026-11-08").failures.length, 1,
 const before = ED.publishedProjection();
 const counts = (p) => Object.fromEntries(Object.keys(p).map((k) => [k, p[k].length]));
 const e0 = ED.entries();
-for (const slug of Object.keys(e0)) for (const e of e0[slug]) if (e.status === "PUBLISHED") { e.season = { end: "2020-01-01", endSource: "test" }; e.reviewOn = "2020-01-01"; e.expiryDisposition = DISP; }
+for (const slug of Object.keys(e0)) for (const e of e0[slug]) if (e.status === "PUBLISHED") { e.season = { end: "2020-01-01", endSource: "test" }; e.reviewOn = "2020-01-01"; e.expiryDisposition = Object.assign({}, DISP, { action: "keep-published" }); }
 const fs = require("fs");
 for (const slug of Object.keys(e0)) {
   const projected = e0[slug].filter(ED.COLLECTIONS.isPublic).map(ED.publicEntry);
@@ -102,6 +102,46 @@ assert.ok(!/"(season|reviewOn|expiryDisposition|schedule)":/.test(fs.readFileSyn
 // the committed data carries no season.end yet, so today the report changes nothing
 const nowReport = X.expirationReport(real, "2026-11-08");
 assert.strictEqual(nowReport.counts.SEASON_ENDED, 0); assert.strictEqual(nowReport.counts.published, 104);
+
+// ---- ENDED status (owner decision 2026-10-20, option A) ----
+{
+  const C = ED.COLLECTIONS, clone = (o) => JSON.parse(JSON.stringify(o));
+  const base = ED.entries().halloween.find((x) => x.status === "PUBLISHED");
+  const endedData = { season: { end: "2026-10-31", endSource: "official site (example)" }, expiryDisposition: DISP };
+  // a verified, previously publishable record with a verified end + unpublish decision derives ENDED and is never public
+  const ended = Object.assign(clone(base), endedData, { status: "ENDED" });
+  assert.strictEqual(C.readiness(ended).state, "ENDED");
+  assert.ok(!C.isPublic(ended), "ENDED is never public");
+  assert.ok(ED.publishedProjection !== undefined);
+  assert.ok(C.STATES.includes("ENDED"));
+  // it keeps its provenance, approval and evidence (publication history preserved)
+  assert.deepStrictEqual(ended.approval, base.approval); assert.deepStrictEqual(ended.evidence, base.evidence);
+  // the declared status cannot be used to bypass the gate: still declared PUBLISHED, the decision derives ENDED, so declared != derived (fails the shipped-data test) and it is not public
+  const stillPublished = Object.assign(clone(base), endedData, { status: "PUBLISHED" });
+  assert.strictEqual(C.readiness(stillPublished).state, "ENDED"); assert.ok(!C.isPublic(stillPublished));
+  // a data-quality failure is not ENDED: without verification it stays HOLD_UNVERIFIED whatever it declares
+  const failing = Object.assign(clone(base), endedData, { status: "ENDED", evidence: [] });
+  assert.strictEqual(C.readiness(failing).state, "HOLD_UNVERIFIED");
+  // an unapproved record is not ENDED (it never was published)
+  const unapproved = Object.assign(clone(base), endedData); delete unapproved.approval;
+  assert.strictEqual(C.readiness(unapproved).state, "READY_FOR_REVIEW");
+  // an unverified end date (no endSource) or a keep-published decision does not make it ENDED
+  assert.strictEqual(C.readiness(Object.assign(clone(base), { season: { end: "2026-10-31" }, expiryDisposition: DISP })).state, "PUBLISHED");
+  assert.strictEqual(C.readiness(Object.assign(clone(base), { season: endedData.season, expiryDisposition: Object.assign({}, DISP, { action: "keep-published" }) })).state, "PUBLISHED");
+  // reactivation: next season, set it back to PUBLISHED with a new verified end and a keep decision; everything else is intact
+  const reactivated = Object.assign(clone(ended), { status: "PUBLISHED", season: { end: "2027-10-31", endSource: "official site 2027" }, expiryDisposition: Object.assign({}, DISP, { action: "keep-published", note: "2027 season confirmed" }) });
+  assert.strictEqual(C.readiness(reactivated).state, "PUBLISHED"); assert.ok(C.isPublic(reactivated));
+  // the report: ENDED after the end date is clean and counted; ENDED before the end date (or without a verified end) fails
+  const r1 = X.expirationReport({ halloween: [ended] }, "2026-11-02");
+  assert.strictEqual(r1.counts.ENDED, 1); assert.strictEqual(r1.failures.length, 0); assert.strictEqual(r1.counts.published, 0);
+  assert.strictEqual(X.expirationReport({ halloween: [ended] }, "2026-10-31").failures.length, 1, "not ended yet on the last day");
+  assert.strictEqual(X.expirationReport({ halloween: [Object.assign(clone(ended), { season: { end: "2026-10-31" } })] }, "2026-11-02").failures.length, 1, "ENDED needs a verified end");
+  // the public projection does not contain an ENDED record and the shipped projection is unchanged
+  const withEndedEntry = ED.entries(); withEndedEntry.halloween = withEndedEntry.halloween.map((x) => x.id === base.id ? ended : x);
+  const proj = withEndedEntry.halloween.filter(C.isPublic).map((x) => x.id);
+  assert.ok(!proj.includes(base.id) && proj.length === before.halloween.length - 1);
+}
+console.log("PASS: ENDED status derives only from verified end + unpublish decision, is never public, keeps history, reactivates");
 console.log("seasonal-expiration-report: all assertions passed");
 
 // The Halloween release tooling treats `disposition` on an entry as its EXCLUSION marker (closed / duplicate). The expiry

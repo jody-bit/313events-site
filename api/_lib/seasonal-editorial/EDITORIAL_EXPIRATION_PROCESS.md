@@ -26,3 +26,11 @@ A SEASON_ENDED entry that is still PUBLISHED and has no valid `expiryDisposition
 ## Planned reviews (proposals only, for owner review)
 - Nov 1-2: attractions with a verified final date of Oct 31 or Nov 1.
 - Nov 8: Erebus (private schedule says through Nov 7; that is not yet a verified `season.end`). Confirm the final date and current status from an authoritative source first.
+
+## ENDED status (owner decision 2026-10-20, option A)
+`ENDED` is the declared and derived status for a verified attraction whose operating season has concluded. It is not Held/Unverified and not a data-quality failure.
+- Derived (seasonal/collections.js `readiness()`): the record passes gate items 1 to 5 (it was publishable and approved), has a verified private `season.end` with `season.endSource`, and carries `expiryDisposition {action: "unpublish", by, at, note}`. A record that fails items 1 to 3 is `HOLD_UNVERIFIED` whatever it declares, so `ENDED` cannot hide a data problem. An unverified end date or a `keep-published` decision never produces `ENDED`.
+- Never public: `isPublic()` requires derived `PUBLISHED`. Nothing unpublishes automatically: the change from `PUBLISHED` to `ENDED` is an editorial PR (status + decision together) that needs its own R&Q PASS and an explicit owner merge GO for each expiry wave.
+- Guards (build and report): a `PUBLISHED` entry that is past its verified end with no decision fails; a `PUBLISHED` entry that records `unpublish` fails until its status is `ENDED`; an `ENDED` entry whose verified end has not passed (or has none) fails; declared status must equal derived status (existing test).
+- History: the record keeps its evidence, image/rights records, `approval` and `expiryDisposition`; it stays in `entries.json` (private admin/editorial history) and is counted as `ENDED (private)` in the expiration report and the state counts in the publication review.
+- Reactivation for a later season: set status back to `PUBLISHED`, replace `season` with the new verified end, and replace `expiryDisposition` with `{action: "keep-published", by, at, note}` (note the prior decision in `note`). Re-verify evidence if stale. This is again a reviewed PR with its own R&Q PASS and merge GO; nothing is automatic.
