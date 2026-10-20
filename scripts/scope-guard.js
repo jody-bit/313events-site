@@ -17,6 +17,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // #256 Auto-Repair / feeds time budgets (owner implementation GO 2026-10-20 16:49Z; R&Q exact-head validation required).
+  "api/_lib/step-runner.js", "api/_lib/auto-repair-steps.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
