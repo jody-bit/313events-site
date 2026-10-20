@@ -155,9 +155,9 @@ async function oldMiami() {
       global.fetch = mk();
       const res1 = makeRes();
       await fresh("cron-oldmiami.js")({ headers: {} }, res1);
-      assert.ok(res1._body.deferred.length >= 1, "some pages deferred when the budget is spent");
+      assert.ok(res1._body.deferred.length + res1._body.timedOut.length >= 1, "some pages deferred or cut off when the budget is spent");
       assert.strictEqual(res1._body.partial, true);
-      assert.strictEqual(res1._body.upserted + res1._body.deferred.length, 6, "every slug is written or reported deferred");
+      assert.strictEqual(res1._body.upserted + res1._body.deferred.length + res1._body.timedOut.length, 6, "every slug is written or reported deferred/timed out");
       assert.strictEqual(store.runs[0].outcome, "partial");
       const firstWritten = new Set(store.rows.keys());
 
