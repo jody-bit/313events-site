@@ -431,7 +431,7 @@
       }
     },
     "brick-or-treat-at-legoland-discovery-center": {
-      "tier": "verified",
+      "summary": "LEGO-themed Halloween activities. The center is closed some days in late October, so check LEGOLAND Discovery Center's calendar before you go.", "tier": "verified",
       "section": "B",
       "operation": "CONFIRMED",
       "officialUrl": "https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/",
