@@ -56,6 +56,27 @@ const VOLUME_DEVIATION_RATIO = 0.5;
 const VOLUME_DEVIATION_MIN_ABS = 5;
 const STARTED_RUN_TIMEOUT_MINUTES = 15; // same budget as api/cron-healthcheck.js
 
+// Missed-schedule detection (owner GO 2026-10-20). `failing` for a source that
+// has not run at all in 2x its cadence already exists below; this is the
+// earlier, slot-level signal: "the run due at 14:00Z did not start". Cron
+// timing is not exact (lower Vercel plans fire within the hour), so a slot is
+// only missed after a grace period, and a slot is judged only if the source's
+// run history reaches back past it (no invented history). A source with no
+// schedule (never scheduled, or paused by removing it from vercel.json) has no
+// slots, so a pause is never reported as a miss. Detection is advisory
+// evaluation only: it never starts, retries or dispatches anything.
+const MISSED_SLOT_GRACE_MS = 2 * HOUR_MS;
+const MISSED_SLOT_EARLY_TOLERANCE_MS = 10 * 60000;
+const MISSED_SLOT_LOOKBACK = 7;
+const MISSED_RAISE_DAYS = 3;
+const SLOT_WINDOW_DAYS = 30; // the window callers load runs for
+
+// DEC-010: Resident Advisor is manual/editorial-only. Its declared "daily"
+// entry in EXTERNAL_SCHEDULES describes the device-driven sync, which is
+// operator-controlled; the absence of a run is not a missed scheduled slot.
+// Nothing here ever schedules, activates or dispatches RA.
+const MANUAL_ONLY = new Set(["resident-advisor"]);
+
 // Which connector produced an event. external_id prefixes are each
 // connector's own construction (see the cron-*.js files); Ticketmaster
 // writes the bare Discovery API id, so it is matched on source.
@@ -143,6 +164,69 @@ function scheduleFor(slug, vercelSchedules) {
   if (vercelSchedules.has(slug)) return vercelSchedules.get(slug);
   if (EXTERNAL_SCHEDULES[slug]) return Object.assign({ expr: null }, EXTERNAL_SCHEDULES[slug]);
   return null;
+}
+
+// scheduledSlots(expr, nowMs, count) -> instants (ms, UTC) the cron expression
+// fired at or before nowMs, newest first, within SLOT_WINDOW_DAYS; or null when
+// the shape is not one this project uses (unknown, never a guess).
+// Understood: "m h * * *", "m h * * d", "m */n * * *", "m * * * *".
+function scheduledSlots(expr, nowMs, count = MISSED_SLOT_LOOKBACK) {
+  const parts = String(expr || "").trim().split(/\s+/);
+  if (parts.length !== 5) return null;
+  const [min, hour, dom, mon, dow] = parts;
+  if (!/^\d+$/.test(min) || Number(min) > 59 || dom !== "*" || mon !== "*") return null;
+  let hours;
+  if (/^\d+$/.test(hour) && Number(hour) <= 23) hours = [Number(hour)];
+  else if (hour === "*") hours = Array.from({ length: 24 }, (_, i) => i);
+  else {
+    const every = /^\*\/(\d+)$/.exec(hour);
+    if (!every || Number(every[1]) < 1 || Number(every[1]) > 23) return null;
+    hours = [];
+    for (let h = 0; h < 24; h += Number(every[1])) hours.push(h);
+  }
+  let dowSet = null;
+  if (dow !== "*") {
+    if (!/^[0-7]$/.test(dow)) return null;
+    dowSet = Number(dow) % 7;
+  }
+  const dayMs = 24 * HOUR_MS;
+  const startDay = Math.floor(nowMs / dayMs) * dayMs;
+  const out = [];
+  for (let back = 0; back <= SLOT_WINDOW_DAYS; back++) {
+    const day = startDay - back * dayMs;
+    if (dowSet !== null && new Date(day).getUTCDay() !== dowSet) continue;
+    for (const h of hours) {
+      const t = day + h * HOUR_MS + Number(min) * 60000;
+      if (t <= nowMs && t >= nowMs - SLOT_WINDOW_DAYS * dayMs) out.push(t);
+    }
+  }
+  out.sort((a, b) => b - a);
+  return out.slice(0, count);
+}
+
+// missedSlots({ expr, startsMs, nowMs, graceMs, earliestMs, count }) ->
+//   { slotsChecked, missed: [ms...] (newest first) } or null for an unknown shape.
+// startsMs: when runs of this schedule actually started (any outcome counts as
+// "it fired"; whether it succeeded is the execution dimension's business).
+// earliestMs: the oldest run we can see; slots before it are not judged.
+function missedSlots({ expr, startsMs, nowMs, graceMs = MISSED_SLOT_GRACE_MS, earliestMs = null, count = MISSED_SLOT_LOOKBACK }) {
+  const slots = scheduledSlots(expr, nowMs, count + 1);
+  if (!slots) return null;
+  const starts = (startsMs || []).filter((t) => typeof t === "number").sort((a, b) => a - b);
+  const missed = [];
+  let checked = 0;
+  for (let i = 0; i < slots.length; i++) {
+    const slot = slots[i];
+    if (slot + graceMs > nowMs) continue; // still inside its grace period
+    if (earliestMs !== null && slot < earliestMs - MISSED_SLOT_EARLY_TOLERANCE_MS) continue; // history does not reach this far
+    const nextBoundary = i === 0 ? nowMs : slots[i - 1];
+    const lo = slot - MISSED_SLOT_EARLY_TOLERANCE_MS;
+    const hi = nextBoundary - MISSED_SLOT_EARLY_TOLERANCE_MS;
+    checked += 1;
+    if (!starts.some((t) => t >= lo && t < hi)) missed.push(slot);
+    if (checked >= count) break;
+  }
+  return { slotsChecked: checked, missed };
 }
 
 function ms(v) {
@@ -277,6 +361,8 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
       missingLinkRate: null,
       placeholderVenueRate: null,
       volume: null,
+      missedSchedule: null,
+      manualOnly: MANUAL_ONLY.has(slug),
       dimensions: {},
       status: "healthy",
       reasons: [],
@@ -347,6 +433,23 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
     if (!schedule || !schedule.cadenceHours) d.currency = "unknown";
     else if (current + stale < 1) d.currency = "unknown";
     else d.currency = (current + stale >= STALE_MIN_EVENTS && s.reseenShare < STALE_SHARE_THRESHOLD) ? "fail" : "ok";
+
+    // expected vs actual scheduled executions (slot level)
+    if (schedule && schedule.expr && !MANUAL_ONLY.has(slug) && allRuns.length) {
+      const starts = allRuns.map((r) => ms(r.started_at)).filter((t) => t !== null);
+      const earliest = starts.length ? Math.min(...starts) : null;
+      const graceMs = Math.min(MISSED_SLOT_GRACE_MS, Math.max(15 * 60000, ((schedule.cadenceHours || 24) * HOUR_MS) / 2));
+      const m = missedSlots({ expr: schedule.expr, startsMs: starts, nowMs, graceMs, earliestMs: earliest });
+      if (m) {
+        s.missedSchedule = {
+          slotsChecked: m.slotsChecked,
+          missedCount: m.missed.length,
+          mostRecentMissedSlot: m.missed.length ? new Date(m.missed[0]).toISOString() : null,
+          missedSlots: m.missed.map((t) => new Date(t).toISOString()),
+          graceMinutes: Math.round(graceMs / 60000),
+        };
+      }
+    }
 
     // ---- status (one, with every reason) ----
     const why = s.reasons;
@@ -431,6 +534,17 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
         }
       }
     }
+    if (s.missedSchedule && s.missedSchedule.missedCount > 0) {
+      const m = s.missedSchedule;
+      const recent = nowMs - ms(m.mostRecentMissedSlot) <= MISSED_RAISE_DAYS * 24 * HOUR_MS;
+      const text = `Scheduled run due ${m.mostRecentMissedSlot} never started (${m.graceMinutes} min grace); ${m.missedCount} of the last ${m.slotsChecked} scheduled slot(s) missed`;
+      if (recent) {
+        raise("degraded");
+        why.push(text);
+      } else {
+        why.push(text + ` (advisory: older than ${MISSED_RAISE_DAYS} days)`);
+      }
+    }
     if (status === "healthy" && !why.length) why.push("Runs, output and currency within expectations");
     s.status = status;
     s.unhealthy = ["failing", "stale", "unscheduled", "degraded"].includes(status);
@@ -457,3 +571,5 @@ module.exports = {
   eventCurrency,
   evaluateSources,
 };
+
+Object.assign(module.exports, { MISSED_SLOT_GRACE_MS, MISSED_SLOT_LOOKBACK, MISSED_RAISE_DAYS, MANUAL_ONLY, scheduledSlots, missedSlots });
