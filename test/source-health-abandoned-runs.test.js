@@ -16,6 +16,10 @@ const ago = (ms) => new Date(NOW - ms).toISOString();
 const ok = (ms) => ({ source_slug: "oldmiami", outcome: "success", started_at: ago(ms), finished_at: ago(ms - 60000), records_fetched: 5, records_written: 5 });
 const failed = (ms) => ({ source_slug: "oldmiami", outcome: "failed", started_at: ago(ms), finished_at: ago(ms - 60000), records_fetched: 0, records_written: 0 });
 const abandoned = (ms) => ({ source_slug: "oldmiami", outcome: "started", started_at: ago(ms), finished_at: null });
+// Daily-dense history (one run per daily 14:00 slot, 4h before NOW plus whole days) so the
+// missed-schedule evaluator, when present, has nothing to flag; `replace` swaps given day
+// offsets for other runs. Keeps these status assertions independent of slot-level detection.
+const dense = (days, replace = {}) => Array.from({ length: days }, (_, d) => replace[d] || ok(4 * H + d * D));
 const evalOld = (runs) => {
   const copy = JSON.parse(JSON.stringify(runs));
   const r = sh.evaluateSources({ runs, vercelConfig, now: NOW }).bySlug.get("oldmiami");
@@ -56,7 +60,7 @@ console.log("PASS timeout threshold respected");
 
 // 4. age: older than 3 days is advisory only (kept in reasons, no status change)
 {
-  const s = evalOld([ok(4 * H), abandoned(5 * D), ok(6 * D)]);
+  const s = evalOld(dense(8, { 5: abandoned(5 * D) }));
   assert.strictEqual(s.history.abandonedEarlier, 1);
   assert.strictEqual(s.status, "healthy", "older than the raise window does not change status");
   assert.ok(s.reasons.some((r) => /advisory: older than 3 days/.test(r)), "but the evidence is still reported");
@@ -75,7 +79,7 @@ console.log("PASS multiple abandoned runs counted");
 
 // 6. earlier failures stay visible as an advisory, without raising status
 {
-  const s = evalOld([ok(2 * H), failed(26 * H), ok(50 * H)]);
+  const s = evalOld(dense(8, { 1: failed(4 * H + D) }));
   assert.strictEqual(s.history.failedEarlier, 1);
   assert.strictEqual(s.status, "healthy");
   assert.ok(s.reasons.some((r) => /earlier run\(s\) failed or were blocked/.test(r)));
