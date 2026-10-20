@@ -74,7 +74,7 @@ const tiny = (ms = 150) => Object.fromEntries(Object.keys(AUTO_REPAIR_TIMEOUTS).
     });
     // (i) per-request timeout bounds each hung check
     let t = Date.now();
-    let r = await runAutoRepair({ ...creds, loaders, timeouts: { ...tiny(), visitDetroitDeadLinks: 2000 }, requestTimeoutMs: 40 });
+    let r = await runAutoRepair({ ...creds, loaders, timeouts: { ...tiny(), visitDetroitDeadLinks: 2000 }, requestTimeoutMs: 40, softStopGraceMs: 0, minStartMs: 0 });
     let elapsed = Date.now() - t;
     assert.ok(elapsed < 1000, `4 hung requests must be bounded by the 40 ms request timeout, took ${elapsed} ms`);
     assert.strictEqual(r.visitDetroitDeadLinks.inconclusive, 4);
@@ -83,7 +83,7 @@ const tiny = (ms = 150) => Object.fromEntries(Object.keys(AUTO_REPAIR_TIMEOUTS).
     // (ii) no per-request timeout: the STEP timeout fires and the step is timed_out, not success
     calls.length = 0;
     t = Date.now();
-    r = await runAutoRepair({ ...creds, loaders, timeouts: { ...tiny(), visitDetroitDeadLinks: 120 }, requestTimeoutMs: 60000 });
+    r = await runAutoRepair({ ...creds, loaders, timeouts: { ...tiny(), visitDetroitDeadLinks: 120 }, requestTimeoutMs: 60000, softStopGraceMs: 0, minStartMs: 0 });
     elapsed = Date.now() - t;
     const vd = r.steps.find((s) => s.key === "visitDetroitDeadLinks");
     assert.strictEqual(vd.status, STATUS.TIMED_OUT);
@@ -96,6 +96,28 @@ const tiny = (ms = 150) => Object.fromEntries(Object.keys(AUTO_REPAIR_TIMEOUTS).
     await sleep(150);
     assert.strictEqual(calls.length, afterTimeout, "no further requests after the step timed out");
     assert.strictEqual(patches, 0);
+  }
+  // --- B(iii). soft stop: Step 6 stops starting checks before its hard timeout, reports checked/deferred, writes nothing for aborted checks ---
+  {
+    const calls = [];
+    global.fetch = hangingFetch(calls);
+    const loaders = fastLoaders({
+      visitDetroitDeadLinks: () => (opts) => repairVisitDetroitDeadLinks({
+        ...opts, logger: { log() {}, warn() {}, error() {} },
+        fetchCandidates: async () => Array.from({ length: 50 }, (_, i) => ({ id: `e${i}`, title: "T", ticket_url: `https://v.example/${i}/`, link_check_status: null })),
+        applyPatchFn: async () => { throw new Error("must not write"); },
+        healFn: async ({ url }) => { try { await fetch(url); return { classification: "ok" }; } catch { return { classification: "inconclusive" }; } },
+      }),
+    });
+    const r = await runAutoRepair({ ...creds, loaders, timeouts: { ...tiny(), visitDetroitDeadLinks: 400 }, requestTimeoutMs: 30, softStopGraceMs: 120, minStartMs: 0 });
+    const vd = r.steps.find((s) => s.key === "visitDetroitDeadLinks");
+    assert.strictEqual(vd.status, STATUS.COMPLETED);
+    assert.strictEqual(vd.partial, true);
+    assert.strictEqual(r.complete, false, "a step that stopped early is never represented as complete");
+    assert.strictEqual(r.partial, true);
+    assert.ok(r.visitDetroitDeadLinks.stoppedEarly && r.visitDetroitDeadLinks.deferred > 0 && r.visitDetroitDeadLinks.checked > 0);
+    assert.strictEqual(r.visitDetroitDeadLinks.checked + r.visitDetroitDeadLinks.deferred, 50);
+    assert.ok(/deferred/.test(r.visitDetroitLinkError));
   }
   console.log("PASS B: hung VisitDetroit requests are bounded per request and per step; timeout reported, nothing written");
 

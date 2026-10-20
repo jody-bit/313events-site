@@ -705,7 +705,7 @@ module.exports = async (req, res) => {
     // counters alone would double-count that event).
     if (action === "auto_repair_venue") {
       try {
-        // Steps, per-step timeouts and the 240 s overall budget live in
+        // Steps, per-step timeouts and the 270 s overall budget live in
         // api/_lib/auto-repair-steps.js (#256).
         const { runAutoRepair } = require("./_lib/auto-repair-steps");
         const result = await runAutoRepair({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });

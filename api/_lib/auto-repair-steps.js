@@ -3,14 +3,14 @@
 // here makes the budget, ordering and response shape testable offline.
 //
 // Budget: Vercel kills the function at 300 s (admin-events has no
-// maxDuration override). The run budget is 240 s, leaving 60 s headroom for
+// maxDuration override). The run budget is 270 s, leaving 30 s headroom for
 // the response. Cheap, bounded steps run first; the VisitDetroit dead-link
 // step (one live fetch per candidate; the observed hang) runs last with
 // whatever budget remains, so it can no longer starve the other steps.
 
 const { runSteps, STATUS } = require("./step-runner");
 
-const AUTO_REPAIR_BUDGET_MS = 240000;
+const AUTO_REPAIR_BUDGET_MS = 270000;
 
 const AUTO_REPAIR_TIMEOUTS = Object.freeze({
   venue: 45000,
@@ -21,9 +21,11 @@ const AUTO_REPAIR_TIMEOUTS = Object.freeze({
   venueRawReparse: 30000,
   nonEventRetirement: 30000,
   duplicateConsolidation: 30000,
-  visitDetroitDeadLinks: 150000, // also capped by the remaining overall budget
+  visitDetroitDeadLinks: 220000, // also capped by the remaining overall budget
 });
 const VISITDETROIT_REQUEST_TIMEOUT_MS = 8000; // per live link check
+const VISITDETROIT_MIN_START_MS = 20000; // Step 6 is skipped (not half-run) with less budget than this left
+const VISITDETROIT_SOFT_STOP_GRACE_MS = 10000; // Step 6 stops starting checks this long before its hard timeout
 
 // key -> [response field, response error field]
 const FIELD_NAMES = {
@@ -52,7 +54,7 @@ function defaultLoaders() {
   };
 }
 
-function buildAutoRepairSteps({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders = defaultLoaders(), timeouts = AUTO_REPAIR_TIMEOUTS, requestTimeoutMs = VISITDETROIT_REQUEST_TIMEOUT_MS }) {
+function buildAutoRepairSteps({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders = defaultLoaders(), timeouts = AUTO_REPAIR_TIMEOUTS, requestTimeoutMs = VISITDETROIT_REQUEST_TIMEOUT_MS, softStopGraceMs = VISITDETROIT_SOFT_STOP_GRACE_MS, minStartMs = VISITDETROIT_MIN_START_MS }) {
   const creds = { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY };
   const mk = (key, label, extra = {}) => ({
     key,
@@ -60,6 +62,8 @@ function buildAutoRepairSteps({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders
     timeoutMs: timeouts[key],
     run: ({ shouldStop }) => loaders[key]()({ ...creds, ...(extra.passStop ? { shouldStop } : {}) }),
     ...(extra.requestTimeoutMs ? { requestTimeoutMs: extra.requestTimeoutMs } : {}),
+    ...(extra.softStopGraceMs !== undefined ? { softStopGraceMs: extra.softStopGraceMs } : {}),
+    ...(extra.minRemainingMs !== undefined ? { minRemainingMs: extra.minRemainingMs } : {}),
   });
   return [
     mk("venue", "Venue address/city repair"),
@@ -73,13 +77,15 @@ function buildAutoRepairSteps({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders
     mk("visitDetroitDeadLinks", "VisitDetroit dead-link repair", {
       passStop: true,
       requestTimeoutMs,
+      softStopGraceMs,
+      minRemainingMs: minStartMs,
     }),
   ];
 }
 
-async function runAutoRepair({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders, timeouts, requestTimeoutMs, budgetMs = AUTO_REPAIR_BUDGET_MS, now }) {
-  const steps = buildAutoRepairSteps({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders, timeouts, requestTimeoutMs });
-  const run = await runSteps(steps, { budgetMs, now });
+async function runAutoRepair({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders, timeouts, requestTimeoutMs, softStopGraceMs, minStartMs, budgetMs = AUTO_REPAIR_BUDGET_MS, now, minRemainingMs }) {
+  const steps = buildAutoRepairSteps({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, loaders, timeouts, requestTimeoutMs, softStopGraceMs, minStartMs });
+  const run = await runSteps(steps, { budgetMs, now, minRemainingMs });
   return assembleResponse(run);
 }
 
@@ -107,7 +113,7 @@ function assembleResponse(run) {
     n("redfordMetadata", "fieldsWritten") + n("genericEnrichment", "fieldsWritten") +
     n("visitDetroitDeadLinks", "fieldsWritten") + n("venueRawReparse", "written");
   const vd = val("visitDetroitDeadLinks");
-  const stepsOut = run.results.map(({ key, label, status, startedAt, ms, error }) => ({ key, label, status, startedAt, ms, error }));
+  const stepsOut = run.results.map(({ key, label, status, startedAt, ms, error, partial }) => ({ key, label, status, startedAt, ms, error, partial: !!partial }));
   const response = {
     ok: true,
     ...(venueCounts || {}),
@@ -130,6 +136,6 @@ function assembleResponse(run) {
 }
 
 module.exports = {
-  AUTO_REPAIR_BUDGET_MS, AUTO_REPAIR_TIMEOUTS, VISITDETROIT_REQUEST_TIMEOUT_MS,
+  AUTO_REPAIR_BUDGET_MS, AUTO_REPAIR_TIMEOUTS, VISITDETROIT_REQUEST_TIMEOUT_MS, VISITDETROIT_SOFT_STOP_GRACE_MS,
   buildAutoRepairSteps, runAutoRepair, assembleResponse,
 };

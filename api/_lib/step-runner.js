@@ -47,8 +47,11 @@ const STATUS = Object.freeze({
   SKIPPED_BUDGET: "skipped_budget",
 });
 
-// steps: [{ key, label, run, timeoutMs, requestTimeoutMs?, minRemainingMs? }]
-// run(ctx) receives { signal, remainingMs, shouldStop }.
+// steps: [{ key, label, run, timeoutMs, requestTimeoutMs?, minRemainingMs?, softStopGraceMs? }]
+// run(ctx) receives { signal, remainingMs, shouldStop }. shouldStop() turns
+// true softStopGraceMs before the hard timeout (or at once if aborted), so a
+// looping step can stop cleanly, report what it finished and what it deferred,
+// instead of being cut off mid-request with its counts lost.
 async function runSteps(steps, { budgetMs, now = Date.now, minRemainingMs = 5000 } = {}) {
   installFetchGuard();
   const t0 = now();
@@ -74,7 +77,11 @@ async function runSteps(steps, { budgetMs, now = Date.now, minRemainingMs = 5000
     const ctx = { signal: controller.signal, requestTimeoutMs: step.requestTimeoutMs || null };
     const work = als
       .run(ctx, () =>
-        step.run({ signal: controller.signal, remainingMs: limit, shouldStop: () => controller.signal.aborted }),
+        step.run({
+          signal: controller.signal,
+          remainingMs: limit,
+          shouldStop: () => controller.signal.aborted || now() - started >= limit - (step.softStopGraceMs || 0),
+        }),
       )
       .then((value) => ({ value }), (error) => ({ error }));
     const outcome = await Promise.race([work, timeout]);
@@ -90,11 +97,12 @@ async function runSteps(steps, { budgetMs, now = Date.now, minRemainingMs = 5000
     } else {
       entry.status = STATUS.COMPLETED;
       entry.value = outcome.value;
+      entry.partial = !!(outcome.value && outcome.value.stoppedEarly);
     }
     results.push(entry);
   }
   const elapsedMs = now() - t0;
-  const complete = results.every((r) => r.status === STATUS.COMPLETED);
+  const complete = results.every((r) => r.status === STATUS.COMPLETED && !r.partial);
   return { results, elapsedMs, budgetMs, complete, partial: !complete };
 }
 
