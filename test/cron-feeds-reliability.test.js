@@ -148,6 +148,17 @@ async function run() {
   }
   console.log("PASS: a feed that never answers is cut at its request timeout, recorded, and the next feed still runs");
 
+  // 2b. a feed that times out every day alerts once, then is listed quietly
+  {
+    const feeds = [feed(1, { last_polled_at: "2026-10-19T00:00:00Z", last_poll_result: health.TIMED_OUT_RESULT })];
+    const { body } = await runOnce({ feeds, behavior: { "https://feed.example/1.ics": () => new Promise(() => {}) }, env: { FEEDS_REQUEST_TIMEOUT_MS: 100, FEEDS_MIN_START_MS: 50 } });
+    assert.strictEqual(kindOf(body, 1), "timeout_persistent");
+    assert.deepStrictEqual(body.alerts, [], "a repeat timeout does not alert again");
+    assert.strictEqual(body.feedsPersistentlyFailing, 1);
+    assert.strictEqual(classifyResponse(200, body, { sourceFailures: handlerOf(body).feedSourceFailures }).outcome, "success");
+  }
+  console.log("PASS: a feed that timed out last poll too is persistent: listed, no repeat alert, run not partial");
+
   // 3. partial success: good feed written, failing feed leaves existing events alone
   {
     const feeds = [feed(1), feed(2)];

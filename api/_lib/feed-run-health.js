@@ -27,6 +27,7 @@ const KINDS = Object.freeze({
   BLOCKED: "blocked",
   BLOCKED_PERSISTENT: "blocked_persistent",
   TIMEOUT: "timeout",
+  TIMEOUT_PERSISTENT: "timeout_persistent",
   FAILED: "failed",
   FAILED_PERSISTENT: "failed_persistent",
   DEFERRED: "deferred",
@@ -52,7 +53,7 @@ function classifyFeedResult(result, previousResult) {
   if (r.startsWith("Not polled automatically")) return KINDS.MANUAL;
   if (r.startsWith("Skipped (resume)")) return KINDS.SKIPPED_RESUME;
   if (BLOCKED_RE.test(r)) return BLOCKED_RE.test(prev) && stripVolatile(prev) === stripVolatile(r) ? KINDS.BLOCKED_PERSISTENT : KINDS.BLOCKED;
-  if (r === TIMED_OUT_RESULT) return KINDS.TIMEOUT;
+  if (r === TIMED_OUT_RESULT) return prev === TIMED_OUT_RESULT ? KINDS.TIMEOUT_PERSISTENT : KINDS.TIMEOUT;
   if (FAILURE_RE.test(r)) return prev && stripVolatile(prev) === stripVolatile(r) ? KINDS.FAILED_PERSISTENT : KINDS.FAILED;
   if (EMPTY_RE.test(r)) return HAD_EVENTS_RE.test(prev) ? KINDS.EMPTY_UNEXPECTED : KINDS.EMPTY;
   return KINDS.OK;
@@ -97,7 +98,7 @@ function summarizeRun(entries, extras = {}) {
   if (polled >= 3 && !extras.upserted && !count(KINDS.FAILED) && !count(KINDS.TIMEOUT) && !count(KINDS.BLOCKED)) {
     alerts.push({ type: "suspected_empty_run", detail: `${polled} feeds polled, 0 events written` });
   }
-  const persistent = list.filter((e) => e.kind === KINDS.BLOCKED_PERSISTENT || e.kind === KINDS.FAILED_PERSISTENT).map((e) => e.venue);
+  const persistent = list.filter((e) => e.kind === KINDS.BLOCKED_PERSISTENT || e.kind === KINDS.FAILED_PERSISTENT || e.kind === KINDS.TIMEOUT_PERSISTENT).map((e) => e.venue);
   const summary = {
     feedsAttempted: polled,
     feedsDeferred: deferred,
