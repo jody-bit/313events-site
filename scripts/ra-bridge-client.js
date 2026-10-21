@@ -26,6 +26,18 @@
 //     caller can see why); 2 on timeout (tag never appeared -- check the
 //     repo's Actions tab).
 //
+// 2026-10-19 (ra-sync-inbox target architecture): RA_BRIDGE_BRANCH selects
+// where the payload is written. Unset or "main" is the LEGACY transport
+// (payload committed to main, relayed by the push trigger). Any other
+// value (the approved target is "ra-sync-inbox") writes the payload to that
+// branch and then sends a `repository_dispatch` (event_type
+// ra-sync-payload) carrying {action, runToken, sha, path} so the workflow on
+// main relays it. Raw payloads then never reach main and trigger no
+// production deployment. The cutover is a device-side environment change
+// (set RA_BRIDGE_BRANCH=ra-sync-inbox), not a code change; unsetting it is
+// the rollback. A third subcommand recovers a lost dispatch:
+//   node scripts/ra-bridge-client.js dispatch <start|complete|promote> <runToken>
+//
 // 2026-10-07: rewritten to drop the local git checkout as a dependency
 // for BOTH commands. The previous version wrote the inbox file to disk
 // and ran `git add` / `git commit` / `git push`, and polled with `git
@@ -122,6 +134,24 @@ async function ghRequest(method, urlPath, { token, body, fetchFn = fetch } = {})
   return { status: res.status, ok: res.ok, body: parsed };
 }
 
+// DISPATCH_EVENT_TYPE must match .github/workflows/ra-sync-bridge.yml.
+const DISPATCH_EVENT_TYPE = "ra-sync-payload";
+
+async function sendDispatch({ slug, token, fetchFn, action, runToken, sha, outRel }) {
+  const res = await ghRequest("POST", `/repos/${slug}/dispatches`, {
+    token,
+    fetchFn,
+    body: { event_type: DISPATCH_EVENT_TYPE, client_payload: { action, runToken, sha, path: outRel } },
+  });
+  if (!res.ok) {
+    const reason = (res.body && res.body.message) || `HTTP ${res.status}`;
+    throw new Error(
+      `dispatch ${action}: GitHub repository_dispatch failed for ${outRel}: ${reason}. ` +
+        `The payload IS stored on the inbox branch; re-send with: node scripts/ra-bridge-client.js dispatch ${action} ${runToken}`
+    );
+  }
+}
+
 async function cmdSubmit(
   action,
   jsonFilePath,
@@ -172,8 +202,44 @@ async function cmdSubmit(
   }
 
   log(`Submitted ${outRel} via GitHub API (runToken ${runToken}, branch ${branch}).`);
+  if (branch !== "main") {
+    const sha = res.body && res.body.commit && res.body.commit.sha;
+    if (!sha) throw new Error(`submit ${action}: GitHub did not return a commit sha for ${outRel}`);
+    await sendDispatch({ slug, token: env.GH_PUSH_TOKEN, fetchFn, action, runToken, sha, outRel });
+    log(`Dispatched ${DISPATCH_EVENT_TYPE} for ${action}-${runToken} at ${sha}.`);
+  }
   process.stdout.write(runToken + "\n");
   return runToken;
+}
+
+// cmdDispatch(action, runToken) -- recovery: re-send the dispatch for a
+// payload already stored on the inbox branch (e.g. the dispatch call
+// failed after the file was written). Idempotent end to end: the workflow
+// skips a runToken whose response tag already exists.
+async function cmdDispatch(
+  action,
+  runToken,
+  { env = process.env, fetchFn = fetch, runFn = run, log = console.error } = {}
+) {
+  if (action !== "start" && action !== "complete" && action !== "promote") {
+    throw new Error(`dispatch: action must be "start", "complete", or "promote", got ${JSON.stringify(action)}`);
+  }
+  if (!runToken) throw new Error("dispatch: missing <runToken> argument");
+  const branch = env.RA_BRIDGE_BRANCH || "main";
+  if (branch === "main") throw new Error("dispatch: RA_BRIDGE_BRANCH is not set to an inbox branch; nothing to dispatch");
+  const slug = repoSlug({ env, runFn });
+  const outRel = ["ra-sync", "inbox", `${action}-${runToken}.json`].join("/");
+  const token = env.GH_PUSH_TOKEN;
+  const res = await ghRequest(
+    "GET",
+    `/repos/${slug}/commits?sha=${encodeURIComponent(branch)}&path=${encodeURIComponent(outRel)}&per_page=1`,
+    { token, fetchFn }
+  );
+  const sha = res.ok && Array.isArray(res.body) && res.body[0] && res.body[0].sha;
+  if (!sha) throw new Error(`dispatch: ${outRel} was not found on branch ${branch}`);
+  await sendDispatch({ slug, token, fetchFn, action, runToken, sha, outRel });
+  log(`Re-dispatched ${DISPATCH_EVENT_TYPE} for ${action}-${runToken} at ${sha}.`);
+  return sha;
 }
 
 function sleep(ms) {
@@ -236,15 +302,21 @@ async function main() {
     await cmdWait(action, runToken, Number(timeoutSec) || 600, Number(pollSec) || 15);
     return;
   }
+  if (sub === "dispatch") {
+    const [action, runToken] = rest;
+    await cmdDispatch(action, runToken);
+    return;
+  }
   console.error(
     "Usage:\n" +
       "  ra-bridge-client.js submit <start|complete|promote> <jsonFile>\n" +
-      "  ra-bridge-client.js wait <start|complete|promote> <runToken> [timeoutSec] [pollSec]"
+      "  ra-bridge-client.js wait <start|complete|promote> <runToken> [timeoutSec] [pollSec]\n" +
+      "  ra-bridge-client.js dispatch <start|complete|promote> <runToken>   (re-send a lost dispatch; needs RA_BRIDGE_BRANCH)"
   );
   process.exitCode = 1;
 }
 
-module.exports = { makeRunToken, repoSlug, ghRequest, cmdSubmit, cmdWait };
+module.exports = { makeRunToken, repoSlug, ghRequest, cmdSubmit, cmdWait, cmdDispatch, DISPATCH_EVENT_TYPE };
 
 // Node's global `fetch` does NOT read HTTP_PROXY/HTTPS_PROXY on its own --
 // confirmed 2026-10-07 on the device: `curl` and `git` (both proxy-aware)

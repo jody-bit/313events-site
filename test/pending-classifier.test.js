@@ -115,10 +115,11 @@ function page() {
   const html = fs.readFileSync(path.join(REPO_DIR, "admin.html"), "utf8");
   assert.ok(html.includes("Civic & Community: public meetings"));
   assert.ok(html.includes("QUEUE_CLASS_ORDER"));
-  assert.ok(html.includes("setTabBadge('submissions', badgeCount)"), "badge uses the actionable count");
-  assert.ok(html.includes("data.actionable_count"), "UI reads the endpoint's count, not a constant");
+  // Submissions dashboard Step 1 (2026-10-17, owner safeguard 3): the Dearborn policy hold is kept out of the human lane,
+  // so the tab badge is the count of the Needs a person lane. It is computed, never hard-coded.
+  assert.ok(html.includes("setTabBadge('submissions', counts.person)"), "badge is the Needs a person lane count");
   assert.ok(!/setTabBadge\('submissions', (?:51|120|131)\)/.test(html), "badge is never hard-coded");
-  assert.ok(html.includes("rows.map(cardHtml).join('')"), "every class group lists all of its records");
-  assert.ok(html.includes("onclick=\"review('${e.id}','approve')\"") && html.includes("onclick=\"review('${e.id}','reject')\""), "Approve and Reject remain on every card");
+  assert.ok(html.includes("QUEUE_CLASS_ORDER.map(cls =>") && html.includes("g.map(r => subRowHtml(r, now, true)).join('')"), "every class group lists all of its records");
+  assert.ok(html.includes("review(\\'' + escapeAttr(e.id) + '\\',\\'approve\\')") && html.includes("review(\\'' + escapeAttr(e.id) + '\\',\\'reject\\')"), "Approve and Reject remain on every record that can be decided");
 }
 endpoint().then(() => { page(); console.log("pending-classifier: all assertions passed"); }, (e) => { console.error(e); process.exit(1); });

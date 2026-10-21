@@ -119,9 +119,17 @@ function publicEntry(e) {
   if (im.alternates && im.alternates.length) out.image.alternates = im.alternates.slice();
   if (im.placeholder) out.image.placeholder = im.placeholder;
   out.image.illustrative = im.illustrative === true;
+  // Opt-in: an archival photograph is labelled "Historic photo" on its card. Only an explicit true carries; nothing else changes.
+  // Owner rule (2026-10-19): historic:true ONLY for an image that is verifiably archival or historical. Never for a contemporary
+  // photograph that merely looks vintage. Attribution stays in the centralized Photo Credits system, not on the card.
+  if (im.historic === true && im.illustrative !== true) out.image.historic = true;
   // A photograph is shown with its credit line; an illustration carries the "Illustrative image" label instead.
+  // A self-hosted copy (the repo file IS the card image, DEC-029 risk acceptance, no license) is drawn as a plain photograph: no hotlink, no
+  // "Illustrative image" fallback badge and no visible credit. The source, credit and risk acceptance stay in the private record.
+  const selfHosted = !!(im.remote && im.remote.src && im.acquired && im.acquired.file && im.acquired.file === im.src);
   if (im.illustrative !== true && im.credit && !(im.remote && im.remote.src)) out.image.credit = im.credit;
-  if (im.remote && im.remote.src) out.image.remote = { src: im.remote.src, sourcePage: im.remote.sourcePage, credit: im.remote.credit };
+  // Owner decision 2026-10-19: a linked photo may be drawn with no visible credit line (hideCredit); the credit stays in the private record.
+  if (im.remote && im.remote.src && !selfHosted) out.image.remote = im.remote.hideCredit === true ? { src: im.remote.src, sourcePage: im.remote.sourcePage } : { src: im.remote.src, sourcePage: im.remote.sourcePage, credit: im.remote.credit };
   return out;
 }
 // The public projection: entries that are declared and derived PUBLISHED, in their public form, and nothing else.
@@ -154,4 +162,18 @@ function review(e) {
   return { id: e.id, name: e.name, declared: e.status, state: r.state, gate: g, outstanding, caveats, imageRoute: g.imageRoute, rightsRoute: g.rightsRoute };
 }
 
-module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, publicEntry, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };
+// Operating calendar from an entry's private `schedule`: every season date from `from` (default season start) to the season end, with the
+// weekly hours for its weekday; an explicit dark day overrides the recurring hours (open: false, hours: null). Dates are plain YYYY-MM-DD.
+function scheduleCalendar(entry, from) {
+  const sc = entry && entry.schedule;
+  if (!sc) return [];
+  const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"], dark = new Set(sc.darkDays || []), out = [];
+  const end = Date.parse(sc.season.end + "T00:00:00Z");
+  for (let t = Date.parse((from && from > sc.season.start ? from : sc.season.start) + "T00:00:00Z"); t <= end; t += 86400000) {
+    const date = new Date(t).toISOString().slice(0, 10), isDark = dark.has(date), hours = sc.weeklyHours[DAYS[new Date(t).getUTCDay()]] || null;
+    out.push({ date, open: !isDark && !!hours, hours: isDark ? null : hours, dark: isDark });
+  }
+  return out;
+}
+
+module.exports = { review, read, entries, allCollections, publishedProjection, ownerPhotoImage, illustrationImage, publicEntry, scheduleCalendar, libraryPhoto, fileFacts, webpSize, ROOT, DIR, COLLECTIONS };

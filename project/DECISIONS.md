@@ -330,6 +330,30 @@ All entries below are reconstructed from decisions already made and recorded in 
 
 ---
 
+### DEC-028 — Calendar exports give a start-only event a two-hour block (technical convention)
+
+**Date:** 2026-10-17
+**Decision:** When an event has a stated start time and no stated end time, the Google Calendar link and the .ics file use a two-hour block (start + 120 minutes) so the entry has a duration. This is a technical convention of the export, not event data: it is never displayed as the event's end, never written back to the event, and never used to decide whether an event has ended. "Ended" uses the stated end time when there is one, otherwise the end of the America/Detroit day.
+**Context:** iCalendar and Google Calendar need a DTEND for a timed entry. Most of the sources the site lists publish a start only (gallery hours, sets, screenings, ticketed starts). The owner asked on 2026-10-17 that the default be documented rather than left as an unexplained constant.
+**Alternatives considered:** An all-day entry (rejected: it claims the whole day, which the source never said and the owner has ruled out for exports); a zero-length entry (rejected: calendars render it inconsistently); no export (rejected: loses a useful feature for confirmed events).
+**Reason:** Two hours is a neutral middle ground that never calls the event all day and never claims a precise end.
+**Consequences:** Implemented in the end-time fallback of `eventDateTimeParts()` in `event-template.html` and in `index.html`. Examples seen in review: a 1:00 PM start exports to 3:00 PM; a 10:00 AM start to 12:00 PM. Any future change to the duration, or to showing it as an end time, is a new decision. Related: a verified-time model (time-confidence work) may later supply real end times; that is a separate, unauthorized follow-up.
+**Related backlog items:** none (convention only).
+
+---
+
+### DEC-029 — Promotional event imagery: no routine advance-permission outreach; remove promptly on a credible rights complaint
+
+**Date:** 2026-10-18 (owner directive 2026-10-19 02:15 UTC)
+**Decision:** 313.events does not routinely request advance permission for promotional event imagery. The owner, Jody Tyree, expressly accepts the business and legal risks of that approach. Operating process: (1) prefer authentic imagery relevant to the event, venue, attraction or destination; (2) prefer images supplied directly, licensed images, official press assets and images with documented reuse permissions where available; (3) do not initiate routine photo-permission outreach, and do not contact organizers about photographs merely because advance permission has not been obtained; (4) record the source URL, source organization, retrieval date and known rights information in the asset metadata; (5) preserve required attribution and license conditions; (6) keep a straightforward rights-holder complaint and removal process; (7) on a credible rights complaint, promptly remove or disable the disputed image; (8) investigate the rights, then either obtain permission before reposting or replace the image with an authorized alternative; (9) keep a record of complaints and resolutions. Do not use images with known prohibitions, watermarks indicating unauthorized use, or known adverse rights claims.
+**Context:** Earlier owner direction: 2026-10-15, venue/organizer-supplied promotional images publish by default with no visible credit unless the license requires it, and approved images are not re-audited; 2026-10-17, a photo found on an organizer's website was said not to be permission to republish, with a route order of licensed assets, then explicitly licensed organizer images, then a direct permission request. This decision replaces the 2026-10-17 permission-request route. Drafted outreach messages stay unsent.
+**Alternatives considered:** Routine permission requests to every organizer (rejected by the owner: slow, and the owner accepts the risk); publishing with no complaint process (rejected: the process in steps 6 to 9 is part of the decision).
+**Reason:** Authentic imagery improves the product, and per-venue outreach does not scale with coverage. This is a risk acceptance, not a finding that public promotional images are free to reuse, and it does not remove potential liability.
+**Consequences:** Seasonal and event image work records source metadata per asset and does not send permission requests. The public editorial policy page (`editorial-policy.html`) is NOT changed by this entry; any change to public policy wording needs separate owner approval. Previously linked images with owner-accepted risk keep their recorded risk notes.
+**Related backlog items:** none.
+
+---
+
 ## Open, not yet decided
 
 These have been *raised* and researched but are explicitly **not** settled — listed here only so they aren't rediscovered as if new. See `PRODUCT.md`'s "Product decisions required" section and `BACKLOG.md` for the tracked items.

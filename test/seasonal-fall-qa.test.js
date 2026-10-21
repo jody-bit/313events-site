@@ -38,7 +38,7 @@ for (const slug of ["fall", "fall-color"]) {
     for (const o of r.image_options) {
       assert.ok(!ids.has(r.id + "/" + o.id), "unique option id");
       ids.add(r.id + "/" + o.id);
-      assert.ok(/^(gen-(fall|fall-color)-\d|link-[a-z0-9-]+|commons-[a-z0-9-]+|313p-[0-9a-f]{8}(-[0-9a-z]+)?)$/.test(o.id), "stable id shape: " + o.id);
+      assert.ok(/^(gen-(fall|fall-color)-\d|link-[a-z0-9-]+|commons-[a-z0-9-]+|archival-[a-z0-9-]+|313p-[0-9a-f]{8}(-[0-9a-z]+)?)$/.test(o.id), "stable id shape: " + o.id);
       if (o.type.indexOf("linked") === 0) {
         assert.strictEqual(o.permission_on_file, false, "no permission on file for a linked image");
         assert.ok(/not cleared/.test(o.rights_status));

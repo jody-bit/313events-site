@@ -82,7 +82,7 @@
     --panel-hover:#272727;
     --ink:#F2F0E8;
     --ink-soft:#A9AAA3;
-    --ink-dim:#5c5d58;
+    --ink-dim:#8a8b85;
     --line:#2c2c2c;
     --line-soft:#212121;
     --accent:#D7FF00;
@@ -344,6 +344,9 @@
   .evt-link{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
+  .evt-link{position:relative;}
+  .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
+  @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
   .empty-state{padding:40px 10px;text-align:center;color:var(--ink-soft);font-size:14px;}
   .es-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
   .es-action{
@@ -885,11 +888,14 @@ function matchesFilters(e){
     if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
   }
   if(whenMode){
+    // A schedule-unverified multiday range is not attendable on any specific
+    // day (owner decision 2026-10-16); it stays on the map only with no date filter.
+    if(EventDates.scheduleState(e) === 'unverified') return false;
     const todayIso = getTodayISO();
     if(whenMode === 'weekend'){
-      if(!cachedWeekendDates.includes(e.date)) return false;
+      if(!cachedWeekendDates.some(d => EventDates.isActiveOn(e, d))) return false; // the shared rule, not just the start date (2026-10-16)
     } else {
-      if(e.date !== todayIso) return false;
+      if(!EventDates.isActiveOn(e, todayIso)) return false; // the shared rule, not just the start date (2026-10-16)
       if(whenMode === 'now'){
         const range = parseTimeRange(e.time);
         if(range && range.end && range.end.h >= range.start.h){
@@ -1133,12 +1139,12 @@ function evtRowHtml(e){
         <div class="evt-meta">
           <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
           ${priceTag(e)}
-          <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
+          <span>${EventDates.scheduleState(e) === 'unverified' ? 'Dates not confirmed' : new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
           ${sharedPointMunicipality(e)?`<span>${escapeHtml(sharedPointMunicipality(e))}</span>`:''}
           ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
-        ${e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
+        ${EventDates.scheduleState(e) === 'unverified' ? `<div class="note">Published ${escapeHtml(new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))} \u2013 ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
         ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
         ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
         ${affiliateDisclosureHtml(e)}
@@ -1929,7 +1935,7 @@ function mapSupabaseRow(row) {
     canonicalLat: vd.lat,
     canonicalLng: vd.lng,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
     ticketUrl: row.ticket_url || undefined,
