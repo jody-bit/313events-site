@@ -190,3 +190,21 @@ run().catch((err) => {
   console.error(err);
   process.exitCode = 1;
 });
+
+// P0 2026-10-16: per-run budget. maxChecks and the deadline stop the run early and say so; samples are logged as they are taken.
+(async () => {
+  const { repairVisitDetroitDeadLinks } = require("../scripts/visitdetroit-dead-link-repair");
+  const rows = Array.from({ length: 5 }, (_, i) => ({ id: "id" + i, title: "T" + i, ticket_url: "https://visitdetroit.com/events/t" + i + "/", link_check_status: null }));
+  const logs = [];
+  const logger = { log: (m) => logs.push(m), error: () => {} };
+  const heal = async () => ({ classification: "inconclusive", repaired: false, newUrl: null, status: 200, finalUrl: "x", identityConfirmed: false });
+  const c1 = await repairVisitDetroitDeadLinks({ dryRun: true, logger, SUPABASE_URL: "u", SUPABASE_SERVICE_ROLE_KEY: "k", fetchCandidates: async () => rows, healFn: heal, maxChecks: 2 });
+  assert.strictEqual(c1.stoppedEarly, true); assert.strictEqual(c1.inconclusive, 2);
+  assert.ok(logs.some((l) => l.startsWith("[link-check sample]")), "samples are logged as they are taken");
+  let t = 0;
+  const c2 = await repairVisitDetroitDeadLinks({ dryRun: true, logger, SUPABASE_URL: "u", SUPABASE_SERVICE_ROLE_KEY: "k", fetchCandidates: async () => rows, healFn: heal, deadlineMs: 1000, nowFn: () => (t += 600) });
+  assert.strictEqual(c2.stoppedEarly, true); assert.ok(c2.inconclusive < 5);
+  const c3 = await repairVisitDetroitDeadLinks({ dryRun: true, logger, SUPABASE_URL: "u", SUPABASE_SERVICE_ROLE_KEY: "k", fetchCandidates: async () => rows, healFn: heal });
+  assert.ok(!c3.stoppedEarly); assert.strictEqual(c3.inconclusive, 5);
+  console.log("PASS: repair run budget");
+})().catch((e) => { console.error(e); process.exit(1); });
