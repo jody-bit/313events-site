@@ -5,6 +5,7 @@ const { startRun, finishRun } = require("./_lib/run-log");
 const { SLUGS } = require("./_lib/source-slugs");
 const { lookupExistingStatuses } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
+const { createBudget, isTimeout, REQUEST_TIMED_OUT } = require("./_lib/run-budget");
 
 // Vercel Cron job — the `eventbrite-org` adapter anticipated by
 // INGESTION_BACKLOG.md's WP 6.12 ("Organizer-authorized keys only. Pilot:
@@ -125,6 +126,53 @@ const AMBIGUOUS_CATEGORY = "community"; // migration_009b's documented catch-all
 const API_BASE = "https://www.eventbriteapi.com/v3";
 const MAX_PAGES_PER_ORGANIZER = 10; // bounded pagination — see header; avoids a runaway loop against a misbehaving/huge organizer
 
+// Reliability limits (#256 / #264 pattern). vercel.json gives this function 60 s.
+// The run budget leaves room for the venue/status lookups and the upsert after
+// the fetch phase. Each organizer gets an equal share of what is left, so a
+// hung first organizer cannot starve the second. No request is retried.
+const RUN_BUDGET_MS = 45000;
+const REQUEST_TIMEOUT_MS = 10000;
+const MIN_START_MS = 1500; // do not start a page request with less than this left
+function limits() {
+  const n = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+  return {
+    budgetMs: n(process.env.EVENTBRITE_RUN_BUDGET_MS, RUN_BUDGET_MS),
+    requestTimeoutMs: n(process.env.EVENTBRITE_REQUEST_TIMEOUT_MS, REQUEST_TIMEOUT_MS),
+    minStartMs: n(process.env.EVENTBRITE_MIN_START_MS, MIN_START_MS),
+  };
+}
+
+// One bounded request that reads the JSON body. The timeout covers the body
+// read and is enforced by a race as well as an AbortSignal, so a fetch that
+// ignores the signal is still bounded. Rejects with code REQUEST_TIMED_OUT.
+async function fetchJsonBounded(url, fetchOptions, timeoutMs) {
+  const controller = new AbortController();
+  let timer;
+  const timedOut = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      const err = new Error(`Timed out after ${timeoutMs} ms`);
+      err.code = REQUEST_TIMED_OUT;
+      reject(err);
+      controller.abort();
+    }, timeoutMs);
+  });
+  const work = (async () => {
+    const r = await fetch(url, { ...fetchOptions, signal: controller.signal });
+    if (!r.ok) return { r, parsed: null, parseError: null };
+    try {
+      return { r, parsed: await r.json(), parseError: null };
+    } catch (err) {
+      return { r, parsed: null, parseError: err };
+    }
+  })();
+  work.catch(() => {});
+  try {
+    return await Promise.race([work, timedOut]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // Config-driven, multi-organizer registry (WP 6.12's "generalized adapter"
 // requirement) — onboarding a new organizer never touches the parsing
 // logic below, only this array and that organizer's own token env var.
@@ -235,27 +283,34 @@ function organizerEventsUrl(organizerId, continuation) {
 // successfully collected before that point (may be partial on error, which
 // is why the caller must treat a non-null error as fatal for this
 // organizer's contribution to the run, not silently use the partial list).
-async function fetchOrganizerEvents(organizerId, token) {
+async function fetchOrganizerEvents(organizerId, token, opts) {
+  const lim = (opts && opts.limits) || limits();
+  const budget = (opts && opts.budget) || createBudget({ budgetMs: lim.budgetMs });
   const events = [];
   let continuation = null;
   for (let page = 0; page < MAX_PAGES_PER_ORGANIZER; page++) {
-    let r;
+    if (budget.remaining() < lim.minStartMs) {
+      return { events, error: "Run time budget reached", httpStatus: null, deferred: true };
+    }
+    let out;
     try {
-      r = await fetch(organizerEventsUrl(organizerId, continuation), {
-        headers: { Authorization: `Bearer ${token}`, "User-Agent": "313.events event calendar" },
-      });
+      out = await fetchJsonBounded(
+        organizerEventsUrl(organizerId, continuation),
+        { headers: { Authorization: `Bearer ${token}`, "User-Agent": "313.events event calendar" } },
+        Math.max(1, Math.min(lim.requestTimeoutMs, budget.remaining()))
+      );
     } catch (err) {
+      if (isTimeout(err)) return { events, error: "Fetch timed out: " + err.message, httpStatus: null, timedOut: true };
       return { events, error: "Fetch failed: " + err.message, httpStatus: null };
     }
+    const r = out.r;
     if (!r.ok) {
       return { events, error: `Fetch failed: HTTP ${r.status}`, httpStatus: r.status };
     }
-    let data;
-    try {
-      data = await r.json();
-    } catch (err) {
-      return { events, error: "Unparseable JSON response: " + err.message, httpStatus: r.status };
+    if (out.parseError) {
+      return { events, error: "Unparseable JSON response: " + out.parseError.message, httpStatus: r.status };
     }
+    const data = out.parsed;
     if (!data || typeof data !== "object" || !Array.isArray(data.events)) {
       return { events, error: "Unexpected API response shape (events was not an array)", httpStatus: r.status };
     }
@@ -291,16 +346,28 @@ module.exports = async (req, res) => {
   // feed). A per-organizer failure never aborts the other organizers in
   // this same run; it is recorded in `failed` and reflected in the
   // run's outcome below.
+  const cfg = limits();
+  const runBudget = createBudget({ budgetMs: cfg.budgetMs });
+  let attempted = 0;
+  const timedOut = [];
+  const deferred = [];
+  const configured = ORGANIZERS.filter((o) => process.env[o.tokenEnvVar]);
   for (const organizer of ORGANIZERS) {
     const token = process.env[organizer.tokenEnvVar];
     if (!token) {
       skipped.push(organizer.organizerId);
       continue;
     }
-    const { events, error, httpStatus } = await fetchOrganizerEvents(organizer.organizerId, token);
+    attempted++;
+    const left = configured.length - (attempted - 1);
+    const share = createBudget({ budgetMs: Math.max(0, Math.floor(runBudget.remaining() / left)) });
+    const { events, error, httpStatus, timedOut: wasTimeout, deferred: wasDeferred } =
+      await fetchOrganizerEvents(organizer.organizerId, token, { budget: share, limits: cfg });
     totalFetched += events.length;
     if (error) {
       failed.push({ organizerId: organizer.organizerId, error, httpStatus });
+      if (wasTimeout) timedOut.push(organizer.organizerId);
+      if (wasDeferred) deferred.push(organizer.organizerId);
     }
     for (const e of events) {
       const parsed = parseEvent(e);
@@ -312,6 +379,17 @@ module.exports = async (req, res) => {
       allParsed.push(parsed);
     }
   }
+
+  // What the fetch phase did, added to every response that reaches the end of it.
+  const runReport = () => ({
+    attempted,
+    timedOut,
+    deferred,
+    complete: failed.length === 0,
+    partial: failed.length > 0,
+    budgetMs: cfg.budgetMs,
+    elapsedMs: runBudget.elapsed(),
+  });
 
   const today = new Date().toISOString().slice(0, 10);
   const parsed = allParsed.filter((e) => e.start_date >= today);
@@ -336,6 +414,7 @@ module.exports = async (req, res) => {
       skipped,
       failed,
       allOrganizersSkipped: allSkipped,
+      ...runReport(),
       fetchedAt: new Date().toISOString(),
     });
     return;
@@ -422,6 +501,7 @@ module.exports = async (req, res) => {
       checked: totalFetched,
       skipped,
       failed,
+      ...runReport(),
       fetchedAt: new Date().toISOString(),
     });
   } catch (err) {
@@ -439,4 +519,5 @@ module.exports.parseEvent = parseEvent; // exposed for test/cron-eventbrite-runl
 module.exports.formatTimeDisplay = formatTimeDisplay; // exposed for test/cron-eventbrite-runlog.test.js only
 module.exports.ORGANIZERS = ORGANIZERS; // exposed for test/cron-eventbrite-runlog.test.js only
 module.exports.fetchOrganizerEvents = fetchOrganizerEvents; // exposed for test/cron-eventbrite-runlog.test.js only
+module.exports.RUN_BUDGET_MS = RUN_BUDGET_MS; // exposed for tests only
 module.exports.MAX_PAGES_PER_ORGANIZER = MAX_PAGES_PER_ORGANIZER; // exposed for test/cron-eventbrite-runlog.test.js only
