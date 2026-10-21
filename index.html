@@ -4167,6 +4167,7 @@
     /* Owner conditions on the renders: a long unbreakable time hint must wrap (not hide behind the
        thumbnail), and the thumbnail gets more space around it. */
     .evt-time{overflow-wrap:break-word;}
+    .evt-time .t-brk::before{content:"\200b";}
     .evt-cal a + a::before{content:'·';margin-right:.6ch;}
     .evt-link::before, .evt-share::after, .evt-cal a::after{content:none;}
   }
@@ -6074,8 +6075,8 @@ function timeCellHtml(time){
   const clock = x => { const c = /^(\d{1,2}(?::\d{2})?)\s*([AaPp]\.?[Mm]\.?)$/.exec(x.trim()); return c ? `<span class="t-clock">${escapeHtml(c[1])}</span><span class="t-mer">${escapeHtml(c[2].replace(/\./g,'').toUpperCase())}</span>` : null; };
   const m = t.match(/^(.+?)\s*[–—-]\s*(.+)$/);
   if(m && /\d/.test(m[1]) && /\d/.test(m[2])) return `${clock(m[1]) || escapeHtml(m[1])}<small>to ${escapeHtml(m[2])}</small>`;
-  // A domain in a free-text time hint ("See paxahau.com") may break before its TLD.
-  return clock(t) || escapeHtml(t).replace(/(\w)\.(?=[a-z]{2,}\b)/gi, '$1<wbr>.');
+  // A domain in a free-text time hint ("See paxahau.com") may break before its TLD (phones only: the break is added in the 480px block).
+  return clock(t) || escapeHtml(t).replace(/(\w)\.(?=[a-z]{2,}\b)/gi, '$1<span class="t-brk"></span>.');
 }
 
 // The artwork fallback: the Orbit field. Thin concentric arcs off one

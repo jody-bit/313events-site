@@ -23,7 +23,8 @@ assert.ok(/@media \(max-width:480px\)/.test(home), "index uses the 480px breakpo
 // Owner conditions: left inset on phones, and a long time hint ("See paxahau.com") may wrap before its TLD.
 assert.ok(/@media \(max-width:480px\)\{ \.evt-row\{padding-left:8px;\} \}/.test(home), "index phone left inset");
 assert.ok(/\.evt-time\{overflow-wrap:break-word;\}/.test(home), "time cell wraps long hints");
-assert.ok(home.includes("'$1<wbr>.'"), "time hint breaks before the TLD");
+assert.ok(home.includes("'$1<span class=\"t-brk\"></span>.'"), "time hint marks the TLD break");
+assert.ok(/@media \(max-width:480px\)\{[\s\S]*?\.evt-time \.t-brk::before\{content:"\\200b";\}/.test(home), "TLD break only on phones");
 for (const f of ["calendar.html", "map.html"]) {
   const css = read(f);
   assert.ok(vInset(css, ".evt-link::before") <= -16, f + " link inset");
