@@ -199,6 +199,16 @@ async function run() {
   }
   console.log("PASS: a feed that was empty before is quiet; one that had events and is now empty raises an unexpected_empty alert");
 
+  // 5b. a 200 that is not a calendar is a failure, not an empty calendar
+  {
+    const html = async () => ({ ok: true, status: 200, text: async () => "<html><title>Just a moment...</title></html>" });
+    const { body } = await runOnce({ feeds: [feed(1)], behavior: { "https://feed.example/1.ics": html } });
+    assert.strictEqual(kindOf(body, 1), "failed");
+    assert.strictEqual(body.results[0].result, health.NOT_A_CALENDAR_RESULT);
+    assert.ok(/new failures: Feed 1/.test(body.note), "failed feeds are named in the run note");
+  }
+  console.log("PASS: an HTML/challenge body is a failed fetch, not an empty calendar; failed feeds are named in the run note");
+
   // 6. stalled execution: closed once, alerted once
   {
     const stalledRows = [{ id: "run-1", started_at: "2026-10-19T22:00:47Z" }];

@@ -1044,6 +1044,9 @@ const handleRequest = async (req, res) => {
           pollResult = `Fetch failed: HTTP ${r.status}`;
         } else {
           const text = r.text;
+          // A 200 whose body is not a calendar (HTML, a challenge page, a truncated file) is a failed fetch, not an
+          // empty calendar: a valid VCALENDAR with no VEVENTs stays the legitimate zero below.
+          if (!/BEGIN:VCALENDAR/i.test(text)) throw new Error("not-a-calendar");
           const icsEvents = parseIcsEvents(text);
           const rows = icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, learnedVenueMap);
           const feedPolicy = policyFor(feedSource);
@@ -1072,7 +1075,7 @@ const handleRequest = async (req, res) => {
         }
       }
     } catch (err) {
-      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : "Error: " + err.message;
+      pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message;
     }
 
     results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult) });

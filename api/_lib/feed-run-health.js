@@ -36,6 +36,7 @@ const KINDS = Object.freeze({
 
 // The result strings api/cron-feeds.js has always written to feed_sources.last_poll_result.
 const TIMED_OUT_RESULT = "Fetch failed: timed out";
+const NOT_A_CALENDAR_RESULT = "Fetch failed: response was not an iCalendar (HTML, challenge page or truncated file)";
 const DEFERRED_RESULT = "Deferred: run time budget reached, will be polled first next run";
 const BLOCKED_RE = /^Fetch failed: HTTP (401|403)\b/;
 const FAILURE_RE = /^(Fetch failed|Error:|Skipped — unrecognized|Parsed \d+ events? but Supabase upsert failed)/;
@@ -113,6 +114,8 @@ function summarizeRun(entries, extras = {}) {
   if (persistent.length) parts.push(`${persistent.length} feed(s) persistently failing, unchanged since the previous poll: ${persistent.join(", ")}`.slice(0, 300));
   if (deferred) parts.push(`${deferred} deferred by the run budget`);
   if (stalled) parts.push(`${stalled} earlier run(s) closed as never finished`);
+  const failedNames = list.filter((e) => e.kind === KINDS.FAILED || e.kind === KINDS.BLOCKED || e.kind === KINDS.TIMEOUT).map((e) => e.venue);
+  if (failedNames.length) parts.unshift(`new failures: ${failedNames.join(", ")}`.slice(0, 300));
   if (parts.length) summary.note = parts.join("; ");
   return summary;
 }
@@ -155,6 +158,7 @@ module.exports = {
   KINDS,
   TIMED_OUT_RESULT,
   DEFERRED_RESULT,
+  NOT_A_CALENDAR_RESULT,
   RUN_FAILURE_KINDS,
   classifyFeedResult,
   orderFeedsForRun,
