@@ -19,6 +19,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 const ALLOWED = [
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
+  // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
+  "api/_lib/run-budget.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
@@ -35,6 +37,8 @@ const ALLOWED = [
   "api/cron-enrichment.js",
   // Link usability classification (issue #99, approved by the owner 2026-10-13): extends the existing link-health helper.
   "api/_lib/link-health.js",
+  // P0 link integrity (owner directive 2026-10-16 16:55Z): VisitDetroit importer stores the live /events/<slug>/ URL; changes no existing row.
+  "api/_lib/visitdetroit-link-recovery.js",
   // Admin queue Stage 4 (owner directive 2026-10-16): read-side BGSU geographic evidence audit; changes no row.
   "api/_lib/bgsu-geo-audit.js",
   // Admin queue Stage 3 (owner decisions 2026-10-16): read-side filter for the press link-review list.
