@@ -1295,6 +1295,10 @@ let whenMode = null;
 // not on every render, since "this weekend" only changes at midnight.
 let cachedWeekendDates = [];
 let selectedDate = null;
+// Set only by an explicit date choice (a day-cell click/Enter, or a WHEN shortcut). The next
+// showDayPanel() then scrolls the event list into view and clears it, so the initial page
+// load and later re-renders (filters, the live-data refresh) never move the viewport.
+let scrollToDayPanel = false;
 // originLocation: the chosen search-radius origin — {name, type, region,
 // lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
 // null means no location filter is active at all.
@@ -1791,7 +1795,7 @@ function renderMonth(){
     const dayLabel = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
     const countLabel = events.length ? `, ${events.length} event${events.length===1?'':'s'}` : ', no events';
     cell.setAttribute('aria-label', dayLabel + countLabel + (iso===todayISO ? ' (today)' : ''));
-    const openDay = ()=>{ selectedDate = iso; showDayPanel(iso); };
+    const openDay = ()=>{ selectedDate = iso; scrollToDayPanel = true; showDayPanel(iso); };
     cell.onclick = openDay;
     cell.onkeydown = (e)=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDay(); }
@@ -1906,7 +1910,11 @@ function showDayPanel(iso){
       `).join('');
   }
   panel.classList.add('show');
-  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  if(scrollToDayPanel){
+    scrollToDayPanel = false;
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panel.scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth', block:'start'});
+  }
 }
 function closeDayPanel(){ document.getElementById('dayPanel').classList.remove('show'); selectedDate=null; }
 
@@ -2281,6 +2289,7 @@ function render(){
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
+    scrollToDayPanel = false;
   } else if(mode === 'map'){
     const places = buildPlaces();
     // A place that was expanded can drop out of the filtered set entirely
@@ -2393,6 +2402,7 @@ function activateWhen(key){
     const t = new Date(todayIso+"T12:00:00");
     current = new Date(t.getFullYear(), t.getMonth(), 1);
     selectedDate = todayIso;
+    scrollToDayPanel = (mode === 'month');
   }
 
   updateWhenButtons();
@@ -2859,6 +2869,12 @@ function readStateFromURL(){
 }
 
 readStateFromURL();
+// A first visit (no date in the link) lands on the current month with today highlighted: open
+// today's event list too, so nobody has to click today to see it. Initial load never scrolls.
+if(!selectedDate && mode === 'month' && !whenMode){
+  const todayIso = getTodayISO();
+  if(current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1) selectedDate = todayIso;
+}
 buildFilterBar();
 render();
 
