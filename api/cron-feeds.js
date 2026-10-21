@@ -934,9 +934,16 @@ function feedLimits(env = process.env) {
 // run row says "partial"/"failed" instead of "success".
 // Persistent conditions (the same block or failure as the previous poll) are reported in the response and the run
 // note but do not make every run "partial"; new failures, timeouts and deferred feeds do.
+// Deferred feeds were not attempted: they are reported on their own (`deferred`) and make the run partial, but
+// they are not failures, so sources_failed in the run record counts real failures only.
 function feedSourceFailures(body) {
   const results = Array.isArray(body && body.results) ? body.results : [];
-  return { attempted: results.length, failed: results.filter((r) => health.RUN_FAILURE_KINDS.has(r && r.kind)).length };
+  const deferred = results.filter((r) => r && r.kind === health.KINDS.DEFERRED).length;
+  return {
+    attempted: results.length - deferred,
+    failed: results.filter((r) => health.RUN_FAILURE_KINDS.has(r && r.kind) && r.kind !== health.KINDS.DEFERRED).length,
+    deferred,
+  };
 }
 
 const handleRequest = async (req, res) => {
@@ -969,6 +976,7 @@ const handleRequest = async (req, res) => {
 
   // Bounded execution, stalled-run detection and ordering (see feedLimits above).
   const limits = feedLimits();
+  const runStartedAt = Date.now();
   const budget = createBudget({ budgetMs: limits.budgetMs });
   const stalledRuns = await health.closeStalledRuns({ supabaseUrl: SUPABASE_URL, headers: sbHeaders, olderThanMs: limits.stalledAfterMs });
   const resume = !!(req && req.query && ["1", "true"].includes(String(req.query.resume)));
@@ -988,8 +996,10 @@ const handleRequest = async (req, res) => {
   const venueDetailsMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const learnedVenueMap = await buildLearnedVenueAddressCityMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+  const preambleMs = Date.now() - runStartedAt; // feed list, stalled-run close and venue lookups, before the first feed
   for (const feedSource of orderedFeeds) {
     const previousResult = feedSource.last_poll_result;
+    const feedStartedAt = Date.now();
     // Safe retry: a re-run with ?resume=1 leaves feeds that were polled recently and did not fail alone.
     if (resume && health.shouldSkipOnResume(feedSource, Date.now(), limits.resumeWindowMs)) {
       results.push({ id: feedSource.id, venue: feedSource.venue_name, result: `Skipped (resume): polled OK at ${feedSource.last_polled_at}`, kind: health.KINDS.SKIPPED_RESUME });
@@ -1082,14 +1092,14 @@ const handleRequest = async (req, res) => {
       pollResult = isTimeout(err) ? health.TIMED_OUT_RESULT : err.message === "not-a-calendar" ? health.NOT_A_CALENDAR_RESULT : "Error: " + err.message;
     }
 
-    results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult) });
+    results.push({ id: feedSource.id, venue: feedSource.venue_name, result: pollResult, kind: health.classifyFeedResult(pollResult, previousResult), ms: Date.now() - feedStartedAt });
     await patchFeedSource(feedSource.id, { last_polled_at: new Date().toISOString(), last_poll_result: pollResult }, sbHeaders);
   }
 
   linkLog.flush();
   const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted });
   health.logAlerts(runHealth.alerts);
-  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
+  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, preambleMs, results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
 module.exports.feedSourceFailures = feedSourceFailures;

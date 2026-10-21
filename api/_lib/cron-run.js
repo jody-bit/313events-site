@@ -65,6 +65,7 @@ function classifyResponse(statusCode, body, options = {}) {
   } else if (options.sourceFailures) {
     const f = options.sourceFailures(b);
     if (f && f.failed > 0) outcome = f.failed >= f.attempted && !(written > 0) ? "failed" : "partial";
+    else if (f && f.deferred > 0) outcome = "partial"; // work was left undone: never "success"
   }
   fields.outcome = outcome;
   if (error) fields.error_sample = error;
@@ -75,6 +76,7 @@ function classifyResponse(statusCode, body, options = {}) {
   if (options.sourceFailures) {
     const f = options.sourceFailures(b);
     if (f) detail.sources_failed = f.failed;
+    if (f && f.deferred > 0) detail.sources_deferred = f.deferred;
   }
   if (Object.keys(detail).length) fields.session_data = detail;
   return fields;

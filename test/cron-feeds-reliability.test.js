@@ -129,6 +129,24 @@ async function run() {
     assert.deepStrictEqual(patchedIds, ["fs-2", "fs-3"], "deferred feeds are NOT patched, so they lead the next run");
     const run = classifyResponse(200, body, { sourceFailures: handlerOf(body).feedSourceFailures });
     assert.strictEqual(run.outcome, "partial", "a run that deferred feeds is partial, never success");
+    // deferred is its own count: sources_failed is real failures only (here none)
+    assert.strictEqual(run.session_data.sources_failed, 0, "deferred feeds are not failures");
+    assert.strictEqual(run.session_data.sources_deferred, 2);
+    // per-feed duration is recorded for polled feeds; the pre-loop time is reported once
+    assert.ok(body.results.filter((r) => r.kind === "ok").every((r) => Number.isFinite(r.ms) && r.ms >= 250), "polled feeds carry their duration");
+    assert.ok(body.results.filter((r) => r.kind === "deferred").every((r) => r.ms === undefined), "deferred feeds were not timed");
+    assert.ok(Number.isFinite(body.preambleMs) && body.preambleMs >= 0);
+  }
+  {
+    // real failures and deferrals together: counted separately, still partial; failures alone are unchanged
+    const mk = (kind) => ({ kind });
+    const f = classifyResponse(200, { upserted: 5, results: [mk("ok"), mk("failed"), mk("deferred"), mk("deferred")] }, { sourceFailures: handlerOf({}).feedSourceFailures });
+    assert.strictEqual(f.outcome, "partial");
+    assert.strictEqual(f.session_data.sources_failed, 1);
+    assert.strictEqual(f.session_data.sources_deferred, 2);
+    const noDefer = classifyResponse(200, { upserted: 5, results: [mk("ok"), mk("ok")] }, { sourceFailures: handlerOf({}).feedSourceFailures });
+    assert.strictEqual(noDefer.outcome, "success");
+    assert.strictEqual(noDefer.session_data.sources_deferred, undefined, "no deferral, no key");
   }
   console.log("PASS: feeds run oldest-polled first; when the budget cannot cover another feed the rest are deferred, unpatched, and the run is partial");
 
