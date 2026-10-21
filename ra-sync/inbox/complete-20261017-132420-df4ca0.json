@@ -1,0 +1,79 @@
+{
+  "runToken": "20261017-132420-df4ca0",
+  "action": "complete",
+  "runId": "f0756182-7547-48b3-8103-cdafa11e87ba",
+  "events": [
+    {
+      "id": "ra-2563406",
+      "title": "Music Observation Station",
+      "description": "",
+      "startDate": "2026-10-17T22:00:00.000",
+      "endDate": "2026-10-18T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/1f19c20d4020c5d2f9d93fa27281d3a5dc400192.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2563407",
+      "title": "Domingo",
+      "description": "",
+      "startDate": "2026-10-18T22:00:00.000",
+      "endDate": "2026-10-19T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/cc786b0c87f037dd7b44b2cfe7c6eb50fb442ce0.jpg",
+      "offersPrice": 11.2,
+      "url": "https://ra.co/events/2563407"
+    },
+    {
+      "id": "ra-2563412",
+      "title": "Sassy Soul Sunday",
+      "description": "",
+      "startDate": "2026-10-18T22:00:00.000",
+      "endDate": "2026-10-19T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/98491ade4b40fb46671f3ad00dfe15c3242f608d.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2563371",
+      "title": "Slow Jams 18 Year Anniversery",
+      "description": "Detroits longest running all vinyl night turns 18 years old ! Joining us will be the legendary DJ / Producer DJ Dez Andres play an all vinyl set .\n",
+      "startDate": "2026-10-26T22:00:00.000",
+      "endDate": "2026-10-27T02:00:00.000",
+      "venueName": "Woodbridge Pub",
+      "address": "5169 Trumbull Avenue, Detroit, MI 48208; United States",
+      "image": "https://images.ra.co/7d056473b4f6c1f8b3fd4fa7f1cf3b6db440357c.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2563281",
+      "title": "Decliner: CUT RATE RELEASE SHOW",
+      "description": "",
+      "startDate": "2026-11-14T20:00:00.000",
+      "endDate": "2026-11-15T02:00:00.000",
+      "venueName": "The Strays",
+      "address": "8850 Joseph Campau Ave, Hamtramck, MI 48212, USA",
+      "image": null,
+      "offersPrice": 11.5,
+      "url": "https://ra.co/events/2563281"
+    },
+    {
+      "id": "ra-2563254",
+      "title": "Swimming Paul - NORTH AMERICAN TOUR",
+      "description": "Swimming Paul\n\nFriday, February 26 \nBuilding 6 / Russell Industrial Center\n1600 Clay St.\n\nDoors at 9pm / 21+ Welcome",
+      "startDate": "2027-02-26T21:00:00.000",
+      "endDate": "2027-02-27T02:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "address": "1600 Clay Street; Detroit; Michigan; 48211",
+      "image": "https://images.ra.co/cd80743edb4e5f8ee7f657d7fdb9f6da4f69dfd9.png",
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}

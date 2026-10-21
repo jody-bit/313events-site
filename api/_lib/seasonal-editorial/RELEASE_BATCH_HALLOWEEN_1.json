@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 49,
-  "eligiblePublished": 29,
+  "ownerApproved": 45,
+  "eligiblePublished": 25,
   "held": 20,
-  "excluded": 3,
+  "excluded": 7,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -581,10 +581,10 @@
     "EXCLUDED, CLOSED: Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record."
    ],
    "disposition": {
-    "type": "closed",
-    "reason": "Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record.",
     "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
-    "recordedAt": "2026-10-12"
+    "recordedAt": "2026-10-12",
+    "type": "closed",
+    "reason": "Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record."
    },
    "publicCard": null
   },
@@ -801,70 +801,50 @@
    "inventoryNo": "24",
    "name": "Dearborn Haunted Trail",
    "city": "Dearborn",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "dearborn-haunted-trail",
-    "name": "Dearborn Haunted Trail",
-    "city": "Dearborn",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Haunted woodland trail",
-    "website": "https://dearborn.gov/dearborns-haunted-trail-returns-ford-field-park-oct-16-18",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-5.webp",
-      "/assets/seasonal/halloween-card-7.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: City of Dearborn listed Fri Oct 16 to Sun Oct 18, 7 PM; the final night is Oct 18. Retained as a non-public record."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "City of Dearborn listed Fri Oct 16 to Sun Oct 18, 7 PM; the final night is Oct 18. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "sanilac-museums-haunted-village",
    "inventoryNo": "25",
    "name": "Sanilac Museum's Haunted Village",
    "city": "Port Sanilac",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "sanilac-museums-haunted-village",
-    "name": "Sanilac Museum's Haunted Village",
-    "city": "Port Sanilac",
-    "region": "MI",
-    "categories": [
-     "haunted-attractions"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Evening trick-or-treating and spooky trails (family-friendly and scarier) at the Sanilac County Historical Museum village in Port Sanilac.",
-    "website": "https://sanilaccountymuseum.org/calendar-of-events/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-7.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-1.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: Museum calendar listed Saturdays Oct 10 and 17, 7-9 PM only; both dates have passed. Retained as a non-public record."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "Museum calendar listed Saturdays Oct 10 and 17, 7-9 PM only; both dates have passed. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "distracted-haunted-house",
@@ -1129,11 +1109,11 @@
     "EXCLUDED, DUPLICATE of scarehouse-windsor: Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record."
    ],
    "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12",
     "type": "duplicate",
     "of": "scarehouse-windsor",
-    "reason": "Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record.",
-    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
-    "recordedAt": "2026-10-12"
+    "reason": "Sub-offering of Scarehouse Windsor: same operator, site and address. Retained as a non-public record."
    },
    "publicCard": null
   },
@@ -1362,11 +1342,11 @@
     "EXCLUDED, DUPLICATE of halloween-hunt-the-haunts: Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record."
    ],
    "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
+    "recordedAt": "2026-10-12",
     "type": "duplicate",
     "of": "halloween-hunt-the-haunts",
-    "reason": "Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record.",
-    "recordedBy": "Jody Tyree (owner), Halloween final editorial decision; applied by editor",
-    "recordedAt": "2026-10-12"
+    "reason": "Same map and organizer (wehavefun.ca) as Halloween Hunt the Haunts; the organizer does not use the name 'Yard Haunt Map'. Retained as a non-public record."
    },
    "publicCard": null
   },
@@ -1409,70 +1389,50 @@
    "inventoryNo": "51",
    "name": "Spooky Jane's Walk",
    "city": "Windsor–Essex",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "spooky-janes-walk",
-    "name": "Spooky Jane's Walk",
-    "city": "Windsor–Essex",
-    "region": "ON",
-    "categories": [
-     "ghosts-history"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "A guided Spooky Jane's Walk through Sandwich's historic graves to the Duff-Baby Mansion in Windsor, a fundraiser for the Jane's Walk festival.",
-    "website": "https://www.windsorjaneswalk.ca/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__spooky-janes-walk__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-2.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: LauraF84, CC BY-SA 3.0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: Jane's Walk site listed a single walk, Saturday Oct 17, 11 AM-12 PM; it has passed. Retained as a non-public record."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "Jane's Walk site listed a single walk, Saturday Oct 17, 11 AM-12 PM; it has passed. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "sandwich-town-ghost-tour",
    "inventoryNo": "52",
    "name": "Sandwich Town Ghost Tour",
    "city": "Windsor",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "sandwich-town-ghost-tour",
-    "name": "Sandwich Town Ghost Tour",
-    "city": "Windsor",
-    "region": "ON",
-    "categories": [
-     "ghosts-history"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Historical ghost walk",
-    "website": "https://sandwichtown.ca/event/sandwich-town-ghost-tour-october-17-2026/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__sandwich-town-ghost-tour__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: Crisco 1492, CC BY-SA 4.0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: Sandwich Town BIA event page listed a single tour, Oct 17, 7:30-9:30 PM; it has passed. Retained as a non-public record."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), Halloween collection owner direction 2026-10-18 (cmsg_0139NVW4pFWSu54bJXVBHDMbAifer4FZsF8XZxtDFgkUHL); applied by editor",
+    "recordedAt": "2026-10-18",
+    "type": "ended",
+    "reason": "Sandwich Town BIA event page listed a single tour, Oct 17, 7:30-9:30 PM; it has passed. Retained as a non-public record.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   }
  ]
 }

@@ -164,8 +164,11 @@ function pickImage(images) {
   return chosenFrom.reduce((best, img) => ((img.width || 0) > (best.width || 0) ? img : best), chosenFrom[0]).url;
 }
 
+// null when Ticketmaster supplies no localTime (time not announced). The old
+// "Evening" fallback asserted a time of day the source never stated and, via the
+// merge upsert, overwrote any time already stored or corrected on the row.
 function formatTime(dateObj) {
-  if (!dateObj || !dateObj.localTime) return "Evening";
+  if (!dateObj || !dateObj.localTime) return null;
   const [h, m] = dateObj.localTime.split(":");
   let hour = parseInt(h, 10);
   const ap = hour >= 12 ? "PM" : "AM";
@@ -315,7 +318,9 @@ function shapeForDb(e, venueMap) {
     venue_address_raw: venueAddress,
     venue_city_raw: venueCity,
     start_date: start.localDate,
-    time_display: formatTime(start),
+    // Key omitted (not sent as null) when Ticketmaster has no time: a new row stores NULL, and the
+    // upsert's merge leaves any stored time on an existing row untouched.
+    ...(formatTime(start) ? { time_display: formatTime(start) } : {}),
     is_free: false,
     price_from: priceRange ? priceRange.min : null,
     ticket_url: affiliateTicketUrl(e.url),

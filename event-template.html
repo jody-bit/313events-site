@@ -44,7 +44,7 @@
   :root{
     --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --bg:#0A0A0A; --panel:#202020; --panel-alt:#161616; --panel-hover:#272727;
-    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#5c5d58;
+    --ink:#F2F0E8; --ink-soft:#A9AAA3; --ink-dim:#8a8b85;
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
@@ -108,6 +108,8 @@
     display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
     padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
   }
+  /* Dark badge text fails 4.5:1 on these three category colors; white passes (5.4 to 5.9:1). */
+  .evt-cat-badge[data-cat="music"],.evt-cat-badge[data-cat="food"],.evt-cat-badge[data-cat="gaming"]{color:#fff;}
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
@@ -115,6 +117,7 @@
   }
   .evt-detail-meta{font-size:15px;color:var(--ink-soft);margin-bottom:4px;overflow-wrap:anywhere;}
   .evt-detail-meta strong{color:var(--ink);font-weight:700;}
+  .evt-ended{display:inline-block;margin:2px 0 8px;padding:3px 10px;border:1px solid var(--ink-soft);border-radius:var(--radius);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   a.evt-venue-link{color:inherit;text-decoration:none;}
   a.evt-venue-link:hover{text-decoration:underline;}
   /* Street address (2026-09-04) — a plain "Get directions" link, distinct
@@ -240,6 +243,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/event-dates.js"></script>
 <script src="/config.js"></script>
 </head>
 <body>
@@ -263,6 +267,7 @@
       <div class="evt-cat-badge" id="evtCatBadge"></div>
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
+      <div class="evt-ended" id="evtEnded" style="display:none;">This event has ended</div>
       <div class="evt-detail-meta" id="evtWhere"></div>
       <a class="evt-address" id="evtAddress" style="display:none;" target="_blank" rel="noopener noreferrer"></a>
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
@@ -472,8 +477,85 @@ function parseTimeRange(timeStr){
   if(!resolved.length) return null;
   return {start: resolved[0].time, end: resolved.length>1 ? resolved[1].time : null};
 }
+// P0 date reliability (2026-10-16): a multiday range with no verified schedule is a published range, not daily
+// availability. The heading keeps the range and says so; the page offers no calendar export for it (Share stays), so
+// it never implies specific days.
+function isDatesUnconfirmed(e){
+  return typeof EventDates !== 'undefined' && EventDates.scheduleState({ date: e.date, start_date: e.date, end_date: e.endDate, endDate: e.endDate,
+    time: e.time, time_display: e.time, date_semantics: e.dateSemantics, occurrence_dates: e.occurrenceDates }) === 'unverified';
+}
+// #151: an event with evidenced occurrence dates (recurring + occurrence_dates) shows those dates, not its stored
+// range, and Add to Calendar uses the next one. "Today" is America/Detroit, as on the homepage.
+// Detroit "now": the date and the minutes after midnight in America/Detroit (Intl handles DST).
+function detroitNow(){
+  const p = {};
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Detroit', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'})
+    .formatToParts(new Date()).forEach(x=>{ p[x.type] = x.value; });
+  return { iso: `${p.year}-${p.month}-${p.day}`, mins: (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10) };
+}
+function detroitTodayIso(){ return detroitNow().iso; }
+function isoPlusOneDay(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  const n = new Date(y, m-1, d+1);
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+// Has this occurrence ended, in Detroit time? An explicit end clock time ends it then (an end earlier than the start
+// is an overnight run that ends the next morning); with no stated end time, the whole day counts and nothing is invented.
+function occurrenceEnded(e, occIso, now){
+  const range = parseTimeRange(e.time);
+  if(!range || !range.end) return now.iso > occIso;
+  const startM = range.start.h * 60 + range.start.m, endM = range.end.h * 60 + range.end.m;
+  if(endM < startM){
+    const nx = isoPlusOneDay(occIso);
+    return now.iso > nx || (now.iso === nx && now.mins >= endM);
+  }
+  return now.iso > occIso || (now.iso === occIso && now.mins >= endM);
+}
+function occurrenceDays(e){
+  if(typeof EventDates === 'undefined' || EventDates.semanticsOf(e) !== 'recurring') return null;
+  const days = EventDates.expand(e);
+  return days.length ? days : null;
+}
+// The occurrence to export: the first one that has not ended, else the last one that was evidenced.
+function nextOccurrence(e){
+  const days = occurrenceDays(e);
+  if(!days) return null;
+  const now = detroitNow();
+  return days.find(d=>!occurrenceEnded(e, d, now)) || days[days.length - 1];
+}
+// Add to Calendar is offered only when there is something to add: not for unverified dates, and not when the event has
+// verified occurrence dates and every one of them has ended.
+function calendarExportAvailable(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const days = occurrenceDays(e);
+  if(!days) return true;
+  const now = detroitNow();
+  return days.some(d=>!occurrenceEnded(e, d, now));
+}
+// Has the event ended for good? Only when its dates are verified and the final verified occurrence has ended in Detroit
+// time (same rule as occurrenceEnded: stated end, else overnight end, else end of the Detroit day). Unverified dates are
+// never "ended": the page cannot say when, or whether, anything happened. Nothing here infers an end time.
+function eventHasEnded(e){
+  if(isDatesUnconfirmed(e)) return false;
+  const now = detroitNow();
+  const days = occurrenceDays(e);
+  if(days) return days.every(d=>occurrenceEnded(e, d, now));
+  const continuous = typeof EventDates !== 'undefined' && EventDates.semanticsOf(e) === 'continuous';
+  const finalIso = continuous ? (e.endDate || e.date) : e.date;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(finalIso || '')) return false;
+  return occurrenceEnded(e, finalIso, now);
+}
+function upcomingOccurrences(e){
+  const days = occurrenceDays(e);
+  if(!days) return null;
+  const today = detroitTodayIso();
+  const up = days.filter(d=>d >= today);
+  return up.length ? up : [days[days.length - 1]];
+}
 function pad2(n){ return String(n).padStart(2,'0'); }
 function eventDateTimeParts(e){
+  const occ = nextOccurrence(e);
+  if(occ) e = Object.assign({}, e, {date: occ, endDate: occ});
   const [y,m,d] = e.date.split('-').map(Number);
   const range = parseTimeRange(e.time);
   const dateStr = `${y}${pad2(m)}${pad2(d)}`;
@@ -503,6 +585,9 @@ function eventDateTimeParts(e){
       endDateStr = `${next.getFullYear()}${pad2(next.getMonth()+1)}${pad2(next.getDate())}`;
     }
   } else {
+    // Technical convention (DEC-028): a start with no stated end gets a two-hour calendar block. It sizes the
+    // calendar entry only; it is not an event end time, is never shown on the page, and plays no part in deciding
+    // whether the event has ended (that uses the stated end, else the end of the Detroit day).
     const endDt = new Date(y, m-1, d, range.start.h, range.start.m + 120);
     endDateStr = `${endDt.getFullYear()}${pad2(endDt.getMonth()+1)}${pad2(endDt.getDate())}`;
     endTime = `${pad2(endDt.getHours())}${pad2(endDt.getMinutes())}00`;
@@ -515,6 +600,8 @@ const icsEscape = CalendarLocation.icsEscape;
 const foldICSLine = CalendarLocation.foldICSLine;
 function buildEventDescription(e){
   const parts = [];
+  const occDays = upcomingOccurrences(e);
+  if(occDays && occDays.length > 1) parts.push('Also on: ' + occDays.slice(1, 6).map(d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short', day:'numeric'})).join(', ') + (occDays.length > 6 ? ` and ${occDays.length - 6} more` : ''));
   if(e.description) parts.push(truncateText(e.description, 300));
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
   if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
@@ -549,7 +636,7 @@ function buildGoogleCalUrl(e){
 function shareEvent(e){
   const dateLabel = dateRangeLabel(e, 'short');
   const bits = [e.title, e.venue].filter(Boolean).join(' — ');
-  const when = [dateLabel, e.time].filter(Boolean).join(' ');
+  const when = [dateLabel, isDatesUnconfirmed(e) ? '' : e.time].filter(Boolean).join(' ');
   const text = when ? `${bits} (${when})` : bits;
   const url = window.location.href;
   if(navigator.share){ navigator.share({title: e.title, text, url}).catch(()=>{}); return; }
@@ -606,6 +693,8 @@ function mapRow(row) {
     // it also fixes Add to Calendar (eventDateTimeParts()) always creating
     // a 1-day entry for a multi-day event regardless of its real span.
     endDate: row.end_date || row.start_date,
+    dateSemantics: row.date_semantics || null,
+    occurrenceDates: row.occurrence_dates || null,
     title: decodeEntities(row.title),
     description: row.description ? decodeEntities(row.description) : undefined,
     imageUrl: row.image_url || undefined,
@@ -626,7 +715,7 @@ function mapRow(row) {
     locVenueZip: row.venues && row.venues.zip_code ? row.venues.zip_code : undefined,
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     // See migration_034_clothing_optional.sql.
     clothingOptional: !!row.is_clothing_optional,
@@ -650,6 +739,11 @@ function mapRow(row) {
 // prominent evtWhen heading, 'short' for the share-sheet text.
 function dateRangeLabel(e, weekdayStyle){
   const opts = {weekday: weekdayStyle, month: weekdayStyle === 'long' ? 'long' : 'short', day: 'numeric'};
+  const occDays = upcomingOccurrences(e);
+  if(occDays){
+    const fmt = d=>new Date(d+"T12:00:00").toLocaleDateString('en-US', opts);
+    return occDays.slice(0, 4).map(fmt).join(' · ') + (occDays.length > 4 ? ` · +${occDays.length - 4} more` : '');
+  }
   const start = new Date(e.date+"T12:00:00").toLocaleDateString('en-US', opts);
   if(!e.endDate || e.endDate <= e.date) return start;
   const end = new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US', opts);
@@ -710,8 +804,9 @@ function renderEvent(e){
   const badge = document.getElementById('evtCatBadge');
   badge.textContent = cat.label;
   badge.style.background = cat.color;
+  badge.dataset.cat = e.cat || '';
   document.getElementById('evtTitle').textContent = e.title;
-  document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time?` · ${escapeHtml(e.time)}`:''}`;
+  document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this
   // event resolved to a real venues row (venue_id) — stays plain text for
   // the "Venue TBA"/unmatched cases rather than linking to a guessed page.
@@ -737,6 +832,8 @@ function renderEvent(e){
   priceHtml(e);
 
   // ---- actions ----
+  // Ended-event message: the dates in the heading stay as they are.
+  document.getElementById('evtEnded').style.display = eventHasEnded(e) ? 'inline-block' : 'none';
   const actions = document.getElementById('evtActions');
   let actionsHtml = '';
   // "Tickets & info" uses ticket_url when valid, otherwise event_url.
@@ -757,13 +854,18 @@ function renderEvent(e){
       actionsHtml += `<a class="btn-secondary" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener noreferrer">Browse on Resident Advisor &rarr;</a>`;
     }
   }
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
-  // Blob + download, not a bare `data:` URI — see index.html's identical
-  // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
-  // and iPhone with the old data: URI approach).
-  const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
-  const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
-  actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  // Dates not confirmed (owner decision 2026-10-17, option B): no Add to Calendar at all. An export would either span the
+  // whole stored range or invent a day, and either reads as confirmed attendance. Likewise when every verified
+  // occurrence has ended (owner decision 2026-10-17). Share and Tickets stay.
+  if(calendarExportAvailable(e)){
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(buildGoogleCalUrl(e))}" target="_blank" rel="noopener noreferrer">Add to Google Cal</a>`;
+    // Blob + download, not a bare `data:` URI — see index.html's identical
+    // addToCalendarHtml() comment for why (2026-09-04: broken on Mac Safari
+    // and iPhone with the old data: URI approach).
+    const icsBlobUrl = URL.createObjectURL(new Blob([buildICS(e)], {type:'text/calendar;charset=utf-8'}));
+    const icsFilename = `${(e.title||'event').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'event'}.ics`;
+    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(icsBlobUrl)}" download="${escapeHtml(icsFilename)}">Apple/Outlook</a>`;
+  }
   actionsHtml += `<button type="button" class="btn-secondary" id="evtShareBtn" onclick="shareEvent(currentEvent)">Share</button>`;
   actions.innerHTML = actionsHtml;
   // No street address -> the calendar entry is not navigable; mark it for QA/enrichment (DEBT-013).
@@ -917,7 +1019,7 @@ async function init(){
     return;
   }
   try {
-    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional`;
+    const url = `${SUPABASE_URL}/rest/v1/events?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=id,title,description,image_url,start_date,end_date,venue_name_raw,venue_address_raw,venue_city_raw,venue_id,venues(name,address,city,zip_code,lat,lng),category,time_display,is_free,source,ticket_url,event_url,price_from,ticket_status,is_clothing_optional,date_semantics,occurrence_dates`;
     const resp = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
     if(!resp.ok) throw new Error('fetch failed');
     const rows = await resp.json();

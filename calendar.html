@@ -50,7 +50,7 @@
     --panel-hover:#272727;
     --ink:#F2F0E8;         /* warm white — primary text */
     --ink-soft:#A9AAA3;    /* concrete — secondary/metadata text */
-    --ink-dim:#5c5d58;     /* dim concrete — otherMonth / disabled text */
+    --ink-dim:#8a8b85;     /* dim concrete — otherMonth / disabled text */
     --line:#2c2c2c;
     --line-soft:#212121;
     --accent:#D7FF00;      /* signal chartreuse — state only: live, selected, active */
@@ -326,7 +326,7 @@
      dims slightly as a temporal cue. Events, pills, and counts stay at full
      opacity so nothing reads as "disabled". Doesn't apply to .today, which
      has its own treatment, or otherMonth cells (already dimmed via panel-alt). */
-  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.55;}
+  .day-cell.past:not(.today):not(.otherMonth) .daynum{opacity:.75;}
   .today-label{
     font-family:'Inter',sans-serif;font-size:9px;font-weight:800;letter-spacing:.05em;
     color:var(--accent);text-transform:uppercase;
@@ -370,7 +370,7 @@
      file's comment for the full reasoning. */
   .evt-main-body{display:flex;gap:10px;align-items:flex-start;min-width:0;}
   .evt-thumb{flex:0 0 auto;width:52px;height:52px;object-fit:cover;border-radius:var(--radius);background:var(--panel-alt);}
-  .evt-text{min-width:0;flex:1 1 auto;}
+  .evt-text{min-width:0;flex:1 1 auto;overflow-wrap:anywhere;}
   .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
   /* 2026-08-28: same title-link + description-excerpt treatment added to
      index.html — see that file's comments for the full reasoning. */
@@ -395,6 +395,9 @@
   .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
+  .evt-link{position:relative;}
+  .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
+  @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
 
   /* List view */
   #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
@@ -512,6 +515,12 @@
     padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;
   }
   .es-action:hover{background:var(--panel-hover);}
+  .es-title{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.02em;text-transform:uppercase;}
+  .es-copy{margin-top:6px;}
+  .es-action{text-transform:uppercase;letter-spacing:.04em;}
+  .es-submit{margin-top:16px;font-size:13px;}
+  .es-submit a{color:var(--accent);font-weight:700;letter-spacing:.02em;text-decoration:none;white-space:nowrap;}
+  .es-submit a:hover{text-decoration:underline;}
 
   footer.site{margin-top:26px;font-size:12px;color:var(--ink-soft);line-height:1.6;}
   footer.site a{color:var(--ink-soft);}
@@ -539,7 +548,13 @@
   footer.site .footer-credit a{color:var(--ink-dim);text-decoration:underline;}
 
   @media (max-width:720px){
-    .day-cell{min-height:78px;}
+    .day-cell{min-height:78px;padding:5px 3px 6px;}
+    /* Seven columns at phone width leave a cell about 47px of text room. "N EVENTS" and "TODAY" beside the day number
+       were cut off by the cell's overflow:hidden, so the day number and label stack and the count drops its unit word
+       (the cell's aria-label still says "N events"; the dot + number is the whole visual count). */
+    .daynum{flex-wrap:wrap;gap:0 4px;}
+    .today-label{white-space:nowrap;font-size:8px;letter-spacing:0;}
+    .day-count .dc-word{display:none;}
     .pill{display:none;}
     .more-link{display:none;} /* redundant once .day-count shows the total */
     #monthLabel{min-width:0;}
@@ -604,10 +619,17 @@
   }
   .sheet-close:hover{background:var(--ink);color:var(--bg);}
 
+  @media (max-width:360px){
+    .mobile-triggers .mobile-trigger{padding-left:4px;padding-right:4px;}
+    .mobile-triggers .mobile-trigger .mt-sub{font-size:11.5px;}
+    .today-label{font-size:7.5px;}
+    .mobile-triggers .mobile-trigger .mt-sub::after{content:none;} /* the caret cost the room "Everywhere" needs at 320px */
+  }
   @media (max-width:720px){
     .discovery-shell{padding:10px 10px 0;background:none;border:none;}
-    .mobile-trigger{align-items:center;text-align:center;}
+    .mobile-trigger{align-items:center;text-align:center;padding:9px 6px;} /* 12px side padding cut "Everywhere" to "Everywh…" at 375px */
     .mobile-trigger .mt-label{display:none;} /* label redundant at this width — "Today"/"Detroit Orbit" already reads as the answer */
+    .mobile-trigger .mt-sub{font-size:12px;}
 
     .sheet-backdrop{
       /* z-index 900+ (not the old 39/40) — Leaflet's own panes go up to
@@ -755,6 +777,7 @@
   </div>
 
   <div id="listView"></div>
+  <div id="unconfirmedResults"></div>
 
   <!-- Map view (2026-08-28) — same #leafletMap/#cityRail structure as the
        dedicated map.html page, reused verbatim so a visitor sees the exact
@@ -1406,10 +1429,10 @@ function matchesFilters(e){
   if(whenMode){
     const todayIso = getTodayISO();
     if(whenMode === 'weekend'){
-      if(!cachedWeekendDates.includes(e.date)) return false;
+      if(!cachedWeekendDates.some(d => EventDates.isActiveOn(e, d))) return false; // the shared rule, not just the start date (2026-10-16)
     } else {
       // now / today / tonight are all "today", narrowed further below
-      if(e.date !== todayIso) return false;
+      if(!EventDates.isActiveOn(e, todayIso)) return false; // the shared rule, not just the start date (2026-10-16)
       if(whenMode === 'now'){
         // Same fix applied to index.html's default list view (Jody,
         // 2026-08-28: "just because it began already doesn't mean the user
@@ -1741,7 +1764,7 @@ function renderMonth(){
     if(events.length){
       const count = document.createElement('div');
       count.className = 'day-count';
-      count.innerHTML = `<span class="dot"></span>${events.length} EVENT${events.length===1?'':'S'}`;
+      count.innerHTML = `<span class="dot"></span><span>${events.length}<span class="dc-word"> EVENT${events.length===1?'':'S'}</span></span>`;
       cell.appendChild(count);
     }
 
@@ -1852,7 +1875,7 @@ function showDayPanel(iso){
   const label = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
   if(!events.length){
-    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${emptyStateMessage()}</div>`;
+    panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2><div class="empty-state">${unconfirmedSearchHits().length ? 'No confirmed events on this day. Matching events with unconfirmed dates are listed below.' : emptyStateMessage()}</div>`;
   } else {
     panel.innerHTML = `<h2>${label} <button onclick="closeDayPanel()">Close ✕</button></h2>` +
       events.map(e=>`
@@ -1933,20 +1956,25 @@ function renderList(dateList){
         </div>
       `).join('') + `</div>`;
   }
-  el.innerHTML = any ? html : `<div class="empty-state">${emptyStateMessage(dateList ? null : fmtMonth(current))}</div>`;
+  el.innerHTML = any ? html : (unconfirmedSearchHits().length ? '' : `<div class="empty-state">${emptyStateMessage()}</div>`);
 }
 
-// Shared empty-state copy for both the list and day-panel views. Per the
-// brief: never a dead end — always paired with concrete actions to widen
-// the search, not just a flat "nothing here."
-function emptyStateMessage(scopeLabel){
-  const actions = [];
-  if(whenMode) actions.push(`<button type="button" class="es-action" onclick="clearAllFilters()">Clear all filters</button>`);
-  if(originLocation && radiusMiles !== 'all' && radiusMiles !== null) actions.push(`<button type="button" class="es-action" onclick="expandRadius()">Expand radius</button>`);
-  if(activeCats.size < Object.keys(CATS).length) actions.push(`<button type="button" class="es-action" onclick="activeCats=new Set(Object.keys(CATS));buildFilterBar();render();">Show all categories</button>`);
-  if(query) actions.push(`<button type="button" class="es-action" onclick="query='';document.getElementById('search').value='';render();">Clear search</button>`);
-  const scope = scopeLabel ? ` in ${escapeHtml(scopeLabel)}` : '';
-  return `Nothing on the signal here${scope}.` + (actions.length ? `<div class="es-actions">${actions.join('')}</div>` : '');
+// Shared empty-state copy for the list, day-panel and map-rail views. Per the brief: never a dead end — a reset, a way
+// back to the search box, and the submission workflow for an event we do not list. It is only drawn when nothing
+// matches at all (the list view also checks the "Dates not confirmed" search section first).
+function emptyStateMessage(){
+  return `<div class="es-title">NOTHING FOUND IN THE DETROIT ORBIT.</div>
+    <div class="es-copy">Try a different search or reset your filters.</div>
+    <div class="es-actions"><button type="button" class="es-action" onclick="tryAgainSearch()">TRY AGAIN</button><button type="button" class="es-action" onclick="clearAllFilters()">RESET FILTERS</button></div>
+    <div class="es-submit"><span>Don't see your event?</span> <a href="submit.html">SUBMIT AN EVENT &rarr;</a></div>`;
+}
+// TRY AGAIN: back to the search box with its text selected, so the next keystroke replaces the search.
+function tryAgainSearch(){
+  const input = document.getElementById('search');
+  if(!input) return;
+  input.scrollIntoView({behavior:'smooth', block:'center'});
+  input.focus();
+  input.select();
 }
 
 // ---- Map view (net-new, 2026-08-28) ----
@@ -2205,6 +2233,44 @@ function updateMapStat(places){
     : '';
 }
 
+// Search results for schedule-unverified events (owner decision 2026-10-16). Date cells stay confirmed-occurrence-only,
+// so an unverified range is on no day; when the visitor is searching it is offered here, outside the grid, in its own
+// "Dates not confirmed" section with the published range. Hidden without a search, in the map view, and whenever a
+// date filter (Today/Tonight/Weekend...) is on, because matchesFilters rejects unverified rows under those.
+// The schedule-unverified events matching the current search, for the section below and for the empty state (which
+// must not claim "nothing found" while this section has results). Empty without a search and in the map view.
+function unconfirmedSearchHits(){
+  if(!query || mode === 'map') return [];
+  const todayIso = getTodayISO();
+  const seen = new Set();
+  return EVENTS.filter(e=>{
+    if(e.id != null){ if(seen.has(e.id)) return false; seen.add(e.id); }
+    if(EventDates.scheduleState(e) !== 'unverified') return false;
+    if((e.endDate || e.date) < todayIso) return false; // the published range has ended
+    return matchesFilters(e);
+  }).sort((a,b)=> a.date < b.date ? -1 : a.date > b.date ? 1 : (a.title < b.title ? -1 : 1));
+}
+function renderUnconfirmedResults(){
+  const el = document.getElementById('unconfirmedResults');
+  if(!el) return;
+  const hits = unconfirmedSearchHits();
+  if(!hits.length){ el.innerHTML = ''; return; }
+  const range = e => e.endDate && e.endDate > e.date
+    ? `${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})} \u2013 ${new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short',day:'numeric'})}` : '';
+  el.innerHTML = `<div class="list-day-group"><div class="list-day-heading">Dates not confirmed</div>` + hits.map(e=>`
+    <div class="evt-row">
+      <div class="evt-time">${escapeHtml(e.time)||''}</div>
+      <div class="evt-main"><div class="evt-main-body"><div class="evt-text">
+        <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
+        <div class="evt-meta">
+          <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+          <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
+        </div>
+        ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}
+      </div></div></div>
+    </div>`).join('') + `</div>`;
+}
+
 function render(){
   updateMonthHeader();
   updateWhenButtons();
@@ -2229,6 +2295,7 @@ function render(){
   } else {
     renderList(whenMode === 'weekend' ? cachedWeekendDates : null);
   }
+  renderUnconfirmedResults();
   syncURL();
 }
 
@@ -2891,7 +2958,7 @@ function mapSupabaseRow(row) {
     canonicalLat: vd.lat,
     canonicalLng: vd.lng,
     cat: row.category,
-    time: row.time_display || "",
+    time: EventDates.displayTime(row.time_display || ""),
     free: !!row.is_free,
     source: row.source || "Manual",
     ticketUrl: row.ticket_url || undefined,

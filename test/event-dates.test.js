@@ -77,8 +77,10 @@ function run() {
   assert.deepStrictEqual(ED.expand(outside), ["2026-10-03", "2026-10-17"]);
   assert.strictEqual(ED.reviewReason(outside), "occurrence-outside-range");
 
-  // Recurring with no usable dates: coverage kept (legacy range), routed to review.
-  assert.deepStrictEqual(ED.expand(ROWS.recurringNoDates), legacyExpand("2026-10-15", "2026-11-08"));
+  // REWRITTEN 2026-10-16 (owner decision: unknown schedule never means daily availability).
+  // Recurring with no usable dates is schedule-unverified: no daily listing, routed to review.
+  assert.deepStrictEqual(ED.expand(ROWS.recurringNoDates), []);
+  assert.strictEqual(ED.scheduleState(ROWS.recurringNoDates), "unverified");
   assert.strictEqual(ED.reviewReason(ROWS.recurringNoDates), "recurring-without-dates");
 
   // ---------------------------------------------------------------
@@ -97,18 +99,23 @@ function run() {
   assert.strictEqual(gbLate[gbLate.length - 1], "2026-12-30", "exhibition still listed through its end date");
   assert.ok(ED.expand(ROWS.glennBarrExhibition).slice(-1)[0] < "2026-12-30", "without a floor the cap ends the list early (why pages pass one)");
   assert.strictEqual(ED.reviewReason(ROWS.glennBarrLegacy), "unclassified-multiday-clock-time");
-  assert.ok(ED.expand(ROWS.glennBarrLegacy, TODAY).length > 1, "legacy row keeps its listings until classified");
+  // REWRITTEN 2026-10-16: an unclassified multiday range is not listed on specific days until classified.
+  assert.deepStrictEqual(ED.expand(ROWS.glennBarrLegacy, TODAY), [], "unclassified range is not daily availability");
+  assert.strictEqual(ED.scheduleState(ROWS.glennBarrLegacy), "unverified");
 
   // ---------------------------------------------------------------
-  // Kent Myers: unclassified legacy range keeps full coverage and is flagged.
+  // Kent Myers: REWRITTEN 2026-10-16: an unclassified range is no longer listed daily; it is flagged.
   // ---------------------------------------------------------------
-  assert.deepStrictEqual(ED.expand(ROWS.kentMyers), legacyExpand("2026-11-14", "2027-01-06"));
+  assert.deepStrictEqual(ED.expand(ROWS.kentMyers), []);
   assert.strictEqual(ED.reviewReason(ROWS.kentMyers), "unclassified-multiday-clock-time");
   // Classifying it continuous (once its source says so) clears the review flag.
   assert.strictEqual(ED.reviewReason({ ...ROWS.kentMyers, dateSemantics: "continuous" }), null);
 
   // ---------------------------------------------------------------
-  // Backwards compatibility: unclassified rows list exactly as before.
+  // REWRITTEN 2026-10-16. Was: unclassified rows list every day of start..end.
+  // Now: an unclassified single-date row lists its date; an unclassified multiday
+  // range (no overnight evidence) lists no specific date; a classified continuous
+  // row keeps the exact legacy listing.
   // ---------------------------------------------------------------
   const starts = ["2026-01-01", "2026-09-30", "2026-10-13", "2026-12-31", "2027-02-28"];
   const spans = [0, 1, 2, 7, 59, 60, 61, 120, 364];
@@ -118,7 +125,8 @@ function run() {
     const end = n === 0 ? undefined : new Date(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10) + n)).toISOString().slice(0, 10);
     const e = { date: s, endDate: end || s };
     const multi = !!e.endDate && e.endDate > e.date;
-    assert.deepStrictEqual(ED.expand(e, multi ? f : null), legacyExpand(s, e.endDate, multi ? f : null), `${s}+${n} floor ${f}`);
+    assert.deepStrictEqual(ED.expand(e, multi ? f : null), multi ? [] : [s], `unclassified ${s}+${n} floor ${f}`);
+    assert.deepStrictEqual(ED.expand({ ...e, dateSemantics: "continuous" }, multi ? f : null), legacyExpand(s, e.endDate, multi ? f : null), `continuous ${s}+${n} floor ${f}`);
     compared++;
   }
   assert.ok(compared >= 100);
@@ -139,7 +147,7 @@ function run() {
   const today = D.change(D.defaults(), { when: "today" });
   assert.strictEqual(D.matches(toEv(ROWS.harvestFestival), today, { now: FRI }), false, "recurring: not on an unlisted weekday");
   assert.strictEqual(D.matches(toEv(ROWS.harvestFestival), today, { now: SAT }), true, "recurring: on a listed Saturday");
-  assert.strictEqual(D.matches(toEv(ROWS.kentMyers), D.change(D.defaults(), { when: "all" }), { now: FRI }), true, "legacy rows still match");
+  assert.strictEqual(D.matches(toEv(ROWS.kentMyers), D.change(D.defaults(), { when: "all" }), { now: FRI }), true, "unverified rows stay in general (date-less) browsing");
   assert.strictEqual(D.matches(toEv(ROWS.glennBarrExhibition), today, { now: FRI }), true, "continuous: active on any day of its run");
   assert.strictEqual(D.matches(toEv(ROWS.raLateNight), D.change(D.defaults(), { when: "tomorrow" }), { now: SAT }), false, "single: its 'through' day is not a second night");
   assert.strictEqual(D.matches(toEv(ROWS.raLateNight), D.change(D.defaults(), { when: "tomorrow" }), { now: FRI }), true, "single: it is on tomorrow's list on its own night");
