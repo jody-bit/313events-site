@@ -38,7 +38,7 @@ function requestAuthorized(req) {
   return cronAuthStatus(req) === "ok";
 }
 
-const SESSION_KEYS = ["note", "skipped", "skippedPast", "checked", "checkedUrls", "checkedCount", "feedsChecked", "excludedByCategory", "excludedByDate"];
+const SESSION_KEYS = ["note", "skipped", "skippedPast", "checked", "checkedUrls", "checkedCount", "feedsChecked", "excludedByCategory", "excludedByDate", "rangesPreserved"];
 
 function upstreamStatus(error) {
   const m = /\bHTTP (\d{3})\b/.exec(String(error || ""));
