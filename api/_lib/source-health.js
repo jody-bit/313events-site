@@ -55,6 +55,16 @@ const STALE_MIN_EVENTS = 3;
 const VOLUME_DEVIATION_RATIO = 0.5;
 const VOLUME_DEVIATION_MIN_ABS = 5;
 const STARTED_RUN_TIMEOUT_MINUTES = 15; // same budget as api/cron-healthcheck.js
+// Abandoned-run history (owner GO 2026-10-20): a run that started and never
+// finished must stay visible after a later run succeeds. Looks at the runs
+// BEFORE the latest one (the latest is already judged by `execution`), within
+// the same 30-day window the callers load. Older than the timeout means
+// abandoned (platform kill / crash), whatever ran after it. It lowers a source
+// to "degraded" for ABANDONED_RAISE_DAYS after the most recent one, then stays
+// as an advisory line so the evidence is never silently dropped. Pure
+// evaluation: nothing is written, cancelled or relabelled.
+const ABANDONED_LOOKBACK_RUNS = 14;
+const ABANDONED_RAISE_DAYS = 3;
 
 // Which connector produced an event. external_id prefixes are each
 // connector's own construction (see the cron-*.js files); Ticketmaster
@@ -269,6 +279,7 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
       zeroFetchStreak: streak(done, (r) => r.records_fetched === 0),
       zeroWriteStreak: streak(done, (r) => r.records_written === 0 && !(r.records_fetched === 0)),
       lastRetrievingRunStartedAt: lastRetrieving ? lastRetrieving.started_at : null,
+      history: null,
       upcomingPublic: publicUpcoming.length,
       upcomingPending: evs.filter((e) => e.status === "pending_review").length,
       lastSeenPublicAt: null,
@@ -331,6 +342,21 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
         out[field] = { latest: cur, baselineMedian: base, deviates };
       }
       s.volume = out;
+    }
+
+    // earlier runs (before the latest) that were abandoned or failed
+    {
+      const earlier = allRuns.slice(1, 1 + ABANDONED_LOOKBACK_RUNS);
+      const abandoned = earlier.filter((r) => r.outcome === "started" && !r.finished_at && nowMs - ms(r.started_at) > STARTED_RUN_TIMEOUT_MINUTES * 60000);
+      const failedEarlier = earlier.filter((r) => r.outcome === "failed" || r.outcome === "blocked");
+      s.history = {
+        runsExamined: earlier.length,
+        abandonedEarlier: abandoned.length,
+        mostRecentAbandonedAt: abandoned.length ? abandoned[0].started_at : null, // allRuns is newest first
+        oldestAbandonedAt: abandoned.length ? abandoned[abandoned.length - 1].started_at : null,
+        failedEarlier: failedEarlier.length,
+        mostRecentFailedAt: failedEarlier.length ? failedEarlier[0].started_at : null,
+      };
     }
 
     // ---- dimensions ----
@@ -401,6 +427,20 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
         why.push(`Inventory re-seen on schedule (${Math.round(s.reseenShare * 100)}%; basis ${s.currencyBasis})`);
       }
     }
+    if (s.history && s.history.abandonedEarlier > 0) {
+      const h = s.history;
+      const recent = nowMs - ms(h.mostRecentAbandonedAt) <= ABANDONED_RAISE_DAYS * 24 * HOUR_MS;
+      const text = `${h.abandonedEarlier} earlier run(s) started and never finished (most recent ${h.mostRecentAbandonedAt}${h.abandonedEarlier > 1 ? `, oldest ${h.oldestAbandonedAt}` : ""}) — probable timeout; a later run does not clear this`;
+      if (schedule && recent) {
+        raise("degraded");
+        why.push(text);
+      } else {
+        why.push(text + (recent ? "" : ` (advisory: older than ${ABANDONED_RAISE_DAYS} days)`));
+      }
+    }
+    if (s.history && s.history.failedEarlier > 0) {
+      why.push(`${s.history.failedEarlier} earlier run(s) failed or were blocked (most recent ${s.history.mostRecentFailedAt}) — advisory, history kept`);
+    }
     if (!s.runLogged && schedule && s.upcomingPublic === 0 && s.upcomingPending === 0) {
       why.push("No run log and no upcoming events at all — no evidence this source produces anything");
     }
@@ -450,6 +490,9 @@ module.exports = {
   EXTERNAL_SCHEDULES,
   NO_REOBSERVATION,
   STREAK_FAILING,
+  ABANDONED_LOOKBACK_RUNS,
+  ABANDONED_RAISE_DAYS,
+  STARTED_RUN_TIMEOUT_MINUTES,
   STALE_SHARE_THRESHOLD,
   attributeEvent,
   parseCronCadenceHours,
