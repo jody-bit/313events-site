@@ -45,6 +45,10 @@ const patch = (calls) => calls.filter((c) => c.method === "PATCH").map((c) => c.
   assert.strictEqual(ok.records_written, 4);
   assert.strictEqual(ok.records_fetched, undefined, "fetched/parsed are never invented");
   assert.deepStrictEqual(ok.session_data, { skippedPast: 2, feedsChecked: 1 });
+  // VisitDetroit reports how many stored ranges the refresh preserved (MC-RANGE); it reaches the run record, 0 included.
+  assert.deepStrictEqual(classifyResponse(200, { upserted: 9, rangesPreserved: 3 }).session_data, { rangesPreserved: 3 });
+  assert.deepStrictEqual(classifyResponse(200, { upserted: 9, rangesPreserved: 0 }).session_data, { rangesPreserved: 0 }, "an explicit zero is recorded, not dropped");
+  assert.strictEqual(classifyResponse(200, { upserted: 9 }).session_data, undefined, "sources that do not report it get no key");
   const feedFail = (n, total) => ({ sourceFailures: () => ({ attempted: total, failed: n }) });
   assert.strictEqual(classifyResponse(200, { upserted: 0 }, feedFail(1, 3)).outcome, "partial");
   assert.strictEqual(classifyResponse(200, { upserted: 0 }, feedFail(3, 3)).outcome, "failed");
