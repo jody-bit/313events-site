@@ -20,6 +20,10 @@ assert.ok(/\.evt-link, \.evt-cal a, \.evt-share\{position:relative;\}/.test(home
 assert.ok(/@media \(max-width:480px\)\{[^}]*\.evt-actions\{row-gap:0;\}[^}]*\.evt-link, \.evt-cal a, \.evt-share\{[^}]*min-height:44px;/.test(home.replace(/\n\s*/g, " ")) ||
   (/@media \(max-width:480px\)/.test(home) && /min-height:44px/.test(home)), "index phone rule");
 assert.ok(/@media \(max-width:480px\)/.test(home), "index uses the 480px breakpoint");
+// Owner conditions: left inset on phones, and a long time hint ("See paxahau.com") may wrap before its TLD.
+assert.ok(/@media \(max-width:480px\)\{ \.evt-row\{padding-left:8px;\} \}/.test(home), "index phone left inset");
+assert.ok(/\.evt-time\{overflow-wrap:break-word;\}/.test(home), "time cell wraps long hints");
+assert.ok(home.includes("'$1<wbr>.'"), "time hint breaks before the TLD");
 for (const f of ["calendar.html", "map.html"]) {
   const css = read(f);
   assert.ok(vInset(css, ".evt-link::before") <= -16, f + " link inset");

@@ -4164,6 +4164,9 @@
     .evt-actions{row-gap:0;}
     .evt-link, .evt-cal a, .evt-share{display:inline-flex;align-items:center;min-height:44px;}
     .evt-share{min-width:44px;}
+    /* Owner conditions on the renders: a long unbreakable time hint must wrap (not hide behind the
+       thumbnail), and the thumbnail gets more space around it. */
+    .evt-time{overflow-wrap:break-word;}
     .evt-cal a + a::before{content:'·';margin-right:.6ch;}
     .evt-link::before, .evt-share::after, .evt-cal a::after{content:none;}
   }
@@ -4224,6 +4227,9 @@
     .list-day-heading{font-size:22px;padding-top:14px;}
     .ds-day{min-width:68px;padding:6px 10px 5px;}
   }
+  /* Owner condition: a little room at the card's left edge on phones (must follow the 640px block,
+     which sets the padding and gap). Thumbnail gap stays at the original 10px. */
+  @media (max-width:480px){ .evt-row{padding-left:8px;} }
   .stream-foot{
     display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
     padding:18px 0 8px;margin-top:8px;border-top:1px solid var(--ink);
@@ -6068,7 +6074,8 @@ function timeCellHtml(time){
   const clock = x => { const c = /^(\d{1,2}(?::\d{2})?)\s*([AaPp]\.?[Mm]\.?)$/.exec(x.trim()); return c ? `<span class="t-clock">${escapeHtml(c[1])}</span><span class="t-mer">${escapeHtml(c[2].replace(/\./g,'').toUpperCase())}</span>` : null; };
   const m = t.match(/^(.+?)\s*[–—-]\s*(.+)$/);
   if(m && /\d/.test(m[1]) && /\d/.test(m[2])) return `${clock(m[1]) || escapeHtml(m[1])}<small>to ${escapeHtml(m[2])}</small>`;
-  return clock(t) || escapeHtml(t);
+  // A domain in a free-text time hint ("See paxahau.com") may break before its TLD.
+  return clock(t) || escapeHtml(t).replace(/(\w)\.(?=[a-z]{2,}\b)/gi, '$1<wbr>.');
 }
 
 // The artwork fallback: the Orbit field. Thin concentric arcs off one
