@@ -72,7 +72,8 @@
     var c = BY_KEY[key];
     if (!c) return "";
     var size = opts && (opts.size === "compact" || opts.size === "detail") ? " cat-tag--" + opts.size : "";
-    return '<span class="cat-tag' + size + '" data-cat="' + esc(c.key) + '">' + esc(c.label) + "</span>";
+    var pill = opts && opts.fill === "pill" ? " cat-tag--pill" : "";
+    return '<span class="cat-tag' + size + pill + '" data-cat="' + esc(c.key) + '">' + esc(c.label) + "</span>";
   }
 
   // Option A: coloured text on the site's dark tag (--panel / --line, with the same fallbacks the pages use). 11px
@@ -84,7 +85,10 @@
       "color:var(--ink,#F2F0E8);background:var(--panel,#202020);border:1px solid var(--line,#2c2c2c);padding:3px 7px;}" +
       ".cat-tag--compact{font-size:10.5px;padding:2px 6px;}" +
       ".cat-tag--detail{font-size:12px;letter-spacing:.06em;padding:5px 12px;}";
-    return base + TABLE.map(function (c) { return '.cat-tag[data-cat="' + c.key + '"]{color:var(' + c.token + ');}'; }).join("");
+    // Pill variant (calendar, map, event detail keep their filled treatment): same mapping, category fill with dark text.
+    var pill = ".cat-tag--pill{border-color:transparent;}";
+    return base + TABLE.map(function (c) { return '.cat-tag[data-cat="' + c.key + '"]{color:var(' + c.token + ');}'; }).join("") + pill +
+      TABLE.map(function (c) { return '.cat-tag--pill[data-cat="' + c.key + '"]{background:var(' + c.token + ');color:#0A0A0A;}'; }).join("");
   }
 
   var api = Object.freeze({ list: Object.freeze(TABLE), cssVar: cssVar, hex: hex, pinHexMap: pinHexMap, tokenCss: tokenCss, tagHtml: tagHtml, tagCss: tagCss });

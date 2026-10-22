@@ -134,8 +134,23 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   assert.ok(size(/\.cat-tag--compact\{font-size:([\d.]+)px/) >= 10.5 && size(/\.cat-tag--detail\{font-size:([\d.]+)px/) >= 12, "compact and detail sizes stay readable");
   // the default colour is the site's ink, not a grey: a label that failed to match a category would still be readable
   assert.ok(/color:var\(--ink,#F2F0E8\)/.test(css));
-  // the label is coloured text, not a filled pill and not a dot
-  assert.ok(!/background:var\(--c-/.test(css), "no category-coloured fills");
+  // the default label is coloured text (not a dot); the filled pill is an explicit variant of the same component
+  assert.ok(!/\.cat-tag\[data-cat=[^{]*\{[^}]*background:/.test(css), "the default label has no category fill");
+  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag--pill[data-cat="${c.key}"]{background:var(${c.token});color:#0A0A0A;}`), `${c.key} has its pill rule from the same token`);
+  assert.strictEqual(Categories.tagHtml("music", { size: "detail", fill: "pill" }), '<span class="cat-tag cat-tag--detail cat-tag--pill" data-cat="music">Music</span>');
+  // Owner design decision (Oct 22): calendar, map and event detail keep their filled pills (same mapping); the pill is at
+  // least as readable as the coloured text for every category.
+  for (const c of Categories.list) assert.ok(ratio(c.hex, "#0A0A0A") >= ratio(c.hex, "#202020"), `${c.key}: pill contrast ${ratio(c.hex, "#0A0A0A").toFixed(2)} is below the text label ${ratio(c.hex, "#202020").toFixed(2)}`);
+  for (const f of ["calendar.html", "map.html"]) {
+    const h = read(f);
+    assert.ok((h.match(/Categories\.tagHtml\(e\.cat, \{fill:'pill'\}\)/g) || []).length === (f === "calendar.html" ? 4 : 1), `${f}: every type label is the shared pill`);
+  }
+  assert.ok(/Categories\.tagHtml\(e\.cat, \{size:'detail', fill:'pill'\}\)/.test(read("event-template.html")), "event detail uses the shared pill");
+  for (const f of ["index.html", "venue-template.html", "radar.html"]) assert.ok(!/fill:\s*'pill'/.test(read(f)), `${f} keeps the coloured-text label`);
+  // Radar: the outlet name is neutral; colour is used only by the type label beneath it.
+  const radar = read("radar.html");
+  assert.ok(!/rc-outlet[^\n]*(cat\.color|var\(--c-|--accent)/.test(radar), "radar outlet name carries no category colour");
+  assert.ok(/\.rc-outlet\{[^}]*color:var\(--ink-soft\)/.test(radar), "radar outlet name is neutral");
 
   // every surface that shows an event's type renders it through the one component, and no page styles a label itself
   const SURFACES = { "index.html": 1, "calendar.html": 4, "map.html": 1, "event-template.html": 1, "venue-template.html": 1, "radar.html": 1 };

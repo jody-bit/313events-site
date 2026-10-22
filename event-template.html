@@ -781,7 +781,7 @@ function renderEvent(e){
   // ---- badge / title / meta ----
   const cat = CATS[e.cat] || {label: e.cat || 'Event', color: 'var(--accent)'};
   const badge = document.getElementById('evtCatBadge');
-  badge.innerHTML = Categories.tagHtml(e.cat, {size:'detail'});
+  badge.innerHTML = Categories.tagHtml(e.cat, {size:'detail', fill:'pill'});
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this

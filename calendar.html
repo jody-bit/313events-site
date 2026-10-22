@@ -1852,7 +1852,7 @@ function showDayPanel(iso){
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
-                  ${Categories.tagHtml(e.cat)}
+                  ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
@@ -1903,7 +1903,7 @@ function renderList(dateList){
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
-                  ${Categories.tagHtml(e.cat)}
+                  ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
@@ -2142,7 +2142,7 @@ function renderCityRail(places){
             <div class="evt-main">
               <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
               <div class="evt-meta">
-                ${Categories.tagHtml(e.cat)}
+                ${Categories.tagHtml(e.cat, {fill:'pill'})}
                 ${priceTag(e)}
                 <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
               </div>
@@ -2228,7 +2228,7 @@ function renderUnconfirmedResults(){
       <div class="evt-main"><div class="evt-main-body"><div class="evt-text">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
-          ${Categories.tagHtml(e.cat)}
+          ${Categories.tagHtml(e.cat, {fill:'pill'})}
           <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
         </div>
         ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}

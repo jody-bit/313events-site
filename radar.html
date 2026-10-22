@@ -115,7 +115,7 @@
     background:var(--bg);color:var(--ink-soft);padding:3px 8px;border:1px solid var(--line);
   }
   .rc-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:5px;flex:1;}
-  .rc-outlet{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);}
+  .rc-outlet{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);}
   .rc-event-title-link{text-decoration:none;color:inherit;display:block;}
   .rc-event-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:1.22;
@@ -423,7 +423,7 @@ function radarCardHtml(item){
           ${isPast ? '<div class="rc-past-badge">Past event</div>' : ''}
         </a>
         <div class="rc-body">
-          <div class="rc-outlet" style="${cat ? `color:${cat.color};` : ''}">${escapeHtml(item.source)}</div>
+          <div class="rc-outlet">${escapeHtml(item.source)}</div>
           <a class="rc-event-title-link" href="${escapeHtml(eventHref)}">
             <h2 class="rc-event-title">${escapeHtml(item.event.title)}</h2>
           </a>
