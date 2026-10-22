@@ -102,8 +102,8 @@
     display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
     padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
   }
-  /* Dark badge text fails 4.5:1 on these three category colors; white passes (5.4 to 5.9:1). */
-  .evt-cat-badge[data-cat="music"],.evt-cat-badge[data-cat="food"],.evt-cat-badge[data-cat="gaming"]{color:#fff;}
+  /* Badge text is dark on every category fill. With the approved accessible palette (categories.js) dark text clears
+     4.5:1 on all 15 (lowest 4.78:1); white would fail on the lightened music, food and gaming fills (3.1 to 3.6:1). */
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;

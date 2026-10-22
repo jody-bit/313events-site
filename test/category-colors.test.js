@@ -55,6 +55,16 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   console.log(`PASS: all 15 colours clear WCAG AA (4.5:1) on #202020 and #0A0A0A; lowest ${Math.min(...worst).toFixed(2)}:1`);
 }
 
+// 2b. filled badges and pills (calendar/map .tag, event-detail badge): dark text on the category fill clears AA for all 15
+{
+  for (const dark of ["#0A0A0A", "#06210F"]) {
+    for (const c of Categories.list) assert.ok(ratio(c.hex, dark) >= 4.5, `${dark} text on the ${c.key} fill (${c.hex}) is ${ratio(c.hex, dark).toFixed(2)}:1, needs 4.5`);
+  }
+  // The event-detail badge must not force white text (white fails on the lightened music, food and gaming fills).
+  assert.ok(!/\.evt-cat-badge\[data-cat=[^{]*\{[^}]*color:#fff/i.test(read("event-template.html")), "event-template.html forces no white badge text");
+  console.log("PASS: dark text on every category fill clears AA (filled badges on calendar, map and event detail); no white-text override remains");
+}
+
 // 3. the token block defines every variable once
 {
   const css = Categories.tokenCss();
