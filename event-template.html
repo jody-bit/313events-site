@@ -98,12 +98,8 @@
     background:var(--panel-alt);border:1px solid var(--line);
   }
 
-  .evt-cat-badge{
-    display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
-    padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
-  }
-  /* Badge text is dark on every category fill. With the approved accessible palette (categories.js) dark text clears
-     4.5:1 on all 15 (lowest 4.78:1); white would fail on the lightened music, food and gaming fills (3.1 to 3.6:1). */
+  .evt-cat-slot{margin-bottom:12px;}
+  /* The event-type label is the shared .cat-tag from /categories.js (detail size); no local rule. */
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
@@ -259,7 +255,7 @@
       <div class="evt-image-wrap" id="evtImageWrap" style="display:none;">
         <img id="evtImage" alt="">
       </div>
-      <div class="evt-cat-badge" id="evtCatBadge"></div>
+      <div class="evt-cat-slot" id="evtCatBadge"></div>
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
       <div class="evt-ended" id="evtEnded" style="display:none;">This event has ended</div>
@@ -785,9 +781,7 @@ function renderEvent(e){
   // ---- badge / title / meta ----
   const cat = CATS[e.cat] || {label: e.cat || 'Event', color: 'var(--accent)'};
   const badge = document.getElementById('evtCatBadge');
-  badge.textContent = cat.label;
-  badge.style.background = cat.color;
-  badge.dataset.cat = e.cat || '';
+  badge.innerHTML = Categories.tagHtml(e.cat, {size:'detail'});
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this

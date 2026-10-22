@@ -111,7 +111,6 @@
     display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft);
   }
   .venue-event-row:last-child{border-bottom:none;}
-  .venue-event-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;}
   .venue-event-body{min-width:0;flex:1;}
   .venue-event-date{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em;}
   .venue-event-title{display:block;font-size:15.5px;font-weight:600;color:var(--ink);text-decoration:none;margin-top:2px;}
@@ -280,12 +279,10 @@ function renderVenue(v, events){
     listEl.innerHTML = `<p class="venue-empty">No upcoming events listed for this venue right now.</p>`;
   } else {
     listEl.innerHTML = events.map(e => {
-      const cat = CATS[e.category] || {color:'var(--accent)'};
       return `
         <div class="venue-event-row">
-          <span class="venue-event-dot" style="background:${cat.color}"></span>
           <div class="venue-event-body">
-            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span>
+            <span class="venue-event-date">${escapeHtml(shortDateLabel(e.start_date))}</span> ${Categories.tagHtml(e.category, {size:'compact'})}
             <a class="venue-event-title" href="/event.html?id=${encodeURIComponent(e.id)}">${escapeHtml(decodeEntities(e.title))}</a>
             ${e.time_display ? `<span class="venue-event-time">${escapeHtml(e.time_display)}</span>` : ''}
           </div>

@@ -4120,10 +4120,7 @@
   .evt-side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding-top:1px;}
   .evt-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;}
   .evt-meta:empty{display:none;}
-  .evt-cat{
-    font-family:var(--font-data);font-size:9.5px;font-weight:400;letter-spacing:.1em;line-height:1.2;text-transform:uppercase;
-    color:var(--ink-soft);background:var(--panel);border:1px solid var(--line);padding:3px 7px;
-  }
+  /* The event-type label is the shared .cat-tag from /categories.js (Option A, approved colours); no local rule. */
   .evt-price{font-family:var(--font-data);font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
   .evt-price.free{color:var(--ink);}
   .evt-run{white-space:nowrap;}
@@ -6033,7 +6030,7 @@ function streamRowHtml(e, dayIso, ctx){
             <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
             <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
           </div>
-          <div class="evt-side"><div class="evt-meta">${cat?`<span class="evt-cat">${escapeHtml(cat)}</span>`:''}${priceTag(e)}</div></div>
+          <div class="evt-side"><div class="evt-meta">${cat?Categories.tagHtml(e.cat):''}${priceTag(e)}</div></div>
           <div class="evt-go">${go}</div>
         </div>`;
 }

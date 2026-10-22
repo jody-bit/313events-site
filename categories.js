@@ -12,8 +12,12 @@
 //   Categories.hex(key)          the literal colour, for code that cannot use var() (map pins, canvas)
 //   Categories.pinHexMap()       { key: hex } for the map pins — see PIN_HELD below
 //   Categories.tokenCss()        the :root block defining every --c-* variable
-// Loading this file in <head> also writes that block into the page (<style id="category-tokens">), so a page
-// never declares a --c-* value itself.
+//   Categories.tagHtml(key, {size})  the ONE event-type label (Option A: coloured text on the dark tag). Every
+//                                surface that shows an event's type renders this and nothing else; size is
+//                                "row" (default), "compact" or "detail" and changes spacing only, never colour.
+//   Categories.tagCss()          the rules for that label, written into the page with the tokens
+// Loading this file in <head> also writes that block, and the label rules, into the page (<style id="category-tokens">),
+// so a page never declares a --c-* value or a label style of its own.
 //
 // COLOURS are the 2026-10-04 accessible set (Product Owner): six values lightened to clear WCAG AA (4.5:1) for
 // small text on the tag background #202020 — music, food, gaming, film, nightlife, fest — the other nine
@@ -58,14 +62,39 @@
     return ":root{" + TABLE.map(function (c) { return c.token + ":" + c.hex + ";"; }).join("") + "}";
   }
 
-  var api = Object.freeze({ list: Object.freeze(TABLE), cssVar: cssVar, hex: hex, pinHexMap: pinHexMap, tokenCss: tokenCss });
+  function esc(v) {
+    return String(v).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; });
+  }
+
+  // The event-type label. Colour comes only from the per-category rule below (data-cat), never from the caller.
+  // The type NAME is the text, so colour is never the only signal. An unknown key renders nothing.
+  function tagHtml(key, opts) {
+    var c = BY_KEY[key];
+    if (!c) return "";
+    var size = opts && (opts.size === "compact" || opts.size === "detail") ? " cat-tag--" + opts.size : "";
+    return '<span class="cat-tag' + size + '" data-cat="' + esc(c.key) + '">' + esc(c.label) + "</span>";
+  }
+
+  // Option A: coloured text on the site's dark tag (--panel / --line, with the same fallbacks the pages use). 11px
+  // bold small caps in the data face; wraps instead of overflowing on a 320px screen. All 15 colours clear 4.5:1 on
+  // #202020 (test/category-colors.test.js).
+  function tagCss() {
+    var base = ".cat-tag{display:inline-block;max-width:100%;box-sizing:border-box;font-family:var(--font-data,'Space Mono',monospace);" +
+      "font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1.25;text-transform:uppercase;overflow-wrap:anywhere;" +
+      "color:var(--ink,#F2F0E8);background:var(--panel,#202020);border:1px solid var(--line,#2c2c2c);padding:3px 7px;}" +
+      ".cat-tag--compact{font-size:10.5px;padding:2px 6px;}" +
+      ".cat-tag--detail{font-size:12px;letter-spacing:.06em;padding:5px 12px;}";
+    return base + TABLE.map(function (c) { return '.cat-tag[data-cat="' + c.key + '"]{color:var(' + c.token + ');}'; }).join("");
+  }
+
+  var api = Object.freeze({ list: Object.freeze(TABLE), cssVar: cssVar, hex: hex, pinHexMap: pinHexMap, tokenCss: tokenCss, tagHtml: tagHtml, tagCss: tagCss });
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) {
     root.Categories = api;
     var el = root.document.createElement("style");
     el.id = "category-tokens";
-    el.textContent = tokenCss();
+    el.textContent = tokenCss() + tagCss();
     (root.document.head || root.document.documentElement).appendChild(el);
   }
 })(typeof window !== "undefined" ? window : null);

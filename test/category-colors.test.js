@@ -112,4 +112,41 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   console.log("PASS: pins derive from the same table; training and gaming pins are unchanged (owner decision pending)");
 }
 
+// 7. ONE event-type label, visible and the same everywhere (owner review 2026-10-22: the homepage showed no coloured label)
+{
+  const tag = Categories.tagHtml("music");
+  assert.ok(/^<span class="cat-tag" data-cat="music">Music<\/span>$/.test(tag), "the label is the category name in one element: " + tag);
+  assert.strictEqual(Categories.tagHtml("music", { size: "detail" }), '<span class="cat-tag cat-tag--detail" data-cat="music">Music</span>');
+  assert.strictEqual(Categories.tagHtml("music", { size: "compact" }), '<span class="cat-tag cat-tag--compact" data-cat="music">Music</span>');
+  assert.strictEqual(Categories.tagHtml("not-a-category"), "", "an unknown type renders nothing");
+  assert.ok(!/style=|color/i.test(tag), "the label carries no colour of its own; the rule keyed on data-cat supplies it");
+  for (const c of Categories.list) {
+    const html = Categories.tagHtml(c.key);
+    assert.ok(html.includes(`>${c.label.replace(/&/g, "&amp;")}</span>`), `${c.key}: the label prints the type name (colour is never the only signal)`);
+  }
+
+  // the label rules: one colour rule per category, from its own token; visible; no hiding
+  const css = Categories.tagCss();
+  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag[data-cat="${c.key}"]{color:var(${c.token});}`), `${c.key} has its colour rule`);
+  assert.ok(!/display:\s*none|visibility:\s*hidden|opacity:\s*0\b/.test(css), "the label is never hidden");
+  const size = (re) => Number((css.match(re) || [])[1]);
+  assert.ok(size(/\.cat-tag\{[^}]*font-size:([\d.]+)px/) >= 11, "the default label is at least 11px");
+  assert.ok(size(/\.cat-tag--compact\{font-size:([\d.]+)px/) >= 10.5 && size(/\.cat-tag--detail\{font-size:([\d.]+)px/) >= 12, "compact and detail sizes stay readable");
+  // the default colour is the site's ink, not a grey: a label that failed to match a category would still be readable
+  assert.ok(/color:var\(--ink,#F2F0E8\)/.test(css));
+  // the label is coloured text, not a filled pill and not a dot
+  assert.ok(!/background:var\(--c-/.test(css), "no category-coloured fills");
+
+  // every surface that shows an event's type renders it through the one component, and no page styles a label itself
+  const SURFACES = { "index.html": 1, "calendar.html": 4, "map.html": 1, "event-template.html": 1, "venue-template.html": 1, "radar.html": 1 };
+  for (const [f, n] of Object.entries(SURFACES)) {
+    const html = read(f);
+    assert.strictEqual((html.match(/Categories\.tagHtml\(/g) || []).length, n, `${f} renders the type label through Categories.tagHtml ${n} time(s)`);
+    assert.ok(!/class="evt-cat"|\.evt-cat\{|\.evt-cat-badge|venue-event-dot|class="tag" style="background:\$\{CATS/.test(html), `${f} has no private label markup or style left`);
+    assert.ok(!/\.cat-tag[^{}\n]*\{/.test(html), `${f} does not restyle the shared label`);
+  }
+  // submit.html is a picker (swatch + name per option), not an event surface; it still uses the shared tokens only.
+  console.log("PASS: one shared event-type label (Option A, coloured text with the type name); never hidden; readable sizes; used by homepage, calendar (4 views), map, event detail, venue and radar; no page styles it");
+}
+
 console.log("\nAll category-colour checks passed.");
