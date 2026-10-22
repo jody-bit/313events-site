@@ -273,7 +273,7 @@
       <div class="evt-detail-price" id="evtPrice" style="display:none;"></div>
 
       <div class="evt-detail-actions" id="evtActions"></div>
-      <div class="evt-detail-note" id="evtAffiliateNote" style="display:none;"></div>
+      <div id="evtAffiliateNote" style="display:none;"></div>
       <div class="evt-detail-note" id="evtTicketStatusNote" style="display:none;"></div>
 
       <div class="evt-detail-desc" id="evtDesc" style="display:none;"></div>
@@ -872,23 +872,11 @@ function renderEvent(e){
   const calLoc = CalendarLocation.resolveForEvent(e);
   if(calLoc.navigable) delete actions.dataset.locationIncomplete; else actions.dataset.locationIncomplete = calLoc.missing.join(',');
 
-  // Conditional Ticketmaster affiliate disclosure (2026-10-01, Phase 1
-  // Legal + Trust pass, item F / Jody's decision 1: "Only show this
-  // disclosure when the ticket URL is actually an affiliate link. Do not
-  // show it on ordinary ticket links."). api/cron-ticketmaster.js's
-  // affiliateTicketUrl() wraps EVERY Ticketmaster event's non-null
-  // ticket_url in an Impact Radius affiliate redirect unconditionally, so
-  // source === 'Ticketmaster' plus a real ticketUrl is both necessary and
-  // sufficient here -- see legal-snippets.js's affiliateDisclosureHtml()
-  // for the identical condition used on the list-card views.
-  const affiliateNote = (e.source === 'Ticketmaster' && e.ticketUrl && safeUrl(e.ticketUrl)) ? TICKET_AFFILIATE_NOTE_TEXT : null;
+  // Affiliate disclosure: the one shared component (legal-snippets.js), keyed on the links this page shows.
+  const affiliateNoteHtml = affiliateDisclosureHtml(e);
   const affiliateNoteEl = document.getElementById('evtAffiliateNote');
-  if(affiliateNote){
-    affiliateNoteEl.textContent = affiliateNote;
-    affiliateNoteEl.style.display = 'block';
-  } else {
-    affiliateNoteEl.style.display = 'none';
-  }
+  affiliateNoteEl.innerHTML = affiliateNoteHtml;
+  affiliateNoteEl.style.display = affiliateNoteHtml ? 'block' : 'none';
 
   const ticketStatusNote = ticketStatusNoteHtml(e);
   const ticketStatusNoteEl = document.getElementById('evtTicketStatusNote');

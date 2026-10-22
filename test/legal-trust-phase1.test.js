@@ -61,7 +61,7 @@ function run() {
   for (const p of ["terms.html", "privacy.html", "copyright.html", "editorial-policy.html", "accessibility.html"]) {
     assert.ok(legalDatesJs.includes(`"${p}"`), `legal-dates.js's LEGAL_PAGE_DATES is missing an entry for ${p}`);
   }
-  assert.ok(/TICKET_AFFILIATE_NOTE_TEXT = "313\.events may earn a commission if you purchase through this link\."/.test(legalSnippetsJs));
+  assert.ok(/const AFFILIATE_DISCLOSURE = Object\.freeze\(\{\s*heading: "SUPPORT THE ORBIT\.",\s*body: "Ticket links may earn us a commission\."/.test(legalSnippetsJs));
   assert.ok(/function affiliateDisclosureHtml\(e\)/.test(legalSnippetsJs));
   console.log("PASS: 3. legal-dates.js and legal-snippets.js exist with the expected shared constants/functions");
 
@@ -175,21 +175,13 @@ function run() {
   assert.strictEqual(calendarAffiliateCallSites, 2, "calendar.html must call affiliateDisclosureHtml(e) from both its day-panel and list-view card templates");
   console.log("PASS: 13. index.html/map.html, and both of calendar.html's card templates, render the conditional affiliate disclosure");
 
-  // The disclosure logic itself: Ticketmaster + real ticketUrl only
-  const affiliateFnMatch = legalSnippetsJs.match(/function affiliateDisclosureHtml\(e\) \{[\s\S]*?\n\}/);
-  assert.ok(affiliateFnMatch, "affiliateDisclosureHtml() body not found in legal-snippets.js");
-  const affiliateFnBody = affiliateFnMatch[0];
-  assert.ok(/if \(!e \|\| e\.source !== 'Ticketmaster'\) return '';/.test(affiliateFnBody), "affiliateDisclosureHtml() must bail out for any non-Ticketmaster source");
-  assert.ok(/if \(!e\.ticketUrl \|\| !safeUrl\(e\.ticketUrl\)\) return '';/.test(affiliateFnBody), "affiliateDisclosureHtml() must bail out when there's no real ticketUrl");
-  console.log("PASS: 14. affiliateDisclosureHtml()'s condition is exactly source==='Ticketmaster' AND a real ticketUrl -- never shown on ordinary ticket links");
-
-  // event-template.html uses its own textContent-based pattern (not the HTML-string helper) --
-  // confirm it's wired with the identical condition and shares the same wording constant.
+  // The disclosure logic itself lives in legal-snippets.js and is tested by test/affiliate-disclosure.test.js
+  // (keyed on the link's host, not the event's source).
   const eventTemplateHtml = read("event-template.html");
   assert.ok(/<script src="\/legal-snippets\.js"><\/script>/.test(eventTemplateHtml), "event-template.html doesn't include legal-snippets.js");
   assert.ok(/id="evtAffiliateNote"/.test(eventTemplateHtml), "event-template.html is missing the evtAffiliateNote element");
-  assert.ok(/e\.source === 'Ticketmaster' && e\.ticketUrl && safeUrl\(e\.ticketUrl\)\) \? TICKET_AFFILIATE_NOTE_TEXT : null/.test(eventTemplateHtml), "event-template.html's affiliate-note condition doesn't match the shared logic");
-  console.log("PASS: 15. event-template.html wires the same Ticketmaster-only + real-ticketUrl condition into its own textContent-based rendering pattern");
+  assert.ok(/affiliateDisclosureHtml\(e\)/.test(eventTemplateHtml), "event-template.html must use the shared affiliateDisclosureHtml(e)");
+  console.log("PASS: 14-15. the shared affiliate disclosure is wired into every surface (see test/affiliate-disclosure.test.js for its rules)");
 
   // Confirm the actual Ticketmaster connector still unconditionally wraps every
   // non-null ticket_url -- the precondition that makes this whole disclosure
