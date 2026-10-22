@@ -364,6 +364,22 @@ async function run() {
   }
   console.log("PASS: vercel.json carries exactly the 22:00Z run and the 22:10Z resume run");
 
+  // 9e. source health: the small second-pass run is not compared with the big first-pass runs (no false volume anomaly)
+  {
+    const sh = require("../api/_lib/source-health.js");
+    const NOW = Date.parse("2026-10-23T22:30:00Z"), H = 3600000, D = 24 * H;
+    const full = (d) => ({ source_slug: "feeds", outcome: "success", started_at: new Date(NOW - 30 * 60000 - d * D).toISOString(), finished_at: new Date(NOW - 29 * 60000 - d * D).toISOString(), records_fetched: null, records_written: 120 });
+    const resumeRun = (extra) => ({ source_slug: "feeds", outcome: "success", started_at: new Date(NOW - 20 * 60000).toISOString(), finished_at: new Date(NOW - 19 * 60000).toISOString(), records_fetched: null, records_written: 6, ...extra });
+    const cfg = { crons: [{ path: "/api/cron-feeds", schedule: "0 22 * * *" }, { path: "/api/cron-feeds?resume=1", schedule: "10 22 * * *" }] };
+    const vol = (runs) => sh.evaluateSources({ runs, vercelConfig: cfg, now: NOW }).bySlug.get("feeds").volume;
+    const history = [1, 2, 3, 4, 5].map(full);
+    assert.strictEqual(vol([full(0), ...history]).records_written.deviates, false, "a normal full run among full runs is not an anomaly");
+    assert.strictEqual(vol([resumeRun({ resume: "true" }), full(0), ...history]).records_written.latest, 120, "the resume run is skipped; the latest full run is the one judged");
+    assert.strictEqual(vol([resumeRun({ resume: "true" }), full(0), ...history]).records_written.deviates, false);
+    assert.strictEqual(vol([resumeRun({}), full(0), ...history]).records_written.deviates, true, "without the flag the same small run would be flagged (this is what the flag prevents)");
+  }
+  console.log("PASS: source health leaves the resume run out of the volume comparison");
+
   console.log("\nAll cron-feeds reliability checks passed.");
 }
 
