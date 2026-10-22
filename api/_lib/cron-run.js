@@ -38,7 +38,9 @@ function requestAuthorized(req) {
   return cronAuthStatus(req) === "ok";
 }
 
-const SESSION_KEYS = ["note", "skipped", "skippedPast", "checked", "checkedUrls", "checkedCount", "feedsChecked", "excludedByCategory", "excludedByDate"];
+const SESSION_KEYS = ["note", "skipped", "skippedPast", "checked", "checkedUrls", "checkedCount", "feedsChecked", "excludedByCategory", "excludedByDate",
+  // cron-feeds second-run record (?resume=1): which feeds were attempted/deferred/skipped/stale, and the per-feed result
+  "resume", "preambleMs", "feedsAttempted", "feedsDeferred", "feedsSkippedOnResume", "feedsStale", "perFeed"];
 
 function upstreamStatus(error) {
   const m = /\bHTTP (\d{3})\b/.exec(String(error || ""));
