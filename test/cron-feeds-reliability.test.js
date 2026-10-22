@@ -104,6 +104,7 @@ async function run() {
   process.env.SUPABASE_URL = SUPABASE_URL;
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
   delete process.env.CRON_SECRET;
+  process.env.FEEDS_STALE_AFTER_MS = String(20 * 365 * 24 * 3600 * 1000); // fixtures use fixed past dates; staleness is tested directly in 9c
 
   // 1. execution time limit: oldest-polled first, rest deferred when the budget cannot cover another feed
   {
@@ -286,6 +287,82 @@ async function run() {
     assert.deepStrictEqual(health.orderFeedsForRun([{ id: "b", last_polled_at: "2026-10-02T00:00:00Z" }, { id: "a", last_polled_at: null }]).map((f) => f.id), ["a", "b"]);
   }
   console.log("PASS: healthy feeds, response fields and the pure classification rules behave as specified");
+
+  // 9. second nightly run (owner GO 2026-10-22): the 22:10Z ?resume=1 entry finishes what the 22:00Z run deferred
+  {
+    // 9a. coverage: the 22:00Z run defers; the resume run (which sees those feeds un-patched, the polled ones fresh) polls the rest
+    const slow = (ms) => async () => { await sleep(ms); return { ok: true, status: 200, text: async () => ics("u", "Slow") }; };
+    const env = { FEEDS_BUDGET_MS: 1000, FEEDS_MIN_START_MS: 600, FEEDS_REQUEST_TIMEOUT_MS: 5000 };
+    const feeds = [1, 2, 3, 4].map((n) => feed(n, { last_polled_at: `2026-10-${10 + n}T22:00:00Z`, last_poll_result: "1 event found" }));
+    const behavior = {}; for (const f of feeds) behavior[f.feed_url] = slow(300);
+    const first = await runOnce({ feeds, behavior, env });
+    const polledFirst = first.body.results.filter((r) => r.kind !== "deferred").map((r) => r.id);
+    const deferredFirst = first.body.results.filter((r) => r.kind === "deferred").map((r) => r.id);
+    assert.ok(deferredFirst.length > 0 && polledFirst.length > 0, "the first run polled some feeds and deferred others");
+    const afterFirst = feeds.map((f) => (polledFirst.includes(f.id) ? { ...f, last_polled_at: new Date().toISOString(), last_poll_result: "1 event found" } : f));
+    const second = await runOnce({ feeds: afterFirst, behavior, env, req: { headers: {}, query: { resume: "1" } } });
+    for (const id of polledFirst) assert.strictEqual(second.body.results.find((r) => r.id === id).kind, "skipped_resume", "a feed the first run finished is not polled again");
+    for (const id of deferredFirst.slice(0, 2)) assert.notStrictEqual(second.body.results.find((r) => r.id === id).kind, "deferred", "the resume run reaches feeds the first run deferred");
+    assert.strictEqual(second.body.resume, true);
+    assert.ok(second.body.feedsAttempted >= 1);
+    // per-feed record
+    assert.ok(Array.isArray(second.body.perFeed) && second.body.perFeed.length === 4 && second.body.perFeed.every((p) => p.id && p.kind));
+    assert.ok(second.body.perFeed.filter((p) => p.kind === "ok").every((p) => typeof p.ms === "number"), "polled feeds carry their duration");
+  }
+  console.log("PASS: the resume run polls only what the first run deferred and records a compact per-feed result");
+
+  // 9b. overlap: a resume run does nothing while another feeds run is in progress
+  {
+    const feeds = [feed(1), feed(2)];
+    const log = network({ feeds });
+    const base = global.fetch;
+    global.fetch = async (url, opts = {}) => {
+      if (url.includes("/rest/v1/source_runs") && (opts.method || "GET") === "GET") { log.methods.push("GET source_runs"); return { ok: true, status: 200, json: async () => [{ id: "other" }] }; }
+      return base(url, opts);
+    };
+    const handler = freshHandler();
+    const res = makeRes();
+    await handler({ headers: {}, query: { resume: "1" } }, res);
+    assert.strictEqual(res._status, 200);
+    assert.strictEqual(res._body.upserted, 0);
+    assert.strictEqual(log.feedFetches.length, 0, "no feed is fetched while another run is in progress");
+    assert.ok(/another feeds run is still in progress/.test(res._body.note));
+    // the normal 22:00Z run is never blocked by this check
+    const normal = await runOnce({ feeds, req: { headers: {}, query: {} } });
+    assert.strictEqual(normal.log.feedFetches.length, 2);
+    // fail-safe: an unreadable run table does not stop the resume run
+    assert.strictEqual(await health.otherRunInProgress({ supabaseUrl: SUPABASE_URL, headers: {}, fetchImpl: async () => { throw new Error("down"); } }), false);
+  }
+  console.log("PASS: a resume run stands down while another feeds run is in progress; the normal run is unaffected; the check fails safe");
+
+  // 9c. repeatedly skipped or stalled feeds are named
+  {
+    const now = Date.parse("2026-10-22T22:00:00Z");
+    const feeds = [
+      feed(1, { last_polled_at: "2026-10-22T10:00:00Z" }),
+      feed(2, { last_polled_at: "2026-10-17T22:00:00Z" }),
+      feed(3, { last_polled_at: null }),
+      feed(4, { last_polled_at: "2026-10-01T22:00:00Z", feed_format: "manual" }),
+    ];
+    assert.deepStrictEqual(health.staleFeeds(feeds, now, 72 * 3600000).map((f) => f.id), ["fs-2"], "only an automatic feed last polled long ago is stale");
+    const s = health.summarizeRun([], { staleFeeds: health.staleFeeds(feeds, now, 72 * 3600000), staleAfterMs: 72 * 3600000 });
+    assert.strictEqual(s.feedsStale, 1);
+    assert.ok(s.alerts.some((a) => a.type === "stale_feeds" && /Feed 2/.test(a.detail)));
+    assert.strictEqual(health.summarizeRun([], {}).feedsStale, 0);
+  }
+  console.log("PASS: feeds not polled for 72 h are reported as stale; new and manual feeds are not");
+
+  // 9d. configuration: one extra entry, the existing 22:00Z entry untouched, and source health still reads one schedule for feeds
+  {
+    const cfg = require(`${REPO_DIR}/vercel.json`);
+    const entries = cfg.crons.filter((c) => c.path.startsWith("/api/cron-feeds"));
+    assert.deepStrictEqual(entries.map((c) => `${c.path} ${c.schedule}`).sort(), ["/api/cron-feeds 0 22 * * *", "/api/cron-feeds?resume=1 10 22 * * *"]);
+    const sh = require("../api/_lib/source-health.js");
+    const sched = sh.schedulesFromVercel ? sh.schedulesFromVercel(cfg) : null;
+    if (sched) assert.strictEqual(sched.get("feeds").expr, "0 22 * * *", "the resume entry does not replace or duplicate the feeds schedule");
+    assert.strictEqual(cfg.functions["api/cron-feeds.js"].maxDuration, 60);
+  }
+  console.log("PASS: vercel.json carries exactly the 22:00Z run and the 22:10Z resume run");
 
   console.log("\nAll cron-feeds reliability checks passed.");
 }
