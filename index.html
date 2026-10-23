@@ -5524,6 +5524,18 @@ function safeUrl(url) {
   }
 }
 
+// Ticket/event links must be absolute web URLs. A relative value (a calendar-feed path such as
+// "/calendar.aspx?EID=1", or free text like "Pay at the door") would otherwise resolve against this
+// site and show a "Tickets & info" button that leads to a broken 313.events page. Anything else is
+// treated as "no link" so the card falls back to its existing no-link state.
+function absWebUrl(u){
+  if(typeof u !== 'string') return undefined;
+  const s = u.trim();
+  if(!/^https?:\/\//i.test(s)) return undefined;
+  try { new URL(s); } catch { return undefined; }
+  return s;
+}
+
 // Real pricing only — never fabricated or inferred (approved: existing
 // price_from data may now be surfaced). FREE keeps rendering exactly as
 // before, from the database's own is_free flag. A price only renders when
@@ -7801,12 +7813,12 @@ function mapSupabaseRow(row) {
     // description, same as every other editorial caveat).
     clothingOptional: !!row.is_clothing_optional,
     source: row.source || "Manual",
-    ticketUrl: row.ticket_url || undefined,
+    ticketUrl: absWebUrl(row.ticket_url),
     // Named eventPageUrl, not eventUrl — this file already has a function
     // called eventUrl(e) (the internal event.html permalink, below); keeping
     // this field's name distinct avoids colliding with that. See
     // migration_022_event_url.sql.
-    eventPageUrl: row.event_url || undefined,
+    eventPageUrl: absWebUrl(row.event_url),
     ticketStatus: row.ticket_status || undefined,
     priceFrom: row.price_from ?? undefined,
     // 2026-09-14: resolved server-side by events_public via the real
