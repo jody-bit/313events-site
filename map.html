@@ -469,6 +469,7 @@
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/event-links.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
 <script src="/config.js"></script>
@@ -1082,6 +1083,13 @@ function truncateText(str, maxLen){
 function eventUrl(e){
   return e.id != null ? `event.html?id=${encodeURIComponent(e.id)}` : null;
 }
+// Which link(s) an event card offers: one rule for every page, see event-links.js (a bare venue homepage is never the main button).
+function eventLinksHtml(e){
+  const L = EventLinks.resolve(e);
+  const a = (l) => { const u = safeUrl(l.url); return u ? `<a class="evt-link" href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>` : ''; };
+  return [L.primary, L.event, L.venue].filter(Boolean).map(a).join('');
+}
+
 function safeUrl(url) {
   if (!url) return '';
   try {
@@ -1118,8 +1126,7 @@ function evtRowHtml(e){
         </div>
         ${e.description?`<div class="evt-desc">${escapeHtml(truncateText(e.description, 140))}</div>`:''}
         ${EventDates.scheduleState(e) === 'unverified' ? `<div class="note">Published ${escapeHtml(new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))} \u2013 ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : e.endDate && e.endDate > e.date ? `<div class="note">Through ${escapeHtml(new Date(e.endDate+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'}))}</div>` : ''}
-        ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
-        ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
+          ${eventLinksHtml(e)}
         ${affiliateDisclosureHtml(e)}
         ${ticketStatusNoteHtml(e)}
       </div>

@@ -139,8 +139,13 @@ async function run() {
   // --- public pages: Tickets & info = ticket_url, otherwise event_url ---
   for (const f of ["index.html", "calendar.html", "map.html", "event-template.html"]) {
     const src = fs.readFileSync(path.join(REPO_DIR, f), "utf8");
-    assert.ok(/e\.ticketUrl\s*\|\|\s*e\.eventPageUrl|primaryUrl/.test(src), `${f}: primary button falls back to event_url`);
-    assert.ok(/e\.ticketUrl && e\.eventPageUrl && safeUrl\(e\.eventPageUrl\)|e\.ticketUrl && safeUrl\(e\.ticketUrl\) && e\.eventPageUrl/.test(src), `${f}: secondary "Event page" only beside a distinct ticket link`);
+    // calendar, map and event page choose through event-links.js (see test/event-links.test.js); the homepage still has its own copy
+    if (f === "index.html") {
+      assert.ok(/e\.ticketUrl\s*\|\|\s*e\.eventPageUrl|primaryUrl/.test(src), `${f}: primary button falls back to event_url`);
+      assert.ok(/e\.ticketUrl && e\.eventPageUrl && safeUrl\(e\.eventPageUrl\)|e\.ticketUrl && safeUrl\(e\.ticketUrl\) && e\.eventPageUrl/.test(src), `${f}: secondary "Event page" only beside a distinct ticket link`);
+    } else {
+      assert.ok(/EventLinks\.resolve\(e\)/.test(src), `${f}: link choice goes through EventLinks.resolve`);
+    }
   }
   console.log("PASS: homepage, calendar, map and event pages show Tickets & info from ticket_url, else event_url, without a duplicate Event page button");
 }
