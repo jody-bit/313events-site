@@ -154,4 +154,18 @@ async function enrichRows(rows, _feedSource, opts) {
   return `enrichment: ${matches.size}/${rows.length} rows linked from ${cards.length} listing cards on ${pages} page${pages === 1 ? "" : "s"}${partial || ""}${budgetNote || ""}`;
 }
 
-module.exports = { parseListing, nextPageUrl, matchRows, enrichRows, LISTING_URL, MAX_PAGES, BUDGET_MS };
+// What an EXISTING, still-unreviewed row may gain from a safe match (Stage 5, owner decision 2026-10-16). Pure and
+// idempotent: it only fills an EMPTY event_url, and appends the page-category hint to the note once. It never returns
+// a title, date, description, category or status, and returns nothing for a link or hint already in place.
+function backfillPatch(stored, enrichment) {
+  const patch = {};
+  if (!stored || !enrichment) return patch;
+  if (enrichment.event_url && !stored.event_url) patch.event_url = enrichment.event_url;
+  const note = String(stored.note || "");
+  if (enrichment.category && !/Source page category:/i.test(note)) {
+    patch.note = `${note ? note + " " : ""}Source page category: ${enrichment.category}.`;
+  }
+  return patch;
+}
+
+module.exports = { backfillPatch, parseListing, nextPageUrl, matchRows, enrichRows, LISTING_URL, MAX_PAGES, BUDGET_MS };
