@@ -192,6 +192,13 @@ async function run() {
     assert.strictEqual(patches[0].body.outcome, "success");
     assert.strictEqual(patches[0].body.records_written, 0);
     assert.strictEqual(patches[0].body.error_sample, null, "no error_sample on a clean success");
+    // B-037: the candidate-cap record is stored on the run row, so a reader can tell whether the cap or the ordering
+    // limited the run (the existing `truncated` flag only means the samples were trimmed for size).
+    const sd = patches[0].body.session_data;
+    assert.ok(sd && typeof sd === "object", "the run row carries session_data");
+    assert.strictEqual(sd.cap_reached, false, "cap_reached is recorded");
+    assert.strictEqual(sd.total_considered, 0, "total_considered is recorded");
+    assert.ok(sd.candidate_cap && sd.candidate_cap.limit > 0 && sd.candidate_cap.order, "the candidate cap limit and ordering are recorded");
     // VENUE GEOGRAPHY IS OFF unless VENUE_GEOGRAPHY=on (Product Owner,
     // 2026-10-05: not before the Production Data Quality Audit). Off means
     // off: the neighborhood labels are not even read, no geocoder and no City
