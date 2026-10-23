@@ -131,6 +131,12 @@
   }
   .nav-search-btn:hover{color:var(--ink);}
   .nav-search-btn svg{display:block;width:18px;height:18px;}
+  /* Touch targets: 44px invisible hit areas for header controls whose painted size stays unchanged (Experience, 2026-10-20). */
+  .site-nav .when-btn,.nav-search-btn,.nav-toggle{position:relative;}
+  .site-nav .when-btn::after,.nav-search-btn::after,.nav-toggle::after{content:"";position:absolute;inset:-12px -6px;}
+  .nav-search-btn::after,.nav-toggle::after{inset:-12px;}
+  .site-nav-link{position:relative;}
+  .site-nav-link::after{content:"";position:absolute;inset:-12px -6px;}
   @media (max-width:900px){
     .site-nav{gap:14px;order:3;flex-basis:100%;}
   }

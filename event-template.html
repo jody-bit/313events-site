@@ -67,6 +67,8 @@
   .back-link{font-size:13px;font-weight:700;color:var(--ink-soft);text-decoration:none;text-transform:uppercase;letter-spacing:.02em;}
   .back-link:hover{color:var(--accent);}
   .back-link::before{content:'← ';}
+  .back-link{position:relative;}
+  .back-link::after{content:"";position:absolute;inset:-12px -8px;}
 
   #loadingState, #notFoundState{padding:60px 0;text-align:center;color:var(--ink-soft);}
   #notFoundState{display:none;}
@@ -132,6 +134,10 @@
   .btn-primary:hover{opacity:.9;}
   .btn-secondary{background:none;color:var(--ink);border:1px solid var(--line);}
   .btn-secondary:hover{background:var(--panel-hover);}
+  /* Touch targets: Share (36px) and Get QR code (19px) get 44px invisible hit areas; painted size unchanged. */
+  #evtShareBtn,#evtQrToggleBtn{position:relative;}
+  #evtShareBtn::after{content:"";position:absolute;inset:-8px 0 0;}
+  #evtQrToggleBtn::after{content:"";position:absolute;inset:-18px -4px -7px;}
 
   .evt-detail-desc{font-size:15.5px;color:var(--ink);white-space:pre-line;margin-bottom:24px;overflow-wrap:anywhere;}
   /* Content-nature descriptor, distinct from the italic editorial note
