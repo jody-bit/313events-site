@@ -309,8 +309,8 @@ console.log("halloween-qa: ok");
   // nothing in the batch is approved
   const all = ED.entries(), authSet = AUTHZ.authorized(ED);
   Object.keys(all).forEach((k) => all[k].forEach((e) => AUTHZ.checkApproval(assert, k, e, authSet)));
-  assert.strictEqual(all.halloween.filter((e) => e.approval).length, 43, "43 Halloween records carry the owner approval of 2026-10-11");
-  assert.strictEqual(all.halloween.filter((e) => e.disposition).length, 9, "9 are excluded (duplicate, closed or ended) and keep their records");
+  assert.strictEqual(all.halloween.filter((e) => e.approval).length, 41, "41 Halloween records carry the owner approval of 2026-10-11");
+  assert.strictEqual(all.halloween.filter((e) => e.disposition).length, 11, "11 are excluded (duplicate, closed or ended) and keep their records");
   assert.deepStrictEqual(AUTHZ.halloweenApproved(ED).sort(), all.halloween.filter((e) => e.approval).map((e) => e.id).sort(), "the approved set is the 45");
   const md = fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md"), "utf8");
   assert.ok(/Nothing is approved/.test(md) && /Rotten Manor/.test(md) && /promo-art/.test(md));

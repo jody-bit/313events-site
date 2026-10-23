@@ -67,6 +67,6 @@ const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 79, "only the 76 batch-1 + 3 batch-2 authorized Fall records are approved");
 assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 79);
 // Halloween (owner approval of 2026-10-11 and final editorial decision): 45 approved, 3 excluded, 7 pass the gate. Fall is untouched.
-assert.strictEqual(E.halloween.filter((e) => e.approval).length, 43);
-assert.strictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 23);
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 41);
+assert.strictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 21);
 console.log("seasonal expansion: ok");

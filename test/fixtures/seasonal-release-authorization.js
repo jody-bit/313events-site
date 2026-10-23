@@ -16,17 +16,15 @@ const AUTH = { by: "Jody Tyree", at: "2026-10-12" };
 const AUTH_BATCH2 = { by: "Jody Tyree", at: "2026-10-19" };
 const BATCH2 = ["fall/goodison-cider-mill", "fall/damouni-orchards", "fall-color/kensington-metropark"];
 const AUTH_HALLOWEEN = { by: "Jody Tyree", at: "2026-10-11" };
-// The 23 Halloween records that pass every gate item (official 2026 evidence, relevance, identity, an authorized image route with rights, and the
-// approval): the first seven (the original seven: owner photos, or linked images on the owner's risk acceptance) plus the 16 content-verified records
+// The 21 Halloween records that pass every gate item (official 2026 evidence, relevance, identity, an authorized image route with rights, and the
+// approval): the first five (the original seven less Greenfield Village and Zoo Boo, ended 2026-10-25: owner photos, or linked images on the owner's risk acceptance) plus the 16 content-verified records
 // that took the owner's established "Illustrative image" route (owner direction 2026-10-12). Pinned by id, independent of the data.
 const HALLOWEEN_PUBLISHED = [
   "azra-chamber-of-horrors", "blakes-haunted-attractions", "brick-or-treat-at-legoland-discovery-center", "crossroads-ghosts-goodies",
   "deranged-haunt", "distracted-haunted-house", "eloise-asylum", "erebus", "field-of-fear",
-  "full-moon-manor-at-bonadeo-farms", "glenlore-carnevil-2", "halloween-greenfield-village",
-  "halloween-stroll-at-canterbury-village", "hallowglow-at-treerunner", "hush-haunted-attraction",
+  "full-moon-manor-at-bonadeo-farms", "glenlore-carnevil-2", "halloween-stroll-at-canterbury-village", "hallowglow-at-treerunner", "hush-haunted-attraction",
   "laser-halloween", "ooky-spooky-light-show", "scarefest-scream-park",
-  "slaughterhouse-adventure", "spooky-trails", "the-howling-haunted-trail-and-party", "wildwood-manor-house",
-  "zoo-boo"
+  "slaughterhouse-adventure", "spooky-trails", "the-howling-haunted-trail-and-party", "wildwood-manor-house"
 ];
 // The 16 that publish on the labelled-illustration route (generated artwork, "Illustrative image" label, never a photograph of the destination).
 const HALLOWEEN_ILLUSTRATED = [
@@ -35,21 +33,22 @@ const HALLOWEEN_ILLUSTRATED = [
   "ooky-spooky-light-show", "scarefest-scream-park",
   "slaughterhouse-adventure", "spooky-trails", "the-howling-haunted-trail-and-party", "wildwood-manor-house"
 ];
-// The nine Halloween records resolved as duplicate, closed or ended (kept in the inventory, never shown).
-// Four more ended attractions were excluded by the owner's direction of 2026-10-18 and two more (Fort Meigs, Halloween Stroll) by the owner's expiry approval of 2026-10-22 (disposition "ended", approval retired).
+// The eleven Halloween records resolved as duplicate, closed or ended (kept in the inventory, never shown).
+// Four more ended attractions were excluded by the owner's direction of 2026-10-18 and four more (Fort Meigs, Halloween Stroll, Greenfield Village, Zoo Boo) by the owner's expiry approval of 2026-10-22 (disposition "ended", approval retired).
 const HALLOWEEN_EXCLUDED = { "exit-13-haunted-house": "closed", "scarehouse-windsor-immersive-dinner": "duplicate", "windsor-essex-yard-haunt-map": "duplicate",
   "sanilac-museums-haunted-village": "ended", "spooky-janes-walk": "ended", "sandwich-town-ghost-tour": "ended", "dearborn-haunted-trail": "ended",
-  "fort-meigs-garrison-ghost-walk": "ended", "halloween-stroll": "ended" };
+  "fort-meigs-garrison-ghost-walk": "ended", "halloween-stroll": "ended",
+  "halloween-greenfield-village": "ended", "zoo-boo": "ended" };
 // The 76 records of the closed Fall batch.
 function batch76(ED) { return new Set(ED.read("RELEASE_BATCH_1.json").records.map((r) => r.collection + "/" + r.id)); }
-// Every record that may be PUBLIC: the 76 plus the pinned Halloween 23.
+// Every record that may be PUBLIC: the 76 plus the pinned Halloween 21.
 function authorized(ED) {
   const s = batch76(ED);
   BATCH2.forEach((k) => s.add(k));
   HALLOWEEN_PUBLISHED.forEach((id) => s.add("halloween/" + id));
   return s;
 }
-// The Halloween records the owner approved: the 52-record inventory in the release data, less the 9 excluded = 43.
+// The Halloween records the owner approved: the 52-record inventory in the release data, less the 11 excluded = 41.
 function halloweenApproved(ED) { return Object.keys(ED.read("halloween-release-1.json").records).filter((id) => !HALLOWEEN_EXCLUDED[id]); }
 // Assert one record: Fall and Fall Colors carry exactly AUTH iff in the 76 batch; every Halloween record carries exactly AUTH_HALLOWEEN.
 function checkApproval(assert, slug, e, set) {
