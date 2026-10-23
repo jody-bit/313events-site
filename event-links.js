@@ -6,11 +6,11 @@
 // "Tickets & info" button and the event page was demoted or hidden. A venue homepage says nothing about one event.
 //
 // Preference order (owner, 2026-10-23):
-//   1. a verified event-specific ticket_url                    -> primary, "Tickets & info" ("More info" when free)
-//   2. an event-specific event_url (organizer/source/venue listing) -> primary, labelled "Event page" (no ticket claim)
+//   1. a verified event-specific ticket_url                    -> primary, "Get tickets"
+//   2. an event-specific event_url (organizer/source/venue listing) -> primary, labelled "Event details" (no ticket claim)
 //   3. a bare venue homepage (in either field)                 -> never primary; a secondary "Venue website" link
 //   4. nothing                                                 -> no link (callers keep their own fallback)
-// "Event page" is shown beside a ticket link only when it is a distinct, event-specific URL. Nothing here rewrites stored
+// "Event details" is shown beside a ticket link only when it is a distinct, event-specific URL. Nothing here rewrites stored
 // data or invents a link: it only chooses among the fields the row already has.
 (function (root) {
   "use strict";
@@ -39,13 +39,13 @@
     const ticketSpecific = ticket && !isBareHomepage(ticket) ? ticket : null;
     const pageSpecific = page && !isBareHomepage(page) ? page : null;
     const homepage = (ticket && !ticketSpecific ? ticket : null) || (page && !pageSpecific ? page : null);
-    const label = e && e.free ? "More info" : "Tickets & info";
-
-    // "Tickets & info" claims a ticket link; an event page with no ticket link is labelled for what it is.
-    const primary = ticketSpecific ? { url: ticketSpecific, label: label } : pageSpecific ? { url: pageSpecific, label: "Event page" } : null;
+    
+    // Labels (owner, 2026-10-23): "Get tickets" claims a ticket link; an event page with no ticket link is "Event details".
+    // Free or not is never inferred from which link exists, so the label does not depend on e.free.
+    const primary = ticketSpecific ? { url: ticketSpecific, label: "Get tickets" } : pageSpecific ? { url: pageSpecific, label: "Event details" } : null;
     return {
       primary: primary,
-      event: ticketSpecific && pageSpecific && pageSpecific !== ticketSpecific ? { url: pageSpecific, label: "Event page" } : null,
+      event: ticketSpecific && pageSpecific && pageSpecific !== ticketSpecific ? { url: pageSpecific, label: "Event details" } : null,
       venue: homepage ? { url: homepage, label: "Venue website" } : null
     };
   }

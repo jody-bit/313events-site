@@ -136,18 +136,13 @@ async function run() {
   }
   console.log("PASS: backfill fills blank event_url only, never replaces a stored link, never writes a generic ticket_url");
 
-  // --- public pages: Tickets & info = ticket_url, otherwise event_url ---
+  // --- public pages: Get tickets = ticket_url, otherwise Event details = event_url ---
   for (const f of ["index.html", "calendar.html", "map.html", "event-template.html"]) {
     const src = fs.readFileSync(path.join(REPO_DIR, f), "utf8");
-    // calendar, map and event page choose through event-links.js (see test/event-links.test.js); the homepage still has its own copy
-    if (f === "index.html") {
-      assert.ok(/e\.ticketUrl\s*\|\|\s*e\.eventPageUrl|primaryUrl/.test(src), `${f}: primary button falls back to event_url`);
-      assert.ok(/e\.ticketUrl && e\.eventPageUrl && safeUrl\(e\.eventPageUrl\)|e\.ticketUrl && safeUrl\(e\.ticketUrl\) && e\.eventPageUrl/.test(src), `${f}: secondary "Event page" only beside a distinct ticket link`);
-    } else {
-      assert.ok(/EventLinks\.resolve\(e\)/.test(src), `${f}: link choice goes through EventLinks.resolve`);
-    }
+    // every public page chooses through event-links.js (see test/event-links.test.js)
+    assert.ok(/EventLinks\.resolve\(e\)/.test(src), `${f}: link choice goes through EventLinks.resolve`);
   }
-  console.log("PASS: homepage, calendar, map and event pages show Tickets & info from ticket_url, else event_url, without a duplicate Event page button");
+  console.log("PASS: homepage, calendar, map and event pages choose Get tickets from ticket_url, else Event details from event_url, without a duplicate Event details button");
 }
 
 run().catch((err) => { console.error("FAIL:", err); process.exit(1); });
