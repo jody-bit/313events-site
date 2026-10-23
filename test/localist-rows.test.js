@@ -551,3 +551,19 @@ async function section8() {
   console.log("PASS: the funnel — every event fetched is either a row or counted under the one reason it was left out");
   console.log("\nAll localist-rows.test.js checks passed.");
 }
+
+// --- Entities in description_text (BGSU athletics links) ---
+{
+  const mk = (desc) => {
+    const e = event("Home Game", { instances: [instance("2026-11-07", "19:00")], description_text: desc, ...PLACES.MACOMB_CENTER });
+    const v = L.eventEligibility(e, TENANT);
+    assert.ok(v.eligible, v.reason);
+    return L.rowsForEvent({ event: e, instanceWrappers: wrap([instance("2026-11-07", "19:00")]), place: v.place, tenant: TENANT, windowStart: "2026-10-05", windowEnd: "2027-01-03", categoryFromText: () => "sports" })[0].description;
+  };
+  assert.strictEqual(mk("Tickets https://bgsufalcons.com/calendar.aspx?game_id=25038&amp;sport_id=8"), "Tickets https://bgsufalcons.com/calendar.aspx?game_id=25038&sport_id=8");
+  assert.strictEqual(mk("Fish &amp; Chips &quot;night&quot; &#39;x&#39;"), "Fish & Chips \"night\" 'x'");
+  assert.strictEqual(mk("Already plain & fine"), "Already plain & fine");
+  assert.strictEqual(mk("Double &amp;amp; escaped"), "Double &amp; escaped", "decoded once only");
+  assert.strictEqual(mk("   "), null);
+  console.log("PASS: description_text entities (&amp; &quot; &#39;) decoded once; plain text and empty untouched");
+}

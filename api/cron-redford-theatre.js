@@ -363,6 +363,28 @@ async function mapWithConcurrency(items, limit, worker) {
 
 const DETAIL_FETCH_CONCURRENCY = 5;
 
+const { createBudget, fetchText, isTimeout } = require("./_lib/run-budget");
+// Reliability limits (#256 pattern). vercel.json gives this function 60 s; the
+// run stops starting detail fetches at 45 s so the venue lookup, status lookup
+// and upsert still have room. Archive page 10 s, each detail page 8 s. Nothing
+// is retried within a run; a detail page that was not read leaves the stored
+// description/ticket_url untouched and is picked up by the next scheduled run.
+const RUN_BUDGET_MS = 45000;
+const ARCHIVE_TIMEOUT_MS = 10000;
+const DETAIL_TIMEOUT_MS = 8000;
+const MIN_START_MS = 1500;
+const MAX_CONSECUTIVE_DETAIL_TIMEOUTS = 3;
+// Test-only overrides (unset in production).
+function limits() {
+  const n = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+  return {
+    budgetMs: n(process.env.REDFORD_RUN_BUDGET_MS, RUN_BUDGET_MS),
+    archiveMs: n(process.env.REDFORD_ARCHIVE_TIMEOUT_MS, ARCHIVE_TIMEOUT_MS),
+    detailMs: n(process.env.REDFORD_DETAIL_TIMEOUT_MS, DETAIL_TIMEOUT_MS),
+    minStartMs: n(process.env.REDFORD_MIN_START_MS, MIN_START_MS),
+  };
+}
+
 // 2026-09-22, Needs-Follow-up reduction (continued): the archive page's own
 // href (extractEventUrls() above) points at a real per-event detail page --
 // and that detail page itself carries MORE authoritative source metadata
@@ -411,32 +433,52 @@ function stripEventDescHtml(inner) {
   return text || null;
 }
 
+function parseEventDetailHtml(html) {
+  let description = null;
+  const descMatch = html.match(/<div[^>]*class="[^"]*eventDesc[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+  if (descMatch) description = stripEventDescHtml(descMatch[1]);
+
+  // Every anchor on the page, tested by its own rendered text (not just
+  // the text immediately after the opening tag) -- mirrors a real
+  // browser's a.textContent match, so a "Buy Tickets" button wrapped in
+  // an inner <span>/icon still matches correctly.
+  const buyLinks = [];
+  const anchorRe = /<a\s+[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+  let am;
+  while ((am = anchorRe.exec(html))) {
+    const linkText = am[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (/buy tickets?/i.test(linkText)) buyLinks.push(decodeEntities(am[1]));
+  }
+  const ticket_url = buyLinks.length === 1 ? buyLinks[0] : null;
+
+  return { description, ticket_url };
+}
+
 async function fetchEventDetail(url) {
   try {
     const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
     if (!r.ok) return { description: null, ticket_url: null };
     const html = await r.text();
-
-    let description = null;
-    const descMatch = html.match(/<div[^>]*class="[^"]*eventDesc[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-    if (descMatch) description = stripEventDescHtml(descMatch[1]);
-
-    // Every anchor on the page, tested by its own rendered text (not just
-    // the text immediately after the opening tag) -- mirrors a real
-    // browser's a.textContent match, so a "Buy Tickets" button wrapped in
-    // an inner <span>/icon still matches correctly.
-    const buyLinks = [];
-    const anchorRe = /<a\s+[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
-    let am;
-    while ((am = anchorRe.exec(html))) {
-      const linkText = am[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-      if (/buy tickets?/i.test(linkText)) buyLinks.push(decodeEntities(am[1]));
-    }
-    const ticket_url = buyLinks.length === 1 ? buyLinks[0] : null;
-
-    return { description, ticket_url };
+    return parseEventDetailHtml(html);
   } catch {
     return { description: null, ticket_url: null };
+  }
+}
+
+// Bounded variant used by the cron (#256 pattern): per-request timeout, run
+// budget, and an outcome that distinguishes "the page has no description"
+// (status "ok", null fields) from "we could not read the page" (status
+// "failed" | "timed_out" | "deferred"). The cron must not treat the second as
+// the first: sending null for a page that was never read would erase a
+// description or ticket link that is already verified in the database.
+async function fetchEventDetailChecked(url, { budget, timeoutMs, minStartMs = MIN_START_MS }) {
+  if (budget.remaining() < minStartMs) return { status: "deferred", description: null, ticket_url: null };
+  try {
+    const r = await fetchText(url, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } }, { timeoutMs, budget });
+    if (!r.ok) return { status: "failed", error: `HTTP ${r.status}`, description: null, ticket_url: null };
+    return { status: "ok", ...parseEventDetailHtml(r.text) };
+  } catch (err) {
+    return { status: isTimeout(err) ? "timed_out" : "failed", error: err.message, description: null, ticket_url: null };
   }
 }
 
@@ -454,9 +496,11 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const cfg = limits();
+  const budget = createBudget({ budgetMs: cfg.budgetMs });
   let html;
   try {
-    const r = await fetch(SOURCE_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } });
+    const r = await fetchText(SOURCE_URL, { headers: { "User-Agent": "Mozilla/5.0 (313.events event calendar)" } }, { timeoutMs: cfg.archiveMs, budget });
     if (!r.ok) {
       const blocked = r.status === 401 || r.status === 403;
       await finishRun(runHandle, {
@@ -467,7 +511,7 @@ module.exports = async (req, res) => {
       res.status(200).json({ upserted: 0, error: `Fetch failed: HTTP ${r.status}` });
       return;
     }
-    html = await r.text();
+    html = r.text;
   } catch (err) {
     await finishRun(runHandle, { outcome: "failed", error_sample: "Fetch failed: " + err.message });
     res.status(200).json({ upserted: 0, error: "Fetch failed: " + err.message });
@@ -510,23 +554,55 @@ module.exports = async (req, res) => {
   // events -- no event will ever look up its detail data).
   const detailUrls = [...new Set(parsed.map((e) => eventUrls.get(e.title)).filter(Boolean))];
   const detailByHref = new Map();
+  let consecutiveDetailTimeouts = 0;
   if (detailUrls.length) {
     try {
-      const details = await mapWithConcurrency(detailUrls, DETAIL_FETCH_CONCURRENCY, async (url) => ({
-        url,
-        detail: await fetchEventDetail(url),
-      }));
+      const details = await mapWithConcurrency(detailUrls, DETAIL_FETCH_CONCURRENCY, async (url) => {
+        // Source looks down (three timeouts in a row): stop spending the budget on it.
+        if (consecutiveDetailTimeouts >= MAX_CONSECUTIVE_DETAIL_TIMEOUTS) {
+          return { url, detail: { status: "deferred", description: null, ticket_url: null } };
+        }
+        const detail = await fetchEventDetailChecked(url, { budget, timeoutMs: cfg.detailMs, minStartMs: cfg.minStartMs });
+        consecutiveDetailTimeouts = detail.status === "timed_out" ? consecutiveDetailTimeouts + 1 : 0;
+        return { url, detail };
+      });
       details.forEach(({ url, detail }) => detailByHref.set(url, detail));
     } catch {
       // Whole detail-fetch pass failed unexpectedly -- fall through with an
       // empty map, same fail-soft philosophy as venue-lookup.js. Base rows
-      // (title/date/time/event_url) still write normally below.
+      // (title/date/time/event_url) still write normally below, and (see
+      // below) leave stored description/ticket_url untouched.
     }
   }
+  const detailCounts = { ok: 0, failed: 0, timed_out: 0, deferred: 0 };
+  for (const url of detailUrls) {
+    const d = detailByHref.get(url);
+    detailCounts[d ? d.status : "failed"]++;
+  }
+  const detailUnread = detailCounts.failed + detailCounts.timed_out + detailCounts.deferred;
+  const runReport = {
+    detailPages: detailUrls.length,
+    detailOk: detailCounts.ok,
+    detailFailed: detailCounts.failed,
+    detailTimedOut: detailCounts.timed_out,
+    detailDeferred: detailCounts.deferred,
+    complete: detailUnread === 0,
+    partial: detailUnread > 0,
+    budgetMs: cfg.budgetMs,
+    elapsedMs: budget.elapsed(),
+  };
 
   const rawRows = parsed.map((e) => {
     const href = eventUrls.get(e.title) || null;
     const detail = href ? detailByHref.get(href) : null;
+    // A detail page that was not read (failed / timed out / deferred / pass
+    // aborted) says nothing about the event: OMIT description and ticket_url
+    // so the merge keeps what is stored. Only a page that was read may write,
+    // and a read page with no description still writes null, as before.
+    const detailRead = !href || (detail && detail.status === "ok");
+    const detailFields = detailRead
+      ? { description: (detail && detail.description) || null, ticket_url: (detail && detail.ticket_url) || null }
+      : {};
     return {
       // Same idempotent id scheme as before -- date+title -- which is
       // exactly why the LIST case (two distinct showings, e.g. Fri/Sat)
@@ -536,7 +612,6 @@ module.exports = async (req, res) => {
       external_id: redfordExternalId(e.date, e.title),
       title: e.title,
       category: "film",
-      description: (detail && detail.description) || null,
       venue_name_raw: VENUE_NAME,
       venue_id: venueId,
       start_date: e.date,
@@ -545,7 +620,7 @@ module.exports = async (req, res) => {
       is_all_day: e.isAllDay,
       is_free: false,
       event_url: href,
-      ticket_url: (detail && detail.ticket_url) || null,
+      ...detailFields,
       source: SOURCE_NAME,
     };
   });
@@ -608,13 +683,16 @@ module.exports = async (req, res) => {
       return;
     }
     await finishRun(runHandle, {
-      outcome: "success",
+      outcome: runReport.partial ? "partial" : "success",
       http_status: resp.status,
       records_fetched: null,
       records_parsed: parsed.length,
       records_written: rowsWithStatus.length,
+      ...(runReport.partial
+        ? { error_sample: `Partial run: ${detailUnread} of ${detailUrls.length} detail pages not read (${detailCounts.timed_out} timed out, ${detailCounts.failed} failed, ${detailCounts.deferred} deferred); stored description/ticket_url left unchanged for those events` }
+        : {}),
     });
-    res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, ...runReport, fetchedAt: new Date().toISOString() });
   } catch (err) {
     await finishRun(runHandle, {
       outcome: "failed",
@@ -639,6 +717,7 @@ module.exports = async (req, res) => {
 module.exports.parseRedfordEvents = parseRedfordEvents;
 module.exports.extractEventUrls = extractEventUrls;
 module.exports.fetchEventDetail = fetchEventDetail;
+module.exports.fetchEventDetailChecked = fetchEventDetailChecked;
 module.exports.redfordExternalId = redfordExternalId;
 module.exports.SOURCE_URL = SOURCE_URL;
 module.exports.SOURCE_NAME = SOURCE_NAME;
