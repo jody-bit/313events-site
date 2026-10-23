@@ -7,7 +7,7 @@
 //
 // Preference order (owner, 2026-10-23):
 //   1. a verified event-specific ticket_url                    -> primary, "Tickets & info" ("More info" when free)
-//   2. an event-specific event_url (organizer/source/venue listing) -> primary, same label
+//   2. an event-specific event_url (organizer/source/venue listing) -> primary, labelled "Event page" (no ticket claim)
 //   3. a bare venue homepage (in either field)                 -> never primary; a secondary "Venue website" link
 //   4. nothing                                                 -> no link (callers keep their own fallback)
 // "Event page" is shown beside a ticket link only when it is a distinct, event-specific URL. Nothing here rewrites stored
@@ -41,9 +41,10 @@
     const homepage = (ticket && !ticketSpecific ? ticket : null) || (page && !pageSpecific ? page : null);
     const label = e && e.free ? "More info" : "Tickets & info";
 
-    const primaryUrl = ticketSpecific || pageSpecific;
+    // "Tickets & info" claims a ticket link; an event page with no ticket link is labelled for what it is.
+    const primary = ticketSpecific ? { url: ticketSpecific, label: label } : pageSpecific ? { url: pageSpecific, label: "Event page" } : null;
     return {
-      primary: primaryUrl ? { url: primaryUrl, label: label } : null,
+      primary: primary,
       event: ticketSpecific && pageSpecific && pageSpecific !== ticketSpecific ? { url: pageSpecific, label: "Event page" } : null,
       venue: homepage ? { url: homepage, label: "Venue website" } : null
     };

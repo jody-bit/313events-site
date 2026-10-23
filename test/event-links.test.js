@@ -16,7 +16,7 @@ const TM = "https://ticketmaster.evyy.net/c/7676879/264167/4272?u=https%3A%2F%2F
 
 // the two Samhain rows
 let r = EL.resolve({ ticketUrl: HOME, eventPageUrl: RA });
-assert.deepStrictEqual(r.primary, { url: RA, label: "Tickets & info" }, "the RA event page is the main button, not the homepage");
+assert.deepStrictEqual(r.primary, { url: RA, label: "Event page" }, "the RA event page is the main button, labelled for what it is, not the homepage");
 assert.strictEqual(r.event, null, "no 'Event page' duplicate when the event page is already primary");
 assert.deepStrictEqual(r.venue, { url: HOME, label: "Venue website" }, "the homepage is kept, honestly labelled");
 
@@ -28,11 +28,13 @@ assert.strictEqual(r.venue, null);
 
 // RA row with no ticket link: the event page is the main button (the Oct 12 contract)
 r = EL.resolve({ ticketUrl: null, eventPageUrl: RA });
-assert.deepStrictEqual(r.primary, { url: RA, label: "Tickets & info" }); assert.strictEqual(r.venue, null);
+assert.deepStrictEqual(r.primary, { url: RA, label: "Event page" }); assert.strictEqual(r.venue, null);
 
 // same link in both fields is shown once
 r = EL.resolve({ ticketUrl: RA, eventPageUrl: RA });
 assert.strictEqual(r.primary.url, RA); assert.strictEqual(r.event, null);
+// ticket_url holding the event page itself is still a ticket-field value: it keeps the ticket label
+assert.strictEqual(r.primary.label, "Tickets & info");
 
 // homepage only: no ticket CTA at all, only a labelled venue link
 r = EL.resolve({ ticketUrl: HOME + "/", eventPageUrl: null });
