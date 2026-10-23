@@ -34,6 +34,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #42 (Cider/orchard). WXYZ 2026 cider-mill opening list shows Yates at 1950 E. Avon Rd. as open; undated otherwise. Another listing shows a second Orion Twp location; not published here.
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 1950 E. Avon Rd., Rochester Hills, MI 48307 (second location: Canterbury Village, Lake Orion). Season/hours as stated: Now Open (historic mill 7am-7pm); no explicit 2026 dates. Flags: second location listed on same site. <https://www.yatescidermill.com/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page shows 'Now Open' (mill 7am-7pm), apple tent daily Sep-Oct, pony rides/petting zoo weekends weather permitting; no season dates. No closure notice. <https://www.yatescidermill.com/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Official page lists fall farm activities: cider, donuts, apple tent, pony rides.
 - Image: `/assets/seasonal/photos/fall/fall__yates-cider-mill__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
@@ -48,6 +49,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #28 (Cider/orchard). WXYZ 2026 opening list: 714 Base Line Rd., listed opening Aug 29 (not displayed).
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 714 Baseline Rd., Northville, MI 48167. Season/hours as stated: 'now open', daily 10am-8pm; no 2026 season dates. Flags: sparse page; activities not enumerated. <https://www.northvillecider.com/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page says 'now open!', 10am-8pm daily, 714 Baseline Rd. No season dates or closure notice; matches record. <https://www.northvillecider.com/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Official page lists fall farm activities: cider and products, large call-ahead orders.
 - Image: `/assets/seasonal/fall-card-2.webp` (generated illustrative card).
 - Outstanding:
@@ -63,6 +65,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #7. Yahoo/Macomb County/Islands.com coverage describe wagon rides and party packages in fall; Blake's has several sites (inventory #8-10), only the Armada orchard is published. <https://www.blakefarms.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 17985 Armada Center Road, Armada, MI 48005. Season/hours as stated: Cider mill open daily 8am-6pm; U-pick open now. Flags: site now branded Blake Farms; one of four locations. <https://blakefarms.com/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Cider Mill 'Open Daily 8am-6pm'; U-pick, tasting room, Funland, store and bakery listed at Armada. No closure notice. Page metadata says 'Fall 2026 (Draft)'. <https://blakefarms.com/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Official page lists fall farm activities: cider mill, tasting room, U-pick, Funland.
 - Image: `/assets/seasonal/fall-card-4.webp` (generated illustrative card).
 - Outstanding:
@@ -79,6 +82,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Inventory #41. Axios (Aug 31 2026) and Ann Arbor-area listings describe the Country Fair at 5565 Merritt Rd. 2026 schedule not confirmed. <https://www.wiards.com>
   - official (site read 2026-10-11): Official site read 2026-10-11 (two reads). Address given as 5565 Merritt Rd, Ypsilanti, Michigan 48197. The home page says "Apples, cider, pumpkins, donuts and so much more!" and "Cider mill season is here!". The Country Fair attractions (corn maze, slide, wagon rides, petting farm) each read Temporarily Closed on the fetched page, so no Country Fair attraction is claimed. A countdown banner shows a September 8, 2026 date that has passed. <https://www.wiards.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 5565 Merritt Rd, Ypsilanti, MI 48197. Season/hours as stated: Fall underway; Country Fair Wed-Sun, Country Store Tue-Sun; hours on separate page not read. Flags: corn maze, slide, wagon rides, petting farm marked Temporarily Closed on page. <https://www.wiards.com/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Still 'Fall is happening at Wiard's!'; Country Fair Wed-Sun, Store Tue-Sun; all four attractions still Temporarily Closed. Countdown now targets Sept 7, 2027 (was Sept 8, 2026): ambiguous, no closing notice. Human check advised. <https://www.wiards.com>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person: The official home page lists apples, cider, pumpkins and donuts and says cider mill season is here. The Country Fair attractions read Temporarily Closed, so no attraction or u-pick is claimed on the card..
 - Image: `/assets/seasonal/photos/fall/fall-guide__wiards-orchards__ypsilanti-mi__mine-01__card.webp` (owner photo 313p-0340da3a, sha256 4d6410520166..., verified 2026-10-13).
 - Outstanding:
@@ -109,6 +113,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #2. WXYZ 2026 report: sixth season, opens Sept 25. Ticket prices not displayed.
   - official (site read 2026-10-12): Official page read 2026-10-12. Official site (read 2026-10-12): haunt season opens Sept 25; Rockin' Haunt Night Concert Fri Oct 30, 2026 (doors 6 PM); tickets on sale through the site's ticketing page. WXYZ 2026 (secondary): sixth season, opens Sept 25. Dates as stated: Opens Sept 25, 2026 (official). Closing date is not stated on the official page. Weekly hours listed: Fri 7-11 PM, Sat 7 PM-12 AM, Sun 7-10:30 PM. WXYZ roundup (secondary) says weekends through Nov 1. <https://eloiseasylum.com/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Starts Sept 25 (2026 season); Rockin' Haunt Night Concert Fri Oct 30, 2026, doors 6 PM. No closing date. Weekly hours text garbled for Saturday on fetch; recheck by eye. <https://eloiseasylum.com/>
 - Relevance: confirmed 2026-10-12 by Claude (Cowork session), read via web fetch: Official site (read 2026-10-12): haunt season opens Sept 25; Rockin' Haunt Night Concert Fri Oct 30, 2026 (doors 6 PM); tickets on sale through the site's ticketing page. WXYZ 2026 (secondary): sixth season, opens Sept 25..
 - Image: `/assets/seasonal/photos/halloween/halloween__eloise-asylum__westland-mi__mine-01__card.webp` (owner photo 313p-73cbabcb, sha256 0ada3fdb00c4..., verified 2026-10-11).
 - Outstanding:
@@ -124,6 +129,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #35. thehenryford.org 2026 news: 46th season; the event page reports general admission sold out. Availability not displayed. <https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village>
   - official (site read 2026-10-11): Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card. <https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Dates Oct 1-4, 8-11, 15-18, 22-25, 2026, 6-9:30 p.m. New: 'General admission tickets ... are sold out for 2026.' Summary still accurate; consider mentioning sold out. <https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session), read in Chrome: Official page describes Hallowe'en in Greenfield Village, October 2026..
 - Image: `/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp` (owner photo 313p-f9dfb30c, sha256 5bde741e7c71..., verified 2026-10-13).
 - Outstanding:
@@ -139,6 +145,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #38. WXYZ 2026: returns on select October weekends. One date listed as a typo in the source, so no dates shown.
   - official (site read 2026-10-11): Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card. <https://detroitzoo.org/events/zoo-boo/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page now shows dates: Oct. 3-4, 9-11, 16-18, 23-25, 3 to 8:30 p.m. Matches 'first four weekends in October'. Final weekend still upcoming. <https://detroitzoo.org/events/zoo-boo/>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session), read in Chrome: Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026..
 - Image: `/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
@@ -153,6 +160,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #32. Michigan.org / Michigan Public 2026 listings; glenloretrails.com named for tickets. <https://glenloretrails.com>
   - official (site read 2026-10-12): Official page read 2026-10-12. Official site (read 2026-10-12) states the 2026 season runs through Nov 1, 2026 and lists dated 2026 special nights. Dates as stated: Select nights from Sept 18 through Nov 1, 2026; trail operates Thursday through Sunday. Special nights: Jay's Junior Night Oct 9; 21+ Adult Night Oct 16; Trick or Treat Oct 25; Halloween Night Oct 31. <https://glenloretrails.com>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open Now through November 1st, 2026'; Thursday through Sunday; Adult Night Fri 10/16, Trick or Treat Sun 10/25, Halloween Night Sat 10/31. Oct 9 Junior Night no longer listed (past). <https://glenloretrails.com>
 - Relevance: confirmed 2026-10-12 by Claude (Cowork session), read via web fetch: Official site (read 2026-10-12) states the 2026 season runs through Nov 1, 2026 and lists dated 2026 special nights..
 - Image: `/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp` (owner photo 313p-8dda6dde, sha256 9bb025beebe2..., verified 2026-10-11).
 - Outstanding:
@@ -168,6 +176,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Inventory #39. A late-summer 2026 listing invites reservations for the 2026 event; specific 2026 dates not found.
   - official (site read 2026-10-11): Official Genesee County Parks page read 2026-10-11: Halloween Ghosts & Goodies at Crossroads Village, October 2026 (3-4, 9-11, 16-18, 22-25, 29-30). Dates are not shown on the card. <https://geneseecountyparks.org/halloween-ghosts-goodies/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open October 2026: 3-4, 9-11, 16-18, 22-25, & 29-30' matches the record. <https://geneseecountyparks.org/halloween-ghosts-goodies/>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session), read in Chrome: Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026..
 - Image: `/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp` (generated illustrative card).
 - Outstanding:
@@ -183,6 +192,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
   - inventory+search: Fall-color inventory. Metro Parent and Macomb Now quote Metroparks marketing calling it a popular fall-color destination. <https://www.metroparks.com>
   - official (site read 2026-10-11): Official Huron-Clinton Metroparks page read 2026-10-11 (two reads). Address given as 4300 Main Park Road, Shelby Township, MI 48316. The page describes a panorama of forest edge, broad fields, dense woods and small wetlands, and trails with "spectacular fall views". It does not use the words autumn, foliage, fall color or leaves. A $10 daily vehicle pass and closure notices are shown (not displayed on the card). <https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 4300 Main Park Road, Shelby Township, MI 48316. Season/hours as stated: park 6am-10pm; $10 daily vehicle pass or annual pass. Flags: seasonal text may be out of date. <https://www.metroparks.com/parks-and-trails/stony-creek-metropark/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address 4300 Main Park Road, park 6am-10pm, $10 daily pass match. Trolley Trails offer 'spectacular fall views'. Page has no explicit 2026 schedule; Off-Leash Dog Area Monday maintenance closure through Nov 1. <https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/>
 - Relevance: confirmed 2026-10-11 by Claude (Cowork session): two independent reads of the official page through a summarising fetch tool; not yet reviewed by a person: Weaker basis: the official trail description mentions "spectacular fall views" but nothing about leaf color. The page otherwise describes woods and trails..
 - Image: `/assets/seasonal/fall-color-card-3.webp` (generated illustrative card).
 - Outstanding:
@@ -198,6 +208,7 @@ Numbers in the last column are gate items: 1 official-source verification, 2 rel
 - Evidence on file:
   - inventory+search: Fall-color inventory. Metro Parent: 8801 N. Territorial Rd., paved path, Acorn Nature Trail, Huron River. <https://www.metroparks.com>
   - official (site read 2026-10-11): Official page read 2026-10-11. Address as stated: 8801 N. Territorial Road, Dexter, MI 48130. Season/hours as stated: park 7am-10pm; $10 daily or annual vehicle pass. Flags: Acorn Nature Trail unsalted/muddy in winter. <https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/>
+  - official (site read 2026-10-19): Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address, 7am-10pm, $10 pass match. Hike-Bike 3-mile paved loop, Acorn Nature Trail, Rapids View canoe/kayak launch all listed. No current closures listed. <https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/>
 - Relevance: confirmed 2026-10-11 by Claude Code: automated read of the official page; owner review pending: Destination Ann Arbor's own fall-color guide names Hudson Mills as a hiking destination, and the park has a river corridor and a nature trail. The park page itself is silent on foliage..
 - Image: `/assets/seasonal/photos/fall-color/fall-color__hudson-mills-metropark__commons-01__card.webp` (generated illustrative card).
 - Outstanding:

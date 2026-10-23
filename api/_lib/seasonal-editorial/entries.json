@@ -81,6 +81,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1950 E. Avon Rd., Rochester Hills, MI 48307 (second location: Canterbury Village, Lake Orion). Season/hours as stated: Now Open (historic mill 7am-7pm); no explicit 2026 dates. Flags: second location listed on same site."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.yatescidermill.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page shows 'Now Open' (mill 7am-7pm), apple tent daily Sep-Oct, pony rides/petting zoo weekends weather permitting; no season dates. No closure notice."
     }
    ],
    "migration": {
@@ -192,6 +200,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 714 Baseline Rd., Northville, MI 48167. Season/hours as stated: 'now open', daily 10am-8pm; no 2026 season dates. Flags: sparse page; activities not enumerated."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.northvillecider.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page says 'now open!', 10am-8pm daily, 714 Baseline Rd. No season dates or closure notice; matches record."
     }
    ],
    "migration": {
@@ -305,6 +321,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 17985 Armada Center Road, Armada, MI 48005. Season/hours as stated: Cider mill open daily 8am-6pm; U-pick open now. Flags: site now branded Blake Farms; one of four locations."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://blakefarms.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Cider Mill 'Open Daily 8am-6pm'; U-pick, tasting room, Funland, store and bakery listed at Armada. No closure notice. Page metadata says 'Fall 2026 (Draft)'."
     }
    ],
    "migration": {
@@ -377,6 +401,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5565 Merritt Rd, Ypsilanti, MI 48197. Season/hours as stated: Fall underway; Country Fair Wed-Sun, Country Store Tue-Sun; hours on separate page not read. Flags: corn maze, slide, wagon rides, petting farm marked Temporarily Closed on page."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.wiards.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Still 'Fall is happening at Wiard's!'; Country Fair Wed-Sun, Store Tue-Sun; all four attractions still Temporarily Closed. Countdown now targets Sept 7, 2027 (was Sept 8, 2026): ambiguous, no closing notice. Human check advised."
     }
    ],
    "relevance": {
@@ -491,6 +523,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 7450 Franklin Rd, Bloomfield Hills, MI 48301. Season/hours as stated: 2026 season Sep 5 - Nov 29, 2026; mill 8am-6pm daily. "
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.franklincidermill.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 'OPENING: Saturday, September 5, 2026' and 'END OF SEASON: Sunday, November 29, 2026'; mill 8am-6pm daily. Matches record."
     }
    ],
    "relevance": {
@@ -619,6 +659,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 3685 Central St., Dexter, MI 48130. Season/hours as stated: Open now Wed-Sun 8am-5pm; no season dates. Flags: cash or check only."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.dextercidermill.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Banner 'We're Open! Wednesday - Sunday, 8 AM - 5 PM'; cash or check only; 3685 Central St. No season dates or closure notice."
     }
    ],
    "website": "https://www.dextercidermill.com/",
@@ -685,6 +733,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5125 N. Rochester Rd., Rochester, MI 48306. Season/hours as stated: Open daily 9am-6pm, Labor Day weekend through Dec 31, 2026. Flags: cash or check only."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://rochestercidermill.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 'Last day of the season is December 31, 2026'; open daily 9-6; cash/check only; closed Thanksgiving and Christmas. Matches record."
     }
    ],
    "relevance": {
@@ -804,6 +860,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 71485 North Avenue, Armada, MI 48005. Season/hours as stated: Haunted attractions Sep 12 - Nov 1; Honeycrisp U-pick from Sep 5 (year not stated; footer 2026). Flags: separate location from Blake's Orchard & Cider Mill; same brand."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://blakefarms.com/big-apple/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Haunted attractions Sept 12 to Nov 1 (2026 ticket link); Honeycrisp U-pick from Sept 5; U-pick daily 8-5; corn maze/animal farm in Funland. No closure notice."
     }
    ],
    "website": "https://blakefarms.com/big-apple/",
@@ -1041,6 +1105,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1479 Ranch Rd., Holly, MI 48442. Season/hours as stated: Aug 15-Oct 31 daily 9am-6pm; Nov 1-22 Sat/Sun 12-5pm; weekend hayrides Sep 12-Oct 18; pony rides Sep 26-Oct 17. Flags: page says no U-pick apples."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.diehlsorchard.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19. Hayrides now weekends Sep 12-Oct 25 (earlier note: Sep 12-Oct 18); pony rides weekends Sep 26-Oct 18 (earlier note: Sep 26-Oct 17). Hours Aug 15-Oct 31 daily 9-6 and Nov 1-22 Sat/Sun 12-5 unchanged. Private evidence only; the public summary has no ride dates."
     }
    ],
    "relevance": {
@@ -1199,6 +1271,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1540 E Commerce Rd, Commerce Township, MI. Season/hours as stated: Cider Mill and Farm Market daily 9-7 through Thanksgiving Eve; Fun Farm and Corn Maze Sep 12-Nov 1; pumpkin patch Sept to early Nov. Flags: farm is cashless; brand shown as Long's Orchard."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.longsorchard.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Cider Mill daily through Thanksgiving Eve; Fun Farm, Corn Maze & Pumpkin Patch Sept 12-Nov 1; banner '1876-2026'; cashless. Date ranges show no year. No closure notice."
     }
    ],
    "relevance": {
@@ -1298,6 +1378,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 10685 Warren Rd, Plymouth, MI 48170 (Red Shed Market: 10260 Ann Arbor Rd). Season/hours as stated: Cider Mill open Sept 5-Nov 8, 2026, 9am-7pm daily; Red Shed Market Sept 5-Nov 25, 2026, 10am-6pm. Flags: two locations on one site."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.plymouthorchards.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Cider Mill September 5 to November 8, 2026, 9am-7pm; Red Shed Market Sept 5-Nov 25, 2026. Award-winning cider, donuts, pumpkins listed. Matches record."
     }
    ],
    "relevance": {
@@ -1492,6 +1580,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 6580 Judd Road, Milan, MI 48160. Season/hours as stated: 2026 opening day Thu Sept 10; open Wed-Sun 9am-6pm (home page). Flags: hours conflict on official site: home page Wed-Sun vs /info Fridays only."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.wasemfruitfarm.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page shows \"Fall 2026 Hours\": opening Thu Sept 10, Wed-Sun 9am-6pm, closed Mon/Tue. Pick-your-own apples and pumpkins listed. Oct 31, Nov and Dec hours still TBD; footer (c)2022."
     }
    ],
    "relevance": {
@@ -1611,6 +1707,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 65075 Van Dyke, Washington, MI 48095. Season/hours as stated: market daily 8-6; U-pick and Fall Family Fun daily 10-5 weather permitting; no season dates. Flags: indoor winery loft closed this fall."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.westvieworchards.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page lists market 8-6 daily, U-Pick 10-5 daily weather permitting, cider, donuts, baked goods, winery porch Sat-Sun 12-6. Oct 25 U-pick starts 11 (5K Wine Run). Winery loft not mentioned."
     }
    ],
    "website": "https://www.westvieworchards.com/",
@@ -1677,6 +1781,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 10411 Clyde Rd., Fenton, MI 48430. Season/hours as stated: open daily; market 9am-7pm; corn maze open; no season dates. Flags: some third parties say Hartland; official says Fenton."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.spicerorchards.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 10411 Clyde Rd., Fenton; market 9am-7pm daily; Corn Maze now open; pumpkin patch; cider and donuts; PYO. No season dates given. Winery also listed."
     }
    ],
    "relevance": {
@@ -1805,6 +1917,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 7897 Six Mile Road, Northville, MI 48168. Season/hours as stated: fall 2026 hours Sun-Thu 10-8, Fri/Sat 10-10; closed Nov 2-5 and Nov 9-26. Flags: banner and hours section disagree on bonus weekend dates; activity list not itemised on page read."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.threecedarsfarm.org/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Fall 2026 hours Sun-Thu 10-8, Fri-Sat 10-10; closed Nov 2-5 and Nov 9-26; Country Christmas 2026 Nov 27-Dec 20; Cider Donut Hut linked. Headline bonus weekend \"November 4-6\" still conflicts with Nov 6-8."
     }
    ],
    "website": "https://www.threecedarsfarm.org/",
@@ -2112,6 +2232,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 13011 Bethel Church Rd., Manchester, Michigan. Season/hours as stated: 2026 fall season: opening day Thu Sept 10, 2026; Thu-Fri 12-6, Sat 9-6, Sun 10-6. Freedom Winery opens Sat Sept 12, 2026, Thu-Sun 2-6. Flags: winery on same site; no closing date stated."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://alberorchard.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: opening day Thu Sept 10, 2026; Thu-Fri 12-6, Sat 9-6, Sun 10-6; Freedom Winery opens Sat Sept 12, 2026, Thu-Sun 2-6. No closing date or closures stated."
     }
    ],
    "website": "https://alberorchard.com",
@@ -2367,6 +2495,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 4900 32 Mile Road, Washington, MI 48095. Season/hours as stated: Headed 'Orchard Season 2026!'; new hours from 9/10: Farm Market Wed 3-7, Thu-Fri 11-7, Sat-Sun 9-5; U-Pick Thu-Fri 11-5:30, Sat-Sun 9-4 (Wed closed). No start/end dates stated. Flags: conflicting hours on page (older Legacy Bar hours)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.bigredorchard.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page headed \"Orchard Season 2026!\"; new hours from 9/10; U-Pick Thu-Fri 11-5:30, Sat-Sun 9-4; cider mill with apples, cider, donuts. Footer still (c)2023."
     }
    ],
    "relevance": {
@@ -2491,6 +2627,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5590 Van Dyke, Almont, MI 48003. Season/hours as stated: Page dated 2026: Market Mon-Wed 9-9, Thu-Sat 8-9, Sun 8-7; Tap Room daily; Tree Nursery Mon-Sat 9-5, Sun 9-3. Backyard Fall Bonfires Sept 18 to Oct 31 (parent site). No season end dates stated. Flags: part of multi-location business; more taproom/market than cider mill."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://blakefarms.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page lists Blake's Backyard, 5590 Van Dyke, Almont with Kitchen & Taproom, U-Pick, Nursery, Store; Backyard Fall Bonfires Sept 18 through Oct 31. Metadata marks page \"Fall 2026 (Draft)\"; Backyard hours not shown."
     }
    ],
    "website": "https://blakefarms.com",
@@ -2639,6 +2783,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: not stated on page (third-party listings: 1235 Erie Rd, Erie MI 48133). Season/hours as stated: 'Open for the season', Mon-Sat 9-7, Sun 11-5; Kids Weekend II Oct 10-11 (magic shows 1-5). No start or end dates; copyright 2026. Flags: address not on page; third-party reports property for sale (news, unverified)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://erieorchards.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: \"We are open for the season\", Mon-Sat 9-7, Sun 11-5, 2026 season image; Halloween Weekend Oct 24-25 (year unstated); pumpkin picking, donuts, cider, caramel apples. Address not on page."
     }
    ],
    "website": "https://erieorchards.com",
@@ -3168,6 +3320,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 12060 Hegel Road, Goodrich, MI 48438. Season/hours as stated: Mon-Sat 9am-6pm, Sun 12pm-6pm; 'open for the Season'; 2026 appears on page; no start/end dates. Flags: name differs from inventory."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://portersorchard.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page says \"We are OPEN for the Season!!!\"; Mon-Sat 9-6, Sun 12-6; 2026 ticketing page and Trick or Treat Trot 5K Oct 31, 2026. Address matches. Apples, cider, donuts listed."
     }
    ],
    "relevance": {
@@ -3658,6 +3818,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 9391 Lindsey Lane, Casco, MI 48064. Season/hours as stated: 2026, Sept 19 to Nov 1, 2026 (year stated). Fri 3-8pm; Sat and Sun 10am-8pm; last tickets 7pm. Pick-your-own pumpkins from Sept 25; Fall Harvest Fest weekends Sept 25 to Nov 1.. Flags: name differs (Corn Fun Family Farm); prices not on page read."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://cornfun.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: Sept 19 to Nov 1, 2026; Fri 3-8, Sat/Sun 10-8; two mazes, hayrides, pick-your-own pumpkins, sunflower/zinnia festival. Address matches."
     }
    ],
    "website": "https://cornfun.com",
@@ -3750,6 +3918,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 50240 Martz Road, Belleville, MI 48111. Season/hours as stated: Fall Festival Sept 12 to Nov 1 (the page ties it to the 2026 fall festival; the dates themselves carry no year). Oct 1-4, 8-11, 15-31: 10am-7pm; November Sundays 10am-7pm; Oct 5-7 and 12-14 not listed.. Flags: hours gaps on some October days; prices not on page read; debuckscornmaze.com redirects (301) to this domain."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.debucksfamilyfarm.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: open Sept 12 - Nov 1 (2026 Fall Festival); Oct 1-4, 8-11, 15-31 10am-7pm; corn maze, pumpkins, giant slides, jump pads, photo displays. Address matches."
     }
    ],
    "website": "https://www.debucksfamilyfarm.com/",
@@ -3917,6 +4093,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 7096 Gillette Rd, Flushing, MI 48433. Season/hours as stated: Fall season Aug 28 through Nov 8, 2026 (year stated). Mon-Thu 11am-9pm; Fri-Sat 10am-10pm; Sun 10am-9pm. Admission $19.75 ages 3+. 5K Trail Run and Walk Nov 7, 2026.. "
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://flushingfarms.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: Aug 28 - Nov 8, 2026; same hours; $19.75 ages 3+; 5K Nov 7, 2026. Three mazes, rides, petting zoo, flower field, pumpkin shop. Address matches."
     }
    ],
    "website": "https://flushingfarms.com",
@@ -4367,6 +4551,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1560 E. Sterns Rd., Erie, MI 48133. Season/hours as stated: Opening September 12th, 2026; Tuesday-Sunday 10am-7pm during season; closed Mondays (year stated). Flags: name differs slightly (footer 'Trabbic Farms'); closing date not seen."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.trabbicpumpkinfarm.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: opening Sept 12, 2026; Tue-Sun 10-7, closed Mondays; pumpkins, animals, rides, cider and donuts. Address matches. No closing date listed."
     }
    ],
    "website": "https://www.trabbicpumpkinfarm.com",
@@ -4588,6 +4780,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 7605 Garden Road, Holland, OH 43528. Season/hours as stated: Open daily except major holidays, May-Oct 9am-7pm; PYO apples generally mid-Sept to third week of Oct (no year); Adventure Land weekends Sept 12-Oct 31 (no year); Apple Butter Festival Oct 3-4, 2026. Flags: most dates lack year; festival (Oct 3-4, 2026) already past."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.macqueenorchards.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: open daily May-Oct 9-7; PYO apples mid-Sept to third week of Oct; Adventure Land weekends Sept 12-Oct 31. Apple Butter Festival Oct 3-4 (2026) has passed. Address matches."
     }
    ],
    "website": "https://www.macqueenorchards.com",
@@ -4778,6 +4978,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 12629 W. Salem Carroll Rd, Oak Harbor, OH 43449. Season/hours as stated: Open 7 days a week, September 12 through November 1, 2026, 10:00 am-7:00 pm (year stated). Flags: activity detail only in nav labels on page read."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.jasonspumpkinpatch.com/visit-us",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: \"Hours: 10am-7pm, Sept. 12-Nov. 1, 2026\", 7 days; address matches. Corn maze, field trips/parties appear only as page links, not described."
     }
    ],
    "website": "https://www.jasonspumpkinpatch.com/visit-us",
@@ -4924,6 +5132,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 11455 Obee Road, Whitehouse, OH 43571. Season/hours as stated: Open for the 2026 season, September 19-October 31; Fri 5-10pm, Sat noon-10pm, Sun noon-6pm; last ticket 1 hour before close (year stated). Flags: inventory note says Pumpkins but page lists only corn maze."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.wheelerfarms.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: 2026 season Sept 19 - Oct 31; Fri 5-10, Sat noon-10, Sun noon-6; corn maze and campfires; Butterfly House next door. Address matches."
     }
    ],
    "website": "https://www.wheelerfarms.com",
@@ -5322,6 +5538,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official site (read 2026-10-12): haunt season opens Sept 25; Rockin' Haunt Night Concert Fri Oct 30, 2026 (doors 6 PM); tickets on sale through the site's ticketing page. WXYZ 2026 (secondary): sixth season, opens Sept 25. Dates as stated: Opens Sept 25, 2026 (official). Closing date is not stated on the official page. Weekly hours listed: Fri 7-11 PM, Sat 7 PM-12 AM, Sun 7-10:30 PM. WXYZ roundup (secondary) says weekends through Nov 1."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://eloiseasylum.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Starts Sept 25 (2026 season); Rockin' Haunt Night Concert Fri Oct 30, 2026, doors 6 PM. No closing date. Weekly hours text garbled for Saturday on fetch; recheck by eye."
     }
    ],
    "migration": {
@@ -5407,6 +5631,14 @@
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session), read in Chrome"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Dates Oct 1-4, 8-11, 15-18, 22-25, 2026, 6-9:30 p.m. New: 'General admission tickets ... are sold out for 2026.' Summary still accurate; consider mentioning sold out."
     }
    ],
    "relevance": {
@@ -5521,6 +5753,14 @@
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session), read in Chrome"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://detroitzoo.org/events/zoo-boo/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page now shows dates: Oct. 3-4, 9-11, 16-18, 23-25, 3 to 8:30 p.m. Matches 'first four weekends in October'. Final weekend still upcoming."
     }
    ],
    "relevance": {
@@ -5629,6 +5869,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official site (read 2026-10-12) states the 2026 season runs through Nov 1, 2026 and lists dated 2026 special nights. Dates as stated: Select nights from Sept 18 through Nov 1, 2026; trail operates Thursday through Sunday. Special nights: Jay's Junior Night Oct 9; 21+ Adult Night Oct 16; Trick or Treat Oct 25; Halloween Night Oct 31."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://glenloretrails.com",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open Now through November 1st, 2026'; Thursday through Sunday; Adult Night Fri 10/16, Trick or Treat Sun 10/25, Halloween Night Sat 10/31. Oct 9 Junior Night no longer listed (past)."
     }
    ],
    "migration": {
@@ -5720,6 +5968,14 @@
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session), read in Chrome"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open October 2026: 3-4, 9-11, 16-18, 22-25, & 29-30' matches the record."
     }
    ],
    "relevance": {
@@ -5804,6 +6060,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official home page shows a 2026 season running September 25 through November 7, 2026, with online ticketing for the current season. Read 2026-10-12 at https://hushhauntedattractions.com/ Dates as stated: September 25 through November 7, 2026 (page also lists a kids' daytime event on October 25, 2-5 PM with no actors, and Glow Stick Fright Nights on November 6 and 7). Evening sessions typically start 6 or 7 PM and end 10 PM or midnight per the page; exact per-night schedule not captured."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://hushhauntedattractions.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Operates Sept 25-Nov 7 2026'; Kid's Hours Oct 25 2-5 PM; Glow Stick Fright Nights Nov 6 and 7. Matches record. Page text does not itself describe multiple houses."
     }
    ],
    "relevance": {
@@ -5869,6 +6133,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official page shows an October 2026 ticket calendar, a one-night VIP offer for Sunday Oct 11, a Boo Bash on Oct 25 and Christmas Chaos on Dec 11 and 12, with tickets sold via azrahauntedhouse.fearticket.com. Read 2026-10-12 at https://azrahaunt.com/ Dates as stated: No full season range or regular hours stated in page text (calendar is an image). Stated dates: Sunday October 11 (VIP 50% off, one night only - already past as of 2026-10-12); October 25, 12pm-4pm (Boo Bash, family-friendly); December 11 and 12 (Christmas Chaos)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://azrahaunt.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Boo Bash 'October 25th - 12pm - 4pm'; Christmas Chaos 'December 11th & 12th'; October 2026 calendar shown but no readable open dates or regular hours."
     }
    ],
    "relevance": {
@@ -6112,6 +6384,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official site says 'Celebrating 20 years', lists fall 2026 events and an October 2026 schedule (open every weekend; Oct 3 20th Anniversary Celebration). Read 2026-10-12 at https://scarefestscreampark.com/ and https://scarefestscreampark.com/hours-events/ Dates as stated: October 2026: 'Open every weekend'; Fri and Sat 7:00 PM-12:00 AM, Sunday 7:00 PM-10:00 PM. Listed events: Sat Oct 3 (20th Anniversary Celebration), Fri Oct 9 and Sat Oct 10 (Aqua Monkey), Sat Oct 17 (The No Ways), Fri Oct 23 and Sat Oct 24 (The MIXX Band). Also Sept 18-19 (Ghouls Night Out) and Sept 25-26 (BBQ, Bourbon & Boos), both past."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://scarefestscreampark.com/hours-events/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open every weekend'; Fri/Sat 7 PM-12 AM, Sun to 10 PM; Oct 17 The No Ways, Oct 23-24 The MIXX Band. Year inferred from 2026 calendar image/links, not printed beside dates."
     }
    ],
    "website": "https://scarefestscreampark.com/",
@@ -6194,6 +6474,14 @@
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session), read in Chrome"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://blakefarms.com/haunted-attractions/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'opens 9/12/26'; weekends through Nov 1; Fri/Sat 6-11 PM, Sun 6-10 PM from Oct 4. Lists Haunted Hayride, 3-Story Haunted Barn, Zombie Paintball, Spookyland. Summary fits."
     }
    ],
    "relevance": {
@@ -6324,6 +6612,14 @@
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session), read in Chrome"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://derangedhauntedattraction.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Calls itself 'Michigan's Premier Haunted Forest' (Covensfield) in Romulus; scare-free kids night Oct 21; 18+ night Nov 1, 2026; no season range or hours on page. 'Haunted woods' broadly fits."
     }
    ],
    "relevance": {
@@ -6404,6 +6700,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official home page shows 'Opening night is Friday, October 2nd', an October 2026 calendar and 2026 copyright (Season 25). Read 2026-10-12 at https://slaughterhouseadventure.net/ Dates as stated: Opening night Friday, October 2 (2026). Page has an October 2026 calendar with open dates in red, not readable as text; outdoor haunts open at dusk. A WXYZ roundup (secondary) says open every weekend in October."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://slaughterhouseadventure.net/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'OPENING NIGHT FRIDAY OCTOBER 2ND'; October 2026 schedule calendar is an image; describes 'a classic 26-acre corn maze'. Matches haunted house and corn maze summary."
     }
    ],
    "website": "https://slaughterhouseadventure.net/",
@@ -6485,6 +6789,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Farm site states 'Opening Day Friday September 25, 2026' for the haunted house and hayride; the haunt's own site is dated 2026 and says open Fri and Sat dusk to 11PM from the last weekend of September through October. Read 2026-10-12 at https://bonadeofarms.com/ and https://fullmoonhauntedhouse.com/ Dates as stated: Opening day Friday, September 25, 2026 (farm site). Haunted house and hayride Friday and Saturday evenings, dusk until 11 PM, the last weekend in September and every weekend in October (haunt site). Exact per-night calendar not stated."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://fullmoonhauntedhouse.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open Fri and Sat Dusk-11PM. The LAST weekend in September and EVERY weekend in October.' Year not printed in text (2026 copyright only). Matches record."
     }
    ],
    "website": "https://fullmoonhauntedhouse.com/",
@@ -6884,6 +7196,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official home page states a 2026 season running October 2 to October 31, with haunts Fridays and Saturdays 7pm-11pm. https://www.spookytrails.com/ read 2026-10-12. Dates as stated: Season October 2 to October 31, 2026; haunts Fridays and Saturdays, 7pm to 11pm (pumpkin picking Sundays 12pm to 5pm)"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.spookytrails.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: '10/02/26-10/31/26', haunts Fri/Sat 7pm-11pm, pumpkin picking Sun 12-5. Haunts: Haunted Hayride, Zombie Hunter Hayride (kid friendly), The Corn Field; page does not call it a 'cornfield walk'."
     }
    ],
    "relevance": {
@@ -7013,6 +7333,14 @@
      "websiteChecked": true,
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude (Cowork session), read in Chrome"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://fieldoffear.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page bills 'The Most Terrifying Haunted Corn Maze in Ohio' at Monclova; 2026 opening Sept 12, final night Oct 31; gates 7 PM, close 11 PM Fri/Sat, 10 PM Sun. Matches summary."
     }
    ],
    "relevance": {
@@ -7299,6 +7627,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official home page describes the all-new 2026 'Ritual Horrors' experience (read 2026-10-12, https://feardistracted.com/). The show calendar on that page is an image only; the 2026 dates below come from the official ticketing page linked from the site (https://app.hauntpay.com/events/distracted-haunted-house-tickets-2021, read 2026-10-12), which lists 2026 dates despite the '2021' in its URL. Dates as stated: Per the ticketing page: open Sept 19 through Nov 7, 2026 on 9/19, 9/26, 10/2, 10/3, 10/9, 10/10, 10/11, 10/16, 10/17, 10/18, 10/23, 10/24, 10/25, 10/30, 10/31 and 11/7. Hours listed: 7-11:30 pm Fridays and Saturdays, 7-10:30 pm select Sundays."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://feardistracted.com/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: all-new 2026 'Ritual Horrors', 'all-indoor haunted attraction' in Bowling Green. Dates/hours only in an image, not verifiable in text; consistent with record."
     }
    ],
    "website": "https://feardistracted.com/",
@@ -7477,6 +7813,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official Metroparks Toledo page carries a 2026 footer and 'Updated: 10/07/2026' listings for Eerie Manor Tours (read 2026-10-12, https://metroparkstoledo.com/eeriemanor). Dates as stated: Friday, October 23 through Saturday, October 31, 2 to 8 p.m. (self-guided tours). Lights Out! Flashlight Tour on select evenings 9 to 9:45 p.m."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/eeriemanor",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 'Friday, October 23 through Saturday, October 31, 2 to 8 p.m.' free self-guided. Lights Out flashlight tours Oct 23, 24, 30, 31 at 9:00-9:45 p.m., ages 12+, $8, all slots listed sold out."
     }
    ],
    "relevance": {
@@ -7569,6 +7913,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official Fort Meigs pages list Garrison Ghost Walk dates in 2026 with ticket sales starting September 9, 2026 (read 2026-10-12, https://fortmeigs.org/ghostwalk/ and https://fortmeigs.org/). Official shop has a listing for the Oct 16, 2026 7:45 pm walk (https://shop.fortmeigs.org/products/garrison-ghost-walk-friday-october-16-2026-7-45-pm, search result only). Dates as stated: October 16, 17, 23 and 24, 2026. Doors open 6:30 p.m.; tours leave every 15 minutes and last about 90 minutes."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://fortmeigs.org/ghostwalk/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: Oct 16, 17, 23, 24, 2026; doors 6:30 p.m., tours every 15 min, ~90 min; timed tickets required, none at door."
     }
    ],
    "relevance": {
@@ -7705,6 +8057,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official event page lists 'Halloween Stroll 2026' and the 2026 season (read 2026-10-12, https://www.canterburyvillage.com/event/halloween-stroll/ and https://www.canterburyvillage.com/). Dates as stated: October 2 to October 30, 2026; scheduled nights Oct 2-4, 9-11, 16-18 and 23-25, plus a Halloween Stroll: Adult Night (18+) on October 30. Hours not on the event page; the ticketing page says 6 PM to 9 PM."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.canterburyvillage.com/event/halloween-stroll/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: Oct 2 to Oct 30, 2026; dates Oct 2-4, 9-11, 16-18, 23-25; Oct 30 'ADULTS ONLY'. No hours on page. Matches record."
     }
    ],
    "relevance": {
@@ -7770,6 +8130,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official 'HallowGlow 2026' section lists October 2026 weekend dates and online ticket links (read 2026-10-12, https://treerunnerparks.com/westbloomfield/fall-festivities/). The URL currently in the record (glow-nights) does not mention HallowGlow. Dates as stated: Every weekend in October 2026: Oct 2-4, 9-11, 16-18, 23-25 (Friday-Sunday) and Oct 30-31 (Friday and Saturday)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://treerunnerparks.com/westbloomfield/fall-festivities/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: Oct 2-4, 9-11, 16-18, 23-25, 30-31, 2026; 'colorful fall Night Forest experience', after-dark climbing and ziplining. Matches summary and record."
     }
    ],
    "relevance": {
@@ -7954,6 +8322,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official event page lists 'Brick or Treat' for October 1 to October 31, 2026, open during attraction hours (read 2026-10-12, https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/ and https://www.legolanddiscoverycenter.com/michigan/). Dates as stated: October 1 to October 31, 2026, during attraction hours (hours vary; the page's posted hours are 10am-6pm with last entry 4:30pm for the day read, not necessarily all October days)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.legolanddiscoverycenter.com/michigan/what-s-inside/events/brick-or-treat/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19. Page still lists Oct 1-31, 2026 during attraction hours, but now says the center is temporarily closed to guests Monday Oct 26 to Wednesday Oct 28, 2026, so the event will not run those days. Private evidence only; the public summary is unchanged."
     }
    ],
    "relevance": {
@@ -8030,6 +8406,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official Halloween Happenings page lists the Ooky Spooky Light Show among October 2026 events (read 2026-10-12, https://sloanlongway.org/halloween/); the Longway Planetarium page carries the same show listing. Dates as stated: Official wording: Tuesday through Sunday at 4 p.m., plus select Fridays and Saturdays at 6 p.m.; no 6 p.m. public show on October 10 due to the Halloween Extravaganza. No full date range stated."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://sloanlongway.org/halloween/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19. Page now says no 6 p.m. public show on October 23 (the earlier note said October 10, now past). Times 'Tues - Sun @ 4 p.m. | Select Fridays & Saturdays @ 6 p.m.' unchanged; no year on the listing. The Sloan Longway calendar lists 6 p.m. shows Oct 24, 30, 31. Private evidence only; the public summary is unchanged."
     }
    ],
    "website": "https://sloanlongway.org/halloween/",
@@ -8107,6 +8491,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Sloan Longway's official calendar lists Laser Halloween with six 2026 dates in October at 7 and 8 PM, 45-minute shows, ages 12+. sloanlongway.org page describes the show but lists no dates. URLs: https://www.trumba.com/events-calendar/mi/flint/longway_shows and https://www.sloanlongway.org/ (read 2026-10-12). Dates as stated: Fri Oct 16, Sat Oct 17, Fri Oct 23, Sat Oct 24, Fri Oct 30, Sat Oct 31, 2026 - each at 7:00 PM and 8:00 PM (per Sloan Longway calendar on trumba.com)"
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.trumba.com/events-calendar/mi/flint/longway_shows",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Sloan Longway calendar now lists remaining Oct 2026 dates Fri Oct 23, Sat Oct 24, Fri Oct 30, Sat Oct 31 at 7 and 8 PM (Oct 16/17 no longer shown, already past). sloanlongway.org/halloween says Fri & Sat 7 & 8 p.m., no dates. Consistent."
     }
    ],
    "relevance": {
@@ -8280,6 +8672,14 @@
      "checkedAt": "2026-10-12",
      "checkedBy": "Claude (Cowork session), read via web fetch",
      "note": "Official page read 2026-10-12. Official recreation-department page gives the event as Saturday, October 24, 2026, 10 a.m. to 12:30 p.m., with registration details. https://porthuronrec.com/halloweenstroll (read 2026-10-12). Matches Michigan Public community calendar listing. Dates as stated: Saturday, October 24, 2026, 10 a.m. to 12:30 p.m.; trick-or-treaters enter in groups every 30 minutes, last group at 12:30 p.m.; rain or shine."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://porthuronrec.com/halloweenstroll",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 'Saturday before Halloween, Oct. 24', 10 a.m. to 12:30 p.m. at Sanborn Park, 2026; costumed trick-or-treat in the Sanborn Park woods. Matches record."
     }
    ],
    "relevance": {
@@ -8733,6 +9133,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 4300 Main Park Road, Shelby Township, MI 48316. Season/hours as stated: park 6am-10pm; $10 daily vehicle pass or annual pass. Flags: seasonal text may be out of date."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-destinations/stony-creek-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address 4300 Main Park Road, park 6am-10pm, $10 daily pass match. Trolley Trails offer 'spectacular fall views'. Page has no explicit 2026 schedule; Off-Leash Dog Area Monday maintenance closure through Nov 1."
     }
    ],
    "relevance": {
@@ -8897,6 +9305,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 8801 N. Territorial Road, Dexter, MI 48130. Season/hours as stated: park 7am-10pm; $10 daily or annual vehicle pass. Flags: Acorn Nature Trail unsalted/muddy in winter."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/hudson-mills-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address, 7am-10pm, $10 pass match. Hike-Bike 3-mile paved loop, Acorn Nature Trail, Rapids View canoe/kayak launch all listed. No current closures listed."
     }
    ],
    "migration": {
@@ -9117,6 +9533,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 99 Pleasure Drive, Detroit, MI 48207. Season/hours as stated: Recreation Passport required for vehicle entry; Oudolf Garden and lighthouse 5am-10pm; no park-wide hours or fees stated. Flags: Scott Fountain not operating until spring 2027; Casino restrooms closed; official page blocked (403); Recreation Passport required for vehicles (unverified)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/belleisle",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address and features (nature center, conservatory, aquarium, Oudolf Garden) match; Scott Fountain resumes spring 2027. Page lists hiking but does not describe specific 'nature trails'; Casino restrooms closed for upgrades."
     }
    ],
    "website": "https://www.michigan.gov/recsearch/parks/belleisle",
@@ -9318,6 +9742,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: Detroit, along 4.7 miles of the Rouge River. Flags: page read is Friends of Rouge Park steward site, not the City; city page blocked; trail-level coordinate only."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.rougepark.org/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page says 'Detroit's largest park at 1,122 acres' along 4.7 miles of the Rouge River; nature trails, paved paths, golf course and archery listed. No closures or alerts."
     }
    ],
    "website": "https://www.rougepark.org/",
@@ -9438,6 +9870,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 33275 Edward Hines Drive, Westland, MI 48185. Season/hours as stated: hours/fees not stated; flooding closes parts of road/park some of the year. Flags: 2026 closure PDF unread; frequent flood closures; Saturday partial road closure to cars in season; bridge work near Newburgh/Wayne Rd reported 2025."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address 33275 Edward Hines Drive, Westland; bike paths, trails, fishing, picnic tables listed. No hours/fees. Links a 'Saturday in the Park and Flooding Closure Information 2026' PDF (details not on page)."
     }
    ],
    "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Hines-Park",
@@ -9595,6 +10035,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 4990 Edward N Hines Dr., Northville, MI 48168. Season/hours as stated: dawn to dusk; no fees mentioned; no restrooms; park at Cass Benton Park across street. Flags: managed by Wayne County, Northville is mailing city."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address 4990 Edward N Hines Dr; 'Open Dawn to Dusk'; maple, oak, beech; gentle unpaved trail; no restrooms; park at Cass Benton Park. No fees listed."
     }
    ],
    "website": "https://www.waynecountymi.gov/Parks-Recreation/Pick-A-Park/Bennett-Arboretum",
@@ -9691,6 +10139,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 49601 Eight Mile Road, Northville, MI 48167. Season/hours as stated: Recreation Passport required for vehicle entry; hours/fees not stated. Flags: mountain bike trail closed for renovation through fall 2026; official page blocked (403); Recreation Passport required; MTB trails closed summer 2026."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/maybury",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address 49601 Eight Mile Road; rolling hills, open meadows, wooded hiking routes; Recreation Passport required. Mountain bike trail closed for renovation through fall 2026."
     }
    ],
    "website": "https://www.michigan.gov/recsearch/parks/maybury",
@@ -9850,6 +10306,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 380 Lone Pine Road, Bloomfield Hills, MI. Season/hours as stated: self-guided give-as-you-wish; Oct 1-Mar 13 8am-5pm weather permitting; restrooms typically closed and beds pulled by mid-October; guided tour $15. Flags: reduced amenities by mid-October."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://housegardens.cranbrook.edu/explore/gardens",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page says 'over 15 gardens' and 'from daffodils and roses, to fall colors and conifers'. Address 380 Lone Pine Road. Fall hours now 'Daily, 8:00am - 5:00pm'; give-as-you-wish admission."
     }
    ],
    "relevance": {
@@ -10267,6 +10731,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5200 Indian Trail, White Lake, MI 48386. Season/hours as stated: park 7am-10pm; $10 daily or annual vehicle pass. "
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-destinations/indian-springs-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Address 5200 Indian Trail, 7am-10pm, $10 pass match. Prairies, woodlands, wetlands, meadows; Woodland Trail 'beautiful red, orange and yellow leaves in the fall'."
     }
    ],
    "relevance": {
@@ -10365,6 +10837,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5200 Highland Road, White Lake, MI 48383 (official page). Season/hours as stated: Recreation Passport required for vehicle entry; no hours stated. Flags: official mailing city is White Lake, inventory says Highland."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/highland",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Name, address 5200 Highland Road, White Lake, 'all of southern Michigan's principal forest types' and 44 miles of trails match. Recreation Passport required. No closures listed."
     }
    ],
    "relevance": {
@@ -10678,6 +11158,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: coordinates only on page; Gerald E. Eddy Discovery Center, 17030 Bush Road, Chelsea. Season/hours as stated: Recreation Passport required for vehicle entry; no hours stated. Flags: no street address for park itself; michigan.gov blocked (403); hunting allowed in area per listing."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/waterloo",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: largest state park in the Lower Peninsula, 11 inland lakes, trail system, Eddy Discovery Center (17030 Bush Road). No park street address; no closures listed."
     }
    ],
    "website": "https://www.michigan.gov/recsearch/parks/waterloo",
@@ -10904,6 +11392,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5402 Wilkins Rd, Whitehouse, OH 43571. Season/hours as stated: open 7am until dark daily; no fees stated. Flags: official city Whitehouse OH, inventory says Swanton; cross-state (Ohio) destination; check Notices page for closures."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 5402 Wilkins Rd, Whitehouse, OH 43571; \"Open 7 a.m. until dark every day\"; \"more than 70 miles of trail\"; no fees listed; no closures listed. Matches record."
     }
    ],
    "website": "https://metroparkstoledo.com/explore-your-parks/oak-openings-preserve-metropark/",
@@ -11013,6 +11509,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 5100 W Central Ave, Toledo, OH 43615. Season/hours as stated: open 7am until dark daily; no fees stated; free Manor House tours. Flags: cross-state (Ohio) destination; check Notices page for closures."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 5100 W Central Ave, Toledo, OH 43615; open 7 a.m. until dark daily; Manor House tours free; Ellen Biddle Shipman Garden and trails listed; no closures listed. Matches record."
     }
    ],
    "website": "https://metroparkstoledo.com/explore-your-parks/wildwood-preserve-metropark/",
@@ -11185,6 +11689,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 599 Broadway Street, Windsor, ON. Season/hours as stated: dawn to dusk; one ~2 km trail; south section closed; possible temporary closures. Flags: cross-border; temporary closures possible (bridge construction)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 599 Broadway Street; dawn to dusk; one ~2 km trail in north section; south section closed; temporary closures may occur (Gordie Howe bridge port of entry construction). Matches record."
     }
    ],
    "website": "https://citywindsor.ca/residents/parks-and-forestry/city-parks/Black-Oak-Heritage-Park",
@@ -11689,6 +12201,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 6685 Coolidge Hwy, Troy, MI 48098. Season/hours as stated: Trails open 365 days dawn to dusk; building Tue-Fri 9-3, Sat 10-4, closed Sun/Mon; free admission and parking; walking only, no pets, bikes, jogging or skiing; no foraging; stay on trails.. Flags: no pets; building closed weekends/Mondays; Distance from Detroit not computed (no coordinates).."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://troynaturesociety.org/visitor-info/hours-location/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 6685 Coolidge Hwy; trails dawn to dusk daily; building Tue-Fri 9-3, Sat 10-4, closed Sun/Mon; free; walking only, no pets/biking. Page's closure list is the 2025 schedule. Matches record."
     }
    ],
    "website": "https://troynaturesociety.org/visitor-info/hours-location/",
@@ -11904,6 +12424,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 6535 Huron River Drive, Dexter, MI 48130. Season/hours as stated: Open 8 a.m. to 8 p.m.; $10 daily vehicle entry or annual vehicle pass; dogs on 6-ft leash.. Flags: vehicle entry fee; Distance from Detroit not computed (no coordinates).."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-destinations/dexter-huron-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 6535 Huron River Drive; 8 a.m. to 8 p.m.; \"$10 Daily or Annual Vehicle Pass\"; dogs on 6-ft leash; paved Hike-Bike trail; no specific closures. Matches record."
     }
    ],
    "website": "https://www.metroparks.com/parks-and-destinations/dexter-huron-metropark/",
@@ -12066,6 +12594,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 40151 East Huron River Drive, Belleville, MI 48111. Season/hours as stated: Park hours 7 a.m.-10 p.m.; $10 daily or annual vehicle pass. Flags: Vehicle pass required."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/lower-huron-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 40151 East Huron River Drive; park hours 7 a.m.-10 p.m.; $10 daily/annual vehicle pass; 4.1-mile paved Hike-Bike Trail, nature trails, river access. No closures listed. Matches record."
     }
    ],
    "website": "https://www.metroparks.com/parks-and-trails/lower-huron-metropark/",
@@ -12171,6 +12707,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 23200 South Huron Road, New Boston, MI 48164. Season/hours as stated: Park hours 7 a.m.-10 p.m.; office weekdays 8 a.m.-8 p.m., weekends 7 a.m.-9 p.m.; $10 daily or annual vehicle pass. Flags: Vehicle pass required."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/willow-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 23200 South Huron Road; 7 a.m.-10 p.m.; office weekdays 8-8, weekends 7-9; $10 vehicle pass; paved Hike-Bike loop and paddling launch. No closures listed. Matches record."
     }
    ],
    "website": "https://www.metroparks.com/parks-and-trails/willow-metropark/",
@@ -12280,6 +12824,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 32911 Willow Road, New Boston, MI 48164. Season/hours as stated: Hours 8 a.m.-dusk; $10 daily or annual vehicle pass; equestrian trails need a release and Bridle Tag. Flags: Vehicle pass required; Inventory says Flat Rock; official address is New Boston."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.metroparks.com/parks-and-trails/oakwoods-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 32911 Willow Road, New Boston; 8 a.m.-dusk; $10 pass; five nature trails, Nature Center, 1-mile canoe trail. Flat Rock Dam portage downstream temporarily closed. Matches record."
     }
    ],
    "website": "https://www.metroparks.com/parks-and-trails/oakwoods-metropark/",
@@ -12518,6 +13070,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 8100 Grange Hall Road, Holly, MI 48442. Season/hours as stated: Page lists no hours or fees; state park vehicle entry rules not stated on the page text read. Flags: WhoaZone water park closed for 2026 (page); boat launch lot paving noted on page (reopening week of Sept 28); hunting is a listed activity; Page read 2026-10-11 via michigan.gov/recsearch (the dnr/places URL returns 403)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.michigan.gov/recsearch/parks/holly",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 8100 Grange Hall Road; 8,000+ acres of rolling woodlands and open fields; WhoaZone closed for 2026; paving reopening week of Sept. 28 (year not stated). Matches record."
     }
    ],
    "relevance": {
@@ -12796,6 +13356,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 9501 Sashabaw Road, Clarkston, MI 48348. Season/hours as stated: Park open 8 a.m.-7 p.m.; north gate 8 a.m.-6 p.m. Entry: Oakland County residents free; non-residents $12 daily or $50 annual (park-entry page); passes online, tracked by license plate; free for military, veterans, people with disabilities. Flags: Archery deer hunting in the North section in fall; Entry fee for non-residents."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/independence-oaks",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 9501 Sashabaw Road; open 8 a.m.-7 p.m., north gate 6 p.m.; 12+ miles of trails; Wint Nature Center; Old-Growth Forest Network; fall archery deer hunting in North. Fees not on this page. Matches record."
     }
    ],
    "website": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/independence-oaks",
@@ -12891,6 +13459,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1480 West Romeo Road, Leonard, MI 48367. Season/hours as stated: Day use open year-round; 7 a.m.-9 p.m. in camping season, 8 a.m. to 30 min after sunset late Oct-April; East unit sunrise-30 min to sunset+30 min. Entry per county page: residents free; non-residents $12 daily/$50 annual. Flags: Hours change late October; E-bike restrictions on trails."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/addison-oaks",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 1480 West Romeo Road; day use year-round, 8 a.m. to 30 min after sunset late Oct-April; 20+ mile trail system; Buhl Lake Loop; Old-Growth Forest Network; Class 1 e-bikes only. Matches record."
     }
    ],
    "website": "https://www.oaklandcountymi.gov/community/oakland-county-parks/parks-trails/addison-oaks",
@@ -13106,6 +13682,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 8.9-mile linear park through Rochester, Rochester Hills, Oakland Twp, Orion Twp and Lake Orion; office at 4480 Orion Rd, Rochester, MI 48306. Season/hours as stated: Page lists no trail fees or trail hours; office hours Mon/Tue/Thu/Fri 10:00-4:30, closed Wed; non-motorized, 8 ft wide.. Flags: part of Iron Belle Trail."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.paintcreektrail.org/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 8.9-mile non-motorized linear park through Rochester, Rochester Hills, Oakland Twp, Orion Twp, Lake Orion; office Mon/Tue/Thu/Fri 10-4:30; no fees or closures listed. Matches record."
     }
    ],
    "website": "https://www.paintcreektrail.org/",
@@ -13423,6 +14007,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 24-mile trail, Dequindre/24 Mile Rd (Shelby Twp) to Division Rd/Main St (Richmond), via Washington Twp, Romeo, Armada. Season/hours as stated: No fees or hours listed. Class 1/2 e-bikes allowed (10 mph cap), Class 3 and e-motos prohibited.. Flags: closure between Dequindre and 24 Mile (water main); vegetation-management closure July 2026 (past)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.macombgov.org/macomb-orchard-trail",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page: 24-mile former railroad path; Dequindre/24 Mile Rd to Division Rd at Main St, Richmond; trail closed Dequindre to 24 Mile for water main, no reopening date; July 20-22, 2026 closure now past. Matches record."
     }
    ],
    "website": "https://www.macombgov.org/macomb-orchard-trail",
@@ -13624,6 +14216,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1850 Newport Road, Ann Arbor, MI 48103. Season/hours as stated: Open 6 a.m.-10 p.m.; bicycles not permitted; dogs leashed; no smoking or alcohol; limited parking; no facilities.. Flags: no bikes; steep unpaved trails; spring/fall controlled burns."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.a2gov.org/parks-and-recreation/parks-places/birdhills/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches record: 1850 Newport Rd, 6 a.m.-10 p.m., no bikes, leashed dogs, spring/fall controlled burns; 146 acres, beech, sugar maple, oak, hickory listed."
     }
    ],
    "website": "https://www.a2gov.org/parks-and-recreation/parks-places/birdhills/",
@@ -13728,6 +14328,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1010 W. Huron River Drive, Ann Arbor, MI 48103. Season/hours as stated: Open 6 a.m.-10 p.m.; no smoking or alcohol; dogs leashed; stay on trail; MDHHS Do Not Eat Fish advisory for Huron River.. Flags: fish advisory; adjacent to railway."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.a2gov.org/parks-and-recreation/parks-places/barton-nature-area/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 1010 W. Huron River Dr, 6 a.m.-10 p.m., Barton oxbow trails, MDHHS Do Not Eat Fish advisory still posted. Page does not mention Destination Ann Arbor autumn listing."
     }
    ],
    "website": "https://www.a2gov.org/parks-and-recreation/parks-places/barton-nature-area/",
@@ -15243,6 +15851,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1670 Bauman Road, Columbus, MI 48063. Season/hours as stated: 8am-9pm May-Sept, 8am-8pm Oct-Apr; no entry fee mentioned; hunting requires county permit; reservations for lodge.. Flags: permit hunting allowed; only first 100k chars of page read."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://www.stclaircounty.org/Offices/176",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 1670 Bauman Rd; 8-9 May-Sept, 8-8 Oct-Apr; wetlands/maple forest nature trail, horse loop, lodge, hunting permit; no fees listed."
     }
    ],
    "website": "https://www.stclaircounty.org/Offices/176",
@@ -15338,6 +15954,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: Rail trail, 12+ miles, trailheads at Wadhams Rd, Lapeer Rd, Imlay City Rd, Avoca Rd; St. Clair County. Season/hours as stated: No hours or fees listed; walkers, bikers, rollerbladers, horseback riders; over 5 miles paved.. Flags: partly paved only."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://stclaircounty.org/offices/181",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 12+ miles former CSX line, four trailheads, over 5 miles paved, fall colors cited, Mill Creek Trestle with four overlooks; no trail hours."
     }
    ],
    "website": "https://stclaircounty.org/offices/181",
@@ -15954,6 +16578,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 10001 W Central Ave, Berkey, OH 43504. Season/hours as stated: Open 7 a.m. until dark daily; no fees listed on page.. Flags: cross-state (Ohio); contains a cemetery (Wolfinger Cemetery) with its own rules."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/secor-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 10001 W Central Ave, 7 a.m. until dark, second-growth forest, meadows, prairies, largest native dogwood concentration in northwest Ohio; no fees; no closures noted. Fall color report not on this page."
     }
    ],
    "website": "https://metroparkstoledo.com/explore-your-parks/secor-metropark/",
@@ -16052,6 +16684,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 761 Lallendorf Rd, Oregon, OH 43616. Season/hours as stated: Open 7 a.m. until dark daily, with extended winter recreation hours; no fees listed on page.. Flags: cross-state (Ohio)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/pearson-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 761 Lallendorf Rd, 7 a.m. until dark with extended winter hours, Great Black Swamp remnant, ponds, about 15 miles of trails; no fees or closures listed."
     }
    ],
    "website": "https://metroparkstoledo.com/explore-your-parks/pearson-metropark/",
@@ -16159,6 +16799,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 1025 W River Rd, Maumee, OH 43537. Season/hours as stated: Open 7 a.m. until dark daily; no fees listed on page.. Flags: cross-state (Ohio)."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/side-cut-metropark/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 1025 W River Rd, 7 a.m. until dark, Maumee River, former canal side cut, fishing; paddling linked; no fees or closures listed."
     }
    ],
    "website": "https://metroparkstoledo.com/explore-your-parks/side-cut-metropark/",
@@ -16258,6 +16906,14 @@
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
      "note": "Official page read 2026-10-11. Address as stated: 8505 S River Road (US 24), Waterville, OH 43566. Season/hours as stated: Open 7 a.m. until dark every day. No fees or passes listed on the page.. Flags: Near the 75-mile boundary: computed 71 mi (approximate coordinates).."
+    },
+    {
+     "level": "official",
+     "websiteChecked": true,
+     "url": "https://metroparkstoledo.com/explore-your-parks/farnsworth/",
+     "checkedAt": "2026-10-19",
+     "checkedBy": "05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person",
+     "note": "Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page matches: 8505 S River Rd, 7 a.m. until dark, Interurban Bridge ruins, 8-mile Towpath Trail; no park fees or closures listed."
     }
    ],
    "website": "https://metroparkstoledo.com/explore-your-parks/farnsworth/",

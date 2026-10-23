@@ -22,7 +22,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 
 | Gate item | Status | Route / note |
 |---|---|---|
-| 1. Official-source verification | recorded | https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village (2026-10-11) |
+| 1. Official-source verification | recorded | https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village (2026-10-11); https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village (2026-10-19) |
 | 2. Relevance to the collection | recorded | Official page describes Hallowe'en in Greenfield Village, October 2026. |
 | 3. Image | recorded | owner-photo |
 | 4. Image rights | recorded | owner-authorization |
@@ -30,6 +30,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 
 ### Evidence read (official)
 - Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card. Source: https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
+- Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Dates Oct 1-4, 8-11, 15-18, 22-25, 2026, 6-9:30 p.m. New: 'General admission tickets ... are sold out for 2026.' Summary still accurate; consider mentioning sold out. Source: https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village. Read 2026-10-19 (05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person).
 
 ### Image
 - **Current image (owner photo `313p-f9dfb30c`)**: Colonial house at night with glowing jack-o-lanterns and large lit pumpkins (venue-supplied image). Captured not recorded. File 1280x853, sha256 `5bde741e7c71afe4...`.
@@ -39,7 +40,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 
 ### What becomes public if you approve
 - The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`, `313p-`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (3 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`, `313p-`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
 
 ### Things you should know
 - **The image is weak.** It is a frame from a 41-second video, upscaled, with visible motion blur. It shows an indoor carousel in daylight with several people, most of them partly masked. Nothing in it reads as Halloween or as Greenfield Village, and the 2020 capture date shows in the masks. Whether it is good enough for a public card is your call.
@@ -58,7 +59,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an official linke
 
 | Gate item | Status | Route / note |
 |---|---|---|
-| 1. Official-source verification | recorded | https://detroitzoo.org/events/zoo-boo/ (2026-10-11) |
+| 1. Official-source verification | recorded | https://detroitzoo.org/events/zoo-boo/ (2026-10-11); https://detroitzoo.org/events/zoo-boo/ (2026-10-19) |
 | 2. Relevance to the collection | recorded | Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026. |
 | 3. Image | recorded | acquired-file |
 | 4. Image rights | recorded | third-party-license |
@@ -66,6 +67,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an official linke
 
 ### Evidence read (official)
 - Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card. Source: https://detroitzoo.org/events/zoo-boo/. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
+- Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. Page now shows dates: Oct. 3-4, 9-11, 16-18, 23-25, 3 to 8:30 p.m. Matches 'first four weekends in October'. Final weekend still upcoming. Source: https://detroitzoo.org/events/zoo-boo/. Read 2026-10-19 (05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person).
 
 ### Image
 - **Current image:** a generated illustrative card only. It cannot satisfy gate items 3 and 4, so this record cannot reach READY_FOR_REVIEW until a real image is chosen.
@@ -73,7 +75,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an official linke
 
 ### What becomes public if you approve
 - The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (3 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
 
 ### Things you should know
 - **No permission from the Detroit Zoo is on file** for the image. Publishing would rest on your recorded risk acceptance alone, and the link depends on the zoo continuing to serve the file. If it fails, visitors see the generated card.
@@ -90,7 +92,7 @@ State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFI
 
 | Gate item | Status | Route / note |
 |---|---|---|
-| 1. Official-source verification | recorded | https://geneseecountyparks.org/halloween-ghosts-goodies/ (2026-10-11) |
+| 1. Official-source verification | recorded | https://geneseecountyparks.org/halloween-ghosts-goodies/ (2026-10-11); https://geneseecountyparks.org/halloween-ghosts-goodies/ (2026-10-19) |
 | 2. Relevance to the collection | recorded | Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026. |
 | 3. Image | recorded | acquired-file |
 | 4. Image rights | recorded | third-party-license |
@@ -98,6 +100,7 @@ State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFI
 
 ### Evidence read (official)
 - Official Genesee County Parks page read 2026-10-11: Halloween Ghosts & Goodies at Crossroads Village, October 2026 (3-4, 9-11, 16-18, 22-25, 29-30). Dates are not shown on the card. Source: https://geneseecountyparks.org/halloween-ghosts-goodies/. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
+- Revalidated 2026-10-19: confirmed against the official page, no change to the recorded facts. 'Open October 2026: 3-4, 9-11, 16-18, 22-25, & 29-30' matches the record. Source: https://geneseecountyparks.org/halloween-ghosts-goodies/. Read 2026-10-19 (05 Editorial Products revalidation 2026-10-19: read of the official page through a summarising fetch tool; not yet re-read directly by a person).
 
 ### Image
 - **Current image:** a generated illustrative card only. It cannot satisfy gate items 3 and 4, so this record cannot reach READY_FOR_REVIEW until a real image is chosen.
@@ -107,7 +110,7 @@ State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFI
 
 ### What becomes public if you approve
 - The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (3 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
 
 ### Things you should know
 - **The linked image already on file does not show Crossroads.** It is the porch-pumpkin photo (2400x1600) that the catalogue itself describes as a generic scene. I viewed it: a jack-o'-lantern on a residential walkway with a clapboard house behind. It loads, but it would present a generic image as if it were the place.
