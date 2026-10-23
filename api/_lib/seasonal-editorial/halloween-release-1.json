@@ -19,7 +19,17 @@
       "evidenceNote": "Official event page (re-read 2026-10-12) lists 2026 dates and a 2026 sold-out notice.",
       "datesNote": "Oct 1-4, 8-11, 15-18 and 22-25, 2026, 6 to 9:30 PM (official).",
       "inventoryOrder": 3,
-      "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates."
+      "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates.",
+      "disposition": {
+        "type": "ended",
+        "reason": "The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "zoo-boo": {
       "tier": "publish",
@@ -29,7 +39,17 @@
       "evidenceNote": "Official page (re-read 2026-10-12) lists 2026 dates and ticketing.",
       "datesNote": "Oct 3-4, 9-11, 16-18 and 23-25, 2026; event 3 to 8:30 PM (full-zoo access until 6 PM).",
       "inventoryOrder": 4,
-      "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo."
+      "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo.",
+      "disposition": {
+        "type": "ended",
+        "reason": "The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "glenlore-carnevil-2": {
       "tier": "publish",

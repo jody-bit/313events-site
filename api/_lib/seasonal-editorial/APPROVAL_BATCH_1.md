@@ -10,15 +10,15 @@ Recorded risk acceptance is not usage rights. No rights-holder permission is on 
 
 | Destination | State now | Still needed |
 |---|---|---|
-| Hallowe'en in Greenfield Village | PUBLISHED |  |
-| Zoo Boo at the Detroit Zoo | PUBLISHED |  |
-| Halloween Ghosts & Goodies at Crossroads Village | PUBLISHED |  |
+| Hallowe'en in Greenfield Village | HOLD_UNVERIFIED | 5 |
+| Zoo Boo at the Detroit Zoo | HOLD_UNVERIFIED | 5 |
+| Halloween Ghosts & Goodies at Crossroads Village | PUBLISHED | none |
 
 Gate items: 1 official verification, 2 relevance, 3 image, 4 image rights, 5 explicit approval.
 
 ## 1. Hallowe'en in Greenfield Village (`halloween-greenfield-village`)
 
-State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo with recorded owner authorization..
+State: **HOLD_UNVERIFIED**. Official page read, relevance confirmed, an owner photo with recorded owner authorization..
 
 | Gate item | Status | Route / note |
 |---|---|---|
@@ -26,7 +26,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 | 2. Relevance to the collection | recorded | Official page describes Hallowe'en in Greenfield Village, October 2026. |
 | 3. Image | recorded | owner-photo |
 | 4. Image rights | recorded | owner-authorization |
-| 5. Explicit publication approval | recorded | only the approving person adds it |
+| 5. Explicit publication approval | NOT recorded | only the approving person adds it |
 
 ### Evidence read (official)
 - Official Henry Ford event page read 2026-10-11: Hallowe'en in Greenfield Village, Oct 1-4, 8-11, 15-18, 22-25, 2026. Dates are not shown on the card. Source: https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
@@ -38,8 +38,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 - **Catalogue link on file (not adopted on this record):** https://www.thehenryford.org/images/thehenryfordlibraries/event-card-1064x798/halloween_pumpkins_1064x798.png. Event card image; may be generated art Warning: Event card image; may be generated art, not a photo of the place. Load test: loaded 1064x798. Risk acceptance recorded 2026-10-11 for this link.
 
 ### What becomes public if you approve
-- The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`, `313p-`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- (This record cannot be public until its other gate items are complete, so there is nothing to project yet.)
 
 ### Things you should know
 - **The image is weak.** It is a frame from a 41-second video, upscaled, with visible motion blur. It shows an indoor carousel in daylight with several people, most of them partly masked. Nothing in it reads as Halloween or as Greenfield Village, and the 2020 capture date shows in the masks. Whether it is good enough for a public card is your call.
@@ -54,7 +53,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an owner photo wi
 
 ## 2. Zoo Boo at the Detroit Zoo (`zoo-boo`)
 
-State: **PUBLISHED**. Official page read, relevance confirmed, an official linked image with your recorded risk acceptance..
+State: **HOLD_UNVERIFIED**. Official page read, relevance confirmed, an official linked image with your recorded risk acceptance..
 
 | Gate item | Status | Route / note |
 |---|---|---|
@@ -62,7 +61,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an official linke
 | 2. Relevance to the collection | recorded | Official page describes Zoo Boo, a Halloween event at the Detroit Zoo, October 2026. |
 | 3. Image | recorded | acquired-file |
 | 4. Image rights | recorded | third-party-license |
-| 5. Explicit publication approval | recorded | only the approving person adds it |
+| 5. Explicit publication approval | NOT recorded | only the approving person adds it |
 
 ### Evidence read (official)
 - Official Detroit Zoo page read 2026-10-11: Zoo Boo returns the first four weekends in October. Dates are not shown on the card. Source: https://detroitzoo.org/events/zoo-boo/. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
@@ -72,8 +71,7 @@ State: **PUBLISHED**. Official page read, relevance confirmed, an official linke
 - **Catalogue link on file (not adopted on this record):** https://detroitzoo.org/wp-content/uploads/2026/01/zoo-boo-hero-min.webp. Official hero photo Load test: loaded 1920x1281. Risk acceptance recorded 2026-10-11 for this link.
 
 ### What becomes public if you approve
-- The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- (This record cannot be public until its other gate items are complete, so there is nothing to project yet.)
 
 ### Things you should know
 - **No permission from the Detroit Zoo is on file** for the image. Publishing would rest on your recorded risk acceptance alone, and the link depends on the zoo continuing to serve the file. If it fails, visitors see the generated card.

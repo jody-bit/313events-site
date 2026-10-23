@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 43,
-  "eligiblePublished": 23,
+  "ownerApproved": 41,
+  "eligiblePublished": 21,
   "held": 20,
-  "excluded": 9,
+  "excluded": 11,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -100,74 +100,50 @@
    "inventoryNo": "35",
    "name": "Hallowe'en in Greenfield Village",
    "city": "Dearborn",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "halloween-greenfield-village",
-    "name": "Hallowe'en in Greenfield Village",
-    "city": "Dearborn",
-    "region": "MI",
-    "categories": [
-     "family-friendly",
-     "ghosts-history"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
-    "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
-    "advisory": "General admission and Hallowe'en Express tickets are sold out for 2026. Premium dining packages remain on select dates.",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__hallowe-en-in-greenfield-village__dearborn-mi__venue-henryford-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp",
-      "/assets/seasonal/halloween-card-3.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photography © The Henry Ford"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "zoo-boo",
    "inventoryNo": "38",
    "name": "Zoo Boo at the Detroit Zoo",
    "city": "Royal Oak",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "zoo-boo",
-    "name": "Zoo Boo at the Detroit Zoo",
-    "city": "Royal Oak",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": true,
-    "status": "PUBLISHED",
-    "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
-    "website": "https://detroitzoo.org/events/zoo-boo/",
-    "advisory": "Tickets sell fast, so book early. Some areas and animal experiences may be closed, and construction may affect routes to the zoo.",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__zoo-boo__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: WMrapids, CC0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "glenlore-carnevil-2",

@@ -5358,7 +5358,7 @@
     "ghosts-history"
    ],
    "featured": true,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
    "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
    "image": {
@@ -5446,14 +5446,15 @@
      ]
     }
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -5465,7 +5466,7 @@
     "family-friendly"
    ],
    "featured": true,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
    "website": "https://detroitzoo.org/events/zoo-boo/",
    "image": {
@@ -5560,14 +5561,15 @@
      ]
     }
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
