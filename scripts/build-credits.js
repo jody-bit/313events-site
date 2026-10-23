@@ -96,7 +96,7 @@ function build() {
     .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${TITLE} — 313.events">`)
     .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${DESC}">`)
     .replace(/<meta property="og:url" content="[^"]*">/, '<meta property="og:url" content="https://313.events/photo-credits">')
-    .replace("</style>", "  .credit-count{font-size:13px;color:var(--ink-dim);margin:0 0 14px;}\n  li.legal-li:target{outline:2px solid var(--accent);outline-offset:4px;}\n</style>");
+    .replace("</style>", "  .credit-count{font-size:13px;color:var(--ink-dim);margin:0 0 14px;}\n  li.legal-li:target{outline:2px solid var(--accent);outline-offset:4px;}\n  li.legal-li{overflow-wrap:anywhere;}\n</style>");
   const header = base.slice(bodyStart, titleAt);
 
   const sections = [];

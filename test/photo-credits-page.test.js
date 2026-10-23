@@ -73,3 +73,6 @@ assert.ok(/<link rel="canonical" href="https:\/\/313\.events\/photo-credits">/.t
 // cards still carry their credits in this change
 assert.ok(/creditLine|sc-credit/.test(read("seasonal/render.js")), "card credits not removed here");
 console.log(`PASS: photo credits page (${rows.length} rows, ${required.length} license-required)`);
+
+// long source links wrap instead of making the page scroll sideways (390px phone measured 1199px wide without this)
+assert.ok(/li\.legal-li\{overflow-wrap:anywhere;\}/.test(page), "credit list items wrap long links");
