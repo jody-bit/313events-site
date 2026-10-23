@@ -17,6 +17,14 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 
 // Exact paths, not prefixes or patterns. Each group says why it is approved.
 const ALLOWED = [
+  // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
+  "api/_lib/source-health.js",
+  // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
+  "api/_lib/control-tower.js",
+  // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
+  "api/_lib/run-budget.js",
+  // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
+  "api/_lib/feed-run-health.js",
   // Homepage V2 as approved on claude/homepage-v2 (915a2bc), carried into the release candidate.
   "index.html",
   "assets/guides/README.md",
@@ -33,12 +41,16 @@ const ALLOWED = [
   "api/cron-enrichment.js",
   // Link usability classification (issue #99, approved by the owner 2026-10-13): extends the existing link-health helper.
   "api/_lib/link-health.js",
+  // P0 link integrity (owner directive 2026-10-16 16:55Z): VisitDetroit importer stores the live /events/<slug>/ URL; changes no existing row.
+  "api/_lib/visitdetroit-link-recovery.js",
   // Admin queue Stage 4 (owner directive 2026-10-16): read-side BGSU geographic evidence audit; changes no row.
   "api/_lib/bgsu-geo-audit.js",
   // Admin queue Stage 3 (owner decisions 2026-10-16): read-side filter for the press link-review list.
   "api/_lib/press-queue-filter.js",
   // Admin queue Stage 2 (owner decision 2026-10-16): read-side class for pending rows (Dearborn grouping).
   "api/_lib/pending-classifier.js",
+  // All-caps title proposal (shadow mode, EI 2026-10-19): pure function, nothing calls it yet.
+  "api/_lib/title-case.js",
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
@@ -46,6 +58,8 @@ const ALLOWED = [
   // Package 1: these handlers export through withRunLog (truthful source_runs rows).
   "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-metrotimes.js", "api/cron-oldmiami.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-visitdetroit.js",
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.
+  // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
+  "api/_lib/localist-rows.js",
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",

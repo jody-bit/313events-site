@@ -219,6 +219,8 @@ function loadPage(options) {
     innerWidth: options.width || 1440,
   };
   sandbox.window = sandbox;
+  // What /categories.js (loaded in <head> on every page) provides in a real browser.
+  sandbox.Categories = require("../../categories.js");
   // What /config.js (api/config.js) provides in a real browser.
   sandbox.__313_CONFIG = { environment: "test", supabaseUrl: "https://example.supabase.co", supabaseAnonKey: "test-anon-key" };
   vm.createContext(sandbox);
