@@ -1,4 +1,9 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "ra-sync-inbox": false
+    }
+  },
   "crons": [
     {
       "path": "/api/cron-trinosophes",
@@ -35,6 +40,10 @@
     {
       "path": "/api/cron-feeds",
       "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/cron-feeds?resume=1",
+      "schedule": "10 22 * * *"
     },
     {
       "path": "/api/cron-editorial",

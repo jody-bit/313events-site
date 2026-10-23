@@ -32,7 +32,7 @@
 //   node scripts/visitdetroit-dead-link-repair.js --dry-run  (reports only)
 
 const { healEventUrl, registerRecoveryStrategy, classifyRecoveryOutcome } = require("../api/_lib/link-health");
-const { visitDetroitRecoveryStrategy } = require("../api/_lib/visitdetroit-link-recovery");
+const { visitDetroitRecoveryStrategy, OLD_SHAPE_RE } = require("../api/_lib/visitdetroit-link-recovery");
 
 registerRecoveryStrategy("visitdetroit.com", visitDetroitRecoveryStrategy);
 
@@ -45,7 +45,11 @@ function todayIso() {
 async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchImpl = fetch) {
   const url =
     `${SUPABASE_URL}/rest/v1/events` +
-    `?start_date=gte.${todayIso()}` +
+    // Still-running events count too (P0 2026-10-16: Cider, Harvest Festival have start_date in the past). Stable
+    // id order: the per-run window rotates over this list by day number (see repairVisitDetroitDeadLinks), because
+    // link_checked_at is written only when an outcome changes and so cannot drive a rotation.
+    `?or=(start_date.gte.${todayIso()},end_date.gte.${todayIso()})` +
+    `&order=id.asc` +
     `&status=neq.rejected` +
     `&source=eq.${encodeURIComponent(SOURCE_NAME)}` +
     `&ticket_url=not.is.null` +
@@ -88,9 +92,17 @@ async function repairVisitDetroitDeadLinks({
   applyPatchFn = applyPatch,
   healFn = healEventUrl,
   fetchFn = fetch,
+  // Per-run budget (P0 2026-10-16): the 2026-10-16 Auto-Repair run hit the 300 s function limit and lost its counts.
+  // Stop checking at maxChecks or when deadlineMs has passed since the start, report what was done, and log samples as we go.
+  maxChecks = 150,
+  deadlineMs = 240000,
+  nowFn = Date.now,
+  dayNumber = Math.floor(Date.now() / 86400000),
 } = {}) {
+  const startedAt = nowFn();
   const counts = {
     totalConsidered: 0,
+    samples: [],
     ok: 0,
     repaired: 0,
     stillDead: 0,
@@ -125,13 +137,29 @@ async function repairVisitDetroitDeadLinks({
   }
   const sbHeaders = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
 
-  const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
+  let candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders, fetchFn);
   counts.totalConsidered = candidates.length;
+  // Deterministic daily window, no writes: start at (day number x maxChecks) modulo the candidate count, so
+  // successive daily runs walk through every row even when the earlier rows write nothing (inconclusive / already ok).
+  if (candidates.length > maxChecks) {
+    const offset = (dayNumber * maxChecks) % candidates.length;
+    candidates = candidates.slice(offset).concat(candidates.slice(0, offset));
+    counts.windowOffset = offset;
+  }
 
+  let checked = 0;
   for (const event of candidates) {
     if (!event.ticket_url || !event.ticket_url.trim()) continue; // defensive re-check
+    if (checked >= maxChecks || nowFn() - startedAt >= deadlineMs) {
+      counts.stoppedEarly = true; // budget reached: the remaining rows are checked on the next run
+      break;
+    }
+    checked++;
 
-    const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn });
+    const result = await healFn({ url: event.ticket_url, title: event.title, fetchFn, requireIdentity: true });
+    // Log what the check actually saw for the first rows (P0 2026-10-16: evidence for stamps we could not reproduce).
+    if (counts.samples.length < 10) logger.log("[link-check sample] " + JSON.stringify({ id: event.id, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null }));
+    if (counts.samples.length < 10) counts.samples.push({ id: event.id, url: event.ticket_url, classification: result.classification, status: result.status === undefined ? null : result.status, finalUrl: result.finalUrl || null, identityConfirmed: result.identityConfirmed === undefined ? null : result.identityConfirmed });
 
     if (result.classification === "inconclusive") {
       counts.inconclusive++;
@@ -144,6 +172,12 @@ async function repairVisitDetroitDeadLinks({
     }
 
     let patchBody;
+    if (result.classification === "ok" && OLD_SHAPE_RE.test(event.ticket_url)) {
+      // P0 2026-10-16: the bare /<slug>/ form is the known-dead shape (R&Q: 292/292 returned 404 from a
+      // real browser). An "ok" for it is not a verified destination, so never record it as ok.
+      counts.unverifiedOldShape = (counts.unverifiedOldShape || 0) + 1;
+      continue;
+    }
     if (result.classification === "ok") {
       counts.ok++;
       if (event.link_check_status === "ok") continue; // already recorded as ok — nothing changed

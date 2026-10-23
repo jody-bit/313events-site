@@ -156,6 +156,25 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Candidate ordering and the fetch cap (owner GO 2026-10-20). Both candidate
+// queries are capped at CANDIDATE_LIMIT rows. Without an ORDER BY, PostgREST
+// returns an arbitrary CANDIDATE_LIMIT of a larger pool, so rows outside it
+// were never reached and nothing said so. Ordering by start_date then id puts
+// the soonest events (the ones visitors see first) in the window, and is the
+// same on every run. Candidates beyond the cap are not touched, not marked and
+// not dropped: they stay in the pool and come into the window as earlier
+// events pass or are fixed. A cap hit is reported, with the exact deferred
+// count when the database returns a total.
+const CANDIDATE_LIMIT = 1000;
+const CANDIDATE_ORDER = "start_date.asc,id.asc";
+
+// totalFromContentRange("0-999/2953") -> 2953; null when absent or "*".
+function totalFromContentRange(resp) {
+  const h = resp && resp.headers && typeof resp.headers.get === "function" ? resp.headers.get("content-range") : null;
+  const m = /\/(\d+)$/.exec(String(h || ""));
+  return m ? Number(m[1]) : null;
+}
+
 // The poor-description candidate query. Source names are percent-encoded: they are real `events.source`
 // values and some contain "&" ("St. Clair Shores - Events & Programs"), which unencoded ends the `source`
 // parameter mid-name and makes PostgREST answer HTTP 400. That failed every enrichment run after Stage 1
@@ -168,7 +187,7 @@ function poorDescriptionCandidatesUrl(SUPABASE_URL, sources = REPAIR_SOURCES_LIS
     `&description=not.is.null&source=in.(${names})` +
     `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
     `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,source,internal_note,` +
-    `venues(name,address,city,website,facebook_url)&limit=1000`;
+    `venues(name,address,city,website,facebook_url)&order=${CANDIDATE_ORDER}&limit=${CANDIDATE_LIMIT}`;
 }
 
 async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders) {
@@ -181,11 +200,15 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
     `&select=id,title,description,description_source,category,is_free,price_from,start_date,time_display,is_all_day,` +
     `venue_id,venue_name_raw,venue_address_raw,venue_city_raw,ticket_url,event_url,external_id,source,internal_note,` +
     `venues(name,address,city,website,facebook_url)` +
-    `&limit=1000`;
-  const resp = await fetch(url, { headers: sbHeaders });
+    `&order=${CANDIDATE_ORDER}&limit=${CANDIDATE_LIMIT}`;
+  // Prefer: count=exact makes the same request also return the true total
+  // (Content-Range), so a cap hit can say exactly how many were deferred.
+  const resp = await fetch(url, { headers: { ...sbHeaders, Prefer: "count=exact" } });
   if (!resp.ok) throw new Error(`Failed to fetch enrichment candidates: HTTP ${resp.status}`);
   const rows = await resp.json();
   if (!Array.isArray(rows)) throw new Error("Unexpected response shape fetching enrichment candidates");
+  const blankReturned = rows.length;
+  const blankTotal = totalFromContentRange(resp);
   // Non-blank but poor descriptions (PostgREST cannot express the quality
   // check, so it is applied here). Only staged-rollout sources, upcoming and
   // not rejected. Deduplicated against the blank-field candidates above.
@@ -198,6 +221,18 @@ async function fetchEnrichmentCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
   for (const r of poorRows) {
     if (!seen.has(r.id) && repairVerdict(r).repairable) { rows.push(r); seen.add(r.id); }
   }
+  // Cap report (read by repairGenericMetadata; an extra property on the array
+  // so the return shape every caller and test relies on is unchanged).
+  rows.cap = {
+    limit: CANDIDATE_LIMIT,
+    order: CANDIDATE_ORDER,
+    blankReturned,
+    blankCapReached: blankReturned >= CANDIDATE_LIMIT,
+    blankTotal,
+    blankDeferred: blankTotal !== null ? Math.max(0, blankTotal - blankReturned) : null,
+    poorReturned: poorRows.length,
+    poorCapReached: poorRows.length >= CANDIDATE_LIMIT,
+  };
   return rows;
 }
 
@@ -295,6 +330,16 @@ async function repairGenericMetadata({
   const canonicalMaps = await buildVenueDetailsMap(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const candidates = await fetchCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders);
   counts.totalConsidered = candidates.length;
+  if (candidates.cap) {
+    const c = candidates.cap;
+    counts.candidateCap = c;
+    counts.capReached = !!(c.blankCapReached || c.poorCapReached);
+    if (counts.capReached) {
+      const where = [c.blankCapReached ? `blank-field query (${c.blankDeferred === null ? "deferred count unknown" : c.blankDeferred + " deferred"})` : null, c.poorCapReached ? "poor-description query" : null].filter(Boolean).join(" and ");
+      counts.capWarning = `Candidate cap of ${c.limit} reached on the ${where}; candidates beyond the cap were not examined this run and stay in the pool (ordered ${c.order})`;
+      (logger.warn || logger.log).call(logger, `[enrichment] ${counts.capWarning}`);
+    }
+  }
 
   const MAX_OUTCOME_SAMPLES = 200;
   function recordDescriptionOutcome(event, outcome, reason) {
@@ -689,6 +734,9 @@ module.exports = {
   repairGenericMetadata,
   fetchEnrichmentCandidates,
   poorDescriptionCandidatesUrl,
+  CANDIDATE_LIMIT,
+  CANDIDATE_ORDER,
+  totalFromContentRange,
   applyPatch,
   MAX_POOR_DESCRIPTION_REPAIRS_PER_RUN,
   MAX_EXTERNAL_VENUE_LOOKUPS_PER_RUN,

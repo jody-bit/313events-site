@@ -88,7 +88,7 @@ async function loadSnapshot({ supabaseUrl, serviceRoleKey, fetchFn = fetch, now 
   let runs = [];
   let runsError = null;
   try {
-    runs = await readAll(fetchFn, `${supabaseUrl}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status&started_at=gte.${encodeURIComponent(since)}&order=started_at.desc`, headers);
+    runs = await readAll(fetchFn, `${supabaseUrl}/rest/v1/source_runs?select=source_slug,outcome,started_at,finished_at,records_fetched,records_parsed,records_written,http_status,resume:session_data->>resume&started_at=gte.${encodeURIComponent(since)}&order=started_at.desc`, headers);
   } catch (err) {
     runsError = err.message; // reported, never silently treated as "no runs"
   }

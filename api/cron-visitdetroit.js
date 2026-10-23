@@ -5,6 +5,7 @@ const { lookupExistingRows } = require("./_lib/status-lookup");
 const { preserveRange } = require("./_lib/range-preservation"); // MC-RANGE: a refresh never narrows a range below evidenced dates
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNoFixedVenue } = require("./_lib/mobile-event");
+const { canonicalVisitDetroitUrl } = require("./_lib/visitdetroit-link-recovery"); // P0 2026-10-16: store the live /events/<slug>/ page
 const { parseZip, decideFeedCity, loadZipTable, loadCdpNames, loadZipTiers, protectExistingCity } = require("./_lib/feed-city"); // GEO-003: city stored only when it agrees with the feed's ZIP and _geoloc
 
 // Orbit ZIP -> municipality evidence table (GEO-003 Addendum 2): EI's Census-built v3 table (with evidence tiers), loaded lazily. A ZIP
@@ -345,7 +346,7 @@ const visitDetroitHandler = async (req, res) => {
         is_all_day: !!h.isAllDay,
         is_free: false, // no price signal in this index — see header comment, never guessed true
         price_from: null,
-        ticket_url: h.uri ? `https://visitdetroit.com${h.uri}` : null,
+        ticket_url: canonicalVisitDetroitUrl(h.uri), // stores /events/<slug>/: the index's bare /<slug>/ path 404s
         image_url: h.primaryImageUrl || null,
         source: SOURCE_NAME,
         note: h.readableRepeatRule
@@ -432,7 +433,7 @@ const visitDetroitHandler = async (req, res) => {
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
         rows.map((r) => r.external_id),
-        { select: "external_id,status,venue_city_raw,start_date,end_date,date_semantics,occurrence_dates" }
+        { select: "external_id,status,venue_city_raw,start_date,end_date,date_semantics,occurrence_dates,recurrence_evidence" }
       );
     } catch (lookupErr) {
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
