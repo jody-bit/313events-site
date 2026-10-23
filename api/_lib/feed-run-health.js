@@ -80,6 +80,23 @@ function shouldSkipOnResume(feed, now, windowMs) {
   return kind === KINDS.OK || kind === KINDS.EMPTY;
 }
 
+// Approved feeds last polled more than staleAfterMs ago: the "repeatedly skipped or stalled" signal. A feed never
+// polled is new, not stale (it leads the run order anyway), and manual-format feeds are never polled automatically.
+// Returns the feeds, oldest first.
+function staleFeeds(feeds, now, staleAfterMs) {
+  const stamp = (f) => (f && f.last_polled_at ? Date.parse(f.last_polled_at) || 0 : 0);
+  return orderFeedsForRun((feeds || []).filter((f) => f && f.feed_format !== "manual" && stamp(f) > 0 && now - stamp(f) > staleAfterMs));
+}
+
+// One compact entry per feed for the run record: which feed, what happened, how long it took.
+function compactResults(entries) {
+  return (Array.isArray(entries) ? entries : []).map((e) => {
+    const o = { id: e.id, kind: e.kind };
+    if (typeof e.ms === "number") o.ms = e.ms;
+    return o;
+  });
+}
+
 const MAX_ALERTS = 20;
 
 // entries: [{ id, venue, result, kind }]; extras: { stalledRuns, upserted, budgetExhausted }
@@ -94,6 +111,8 @@ function summarizeRun(entries, extras = {}) {
   if (deferred) alerts.push({ type: "budget_exhausted", detail: `${deferred} feed(s) deferred to the next run` });
   const stalled = (extras.stalledRuns || []).length;
   if (stalled) alerts.push({ type: "stalled_run", detail: `${stalled} earlier run(s) started and never finished (probable function time limit): ${extras.stalledRuns.map((r) => r.started_at).join(", ")}` });
+  const stale = Array.isArray(extras.staleFeeds) ? extras.staleFeeds : [];
+  if (stale.length) alerts.push({ type: "stale_feeds", detail: `${stale.length} approved feed(s) not polled for ${Math.round((extras.staleAfterMs || 0) / 3600000)} h or more: ${stale.slice(0, 8).map((f) => f.venue_name || f.id).join(", ")}`.slice(0, 300) });
   const polled = list.filter((e) => ![KINDS.MANUAL, KINDS.DEFERRED, KINDS.SKIPPED_RESUME].includes(e.kind)).length;
   if (polled >= 3 && !extras.upserted && !count(KINDS.FAILED) && !count(KINDS.TIMEOUT) && !count(KINDS.BLOCKED)) {
     alerts.push({ type: "suspected_empty_run", detail: `${polled} feeds polled, 0 events written` });
@@ -109,6 +128,7 @@ function summarizeRun(entries, extras = {}) {
     feedsSkippedOnResume: count(KINDS.SKIPPED_RESUME),
     budgetExhausted: !!extras.budgetExhausted,
     stalledRunsClosed: stalled,
+    feedsStale: stale.length,
     alerts: alerts.slice(0, MAX_ALERTS),
   };
   const parts = [];
@@ -155,8 +175,29 @@ async function closeStalledRuns({ supabaseUrl, headers, slug = "feeds", olderTha
   return closed;
 }
 
+// True when another invocation of `slug` started within withinMs and has not finished. beforeMs keeps the caller's
+// own just-written "started" row out of the answer. Fail-safe: any problem answers false (the run proceeds; its
+// writes are upserts keyed on external_id, so a rare overlap costs time, not data).
+async function otherRunInProgress({ supabaseUrl, headers, slug = "feeds", withinMs = 90 * 1000, beforeMs = 5000, now = Date.now(), fetchImpl = fetch, timeoutMs = 4000 } = {}) {
+  try {
+    if (!supabaseUrl || !headers) return false;
+    const lo = new Date(now - withinMs).toISOString();
+    const hi = new Date(now - beforeMs).toISOString();
+    const q = `${supabaseUrl}/rest/v1/source_runs?source_slug=eq.${encodeURIComponent(slug)}&outcome=eq.started&finished_at=is.null&started_at=gte.${encodeURIComponent(lo)}&started_at=lt.${encodeURIComponent(hi)}&select=id&limit=1`;
+    const r = await fetchImpl(q, { headers, signal: AbortSignal.timeout(timeoutMs) });
+    if (!r || !r.ok) return false;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows.length > 0;
+  } catch (_) {
+    return false;
+  }
+}
+
 module.exports = {
   KINDS,
+  staleFeeds,
+  compactResults,
+  otherRunInProgress,
   TIMED_OUT_RESULT,
   DEFERRED_RESULT,
   NOT_A_CALENDAR_RESULT,
