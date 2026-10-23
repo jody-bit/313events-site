@@ -71,21 +71,6 @@
        saturated blacklight-poster neons rather than the old grab-bag of
        hues, so it reads as on-brand next to the chartreuse accent instead of
        competing with it. Kept clear of chartreuse's own yellow-green band. */
-    --c-music:#5B3EFF;    /* electric indigo */
-    --c-theatre:#FF6A00;  /* neon orange */
-    --c-dance:#FF2ECC;    /* neon magenta */
-    --c-visual:#00E5FF;   /* electric cyan */
-    --c-museum:#00FFA6;   /* UV spring-teal */
-    --c-family:#FFC400;   /* neon amber */
-    --c-fest:#FF2D55;     /* neon crimson */
-    --c-food:#9D00FF;     /* UV violet */
-    --c-film:#2979FF;     /* electric blue */
-    --c-night:#E100FF;    /* UV fuchsia */
-    --c-sports:#FF3B3B;   /* neon scarlet */
-    --c-community:#3DFF6E; /* neon green */
-    --c-vendor:#39FF14;   /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -401,6 +386,9 @@
   .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:5px;}
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
+  .evt-link{position:relative;}
+  .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
+  @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
 
   /* List view */
   #listView{display:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;}
@@ -674,6 +662,7 @@
 <script src="/event-dates.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -816,37 +805,16 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
-};
+// Keys, labels, order and colours all come from /categories.js (one definition for every page).
+const CATS = {};
+Categories.list.forEach(c => {
+  CATS[c.key] = {label: c.label, color: Categories.cssVar(c.key)};
+});
 
-// Literal-hex mirror of the --c-* tokens above, for the one spot that can't
-// use a CSS var(): Leaflet's SVG renderer sets marker color as a raw
-// attribute value, and var() resolution through that path is inconsistent
-// across browsers — so markers get real hex here while every other UI
-// element keeps using CATS[key].color's var() as usual. Keep this in sync
-// with the :root token block by hand (same non-build-step constraint as
-// everywhere else on the site).
-const CAT_HEX = {
-  music:"#5B3EFF", theatre:"#FF6A00", dance:"#FF2ECC", visual:"#00E5FF",
-  museum:"#00FFA6", family:"#FFC400", fest:"#FF2D55", food:"#9D00FF",
-  film:"#2979FF", nightlife:"#E100FF", sports:"#FF3B3B", community:"#3DFF6E",
-  vendor:"#39FF14",
-};
+// Literal hex for the one spot that can't use a CSS var(): Leaflet's SVG renderer sets marker color as a raw
+// attribute value, and var() resolution through that path is inconsistent across browsers. Derived from the same
+// table as the --c-* tokens, so it cannot drift from them.
+const CAT_HEX = Categories.pinHexMap(); // from /categories.js; training and gaming have no pin colour yet (owner decision pending), so they keep the fallback
 
 // A place's marker/rail-row color reflects whichever category has the most
 // events there (ties broken by CATS' own declared order, for determinism) —
@@ -1298,6 +1266,10 @@ let whenMode = null;
 // not on every render, since "this weekend" only changes at midnight.
 let cachedWeekendDates = [];
 let selectedDate = null;
+// Set only by an explicit date choice (a day-cell click/Enter, or a WHEN shortcut). The next
+// showDayPanel() then scrolls the event list into view and clears it, so the initial page
+// load and later re-renders (filters, the live-data refresh) never move the viewport.
+let scrollToDayPanel = false;
 // originLocation: the chosen search-radius origin — {name, type, region,
 // lat, lng} from LOCATIONS, or a geolocation-derived point (type:'here').
 // null means no location filter is active at all.
@@ -1794,7 +1766,7 @@ function renderMonth(){
     const dayLabel = new Date(iso+"T12:00:00").toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
     const countLabel = events.length ? `, ${events.length} event${events.length===1?'':'s'}` : ', no events';
     cell.setAttribute('aria-label', dayLabel + countLabel + (iso===todayISO ? ' (today)' : ''));
-    const openDay = ()=>{ selectedDate = iso; showDayPanel(iso); };
+    const openDay = ()=>{ selectedDate = iso; scrollToDayPanel = true; showDayPanel(iso); };
     cell.onclick = openDay;
     cell.onkeydown = (e)=>{
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDay(); }
@@ -1890,7 +1862,7 @@ function showDayPanel(iso){
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
-                  <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+                  ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
@@ -1909,7 +1881,11 @@ function showDayPanel(iso){
       `).join('');
   }
   panel.classList.add('show');
-  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  if(scrollToDayPanel){
+    scrollToDayPanel = false;
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panel.scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth', block:'start'});
+  }
 }
 function closeDayPanel(){ document.getElementById('dayPanel').classList.remove('show'); selectedDate=null; }
 
@@ -1941,7 +1917,7 @@ function renderList(dateList){
               <div class="evt-text">
                 <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
                 <div class="evt-meta">
-                  <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+                  ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
                   <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
@@ -2180,7 +2156,7 @@ function renderCityRail(places){
             <div class="evt-main">
               <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
               <div class="evt-meta">
-                <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+                ${Categories.tagHtml(e.cat, {fill:'pill'})}
                 ${priceTag(e)}
                 <span>${new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
               </div>
@@ -2266,7 +2242,7 @@ function renderUnconfirmedResults(){
       <div class="evt-main"><div class="evt-main-body"><div class="evt-text">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
-          <span class="tag" style="background:${CATS[e.cat].color}">${CATS[e.cat].label}</span>
+          ${Categories.tagHtml(e.cat, {fill:'pill'})}
           <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
         </div>
         ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}
@@ -2284,6 +2260,7 @@ function render(){
   if(mode === 'month'){
     renderMonth();
     if(selectedDate) showDayPanel(selectedDate);
+    scrollToDayPanel = false;
   } else if(mode === 'map'){
     const places = buildPlaces();
     // A place that was expanded can drop out of the filtered set entirely
@@ -2396,6 +2373,7 @@ function activateWhen(key){
     const t = new Date(todayIso+"T12:00:00");
     current = new Date(t.getFullYear(), t.getMonth(), 1);
     selectedDate = todayIso;
+    scrollToDayPanel = (mode === 'month');
   }
 
   updateWhenButtons();
@@ -2862,6 +2840,12 @@ function readStateFromURL(){
 }
 
 readStateFromURL();
+// A first visit (no date in the link) lands on the current month with today highlighted: open
+// today's event list too, so nobody has to click today to see it. Initial load never scrolls.
+if(!selectedDate && mode === 'month' && !whenMode){
+  const todayIso = getTodayISO();
+  if(current.getFullYear() === Number(todayIso.slice(0,4)) && current.getMonth() === Number(todayIso.slice(5,7)) - 1) selectedDate = todayIso;
+}
 buildFilterBar();
 render();
 
