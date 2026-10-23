@@ -228,6 +228,27 @@ function parseEventPage(html, slug) {
 }
 
 const { withRunLog } = require("./_lib/cron-run"); // Package 1: truthful source_runs rows, see api/_lib/cron-run.js
+const { createBudget, fetchText, isTimeout, rotate } = require("./_lib/run-budget");
+
+// Reliability limits (#256 pattern). vercel.json gives this function 60 s; the
+// run stops starting work at 45 s so the venue lookup, status lookup and upsert
+// that follow still have room. Each page fetch gets 10 s, and three timeouts
+// in a row mean the source is down, so the rest is deferred instead of burning
+// the budget. Nothing is retried within a run: the next scheduled run picks up
+// whatever was deferred (writes are idempotent upserts keyed on external_id).
+const RUN_BUDGET_MS = 45000;
+const REQUEST_TIMEOUT_MS = 10000;
+const MAX_CONSECUTIVE_TIMEOUTS = 3;
+const MIN_START_MS = 1500;
+// Test-only overrides (unset in production), same convention as cron-feeds.js.
+function limits() {
+  const n = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+  return {
+    budgetMs: n(process.env.OLDMIAMI_RUN_BUDGET_MS, RUN_BUDGET_MS),
+    requestMs: n(process.env.OLDMIAMI_REQUEST_TIMEOUT_MS, REQUEST_TIMEOUT_MS),
+    minStartMs: n(process.env.OLDMIAMI_MIN_START_MS, MIN_START_MS),
+  };
+}
 const handleRequest = async (req, res) => {
   if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -235,14 +256,16 @@ const handleRequest = async (req, res) => {
     return;
   }
 
+  const cfg = limits();
+  const budget = createBudget({ budgetMs: cfg.budgetMs });
   let venueHtml;
   try {
-    const r = await fetch(VENUE_PAGE_URL, { headers: FETCH_HEADERS });
+    const r = await fetchText(VENUE_PAGE_URL, { headers: FETCH_HEADERS }, { timeoutMs: cfg.requestMs, budget });
     if (!r.ok) {
       res.status(200).json({ upserted: 0, error: `Venue page fetch failed: HTTP ${r.status}` });
       return;
     }
-    venueHtml = await r.text();
+    venueHtml = r.text;
   } catch (err) {
     res.status(200).json({ upserted: 0, error: "Venue page fetch failed: " + err.message });
     return;
@@ -256,25 +279,54 @@ const handleRequest = async (req, res) => {
 
   const parsedEvents = [];
   const skipped = [];
-  for (const slug of slugs) {
+  const timedOut = [];
+  const deferred = [];
+  let consecutiveTimeouts = 0;
+  // Rotated by UTC day so a persistently slow head item cannot starve the tail.
+  const ordered = rotate(slugs, Math.floor(Date.now() / 86400000));
+  for (let i = 0; i < ordered.length; i++) {
+    const slug = ordered[i];
+    if (consecutiveTimeouts >= MAX_CONSECUTIVE_TIMEOUTS || budget.remaining() < cfg.minStartMs) {
+      deferred.push(slug);
+      continue;
+    }
     const eventUrl = `https://rockindetroit.com/events/${slug}/`;
     try {
-      const r = await fetch(eventUrl, { headers: FETCH_HEADERS });
+      const r = await fetchText(eventUrl, { headers: FETCH_HEADERS }, { timeoutMs: cfg.requestMs, budget });
+      consecutiveTimeouts = 0;
       if (!r.ok) {
         skipped.push({ slug, reason: `HTTP ${r.status}` });
         continue;
       }
-      const html = await r.text();
-      const parsed = parseEventPage(html, slug);
+      const parsed = parseEventPage(r.text, slug);
       if (!parsed) {
         skipped.push({ slug, reason: "Could not parse expected fields (title/venue/date)" });
         continue;
       }
       parsedEvents.push({ ...parsed, eventUrl });
     } catch (err) {
-      skipped.push({ slug, reason: err.message });
+      if (isTimeout(err)) {
+        consecutiveTimeouts++;
+        timedOut.push(slug);
+        skipped.push({ slug, reason: err.message });
+      } else {
+        consecutiveTimeouts = 0;
+        skipped.push({ slug, reason: err.message });
+      }
     }
   }
+  // Accurate partial-run reporting: a run that did not look at every event
+  // page says so. Events that were not read are neither written nor touched.
+  const runReport = {
+    attempted: slugs.length - deferred.length,
+    total: slugs.length,
+    timedOut,
+    deferred,
+    complete: !timedOut.length && !deferred.length,
+    budgetMs: cfg.budgetMs,
+    elapsedMs: budget.elapsed(),
+  };
+  runReport.partial = !runReport.complete;
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
@@ -313,7 +365,7 @@ const handleRequest = async (req, res) => {
   const rows = Array.from(seen.values());
 
   if (!rows.length) {
-    res.status(200).json({ upserted: 0, skipped, note: "Parsed event pages but none are today or later (or none parsed cleanly).", fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: 0, skipped, ...runReport, note: runReport.partial && !parsedEvents.length ? "No event page could be read this run (timed out or deferred); nothing was written." : "Parsed event pages but none are today or later (or none parsed cleanly).", fetchedAt: new Date().toISOString() });
     return;
   }
 
@@ -350,9 +402,14 @@ const handleRequest = async (req, res) => {
       res.status(502).json({ upserted: resp.written, skipped, error: "Supabase upsert failed: " + errText });
       return;
     }
-    res.status(200).json({ upserted: rowsWithStatus.length, skipped, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, skipped, ...runReport, fetchedAt: new Date().toISOString() });
   } catch (err) {
-    res.status(500).json({ upserted: 0, skipped, error: err.message });
+    res.status(500).json({ upserted: 0, skipped, ...runReport, error: err.message });
   }
 };
-module.exports = withRunLog("oldmiami", handleRequest);
+// A run that timed out on or deferred any event page is "partial" in source_runs.
+module.exports = withRunLog("oldmiami", handleRequest, {
+  sourceFailures: (b) => (b && Array.isArray(b.deferred) ? { failed: b.deferred.length + (b.timedOut || []).length, attempted: b.total || 0 } : null),
+});
+module.exports.RUN_BUDGET_MS = RUN_BUDGET_MS;
+module.exports.REQUEST_TIMEOUT_MS = REQUEST_TIMEOUT_MS;
