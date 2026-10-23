@@ -17127,7 +17127,7 @@
    ],
    "featured": false,
    "status": "PUBLISHED",
-   "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration.",
+   "summary": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration. ERCA lists day use from mid-April to Thanksgiving, so check with the Essex Region Conservation Authority for current access before visiting.",
    "image": {
     "src": "/assets/seasonal/fall-color-card-2.webp",
     "alternates": [
@@ -17171,7 +17171,7 @@
      "url": "https://essexregionconservation.ca/conservation-areas",
      "checkedAt": "2026-10-11",
      "checkedBy": "Claude Code: automated read of the official page; owner review pending",
-     "note": "Official page read 2026-10-11. Address as stated: 6952 County Road 50 (listed as 6952 50 Cr), Amherstburg ON N0R 1G0. Season/hours as stated: Day use 6am to 8pm daily, mid-April to Thanksgiving; $12 per car or $5 per cyclist/pedestrian at an automated gate; Seasonal Pass accepted; controlled waterfowl hunting permitted seasonally. Flags: day use ends at Thanksgiving; seasonal waterfowl hunting; past beach closures reported in news."
+     "note": "Official page read 2026-10-11. Address as stated: 6952 County Road 50 (listed as 6952 50 Cr), Amherstburg ON N0R 1G0. Season/hours as stated: Day use 6am to 8pm daily, mid-April to Thanksgiving; $12 per car or $5 per cyclist/pedestrian at an automated gate; Seasonal Pass accepted; controlled waterfowl hunting permitted seasonally. Flags: day use ends at Thanksgiving; seasonal waterfowl hunting; past beach closures reported in news. Owner decision 2026-10-19 (Jody 20:09Z): retain with corrected wording. Public text now states the ERCA-listed season end. ERCA call still pending; update wording when ERCA confirms post-Thanksgiving access. Next review: the ERCA call or 2026-10-26 (7-day rule), whichever comes first."
     }
    ],
    "website": "https://essexregionconservation.ca/conservation-areas",
@@ -17195,7 +17195,7 @@
     ],
     "unresolved": [
      "Fee conflict: a search summary of the Amherstburg page cited $10 per car versus $12 on ERCA",
-     "Whether the season ends exactly at Thanksgiving (Oct 12, 2026)",
+     "Post-Thanksgiving access: ERCA call pending (519-776-5209)",
      "Hunting dates"
     ]
    },

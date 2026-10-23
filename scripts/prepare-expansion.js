@@ -85,7 +85,7 @@ const DESC = {
     "pearson-metropark": "Metroparks Toledo park with remnant Great Black Swamp forest, ponds and about 15 miles of trails. The agency's fall color report names it.",
     "side-cut-metropark": "Metroparks Toledo park on the Maumee River and canal, with river views, fishing and paddling.",
     "farnsworth-metropark": "Metroparks Toledo park on the Maumee River with the Towpath Trail, river views and the Interurban Bridge ruins.",
-    "holiday-beach-conservation-area": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration.",
+    "holiday-beach-conservation-area": "Conservation area with trails, a boardwalk and a viewing tower, known for fall hawk migration. ERCA lists day use from mid-April to Thanksgiving, so check with the Essex Region Conservation Authority for current access before visiting.",
     "point-pelee-national-park": "National park of forest, marsh and lakeshore with hiking trails, and a stopover for migrating Monarch butterflies each autumn.",
     "bennett-arboretum": "Wayne County arboretum on Hines Drive with maple, oak and beech collections and a gentle unpaved walking trail.",
     "maybury-state-park": "State park of rolling hills, meadows and mature woodlands with wooded hiking paths.",
