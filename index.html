@@ -3396,28 +3396,14 @@
     --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif;
     --font-ui:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --font-data:'Space Mono',monospace;
-    /* Event Type palette — the established "UV signal" set. Category colour
+    /* Event Type palette — defined once, in /categories.js (loaded in <head>), which also writes the --c-*
+       variables into this page. Do not declare a --c-* value here. History: category colour
        appears only on a stream row's TYPE label, where it helps scanning;
        never inside the WHAT control. Six values were lightened the smallest
        step that clears WCAG AA (4.5:1) for 11px bold caps on Charcoal
        (Product Owner, 2026-10-04): music 2.78 -> 4.85, food 3.01 -> 5.19,
        gaming 3.54 -> 4.55, film 4.09 -> 4.70, nightlife 4.38 -> 4.57,
        fest 4.47 -> 4.83. Hues unchanged; the other nine untouched. */
-    --c-music:#8C78FF;    /* electric indigo, lightened */
-    --c-theatre:#FF6A00;  /* neon orange */
-    --c-dance:#FF2ECC;    /* neon magenta */
-    --c-visual:#00E5FF;   /* electric cyan */
-    --c-museum:#00FFA6;   /* UV spring-teal */
-    --c-family:#FFC400;   /* neon amber */
-    --c-fest:#FF4266;     /* neon crimson, lightened */
-    --c-food:#C466FF;     /* UV violet, lightened */
-    --c-film:#3E86FF;     /* electric blue, lightened */
-    --c-night:#E41AFF;    /* UV fuchsia, lightened */
-    --c-sports:#FF3B3B;   /* neon scarlet */
-    --c-community:#3DFF6E; /* neon green */
-    --c-vendor:#39FF14;   /* radioactive lime */
-    --c-training:#FFEA00; /* hazard yellow */
-    --c-gaming:#C051FF;   /* neon violet, lightened */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -4134,10 +4120,7 @@
   .evt-side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding-top:1px;}
   .evt-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;}
   .evt-meta:empty{display:none;}
-  .evt-cat{
-    font-family:var(--font-data);font-size:9.5px;font-weight:400;letter-spacing:.1em;line-height:1.2;text-transform:uppercase;
-    color:var(--ink-soft);background:var(--panel);border:1px solid var(--line);padding:3px 7px;
-  }
+  /* The event-type label is the shared .cat-tag from /categories.js (Option A, approved colours); no local rule. */
   .evt-price{font-family:var(--font-data);font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;}
   .evt-price.free{color:var(--ink);}
   .evt-run{white-space:nowrap;}
@@ -4396,6 +4379,7 @@
 <script src="/discovery.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -4722,23 +4706,10 @@
 // (2026-10-04: the stream's category label and the WHAT chips carry no
 // category colour); the table is kept, unused, because
 // test/discovery-compat.test.js checks it against the category list.
-const CAT_COLORS = {
-  music:    "var(--c-music)",
-  theatre:  "var(--c-theatre)",
-  dance:    "var(--c-dance)",
-  visual:   "var(--c-visual)",
-  museum:   "var(--c-museum)",
-  family:   "var(--c-family)",
-  fest:     "var(--c-fest)",
-  food:     "var(--c-food)",
-  film:     "var(--c-film)",
-  nightlife:"var(--c-night)",
-  sports:   "var(--c-sports)",
-  community:"var(--c-community)",
-  vendor:   "var(--c-vendor)",
-  training: "var(--c-training)",
-  gaming:   "var(--c-gaming)"
-};
+const CAT_COLORS = {};
+Categories.list.forEach(c => {
+  CAT_COLORS[c.key] = Categories.cssVar(c.key);
+});
 const CATS = {};
 Discovery.categories.forEach(c => {
   CATS[c.key] = {label: c.label, color: CAT_COLORS[c.key] || "var(--ink-soft)"};
@@ -6066,7 +6037,7 @@ function streamRowHtml(e, dayIso, ctx){
             <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
             <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
           </div>
-          <div class="evt-side"><div class="evt-meta">${cat?`<span class="evt-cat">${escapeHtml(cat)}</span>`:''}${priceTag(e)}</div></div>
+          <div class="evt-side"><div class="evt-meta">${cat?Categories.tagHtml(e.cat):''}${priceTag(e)}</div></div>
           <div class="evt-go">${go}</div>
         </div>`;
 }

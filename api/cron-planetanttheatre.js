@@ -218,11 +218,15 @@ function parseVenue(raw) {
   };
 }
 
+// price_from is the cheapest PAID tier. A $0 tier next to paid tiers (a comp or placeholder tier, not the
+// price a reader pays) must not make the show read as free: 2026-10-22, "My Daddy is Haunted!" stored 0.00
+// while CrowdWork lists $32.85 online / $38.10 at the door. A show is free only when every priced tier is $0.
 function minCostDollars(costTiers) {
   if (!Array.isArray(costTiers) || !costTiers.length) return null;
-  const cents = costTiers.map((t) => t.cost_after_fees).filter((n) => typeof n === "number" && Number.isFinite(n));
+  const cents = costTiers.map((t) => t && t.cost_after_fees).filter((n) => typeof n === "number" && Number.isFinite(n) && n >= 0);
   if (!cents.length) return null;
-  return Math.round(Math.min(...cents)) / 100;
+  const paid = cents.filter((n) => n > 0);
+  return Math.round(paid.length ? Math.min(...paid) : 0) / 100;
 }
 
 // 12-hour time string straight from an ISO datetime's own HH:MM — the ISO
@@ -403,3 +407,4 @@ module.exports = async (req, res) => {
 };
 module.exports.buildRequestHeaders = buildRequestHeaders;
 module.exports.describeUpstream = describeUpstream;
+module.exports.shapeRowsForShow = shapeRowsForShow; // exposed for test/cron-planetanttheatre-price.test.js only
