@@ -58,6 +58,8 @@ function timingSafeStringEqual(a, b) {
 const SOURCE_URL = "https://www.thehalodetroit.com/currentevents";
 const SOURCE_SLUG = SLUGS.halo; // WP 0.5 -- see api/_lib/source-slugs.js
 const VENUE_NAME = "HALO Detroit";
+// HALO's own events page: the page this connector scrapes (robots.txt places no restriction), confirmed live 2026-09-28.
+const HALO_WEBSITE_URL = SOURCE_URL;
 const VENUE_CITY = "Detroit";
 const DEFAULT_STATUS = "approved";
 
@@ -283,6 +285,12 @@ const haloHandler = async (req, res) => {
   // function that's about the VENUE, not about what a specific event's
   // page showed -- every other branch above is still driven purely by
   // that event's own scraped action button, unchanged.
+  //
+  // 2026-10-19 (Jody, site owner): "for halo blank links just send people to their website ... they usually just have a cover
+  // charge at the door and do not sell tickets." A door event with no event-specific link therefore gets HALO's own events page
+  // (HALO_WEBSITE_URL), shown as "Venue website". It is written AFTER the upsert and ONLY into an empty event_url
+  // (fillVenueWebsite below), so an event-specific link that is already stored is never replaced by the generic page (R&Q
+  // review of #235, and the #234 rule that a stored valid link is never overwritten). ticket_url stays NULL on purpose.
   function ticketFieldsFor(e) {
     const url = resolveHaloUrl(e.actionHref);
     if (!url) return { ticket_url: null, event_url: null, ticket_status: "door" };
@@ -365,6 +373,13 @@ const haloHandler = async (req, res) => {
       res.status(502).json({ upserted: resp.written, error: "Supabase upsert failed: " + errText });
       return;
     }
+    let venueWebsiteFill = { attempted: 0, ok: true };
+    const doorIds = rowsWithStatus.filter((r) => r.ticket_status === "door" && !r.event_url).map((r) => r.external_id);
+    if (doorIds.length) {
+      venueWebsiteFill.attempted = doorIds.length;
+      try { await fillVenueWebsite(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, doorIds); }
+      catch (fillErr) { venueWebsiteFill = { attempted: doorIds.length, ok: false, error: fillErr.message }; }
+    }
     await finishRun(runHandle, {
       outcome: "success",
       http_status: resp.status,
@@ -372,7 +387,7 @@ const haloHandler = async (req, res) => {
       records_parsed: parsed.length,
       records_written: rowsWithStatus.length,
     });
-    res.status(200).json({ upserted: rowsWithStatus.length, fetchedAt: new Date().toISOString() });
+    res.status(200).json({ upserted: rowsWithStatus.length, venueWebsiteFill, fetchedAt: new Date().toISOString() });
   } catch (err) {
     await finishRun(runHandle, {
       outcome: "failed",
@@ -384,6 +399,25 @@ const haloHandler = async (req, res) => {
   }
 };
 
+// Fills HALO's own events page into door events whose event_url is still empty. PATCH ... event_url=is.null never touches a
+// row that already has a link. Non-fatal: if it fails the events simply keep no link, as before 2026-10-19.
+async function fillVenueWebsite(supabaseUrl, key, externalIds) {
+  let filled = 0;
+  for (let i = 0; i < externalIds.length; i += 100) {
+    const chunk = externalIds.slice(i, i + 100);
+    // external_ids here are slugs ([a-z0-9-]), the same shape lookupExistingStatuses puts in its in.(...) filter
+    const r = await fetch(`${supabaseUrl}/rest/v1/events?source=eq.HALO%20Detroit&event_url=is.null&external_id=in.(${chunk.join(",")})`, {
+      method: "PATCH",
+      headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ event_url: HALO_WEBSITE_URL }),
+    });
+    if (!r.ok) throw new Error("venue website fill HTTP " + r.status);
+    filled += chunk.length;
+  }
+  return filled;
+}
+
 module.exports = haloHandler;
 module.exports.parseHaloEvents = parseHaloEvents; // exposed for test/cron-halo-ticket-status.test.js only
 module.exports.resolveHaloUrl = resolveHaloUrl;
+module.exports.HALO_WEBSITE_URL = HALO_WEBSITE_URL;

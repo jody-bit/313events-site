@@ -5143,10 +5143,24 @@ const TICKET_STATUS_NOTES = {
 };
 function ticketStatusNoteHtml(e){
   if(e.ticketUrl && safeUrl(e.ticketUrl)) return '';
-  if(e.eventPageUrl && safeUrl(e.eventPageUrl)) return '';
+  if(e.eventPageUrl && safeUrl(e.eventPageUrl) && !haloVenueLinkLabel(e)) return '';
   if(!e.ticketStatus) return '';
   const text = TICKET_STATUS_NOTES[e.ticketStatus];
   return text ? `<div class="note">${escapeHtml(text)}</div>` : '';
+}
+
+// HALO Detroit sells no advance tickets (owner decision 2026-10-19): its events without a ticket link point to the venue's own
+// website, labelled for what it is. Keep this function identical in index.html, calendar.html, map.html and event-template.html
+// (test/halo-venue-link.test.js checks they match).
+function haloVenueLinkLabel(e){
+  if(e.source !== 'HALO Detroit' || (e.ticketUrl && safeUrl(e.ticketUrl)) || !(e.eventPageUrl && safeUrl(e.eventPageUrl))) return '';
+  if(e.ticketStatus === 'door') return 'Venue website';
+  if(e.ticketStatus === 'rsvp_no_advance_sale') return 'Event information';
+  return '';
+}
+function eventLinkLabel(e){
+  if(e.free) return 'More info';
+  return haloVenueLinkLabel(e) || 'Tickets & info';
 }
 
 // The human-readable scope of the current view, used by renderList() for
@@ -6018,7 +6032,7 @@ function streamRowHtml(e, dayIso, ctx){
           </div>
           <div class="evt-act">
             <div class="evt-actions">
-              ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets &amp; info'}</a>`:''}
+              ${(e.ticketUrl||e.eventPageUrl) && safeUrl(e.ticketUrl||e.eventPageUrl)?`<a class="evt-link" href="${escapeHtml(safeUrl(e.ticketUrl||e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(eventLinkLabel(e))}</a>`:''}
               ${e.ticketUrl && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl?`<a class="evt-link" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`:''}
               ${addToCalendarHtml(e)}
               ${shareButtonHtml(e)}
