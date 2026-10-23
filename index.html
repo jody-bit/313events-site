@@ -3802,7 +3802,7 @@
   }
   .sec-sub{font-size:13px;color:var(--ink-soft);margin:0;line-height:1.3;min-width:0;}
   .sec-link{
-    margin-left:auto;font-family:var(--font-data);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    margin-left:auto;font-family:var(--font-data);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--ink);text-decoration:none;white-space:nowrap;
   }
   .sec-link:hover, .sec-link:focus-visible{color:var(--accent);}
@@ -3909,7 +3909,7 @@
   }
   .rc-link:hover .rc-title, .rc-link:focus-visible .rc-title{text-decoration:underline;text-underline-offset:3px;}
   .rc-link:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}
-  .rc-date{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .rc-date{font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   .rc-event{
     display:block;padding:8px 12px 9px;border-top:1px solid var(--line);
     font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;
@@ -4024,12 +4024,12 @@
   .daynum{font-family:var(--font-data);font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink-soft);display:flex;align-items:baseline;gap:6px;}
   .day-cell.today .daynum{color:var(--accent);}
   .today-label{font-family:var(--font-data);font-size:9px;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;}
-  .day-count{font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;}
+  .day-count{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:4px;display:flex;align-items:center;gap:4px;text-transform:uppercase;}
   .day-count .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
   .pill{font-size:10.8px;background:var(--panel-hover);color:var(--ink);border-radius:0;padding:2px 5px;margin-bottom:3px;display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;}
   .pill .sw{width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
   .pill .t{min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .more-link{font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
+  .more-link{font-size:12px;color:var(--ink-soft);font-weight:600;margin-top:1px;}
 
   /* ---- the stream: WHAT'S HAPPENING, a departure board (Homepage V2) ----
      A date strip, then dense chronological rows: time, artwork, title and
@@ -4049,8 +4049,8 @@
     font-family:var(--font-data);text-transform:uppercase;letter-spacing:.1em;text-align:left;scroll-snap-align:start;
   }
   .ds-day:hover{border-color:var(--ink-dim);background:var(--panel-hover);}
-  .ds-dow{font-size:10.5px;line-height:1.2;color:var(--ink);}
-  .ds-date{font-size:10px;line-height:1.2;color:var(--ink-soft);}
+  .ds-dow{font-size:12px;line-height:1.2;color:var(--ink);}
+  .ds-date{font-size:12px;line-height:1.2;color:var(--ink-soft);}
   .ds-day.active{background:var(--accent);border-color:var(--accent);}
   .ds-day.active .ds-dow, .ds-day.active .ds-date{color:var(--on-accent);font-weight:700;}
   .ds-step{
@@ -4092,7 +4092,7 @@
   }
   .evt-time .t-clock{display:block;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:24px;line-height:.95;letter-spacing:0;}
   .evt-time .t-mer{display:block;font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:17px;line-height:1;color:var(--ink);}
-  .evt-time small{display:block;margin-top:3px;font-size:9.5px;letter-spacing:.04em;color:var(--ink-soft);}
+  .evt-time small{display:block;margin-top:3px;font-size:11px;letter-spacing:.04em;color:var(--ink-soft);}
   /* The artwork frame: one frame for every row, the Orbit field beneath,
      the event's own artwork laid over it when the source has any. The
      frame never changes size, so a column of rows keeps its rhythm. */
@@ -4112,11 +4112,11 @@
   .evt-venue b, .evt-venue a.evt-venue-link{font-weight:500;color:var(--ink);}
   .evt-place{
     display:flex;flex-wrap:wrap;gap:2px 0;margin-top:3px;
-    font-family:var(--font-data);font-size:10px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
+    font-family:var(--font-data);font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);
   }
   .evt-place:empty{display:none;}
   .evt-place > * + *::before{content:'\00b7';margin:0 7px;color:var(--ink-dim);}
-  .evt-place .src{font-style:normal;color:var(--ink-dim);font-size:10px;}
+  .evt-place .src{font-style:normal;color:var(--ink-dim);font-size:12px;}
   .evt-side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding-top:1px;}
   .evt-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;}
   .evt-meta:empty{display:none;}
@@ -4133,8 +4133,8 @@
   }
   .note{font-size:12px;color:var(--ink-soft);margin-top:5px;font-style:italic;overflow-wrap:anywhere;}
   .evt-desc, .evt-title, .evt-venue{overflow-wrap:anywhere;}
-  .src{font-size:11px;color:var(--ink-dim);font-style:italic;}
-  .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;}
+  .src{font-size:12px;color:var(--ink-dim);font-style:italic;}
+  .evt-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;}
   .evt-link:hover{color:var(--accent);}
   .evt-link::after{content:'→';}
   /* ~44px tap areas for the card-row controls; invisible, no layout or visual change. */
@@ -4166,15 +4166,15 @@
   .evt-editorial-also{font-family:var(--font-data);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-dim);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
   .evt-actions{display:flex;flex-wrap:wrap;align-items:center;row-gap:4px;column-gap:14px;margin-top:6px;}
   .evt-actions:empty{display:none;}
-  .evt-cal{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;}
+  .evt-cal{font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;}
   .evt-cal a{color:var(--ink-soft);text-decoration:none;}
   .evt-cal a:hover{color:var(--ink);}
   .evt-cal a + a::before{content:'· ';color:var(--ink-dim);}
-  .evt-share{border:none;background:none;padding:0;font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;}
+  .evt-share{border:none;background:none;padding:0;font-family:var(--font-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;}
   .evt-share:hover{color:var(--ink);}
   .evt-share:disabled{color:var(--accent);cursor:default;}
-  .evt-tag-clothing-optional{display:inline-block;font-family:var(--font-data);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);border-radius:0;padding:2px 7px;margin-top:6px;}
-  .evt-disclosure, .evt-ticket-status{font-family:var(--font-data);font-size:9.5px;letter-spacing:.04em;color:var(--ink-dim);margin-top:5px;}
+  .evt-tag-clothing-optional{display:inline-block;font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);border-radius:0;padding:2px 7px;margin-top:6px;}
+  .evt-disclosure, .evt-ticket-status{font-family:var(--font-data);font-size:12px;letter-spacing:.04em;color:var(--ink-dim);margin-top:5px;}
   /* Tablet and mobile: time and artwork down the left, then title, place and
      tags stacked, the arrow at the right. */
   @media (max-width:980px){
@@ -4200,8 +4200,8 @@
     .evt-side{padding-top:4px;}
     .evt-time .t-clock{font-size:20px;}
     .evt-time .t-mer{font-size:14px;}
-    .evt-time{font-size:10.5px;}
-    .evt-time small{font-size:9px;letter-spacing:0;line-height:1.25;}
+    .evt-time{font-size:12px;}
+    .evt-time small{font-size:11px;letter-spacing:0;line-height:1.25;}
     .evt-art{width:62px;height:46px;}
     .evt-art .evt-art-code{font-size:7px;left:5px;top:4px;}
     .evt-editorial-mention{display:flex;flex-wrap:wrap;gap:3px 7px;}
