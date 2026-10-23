@@ -133,7 +133,12 @@
   .btn-secondary{background:none;color:var(--ink);border:1px solid var(--line);}
   .btn-secondary:hover{background:var(--panel-hover);}
 
-  .evt-detail-desc{font-size:15.5px;color:var(--ink);white-space:pre-line;margin-bottom:24px;overflow-wrap:anywhere;}
+  .evt-detail-desc{font-size:16.5px;line-height:1.65;color:var(--ink);max-width:40em;margin-bottom:24px;overflow-wrap:anywhere;}
+  .evt-detail-desc p{margin:0 0 1em;}
+  .evt-detail-desc ul{margin:0 0 1em;padding-left:1.25em;}
+  .evt-detail-desc li{margin:0 0 .35em;}
+  .evt-detail-desc a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere;}
+  h2.evt-about-h{font-family:var(--font-display);font-stretch:62%;font-weight:900;font-size:18px;letter-spacing:.02em;text-transform:uppercase;margin:0 0 10px;}
   /* Content-nature descriptor, distinct from the italic editorial note
      below — a plain fact about the event, not a caveat. See
      migration_034_clothing_optional.sql. */
@@ -234,6 +239,7 @@
 <script src="/legal-snippets.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/event-links.js"></script>
+<script src="/description-format.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
@@ -879,8 +885,15 @@ function renderEvent(e){
   // ---- description / note / source ----
   if(e.description){
     const d = document.getElementById('evtDesc');
-    d.textContent = e.description;
-    d.style.display = 'block';
+    // Readable blocks from the stored text (description-format.js): source breaks, lists and lineups kept, links checked, never innerHTML.
+    const body = document.createElement('div');
+    if(DescriptionFormat.render(body, e.description, safeUrl)){
+      const h = document.createElement('h2');
+      h.className = 'evt-about-h';
+      h.textContent = 'About this event';
+      d.replaceChildren(h, body);
+      d.style.display = 'block';
+    }
   }
   if(e.clothingOptional){
     document.getElementById('evtClothingOptional').style.display = 'inline-block';
