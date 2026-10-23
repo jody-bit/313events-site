@@ -49,6 +49,8 @@ const ALLOWED = [
   "api/_lib/press-queue-filter.js",
   // Admin queue Stage 2 (owner decision 2026-10-16): read-side class for pending rows (Dearborn grouping).
   "api/_lib/pending-classifier.js",
+  // Nightlife rule (#177, owner decision 2026-10-19): classify-only helper, wired into GottaGacha, Eventbrite and Localist catch-all rows.
+  "api/_lib/nightlife-classifier.js", "api/_lib/localist-rows.js",
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
