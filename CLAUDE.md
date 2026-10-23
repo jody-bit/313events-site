@@ -9,6 +9,14 @@ GitHub (issues, PRs, labels) is the authoritative record of development
 status. This file documents durable structure and procedure; it is not a
 backlog and should not accumulate task-specific state.
 
+## Mission Control master prompt
+
+Cross-workstream coordination (authoritative records, owner-authorization
+gates, GO lifecycle, evidence tags, status ladder) is consolidated in
+`mission-control/MASTER-PROMPT.md` v1.0 in the Project shared folder (not
+in this repository). This file remains the repository engineering
+authority; the master prompt does not replace or relax anything here.
+
 ## The five workstreams
 
 Every PR and issue should carry one `workstream:*` label for its primary
