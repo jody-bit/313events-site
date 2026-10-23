@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js): sends only from the production hostnames, never from Preview, localhost or other hosts. -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  if (/^(www\.)?313\.events$/.test(location.hostname)) {
+    var gaTag = document.createElement('script');
+    gaTag.async = true;
+    gaTag.src = 'https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3';
+    document.head.appendChild(gaTag);
+    gtag('js', new Date());
+    gtag('config', 'G-1078BKN0M3');
+  }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">Venue — 313.events</title>
 <link rel="canonical" id="canonicalLink" href="https://313.events/venue.html">

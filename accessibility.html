@@ -91,13 +91,18 @@
   footer.site a:hover{color:var(--accent);}
   footer.site p{margin:0 0 8px;}
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3"></script>
+<!-- Google tag (gtag.js): sends only from the production hostnames, never from Preview, localhost or other hosts. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-1078BKN0M3');
+  if (/^(www\.)?313\.events$/.test(location.hostname)) {
+    var gaTag = document.createElement('script');
+    gaTag.async = true;
+    gaTag.src = 'https://www.googletagmanager.com/gtag/js?id=G-1078BKN0M3';
+    document.head.appendChild(gaTag);
+    gtag('js', new Date());
+    gtag('config', 'G-1078BKN0M3');
+  }
 </script>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-dates.js"></script>
