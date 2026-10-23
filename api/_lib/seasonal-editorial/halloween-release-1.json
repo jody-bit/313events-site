@@ -401,6 +401,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Fort Meigs ghost walk page listed Oct 16, 17, 23 and 24, 2026; the final night was Oct 24. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "haunted-waterville-tours": {
@@ -517,6 +527,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Port Huron Parks and Recreation page listed a single Halloween Stroll, Saturday Oct 24, 2026, 10 AM-12:30 PM; it has passed. Retained as a non-public record; underlying event records and source evidence are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+        "recordedAt": "2026-10-22",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "halloween-hunt-the-haunts": {
