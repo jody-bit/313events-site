@@ -414,13 +414,16 @@ function evaluateSources({ runs = [], events = [], vercelConfig = null, now = Da
       s.placeholderVenueRate = placeholder / publicUpcoming.length;
     }
 
-    // volume: latest fetched/written vs the median of the runs before it
-    if (done.length >= 3 && (done[0].outcome === "success" || done[0].outcome === "partial")) {
+    // volume: latest fetched/written vs the median of the runs before it.
+    // A second-pass "resume" run (cron-feeds ?resume=1, session_data.resume) only finishes what the first run did
+    // not reach, so its counts are small by design; it is left out of both sides of the comparison.
+    const volumeRuns = done.filter((r) => r.resume !== "true" && r.resume !== true);
+    if (volumeRuns.length >= 3 && (volumeRuns[0].outcome === "success" || volumeRuns[0].outcome === "partial")) {
       // baseline from completed runs only: a failed run's zero is not "normal volume"
-      const prior = done.slice(1).filter((r) => r.outcome === "success" || r.outcome === "partial").slice(0, 7);
+      const prior = volumeRuns.slice(1).filter((r) => r.outcome === "success" || r.outcome === "partial").slice(0, 7);
       const out = {};
       for (const field of ["records_fetched", "records_written"]) {
-        const cur = done[0][field];
+        const cur = volumeRuns[0][field];
         const base = median(prior.map((r) => r[field]));
         if (typeof cur !== "number" || base === null) continue;
         const delta = cur - base;

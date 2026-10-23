@@ -450,11 +450,11 @@ function run() {
     };
     function readOnPage(surface, url) {
       const page = PAGES[surface];
-      const sb = { URLSearchParams, document: dummyDocument(), console };
+      const sb = { URLSearchParams, document: dummyDocument(), console, Categories: require(`${REPO_DIR}/categories.js`) };
       vm.createContext(sb);
       vm.runInContext(FAKE_DATE(NOW), sb);
       vm.runInContext([
-        block(page.html, "CATS", "\\};"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
+        block(page.html, "CATS", "\\}\\);"), block(page.html, "LOCATIONS", "\\];"), block(page.html, "FEATURE_CHIPS", "\\];"),
         oneLineFn(page.html, "toISO"), fn(page.html, "getTodayISO"), fn(page.html, "getWeekendDates"),
         `var activeCats = new Set(Object.keys(CATS)), freeOnly = false, activeFeatures = new Set(), query = "", whenMode = null,
              originLocation = null, radiusMiles = null, cachedWeekendDates = [];
@@ -538,16 +538,17 @@ function run() {
   // =====================================================================
   {
     const canonical = D.categories.map((c) => [c.key, c.label]);
-    const evalIn = (src, expr) => { const sb = {}; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
+    // The pages build CATS from /categories.js, which they load in <head>; give the sandbox the same global.
+    const evalIn = (src, expr) => { const sb = { Categories: require(`${REPO_DIR}/categories.js`) }; vm.createContext(sb); vm.runInContext(src, sb); return vm.runInContext(expr, sb); };
     // Five pages still keep their own CATS object, submit.html a list. (The
     // homepage no longer has a copy: it builds CATS from Discovery.categories.)
     ["calendar.html", "map.html", "event-template.html", "radar.html", "venue-template.html"].forEach((f) => {
-      const cats = evalIn(block(read(f), "CATS", "\\};"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
+      const cats = evalIn(block(read(f), "CATS", "\\}\\);"), "Object.keys(CATS).map(function(k){ return [k, CATS[k].label]; })");
       assert.deepStrictEqual(plain(cats), canonical, `${f}: CATS keys, labels and order match discovery.js`);
     });
-    assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\];"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
+    assert.deepStrictEqual(plain(evalIn(block(read("submit.html"), "CATS", "\\}\\)\\);"), "CATS.map(function(c){ return [c.key, c.label]; })")), canonical, "submit.html: CATS matches discovery.js");
     // The homepage keeps only a COLOUR per category (presentation): exactly one for each canonical key, no extras.
-    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\};"), "Object.keys(CAT_COLORS)");
+    const homeColours = evalIn(block(read("index.html"), "CAT_COLORS", "\\}\\);"), "Object.keys(CAT_COLORS)");
     assert.deepStrictEqual(plain(homeColours), canonical.map(([k]) => k), "index.html: a colour for every category, in the canonical order, and for nothing else");
     // admin.html's editorial form lists [key, label] pairs. Same keys, same
     // order. ONE label already differs there today — 'fest' reads

@@ -19,6 +19,8 @@ const PROTECTED = /^(index\.html|admin\.html|api\/|assets\/guides\/|supabase\/mi
 const ALLOWED = [
   // Platform reliability (owner GO 2026-10-20): source-health evaluator (abandoned-run visibility, missed-schedule detection).
   "api/_lib/source-health.js",
+  // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
+  "api/_lib/control-tower.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
