@@ -38,9 +38,10 @@ only("categories reference table", categoryRows.map((r) => r.slug), taxonomy);
 // ---- 2. every place the app lets a person or an editor choose a category ---
 function keys(src, from, until) { const i = src.indexOf(from); assert(i >= 0, "marker not found: " + from); return [...src.slice(i, i + until).matchAll(/key:\s*"(\w+)"/g)].map((m) => m[1]); }
 const submit = read("submit.html");
-const catsStart = submit.indexOf("const CATS = [");
-const catsBlock = submit.slice(catsStart, submit.indexOf("];", catsStart));
-only("submit.html Submit/feed category list", [...catsBlock.matchAll(/\{key:"(\w+)"/g)].map((m) => m[1]), taxonomy);
+// Submit builds its list from /categories.js (the one table of keys, labels and colours), so check the table itself.
+const Categories = require("../categories.js");
+assert(/const CATS = Categories\.list\.map\(/.test(submit), "submit.html must build CATS from /categories.js");
+only("categories.js (Submit/feed category list)", Categories.list.map((c) => c.key), taxonomy);
 for (const f of ["api/submit.js", "api/submit-feed.js", "api/admin-editorial.js"]) {
   const m = noComments(read(f).replace(/\/\/[^\n]*/g, "")).match(/VALID_CATEGORIES\s*=\s*new Set\(\[([\s\S]*?)\]\)/);
   assert(m, f + ": VALID_CATEGORIES not found");
@@ -57,8 +58,8 @@ only("discovery.js categories", keys(disc, "var DEFAULT_CATEGORIES", disc.indexO
 
 // Labels the visitor sees match the reference table.
 const labels = new Map(categoryRows.map((r) => [r.slug, r.label]));
-for (const m of catsBlock.matchAll(/\{key:"(\w+)",\s*label:"([^"]+)"/g))
-  assert.strictEqual(m[2], labels.get(m[1]), `submit.html label for "${m[1]}" differs from categories table`);
+for (const c of Categories.list)
+  assert.strictEqual(c.label, labels.get(c.key), `categories.js label for "${c.key}" differs from categories table`);
 
 // ---- 3. categories the connectors can emit ---------------------------------
 const emitted = new Map(); // value -> files
