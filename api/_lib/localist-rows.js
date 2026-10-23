@@ -363,6 +363,16 @@ function cleanString(v) {
   return typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
+// description_text is plain text, but a URL pasted into it arrives HTML-escaped
+// (BGSU athletics links: "...calendar.aspx?game_id=25038&amp;sport_id=8"), which
+// shows "&amp;" to visitors and breaks the second query parameter. Decode only
+// the entities that escape ampersands, quotes and angle brackets, once.
+function decodeTextEntities(v) {
+  const s = cleanString(v);
+  if (!s) return s;
+  return s.replace(/&(amp|quot|apos|lt|gt|#39);/g, (m, n) => ({ amp: "&", quot: '"', apos: "'", lt: "<", gt: ">", "#39": "'" }[n]));
+}
+
 // "Kalamazoo, Mich." / "Bowling Green, Ohio, Stroh Center" / "Stroh Center,
 // Bowling Green, Ohio" -> { cityText, state, venue }. null unless one of the
 // comma-separated parts, other than the first, is a state.
@@ -576,7 +586,7 @@ function rowsForEvent({ event: e, instanceWrappers, place, tenant, windowStart, 
   const title = cleanString(e.title);
   const units = scheduleUnits(normalizeInstances(instanceWrappers));
   const category = categorize(e, categoryFromText);
-  const description = cleanString(e.description_text);
+  const description = decodeTextEntities(e.description_text);
   const rows = [];
   for (const unit of units) {
     const lastDay = unit.endDate || unit.startDate;

@@ -56,6 +56,8 @@ const ALLOWED = [
   // Package 1: these handlers export through withRunLog (truthful source_runs rows).
   "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-metrotimes.js", "api/cron-oldmiami.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-visitdetroit.js",
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.
+  // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
+  "api/_lib/localist-rows.js",
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
