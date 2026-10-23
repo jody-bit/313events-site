@@ -85,6 +85,18 @@ function run() {
   }
   console.log("PASS: arbitrary summer epoch reads UTC digits directly, with no DST-dependent branching");
 
+
+  // VisitDetroit's 23:59 end-of-day filler is never shown as an end time.
+  {
+    const { deriveDateTimeFields } = require("../api/cron-visitdetroit.js");
+    const mk = (sh, sm, eh, em) => ({ startDate: Date.UTC(2026, 10, 7, sh, sm, 0) / 1000, endDate: Date.UTC(2026, 10, 7, eh, em, 0) / 1000, isAllDay: false });
+    assert.strictEqual(deriveDateTimeFields(mk(19, 30, 23, 59)).timeDisplay, "7:30 PM", "a 23:59 end is filler: start only");
+    assert.strictEqual(deriveDateTimeFields(mk(19, 30, 22, 0)).timeDisplay, "7:30 PM \u2013 10:00 PM", "a published end is kept");
+    assert.strictEqual(deriveDateTimeFields(mk(19, 30, 23, 30)).timeDisplay, "7:30 PM \u2013 11:30 PM", "11:30 PM is a real end");
+    assert.strictEqual(deriveDateTimeFields(mk(23, 0, 23, 59)).timeDisplay, "11:00 PM", "late start with filler end");
+  }
+  console.log("PASS: VisitDetroit 23:59 filler end is dropped; real ends are kept");
+
   console.log("\ncron-visitdetroit-time-parsing.test.js: all assertions passed");
 }
 
