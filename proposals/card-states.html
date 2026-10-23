@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Event card states — Preview proposal</title>
+<style>
+  /* PREVIEW-ONLY PROPOSAL. Not linked from the site, noindex. Baseline CSS
+     below is copied from calendar.html unchanged; proposed rules are the
+     only new styling (.p-* classes). Nothing here is approved until Jody
+     reviews it. */
+  :root{--bg:#0A0A0A;--panel:#202020;--panel-alt:#161616;--panel-hover:#272727;--ink:#F2F0E8;--ink-soft:#A9AAA3;--ink-dim:#5c5d58;--line:#2c2c2c;--line-soft:#212121;--accent:#D7FF00;--on-accent:#0A0A0A;--radius:0px;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Archivo',-apple-system,sans-serif;line-height:1.4;}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px;}
+  h1{font-size:22px;margin:0 0 6px;} h2{font-size:16px;margin:28px 0 4px;text-transform:uppercase;letter-spacing:.04em;}
+  p.lead{color:var(--ink-soft);font-size:14px;max-width:70ch;margin:4px 0;}
+  .banner{border:1px solid var(--accent);padding:10px 12px;font-size:13px;margin:14px 0;}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;}
+  .pane{background:var(--panel);border:1px solid var(--line);padding:6px 16px;min-width:0;}
+  .pane>h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:8px 0 2px;}
+  .pane.prop>h3{color:var(--accent);}
+  .mobile{max-width:360px;} .mobile .pair{grid-template-columns:1fr;}
+  .why{font-size:12.5px;color:var(--ink-soft);margin:6px 0 0;max-width:80ch;}
+  .prov{font-size:11px;color:var(--ink-dim);font-style:italic;margin:2px 0 0;}
+  /* ---- baseline (unchanged from calendar.html) ---- */
+  .evt-row{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line-soft);align-items:flex-start;}
+  .evt-time{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);min-width:96px;max-width:132px;overflow-wrap:break-word;font-weight:700;padding-top:2px;}
+  .evt-main{flex:1;min-width:0;}
+  .evt-main-body{display:flex;gap:10px;align-items:flex-start;min-width:0;}
+  .evt-thumb{flex:0 0 auto;width:52px;height:52px;object-fit:cover;background:var(--panel-alt);}
+  .evt-text{min-width:0;flex:1 1 auto;overflow-wrap:anywhere;}
+  .evt-title{font-size:15px;font-weight:800;margin-bottom:2px;}
+  .evt-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.4;margin:3px 0;}
+  .evt-meta{font-size:12.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .tag{display:inline-flex;align-items:center;gap:4px;font-size:10.8px;font-weight:700;padding:2px 7px;border-radius:999px;color:#06210f;text-transform:uppercase;letter-spacing:.02em;}
+  .tag.free{background:#3fbf6a;} .tag.price{background:var(--panel-hover);color:var(--ink);}
+  .evt-link{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;display:inline-flex;gap:3px;margin-top:5px;}
+  .evt-link::after{content:'→';}
+  /* ---- proposed additions ---- */
+  .p-note{font-size:12px;color:var(--ink-soft);}                       /* neutral unknown-price text, not a pill */
+  .p-time-tba{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-soft);font-weight:400;font-style:italic;}
+  .p-badge{display:inline-flex;font-size:10.8px;font-weight:800;padding:2px 7px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--ink);color:var(--ink);}
+  .p-badge.sold{background:var(--ink);color:var(--bg);}                /* neutral ink, not accent: accent is reserved for state=live/selected */
+  .p-badge.cancel{border-style:dashed;color:var(--ink-soft);border-color:var(--ink-soft);}
+  .p-sold .evt-title{color:var(--ink);} .p-sold .evt-link{color:var(--ink-soft);}
+  .p-times{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .p-times a{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);border:1px solid var(--ink-dim);padding:4px 12px;text-decoration:none;min-height:44px;min-width:44px;justify-content:center;display:inline-flex;align-items:center;}
+  .p-times a:hover{border-color:var(--accent);}
+  .p-times a.sold{color:var(--ink-dim);text-decoration:line-through;}
+  .p-ph{flex:0 0 auto;width:52px;height:52px;background:var(--panel-alt);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.06em;color:var(--ink-dim);text-transform:uppercase;}
+  .p-run{font-size:12px;color:var(--ink-soft);}
+  @media (max-width:760px){.pair{grid-template-columns:1fr;}.evt-time{min-width:84px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Event card states — proposal</h1>
+  <p class="lead">Left: the approved list card exactly as shipped today (CSS copied from calendar.html, no changes). Right: the proposed state. Header, colors, type, spacing and row structure are unchanged; only the content of states that today are blank, misleading or missing changes.</p>
+  <div class="banner">Preview-only. Not linked from the site. Owner decisions applied Oct 20; awaiting visual acceptance. Record titles and ids come from the Quality Recovery Board; venue, time and price shown are as the board records them, and anything the board does not state is left out or labeled illustrative below.</div>
+
+  <h2>1 · SOLD OUT</h2>
+  <div class="pair">
+    <div class="pane"><h3>Today</h3>
+      <div class="evt-row"><div class="evt-time">Time as stored</div><div class="evt-main"><div class="evt-title">Branson Holiday Tour — SOLD OUT (WAIT LIST)</div><div class="evt-meta"><span>Royal Oak</span></div><a class="evt-link" href="#">Tickets &amp; info</a></div></div>
+    </div>
+    <div class="pane prop"><h3>Proposed</h3>
+      <div class="evt-row p-sold"><div class="evt-time"><span class="p-time-tba">Time not listed</span></div><div class="evt-main"><div class="evt-title">Branson Holiday Tour</div><div class="evt-meta"><span class="p-badge sold">Sold out</span><span>Royal Oak</span></div><a class="evt-link" href="#">Waitlist &amp; info</a></div></div>
+      <div class="evt-row p-sold"><div class="evt-time"><span class="p-time-tba">Time not listed</span></div><div class="evt-main"><div class="evt-title">Layout sample: sold out, no waitlist confirmed</div><div class="evt-meta"><span class="p-badge sold">Sold out</span><span>Venue name</span></div><a class="evt-link" href="#">Event info</a></div></div>
+    </div>
+  </div>
+  <p class="why">Board Q6: Royal Oak carries the state inside the title (20d63874 and three more). Proposed: badge from the stored ticket status, title cleaned, link text changes to match. Badge uses ink, not chartreuse. <b>Owner decision (approved):</b> the first row uses &ldquo;Waitlist &amp; info&rdquo; only when a waitlist is verified in the source; the second row shows the default, &ldquo;Event info&rdquo;, whenever no waitlist is confirmed. A waitlist is never implied. Theatre Bizarre (owner-confirmed sold out) would use the same state once its record exists. A cancelled/postponed variant (dashed outline) is included in section 4 for review; hiding cancelled events from upcoming lists is a separate owner decision.</p>
+
+  <h2>2 · Unknown price and unknown time</h2>
+  <div class="pair">
+    <div class="pane"><h3>Today</h3>
+      <div class="evt-row"><div class="evt-time">Evening</div><div class="evt-main"><div class="evt-title">Lucky Rabbit</div><div class="evt-meta"><span>Resident Advisor listing</span></div><a class="evt-link" href="#">Tickets &amp; info</a></div></div>
+      <div class="evt-row"><div class="evt-time"></div><div class="evt-main"><div class="evt-title">HOT ASH CIGAR &amp; PIPE SOCIAL</div><div class="evt-meta"><span>HALO Detroit</span></div><a class="evt-link" href="#">Tickets &amp; info</a></div></div>
+    </div>
+    <div class="pane prop"><h3>Proposed</h3>
+      <div class="evt-row"><div class="evt-time"><span class="p-time-tba">Time not listed</span></div><div class="evt-main"><div class="evt-title">Lucky Rabbit</div><div class="evt-meta"><span class="p-note">Price not listed</span><span>Resident Advisor listing</span></div><a class="evt-link" href="#">Tickets &amp; info</a></div></div>
+      <div class="evt-row"><div class="evt-time"><span class="p-time-tba">Time not listed</span></div><div class="evt-main"><div class="evt-title">Hot Ash Cigar &amp; Pipe Social</div><div class="evt-meta"><span class="p-note">Price not listed</span><span>HALO Detroit</span></div><a class="evt-link" href="#">Tickets &amp; info</a></div></div>
+    </div>
+  </div>
+  <p class="why">Board Q2/Q5/Q9. "Evening" is a placeholder, not a time; a blank time column looks broken. Proposed: plain "Time not listed" and "Price not listed" in muted text (never a pill, never "$0" or "Free"), so a visitor knows to check the link. The second record also shows the display-only title-case normalizer (stored title untouched, acronym allow-list). Real times and prices replace these automatically once the data has them. <b>Owner decision (approved):</b> muted text, not pills; &ldquo;Evening&rdquo;, &ldquo;$0&rdquo; and &ldquo;Free&rdquo; are never invented. Title-case is display-only (stored source title untouched; acronym and proper-name exceptions kept; see the second row in section 2).</p>
+
+  <h2>3 · Grouped showtimes</h2>
+  <div class="pair">
+    <div class="pane"><h3>Today (one row per showtime)</h3>
+      <div class="evt-row"><div class="evt-time">2:00 PM</div><div class="evt-main"><div class="evt-title">Layout sample: family matinee series</div><div class="evt-meta"><span class="tag price">$12+</span><span>Venue name</span></div></div></div>
+      <div class="evt-row"><div class="evt-time">5:00 PM</div><div class="evt-main"><div class="evt-title">Layout sample: family matinee series</div><div class="evt-meta"><span class="tag price">$12+</span><span>Venue name</span></div></div></div>
+      <div class="evt-row"><div class="evt-time">8:00 PM</div><div class="evt-main"><div class="evt-title">Layout sample: family matinee series</div><div class="evt-meta"><span class="tag price">$12+</span><span>Venue name</span></div></div></div>
+    </div>
+    <div class="pane prop"><h3>Proposed (one card, time chips)</h3>
+      <div class="evt-row"><div class="evt-time">3 showtimes</div><div class="evt-main"><div class="evt-title">Layout sample: family matinee series</div><div class="evt-meta"><span class="tag price">$12+</span><span>Venue name</span></div>
+        <div class="p-times"><a href="#">2:00 PM</a><a href="#">5:00 PM</a><a class="sold" href="#" aria-label="8:00 PM sold out">8:00 PM</a></div></div></div>
+      <div class="evt-row"><div class="evt-time">2:00 PM</div><div class="evt-main"><div class="evt-title">Layout sample: same venue and date, different admission</div><div class="evt-meta"><span class="tag price">$12+</span><span class="p-note">Sensory-friendly performance</span><span>Venue name</span></div></div></div>
+    </div>
+  </div>
+  <p class="why">Illustrative content: no single live multi-showtime record was readable from this environment, so this shows layout only. <b>Owner decision (change approved):</b> chips are 44px minimum touch targets. Grouping applies only to genuinely identical performances: same title, same venue, same date. Distinct performance identities, ticket destinations and admission conditions are preserved, so anything that differs in ticket link, admission type (for example sensory-friendly, VIP, or a different ticket tier) or performance name stays its own card, as in the last example below. Each chip keeps its own ticket link; a sold-out showtime is struck through and announced to screen readers. The day panel and event page are unchanged. Implementation still needs its own GO.</p>
+
+  <h2>4 · No image, continuous run, cancelled</h2>
+  <div class="pair">
+    <div class="pane"><h3>Today</h3>
+      <div class="evt-row"><div class="evt-time">All day</div><div class="evt-main"><div class="evt-main-body"><div class="evt-text"><div class="evt-title">The World of Anna Sui</div><div class="evt-meta"><span>Cranbrook Art Museum</span></div></div></div></div></div>
+      <div class="evt-row"><div class="evt-time">Oct 31</div><div class="evt-main"><div class="evt-main-body"><div class="evt-text"><div class="evt-title">Samhain XXVI</div><div class="evt-meta"><span>Tangent Gallery</span></div></div></div></div></div>
+    </div>
+    <div class="pane prop"><h3>Proposed</h3>
+      <div class="evt-row"><div class="evt-time">Oct 21 – Feb 28</div><div class="evt-main"><div class="evt-main-body"><div class="p-ph" aria-hidden="true">Exhibit</div><div class="evt-text"><div class="evt-title">The World of Anna Sui</div><div class="evt-meta"><span class="p-run">Exhibition · see museum hours</span><span>Cranbrook Art Museum</span></div></div></div></div></div>
+      <div class="evt-row"><div class="evt-time"><span class="p-time-tba">Time not listed</span></div><div class="evt-main"><div class="evt-main-body"><div class="p-ph" aria-hidden="true">Event</div><div class="evt-text"><div class="evt-title">Samhain XXVI</div><div class="evt-meta"><span class="p-note">Price not listed</span><span>Tangent Gallery</span></div></div></div></div></div>
+      <div class="evt-row"><div class="evt-time">Oct 24</div><div class="evt-main"><div class="evt-title">Layout sample: cancelled event</div><div class="evt-meta"><span class="p-badge cancel">Cancelled</span><span>Venue name</span></div></div></div>
+    </div>
+  </div>
+  <p class="why">Board Q1/Q11. A designed 52px placeholder (same footprint as the thumbnail, so rows align whether or not an image exists) instead of rows that look unfinished; continuous exhibits show their run, not a daily time. Anna Sui's hours are descriptive museum hours, so no daily schedule is implied. <b>Owner decision (approved with conditions):</b> no-image rows use the designed same-size placeholder from the approved design system, never generic or fabricated photography. Continuous runs show only a verified exhibition run and never imply daily hours; &ldquo;Exhibition &middot; see museum hours&rdquo; is used while operating hours are unverified. A cancelled event shows &ldquo;Cancelled&rdquo; with its original date, and cancellation history is never silently erased. Whether cancelled events appear in upcoming lists is a separate owner decision and is not part of this proposal. The cancelled row is a layout sample only.</p>
+
+  <h2>Mobile (360 px)</h2>
+  <div class="mobile">
+    <div class="pair">
+      <div class="pane"><h3>Today</h3>
+        <div class="evt-row"><div class="evt-time">Evening</div><div class="evt-main"><div class="evt-title">Branson Holiday Tour — SOLD OUT (WAIT LIST)</div><div class="evt-meta"><span>Royal Oak</span></div></div></div>
+      </div>
+      <div class="pane prop"><h3>Proposed</h3>
+        <div class="evt-row p-sold"><div class="evt-time"><span class="p-time-tba">Time not listed</span></div><div class="evt-main"><div class="evt-title">Branson Holiday Tour</div><div class="evt-meta"><span class="p-badge sold">Sold out</span><span class="p-note">Price not listed</span><span>Royal Oak</span></div></div></div>
+        <div class="evt-row"><div class="evt-time">3 showtimes</div><div class="evt-main"><div class="evt-title">Layout sample: family matinee series</div><div class="p-times"><a href="#">2:00 PM</a><a href="#">5:00 PM</a><a class="sold" href="#" aria-label="8:00 PM sold out">8:00 PM</a></div></div></div>
+      </div>
+    </div>
+  </div>
+  <p class="why">Chips wrap; each is at least 44px by 44px, per the owner decision.</p>
+
+  <p class="prov">Source of examples: Quality Recovery Board 2026-10-19 (Q1, Q2, Q5, Q6, Q9, Q11). Layout samples are labeled. Proposal only. Owner decisions recorded Oct 20, 2026; no implementation GO and no merge GO.</p>
+</div>
+</body>
+</html>
