@@ -48,6 +48,48 @@ function decideSourceDescription({ stored, storedSource, incoming, title }) {
   return { write, reason, incomingClass, storedClass };
 }
 
+// ---- Ingestion precedence for connectors that never overwrote stored text (Ticketmaster) --------------------------
+// Owner direction 2026-10-24: a generic research-written artist biography must not outrank a source's own event-specific
+// text; explicitly approved copy stays protected; stronger stored facts are preserved; conflicts go to review.
+//
+// A stored description counts as "research_generic" when its source is unknown (null) or tagged research_unsourced (a tag
+// that needs a schema change and is inert until it exists) AND it reads like a generic biography: a short text that says
+// what the artist is known for and carries no date, price or time. Anything else with a null source is kept as written.
+const GENERIC_BIO_RE = /\b(known for|best known|celebrated|renowned|legendary|pioneering|veteran|long-running|fast-rising|grammy-winning)\b/i;
+const CONCRETE_FACT_RE = /(\$\s?\d|\b\d{1,2}(:\d{2})?\s?(a|p)\.?m\b|\b(doors?|support(ed|ing)?|special guests?|opening act|rescheduled|postponed|vip|package|sold out|presale|on sale)\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}\b|\b\d{1,2}\/\d{1,2}\b)/i;
+const GENERIC_BIO_MAX_CHARS = 260;
+
+function isGenericBiography(text) {
+  const d = typeof text === "string" ? text.trim() : "";
+  return d.length > 0 && d.length < GENERIC_BIO_MAX_CHARS && GENERIC_BIO_RE.test(d) && !CONCRETE_FACT_RE.test(d);
+}
+
+// -> { action: "keep" | "replace" | "review", reason }
+// stored/storedSource: what the row holds now. incoming: the source's own event text (e.g. Ticketmaster `info`).
+function decideEventSpecificDescription({ stored, storedSource, incoming, title }) {
+  const inc = typeof incoming === "string" ? incoming.trim() : "";
+  const old = typeof stored === "string" ? stored.trim() : "";
+  if (!inc) return { action: "keep", reason: "incoming_blank_never_replaces" };
+  if (descriptionQuality(inc, title).ok !== true) return { action: "keep", reason: "incoming_not_usable" };
+  if (!old) return { action: "replace", reason: "fill_blank" };
+  if (storedSource === "manual") return { action: "keep", reason: "manual_protected" };
+  if (storedSource === "authoritative") {
+    // two source texts: only a changed source text is a conflict worth a person's eyes
+    return old === inc ? { action: "keep", reason: "unchanged" } : { action: "keep", reason: "authoritative_stored" };
+  }
+  const researchTag = storedSource === "research_unsourced";
+  const unknown = storedSource === null || storedSource === undefined || storedSource === "";
+  const generated = storedSource === "generated";
+  const replaceable = researchTag || generated || (unknown && (isGenericBiography(old) || !descriptionQuality(old, title).ok));
+  if (!replaceable) return { action: "keep", reason: "stored_text_preserved" };
+  // stronger facts: if the stored text carries a concrete fact the source text lacks, a person decides
+  const storedFacts = old.match(new RegExp(CONCRETE_FACT_RE.source, "gi")) || [];
+  const lost = storedFacts.filter((f) => !inc.toLowerCase().includes(f.toLowerCase()));
+  if (lost.length) return { action: "review", reason: "stored_text_has_facts_the_source_lacks: " + lost.slice(0, 3).join(", ") };
+  if (inc.length < old.length && !(researchTag || generated || isGenericBiography(old))) return { action: "keep", reason: "never_replace_with_shorter" };
+  return { action: "replace", reason: researchTag ? "research_unsourced_replaced_by_source" : generated ? "generated_replaced_by_source" : "generic_biography_replaced_by_source" };
+}
+
 // Quality classes the nightly repair may replace with factual generated copy.
 // truncated / unrelated_to_title are deliberately excluded: they may carry real
 // information (or belong to an editor), so they stay flagged, not rewritten.
@@ -89,4 +131,4 @@ function repairVerdict(event) {
   return { repairable: REPAIRABLE.has(q) && REPAIR_SOURCES.has(event.source), quality: q };
 }
 
-module.exports = { RANK, REPAIRABLE, REPAIR_SOURCES, CIVICPLUS_FEED_SOURCES, classifyStored, classifyIncoming, decideSourceDescription, repairVerdict };
+module.exports = { isGenericBiography, decideEventSpecificDescription, GENERIC_BIO_MAX_CHARS, RANK, REPAIRABLE, REPAIR_SOURCES, CIVICPLUS_FEED_SOURCES, classifyStored, classifyIncoming, decideSourceDescription, repairVerdict };
