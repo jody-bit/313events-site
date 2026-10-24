@@ -56,8 +56,11 @@ PGHOST="${PGHOST:-}"
 if [ -z "$PGHOST" ]; then
   read -r -p "Session pooler host (dashboard > Connect), e.g. aws-0-us-west-2.pooler.supabase.com: " PGHOST </dev/tty
 fi
-export PGHOST PGPORT=5432 PGUSER="postgres.$PROD_REF" PGDATABASE=postgres PGSSLMODE=require
-secret PGPASSWORD 313events-backup-db-password "Production database password (hidden)"
+# PGUSER may be set to a dedicated read-only role, e.g. PGUSER=backup_reader.$PROD_REF, so the postgres password is never needed.
+PGUSER="${PGUSER:-postgres.$PROD_REF}"
+case "$PGUSER" in *".$PROD_REF") ;; *) echo "PGUSER must end with .$PROD_REF (the shared-pooler tenant suffix)" >&2; exit 1;; esac
+export PGHOST PGPORT=5432 PGUSER PGDATABASE=postgres PGSSLMODE=require
+secret PGPASSWORD 313events-backup-db-password "Password for database user $PGUSER (hidden)"
 secret SUPABASE_SERVICE_ROLE_KEY 313events-backup-storage-key "Production service-role key, used only for Storage GET (hidden)"
 export PGPASSWORD SUPABASE_URL AGE_RECIPIENT SUPABASE_SERVICE_ROLE_KEY
 export BACKUP_DRY_RUN=1 BACKUP_DIR="$OUT"     # local only: nothing is uploaded
