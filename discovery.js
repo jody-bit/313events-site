@@ -534,7 +534,8 @@
         minutes: clock.minutes,
         defaultWhen: (dw && dw !== "dates" && WHEN_BY_KEY.has(dw)) ? dw : "all",
         coverage: ctx.coverage || null,
-        includePast: ctx.includePast === true
+        includePast: ctx.includePast === true,
+        includeUnplaced: ctx.includeUnplaced === true
       };
     }
 
@@ -889,11 +890,11 @@
       return sharedSearch().matches(e, q, { categoryLabel: node ? node.label : "" });
     }
 
-    function matchWhere(e, where, skip) {
+    function matchWhere(e, where, skip, c) {
       if (skip !== "neighborhood" && where.neighborhood && e.neighborhood !== where.neighborhood) return false;
       if (skip === "place" || where.radius === null) return true;
       var city = cityOf(e);
-      if (!city) return false;              // cannot be placed: never guessed at
+      if (!city) return !!(c && c.includeUnplaced); // cannot be placed: never guessed at; shown only when the visitor asks ("Show them")
       if (!cityInOrbit(city)) return false; // every radius stays inside the Orbit
       if (where.radius === "orbit") return true;
       var origin = where.here || PLACE_BY_NAME.get(String(where.place).toLowerCase());
@@ -947,7 +948,7 @@
 
     function test(e, s, c, skip) {
       if (!e || isBlocked(e)) return false;
-      return matchWhat(e, s.what, c, skip) && matchSearch(e, s.q) && matchWhere(e, s.where, skip) && matchWhen(e, s, c);
+      return matchWhat(e, s.what, c, skip) && matchSearch(e, s.q) && matchWhere(e, s.where, skip, c) && matchWhen(e, s, c);
     }
 
     function matches(event, state, ctx) { return test(event, normalize(state), resolveCtx(ctx)); }

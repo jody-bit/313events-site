@@ -852,7 +852,7 @@ function getWeekendDates(){
 // the entire point of this page existing. Unlike calendar.html this page
 // has no month to browse, so it's always evaluated against the live
 // EVENTS set as a whole, not one day/list slice at a time.
-function matchesFilters(e){
+function matchesFilters(e, skipPlace){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
@@ -889,7 +889,11 @@ function matchesFilters(e){
     // now means 75 miles from Detroit's BORDER like the homepage (it was the city centre). A
     // city that cannot be placed is never guessed: it is left out of an active place filter
     // and counted by PlaceEligibility.partition() rather than lost silently.
-    if(!PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).eligible) return false;
+    if(!skipPlace){
+      const at = PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles);
+      // "Show them" lets events with a location we haven't placed through; a placed city outside the radius stays out.
+      if(!at.eligible && !(showUnplaced && at.status === 'unplaced')) return false;
+    }
   }
   return true;
 }
@@ -992,6 +996,39 @@ function clearAllFilters(){
   render();
 }
 
+// Events whose city cannot be placed are left out of a place filter (never guessed at). The line below says how many,
+// and "Show them" lets them through. Same wording as the homepage.
+let showUnplaced = false;
+function unplacedCount(){
+  if(!originLocation || radiusMiles === null) return 0;
+  const seen = new Set();
+  let n = 0;
+  EVENTS.forEach(e=>{
+    if(e.id != null){ if(seen.has(e.id)) return; seen.add(e.id); }
+    if(matchesFilters(e, true) && PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).status === 'unplaced') n++;
+  });
+  return n;
+}
+function renderUnplacedNote(tray){
+  const m = unplacedCount();
+  if(!m) return;
+  const note = document.createElement('span');
+  note.className = 'af-label';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'af-clear';
+  if(showUnplaced){
+    note.textContent = `Including ${m.toLocaleString('en-US')} with a location we haven't placed yet.`;
+    btn.textContent = 'Hide them';
+  } else {
+    note.textContent = `${m.toLocaleString('en-US')} more ${m === 1 ? 'has a location' : 'have a location'} we haven't placed yet.`;
+    btn.textContent = 'Show them';
+  }
+  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); };
+  tray.appendChild(note);
+  tray.appendChild(btn);
+}
+
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
   const chips = [];
@@ -1062,6 +1099,7 @@ function renderActiveFilters(){
   clearAll.textContent = 'Clear all';
   clearAll.onclick = ()=>{ clearAllFilters(); };
   tray.appendChild(clearAll);
+  renderUnplacedNote(tray);
 }
 
 function escapeHtml(str) {

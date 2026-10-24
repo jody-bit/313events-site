@@ -5054,7 +5054,22 @@ function discoveryCtx(){
     now: new Date(),
     defaultWhen: 'all',
     coverage: editorialByEvent,
+    includeUnplaced: showUnplaced,
   };
+}
+// Events whose city is not in the city table are left out once a place or
+// radius is chosen (never guessed at). The visitor can ask to see them.
+let showUnplaced = false;
+function toggleUnplaced(on){ showUnplaced = !!on; renderList(); }
+function unplacedNoteHtml(){
+  if(state.where.radius === null) return '';
+  const base = Object.assign({}, discoveryCtx(), {includeUnplaced: false});
+  const m = Discovery.facets(EVENTS, state, base, 'placement').get('unplaced') || 0;
+  if(!m) return '';
+  const n = m.toLocaleString('en-US');
+  return showUnplaced
+    ? `. <span class="unplaced-note">Including ${n} with a location we haven't placed yet.</span> <button type="button" class="es-action" onclick="toggleUnplaced(false)">Hide them</button>`
+    : `. <span class="unplaced-note">${n} more ${m===1?'has a location':'have a location'} we haven't placed yet.</span> <button type="button" class="es-action" onclick="toggleUnplaced(true)">Show them</button>`;
 }
 // The site's current + upcoming inventory, whatever the visitor has
 // filtered: used by the cards that are meant to be a constant pulse of the
@@ -6205,7 +6220,7 @@ function renderList(){
   const headHtml = (countLine) => `<div class="stream-head"><div class="sec-head"><h2 class="sec-title">What's Happening</h2>${countLine}<a class="sec-link" href="${escapeHtml(calHref)}">View full calendar &rarr;</a></div>${dayStripHtml()}</div>`;
 
   if(!rows.length){
-    first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+    first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}${unplacedNoteHtml()}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
     more.innerHTML = '';
     more.style.display = 'none';
     return;
@@ -6219,7 +6234,7 @@ function renderList(){
 
   const filtered = Discovery.describe(state).length > 0;
   const head = (meta.countLabel || filtered)
-    ? headHtml(`<p class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`)
+    ? headHtml(`<p class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}${unplacedNoteHtml()}</p>`)
     : headHtml(`<p class="sec-sub">${total.toLocaleString('en-US')} current + upcoming event${total===1?'':'s'}, in date order.</p>`);
 
   const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
