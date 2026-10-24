@@ -92,19 +92,23 @@ console.log("PASS: sourced Phase 2 cities place only with jurisdiction evidence,
 for (const [city, source] of [
   ["2810 Russell St.", "Eastern Market Partnership"], ["West", "Windsor Symphony Orchestra"], ["October 29", "Macomb Township Events"],
   ["Tech   Mount Clemens", "x"], ["Highland", "VisitDetroit"], ["Belle River", "Tourism Windsor Essex Pelee Island"],
-  ["Dryden", "Avenue Ticketing"], ["Dresden", "x"], ["Warren, OH", "x"], ["Troy, NY", "x"], ["Mtn View", "x"]
+  ["Dresden", "x"], ["Warren, OH", "x"], ["Troy, NY", "x"], ["Mtn View", "x"]
 ]) allSame(city, source, false);
-assert.strictEqual(PE.locate(ev("Dryden", "x"), mapLookup).reason, "not-in-table");
+assert.strictEqual(PE.locate(ev("Dresden", "x"), mapLookup).reason, "not-in-table");
+assert.strictEqual(PE.locate(ev("Dryden", "x"), mapLookup).reason, "source-not-evidence");
 assert.strictEqual(PE.locate(ev("Canton", "Ticketmaster"), mapLookup).reason, "source-not-evidence");
 console.log("PASS: addresses, dates, typos, other-state names and unsourced places stay unplaced (never guessed)");
 
-// Dryden becomes eligible only when a sourced coordinate row exists (EI/Platform dependency);
-// Dryden Township is under 75 miles from Detroit's border, so the Orbit rule keeps it.
-const drydenRow = { name: "Dryden", type: "city", region: "Michigan", lat: 43.43, lng: -83.12, sources: ["avenue ticketing"] };
-const withDryden = PE.buildLookup(mapCities, P2.concat([drydenRow]));
-assert.strictEqual(PE.withinPlace(ev("Dryden", "Avenue Ticketing"), withDryden, detroit, "orbit").eligible, true);
-assert.strictEqual(PE.withinPlace(ev("Dryden", "Some Other Feed"), withDryden, detroit, "orbit").eligible, false);
-console.log("PASS: a sourced Dryden row would make Dryden events Orbit-eligible (test coordinate only; production row needs EI's Census value)");
+// Dryden, Michigan (Census TIGERweb village point, added to Phase 2 on 2026-10-24) is eligible:
+// ~34 mi from Detroit's border. Only for a feed that is jurisdiction evidence, and never as Dryden, Ontario.
+allSame("Dryden", "Manual", true);
+allSame("Dryden", "Avenue Ticketing", true);
+allSame("Dryden, MI", "anything", true);
+allSame("Dryden, Michigan", "anything", true);
+allSame("Dryden", "Some Other Feed", false);
+allSame("Dryden, ON", "Manual", false);
+allSame("Dresden", "Manual", false);
+console.log("PASS: Dryden, MI is Orbit-eligible on every surface (listed feeds or explicit state); Dryden, ON and Dresden are not");
 
 // ---- 4. the Orbit is measured from the border, not the centre ----
 const lansing = homeCities.find((c) => c.name === "Lansing");
