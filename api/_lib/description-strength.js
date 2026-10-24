@@ -55,18 +55,29 @@ function decideSourceDescription({ stored, storedSource, incoming, title }) {
 // A stored description counts as "research_generic" when its source is unknown (null) or tagged research_unsourced (a tag
 // that needs a schema change and is inert until it exists) AND it reads like a generic biography: a short text that says
 // what the artist is known for and carries no date, price or time. Anything else with a null source is kept as written.
-const GENERIC_BIO_RE = /\b(known for|best known|celebrated|renowned|legendary|pioneering|veteran|long-running|fast-rising|grammy-winning)\b/i;
+const GENERIC_BIO_RE = /\b(known for|best known|celebrated|renowned|legendary|pioneering|veterans?|long-running|fast-rising|grammy-winning)\b/i;
 // Hard facts: always a concrete fact. A date fraction must be a real month/day, so a tour name like "80/65" is not one.
 const HARD_FACT_RE = /(\$\s?\d|\b\d{1,2}(:\d{2})?\s?(a|p)\.?m\b|\b(doors?|rescheduled|postponed|vip|sold out|presale|on sale)\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}\b|\b(1[0-2]|0?[1-9])\/(3[01]|[12]\d|0?[1-9])\b)/i;
 // Soft facts: a stored-only fact only when the title and the source text do not already say it (a TM title like
 // "X with support from Y" or "ticket-and-hotel package" already carries them).
 const SOFT_FACT_RE = /\b(support(ed|ing)?|special guests?|opening act|package)\b/i;
 const SOFT_FACT_G = new RegExp(SOFT_FACT_RE.source, "gi");
+// "support from Rain City Drive", "special guest Bello Nock": the named act decides, not the word.
+const SUPPORT_NAME_RE = /\b(?:support(?:ed|ing)?|special guests?|opening act)\b(?:\s+(?:from|by|with|of))?\s+((?:[A-Z][\w'’.&-]*\s?){1,4})/g;
 const CONCRETE_FACT_RE = new RegExp(HARD_FACT_RE.source + "|" + SOFT_FACT_RE.source, "i");
 function storedOnlyFacts(text, ...others) {
   const hard = text.match(new RegExp(HARD_FACT_RE.source, "gi")) || [];
   const known = others.filter(Boolean).join(" ").toLowerCase();
-  const soft = (text.match(SOFT_FACT_G) || []).filter((f) => !known.includes(f.toLowerCase().replace(/(ed|ing)$/, "")));
+  const names = [...text.matchAll(SUPPORT_NAME_RE)].map((m) => ({ phrase: m[0].trim().toLowerCase(), first: m[1].trim().split(/\s+/)[0].toLowerCase() }));
+  const soft = [];
+  for (const f of text.match(SOFT_FACT_G) || []) {
+    const word = f.toLowerCase();
+    if (word === "package") { if (!/hotel|package|ticket/.test(known)) soft.push(f); continue; }
+    // a support / special-guest phrase is a stored-only fact only when the named act is absent from the title and source text
+    const n = names.find((x) => x.phrase.startsWith(word));
+    const said = n ? known.includes(n.first) : known.includes(word.replace(/(ed|ing)$/, ""));
+    if (!said) soft.push(f);
+  }
   return hard.concat(soft);
 }
 const GENERIC_BIO_MAX_CHARS = 260;

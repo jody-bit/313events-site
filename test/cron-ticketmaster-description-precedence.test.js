@@ -36,6 +36,11 @@ const ANDREA = "Andrea Gibson reads from their new collection for an evening of 
   assert.strictEqual(isGenericBiography("Known for hits, plays with support from Foo.", { title: "Band Live" }), false, "a support act the title does not name stays a stored fact");
   assert.strictEqual(isGenericBiography("Legendary singer on her 80/65 Tour."), true, "80/65 is a tour name, not a date");
   assert.strictEqual(isGenericBiography("Legendary singer, doors at 7."), false);
+  assert.strictEqual(isGenericBiography("Death metal veterans best known for their riffs, with support from Soul Glo.", { title: "Chat Pile w/ Soul Glo" }), true, "named support act in the title");
+  assert.strictEqual(isGenericBiography("Legendary daredevil with special guest Bello Nock.", { title: "Ringling: Bello Nock and friends" }), true);
+  assert.strictEqual(isGenericBiography("Known for hits, with support from Zed Quartet.", { title: "Band Live" }), false, "support act the title does not name");
+  assert.strictEqual(isGenericBiography("Country star known for radio hits, with a hotel package.", { title: "Lee Brice", incoming: "Includes a hotel stay." }), true);
+  assert.strictEqual(isGenericBiography("Country star known for radio hits, with a hotel package.", { title: "Lee Brice" }), false);
 
   // decisions
   assert.strictEqual(decide({ stored: BIO, storedSource: null, incoming: INFO, title: "Vince Staples" }).action, "replace");
