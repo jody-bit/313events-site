@@ -1110,7 +1110,7 @@ function evtRowHtml(e){
       <div class="evt-main">
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
-          ${Categories.tagHtml(e.cat, {fill:'pill'})}
+          ${Categories.tagHtml(e.cat)}
           ${priceTag(e)}
           <span>${EventDates.scheduleState(e) === 'unverified' ? 'Dates not confirmed' : new Date(e.date+"T12:00:00").toLocaleDateString('en-US',{month:'short', day:'numeric'})}</span>
           ${sharedPointMunicipality(e)?`<span>${escapeHtml(sharedPointMunicipality(e))}</span>`:''}
