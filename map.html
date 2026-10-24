@@ -1009,22 +1009,31 @@ function unplacedCount(){
   });
   return n;
 }
+let unplacedPlaceKey = '';
+// A different place or radius starts again with them hidden. Runs at the start of render(), before any filtering.
+function syncUnplacedKey(){
+  const key = (originLocation && radiusMiles !== null) ? originLocation.name + '|' + radiusMiles : '';
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
 function renderUnplacedNote(tray){
   const m = unplacedCount();
   if(!m) return;
+  const n = m.toLocaleString('en-US');
   const note = document.createElement('span');
   note.className = 'af-label';
   const btn = document.createElement('button');
   btn.type = 'button';
+  btn.id = 'unplacedToggle';
   btn.className = 'af-clear';
+  btn.setAttribute('aria-expanded', String(showUnplaced));
   if(showUnplaced){
-    note.textContent = `Including ${m.toLocaleString('en-US')} with a location we haven't placed yet.`;
+    note.textContent = `Includes ${n} ${m === 1 ? 'event' : 'events'} with ${m === 1 ? 'a location' : 'locations'} we haven't mapped yet, so we can't confirm ${m === 1 ? 'it is' : 'they are'} inside this area.`;
     btn.textContent = 'Hide them';
   } else {
-    note.textContent = `${m.toLocaleString('en-US')} more ${m === 1 ? 'has a location' : 'have a location'} we haven't placed yet.`;
+    note.textContent = `${n} more ${m === 1 ? 'event has a location' : 'events have locations'} we haven't mapped yet.`;
     btn.textContent = 'Show them';
   }
-  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); };
+  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); const b = document.getElementById('unplacedToggle'); if(b) b.focus(); };
   tray.appendChild(note);
   tray.appendChild(btn);
 }
@@ -1228,6 +1237,13 @@ function resolvePlace(e){
 function buildPlaces(){
   const places = new Map();
   EVENTS.filter(matchesFilters).forEach(e=>{
+    // "Show them": events whose city is not mapped are listed in their own group and get no pin,
+    // never placed inside the chosen area (even when some other field could draw a point).
+    if(showUnplaced && originLocation && radiusMiles !== null && PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).status === 'unplaced'){
+      if(!places.has('u:unmapped')) places.set('u:unmapped', {key: 'u:unmapped', label: "Not mapped yet", precise: false, unmapped: true, events: []});
+      places.get('u:unmapped').events.push(e);
+      return;
+    }
     const place = resolvePlace(e);
     if(!place) return;
     if(!places.has(place.key)) places.set(place.key, {...place, events:[]});
@@ -1379,6 +1395,7 @@ function renderMap(places){
   markersByKey.forEach(m => leafletMap.removeLayer(m));
   markersByKey = new Map();
   places.forEach(place=>{
+    if(place.unmapped) return; // no pin: its location is not mapped
     const count = place.events.length;
     const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
     const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
@@ -1421,7 +1438,7 @@ function renderCityRail(places){
           <span class="cr-cat-dot" style="background:${hex}" aria-hidden="true"></span>
           <span class="cr-count">${place.events.length}</span>
           <span class="cr-name">${escapeHtml(place.label)}</span>
-          ${!place.precise ? '<span class="cr-approx">City center</span>' : ''}
+          ${place.unmapped ? '<span class="cr-approx">Not on the map</span>' : (!place.precise ? '<span class="cr-approx">City center</span>' : '')}
           <span class="cr-caret">&#9656;</span>
         </button>
         <div class="city-row-body${expanded ? ' show' : ''}">${expanded ? place.events.map(evtRowHtml).join('') : ''}</div>
@@ -1481,7 +1498,9 @@ function selectPlace(key, opts){
 }
 
 function updateMapStat(places){
-  const totalEvents = [...places.values()].reduce((sum,p)=> sum + p.events.length, 0);
+  const unmapped = [...places.values()].find(p => p.unmapped);
+  const totalEvents = [...places.values()].reduce((sum,p)=> p.unmapped ? sum : sum + p.events.length, 0);
+  const placeCount = places.size - (unmapped ? 1 : 0);
   const stat = document.getElementById('mapStat');
   loadDiag.plotted = totalEvents;
   if(loadState === 'loading'){ stat.textContent = 'Loading events…'; return; }
@@ -1489,11 +1508,13 @@ function updateMapStat(places){
     stat.innerHTML = `<span class="load-error" role="alert">Events could not be loaded. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>`;
     return;
   }
-  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${places.size.toLocaleString()}</strong> place${places.size===1?'':'s'} in the Detroit Orbit`
+  stat.innerHTML = `<strong>${totalEvents.toLocaleString()}</strong> event${totalEvents===1?'':'s'} across <strong>${placeCount.toLocaleString()}</strong> place${placeCount===1?'':'s'} in the Detroit Orbit`
+    + (unmapped ? ` <span class="stat-unmapped">+ ${unmapped.events.length.toLocaleString()} not on the map (location not mapped yet)</span>` : '')
     + (loadDiag.complete === false ? ` <span class="load-error" role="alert">Some events did not load. <button type="button" class="es-action" onclick="retryLoad()">Try again</button></span>` : '');
 }
 
 function render(){
+  syncUnplacedKey();
   updateWhenButtons();
   updateRadiusButtons();
   updateMobileTriggers();

@@ -1,4 +1,4 @@
-// test/unplaced-line.test.js — "M more have a location we haven't placed yet. Show them." on homepage, calendar and map.
+// test/unplaced-line.test.js — "M more have a location we haven't mapped yet. Show them." on homepage, calendar and map.
 // Events whose city cannot be placed are left out of an active place filter (never guessed at). The line counts them and
 // "Show them" lets them through. Run: node test/unplaced-line.test.js
 "use strict";
@@ -33,7 +33,7 @@ const ids = (c) => events.filter((e) => Discovery.matches(e, orbit, c)).map((e) 
 }
 // 3. the three pages carry the one line and the toggle
 {
-  const w = /we haven't placed yet/;
+  const w = /we haven't mapped yet/;
   for (const f of ["index.html", "calendar.html", "map.html"]) {
     const h = read(f);
     assert.ok(w.test(h) && /Show them/.test(h) && /Hide them/.test(h), f + " has the line and both buttons");
@@ -41,4 +41,20 @@ const ids = (c) => events.filter((e) => Discovery.matches(e, orbit, c)).map((e) 
   assert.ok(/includeUnplaced: showUnplaced/.test(read("index.html")));
   for (const f of ["calendar.html", "map.html"]) assert.ok(/showUnplaced && at\.status === 'unplaced'/.test(read(f)), f + " lets unplaced through only on request");
   console.log("PASS: homepage, calendar and map carry the same line and toggle");
+}
+
+// 4. owner wording (2026-10-24): visitor-friendly singular/plural, revealed cards never read as confirmed, map has no pin for them
+{
+  for (const f of ["index.html", "calendar.html", "map.html"]) {
+    const h = read(f);
+    assert.ok(/event has a location'\s*:\s*'events have locations'/.test(h), f + " uses grammatical singular/plural");
+    assert.ok(/we haven't mapped yet/.test(h) && !/haven't placed yet/.test(h), f + " says mapped, not placed");
+    assert.ok(/can't confirm/.test(h), f + " says revealed events are not confirmed inside the area");
+    assert.ok(/id="unplacedToggle"|btn\.id = 'unplacedToggle'/.test(h) && /aria-expanded/.test(h), f + " keeps focus target and aria-expanded");
+  }
+  assert.ok(/Location not mapped yet/.test(read("index.html")) && /Location not mapped yet/.test(read("calendar.html")), "each revealed card carries its own marker");
+  const map = read("map.html");
+  assert.ok(/if\(place\.unmapped\) return;/.test(map), "the map draws no pin for events that are not mapped");
+  assert.ok(/syncUnplacedKey\(\)/.test(read("index.html")) && /syncUnplacedKey\(\)/.test(read("calendar.html")), "changing the place or radius hides them again");
+  console.log("PASS: owner wording, no-confirmation text, per-card marker, no map pin, reset on filter change");
 }

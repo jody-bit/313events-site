@@ -97,7 +97,7 @@ console.log("PASS: named cases; malformed records, Ottawa and Phase 2 cities sta
 {
   const run = (cities) => {
     const c2 = { resolvePlace: ctx.resolvePlace, CityResolution: CR, CITY_LOOKUP: ctx.CITY_LOOKUP, escapeHtml: (x) => String(x),
-      matchesFilters: () => true, timeSortMinutes: () => 0, EVENTS: cities.map((city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" })) };
+      matchesFilters: () => true, showUnplaced: false, originLocation: null, radiusMiles: null, timeSortMinutes: () => 0, EVENTS: cities.map((city, i) => ({ venue: "v" + i, city, date: "2026-10-20", time: "7 PM" })) };
     vm.createContext(c2);
     vm.runInContext(html.slice(html.indexOf("function buildPlaces()"), html.indexOf("let leafletMap")) +
       html.slice(html.indexOf("function sharedPointMunicipality"), html.indexOf("function placePopupHtml")) +

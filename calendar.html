@@ -216,6 +216,7 @@
     width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
   }
   .af-chip button:hover{background:var(--ink);color:var(--bg);}
+  .unmapped-tag{display:inline-block;margin-left:4px;padding:0 6px;border:1px dashed var(--ink-dim,#8a8a8a);font-family:var(--font-data,'Space Mono',monospace);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap;}
   .af-clear{
     border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
     font-size:12.5px;font-weight:600;cursor:pointer;
@@ -1600,6 +1601,10 @@ function clearAllFilters(){
 // Events whose city cannot be placed are left out of a place filter (never guessed at). The line below says how many,
 // and "Show them" lets them through. Same wording as the homepage.
 let showUnplaced = false;
+function unmappedTagHtml(e){
+  if(!showUnplaced || !originLocation || radiusMiles === null) return '';
+  return PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles).status === 'unplaced' ? ' <span class="unmapped-tag">Location not mapped yet</span>' : '';
+}
 function unplacedCount(){
   if(!originLocation || radiusMiles === null) return 0;
   const seen = new Set();
@@ -1610,22 +1615,31 @@ function unplacedCount(){
   });
   return n;
 }
+let unplacedPlaceKey = '';
+// A different place or radius starts again with them hidden. Runs at the start of render(), before any filtering.
+function syncUnplacedKey(){
+  const key = (originLocation && radiusMiles !== null) ? originLocation.name + '|' + radiusMiles : '';
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
 function renderUnplacedNote(tray){
   const m = unplacedCount();
   if(!m) return;
+  const n = m.toLocaleString('en-US');
   const note = document.createElement('span');
   note.className = 'af-label';
   const btn = document.createElement('button');
   btn.type = 'button';
+  btn.id = 'unplacedToggle';
   btn.className = 'af-clear';
+  btn.setAttribute('aria-expanded', String(showUnplaced));
   if(showUnplaced){
-    note.textContent = `Including ${m.toLocaleString('en-US')} with a location we haven't placed yet.`;
+    note.textContent = `Includes ${n} ${m === 1 ? 'event' : 'events'} with ${m === 1 ? 'a location' : 'locations'} we haven't mapped yet, so we can't confirm ${m === 1 ? 'it is' : 'they are'} inside this area.`;
     btn.textContent = 'Hide them';
   } else {
-    note.textContent = `${m.toLocaleString('en-US')} more ${m === 1 ? 'has a location' : 'have a location'} we haven't placed yet.`;
+    note.textContent = `${n} more ${m === 1 ? 'event has a location' : 'events have locations'} we haven't mapped yet.`;
     btn.textContent = 'Show them';
   }
-  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); };
+  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); const b = document.getElementById('unplacedToggle'); if(b) b.focus(); };
   tray.appendChild(note);
   tray.appendChild(btn);
 }
@@ -1896,7 +1910,7 @@ function showDayPanel(iso){
                 <div class="evt-meta">
                   ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
-                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${streetLineHtml(e)}
@@ -1951,7 +1965,7 @@ function renderList(dateList){
                 <div class="evt-meta">
                   ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
-                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${streetLineHtml(e)}
@@ -2275,7 +2289,7 @@ function renderUnconfirmedResults(){
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
           ${Categories.tagHtml(e.cat, {fill:'pill'})}
-          <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
+          <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</span>
         </div>
         ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}
       </div></div></div>
@@ -2283,6 +2297,7 @@ function renderUnconfirmedResults(){
 }
 
 function render(){
+  syncUnplacedKey();
   updateMonthHeader();
   updateWhenButtons();
   updateRadiusButtons();
