@@ -99,7 +99,7 @@ test("TARGET: an unclassified Fri-Sun range does not synthesise daily occurrence
   assert.ok(ED.expand(FIX.friToSunUnclassified, FRI).length <= 1);
 });
 test("TARGET: the unclassified event stays discoverable (general browsing, search) and keeps its original range", () => {
-  const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+  const { Discovery: D } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
   const ev = (r) => Object.assign({ title: "T", venue: "V", cat: "music", free: false, source: "Manual", date: r.start_date, endDate: r.end_date, time: r.time_display }, r);
   const FRI_NOW = new Date("2026-10-16T16:00:00Z");
   const u = ev(FIX.promoRangeUnclassified);
@@ -174,7 +174,7 @@ test("PRODUCTION SHAPE: Thursday-night overnight row is not a Friday event; the 
   assert.strictEqual(ED.availabilityOn(fri, SAT), null);
 });
 test("DISCOVERY: weekend and date windows ignore unverified ranges; the all window keeps them", () => {
-  const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+  const { Discovery: D } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
   const FRI_NOW = new Date("2026-10-16T16:00:00Z");
   const cider = { title: "C", venue: "V", cat: "fest", free: false, source: "VisitDetroit", date: "2026-10-11", endDate: "2026-10-18", time: "1:00 PM" };
   assert.strictEqual(D.matches(cider, D.change(D.defaults(), { when: "weekend" }), { now: FRI_NOW }), false);

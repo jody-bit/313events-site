@@ -41,7 +41,7 @@ const fs = require("fs");
 const vm = require("vm");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
 const plain = (x) => JSON.parse(JSON.stringify(x));
 
@@ -84,7 +84,7 @@ const INDEX = LEGACY_HOME; // sections 1 and 2 read the frozen copy with the sam
 // 1. PARITY with the homepage's own filter code (as it was before adoption)
 // =====================================================================
 function homepageSandbox(nowMs) {
-  const sb = { URLSearchParams, console };
+  const sb = { URLSearchParams, console, SearchMatch: require(`${REPO_DIR}/search-match.js`), Categories: require(`${REPO_DIR}/categories.js`) };
   vm.createContext(sb);
   vm.runInContext(FAKE_DATE(nowMs), sb);
   vm.runInContext([
@@ -579,7 +579,7 @@ function run() {
     assert.deepStrictEqual(plain(D.places), plain(vm.runInContext("LOCATIONS", sb)), "places match what the homepage had, exactly");
     // The boundary: the shared copy, the server's copy and the homepage's old copy are the same polygon.
     const server = require(`${REPO_DIR}/api/_lib/detroit-boundary.js`);
-    const { _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+    const { _defaultConfig } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
     assert.deepStrictEqual(plain(_defaultConfig.boundary), plain(server.DETROIT_BOUNDARY), "discovery.js and the server use the same Detroit boundary");
     assert.deepStrictEqual(plain(vm.runInContext("DETROIT_BOUNDARY", sb)), plain(server.DETROIT_BOUNDARY), "and it is the one the homepage had");
     // The Orbit decision for every city agrees with the server's maths and with the homepage's old maths.
@@ -615,7 +615,7 @@ function run() {
 // the border, SERVICE_AREA.md); Lansing is the documented case just inside
 // (67.5 mi). Built with a private places table so the real one is untouched.
 function _probeOrbit() {
-  const { _build, _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+  const { _build, _defaultConfig } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
   const P = _build(Object.assign({}, _defaultConfig, { places: _defaultConfig.places.concat([["Saginaw", "city", "Michigan", 43.4195, -83.9508]]) }));
   const orbit = P.change(P.defaults(), { where: { radius: "orbit" } });
   const ctx = { now: new Date("2026-10-03T19:00:00Z") };

@@ -660,6 +660,7 @@
 <script src="/place-eligibility.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
+<script src="/search-match.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1404,8 +1405,7 @@ function matchesFilters(e){
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
-    const q = query.toLowerCase();
-    if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
+    if(!SearchMatch.matches(e, query)) return false; // the one shared matcher (search-match.js)
   }
   if(whenMode){
     const todayIso = getTodayISO();
@@ -2932,6 +2932,8 @@ function mapSupabaseRow(row) {
     // SH.N: sourced through resolveVenueDisplay() — canonical venues.city
     // when venue_id resolves and is nonblank, raw venue_city_raw otherwise.
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
+    // Search sees the city even when it is Detroit (the display field above hides it): one rule on every page (search-match.js).
+    searchCity: vd.city ? decodeEntities(vd.city) : undefined,
     // SH.N: canonical venue_id-resolved coordinates (the real FK, never
     // fabricated) — preferred over the legacy name-matching join in
     // resolvePlace() below when present; null falls through to that
@@ -3039,6 +3041,9 @@ async function loadSupabaseEvents() {
 
     buildFilterBar();
     render();
+    // Neighborhood is searchable on every page; this page's events table has none, so attach it from the public view.
+    try { SearchMatch.attachNeighborhoods(EVENTS, fetchAllRows, SUPABASE_URL, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }, null)
+      .then(n => { if(n && query) render(); }).catch(() => {}); } catch (err) { /* auxiliary: search runs without neighborhood */ }
   } catch (err) {
     // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
   }

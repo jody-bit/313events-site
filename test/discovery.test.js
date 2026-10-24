@@ -17,7 +17,7 @@ const vm = require("vm");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SRC = fs.readFileSync(`${REPO_DIR}/discovery.js`, "utf8");
-const { Discovery: D, _build, _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D, _build, _defaultConfig } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
 
 // Saturday 2026-10-03, 3:00 PM in Detroit (EDT, UTC-4).
 const NOW = new Date("2026-10-03T19:00:00Z");
