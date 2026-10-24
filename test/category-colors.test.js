@@ -14,7 +14,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const read = (p) => fs.readFileSync(path.join(root, p), "utf8");
 const Categories = require("../categories.js");
-const { Discovery } = require("../discovery.js");
+const { Discovery } = (require("../search-match.js"), require("../discovery.js"));
 
 const PAGES = ["index.html", "calendar.html", "map.html", "radar.html", "venue-template.html", "event-template.html", "submit.html"];
 

@@ -547,7 +547,7 @@ function run() {
   // --- 21. The closed list of city names (api/_lib/orbit-cities.js). ---
   {
     const { knownCity } = require(`${REPO_DIR}/api/_lib/orbit-cities.js`);
-    const discovery = require(`${REPO_DIR}/discovery.js`);
+    const discovery = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
     // Every Michigan and Ohio city the site already knows is on it, under its
     // own state, so the two can never disagree about a name.
     const stateCode = { Michigan: "MI", Ohio: "OH" };

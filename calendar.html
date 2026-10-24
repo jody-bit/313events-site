@@ -216,6 +216,7 @@
     width:16px;height:16px;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
   }
   .af-chip button:hover{background:var(--ink);color:var(--bg);}
+  .unmapped-tag{display:inline-block;margin-left:4px;padding:0 6px;border:1px dashed var(--ink-dim,#8a8a8a);font-family:var(--font-data,'Space Mono',monospace);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap;}
   .af-clear{
     border:1px solid #4a2a28;background:none;color:#e07a72;border-radius:var(--radius);padding:5px 12px;
     font-size:12.5px;font-weight:600;cursor:pointer;
@@ -660,6 +661,7 @@
 <script src="/place-eligibility.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
+<script src="/search-match.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1395,7 +1397,7 @@ function getWeekendDates(){
   });
 }
 
-function matchesFilters(e){
+function matchesFilters(e, skipPlace){
   if(isBlockedEvent(e)) return false;
   if(!activeCats.has(e.cat)) return false;
   if(freeOnly && !e.free) return false;
@@ -1404,8 +1406,7 @@ function matchesFilters(e){
   if(activeFeatures.has('photo') && !e.imageUrl) return false;
   if(activeFeatures.has('submitted') && e.source !== 'Venue Submission') return false;
   if(query){
-    const q = query.toLowerCase();
-    if(!(e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q))) return false;
+    if(!SearchMatch.matches(e, query)) return false; // the one shared matcher (search-match.js)
   }
   if(whenMode){
     const todayIso = getTodayISO();
@@ -1449,7 +1450,11 @@ function matchesFilters(e){
     // means 75 miles from Detroit's BORDER, as on the homepage. A city that still cannot be
     // placed is never guessed: it is left out of an active place filter and counted by
     // PlaceEligibility.partition() rather than lost silently.
-    if(!PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles).eligible) return false;
+    if(!skipPlace){
+      const at = PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles);
+      // "Show them" lets events with a location we haven't placed through; a placed city outside the radius stays out.
+      if(!at.eligible && !(showUnplaced && at.status === 'unplaced' && isCurrentOrUpcoming(e))) return false;
+    }
   }
   return true;
 }
@@ -1593,6 +1598,64 @@ function clearAllFilters(){
 // "filter state must be visible" requirement. Categories only show up here
 // when narrowed below the full set (showing all 11 active chips twice, once
 // in the category bar and again here, would just be noise).
+// Events whose city cannot be placed are left out of a place filter (never guessed at). The line below says how many,
+// and "Show them" lets them through. Same wording as the homepage.
+let showUnplaced = false;
+// "Show them" and its count only cover current and upcoming events, the same window the homepage counts
+// (the calendar and map also load the last 8 days, which the notice must not count).
+function isCurrentOrUpcoming(e){
+  const today = getTodayISO();
+  const b = EventDates.bounds(e);
+  if(b.dates && b.dates.length) return b.dates.some(d => d >= today);
+  return (b.end || e.date) >= today;
+}
+function isUnmappedNow(e, lookup){
+  return originLocation && radiusMiles !== null && isCurrentOrUpcoming(e)
+    && PlaceEligibility.withinPlace(e, lookup, originLocation, radiusMiles).status === 'unplaced';
+}
+function unmappedTagHtml(e){
+  if(!showUnplaced) return '';
+  return isUnmappedNow(e, PLACE_LOOKUP) ? ' <span class="unmapped-tag">Location not mapped yet</span>' : '';
+}
+function unplacedCount(){
+  if(!originLocation || radiusMiles === null) return 0;
+  const seen = new Set();
+  let n = 0;
+  EVENTS.forEach(e=>{
+    if(e.id != null){ if(seen.has(e.id)) return; seen.add(e.id); }
+    if(matchesFilters(e, true) && isUnmappedNow(e, PLACE_LOOKUP)) n++;
+  });
+  return n;
+}
+let unplacedPlaceKey = '';
+// A different place or radius starts again with them hidden. Runs at the start of render(), before any filtering.
+function syncUnplacedKey(){
+  const key = (originLocation && radiusMiles !== null) ? originLocation.name + '|' + radiusMiles : '';
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
+function renderUnplacedNote(tray){
+  const m = unplacedCount();
+  if(!m) return;
+  const n = m.toLocaleString('en-US');
+  const note = document.createElement('span');
+  note.className = 'af-label';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'unplacedToggle';
+  btn.className = 'af-clear';
+  btn.setAttribute('aria-expanded', String(showUnplaced));
+  if(showUnplaced){
+    note.textContent = `Includes ${n} ${m === 1 ? 'event' : 'events'} with ${m === 1 ? 'a location' : 'locations'} we haven't mapped yet, so we can't confirm ${m === 1 ? 'it is' : 'they are'} inside this area.`;
+    btn.textContent = 'Hide them';
+  } else {
+    note.textContent = `${n} more ${m === 1 ? 'event has a location' : 'events have locations'} we haven't mapped yet.`;
+    btn.textContent = 'Show them';
+  }
+  btn.onclick = ()=>{ showUnplaced = !showUnplaced; render(); const b = document.getElementById('unplacedToggle'); if(b) b.focus(); };
+  tray.appendChild(note);
+  tray.appendChild(btn);
+}
+
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
   const chips = [];
@@ -1663,6 +1726,7 @@ function renderActiveFilters(){
   clearAll.textContent = 'Clear all';
   clearAll.onclick = ()=>{ clearAllFilters(); };
   tray.appendChild(clearAll);
+  renderUnplacedNote(tray);
 }
 
 // Keeps the month label and prev/next disabled state in sync with `current`
@@ -1858,7 +1922,7 @@ function showDayPanel(iso){
                 <div class="evt-meta">
                   ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
-                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${streetLineHtml(e)}
@@ -1913,7 +1977,7 @@ function renderList(dateList){
                 <div class="evt-meta">
                   ${Categories.tagHtml(e.cat, {fill:'pill'})}
                   ${priceTag(e)}
-                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}</span>
+                  <span>${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:escapeHtml(e.venue)}${e.city?` — ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</span>
                   ${e.source?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}
                 </div>
                 ${streetLineHtml(e)}
@@ -2237,7 +2301,7 @@ function renderUnconfirmedResults(){
         <div class="evt-title">${eventUrl(e)?`<a class="evt-title-link" href="${escapeHtml(eventUrl(e))}">${escapeHtml(e.title)}</a>`:escapeHtml(e.title)}</div>
         <div class="evt-meta">
           ${Categories.tagHtml(e.cat, {fill:'pill'})}
-          <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}</span>
+          <span>${escapeHtml(e.venue)}${e.city?` \u2014 ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</span>
         </div>
         ${range(e)?`<div class="note">Published ${escapeHtml(range(e))}</div>`:''}
       </div></div></div>
@@ -2245,6 +2309,7 @@ function renderUnconfirmedResults(){
 }
 
 function render(){
+  syncUnplacedKey();
   updateMonthHeader();
   updateWhenButtons();
   updateRadiusButtons();
@@ -2932,6 +2997,8 @@ function mapSupabaseRow(row) {
     // SH.N: sourced through resolveVenueDisplay() — canonical venues.city
     // when venue_id resolves and is nonblank, raw venue_city_raw otherwise.
     city: (vd.city && vd.city.toLowerCase() !== "detroit") ? decodeEntities(vd.city) : undefined,
+    // Search sees the city even when it is Detroit (the display field above hides it): one rule on every page (search-match.js).
+    searchCity: vd.city ? decodeEntities(vd.city) : undefined,
     // SH.N: canonical venue_id-resolved coordinates (the real FK, never
     // fabricated) — preferred over the legacy name-matching join in
     // resolvePlace() below when present; null falls through to that
@@ -3039,6 +3106,9 @@ async function loadSupabaseEvents() {
 
     buildFilterBar();
     render();
+    // Neighborhood is searchable on every page; this page's events table has none, so attach it from the public view.
+    try { SearchMatch.attachNeighborhoods(EVENTS, fetchAllRows, SUPABASE_URL, { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }, null)
+      .then(n => { if(n && query) render(); }).catch(() => {}); } catch (err) { /* auxiliary: search runs without neighborhood */ }
   } catch (err) {
     // Silent by design — FALLBACK_EVENTS keeps the calendar usable regardless.
   }

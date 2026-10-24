@@ -4109,6 +4109,7 @@
   .evt-act{grid-area:act;min-width:0;}
   .evt-where{grid-area:where;min-width:0;padding-top:1px;}
   .evt-venue{font-size:13px;color:var(--ink-soft);line-height:1.35;}
+  .unmapped-tag{display:inline-block;margin-left:4px;padding:0 6px;border:1px dashed var(--ink-dim,#8a8a8a);font-family:var(--font-data,'Space Mono',monospace);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap;}
   .evt-venue b, .evt-venue a.evt-venue-link{font-weight:500;color:var(--ink);}
   .evt-place{
     display:flex;flex-wrap:wrap;gap:2px 0;margin-top:3px;
@@ -4374,6 +4375,7 @@
 <script src="/event-dates.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
+<script src="/search-match.js"></script>
 <script src="/discovery.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
@@ -5053,7 +5055,36 @@ function discoveryCtx(){
     now: new Date(),
     defaultWhen: 'all',
     coverage: editorialByEvent,
+    includeUnplaced: showUnplaced,
   };
+}
+// Events whose city is not in the city table are left out once a place or
+// radius is chosen (never guessed at). The visitor can ask to see them, and
+// then they are labelled as NOT confirmed inside the chosen area.
+let showUnplaced = false, unplacedPlaceKey = '';
+// Once "Show them" is on, each such card says so itself: it is not confirmed inside the chosen area.
+function unmappedTagHtml(e){
+  return (showUnplaced && state.where.radius !== null && !Discovery.matches(e, state, Object.assign({}, discoveryCtx(), {includeUnplaced: false}))) ? ' <span class="unmapped-tag">Location not mapped yet</span>' : '';
+}
+function toggleUnplaced(on){
+  showUnplaced = !!on; renderList();
+  const b = document.getElementById('unplacedToggle'); if(b) b.focus();
+}
+// A different place or radius starts again with them hidden. Runs before the list is built.
+function syncUnplacedKey(){
+  const key = state.where.radius === null ? '' : [state.where.place, state.where.here ? 'here' : '', state.where.radius].join('|');
+  if(key !== unplacedPlaceKey){ unplacedPlaceKey = key; showUnplaced = false; }
+}
+function unplacedNoteHtml(){
+  if(state.where.radius === null) return '';
+  const base = Object.assign({}, discoveryCtx(), {includeUnplaced: false});
+  const m = Discovery.facets(EVENTS, state, base, 'placement').get('unplaced') || 0;
+  if(!m) return '';
+  const n = m.toLocaleString('en-US');
+  const btn = (on, label) => `<button type="button" id="unplacedToggle" class="es-action" aria-expanded="${!on}" onclick="toggleUnplaced(${on})">${label}</button>`;
+  return showUnplaced
+    ? `. <span class="unplaced-note">Includes ${n} ${m===1?'event':'events'} with ${m===1?'a location':'locations'} we haven't mapped yet, so we can't confirm ${m===1?'it is':'they are'} inside this area.</span> ${btn(false,'Hide them')}`
+    : `. <span class="unplaced-note">${n} more ${m===1?'event has a location':'events have locations'} we haven't mapped yet.</span> ${btn(true,'Show them')}`;
 }
 // The site's current + upcoming inventory, whatever the visitor has
 // filtered: used by the cards that are meant to be a constant pulse of the
@@ -6029,7 +6060,7 @@ function streamRowHtml(e, dayIso, ctx){
             ${ticketStatusNoteHtml(e)}
           </div>
           <div class="evt-where">
-            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}</div>
+            <div class="evt-venue">${venueUrl(e)?`<a class="evt-venue-link" href="${escapeHtml(venueUrl(e))}">${escapeHtml(e.venue)}</a>`:`<b>${escapeHtml(e.venue)}</b>`}${e.city?` &middot; ${escapeHtml(e.city)}`:''}${unmappedTagHtml(e)}</div>
             <div class="evt-place">${e.neighborhood?`<span>${escapeHtml(e.neighborhood)}</span>`:''}${runNoteHtml(e, dayIso)}${shouldShowSource(e)?`<span class="src">via ${escapeHtml(e.source)}</span>`:''}</div>
           </div>
           <div class="evt-side"><div class="evt-meta">${cat?Categories.tagHtml(e.cat):''}${priceTag(e)}</div></div>
@@ -6188,6 +6219,7 @@ document.getElementById('listView').addEventListener('click', (e)=>{
 function renderList(){
   const first = document.getElementById('listView');
   const more = document.getElementById('listMore');
+  syncUnplacedKey();
   const meta = currentListMeta();
   const ctx = discoveryCtx();
   const rows = streamRows(ctx);
@@ -6204,7 +6236,7 @@ function renderList(){
   const headHtml = (countLine) => `<div class="stream-head"><div class="sec-head"><h2 class="sec-title">What's Happening</h2>${countLine}<a class="sec-link" href="${escapeHtml(calHref)}">View full calendar &rarr;</a></div>${dayStripHtml()}</div>`;
 
   if(!rows.length){
-    first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
+    first.innerHTML = headHtml(`<p class="list-count-heading">Showing 0 events${meta.countLabel ? ' ' + meta.countLabel : ''}${unplacedNoteHtml()}</p>`) + `<div class="empty-state">${emptyStateMessage(meta.scopeLabel || null)}</div>`;
     more.innerHTML = '';
     more.style.display = 'none';
     return;
@@ -6218,7 +6250,7 @@ function renderList(){
 
   const filtered = Discovery.describe(state).length > 0;
   const head = (meta.countLabel || filtered)
-    ? headHtml(`<p class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}</p>`)
+    ? headHtml(`<p class="list-count-heading">Showing ${total.toLocaleString('en-US')} event${total===1?'':'s'}${meta.countLabel ? ' ' + meta.countLabel : ''}${unplacedNoteHtml()}</p>`)
     : headHtml(`<p class="sec-sub">${total.toLocaleString('en-US')} current + upcoming event${total===1?'':'s'}, in date order.</p>`);
 
   const firstRows = rows.slice(0, Math.min(STREAM_FIRST, shown));
@@ -7790,6 +7822,8 @@ function mapSupabaseRow(row) {
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
     // shows, since that's exactly the info that was silently missing before.
     city: (row.venue_city && row.venue_city.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city) : undefined,
+    // Search sees the city even when it is Detroit (the display field above hides it): one rule on every page (search-match.js).
+    searchCity: row.venue_city ? decodeEntities(row.venue_city) : undefined,
     // Calendar-export location inputs (calendar-location.js). The display
     // city above hides "Detroit"; the calendar needs the real one. The
     // street address is not in events_public -- loadCalendarLocations()
