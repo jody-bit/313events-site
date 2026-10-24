@@ -92,7 +92,17 @@
       "officialUrl": "https://hushhauntedattractions.com/",
       "evidenceNote": "Official home page shows a 2026 season running September 25 through November 7, 2026, with online ticketing for the current season. Read 2026-10-12 at https://hushhauntedattractions.com/",
       "datesNote": "September 25 through November 7, 2026 (page also lists a kids' daytime event on October 25, 2-5 PM with no actors, and Glow Stick Fright Nights on November 6 and 7). Evening sessions typically start 6 or 7 PM and end 10 PM or midnight per the page; exact per-night schedule not captured.",
-      "inventoryOrder": 7
+      "inventoryOrder": 7,
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator-stated 2026 season was Sept 25 to Nov 7 with Glow Stick Fright Nights Nov 6 and 7 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 7. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "azra-chamber-of-horrors": {
       "tier": "publish",
