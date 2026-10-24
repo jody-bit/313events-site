@@ -14,7 +14,7 @@ cat >"$tmp/bin/psql" <<'S'
 #!/usr/bin/env bash
 sql="$(cat)"
 case "$sql" in
-  *"from storage.objects order by"*) printf 'event-flyers\ttop.jpg\t8\nevent-flyers\tu/nested dir/a b.jpg\t8\n' ;;
+  *"from storage.objects order by"*) printf 'event-flyers\ttop.jpg\t8\t-\t-\nevent-flyers\tu/nested dir/a b.jpg\t8\t-\t-\n' ;;
   *json_agg*) echo '[{"id":"event-flyers","name":"event-flyers","public":true}]' ;;
   *"select 'events'"*) printf 'events\t10\nvenues\t2\nstorage_objects\t%s\n' "${STUB_OBJECTS:-2}" ;;
   *aclexplode*) echo 'grant select on public.venues to anon;' ;;

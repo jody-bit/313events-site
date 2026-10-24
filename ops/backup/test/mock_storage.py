@@ -6,6 +6,9 @@ import http.server, os, subprocess, sys, urllib.parse, json
 port, root, key = int(sys.argv[1]), sys.argv[2], sys.argv[3]
 fail = sys.argv[4] if len(sys.argv) > 4 else ""
 dbname = sys.argv[5] if len(sys.argv) > 5 else ""
+mutate = sys.argv[6] if len(sys.argv) > 6 else ""   # SQL run once (against MUTATE_DB) on the first object GET: simulates Storage changing mid-backup
+delay = float(sys.argv[7]) if len(sys.argv) > 7 else 0.0
+mutated = []
 class H(http.server.BaseHTTPRequestHandler):
     def log_message(self, *a): pass
     def _auth(self):
@@ -21,6 +24,9 @@ class H(http.server.BaseHTTPRequestHandler):
         f = os.path.join(root, rel) if rel else None
         if rel is None or (fail and fail in rel) or not os.path.isfile(f):
             self.send_response(404); self.end_headers(); return
+        if delay: __import__("time").sleep(delay)
+        if mutate and not mutated:
+            mutated.append(1); subprocess.run(["psql", "dbname=" + os.environ.get("MUTATE_DB", "src"), "-X", "-q", "-c", mutate], check=True)
         data = open(f, "rb").read()
         self.send_response(200); self.send_header("content-length", str(len(data))); self.end_headers(); self.wfile.write(data)
     def do_POST(self):

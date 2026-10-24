@@ -68,6 +68,8 @@ pre="$(echo "show transaction_read_only; select current_setting('server_version'
   || { echo "Cannot connect with those details. Check the host and password (not stored anywhere)." >&2; exit 1; }
 echo "Preflight (read-only session): $(echo "$pre" | tr '\n\t' ' ')   [read-only flag, server version, storage objects, storage bytes]"
 
+trap 'echo "BACKUP FAILED. Do not rely on any archive from this run." >&2' ERR
+trap 'exit 130' INT TERM HUP
 "$here/backup.sh"
 f="$(ls -t "$OUT"/*.tar.age | head -1)"
 base="${f%.tar.age}"

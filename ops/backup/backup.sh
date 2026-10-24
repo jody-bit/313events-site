@@ -34,7 +34,13 @@ alert() {
   [ -n "${ALERT_WEBHOOK_URL:-}" ] && curl -fsS -m 10 -X POST -d "313.events backup FAILED at step: $1 ($STAMP)" "$ALERT_WEBHOOK_URL" >/dev/null || true
 }
 trap 'alert "${STEP:-unknown}"' ERR
-trap 'cd /; rm -rf "$WORK"' EXIT
+DONE=0
+cleanup() {  # always remove the plaintext working directory; remove partial ciphertext artifacts if the run did not finish
+  cd /; rm -rf "$WORK"
+  [ "$DONE" = 1 ] || rm -f "$OUTDIR/313events-$STAMP.tar.age" "$OUTDIR/313events-$STAMP.tar.age.sha256" "$OUTDIR/313events-$STAMP.manifest.txt"
+}
+trap cleanup EXIT
+trap 'exit 130' INT TERM HUP
 
 # pg_dump itself runs inside a READ ONLY, REPEATABLE READ transaction.
 STEP=dump_custom
@@ -61,23 +67,37 @@ select 'storage_objects', count(*) from storage.objects;
 SQL
 
 STEP=storage_copy
-# SQL-driven: the object list comes from storage.objects, so sub-folders cannot be skipped, and the result is gated on the
-# exact object count and byte total the database reports.
-q > storage_objects.tsv <<'SQL'
-select bucket_id, name, coalesce((metadata->>'size')::bigint, -1) from storage.objects order by 1, 2;
+# SQL-driven: the object list comes from storage.objects, so sub-folders cannot be skipped. The list (name, size, eTag,
+# updated_at) is snapshotted before the downloads and again after; any difference means Storage changed while the backup ran,
+# and the backup fails rather than produce an archive that matches neither moment. Each file must also match its size and,
+# where the eTag is a plain MD5, its content hash.
+snap() { q <<'SQL'
+select bucket_id, name, coalesce((metadata->>'size')::bigint, -1), coalesce(nullif(metadata->>'eTag', ''), '-'), coalesce(updated_at::text, '-')
+from storage.objects order by 1, 2;
 SQL
+}
+snap > storage_objects.tsv
 q > buckets.json <<'SQL'
 select coalesce(json_agg(b), '[]'::json) from (select id, name, public, file_size_limit, allowed_mime_types from storage.buckets order by id) b;
 SQL
+if awk -F'\t' 'NF != 5 {bad=1} END {exit !bad}' storage_objects.tsv; then echo "unexpected object name or metadata (tab/newline)" >&2; false; fi
 exp_n="$(wc -l < storage_objects.tsv | tr -d ' ')"
 exp_bytes="$(awk -F'\t' '{s+=$3} END{print s+0}' storage_objects.tsv)"
 i=0
-while IFS=$'\t' read -r b name size; do
+while IFS=$'\t' read -r b name size etag upd; do
   i=$((i + 1))
   mkdir -p "storage/$b/$(dirname "$name")"
   sb_curl -o "storage/$b/$name" "$SUPABASE_URL/storage/v1/object/$b/$(uri_path "$name")"
   [ "$(fsize "storage/$b/$name")" = "$size" ] || { echo "size mismatch on object #$i" >&2; false; }
+  e="$(printf '%s' "$etag" | tr -d '"')"
+  case "$e" in
+    [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])
+      [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; } ;;
+  esac
 done < storage_objects.tsv
+snap > storage_objects.after.tsv
+cmp -s storage_objects.tsv storage_objects.after.tsv || { echo "Storage changed while the backup was running; rerun" >&2; false; }
+rm -f storage_objects.after.tsv
 got_n="$(find storage -type f | wc -l | tr -d ' ')"
 got_bytes="$(find storage -type f | while IFS= read -r f; do fsize "$f"; done | awk '{s+=$1} END{print s+0}')"
 [ "$got_n" = "$exp_n" ] && [ "$got_bytes" = "$exp_bytes" ] || { echo "storage incomplete: files $got_n/$exp_n bytes $got_bytes/$exp_bytes" >&2; false; }
@@ -112,7 +132,7 @@ sha256 "313events-$STAMP.tar.age" > "313events-$STAMP.tar.age.sha256"
 cp "313events-$STAMP/MANIFEST.txt" "313events-$STAMP.manifest.txt"   # manifest has counts and hashes only, no row data
 
 if [ "${BACKUP_DRY_RUN:-0}" = 1 ]; then
-  echo "dry run complete: $OUTDIR/313events-$STAMP.tar.age"; exit 0
+  DONE=1; echo "dry run complete: $OUTDIR/313events-$STAMP.tar.age"; exit 0
 fi
 
 STEP=upload
@@ -125,4 +145,4 @@ STEP=post_upload_verify
 remote_sha="$(rclone cat "$RCLONE_REMOTE/daily/313events-$STAMP.tar.age" | sha256 | cut -d' ' -f1)"
 test "$remote_sha" = "$(cut -d' ' -f1 "313events-$STAMP.tar.age.sha256")"
 
-echo "backup ok: 313events-$STAMP.tar.age"
+DONE=1; echo "backup ok: 313events-$STAMP.tar.age"

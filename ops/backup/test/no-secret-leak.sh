@@ -9,7 +9,7 @@ for c in pg_restore pg_dump psql; do cat > "$tmp/bin/$c" <<S
 #!/usr/bin/env bash
 echo "$c \$*" >> "$tmp/argv.log"
 [ "$c" = pg_dump ] && { [ "\$1" = "--version" ] && { echo "pg_dump (stub) 17.0"; exit 0; }; for a in "\$@"; do case \$a in --file=*) echo stub > "\${a#--file=}"; esac; done; }
-if [ "$c" = psql ]; then sql="\$(cat)"; case "\$sql" in *"from storage.objects order by"*) printf 'b\tk.jpg\t3\n';; *json_agg*) echo '[]';; *"select 'events'"*) printf 'events\t1\nstorage_objects\t1\n';; *) printf 'x\ty\t1\n';; esac; fi
+if [ "$c" = psql ]; then sql="\$(cat)"; case "\$sql" in *"from storage.objects order by"*) printf 'b\tk.jpg\t3\t-\t-\n';; *json_agg*) echo '[]';; *"select 'events'"*) printf 'events\t1\nstorage_objects\t1\n';; *) printf 'x\ty\t1\n';; esac; fi
 exit 0
 S
 done

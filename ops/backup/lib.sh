@@ -5,6 +5,7 @@
 sha256() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$@"; else shasum -a 256 "$@"; fi; }
 sha256_check() { if command -v sha256sum >/dev/null 2>&1; then sha256sum -c --quiet; else shasum -a 256 -c --quiet; fi; }  # reads "hash  path" lines on stdin
 fsize() { wc -c < "$1" | tr -d ' '; }
+md5_of() { if command -v md5sum >/dev/null 2>&1; then md5sum "$1" | cut -d" " -f1; else md5 -q "$1"; fi; }
 uri_path() { jq -rn --arg n "$1" '$n|split("/")|map(@uri)|join("/")'; }
 
 # sb_curl <curl args...>   needs SB_KEY

@@ -16,13 +16,14 @@ export PGHOST=127.0.0.1 PGPORT=$port PGUSER=postgres PGPASSWORD=dummy PGSSLMODE=
 export PATH="$PGBIN:$PATH" PG_DUMP_MAJOR="$major"
 psql -X -q -c "create role anon nologin" -c "create role authenticated nologin" -c "create role service_role nologin bypassrls" -c "create database src" -c "create database dst"
 # Source: a miniature of the production shape, including RLS, column grants, a view, and nested Storage names.
-psql -X -q -d src <<'SQL'
+m1=$(printf 'PNGDATA1' | md5sum | cut -d' ' -f1); m2=$(printf 'PNGDATA-two' | md5sum | cut -d' ' -f1)
+sed -e "s/__M1__/$m1/" -e "s/__M2__/$m2/" <<'SQL' | psql -X -q -d src
 create schema storage;
 create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
-create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb);
+create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb, updated_at timestamptz default now());
 insert into storage.buckets values ('event-flyers','event-flyers',true,4194304,array['image/png','image/jpeg']);
 insert into storage.objects(bucket_id,name,metadata) values
- ('event-flyers','top.png','{"size":8}'),('event-flyers','u/abc123/nested one.png','{"size":11}'),('event-flyers','u/def/deep/x.png','{"size":6}');
+ ('event-flyers','top.png','{"size":8,"eTag":"\"__M1__\""}'),('event-flyers','u/abc123/nested one.png','{"size":11,"eTag":"\"__M2__\""}'),('event-flyers','u/def/deep/x.png','{"size":6}');
 create schema supabase_migrations; create table supabase_migrations.schema_migrations(version text primary key); insert into supabase_migrations.schema_migrations values ('1');
 create table public.events (id serial primary key, title text not null, status text not null default 'pending', secret text);
 create table public.venues (id serial primary key, name text);
@@ -51,7 +52,7 @@ printf 'PNGDATA1' > "$tmp/srcfiles/event-flyers/top.png"; printf 'PNGDATA-two' >
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC1=$!
 python3 "$here/test/mock_storage.py" 54331 "$tmp/dstfiles" "$KEY" "" dst & DST1=$!
 sleep 1
-psql -X -q -d dst -c "create schema storage; create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb);"
+psql -X -q -d dst -c "create schema storage; create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb, updated_at timestamptz default now());"
 age-keygen -o "$tmp/id" 2>/dev/null; rec="$(age-keygen -y "$tmp/id")"
 
 run_backup() { ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) ; }
@@ -94,4 +95,29 @@ psql -X -q -d dst -c "grant select on public.source_runs to anon"
 f2="$(psql -X -q -At -F, -d dst -f "$here/fingerprint.sql" | grep '^table_grants')"
 [ "$f1" != "$f2" ] || { echo "FAIL: fingerprint did not notice an extra anon grant"; exit 1; }
 echo "PASS 6: fingerprint detects an extra anonymous grant"
+# 7. Storage changing while the backup runs must fail the backup (new object, replaced object), leaving nothing behind
+for change in "insert into storage.objects(bucket_id,name,metadata) values ('event-flyers','late.png','{\"size\":3}')" \
+              "update storage.objects set updated_at=now(), metadata=jsonb_set(metadata,'{eTag}','\"abc\"') where name='top.png'"; do
+  kill $SRC3 2>/dev/null || true; sleep 0.3; rm -rf "$tmp/out"
+  python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" "" "" "$change" & SRC4=$!; sleep 1
+  if run_backup >"$tmp/b3.log" 2>&1; then echo "FAIL: backup passed although Storage changed mid-run"; exit 1; fi
+  grep -q 'Storage changed while the backup was running' "$tmp/b3.log" || { cat "$tmp/b3.log"; echo "FAIL: wrong failure reason"; exit 1; }
+  [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: leftovers after mid-run change"; exit 1; }
+  psql -X -q -d src -c "delete from storage.objects where name='late.png'; update storage.objects set updated_at=null, metadata=metadata - 'eTag' where name='top.png'" >/dev/null
+  SRC3=$SRC4
+done
+echo "PASS 7: Storage changes during the backup (added object, replaced object) fail it and leave nothing behind"
+# 8. failure paths leave no plaintext and no partial ciphertext: encryption failure, and Ctrl-C mid-download
+kill $SRC3 2>/dev/null || true; sleep 0.3
+python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC5=$!; sleep 1
+rm -rf "$tmp/out"
+if ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="not-a-valid-key" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b4.log" 2>&1; then echo "FAIL: backup passed with an invalid age recipient"; exit 1; fi
+[ -z "$(ls -A "$tmp/out")" ] || { ls "$tmp/out"; echo "FAIL: leftovers after encryption failure"; exit 1; }
+kill $SRC5 2>/dev/null || true; sleep 0.3
+python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" "" "" "" 2 & SRC6=$!; sleep 1
+( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b5.log" 2>&1 & BP=$!
+sleep 2; pkill -INT -P $BP 2>/dev/null || true; kill -INT $BP 2>/dev/null || true; wait $BP 2>/dev/null || true; sleep 1
+[ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: leftovers after interrupt"; exit 1; }
+kill $SRC6 2>/dev/null || true
+echo "PASS 8: encryption failure and interrupt leave no plaintext and no partial archive"
 echo "PASS: e2e-local"
