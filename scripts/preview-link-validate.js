@@ -18,7 +18,9 @@
 // Data parity (run on ALL rows read, not just the sample): a Preview reads its own database, which can lag production
 // (2026-10-24: staging held 324 VisitDetroit links in the old, dead /<slug>/ form while production used /events/<slug>/).
 //   STALE-SHAPE         rows whose stored link is a known-dead old form: reported with a count, blocks like a 404
-//   data date           newest updated_at among the rows; older than --max-age-days (default 3) is reported as STALE-DATA
+//   data date           when the database last ingested: newest finished successful source_runs row, else newest events.created_at.
+//                       updated_at is NOT used: any edit (a links-only repair, an admin save) bumps it and would make old data look fresh.
+//                       Older than --max-age-days (default 3) is reported as STALE-DATA
 // Exit code 1 when any BLOCKING result exists, so R&Q can gate a Preview on it.
 "use strict";
 const fs = require("fs");
@@ -71,12 +73,16 @@ async function validateRows(rows, { fetchFn = fetch, perSource = 5, EventLinks =
   return { results: out, counts, blocking: out.filter((o) => o.verdict === "BLOCKING") };
 }
 
-function dataParity(rows, { maxAgeDays = 3, now = Date.now() } = {}) {
+// lastIngestAt: newest finished success/partial source_runs row (service-role only), or null when unreadable.
+function dataParity(rows, { maxAgeDays = 3, now = Date.now(), lastIngestAt = null } = {}) {
   const staleShape = rows.filter((r) => OLD_SHAPE_RE.test(String(r.ticket_url || r.ticketUrl || "").trim()) || OLD_SHAPE_RE.test(String(r.event_url || r.eventPageUrl || "").trim()));
-  const stamps = rows.map((r) => Date.parse(r.updated_at)).filter(Number.isFinite);
-  const newest = stamps.length ? new Date(Math.max(...stamps)).toISOString() : null;
+  const created = rows.map((r) => Date.parse(r.created_at)).filter(Number.isFinite);
+  const ingest = lastIngestAt ? Date.parse(lastIngestAt) : NaN;
+  const candidates = created.concat(Number.isFinite(ingest) ? [ingest] : []);
+  const newest = candidates.length ? new Date(Math.max(...candidates)).toISOString() : null;
+  const edits = rows.map((r) => Date.parse(r.updated_at)).filter(Number.isFinite);
   const ageDays = newest ? (now - Date.parse(newest)) / 86400000 : null;
-  return { total: rows.length, staleShapeCount: staleShape.length, staleShapeExamples: staleShape.slice(0, 3).map((r) => r.ticket_url || r.event_url), newestUpdate: newest, ageDays, staleData: ageDays !== null && ageDays > maxAgeDays };
+  return { total: rows.length, staleShapeCount: staleShape.length, staleShapeExamples: staleShape.slice(0, 3).map((r) => r.ticket_url || r.event_url), newestUpdate: newest, source: Number.isFinite(ingest) && ingest >= Math.max(...created, 0) ? "source_runs" : "events.created_at", lastRowEdit: edits.length ? new Date(Math.max(...edits)).toISOString() : null, ageDays, staleData: ageDays !== null && ageDays > maxAgeDays };
 }
 
 async function fetchSupabaseRows() {
@@ -84,9 +90,23 @@ async function fetchSupabaseRows() {
   const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY (or SERVICE_ROLE_KEY) are required for --supabase");
   const today = new Date().toISOString().slice(0, 10);
-  const resp = await fetch(`${url}/rest/v1/events?select=id,title,source,ticket_url,event_url,updated_at&status=eq.approved&start_date=gte.${today}&order=start_date.asc&limit=2000`, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+  const resp = await fetch(`${url}/rest/v1/events?select=id,title,source,ticket_url,event_url,created_at,updated_at&status=eq.approved&start_date=gte.${today}&order=start_date.asc&limit=2000`, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
   if (!resp.ok) throw new Error(`events query HTTP ${resp.status}`);
   return resp.json();
+}
+
+// Newest finished successful ingestion run. source_runs is service-role only; with the anon key this returns null and the
+// freshness falls back to events.created_at.
+async function fetchLastIngest() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  try {
+    const resp = await fetch(`${url}/rest/v1/source_runs?select=finished_at&outcome=in.(success,partial)&finished_at=not.is.null&order=finished_at.desc&limit=1`, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+    if (!resp.ok) return null;
+    const rows = await resp.json();
+    return rows[0] ? rows[0].finished_at : null;
+  } catch { return null; }
 }
 
 // The stamp R&Q attaches to every owner Preview (owner direction 2026-10-24): which build, which database, how fresh, and
@@ -98,6 +118,8 @@ function previewStamp({ commit, supabaseUrl, parity, counts, checkedAt }) {
     application_commit: commit || null,
     data_environment: ref ? (DATA_ENVIRONMENTS[ref] || `unknown (${ref})`) : "unknown",
     data_refreshed_at: parity.newestUpdate,
+    data_refreshed_from: parity.source,
+    last_row_edit_at: parity.lastRowEdit,
     data_age_days: parity.ageDays === null ? null : Math.round(parity.ageDays * 10) / 10,
     data_stale: !!parity.staleData || parity.staleShapeCount > 0,
     link_check: { checked_at: checkedAt, sampled: Object.values(counts).reduce((a, b) => a + b, 0), counts },
@@ -112,11 +134,11 @@ async function main() {
   const { results, counts, blocking } = await validateRows(rows, { perSource });
   for (const r of results) console.log(`${r.verdict.padEnd(18)} ${String(r.status ?? "-").padEnd(4)} ${r.source} | ${r.title} | ${r.url || "(no event-specific link)"}`);
   console.log(`\n${results.length} sampled: ${Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(", ")}`);
-  const parity = dataParity(rows, { maxAgeDays: Number(arg("--max-age-days") || 3) });
-  console.log(`Data date: newest row update ${parity.newestUpdate || "unknown"}${parity.staleData ? ` (${parity.ageDays.toFixed(1)} days old: STALE-DATA)` : ""}`);
+  const parity = dataParity(rows, { maxAgeDays: Number(arg("--max-age-days") || 3), lastIngestAt: args.includes("--supabase") ? await fetchLastIngest() : null });
+  console.log(`Data date: last ingestion (${parity.source}) ${parity.newestUpdate || "unknown"}; last row edit ${parity.lastRowEdit || "unknown"}${parity.staleData ? ` (${parity.ageDays.toFixed(1)} days old: STALE-DATA)` : ""}`);
   const stamp = previewStamp({ commit: arg("--commit") || process.env.VERCEL_GIT_COMMIT_SHA, supabaseUrl: process.env.SUPABASE_URL, parity, counts, checkedAt: new Date().toISOString() });
   console.log(`PREVIEW STAMP: ${JSON.stringify(stamp)}`);
-  if (parity.staleShapeCount) console.log(`STALE-SHAPE: ${parity.staleShapeCount} of ${parity.total} rows hold a known-dead old-form link, e.g. ${parity.staleShapeExamples.join(", ")}; this database is behind production.`);
+  if (parity.staleShapeCount) console.log(`STALE-SHAPE: ${parity.staleShapeCount} of ${parity.total} rows hold a known-dead old-form link (held for verification, never counted as PASS), e.g. ${parity.staleShapeExamples.join(", ")}; this database is behind production.`);
   if (parity.staleShapeCount) { console.log("The Preview's data is not current; it is not ready for owner acceptance."); process.exit(1); }
   if (blocking.length) { console.log(`BLOCKING: ${blocking.length} primary link(s) confirmed dead; the Preview is not ready for owner acceptance.`); process.exit(1); }
 }
