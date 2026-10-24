@@ -136,7 +136,7 @@ const patch = (calls) => calls.filter((c) => c.method === "PATCH").map((c) => c.
   // editorial and post-to-facebook are not event-ingestion sources; cron-ra is
   // a bridge logged as 'resident-advisor' by the RA sync, not a Vercel cron.
   // Any OTHER cron without run logging must be added above or here, or this fails.
-  const EXCLUDED = ["cron-editorial.js", "cron-post-to-facebook.js", "cron-ra.js", "cron-healthcheck.js"]; // healthcheck reads source_runs, it is not a source
+  const EXCLUDED = ["cron-editorial.js", "cron-post-to-facebook.js", "cron-ra.js", "cron-healthcheck.js", "cron-link-check.js"]; // healthcheck reads source_runs, link check verifies stored URLs: neither is a source
   for (const file of fs.readdirSync(path.join(REPO, "api")).filter((f) => /^cron-.*\.js$/.test(f))) {
     const src = fs.readFileSync(path.join(REPO, "api", file), "utf8");
     const logged = /require\(["']\.\/_lib\/(run-log|cron-run)["']\)/.test(src);

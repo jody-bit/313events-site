@@ -112,6 +112,18 @@
     {
       "path": "/api/cron-antonartcenter",
       "schedule": "15 14 * * *"
+    },
+    {
+      "path": "/api/cron-link-check",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron-link-check",
+      "schedule": "30 16 * * *"
+    },
+    {
+      "path": "/api/cron-link-check",
+      "schedule": "30 19 * * *"
     }
   ],
   "functions": {
@@ -168,6 +180,9 @@
     },
     "api/seasonal-qa.js": {
       "includeFiles": "api/_lib/seasonal-editorial/**"
+    },
+    "api/cron-link-check.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
