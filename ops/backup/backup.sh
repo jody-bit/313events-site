@@ -94,7 +94,7 @@ rc_n="$(awk -F'\t' '$1=="storage_objects"{print $2}' row_counts.tsv)"
 meta_n="$(awk '/^COPY storage.objects /{f=1; next} /^\\\.$/{f=0} f' storage_meta.sql | wc -l | tr -d ' ')"
 [ "$exp_n" = "$rc_n" ] && [ "$exp_n" = "$meta_n" ] || { echo "storage object count disagrees: list $exp_n, row_counts $rc_n, metadata dump $meta_n (Storage changed during the run; rerun)" >&2; false; }
 exp_bytes="$(awk -F'\t' '{s+=$3} END{print s+0}' storage_objects.tsv)"
-i=0
+i=0; hashed=0
 while IFS=$'\t' read -r b name size etag upd; do
   i=$((i + 1))
   mkdir -p "storage/$b/$(dirname "$name")"
@@ -103,7 +103,8 @@ while IFS=$'\t' read -r b name size etag upd; do
   e="$(printf '%s' "$etag" | tr -d '"')"
   case "$e" in
     [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])
-      [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; } ;;
+      [ "$(md5_of "storage/$b/$name")" = "$e" ] || { echo "content hash mismatch on object #$i" >&2; false; }
+      hashed=$((hashed + 1)) ;;
   esac
 done < storage_objects.tsv
 snap > storage_objects.after.tsv
@@ -134,6 +135,7 @@ STEP=manifest
   echo "pg_dump_version=$(pg_dump --version)"
   echo "storage_files=$got_n"
   echo "storage_bytes=$got_bytes"
+  echo "storage_content_hashed=$hashed"   # files whose eTag is a plain MD5 and matched; the rest are checked by size and the before/after snapshot
   echo "--- row_counts"; cat row_counts.tsv
   echo "--- sha256"
   sha256 db.dump schema.sql storage_meta.sql row_counts.tsv fingerprint.tsv acl_replay.sql buckets.json storage_objects.tsv

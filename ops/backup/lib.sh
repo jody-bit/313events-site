@@ -18,7 +18,7 @@ q() { { echo "set default_transaction_read_only = on;"; cat; } | psql "${DB:-dbn
 sweep_stale() {
   local d
   for d in "${TMPDIR:-/tmp}"/313events-work.* "${TMPDIR:-/tmp}"/313events-verify.* "$1"/313events-[0-9]*T[0-9]*Z; do
-    [ -d "$d" ] && rm -rf "$d"
+    if [ -d "$d" ]; then echo "swept stale plaintext left by an earlier run: $d" >&2; rm -rf "$d"; fi
   done
   return 0
 }

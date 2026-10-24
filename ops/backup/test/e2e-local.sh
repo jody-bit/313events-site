@@ -62,6 +62,7 @@ a="$(ls "$tmp"/out/*.tar.age)"
 [ "$(ls "$tmp/out" | grep -vc -E '\.tar\.age$|\.sha256$|\.manifest\.txt$')" = 0 ] || { ls "$tmp/out"; echo "FAIL: plaintext left behind"; exit 1; }
 grep -q '^storage_files=3$' "$tmp"/out/*.manifest.txt || { cat "$tmp"/out/*.manifest.txt; echo "FAIL: nested objects not all captured"; exit 1; }
 grep -q '^storage_bytes=25$' "$tmp"/out/*.manifest.txt || { echo "FAIL: byte total"; exit 1; }
+grep -q '^storage_content_hashed=2$' "$tmp"/out/*.manifest.txt || { echo "FAIL: content-hashed count (2 of 3 have a plain MD5 eTag)"; exit 1; }
 ! grep -aq 'PNGDATA' "$a" || { echo "FAIL: plaintext in archive"; exit 1; }
 echo "PASS 1: backup captured 3/3 objects (2 nested), bytes 25, no plaintext left"
 # 2. a missing object makes the backup fail closed
@@ -117,7 +118,8 @@ if ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="not-a-
 kill $SRC5 2>/dev/null || true; sleep 0.3
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" "" "" "" 2 & SRC6=$!; sleep 1
 ( PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b5.log" 2>&1 & BP=$!
-sleep 2; pkill -INT -P $BP 2>/dev/null || true; kill -INT $BP 2>/dev/null || true; wait $BP 2>/dev/null || true; sleep 1
+sleep 2; [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: something exists under the output folder DURING the run"; exit 1; }
+pkill -INT -P $BP 2>/dev/null || true; kill -INT $BP 2>/dev/null || true; wait $BP 2>/dev/null || true; sleep 1
 [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: leftovers after interrupt"; exit 1; }
 kill $SRC6 2>/dev/null || true
 echo "PASS 8: encryption failure and interrupt leave no plaintext and no partial archive"
@@ -126,6 +128,7 @@ kill $SRC3 2>/dev/null || true; sleep 0.3
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC7=$!; sleep 1
 mkdir -p "$tmp/t/313events-work.stale/storage" "$tmp/out9/313events-20200101T000000Z"; echo leftover > "$tmp/t/313events-work.stale/storage/x"
 ( TMPDIR="$tmp/t" PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out9" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b9.log" 2>&1 || { cat "$tmp/b9.log"; echo "FAIL: backup 9"; exit 1; }
+grep -q "swept stale plaintext" "$tmp/b9.log" || { echo "FAIL: sweep did not report what it removed"; exit 1; }
 [ ! -e "$tmp/t/313events-work.stale" ] && [ ! -e "$tmp/out9/313events-20200101T000000Z" ] || { echo "FAIL: stale plaintext not swept"; exit 1; }
 [ -z "$(ls "$tmp/t")" ] && [ -z "$(ls "$tmp/out9" | grep -v -E '\.tar\.age$|\.sha256$|\.manifest\.txt$')" ] || { echo "FAIL: leftovers after run 9"; exit 1; }
 kill $SRC7 2>/dev/null || true

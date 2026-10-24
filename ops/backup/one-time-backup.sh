@@ -89,7 +89,7 @@ echo "Archive:  $f"
 echo "Size:     $(fsize "$f") bytes"
 echo "SHA-256:  $(cut -d' ' -f1 "$base.tar.age.sha256")"
 echo "Created:  $(awk -F= '$1=="created_utc"{print $2}' "$base.manifest.txt")"
-echo "Storage:  $(awk -F= '$1=="storage_files"{print $2}' "$base.manifest.txt") files, $(awk -F= '$1=="storage_bytes"{print $2}' "$base.manifest.txt") bytes"
+echo "Storage:  $(awk -F= '$1=="storage_files"{print $2}' "$base.manifest.txt") files, $(awk -F= '$1=="storage_bytes"{print $2}' "$base.manifest.txt") bytes ($(awk -F= '$1=="storage_content_hashed"{print $2}' "$base.manifest.txt") content-hashed, the rest verified by size and the before/after snapshot)"
 echo "Row counts:"
 awk '/^--- row_counts/{go=1; next} /^--- sha256/{go=0} go' "$base.manifest.txt" | sed 's/^/  /'
 echo "Next: restore into the temporary project with ops/backup/restore-mac.sh (age key: $KEYDIR/age.key)"
