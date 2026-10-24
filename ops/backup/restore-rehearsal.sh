@@ -28,7 +28,8 @@ tq() { psql "$DB" -X -q -At -F $'\t' -v ON_ERROR_STOP=1 "$@"; }     # target ses
 
 # pg_restore errors can quote data, so only counts and the first error messages (no "Command was" lines) are shown.
 pg_restore --no-owner --dbname="$DB" "$d/db.dump" 2>"$work/restore.err" || true
-bad="$(grep -E '^pg_restore: error:' "$work/restore.err" | grep -v 'schema "public" already exists' | grep -vi 'command was' || true)"
+# A dump made while the dedicated backup account existed carries GRANTs to it; that account is not part of the restored project.
+bad="$(grep -E '^pg_restore: error:' "$work/restore.err" | grep -v 'schema "public" already exists' | grep -v 'role "backup_reader" does not exist' | grep -vi 'command was' || true)"
 if [ -n "$bad" ]; then echo "restore errors: $(echo "$bad" | wc -l | tr -d ' ')"; echo "$bad" | head -3 | cut -c1-140; exit 6; fi
 lap "database restored"
 

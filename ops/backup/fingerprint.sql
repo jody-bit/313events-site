@@ -1,5 +1,5 @@
 -- Core catalog fingerprint (mirrors supabase/verify/core_fingerprint.sql from PR #293). Read-only.
--- Output: group <tab> md5 <tab> line count. Includes table and column grants, so it proves the access boundary.
+-- Output: group <tab> md5 <tab> line count. Includes table and column grants (read from the ACL catalogs, so the result does not depend on the caller's own privileges), so it proves the access boundary.
 with core as (
   select c.oid, c.relname, c.relkind from pg_class c
   where c.relnamespace='public'::regnamespace and c.relkind in ('r','v')
@@ -17,6 +17,6 @@ select k, md5(string_agg(d, E'\n' order by d)) as h, count(*) as n from (
  union all select 'triggers', pg_get_triggerdef(t.oid) from pg_trigger t join core c on c.oid=t.tgrelid where not t.tgisinternal
  union all select 'policies', p.tablename||'.'||p.policyname||' '||p.cmd||' '||p.roles::text||' '||coalesce(p.qual,'-')||' '||coalesce(p.with_check,'-') from pg_policies p where p.schemaname='public' and p.tablename in (select relname from core)
  union all select 'rls', c.relname||' '||cl.relrowsecurity::text from core c join pg_class cl on cl.oid=c.oid where c.relkind='r'
- union all select 'table_grants', c.relname||' '||g.grantee||' '||g.privilege_type from core c join information_schema.role_table_grants g on g.table_schema='public' and g.table_name=c.relname where g.grantee in ('anon','authenticated','service_role')
- union all select 'column_grants', cp.table_name||'.'||cp.column_name||' '||cp.grantee||' '||cp.privilege_type from information_schema.column_privileges cp where cp.table_schema='public' and cp.grantee in ('anon','authenticated') and cp.table_name in (select relname from core)
+ union all select 'table_grants', c.relname||' '||r.rolname||' '||x.privilege_type from core c join pg_class cl on cl.oid=c.oid cross join lateral aclexplode(cl.relacl) x join pg_roles r on r.oid=x.grantee where r.rolname in ('anon','authenticated','service_role')
+ union all select 'column_grants', c.relname||'.'||a.attname||' '||r.rolname||' '||x.privilege_type from core c join pg_attribute a on a.attrelid=c.oid and a.attnum>0 and not a.attisdropped join pg_class cl on cl.oid=c.oid cross join lateral (select g.grantee, g.privilege_type from aclexplode(cl.relacl) g where g.privilege_type in ('SELECT','INSERT','UPDATE','REFERENCES') union select g.grantee, g.privilege_type from aclexplode(a.attacl) g) x join pg_roles r on r.oid=x.grantee where r.rolname in ('anon','authenticated')
 ) x group by k order by k;

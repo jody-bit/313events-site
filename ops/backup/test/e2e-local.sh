@@ -152,15 +152,8 @@ grep -q "swept stale plaintext" "$tmp/b9.log" || { echo "FAIL: sweep did not rep
 kill $SRC7 2>/dev/null || true
 echo "PASS 9: stale plaintext from a killed run is swept; working files live in the temp dir, output folder holds ciphertext only"
 # 10. the dedicated read-only role (no superuser, no pg_read_all_data) is sufficient for a complete backup and cannot write
-psql -X -q -d src <<'SQL'
-create role backup_reader login bypassrls connection limit 2;
-alter role backup_reader set default_transaction_read_only = on;
-grant usage on schema public, supabase_migrations, storage to backup_reader;
-grant select on all tables in schema public to backup_reader;
-grant select on all sequences in schema public to backup_reader;
-grant select on all tables in schema supabase_migrations to backup_reader;
-grant select on storage.buckets, storage.objects to backup_reader;
-SQL
+psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_before.txt"
+sed "s/PASTE-PASSWORD-HERE/testpw/" "$here/backup_reader_create.sql" | psql -X -q -d src
 kill $SRC3 2>/dev/null || true; sleep 0.3; rm -rf "$tmp/out"
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC10=$!; sleep 1
 ( PGUSER=backup_reader PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b10.log" 2>&1 || { cat "$tmp/b10.log"; echo "FAIL: backup as backup_reader"; exit 1; }
@@ -169,4 +162,56 @@ if PGUSER=backup_reader psql -X -q -d src -c "insert into public.venues(name) va
 if PGUSER=backup_reader psql -X -q -d src -c "select * from pg_authid" >/dev/null 2>&1; then echo "FAIL: backup_reader can read pg_authid"; exit 1; fi
 kill $SRC10 2>/dev/null || true
 echo "PASS 10: dedicated read-only role makes a complete backup (incl. RLS tables) and cannot write"
+# 10b. effective privilege boundary, even with the read-only default overridden in the connection and the session
+psql -X -q -d src -c "create schema auth; create table auth.users(id int, email text); insert into auth.users values (1,'a@b'); create schema vault; create table vault.secrets(s text); insert into vault.secrets values ('s')"
+PGO="-c default_transaction_read_only=off"
+bq() { PGOPTIONS="$PGO" PGUSER=backup_reader psql -X -q -d src -c "set default_transaction_read_only=off; $1" >/dev/null 2>&1; }
+for stmt in "insert into public.venues(name) values ('x')" "update public.venues set name='z'" "delete from public.venues" "truncate public.venues" \
+  "create table public.t(a int)" "create schema s" "create function public.nf() returns int language sql as 'select 1'" "create role r" \
+  "create extension pgcrypto" \
+  "drop table public.venues" "alter table public.venues owner to backup_reader" "alter table public.venues disable row level security" \
+  "create policy p on public.venues using (true)" "create table storage.t(a int)" "create table supabase_migrations.t(a int)" "insert into storage.objects(bucket_id,name) values ('a','b')" \
+  "select nextval('public.venues_id_seq')" "select setval('public.venues_id_seq',100)" "select * from pg_authid" "set role postgres" "set session authorization postgres" \
+  "copy public.venues to program 'id'" "select pg_read_file('/etc/passwd')" "select pg_ls_dir('/')" "select lo_import('/etc/passwd')" "alter system set work_mem='1MB'" \
+  "select * from auth.users" "select * from vault.secrets" "create table auth.t(a int)" \
+  "select pg_terminate_backend(pid) from pg_stat_activity where usename='postgres'" "select pg_reload_conf()" "create database zz"; do
+  if bq "$stmt"; then echo "FAIL: backup_reader was able to run: $stmt"; exit 1; fi
+done
+# GRANT/REVOKE by a non-owner are WARNING no-ops (exit code 0), so judge them by effect on the ACL state, not by exit status
+for stmt in "grant select on public.events to anon" "grant all on public.venues to public" "revoke select on public.venues from anon" "grant select on all tables in schema public to authenticated" "revoke all on all tables in schema public from service_role"; do
+  bq "$stmt" || true
+  psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_probe.txt"
+  cmp -s "$tmp/acl_before.txt" "$tmp/acl_probe.txt" || { echo "FAIL: backup_reader changed privileges with: $stmt"; exit 1; }
+done
+[ "$(psql -X -At -d src -c "select count(*) from public.venues")" = 2 ] || { echo "FAIL: venues changed"; exit 1; }
+echo "PASS 10b: 35 write/DDL/grant/escalation/unauthorized-schema statements all denied with the read-only default overridden; 5 GRANT/REVOKE attempts changed nothing"
+# what the role CAN do, stated honestly: reads (including RLS-protected rows via BYPASSRLS), temp objects, its own settings
+[ "$(PGUSER=backup_reader psql -X -At -d src -c "select count(*) from public.events")" = 25 ] || { echo "FAIL: BYPASSRLS read of all rows"; exit 1; }
+PGUSER=backup_reader PGOPTIONS="$PGO" psql -X -q -d src -c "set default_transaction_read_only=off; create temp table tt(a int); insert into tt values (1)" >/dev/null 2>&1 && echo "NOTE: temp tables are allowed (PUBLIC has TEMP on the database); they vanish with the session and touch no production object"
+# the fingerprint taken as backup_reader equals the one taken by the owner (privilege-visibility independent)
+fo="$(psql -X -q -At -F, -d src -f "$here/fingerprint.sql")"; fr="$(PGUSER=backup_reader psql -X -q -At -F, -d src -f "$here/fingerprint.sql")"
+[ "$fo" = "$fr" ] || { diff <(echo "$fo") <(echo "$fr") || true; echo "FAIL: fingerprint differs by caller"; exit 1; }
+echo "PASS 10c: fingerprint is identical whether taken by the owner or by backup_reader"
+# 10d. verified removal: revoke exactly what was granted, drop the role, ACL state hash equals the pre-create value
+psql -X -q -d src -c "drop role backup_reader" >/dev/null 2>&1 && { echo "FAIL: plain drop role succeeded while grants exist (should be refused)"; exit 1; }
+echo "PASS 10d-1: DROP ROLE alone is refused while grants exist (nothing can be dropped by accident)"
+psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_mid.txt"
+[ "$(psql -X -At -d src -c "select count(*) from pg_roles where rolname='backup_reader'")" = 1 ] || { echo "FAIL: role missing"; exit 1; }
+psql -X -q -At -d src -v ON_ERROR_STOP=1 -f "$here/backup_reader_remove.sql" > "$tmp/rm.log" 2>&1 || { cat "$tmp/rm.log"; cp "$tmp/rm.log" /tmp/rm.log; echo "FAIL: removal script"; exit 1; }
+[ "$(head -1 "$tmp/rm.log")" = 0 ] || { cat "$tmp/rm.log"; echo "FAIL: role owns objects"; exit 1; }
+[ "$(psql -X -At -d src -c "select count(*) from pg_roles where rolname='backup_reader'")" = 0 ] || { echo "FAIL: role not dropped"; exit 1; }
+psql -X -q -d src -f "$here/acl_state.sql" -At > "$tmp/acl_after.txt"
+cmp -s "$tmp/acl_before.txt" "$tmp/acl_after.txt" || { cat "$tmp/acl_before.txt" "$tmp/acl_after.txt"; echo "FAIL: ACL state differs after removal"; exit 1; }
+cmp -s "$tmp/acl_before.txt" "$tmp/acl_mid.txt" || { echo "FAIL: acl_state.sql should ignore backup_reader grants"; exit 1; }
+[ "$(psql -X -At -d src -c "select count(*) from public.events")" = 25 ] && psql -X -q -At -d src -c "set role anon; select count(*) from public.events" | grep -q 12 || { echo "FAIL: app access changed"; exit 1; }
+echo "PASS 10d: scripted removal (revokes + plain DROP ROLE) leaves the ACL state hash identical to before creation; anon access unchanged"
+# 10e. after the role is gone (as on the rehearsal project) the dedicated-role archive restores end to end, including the access-boundary fingerprint gate
+psql -X -q -c "create database dst3"
+psql -X -q -d dst3 -c "alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role; alter default privileges in schema public grant execute on functions to anon, authenticated, service_role; create schema storage; create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text, metadata jsonb, updated_at timestamptz default now());"
+mkdir -p "$tmp/dstfiles3"; python3 "$here/test/mock_storage.py" 54332 "$tmp/dstfiles3" "$KEY" "" dst3 & DST3=$!; sleep 1
+a10="$(ls "$tmp"/out/*.tar.age | tail -1)"
+( PGDATABASE=dst3 AGE_IDENTITY="$tmp/id" ARCHIVE="$a10" RESTORE_SUPABASE_URL=http://127.0.0.1:54332 RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >"$tmp/r10.log" 2>&1 || { cat "$tmp/r10.log"; echo "FAIL: restore of backup_reader archive"; exit 1; }
+grep -q 'ALL CHECKS PASSED' "$tmp/r10.log" && [ "$(grep -c '^ok   fingerprint' "$tmp/r10.log")" = "$(grep -c '^ok   fingerprint' "$tmp/r.log")" ] || { cat "$tmp/r10.log"; echo "FAIL: fingerprint gate on backup_reader archive"; exit 1; }
+kill $DST3 2>/dev/null || true
+echo "PASS 10e: archive made as backup_reader (carrying GRANTs to a role the target does not have) restores end to end; every fingerprint group equal to the source"
 echo "PASS: e2e-local"
