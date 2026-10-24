@@ -84,6 +84,13 @@ allSame("Canton", "Canton Township Community and Special Events", true);
 allSame("Canton", "VisitDetroit", true);
 allSame("Bowling Green", "Bowling Green State University", true);
 allSame("Tecumseh, ON", "anything", true);
+allSame("Highland", "VisitDetroit", true);
+allSame("Highland, MI", "anything", true);
+allSame("Belle River", "Tourism Windsor Essex Pelee Island", true);
+allSame("Belle River", "Some Other Feed", false);
+allSame("Romulus", "TechTown Detroit", true);
+allSame("Inkster", "TechTown Detroit", true);
+allSame("Hazel Park", "Editorial Review (Automated)", true);
 allSame("Canton", "Ticketmaster", false);        // bare name, no jurisdiction evidence: not guessed
 allSame("Redford", "Some Other Feed", false);
 console.log("PASS: sourced Phase 2 cities place only with jurisdiction evidence, on every surface");
@@ -91,20 +98,24 @@ console.log("PASS: sourced Phase 2 cities place only with jurisdiction evidence,
 // Never guessed.
 for (const [city, source] of [
   ["2810 Russell St.", "Eastern Market Partnership"], ["West", "Windsor Symphony Orchestra"], ["October 29", "Macomb Township Events"],
-  ["Tech   Mount Clemens", "x"], ["Highland", "VisitDetroit"], ["Belle River", "Tourism Windsor Essex Pelee Island"],
-  ["Dryden", "Avenue Ticketing"], ["Dresden", "x"], ["Warren, OH", "x"], ["Troy, NY", "x"], ["Mtn View", "x"]
+  ["Tech   Mount Clemens", "x"], ["Highland", "Ticketmaster"],
+  ["Dresden", "x"], ["Warren, OH", "x"], ["Troy, NY", "x"], ["Mtn View", "x"]
 ]) allSame(city, source, false);
-assert.strictEqual(PE.locate(ev("Dryden", "x"), mapLookup).reason, "not-in-table");
+assert.strictEqual(PE.locate(ev("Dresden", "x"), mapLookup).reason, "not-in-table");
+assert.strictEqual(PE.locate(ev("Dryden", "x"), mapLookup).reason, "source-not-evidence");
 assert.strictEqual(PE.locate(ev("Canton", "Ticketmaster"), mapLookup).reason, "source-not-evidence");
 console.log("PASS: addresses, dates, typos, other-state names and unsourced places stay unplaced (never guessed)");
 
-// Dryden becomes eligible only when a sourced coordinate row exists (EI/Platform dependency);
-// Dryden Township is under 75 miles from Detroit's border, so the Orbit rule keeps it.
-const drydenRow = { name: "Dryden", type: "city", region: "Michigan", lat: 43.43, lng: -83.12, sources: ["avenue ticketing"] };
-const withDryden = PE.buildLookup(mapCities, P2.concat([drydenRow]));
-assert.strictEqual(PE.withinPlace(ev("Dryden", "Avenue Ticketing"), withDryden, detroit, "orbit").eligible, true);
-assert.strictEqual(PE.withinPlace(ev("Dryden", "Some Other Feed"), withDryden, detroit, "orbit").eligible, false);
-console.log("PASS: a sourced Dryden row would make Dryden events Orbit-eligible (test coordinate only; production row needs EI's Census value)");
+// Dryden, Michigan (Census TIGERweb village point, added to Phase 2 on 2026-10-24) is eligible:
+// ~34 mi from Detroit's border. Only for a feed that is jurisdiction evidence, and never as Dryden, Ontario.
+allSame("Dryden", "Manual", true);
+allSame("Dryden", "Avenue Ticketing", true);
+allSame("Dryden, MI", "anything", true);
+allSame("Dryden, Michigan", "anything", true);
+allSame("Dryden", "Some Other Feed", false);
+allSame("Dryden, ON", "Manual", false);
+allSame("Dresden", "Manual", false);
+console.log("PASS: Dryden, MI is Orbit-eligible on every surface (listed feeds or explicit state); Dryden, ON and Dresden are not");
 
 // ---- 4. the Orbit is measured from the border, not the centre ----
 const lansing = homeCities.find((c) => c.name === "Lansing");
@@ -143,17 +154,17 @@ const unplacedOn = {
   map: PE.partition(events, mapLookup).unplaced
 };
 // Placement facet counts events that pass every other filter; with 'when: all' that is all of them.
-assert.deepStrictEqual(unplacedOn, { home: 14, cal: 14, map: 14 }, "420 -> 14 on every surface: " + JSON.stringify(unplacedOn));
+assert.deepStrictEqual(unplacedOn, { home: 9, cal: 9, map: 9 }, "420 -> 9 on every surface: " + JSON.stringify(unplacedOn));
 const residual = events.filter((x) => PE.locate(x, mapLookup).status !== "placed").map((x) => x.city + " / " + x.source);
 assert.deepStrictEqual([...new Set(residual)].sort(), [
-  "2810 Russell St. / Eastern Market Partnership", "Belle River / Tourism Windsor Essex Pelee Island", "Highland / VisitDetroit",
-  "Hazel Park / Editorial Review (Automated)", "Inkster / TechTown Detroit", "October 29 / Macomb Township Events",
-  "Romulus / TechTown Detroit", "Tech   Mount Clemens / Mount Clemens Public Library - Adult Events", "West / Windsor Symphony Orchestra"
+  "2810 Russell St. / Eastern Market Partnership",
+  "October 29 / Macomb Township Events",
+  "Tech   Mount Clemens / Mount Clemens Public Library - Adult Events", "West / Windsor Symphony Orchestra"
 ].sort());
-// Every one of the 406 recovered events is inside the Orbit by the border rule.
+// Every one of the 411 recovered events is inside the Orbit by the border rule.
 const placed = events.filter((x) => PE.locate(x, mapLookup).status === "placed");
-assert.strictEqual(placed.length, 406);
+assert.strictEqual(placed.length, 411);
 assert.ok(placed.every((x) => PE.inOrbit(PE.locate(x, mapLookup).loc)), "no recovered event is outside the Orbit");
-console.log("PASS: production impact fixture, 420 unplaced -> 14 (exceptions named), 406 recovered all inside the Orbit");
+console.log("PASS: production impact fixture, 420 unplaced -> 9 (exceptions named), 411 recovered all inside the Orbit");
 
 console.log("\nAll place-eligibility tests passed.");
