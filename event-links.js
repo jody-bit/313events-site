@@ -6,8 +6,8 @@
 // "Tickets & info" button and the event page was demoted or hidden. A venue homepage says nothing about one event.
 //
 // Preference order (owner, 2026-10-23):
-//   1. a verified event-specific ticket_url                    -> primary, "Get tickets"
-//   2. an event-specific event_url (organizer/source/venue listing) -> primary, labelled "Event details" (no ticket claim)
+//   1. an event-specific ticket_url on a ticketing host         -> primary, "Get tickets"
+//   2. any other event-specific link (event_url, or a listing page in ticket_url) -> primary, "Event details" (no ticket claim)
 //   3. a bare venue homepage (in either field)                 -> never primary; a secondary "Venue website" link
 //   4. nothing                                                 -> no link (callers keep their own fallback)
 // "Event details" is shown beside a ticket link only when it is a distinct, event-specific URL. Nothing here rewrites stored
@@ -32,6 +32,22 @@
     return u.pathname.replace(/\/+$/, "") === "" && !u.search && !u.hash;
   }
 
+  // Hosts that sell tickets (owner, 2026-10-24: "GET TICKETS: verified ticketing destinations"). A specific link on any other host
+  // that sits in ticket_url (a VisitDetroit or other listing page, a venue's own page) is an event-information page, so it is
+  // labelled "Event details", never "Get tickets". Mirrors the ticketing hosts in api/_lib/link-health.js, minus listing
+  // sites (bandsintown, songkick, signupgenius). Affiliate wrappers are the Ticketmaster/Impact redirects.
+  const TICKET_VENDORS = [
+    "ra.co", "eventbrite.com", "dice.fm", "ticketmaster.com", "livenation.com", "axs.com", "seetickets.us", "ticketweb.com",
+    "eventim.us", "showclix.com", "universe.com", "ticketleap.com", "posh.vip", "fearticket.com", "etix.com", "tixr.com",
+    "crowdwork.com", "veezi.com", "spektrix.com", "evyy.net", "pxf.io", "sjv.io"
+  ];
+  function isTicketVendor(value) {
+    const u = cleanUrl(value);
+    if (!u) return false;
+    const host = u.hostname.replace(/^www\./, "").toLowerCase();
+    return TICKET_VENDORS.some(function (h) { return host === h || host.endsWith("." + h); });
+  }
+
   // e: { ticketUrl, eventPageUrl, free }. Returns { primary, event, venue }, each null or { url, label }.
   function resolve(e) {
     const ticket = e && cleanUrl(e.ticketUrl) ? String(e.ticketUrl).trim() : null;
@@ -40,17 +56,20 @@
     const pageSpecific = page && !isBareHomepage(page) ? page : null;
     const homepage = (ticket && !ticketSpecific ? ticket : null) || (page && !pageSpecific ? page : null);
     
-    // Labels (owner, 2026-10-23): "Get tickets" claims a ticket link; an event page with no ticket link is "Event details".
-    // Free or not is never inferred from which link exists, so the label does not depend on e.free.
-    const primary = ticketSpecific ? { url: ticketSpecific, label: "Get tickets" } : pageSpecific ? { url: pageSpecific, label: "Event details" } : null;
+    // Labels (owner, 2026-10-23 and 2026-10-24): "Get tickets" only for a ticketing destination; any other event-specific page,
+    // including a listing site's page stored in ticket_url, is "Event details". Free or not is never inferred from which link
+    // exists, so the label does not depend on e.free.
+    const vendorUrl = ticketSpecific && isTicketVendor(ticketSpecific) ? ticketSpecific : null;
+    const infoUrl = (ticketSpecific && !vendorUrl ? ticketSpecific : null) || pageSpecific;
+    const primary = vendorUrl ? { url: vendorUrl, label: "Get tickets" } : infoUrl ? { url: infoUrl, label: "Event details" } : null;
     return {
       primary: primary,
-      event: ticketSpecific && pageSpecific && pageSpecific !== ticketSpecific ? { url: pageSpecific, label: "Event details" } : null,
+      event: vendorUrl && infoUrl && infoUrl !== vendorUrl ? { url: infoUrl, label: "Event details" } : null,
       venue: homepage ? { url: homepage, label: "Venue website" } : null
     };
   }
 
-  const api = { resolve: resolve, isBareHomepage: isBareHomepage };
+  const api = { resolve: resolve, isBareHomepage: isBareHomepage, isTicketVendor: isTicketVendor };
   if (typeof module !== "undefined" && module.exports) module.exports = { EventLinks: api };
   else (typeof window !== "undefined" ? window : globalThis).EventLinks = api;
 })(this);
