@@ -45,7 +45,7 @@ const fs = require("fs");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 global.EventDates = require(`${REPO_DIR}/event-dates.js`); // the page loads /event-dates.js before it asks Discovery; mirror that here (2026-10-16)
-const { Discovery: D } = require(`${REPO_DIR}/discovery.js`);
+const { Discovery: D } = (require(`${REPO_DIR}/search-match.js`), require(`${REPO_DIR}/discovery.js`));
 const { makeMockPostgrest } = require(`${REPO_DIR}/test/fixtures/mock-postgrest.js`);
 const { loadPage, inlineScript } = require(`${REPO_DIR}/test/fixtures/fake-dom.js`);
 const read = (f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
@@ -116,8 +116,8 @@ async function open(url, opts) {
   const page = loadPage({
     url: url || "/", now: opts.now || NOW, seed: SEED, fetch: api.fetch,
     geolocation: opts.geolocation,
-    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("discovery.js"), read("calendar-location.js"), SCRIPT],
-    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "discovery.js", "calendar-location.js", "index.html <script>"],
+    scripts: [read("legal-snippets.js"), read("paged-fetch.js"), read("event-dates.js"), read("search-match.js"), read("discovery.js"), read("calendar-location.js"), SCRIPT],
+    names: ["legal-snippets.js", "paged-fetch.js", "event-dates.js", "search-match.js", "discovery.js", "calendar-location.js", "index.html <script>"],
   });
   await page.settle();
   page.requests = api.log;

@@ -4372,6 +4372,7 @@
 <script src="/legal-snippets.js"></script>
 <script src="/paged-fetch.js"></script>
 <script src="/event-dates.js"></script>
+<script src="/search-match.js"></script>
 <script src="/discovery.js"></script>
 <script src="/calendar-location.js"></script>
 <script src="/config.js"></script>
@@ -7788,6 +7789,8 @@ function mapSupabaseRow(row) {
     // Any other city (Rochester Hills, Sterling Heights, Windsor ON, etc.)
     // shows, since that's exactly the info that was silently missing before.
     city: (row.venue_city && row.venue_city.toLowerCase() !== "detroit") ? decodeEntities(row.venue_city) : undefined,
+    // Search sees the city even when it is Detroit (the display field above hides it): one rule on every page (search-match.js).
+    searchCity: row.venue_city ? decodeEntities(row.venue_city) : undefined,
     // Calendar-export location inputs (calendar-location.js). The display
     // city above hides "Detroit"; the calendar needs the real one. The
     // street address is not in events_public -- loadCalendarLocations()
