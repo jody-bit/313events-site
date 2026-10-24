@@ -39,7 +39,7 @@ for (const slug of ["fall", "fall-color"]) {
 }
 // The public projection is exactly the authorized batch.
 const pub = ED.publishedProjection();
-assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [38, 41, 21], "public lists = the 79 authorized Fall records plus the 21 Halloween records that pass the gate");
+assert.deepStrictEqual([pub.fall.length, pub["fall-color"].length, pub.halloween.length], [38, 41, 19], "public lists = the 79 authorized Fall records plus the 19 Halloween records that pass the gate");
 // A third-party linked image is never a gate image: it is kept only as an unlicensed QA candidate.
 for (const slug of ["fall", "fall-color"]) for (const e of entries[slug]) {
   // Narrow, explicit exception (release batch 2, DEC-029): only the three pinned records may carry image.remote, and only with a complete

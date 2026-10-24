@@ -5665,7 +5665,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
    "image": {
@@ -5737,14 +5737,15 @@
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -7647,7 +7648,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Halloween light displays and characters",
    "website": "https://www.canterburyvillage.com/",
    "image": {
@@ -7716,14 +7717,15 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official event page lists 'Halloween Stroll 2026' and the 2026 season (read 2026-10-12, https://www.canterburyvillage.com/event/halloween-stroll/ and https://www.canterburyvillage.com/)."
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {

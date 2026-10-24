@@ -20,16 +20,14 @@ const AUTH_HALLOWEEN = { by: "Jody Tyree", at: "2026-10-11" };
 // approval): the first five (the original seven less Greenfield Village and Zoo Boo, ended 2026-10-25: owner photos, or linked images on the owner's risk acceptance) plus the 16 content-verified records
 // that took the owner's established "Illustrative image" route (owner direction 2026-10-12). Pinned by id, independent of the data.
 const HALLOWEEN_PUBLISHED = [
-  "azra-chamber-of-horrors", "blakes-haunted-attractions", "brick-or-treat-at-legoland-discovery-center", "crossroads-ghosts-goodies",
-  "deranged-haunt", "distracted-haunted-house", "eloise-asylum", "erebus", "field-of-fear",
-  "full-moon-manor-at-bonadeo-farms", "glenlore-carnevil-2", "halloween-stroll-at-canterbury-village", "hallowglow-at-treerunner", "hush-haunted-attraction",
+  "azra-chamber-of-horrors", "blakes-haunted-attractions", "brick-or-treat-at-legoland-discovery-center", "deranged-haunt", "distracted-haunted-house", "eloise-asylum", "erebus", "field-of-fear",
+  "full-moon-manor-at-bonadeo-farms", "glenlore-carnevil-2", "hallowglow-at-treerunner", "hush-haunted-attraction",
   "laser-halloween", "ooky-spooky-light-show", "scarefest-scream-park",
   "slaughterhouse-adventure", "spooky-trails", "the-howling-haunted-trail-and-party", "wildwood-manor-house"
 ];
 // The 16 that publish on the labelled-illustration route (generated artwork, "Illustrative image" label, never a photograph of the destination).
 const HALLOWEEN_ILLUSTRATED = [
-  "blakes-haunted-attractions", "brick-or-treat-at-legoland-discovery-center", "crossroads-ghosts-goodies",
-  "deranged-haunt", "distracted-haunted-house", "erebus", "field-of-fear", "full-moon-manor-at-bonadeo-farms", "halloween-stroll-at-canterbury-village", "laser-halloween",
+  "blakes-haunted-attractions", "brick-or-treat-at-legoland-discovery-center", "deranged-haunt", "distracted-haunted-house", "erebus", "field-of-fear", "full-moon-manor-at-bonadeo-farms", "laser-halloween",
   "ooky-spooky-light-show", "scarefest-scream-park",
   "slaughterhouse-adventure", "spooky-trails", "the-howling-haunted-trail-and-party", "wildwood-manor-house"
 ];
@@ -38,7 +36,7 @@ const HALLOWEEN_ILLUSTRATED = [
 const HALLOWEEN_EXCLUDED = { "exit-13-haunted-house": "closed", "scarehouse-windsor-immersive-dinner": "duplicate", "windsor-essex-yard-haunt-map": "duplicate",
   "sanilac-museums-haunted-village": "ended", "spooky-janes-walk": "ended", "sandwich-town-ghost-tour": "ended", "dearborn-haunted-trail": "ended",
   "fort-meigs-garrison-ghost-walk": "ended", "halloween-stroll": "ended",
-  "halloween-greenfield-village": "ended", "zoo-boo": "ended" };
+  "halloween-greenfield-village": "ended", "zoo-boo": "ended", "crossroads-ghosts-goodies": "ended", "halloween-stroll-at-canterbury-village": "ended" };
 // The 76 records of the closed Fall batch.
 function batch76(ED) { return new Set(ED.read("RELEASE_BATCH_1.json").records.map((r) => r.collection + "/" + r.id)); }
 // Every record that may be PUBLIC: the 76 plus the pinned Halloween 21.

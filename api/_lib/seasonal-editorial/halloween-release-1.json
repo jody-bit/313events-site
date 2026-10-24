@@ -133,6 +133,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "wiards-night-terrors": {
@@ -458,6 +468,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "brick-or-treat-at-legoland-discovery-center": {

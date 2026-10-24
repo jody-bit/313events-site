@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 41,
-  "eligiblePublished": 21,
+  "ownerApproved": 39,
+  "eligiblePublished": 19,
   "held": 20,
-  "excluded": 11,
+  "excluded": 13,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -187,36 +187,25 @@
    "inventoryNo": "39",
    "name": "Halloween Ghosts & Goodies at Crossroads Village",
    "city": "Flint",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "crossroads-ghosts-goodies",
-    "name": "Halloween Ghosts & Goodies at Crossroads Village",
-    "city": "Flint",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
-    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__crossroads-ghosts-goodies__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-3.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: Rodney Campbell, CC BY 2.0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "hush-haunted-attraction",
@@ -974,35 +963,25 @@
    "inventoryNo": "33",
    "name": "Halloween Stroll at Canterbury Village",
    "city": "Lake Orion",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "illustration",
    "rightsRoute": "owner-supplied-illustration",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "halloween-stroll-at-canterbury-village",
-    "name": "Halloween Stroll at Canterbury Village",
-    "city": "Lake Orion",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Halloween light displays and characters",
-    "website": "https://www.canterburyvillage.com/",
-    "image": {
-     "src": "/assets/seasonal/halloween-card-3.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": true
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "hallowglow-at-treerunner",
