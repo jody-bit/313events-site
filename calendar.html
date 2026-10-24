@@ -1453,7 +1453,7 @@ function matchesFilters(e, skipPlace){
     if(!skipPlace){
       const at = PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles);
       // "Show them" lets events with a location we haven't placed through; a placed city outside the radius stays out.
-      if(!at.eligible && !(showUnplaced && at.status === 'unplaced')) return false;
+      if(!at.eligible && !(showUnplaced && at.status === 'unplaced' && isCurrentOrUpcoming(e))) return false;
     }
   }
   return true;
@@ -1601,9 +1601,21 @@ function clearAllFilters(){
 // Events whose city cannot be placed are left out of a place filter (never guessed at). The line below says how many,
 // and "Show them" lets them through. Same wording as the homepage.
 let showUnplaced = false;
+// "Show them" and its count only cover current and upcoming events, the same window the homepage counts
+// (the calendar and map also load the last 8 days, which the notice must not count).
+function isCurrentOrUpcoming(e){
+  const today = getTodayISO();
+  const b = EventDates.bounds(e);
+  if(b.dates && b.dates.length) return b.dates.some(d => d >= today);
+  return (b.end || e.date) >= today;
+}
+function isUnmappedNow(e, lookup){
+  return originLocation && radiusMiles !== null && isCurrentOrUpcoming(e)
+    && PlaceEligibility.withinPlace(e, lookup, originLocation, radiusMiles).status === 'unplaced';
+}
 function unmappedTagHtml(e){
-  if(!showUnplaced || !originLocation || radiusMiles === null) return '';
-  return PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles).status === 'unplaced' ? ' <span class="unmapped-tag">Location not mapped yet</span>' : '';
+  if(!showUnplaced) return '';
+  return isUnmappedNow(e, PLACE_LOOKUP) ? ' <span class="unmapped-tag">Location not mapped yet</span>' : '';
 }
 function unplacedCount(){
   if(!originLocation || radiusMiles === null) return 0;
@@ -1611,7 +1623,7 @@ function unplacedCount(){
   let n = 0;
   EVENTS.forEach(e=>{
     if(e.id != null){ if(seen.has(e.id)) return; seen.add(e.id); }
-    if(matchesFilters(e, true) && PlaceEligibility.withinPlace(e, PLACE_LOOKUP, originLocation, radiusMiles).status === 'unplaced') n++;
+    if(matchesFilters(e, true) && isUnmappedNow(e, PLACE_LOOKUP)) n++;
   });
   return n;
 }

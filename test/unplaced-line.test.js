@@ -58,3 +58,15 @@ const ids = (c) => events.filter((e) => Discovery.matches(e, orbit, c)).map((e) 
   assert.ok(/syncUnplacedKey\(\)/.test(read("index.html")) && /syncUnplacedKey\(\)/.test(read("calendar.html")), "changing the place or radius hides them again");
   console.log("PASS: owner wording, no-confirmation text, per-card marker, no map pin, reset on filter change");
 }
+
+// 5. parity of the count: calendar and map load the last 8 days, the homepage counts current + upcoming only. The notice,
+// its reveal and the card tags must use the same window on every page (R&Q found 5 vs 22 on real data).
+{
+  for (const f of ["calendar.html", "map.html"]) {
+    const h = read(f);
+    assert.ok(/function isCurrentOrUpcoming\(e\)/.test(h) && /isCurrentOrUpcoming\(e\)\s*&&\s*PlaceEligibility/.test(h.replace(/\n\s*/g, " ")), f + " limits the unmapped count to current and upcoming events");
+    assert.ok(/at\.status === 'unplaced' && isCurrentOrUpcoming\(e\)/.test(h), f + " reveals only what it counts");
+    assert.ok(!/withinPlace\([^)]*\)\.status === 'unplaced'\) n\+\+/.test(h), f + " no longer counts past events");
+  }
+  console.log("PASS: count, reveal and tags use the current-and-upcoming window on calendar and map");
+}
