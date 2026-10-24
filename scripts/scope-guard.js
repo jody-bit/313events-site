@@ -110,7 +110,9 @@ const ALLOWED = [
   "api/_lib/editorial-verification.js",
   "api/admin-editorial.js",
   "supabase/migrations/20261016000000_dq004_editorial_link_verification.sql",
-  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql"
+  "supabase/migrations/20261016000001_dq004_editorial_public_read_verified_only.sql",
+  // Migration governance (owner decision 2026-10-24): comment-only baseline marker and its README authority section.
+  "supabase/migrations/20261024000000_baseline_marker.sql", "supabase/migrations/README.md"
 ];
 
 class ScopeGuardError extends Error {}

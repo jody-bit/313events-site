@@ -1,0 +1,18 @@
+-- BASELINE MARKER. Comment-only: changes no schema, no data, no privileges. Safe to apply twice.
+--
+-- Purpose: give the native migration history one clean starting line. Everything before this file is captured by
+-- 20261006000000_baseline_schema.sql, 20261006000001_reference_data.sql, 20261006000002_baseline_grants.sql,
+-- 20261006000003_sz01_public_access_boundary.sql and the later files in this directory, plus the legacy
+-- supabase/migration_*.sql / update_*.sql record (which is history and must never be replayed).
+-- Existing rows in public.schema_migrations and the native migration table are NOT edited, deleted or consolidated.
+--
+-- Core catalog fingerprint measured 2026-10-24 with supabase/verify/core_fingerprint.sql, identical on production and
+-- staging in every group except view_options (events_public security_invoker, pending its own release):
+--   columns        3ec6fbe9058049a6a4d689c3f396711e   column_grants 66e15377d09cf49a658f7af359d27b25
+--   constraints    bb35e75e853127b97859515a8f8991e8   indexes       cf76539c1812b682b46a9f7e2ad97ea3
+--   policies       15a4a3be95308e1a8ebb759af9e937ff   rls           9f566fa400deb356bf1775ee2a108b6a
+--   table_grants   d05d79c36d4e209a5c048b26b23f51af   functions     f541620a195ffde3467c28efd5294510
+--   triggers       3158906f24c993c8cf95e9c2f6c42e31   views         4d4f2e8b07728d41a306874cd3458dd5
+--   enums          7cf7e2ee6a70fd56293886f016ceabed
+-- Full record: supabase/verify/core-fingerprint-baseline.json.
+select 1;
