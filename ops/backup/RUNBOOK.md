@@ -44,3 +44,9 @@ Only into a new, empty, isolated project (never production or staging; `restore-
 
 ## Disaster recovery (real incident)
 Create a new project, run the same restore steps, then repoint the app: update Supabase URL and keys in Vercel (production), redeploy, re-register cron secrets, re-create Storage bucket policies. Expected recovery time and loss are the measured rehearsal numbers.
+
+## One-time local backup (no credentials in chat)
+`ops/backup/one-time-backup.sh` on the owner's Mac. Secrets come from environment, the macOS Keychain, or a hidden prompt; none is echoed, passed as an argument or stored. It creates the age key pair on first run at `~/.313events-backup/age.key` (outside the repo and CI; copy it to the password manager), runs `backup.sh` in local-only mode, and prints the archive path, size and manifest row counts.
+
+## Tests
+`ops/backup/test/dry-run.sh` (flow, manifest, ciphertext only) and `ops/backup/test/no-secret-leak.sh` (sentinel secrets never appear in output or manifest; no `set -x`). Full git history (1,073 commits) was scanned for key-shaped strings on 2026-10-24: only fake test fixtures matched.
