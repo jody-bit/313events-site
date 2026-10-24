@@ -39,6 +39,10 @@ const ANDREA = "Andrea Gibson reads from their new collection for an evening of 
   assert.strictEqual(isGenericBiography("Death metal veterans best known for their riffs, with support from Soul Glo.", { title: "Chat Pile w/ Soul Glo" }), true, "named support act in the title");
   assert.strictEqual(isGenericBiography("Legendary daredevil with special guest Bello Nock.", { title: "Ringling: Bello Nock and friends" }), true);
   assert.strictEqual(isGenericBiography("Known for hits, with support from Zed Quartet.", { title: "Band Live" }), false, "support act the title does not name");
+  assert.strictEqual(isGenericBiography("Veterans known for riffs, with support from Virginia bluegrass act The Steel Wheels.", { title: "Old Crow Medicine Show w/ The Steel Wheels" }), true, "descriptor before the act name");
+  assert.strictEqual(isGenericBiography("Philadelphia hardcore act Soul Glo in support. Best known for noise.", { title: "Chat Pile w/ Soul Glo" }), true, "name before 'in support'");
+  assert.strictEqual(isGenericBiography("Pop star best known for hits, in support of new music.", { title: "Em Beihold" }), true);
+  assert.strictEqual(isGenericBiography("Punks best known for anthems, with supporting acts.", { title: "Blitzkid" }), true);
   assert.strictEqual(isGenericBiography("Country star known for radio hits, with a hotel package.", { title: "Lee Brice", incoming: "Includes a hotel stay." }), true);
   assert.strictEqual(isGenericBiography("Country star known for radio hits, with a hotel package.", { title: "Lee Brice" }), false);
 

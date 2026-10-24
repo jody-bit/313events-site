@@ -62,21 +62,27 @@ const HARD_FACT_RE = /(\$\s?\d|\b\d{1,2}(:\d{2})?\s?(a|p)\.?m\b|\b(doors?|resche
 // "X with support from Y" or "ticket-and-hotel package" already carries them).
 const SOFT_FACT_RE = /\b(support(ed|ing)?|special guests?|opening act|package)\b/i;
 const SOFT_FACT_G = new RegExp(SOFT_FACT_RE.source, "gi");
-// "support from Rain City Drive", "special guest Bello Nock": the named act decides, not the word.
-const SUPPORT_NAME_RE = /\b(?:support(?:ed|ing)?|special guests?|opening act)\b(?:\s+(?:from|by|with|of))?\s+((?:[A-Z][\w'’.&-]*\s?){1,4})/g;
 const CONCRETE_FACT_RE = new RegExp(HARD_FACT_RE.source + "|" + SOFT_FACT_RE.source, "i");
+const CAP_STOP = new Set(["the", "and", "with", "from", "for", "his", "her", "their", "new"]);
+function capitalisedWords(clause) {
+  return (clause.match(/\b[A-Z][\w'’&-]+/g) || []).map((w) => w.toLowerCase().replace(/['’]s$/, "")).filter((w) => w.length > 2 && !CAP_STOP.has(w));
+}
 function storedOnlyFacts(text, ...others) {
   const hard = text.match(new RegExp(HARD_FACT_RE.source, "gi")) || [];
   const known = others.filter(Boolean).join(" ").toLowerCase();
-  const names = [...text.matchAll(SUPPORT_NAME_RE)].map((m) => ({ phrase: m[0].trim().toLowerCase(), first: m[1].trim().split(/\s+/)[0].toLowerCase() }));
   const soft = [];
-  for (const f of text.match(SOFT_FACT_G) || []) {
-    const word = f.toLowerCase();
-    if (word === "package") { if (!/hotel|package|ticket/.test(known)) soft.push(f); continue; }
-    // a support / special-guest phrase is a stored-only fact only when the named act is absent from the title and source text
-    const n = names.find((x) => x.phrase.startsWith(word));
-    const said = n ? known.includes(n.first) : known.includes(word.replace(/(ed|ing)$/, ""));
-    if (!said) soft.push(f);
+  for (const m of text.matchAll(SOFT_FACT_G)) {
+    const word = m[0].toLowerCase();
+    if (word === "package") { if (!/hotel|package|ticket/.test(known)) soft.push(m[0]); continue; }
+    // "in support of new music" and "with supporting acts" name no one: not a fact
+    const after = text.slice(m.index + m[0].length);
+    if (/^\s+of\b/i.test(after)) continue;
+    // the named act is in the clause after the phrase ("support from garage-rock veterans The Flamin' Groovies") or just
+    // before it ("Soul Glo in support"); the fact is stored-only when none of those names is in the title or source text
+    const clause = after.split(/[.;]/)[0].slice(0, 90) + " " + text.slice(Math.max(0, m.index - 30), m.index).split(/[.;,]/).pop();
+    const names = capitalisedWords(clause);
+    if (!names.length) continue;
+    if (!names.some((n) => known.includes(n))) soft.push(m[0]);
   }
   return hard.concat(soft);
 }
