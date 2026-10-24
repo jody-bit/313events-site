@@ -56,12 +56,24 @@ function decideSourceDescription({ stored, storedSource, incoming, title }) {
 // that needs a schema change and is inert until it exists) AND it reads like a generic biography: a short text that says
 // what the artist is known for and carries no date, price or time. Anything else with a null source is kept as written.
 const GENERIC_BIO_RE = /\b(known for|best known|celebrated|renowned|legendary|pioneering|veteran|long-running|fast-rising|grammy-winning)\b/i;
-const CONCRETE_FACT_RE = /(\$\s?\d|\b\d{1,2}(:\d{2})?\s?(a|p)\.?m\b|\b(doors?|support(ed|ing)?|special guests?|opening act|rescheduled|postponed|vip|package|sold out|presale|on sale)\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}\b|\b\d{1,2}\/\d{1,2}\b)/i;
+// Hard facts: always a concrete fact. A date fraction must be a real month/day, so a tour name like "80/65" is not one.
+const HARD_FACT_RE = /(\$\s?\d|\b\d{1,2}(:\d{2})?\s?(a|p)\.?m\b|\b(doors?|rescheduled|postponed|vip|sold out|presale|on sale)\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}\b|\b(1[0-2]|0?[1-9])\/(3[01]|[12]\d|0?[1-9])\b)/i;
+// Soft facts: a stored-only fact only when the title and the source text do not already say it (a TM title like
+// "X with support from Y" or "ticket-and-hotel package" already carries them).
+const SOFT_FACT_RE = /\b(support(ed|ing)?|special guests?|opening act|package)\b/i;
+const SOFT_FACT_G = new RegExp(SOFT_FACT_RE.source, "gi");
+const CONCRETE_FACT_RE = new RegExp(HARD_FACT_RE.source + "|" + SOFT_FACT_RE.source, "i");
+function storedOnlyFacts(text, ...others) {
+  const hard = text.match(new RegExp(HARD_FACT_RE.source, "gi")) || [];
+  const known = others.filter(Boolean).join(" ").toLowerCase();
+  const soft = (text.match(SOFT_FACT_G) || []).filter((f) => !known.includes(f.toLowerCase().replace(/(ed|ing)$/, "")));
+  return hard.concat(soft);
+}
 const GENERIC_BIO_MAX_CHARS = 260;
 
-function isGenericBiography(text) {
+function isGenericBiography(text, { title = "", incoming = "" } = {}) {
   const d = typeof text === "string" ? text.trim() : "";
-  return d.length > 0 && d.length < GENERIC_BIO_MAX_CHARS && GENERIC_BIO_RE.test(d) && !CONCRETE_FACT_RE.test(d);
+  return d.length > 0 && d.length < GENERIC_BIO_MAX_CHARS && GENERIC_BIO_RE.test(d) && storedOnlyFacts(d, title, incoming).length === 0;
 }
 
 // -> { action: "keep" | "replace" | "review", reason }
@@ -80,13 +92,13 @@ function decideEventSpecificDescription({ stored, storedSource, incoming, title 
   const researchTag = storedSource === "research_unsourced";
   const unknown = storedSource === null || storedSource === undefined || storedSource === "";
   const generated = storedSource === "generated";
-  const replaceable = researchTag || generated || (unknown && (isGenericBiography(old) || !descriptionQuality(old, title).ok));
+  const replaceable = researchTag || generated || (unknown && (isGenericBiography(old, { title, incoming: inc }) || !descriptionQuality(old, title).ok));
   if (!replaceable) return { action: "keep", reason: "stored_text_preserved" };
   // stronger facts: if the stored text carries a concrete fact the source text lacks, a person decides
-  const storedFacts = old.match(new RegExp(CONCRETE_FACT_RE.source, "gi")) || [];
+  const storedFacts = storedOnlyFacts(old, title);
   const lost = storedFacts.filter((f) => !inc.toLowerCase().includes(f.toLowerCase()));
   if (lost.length) return { action: "review", reason: "stored_text_has_facts_the_source_lacks: " + lost.slice(0, 3).join(", ") };
-  if (inc.length < old.length && !(researchTag || generated || isGenericBiography(old))) return { action: "keep", reason: "never_replace_with_shorter" };
+  if (inc.length < old.length && !(researchTag || generated || isGenericBiography(old, { title, incoming: inc }))) return { action: "keep", reason: "never_replace_with_shorter" };
   return { action: "replace", reason: researchTag ? "research_unsourced_replaced_by_source" : generated ? "generated_replaced_by_source" : "generic_biography_replaced_by_source" };
 }
 

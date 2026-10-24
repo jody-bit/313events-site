@@ -30,6 +30,12 @@ const ANDREA = "Andrea Gibson reads from their new collection for an evening of 
   assert.strictEqual(isGenericBiography(ANDREA), false, "event-specific research text is not generic");
   assert.strictEqual(isGenericBiography("Known for hits, plays with support from Foo on Oct 30 at 8 PM."), false, "dates, times and support acts are facts");
   assert.strictEqual(isGenericBiography(""), false);
+  // EI audit 2026-10-24: support acts / packages already named in the title are not stored-only facts
+  assert.strictEqual(isGenericBiography("Pop-punk veterans, best known for their anthems, tour with support from Rain City Drive.", { title: "Sleeping with Sirens with support from Rain City Drive" }), true);
+  assert.strictEqual(isGenericBiography("Country star known for radio hits, in a ticket-and-hotel package.", { title: "Lee Brice ticket-and-hotel package" }), true);
+  assert.strictEqual(isGenericBiography("Known for hits, plays with support from Foo.", { title: "Band Live" }), false, "a support act the title does not name stays a stored fact");
+  assert.strictEqual(isGenericBiography("Legendary singer on her 80/65 Tour."), true, "80/65 is a tour name, not a date");
+  assert.strictEqual(isGenericBiography("Legendary singer, doors at 7."), false);
 
   // decisions
   assert.strictEqual(decide({ stored: BIO, storedSource: null, incoming: INFO, title: "Vince Staples" }).action, "replace");
