@@ -2,10 +2,11 @@ const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
 const { buildVenueNameToIdMap, resolveVenueId } = require("./_lib/venue-lookup");
 const { milesFromDetroitBorder } = require("./_lib/detroit-boundary");
-const { lookupExistingStatuses } = require("./_lib/status-lookup");
+const { lookupExistingStatuses, lookupExistingRows } = require("./_lib/status-lookup");
 const { upsertEventRows } = require("./_lib/event-upsert");
 const { isLikelyNotARealEvent } = require("./_lib/non-event-filter");
 const { startRun, finishRun } = require("./_lib/run-log");
+const { decideEventSpecificDescription } = require("./_lib/description-strength");
 const { SLUGS } = require("./_lib/source-slugs");
 // Vercel Cron job — runs on a schedule (see vercel.json) rather than being
 // called from the browser. Pulls Detroit-area events from the Ticketmaster
@@ -423,12 +424,16 @@ module.exports = async (req, res) => {
     // entirely -- zero event writes, HTTP 502 -- rather than falling back
     // to an empty map the way this connector used to.
     let existingStatusByExternalId;
+    let existingRowsByExternalId;
     try {
-      existingStatusByExternalId = await lookupExistingStatuses(
+      // Status plus the stored description text and its source: the precedence rule below needs all three.
+      existingRowsByExternalId = await lookupExistingRows(
         SUPABASE_URL,
         SUPABASE_SERVICE_ROLE_KEY,
-        rows.map((r) => r.external_id)
+        rows.map((r) => r.external_id),
+        { select: "external_id,status,title,description,description_source,internal_note" }
       );
+      existingStatusByExternalId = new Map([...existingRowsByExternalId].map(([id, r]) => [id, r.status]));
     } catch (lookupErr) {
       await logFinish({ outcome: "failed", records_parsed: rows.length, records_written: 0, error_sample: "Status lookup failed: " + lookupErr.message });
       res.status(502).json({ upserted: 0, error: "Status lookup failed, aborting to protect existing moderation state: " + lookupErr.message });
@@ -457,17 +462,45 @@ module.exports = async (req, res) => {
     // fills blanks. Every other field is unchanged by this safeguard — see
     // DEBT-011 in project/BACKLOG.md for title, time, price, image, address
     // and venue.
+    // PRECEDENCE (owner direction 2026-10-24, on top of the safeguard above): a stored text is no longer untouchable.
+    // decideEventSpecificDescription() (api/_lib/description-strength.js) lets Ticketmaster's own `info` replace a blank,
+    // generated or generic research-written biography, and nothing else: approved (manual) copy, source text and any
+    // research text that is not a generic biography stay as stored; a replacement that would drop a concrete fact the stored
+    // text carries is counted for review instead. The text it replaces is kept in internal_note. DESCRIPTION_PRECEDENCE_MODE
+    // is "dry" unless set to "apply": dry runs decide and count (session_data.description_precedence) but write nothing, so
+    // R&Q reads the list before any stored description changes.
+    const precedenceApply = process.env.DESCRIPTION_PRECEDENCE_MODE === "apply";
+    const precedence = { mode: precedenceApply ? "apply" : "dry", considered: 0, would_replace: 0, kept: 0, review: 0, replace_ids: [], review_ids: [] };
     const rowsWithStatus = rows.map((row) => {
       if (!existingStatusByExternalId.has(row.external_id)) {
         return { ...row, status: DEFAULT_STATUS };
       }
+      const prev = existingRowsByExternalId.get(row.external_id) || {};
       const stored = {
         ...row,
         status: existingStatusByExternalId.get(row.external_id) || DEFAULT_STATUS,
       };
+      const incoming = row.description;
       delete stored.description;
+      if (typeof incoming === "string" && incoming.trim()) {
+        precedence.considered += 1;
+        const verdict = decideEventSpecificDescription({ stored: prev.description, storedSource: prev.description_source, incoming, title: prev.title || row.title });
+        if (verdict.action === "replace") {
+          precedence.would_replace += 1;
+          if (precedence.replace_ids.length < 50) precedence.replace_ids.push(row.external_id);
+          if (precedenceApply) {
+            stored.description = incoming;
+            stored.description_source = "authoritative";
+            if (prev.description) stored.internal_note = [prev.internal_note, "description replaced by Ticketmaster text " + new Date().toISOString().slice(0, 10) + "; was: " + String(prev.description).slice(0, 600)].filter(Boolean).join(" | ");
+          }
+        } else if (verdict.action === "review") {
+          precedence.review += 1;
+          if (precedence.review_ids.length < 50) precedence.review_ids.push(row.external_id + " (" + verdict.reason + ")");
+        } else precedence.kept += 1;
+      }
       return stored;
     });
+    runStats.description_precedence = precedence;
 
     // Upsert on external_id — see the unique index in supabase/schema.sql.
     // merge-duplicates updates existing rows (e.g. a venue/time change)
