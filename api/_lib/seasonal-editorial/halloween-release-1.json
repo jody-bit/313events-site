@@ -63,7 +63,17 @@
       "categories": [
         "strange-unusual",
         "family-friendly"
-      ]
+      ],
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "hush-haunted-attraction": {
       "tier": "publish",

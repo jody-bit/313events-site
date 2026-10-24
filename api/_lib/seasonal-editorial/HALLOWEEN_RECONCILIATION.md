@@ -9,23 +9,22 @@ Owner decisions applied: approval of 2026-10-11 (all 52 destinations approved fo
 | | Records |
 |---|---|
 | Inventory records preserved | 52 |
-| Owner-approved (49 carry the approval; 3 excluded carry none) | 33 |
-| **Eligible and published through the gate** | **13** |
+| Owner-approved (49 carry the approval; 3 excluded carry none) | 32 |
+| **Eligible and published through the gate** | **12** |
 | Held (retained, not public) | 20 |
-| Excluded as duplicate or closed (retained with history) | 19 |
-| Check: 13 + 20 + 19 | 52 |
+| Excluded as duplicate or closed (retained with history) | 20 |
+| Check: 12 + 20 + 20 | 52 |
 
-Image route: 5 of the 13 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 8 use an owner photo or a linked image.
+Image route: 5 of the 12 published records use the owner's established labelled-illustration route (owner direction 2026-10-12): generated artwork shown with the visible "Illustrative image" label, never as a photograph of the destination. It satisfies the image route only; every one of them also has official 2026 evidence recorded. The other 7 use an owner photo or a linked image.
 
 All 20 held records are held for factual verification: 9 have only indirect 2026 evidence (a person must confirm dates or the year) and also have no image route; 11 have no official 2026 evidence (Rotten Manor has a linked image but no 2026 evidence).
 
-## Published through the gate (13)
+## Published through the gate (12)
 
 | Destination | Image route | Rights route | Public advisory |
 |---|---|---|---|
 | Erebus Haunted Attraction | illustration | owner-supplied-illustration |  |
 | Eloise Asylum | owner-photo | owner-authorization |  |
-| Glenlore Trails: CarnEvil 2 | owner-photo | owner-authorization |  |
 | Hush Haunted Attraction | owner-photo | owner-authorization |  |
 | Azra Chamber of Horrors | linked | linked-risk-acceptance |  |
 | Scarefest Scream Park | owner-photo | owner-authorization |  |
@@ -64,12 +63,13 @@ Four of these (Zoo Boo, Hush, Azra, HallowGlow) use a linked image on the owner'
 | 49 | Halloween Hunt the Haunts | HOLD_UNVERIFIED | Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. wehavefun.ca has a 'Hunt the Haunts 2026' section: interactive map plus Catch 'Em All Hunt app and a 2026 registration form; says registration is required every year. No 2026 dates printed. https://wehavefun.ca/ (read 2026-10-12). No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet. |
 | 50 | Motor City Ghosts | HOLD_UNVERIFIED | Official 2026 operation supported only indirectly (CONFIRMED (indirect)): a person must confirm the dates or the year on the official page before it can be recorded as official evidence. Operator's Detroit page (last modified Oct 8, 2026 per the page) says tours run daily year-round, 8 PM start, bookable online; no season-specific dates. https://usghostadventures.com/ghost-tours/detroit/ (read 2026-10-12). Medium: 'daily, 365 days' rather than dated 2026 events. No authorized image route recorded: the owner's labelled-illustration route is applied only to records whose 2026 operation is verified, so it is not recorded here yet. |
 
-## Excluded as duplicate or closed (19)
+## Excluded as duplicate or closed (20)
 
 | # | Record | Disposition | Reason |
 |---|---|---|---|
 | 35 | Hallowe'en in Greenfield Village | ended | The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved. |
 | 38 | Zoo Boo at the Detroit Zoo | ended | The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved. |
+| 32 | Glenlore Trails: CarnEvil 2 | ended | The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 39 | Halloween Ghosts & Goodies at Crossroads Village | ended | The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |
 | 14 | Exit 13 Haunted House | closed | Closed under this name; operating status not confirmed for 2026 (WNEM 2023-10-27, secondary). Retained as a non-public record. |
 | 20 | Spooky Trails | ended | The operator-stated 2026 season was 10/02/26-10/31/26 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved. |

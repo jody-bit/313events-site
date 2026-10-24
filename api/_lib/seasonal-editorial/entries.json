@@ -5582,7 +5582,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Illuminated night walk with a carnival theme in Commerce Township.",
    "website": "https://glenloretrails.com",
    "image": {
@@ -5646,14 +5646,15 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official site (read 2026-10-12) states the 2026 season runs through Nov 1, 2026 and lists dated 2026 special nights."
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {

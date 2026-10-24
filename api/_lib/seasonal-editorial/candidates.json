@@ -2254,9 +2254,9 @@
    "name": "Glenlore Trails: CarnEvil 2",
    "location": "Commerce Township, MI",
    "inventory_note": "Immersive illuminated forest",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": "glenlore-carnevil-2",
-   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
     "313p-cc8f40e5",
@@ -2287,7 +2287,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "strange-unusual",
