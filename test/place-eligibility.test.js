@@ -84,6 +84,11 @@ allSame("Canton", "Canton Township Community and Special Events", true);
 allSame("Canton", "VisitDetroit", true);
 allSame("Bowling Green", "Bowling Green State University", true);
 allSame("Tecumseh, ON", "anything", true);
+allSame("Belle River", "Tourism Windsor Essex Pelee Island", true);
+allSame("Belle River", "Some Other Feed", false);
+allSame("Romulus", "TechTown Detroit", true);
+allSame("Inkster", "TechTown Detroit", true);
+allSame("Hazel Park", "Editorial Review (Automated)", true);
 allSame("Canton", "Ticketmaster", false);        // bare name, no jurisdiction evidence: not guessed
 allSame("Redford", "Some Other Feed", false);
 console.log("PASS: sourced Phase 2 cities place only with jurisdiction evidence, on every surface");
@@ -91,7 +96,7 @@ console.log("PASS: sourced Phase 2 cities place only with jurisdiction evidence,
 // Never guessed.
 for (const [city, source] of [
   ["2810 Russell St.", "Eastern Market Partnership"], ["West", "Windsor Symphony Orchestra"], ["October 29", "Macomb Township Events"],
-  ["Tech   Mount Clemens", "x"], ["Highland", "VisitDetroit"], ["Belle River", "Tourism Windsor Essex Pelee Island"],
+  ["Tech   Mount Clemens", "x"], ["Highland", "VisitDetroit"],
   ["Dresden", "x"], ["Warren, OH", "x"], ["Troy, NY", "x"], ["Mtn View", "x"]
 ]) allSame(city, source, false);
 assert.strictEqual(PE.locate(ev("Dresden", "x"), mapLookup).reason, "not-in-table");
@@ -147,17 +152,17 @@ const unplacedOn = {
   map: PE.partition(events, mapLookup).unplaced
 };
 // Placement facet counts events that pass every other filter; with 'when: all' that is all of them.
-assert.deepStrictEqual(unplacedOn, { home: 14, cal: 14, map: 14 }, "420 -> 14 on every surface: " + JSON.stringify(unplacedOn));
+assert.deepStrictEqual(unplacedOn, { home: 10, cal: 10, map: 10 }, "420 -> 10 on every surface: " + JSON.stringify(unplacedOn));
 const residual = events.filter((x) => PE.locate(x, mapLookup).status !== "placed").map((x) => x.city + " / " + x.source);
 assert.deepStrictEqual([...new Set(residual)].sort(), [
-  "2810 Russell St. / Eastern Market Partnership", "Belle River / Tourism Windsor Essex Pelee Island", "Highland / VisitDetroit",
-  "Hazel Park / Editorial Review (Automated)", "Inkster / TechTown Detroit", "October 29 / Macomb Township Events",
-  "Romulus / TechTown Detroit", "Tech   Mount Clemens / Mount Clemens Public Library - Adult Events", "West / Windsor Symphony Orchestra"
+  "2810 Russell St. / Eastern Market Partnership", "Highland / VisitDetroit",
+  "October 29 / Macomb Township Events",
+  "Tech   Mount Clemens / Mount Clemens Public Library - Adult Events", "West / Windsor Symphony Orchestra"
 ].sort());
-// Every one of the 406 recovered events is inside the Orbit by the border rule.
+// Every one of the 410 recovered events is inside the Orbit by the border rule.
 const placed = events.filter((x) => PE.locate(x, mapLookup).status === "placed");
-assert.strictEqual(placed.length, 406);
+assert.strictEqual(placed.length, 410);
 assert.ok(placed.every((x) => PE.inOrbit(PE.locate(x, mapLookup).loc)), "no recovered event is outside the Orbit");
-console.log("PASS: production impact fixture, 420 unplaced -> 14 (exceptions named), 406 recovered all inside the Orbit");
+console.log("PASS: production impact fixture, 420 unplaced -> 10 (exceptions named), 410 recovered all inside the Orbit");
 
 console.log("\nAll place-eligibility tests passed.");

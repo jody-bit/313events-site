@@ -51,6 +51,9 @@
   // Census TIGERweb (GEOID 2623140), researched by 03 Event Intelligence. Ontario also has a Dryden, so a bare
   // name is accepted only for a listed feed, and "Dryden, ON" never resolves to this Michigan point.
   {name:"Dryden", region:"Michigan", lat:42.9455811, lng:-83.1239865, jurisdiction:"Village", source:"Census TIGERweb", featureId:"2623140", verified:"2026-10-24", events:0},
+  // Added 2026-10-24 (geographic parity): Belle River, ON (unincorporated place, Essex County). NRCan CGN geoname id
+  // FAGXD only; a second record, FAGXE, was not readable and is not used. Researched by 03 Event Intelligence.
+  {name:"Belle River", region:"Ontario", lat:42.2913889, lng:-82.7044444, jurisdiction:"Unincorporated place (Essex County)", source:"NRCan CGN", featureId:"FAGXD", verified:"2026-10-24", events:1},
   ];
 
   // Source feeds that are jurisdiction evidence for each city (03 Event Intelligence,
@@ -58,6 +61,9 @@
   // listed: Canton, Plymouth, Wayne, Richmond, Oxford, Huron, Tecumseh, Essex, Bowling Green
   // and the rest also exist as other places, so the name alone is not evidence.
   var SOURCES = {
+      "Belle River": [
+          "Tourism Windsor Essex Pelee Island"
+      ],
       "Dryden": [
           "Manual",
           "Avenue Ticketing"
@@ -117,7 +123,8 @@
           "Eastern Market Partnership"
       ],
       "Romulus": [
-          "Eastern Market Partnership"
+          "Eastern Market Partnership",
+          "TechTown Detroit"
       ],
       "Wayne": [
           "Eastern Market Partnership",
@@ -137,13 +144,15 @@
           "Tourism Windsor Essex Pelee Island"
       ],
       "Inkster": [
-          "Eastern Market Partnership"
+          "Eastern Market Partnership",
+          "TechTown Detroit"
       ],
       "West Bloomfield": [
           "VisitDetroit"
       ],
       "Hazel Park": [
-          "Manual"
+          "Manual",
+          "Editorial Review (Automated)"
       ],
       "Lake Orion": [
           "VisitDetroit"
