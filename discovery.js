@@ -74,8 +74,9 @@
 //           aliases, source-gated Phase 2 cities. An event whose city still
 //           cannot be placed is excluded by any radius filter, never
 //           guessed, and reported by facets(…, 'placement').
-//   SEARCH  One haystack: title, venue, city, category label,
-//           neighborhood, source, note.
+//   SEARCH  The shared matcher (search-match.js): title, venue, city and
+//           verified aliases, category label, neighborhood, source;
+//           word by word, punctuation and &/and normalised.
 //   BLOCKED A small always-on suppression list, applied inside matches()
 //           so no surface can forget it.
 //
@@ -121,6 +122,12 @@
 //   (`city` is undefined for Detroit, as the pages already store it.)
 (function () {
   "use strict";
+  // The shared search matcher: the page loads <script src="/search-match.js"> before this file (a Node test requires it first).
+  function sharedSearch() {
+    var m = globalThis.SearchMatch;
+    if (!m) throw new Error("discovery.js needs search-match.js loaded first");
+    return m;
+  }
 
   var GLOBAL = globalThis;
 
@@ -875,12 +882,11 @@
       return true;
     }
 
+    // Search is the shared matcher (search-match.js): one implementation for homepage, calendar and map.
     function matchSearch(e, q) {
       if (!q) return true;
       var node = NODES.get(e.cat);
-      var hay = [e.title, e.venue, e.city, node ? node.label : "", e.neighborhood, e.source]
-        .filter(Boolean).join(" ").toLowerCase();
-      return hay.indexOf(q.toLowerCase()) !== -1;
+      return sharedSearch().matches(e, q, { categoryLabel: node ? node.label : "" });
     }
 
     function matchWhere(e, where, skip) {

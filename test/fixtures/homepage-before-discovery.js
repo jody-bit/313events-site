@@ -355,12 +355,8 @@ function matchesNonDateFilters(e){
     // loadSupabaseEvents() today — adding it would mean pulling extra text for
     // every one of the (1,275+ and growing) approved rows just for search, so
     // it's left out until that's worth the payload cost.
-    const q = query.toLowerCase();
-    const haystack = [
-      e.title, e.venue, e.city, CATS[e.cat] ? CATS[e.cat].label : '',
-      e.neighborhood, e.source, e.note
-    ].filter(Boolean).join(' ').toLowerCase();
-    if(!haystack.includes(q)) return false;
+    // 2026-10-24: the search predicate is now the shared matcher (search-match.js), the one deliberate change to this frozen copy.
+    if(!SearchMatch.matches(e, query, {categoryLabel: CATS[e.cat] ? CATS[e.cat].label : ''})) return false;
   }
   if(originLocation && radiusMiles !== null){
     const loc = CITY_LOOKUP.get((e.city || "Detroit").toLowerCase());
