@@ -1,7 +1,7 @@
 // test/preview-link-validate.test.js — Preview qualification: primary event links are really opened (owner direction 2026-10-23).
 "use strict";
 const assert = require("assert");
-const { validateRows, isHomepageLanding, dataParity } = require("../scripts/preview-link-validate");
+const { validateRows, isHomepageLanding, dataParity, previewStamp } = require("../scripts/preview-link-validate");
 
 const answers = {
   "https://visitdetroit.com/events/gone/": { status: 404 },
@@ -47,5 +47,8 @@ const fetchFn = async (u) => {
   assert.strictEqual(stale.staleData, true);
   const fresh = dataParity([{ ticket_url: "https://visitdetroit.com/events/a/", updated_at: new Date(now - day).toISOString() }], { now });
   assert.deepStrictEqual([fresh.staleShapeCount, fresh.staleData], [0, false]);
+  const st = previewStamp({ commit: "abc1234", supabaseUrl: "https://efxjdlogohcggpuftivm.supabase.co", parity: stale, counts: { PASS: 3, BLOCKING: 1 }, checkedAt: "2026-10-24T01:00:00Z" });
+  assert.deepStrictEqual([st.application_commit, st.data_environment, st.data_refreshed_at, st.data_stale, st.link_check.sampled], ["abc1234", "staging", "2026-10-18T21:09:09.000Z", true, 4]);
+  assert.strictEqual(previewStamp({ supabaseUrl: "https://afvyfjfqukptnfmgshzn.supabase.co", parity: fresh, counts: {}, checkedAt: "x" }).data_environment, "production");
   console.log("ok: preview link validation");
 })().catch((e) => { console.error(e); process.exit(1); });

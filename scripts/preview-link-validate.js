@@ -6,6 +6,7 @@
 //
 //   node scripts/preview-link-validate.js --supabase [--per-source 5] [--include-venue-link]
 //       (SUPABASE_URL + SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY: samples approved upcoming rows per source)
+//   (--commit <sha> names the Preview build; the stamp line is what R&Q attaches to the owner Preview)
 //   node scripts/preview-link-validate.js --events rows.json [--per-source 5]
 //       (rows.json: array of event rows with title, source, ticket_url, event_url)
 //
@@ -88,6 +89,21 @@ async function fetchSupabaseRows() {
   return resp.json();
 }
 
+// The stamp R&Q attaches to every owner Preview (owner direction 2026-10-24): which build, which database, how fresh, and
+// whether its primary links were opened. Environment is read from the data host, never guessed.
+const DATA_ENVIRONMENTS = { afvyfjfqukptnfmgshzn: "production", efxjdlogohcggpuftivm: "staging" };
+function previewStamp({ commit, supabaseUrl, parity, counts, checkedAt }) {
+  const ref = (String(supabaseUrl || "").match(/^https:\/\/([a-z0-9]+)\.supabase\.co/i) || [])[1] || null;
+  return {
+    application_commit: commit || null,
+    data_environment: ref ? (DATA_ENVIRONMENTS[ref] || `unknown (${ref})`) : "unknown",
+    data_refreshed_at: parity.newestUpdate,
+    data_age_days: parity.ageDays === null ? null : Math.round(parity.ageDays * 10) / 10,
+    data_stale: !!parity.staleData || parity.staleShapeCount > 0,
+    link_check: { checked_at: checkedAt, sampled: Object.values(counts).reduce((a, b) => a + b, 0), counts },
+  };
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
@@ -98,10 +114,12 @@ async function main() {
   console.log(`\n${results.length} sampled: ${Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(", ")}`);
   const parity = dataParity(rows, { maxAgeDays: Number(arg("--max-age-days") || 3) });
   console.log(`Data date: newest row update ${parity.newestUpdate || "unknown"}${parity.staleData ? ` (${parity.ageDays.toFixed(1)} days old: STALE-DATA)` : ""}`);
+  const stamp = previewStamp({ commit: arg("--commit") || process.env.VERCEL_GIT_COMMIT_SHA, supabaseUrl: process.env.SUPABASE_URL, parity, counts, checkedAt: new Date().toISOString() });
+  console.log(`PREVIEW STAMP: ${JSON.stringify(stamp)}`);
   if (parity.staleShapeCount) console.log(`STALE-SHAPE: ${parity.staleShapeCount} of ${parity.total} rows hold a known-dead old-form link, e.g. ${parity.staleShapeExamples.join(", ")}; this database is behind production.`);
   if (parity.staleShapeCount) { console.log("The Preview's data is not current; it is not ready for owner acceptance."); process.exit(1); }
   if (blocking.length) { console.log(`BLOCKING: ${blocking.length} primary link(s) confirmed dead; the Preview is not ready for owner acceptance.`); process.exit(1); }
 }
 
 if (require.main === module) main().catch((e) => { console.error(e.message); process.exit(2); });
-module.exports = { validateRows, isHomepageLanding, dataParity };
+module.exports = { validateRows, isHomepageLanding, dataParity, previewStamp };
