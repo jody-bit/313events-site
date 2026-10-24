@@ -114,6 +114,15 @@ const BROAD_TYPE_CATEGORY_RULES = [
   [/^(?:seminars?\s*(?:&|and)\s*workshops?|workshops?\s*(?:&|and)\s*classes)$/i, "training"],
 ];
 
+// Title phrases that are music on every Localist tenant even when the event
+// type is missing or generic (BGSU college of music listings). Narrow on
+// purpose: "Open", "Public Skate" and fundraisers stay unmapped for review.
+const TITLE_CATEGORY_RULES = [
+  [/\b(?:student|faculty|graduate|senior|junior|guest)\s+(?:artist\s+)?recital\b/i, "music"],
+  [/\bfaculty\s+artist\s+series\b/i, "music"],
+  [/\b(?:chamber|jazz|percussion|wind|brass|string|choral)\s+ensembles?\b/i, "music"],
+];
+
 function eventTypeNames(e) {
   const types = e && e.filters && Array.isArray(e.filters.event_types) ? e.filters.event_types : [];
   return types.map((t) => (t && typeof t === "object" ? t.name : t)).filter((n) => typeof n === "string").map((n) => n.trim());
@@ -141,6 +150,10 @@ function categorize(e, categoryFromText) {
   if (types.some((name) => SPORTS_TYPE_RE.test(name))) return "sports";
   const fromTitle = typeof categoryFromText === "function" ? categoryFromText(e.title, "") : null;
   if (fromTitle) return fromTitle;
+  const title = String((e && e.title) || "");
+  for (const [re, category] of TITLE_CATEGORY_RULES) {
+    if (re.test(title)) return category;
+  }
   for (const name of types) {
     for (const [re, category] of BROAD_TYPE_CATEGORY_RULES) {
       if (re.test(name)) return category;
