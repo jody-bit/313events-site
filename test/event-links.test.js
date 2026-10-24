@@ -62,6 +62,24 @@ assert.strictEqual(EL.resolve({ ticketUrl: TM, free: true }).primary.label, "Get
 assert.strictEqual(EL.resolve({ ticketUrl: TM }).primary.label, "Get tickets");
 assert.strictEqual(EL.resolve({ eventPageUrl: RA, free: false }).primary.label, "Event details");
 
+// owner 2026-10-24: "Get tickets" only for a ticketing destination; a listing site's page in ticket_url is "Event details"
+{
+  const VD = "https://visitdetroit.com/events/treats-in-the-streets/";
+  let r = EL.resolve({ ticketUrl: VD });
+  assert.deepStrictEqual(r.primary, { url: VD, label: "Event details" }, "VisitDetroit page in ticket_url is event information, not a ticket claim");
+  assert.strictEqual(r.event, null);
+  r = EL.resolve({ ticketUrl: VD, eventPageUrl: RA });
+  assert.deepStrictEqual(r.primary, { url: VD, label: "Event details" });
+  r = EL.resolve({ ticketUrl: TM, eventPageUrl: VD });
+  assert.deepStrictEqual(r.primary, { url: TM, label: "Get tickets" });
+  assert.deepStrictEqual(r.event, { url: VD, label: "Event details" });
+  assert.strictEqual(EL.resolve({ ticketUrl: "https://venue.example/shows/the-band-oct-30" }).primary.label, "Event details", "an unknown host is never called a ticket destination");
+  assert.strictEqual(EL.resolve({ ticketUrl: "https://www.bandsintown.com/e/123-the-band" }).primary.label, "Event details", "listing sites are not ticket sellers");
+  assert.strictEqual(EL.resolve({ ticketUrl: "https://dice.fm/event/abc123-the-band" }).primary.label, "Get tickets");
+  assert.strictEqual(EL.resolve({ ticketUrl: "https://ticketmaster.evyy.net/c/1/2/3?u=https%3A%2F%2Fwww.ticketmaster.com%2Fevent%2F1" }).primary.label, "Get tickets");
+  assert.strictEqual(EL.resolve({ ticketUrl: "https://tangentgallery.com" }).primary, null, "a generic venue homepage is never a ticket destination");
+}
+
 // every page that shows an event link goes through the one rule
 for (const f of ["index.html", "calendar.html", "map.html", "event-template.html"]) {
   const s = fs.readFileSync(`${REPO_DIR}/${f}`, "utf8");
