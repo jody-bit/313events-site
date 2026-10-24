@@ -58,7 +58,7 @@ function load(file, startMarker, endMarker, href) {
   class FakeDate extends Date { constructor(...a) { if (a.length) super(...a); else super(PINNED); } static now() { return PINNED; } }
   const ctx = {
     EventDates: require(`${REPO_DIR}/event-dates.js`), getTodayISO: () => "2026-10-16",
-    CalendarLocation: CL, URL, URLSearchParams, Date: FakeDate, Math, String, Array, Object, JSON, Number, RegExp,
+    CalendarLocation: CL, EventLinks: require(`${REPO_DIR}/event-links.js`).EventLinks, URL, URLSearchParams, Date: FakeDate, Math, String, Array, Object, JSON, Number, RegExp,
     Blob: class { constructor(parts) { this.text = parts.join(""); blobs.push(this.text); } },
     window: { location: { href }, open: () => null },
     EVENTS: [], setTimeout, document: undefined,

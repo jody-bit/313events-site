@@ -82,5 +82,5 @@ assert.strictEqual(eventHasEnded(ev({ date: "" })), false, "missing date: no end
 assert.ok(/<div class="evt-ended" id="evtEnded" style="display:none;">This event has ended<\/div>/.test(html), "message element, hidden by default");
 assert.ok(/getElementById\('evtEnded'\)\.style\.display = eventHasEnded\(e\)/.test(html), "shown only when eventHasEnded(e)");
 assert.ok(/document\.getElementById\('evtWhen'\)\.innerHTML = `<strong>\$\{escapeHtml\(dateLabel\)\}<\/strong>/.test(html), "dates heading still rendered, unchanged");
-assert.ok(/id="evtShareBtn"/.test(html) && /Tickets & info/.test(html), "Share and Tickets are unchanged");
+assert.ok(/id="evtShareBtn"/.test(html) && /EventLinks\.resolve\(e\)/.test(html) && /if\(L\.primary\) actionsHtml/.test(html), "Share and Tickets are unchanged");
 console.log("PASS: event page ended message (verified final occurrence only, Detroit time)");

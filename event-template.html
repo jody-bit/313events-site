@@ -233,6 +233,7 @@
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"82cfe2e27939d2f0fe710accea45f177"})});</script>
 <script src="/legal-snippets.js"></script>
 <script src="/calendar-location.js"></script>
+<script src="/event-links.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
@@ -583,7 +584,7 @@ function buildEventDescription(e){
   if(occDays && occDays.length > 1) parts.push('Also on: ' + occDays.slice(1, 6).map(d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short', day:'numeric'})).join(', ') + (occDays.length > 6 ? ` and ${occDays.length - 6} more` : ''));
   if(e.description) parts.push(truncateText(e.description, 300));
   if(shouldShowSource(e)) parts.push(`Via ${e.source}`);
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
+  if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) parts.push(safeUrl(e.ticketUrl));
   parts.push(`Details: ${window.location.href}`);
   return parts.join('\n');
 }
@@ -813,19 +814,18 @@ function renderEvent(e){
   document.getElementById('evtEnded').style.display = eventHasEnded(e) ? 'inline-block' : 'none';
   const actions = document.getElementById('evtActions');
   let actionsHtml = '';
-  // "Tickets & info" uses ticket_url when valid, otherwise event_url.
-  const primaryUrl = (e.ticketUrl && safeUrl(e.ticketUrl)) ? e.ticketUrl : e.eventPageUrl;
-  if(primaryUrl && safeUrl(primaryUrl)){
-    actionsHtml += `<a class="btn-primary" href="${escapeHtml(safeUrl(primaryUrl))}" target="_blank" rel="noopener noreferrer">${e.free?'More info':'Tickets & info'}</a>`;
-  }
-  if(e.ticketUrl && safeUrl(e.ticketUrl) && e.eventPageUrl && safeUrl(e.eventPageUrl) && e.eventPageUrl !== e.ticketUrl){
-    actionsHtml += `<a class="btn-secondary" href="${escapeHtml(safeUrl(e.eventPageUrl))}" target="_blank" rel="noopener noreferrer">Event page</a>`;
-  }
+  // One rule for which link is the main button (event-links.js): an event-specific ticket link, else an event-specific
+  // event page. A bare venue homepage is never the main button; it appears only as a "Venue website" link.
+  const L = EventLinks.resolve(e);
+  const linkBtn = (l, cls) => { const u = safeUrl(l.url); return u ? `<a class="${cls}" href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>` : ''; };
+  if(L.primary) actionsHtml += linkBtn(L.primary, 'btn-primary');
+  if(L.event) actionsHtml += linkBtn(L.event, 'btn-secondary');
+  if(L.venue) actionsHtml += linkBtn(L.venue, 'btn-secondary');
   // Fallback when neither a real ticket link nor an event page link exists
   // — see sourceSearchUrl()'s comment above. Never shown alongside a real
   // link; only fills the gap when there'd otherwise be nothing to click
   // through to at all.
-  if(!(e.ticketUrl && safeUrl(e.ticketUrl)) && !(e.eventPageUrl && safeUrl(e.eventPageUrl))){
+  if(!L.primary && !L.venue){
     const fallbackUrl = sourceSearchUrl(e.source);
     if(fallbackUrl){
       actionsHtml += `<a class="btn-secondary" href="${escapeHtml(fallbackUrl)}" target="_blank" rel="noopener noreferrer">Browse on Resident Advisor &rarr;</a>`;
@@ -917,7 +917,7 @@ function renderEvent(e){
     "url": window.location.href,
   };
   if(e.imageUrl && safeUrl(e.imageUrl)) ld.image = [safeUrl(e.imageUrl)];
-  if(e.ticketUrl && safeUrl(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
+  if(e.ticketUrl && safeUrl(e.ticketUrl) && !EventLinks.isBareHomepage(e.ticketUrl)) ld.offers = { "@type": "Offer", "url": safeUrl(e.ticketUrl), "price": e.free ? "0" : (e.priceFrom || undefined), "priceCurrency": "USD" };
   const ldScript = document.createElement('script');
   ldScript.type = 'application/ld+json';
   ldScript.textContent = JSON.stringify(ld);
