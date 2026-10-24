@@ -55,6 +55,12 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   console.log(`PASS: all 15 colours clear WCAG AA (4.5:1) on #202020 and #0A0A0A; lowest ${Math.min(...worst).toFixed(2)}:1`);
 }
 
+// 2b. the pill: #0A0A0A text on every category fill clears AA
+{
+  for (const c of Categories.list) assert.ok(ratio(c.hex, "#0A0A0A") >= 4.5, `#0A0A0A text on the ${c.key} fill (${c.hex}) is ${ratio(c.hex, "#0A0A0A").toFixed(2)}:1, needs 4.5`);
+  console.log("PASS: dark text on every category fill clears AA");
+}
+
 // 3. the token block defines every variable once
 {
   const css = Categories.tokenCss();
@@ -117,21 +123,24 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
 
   // the label rules: one colour rule per category, from its own token; visible; no hiding
   const css = Categories.tagCss();
-  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag[data-cat="${c.key}"]{color:var(${c.token});}`), `${c.key} has its colour rule`);
   assert.ok(!/display:\s*none|visibility:\s*hidden|opacity:\s*0\b/.test(css), "the label is never hidden");
   const size = (re) => Number((css.match(re) || [])[1]);
   assert.ok(size(/\.cat-tag\{[^}]*font-size:([\d.]+)px/) >= 11, "the default label is at least 11px");
   assert.ok(size(/\.cat-tag--detail\{font-size:([\d.]+)px/) >= 12, "the detail size stays readable");
-  assert.ok(!/cat-tag--compact|cat-tag--pill/.test(css), "one badge: no compact size, no filled pill (owner review 2026-10-23)");
-  assert.ok(/\.cat-tag\{[^}]*font-weight:700[^}]*text-transform:uppercase/.test(css) && /background:#202020;border:1px solid #2A2A2A/.test(css) && /padding:3px 7px/.test(css), "weight, capitalisation, border and padding are defined once");
-  // the default colour is the site's ink, not a grey: a label that failed to match a category would still be readable
-  assert.ok(/color:var\(--ink,#F2F0E8\)/.test(css));
-  // coloured text on the dark tag, never a category fill, on every surface
-  assert.ok(!/background:var\(--c-|\.cat-tag\[data-cat=[^{]*\{[^}]*background:/.test(css), "no category fill");
+  assert.ok(!/cat-tag--compact|cat-tag--pill|cat-tag--text/.test(css), "one badge: no compact size, no second variant");
+  assert.ok(/\.cat-tag\{[^}]*font-weight:700[^}]*text-transform:uppercase/.test(css) && /color:#0A0A0A;background:#8C78FF;border:1px solid transparent/.test(css) && /padding:3px 7px/.test(css), "weight, capitalisation, text colour, border and padding are defined once");
+  // a filled pill on every surface: each category's fill comes from its own token, text is dark
+  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag[data-cat="${c.key}"]{background:var(${c.token});}`), `${c.key} has its fill rule`);
+  assert.ok(!/\.cat-tag\[data-cat=[^{]*\{[^}]*(?<![-])color:/.test(css), "no per-category text colour");
   for (const f of ["index.html", "calendar.html", "map.html", "event-template.html", "venue-template.html", "radar.html"]) {
     assert.ok(!/fill:\s*'pill'|size:\s*'compact'/.test(read(f)), `${f} passes no variant to the label`);
   }
   assert.ok(/Categories\.tagHtml\(e\.cat, \{size:'detail'\}\)/.test(read("event-template.html")), "event detail uses the detail size only");
+  // Source attribution stays neutral secondary text and is never styled as a category pill
+  for (const f of ["index.html", "calendar.html", "map.html", "radar.html"]) {
+    const h = read(f);
+    assert.ok(!/\.(?:src|rc-src|rc-outlet)\{[^}]*(?:var\(--c-|background:var\(--accent)/.test(h), `${f}: source attribution carries no category colour or pill fill`);
+  }
   // Radar: the outlet name is neutral; colour is used only by the type label beneath it.
   const radar = read("radar.html");
   assert.ok(!/rc-outlet[^\n]*(cat\.color|var\(--c-|--accent)/.test(radar), "radar outlet name carries no category colour");
@@ -146,7 +155,7 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
     assert.ok(!/\.cat-tag[^{}\n]*\{/.test(html), `${f} does not restyle the shared label`);
   }
   // submit.html is a picker (swatch + name per option), not an event surface; it still uses the shared tokens only.
-  console.log("PASS: one shared event-type label (Option A, coloured text with the type name); never hidden; readable sizes; used by homepage, calendar (4 views), map, event detail, venue and radar; no page styles it");
+  console.log("PASS: one shared event-type label (coloured pill with the type name); never hidden; readable sizes; used by homepage, calendar (4 views), map, event detail, venue and radar; no page styles it");
 }
 
 console.log("\nAll category-colour checks passed.");
