@@ -123,7 +123,7 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   assert.ok(size(/\.cat-tag\{[^}]*font-size:([\d.]+)px/) >= 11, "the default label is at least 11px");
   assert.ok(size(/\.cat-tag--detail\{font-size:([\d.]+)px/) >= 12, "the detail size stays readable");
   assert.ok(!/cat-tag--compact|cat-tag--pill/.test(css), "one badge: no compact size, no filled pill (owner review 2026-10-23)");
-  assert.ok(/\.cat-tag\{[^}]*font-weight:700[^}]*text-transform:uppercase/.test(css) && /border:1px solid var\(--line/.test(css) && /padding:3px 7px/.test(css), "weight, capitalisation, border and padding are defined once");
+  assert.ok(/\.cat-tag\{[^}]*font-weight:700[^}]*text-transform:uppercase/.test(css) && /background:#202020;border:1px solid #2A2A2A/.test(css) && /padding:3px 7px/.test(css), "weight, capitalisation, border and padding are defined once");
   // the default colour is the site's ink, not a grey: a label that failed to match a category would still be readable
   assert.ok(/color:var\(--ink,#F2F0E8\)/.test(css));
   // coloured text on the dark tag, never a category fill, on every surface
