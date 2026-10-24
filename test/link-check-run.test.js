@@ -45,6 +45,13 @@ async function main() {
   assert.deepStrictEqual(dry.dead_ids.sort(), ["b", "c"]);
   console.log("PASS: dry mode checks and counts, writes nothing");
 
+  const mixed = [ev("n1", 9), ev("n2", 40), ev("c1", 9, { link_checked_at: ago(30) })];
+  assert.deepStrictEqual(selectDue(mixed, NOW, 10, { onlyNever: true }).map((d) => d.row.id), ["n1", "n2"]);
+  const det = await run({ rows: mixed, now: NOW, fetchFn: async () => ({ status: 404 }), onlyNever: true, detail: true });
+  assert.deepStrictEqual(det.results.map((r) => [r.id, r.status, r.classification]).sort(), [["n1", 404, "dead"], ["n2", 404, "dead"]]);
+  assert.strictEqual((await run({ rows: mixed, now: NOW, fetchFn: async () => ({ status: 200 }) })).results, undefined);
+  console.log("PASS: only=never and detail give a targeted dry run");
+
   const applied = await run({ rows: rs, now: NOW, fetchFn, patchFn: async (i, f) => writes.push([i.row.id, f]), apply: true });
   assert.strictEqual(applied.mode, "apply");
   const byId = Object.fromEntries(writes);

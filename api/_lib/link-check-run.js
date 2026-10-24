@@ -34,13 +34,14 @@ function primaryLink(row) {
 }
 
 // selectDue(rows, now, limit) -> [{ row, field, url }], never-checked first, then soonest event.
-function selectDue(rows, now, limit) {
+function selectDue(rows, now, limit, { onlyNever = false } = {}) {
   const due = [];
   for (const row of rows) {
     const link = primaryLink(row);
     if (!link) continue;
     const daysToEvent = Math.max(0, Math.floor((Date.parse(`${row.start_date}T00:00:00Z`) - now) / DAY_MS));
     const checkedAt = row.link_checked_at ? Date.parse(row.link_checked_at) : null;
+    if (onlyNever && checkedAt !== null) continue;
     if (checkedAt !== null && now - checkedAt < recheckIntervalDays(daysToEvent) * DAY_MS) continue;
     due.push({ row, ...link, daysToEvent, neverChecked: checkedAt === null });
   }
@@ -64,10 +65,10 @@ async function checkOne(item, { fetchFn, timeoutMs }) {
 
 // run({ rows, now, limit, concurrency, timeoutMs, deadlineMs, fetchFn, patchFn, apply })
 // patchFn(item, fields) writes one row (apply mode only).
-async function run({ rows, now = Date.now(), limit = 100, concurrency = 8, timeoutMs = 6000, deadlineMs = 45000, fetchFn = fetch, patchFn = null, apply = false }) {
+async function run({ rows, now = Date.now(), limit = 100, onlyNever = false, detail = false, concurrency = 8, timeoutMs = 6000, deadlineMs = 45000, fetchFn = fetch, patchFn = null, apply = false }) {
   const startedAt = Date.now();
-  const queue = selectDue(rows, now, limit);
-  const stats = { mode: apply ? "apply" : "dry", candidates: rows.length, due: queue.length, checked: 0, ok: 0, dead: 0, inconclusive: 0, skipped_deadline: 0, write_errors: 0, dead_ids: [], inconclusive_by_status: {} };
+  const queue = selectDue(rows, now, limit, { onlyNever });
+  const stats = { mode: apply ? "apply" : "dry", candidates: rows.length, due: queue.length, checked: 0, ok: 0, dead: 0, inconclusive: 0, skipped_deadline: 0, write_errors: 0, dead_ids: [], inconclusive_by_status: {}, results: detail ? [] : undefined };
   let next = 0;
   async function worker() {
     while (next < queue.length) {
@@ -77,6 +78,7 @@ async function run({ rows, now = Date.now(), limit = 100, concurrency = 8, timeo
       stats.checked++;
       stats[result.classification]++;
       if (result.classification === "dead") stats.dead_ids.push(item.row.id);
+      if (detail && stats.results.length < 200) stats.results.push({ id: item.row.id, title: item.row.title, url: item.url, status: result.status, classification: result.classification });
       if (result.classification === "inconclusive") {
         const key = String(result.status);
         stats.inconclusive_by_status[key] = (stats.inconclusive_by_status[key] || 0) + 1;

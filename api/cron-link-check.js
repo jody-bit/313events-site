@@ -14,10 +14,11 @@ const LIMIT = Number(process.env.LINK_CHECK_LIMIT) || 100;
 
 const headers = () => ({ apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" });
 
-async function loadRows() {
+// source: events.source filter (ilike), for a targeted run such as the 36 never-checked VisitDetroit URLs.
+async function loadRows(source) {
   const today = new Date().toISOString().slice(0, 10);
-  const url = `${SUPABASE_URL}/rest/v1/events?select=id,start_date,ticket_url,event_url,link_check_status,link_checked_at` +
-    `&status=eq.approved&start_date=gte.${today}&order=start_date.asc&limit=5000`;
+  const url = `${SUPABASE_URL}/rest/v1/events?select=id,title,start_date,ticket_url,event_url,link_check_status,link_checked_at` +
+    `&status=eq.approved&start_date=gte.${today}${source ? `&source=ilike.${encodeURIComponent(`*${source}*`)}` : ""}&order=start_date.asc&limit=5000`;
   const r = await fetch(url, { headers: headers() });
   if (!r.ok) throw new Error(`events read failed: HTTP ${r.status}`);
   return r.json();
@@ -34,7 +35,11 @@ module.exports = async function handler(req, res) {
   if (!requireCronAuth(req, res)) return;
   if (!SUPABASE_URL || !KEY) return res.status(200).json({ error: "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured" });
   try {
-    const stats = await run({ rows: await loadRows(), limit: LIMIT, apply: APPLY, patchFn: patchRow });
+    // Targeted dry runs (dry mode never advances link_checked_at, so a plain run re-selects the same rows):
+    //   ?source=visitdetroit  only that source;  ?only=never  only never-checked rows;  ?detail=1  per-row results (max 200)
+    const q = req.query || {};
+    const source = typeof q.source === "string" ? q.source.slice(0, 60) : "";
+    const stats = await run({ rows: await loadRows(source), limit: LIMIT, apply: APPLY, patchFn: patchRow, onlyNever: q.only === "never", detail: q.detail === "1" });
     console.log("[cron-link-check]", JSON.stringify(stats));
     return res.status(200).json(stats);
   } catch (err) {
