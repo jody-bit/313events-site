@@ -1,7 +1,7 @@
 // test/preview-link-validate.test.js — Preview qualification: primary event links are really opened (owner direction 2026-10-23).
 "use strict";
 const assert = require("assert");
-const { validateRows, isHomepageLanding } = require("../scripts/preview-link-validate");
+const { validateRows, isHomepageLanding, dataParity } = require("../scripts/preview-link-validate");
 
 const answers = {
   "https://visitdetroit.com/events/gone/": { status: 404 },
@@ -36,5 +36,16 @@ const fetchFn = async (u) => {
   // per-source cap
   const many = Array.from({ length: 8 }, () => ({ title: "x", source: "VisitDetroit", ticket_url: "https://visitdetroit.com/events/fine/" }));
   assert.strictEqual((await validateRows(many, { fetchFn, perSource: 3 })).results.length, 3);
+  // data parity: old-form VisitDetroit links and the data date
+  const day = 86400000, now = Date.parse("2026-10-24T12:00:00Z");
+  const stale = dataParity([
+    { ticket_url: "https://visitdetroit.com/some-event/", updated_at: "2026-10-18T21:09:09Z" },
+    { ticket_url: "https://visitdetroit.com/events/other/", updated_at: "2026-10-18T10:00:00Z" },
+  ], { now });
+  assert.strictEqual(stale.staleShapeCount, 1);
+  assert.strictEqual(stale.newestUpdate, "2026-10-18T21:09:09.000Z");
+  assert.strictEqual(stale.staleData, true);
+  const fresh = dataParity([{ ticket_url: "https://visitdetroit.com/events/a/", updated_at: new Date(now - day).toISOString() }], { now });
+  assert.deepStrictEqual([fresh.staleShapeCount, fresh.staleData], [0, false]);
   console.log("ok: preview link validation");
 })().catch((e) => { console.error(e); process.exit(1); });
