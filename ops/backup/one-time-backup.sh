@@ -71,6 +71,13 @@ pre="$(echo "show transaction_read_only; select current_setting('server_version'
   || { echo "Cannot connect with those details. Check the host and password (not stored anywhere)." >&2; exit 1; }
 echo "Preflight (read-only session): $(echo "$pre" | tr '\n\t' ' ')   [read-only flag, server version, storage objects, storage bytes]"
 
+# A dedicated account must prove it is not privileged before anything is read (fail closed). The postgres account is not subject to this check.
+if [ "$PGUSER" != "postgres.$PROD_REF" ]; then
+  bad="$(q < "$here/identity_check.sql")" || { echo "Identity check could not run." >&2; exit 1; }
+  if [ -n "$bad" ]; then echo "DEDICATED ACCOUNT NOT ACCEPTABLE (nothing was read):" >&2; echo "$bad" | head -10 >&2; exit 1; fi
+  echo "dedicated account verified: $PGUSER is not superuser/createrole/createdb, holds no privileged-role memberships, and has no CREATE on the database or on public, storage, supabase_migrations"
+fi
+
 trap 'echo "BACKUP FAILED. Do not rely on any archive from this run." >&2' ERR
 trap 'exit 130' INT TERM HUP
 "$here/backup.sh"

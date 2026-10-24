@@ -192,6 +192,16 @@ PGUSER=backup_reader PGOPTIONS="$PGO" psql -X -q -d src -c "set default_transact
 fo="$(psql -X -q -At -F, -d src -f "$here/fingerprint.sql")"; fr="$(PGUSER=backup_reader psql -X -q -At -F, -d src -f "$here/fingerprint.sql")"
 [ "$fo" = "$fr" ] || { diff <(echo "$fo") <(echo "$fr") || true; echo "FAIL: fingerprint differs by caller"; exit 1; }
 echo "PASS 10c: fingerprint is identical whether taken by the owner or by backup_reader"
+# 10c2. the identity preflight (fail closed): accepts backup_reader, rejects any privileged look-alike
+ic() { PGUSER="$1" psql -X -q -At -d src -f "$here/identity_check.sql"; }
+[ -z "$(ic backup_reader)" ] || { ic backup_reader; echo "FAIL: identity check rejected backup_reader"; exit 1; }
+psql -X -q -d src -c "create role bad_createrole login createrole; create role bad_member login; grant pg_write_all_data to bad_member; create role bad_schema login; grant create on schema public to bad_schema; create role bad_db login; grant create on database src to bad_db; create role bad_prog login; grant pg_execute_server_program to bad_prog"
+for r in postgres bad_createrole bad_member bad_schema bad_db bad_prog; do
+  [ -n "$(ic $r)" ] || { echo "FAIL: identity check accepted $r"; exit 1; }
+done
+psql -X -q -d src -c "drop owned by bad_schema; drop owned by bad_db; drop role bad_createrole, bad_member, bad_schema, bad_db, bad_prog"
+grep -q 'identity_check.sql' "$here/one-time-backup.sh" && grep -q 'dedicated account verified' "$here/one-time-backup.sh" || { echo "FAIL: one-time-backup.sh does not run the identity check"; exit 1; }
+echo "PASS 10c2: identity preflight accepts backup_reader and rejects superuser, createrole, privileged-role members, CREATE on database or public"
 # 10d. verified removal: revoke exactly what was granted, drop the role, ACL state hash equals the pre-create value
 psql -X -q -d src -c "drop role backup_reader" >/dev/null 2>&1 && { echo "FAIL: plain drop role succeeded while grants exist (should be refused)"; exit 1; }
 echo "PASS 10d-1: DROP ROLE alone is refused while grants exist (nothing can be dropped by accident)"
