@@ -21,6 +21,8 @@ const ALLOWED = [
   "api/_lib/source-health.js",
   // Feeds second run (owner GO 2026-10-22): control tower and admin read the resume flag so a resume run is left out of the volume comparison.
   "api/_lib/control-tower.js",
+  // Non-event title filter (HALO private-event label, 2026-10-23): shared by every connector, so any change is its own reviewed PR.
+  "api/_lib/non-event-filter.js",
   // Single-source cron reliability (cron-oldmiami, cron-redford-theatre): per-request timeout and run budget helper.
   "api/_lib/run-budget.js",
   // Daily feeds cron reliability (cron-feeds): run-health rules, alerts and stalled-run closing.
@@ -49,6 +51,8 @@ const ALLOWED = [
   "api/_lib/press-queue-filter.js",
   // Admin queue Stage 2 (owner decision 2026-10-16): read-side class for pending rows (Dearborn grouping).
   "api/_lib/pending-classifier.js",
+  // All-caps title proposal (shadow mode, EI 2026-10-19): pure function, nothing calls it yet.
+  "api/_lib/title-case.js",
   // Admin submissions queue date filter (owner decision 2026-10-14): ended pending events leave the default queue (read-side only).
   "api/_lib/pending-queue.js", "admin.html", "api/_lib/cron-run.js", "api/_lib/cron-auth.js",
   // Package 1B: every cron handler uses the shared fail-closed auth check.
@@ -56,6 +60,8 @@ const ALLOWED = [
   // Package 1: these handlers export through withRunLog (truthful source_runs rows).
   "api/cron-detroitmonthofdesign.js", "api/cron-detroittraining.js", "api/cron-metrotimes.js", "api/cron-oldmiami.js", "api/cron-playgrounddetroit.js", "api/cron-poppspacking.js", "api/cron-visitdetroit.js",
   // MC-RANGE (owner directive 2026-10-17, P0 #141): VisitDetroit refresh never narrows a range below evidenced dates.
+  // Localist description entity decode (PR #248, owner-routed EI data-quality fix).
+  "api/_lib/localist-rows.js",
   "api/_lib/range-preservation.js", "api/_lib/submission-provenance.js", "api/_lib/upload-guard.js", "api/upload-image.js",
   // Description self-healing: shared strength rule + GottaGacha adopting it.
   "api/_lib/description-strength.js", "api/cron-gottagacha.js",
