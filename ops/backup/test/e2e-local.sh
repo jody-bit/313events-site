@@ -151,4 +151,22 @@ grep -q "swept stale plaintext" "$tmp/b9.log" || { echo "FAIL: sweep did not rep
 [ -z "$(ls "$tmp/t")" ] && [ -z "$(ls "$tmp/out9" | grep -v -E '\.tar\.age$|\.sha256$|\.manifest\.txt$')" ] || { echo "FAIL: leftovers after run 9"; exit 1; }
 kill $SRC7 2>/dev/null || true
 echo "PASS 9: stale plaintext from a killed run is swept; working files live in the temp dir, output folder holds ciphertext only"
+# 10. the dedicated read-only role (no superuser, no pg_read_all_data) is sufficient for a complete backup and cannot write
+psql -X -q -d src <<'SQL'
+create role backup_reader login bypassrls connection limit 2;
+alter role backup_reader set default_transaction_read_only = on;
+grant usage on schema public, supabase_migrations, storage to backup_reader;
+grant select on all tables in schema public to backup_reader;
+grant select on all sequences in schema public to backup_reader;
+grant select on all tables in schema supabase_migrations to backup_reader;
+grant select on storage.buckets, storage.objects to backup_reader;
+SQL
+kill $SRC3 2>/dev/null || true; sleep 0.3; rm -rf "$tmp/out"
+python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC10=$!; sleep 1
+( PGUSER=backup_reader PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b10.log" 2>&1 || { cat "$tmp/b10.log"; echo "FAIL: backup as backup_reader"; exit 1; }
+grep -q '^storage_files=3$' "$tmp"/out/*.manifest.txt && grep -q '^events	25$' "$tmp"/out/*.manifest.txt || { echo "FAIL: backup_reader archive incomplete"; exit 1; }
+if PGUSER=backup_reader psql -X -q -d src -c "insert into public.venues(name) values ('x')" >/dev/null 2>&1; then echo "FAIL: backup_reader can write"; exit 1; fi
+if PGUSER=backup_reader psql -X -q -d src -c "select * from pg_authid" >/dev/null 2>&1; then echo "FAIL: backup_reader can read pg_authid"; exit 1; fi
+kill $SRC10 2>/dev/null || true
+echo "PASS 10: dedicated read-only role makes a complete backup (incl. RLS tables) and cannot write"
 echo "PASS: e2e-local"
