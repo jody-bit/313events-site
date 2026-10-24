@@ -12,13 +12,21 @@
 //   Categories.hex(key)          the literal colour, for code that cannot use var() (map pins, canvas)
 //   Categories.pinHexMap()       { key: hex } for the map pins — see PIN_HELD below
 //   Categories.tokenCss()        the :root block defining every --c-* variable
-//   Categories.tagHtml(key, {size})  the ONE event-type label (Option A: coloured text on the dark tag). Every
-//                                surface that shows an event's type renders this and nothing else; size is
-//                                "row" (default), "compact" or "detail" and changes spacing only, never colour.
+//   Categories.tagHtml(key, {size})  the ONE event-type label. Every surface that shows an event's type renders this
+//                                and nothing else; size is "detail" (event page lead label only) or omitted.
 //   Categories.tagCss()          the rules for that label, written into the page with the tokens
 // Loading this file in <head> also writes that block, and the label rules, into the page (<style id="category-tokens">),
 // so a page never declares a --c-* value or a label style of its own.
 //
+// BADGE SPECIFICATION (owner decisions 2026-10-23 review and 2026-10-24: one badge, every surface, coloured pill)
+//   Colour      FILLED PILL: background is the type's own colour from TABLE, text is #0A0A0A. One treatment, no variants.
+//   Type        Space Mono (--font-data), 700, UPPERCASE, letter-spacing .08em, line-height 1.25
+//   Size        11px everywhere, all widths (never below 11px); the event page's lead label only is 12px
+//   Box         1px transparent border, no radius, padding 3px 7px (detail: 5px 12px); wraps instead of overflowing
+//   Contrast    #0A0A0A text on every fill at least 4.5:1 (tested)
+//   Placement   cards and rows: first item of the meta line; event page: above the title; homepage keeps its right-hand
+//               column; radar: under the outlet name. Source attribution ("via X", the Radar outlet) is neutral grey text and is never a pill.
+//   Map pins    keep their own marker shape; pin colour comes from the same table (Categories.pinHexMap)
 // COLOURS are the 2026-10-04 accessible set (Product Owner): six values lightened to clear WCAG AA (4.5:1) for
 // small text on the tag background #202020 — music, food, gaming, film, nightlife, fest — the other nine
 // unchanged. The type name is always printed beside the colour, so colour is never the only signal.
@@ -71,24 +79,18 @@
   function tagHtml(key, opts) {
     var c = BY_KEY[key];
     if (!c) return "";
-    var size = opts && (opts.size === "compact" || opts.size === "detail") ? " cat-tag--" + opts.size : "";
-    var pill = opts && opts.fill === "pill" ? " cat-tag--pill" : "";
-    return '<span class="cat-tag' + size + pill + '" data-cat="' + esc(c.key) + '">' + esc(c.label) + "</span>";
+    var size = opts && opts.size === "detail" ? " cat-tag--detail" : "";
+    return '<span class="cat-tag' + size + '" data-cat="' + esc(c.key) + '">' + esc(c.label) + "</span>";
   }
 
-  // Option A: coloured text on the site's dark tag (--panel / --line, with the same fallbacks the pages use). 11px
-  // bold small caps in the data face; wraps instead of overflowing on a 320px screen. All 15 colours clear 4.5:1 on
-  // #202020 (test/category-colors.test.js).
+  // The one badge: a filled pill in the category colour with dark text (owner decision 2026-10-24). 11px bold caps in the data
+  // face; wraps instead of overflowing on a 320px screen. Dark text on every fill clears 4.5:1 (test/category-colors.test.js).
   function tagCss() {
     var base = ".cat-tag{display:inline-block;max-width:100%;box-sizing:border-box;font-family:var(--font-data,'Space Mono',monospace);" +
       "font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1.25;text-transform:uppercase;overflow-wrap:anywhere;" +
-      "color:var(--ink,#F2F0E8);background:var(--panel,#202020);border:1px solid var(--line,#2c2c2c);padding:3px 7px;}" +
-      ".cat-tag--compact{font-size:10.5px;padding:2px 6px;}" +
+      "color:#0A0A0A;background:#8C78FF;border:1px solid transparent;padding:3px 7px;}" +
       ".cat-tag--detail{font-size:12px;letter-spacing:.06em;padding:5px 12px;}";
-    // Pill variant (calendar, map, event detail keep their filled treatment): same mapping, category fill with dark text.
-    var pill = ".cat-tag--pill{border-color:transparent;}";
-    return base + TABLE.map(function (c) { return '.cat-tag[data-cat="' + c.key + '"]{color:var(' + c.token + ');}'; }).join("") + pill +
-      TABLE.map(function (c) { return '.cat-tag--pill[data-cat="' + c.key + '"]{background:var(' + c.token + ');color:#0A0A0A;}'; }).join("");
+    return base + TABLE.map(function (c) { return '.cat-tag[data-cat="' + c.key + '"]{background:var(' + c.token + ');}'; }).join("");
   }
 
   var api = Object.freeze({ list: Object.freeze(TABLE), cssVar: cssVar, hex: hex, pinHexMap: pinHexMap, tokenCss: tokenCss, tagHtml: tagHtml, tagCss: tagCss });

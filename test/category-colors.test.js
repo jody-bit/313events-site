@@ -55,14 +55,10 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   console.log(`PASS: all 15 colours clear WCAG AA (4.5:1) on #202020 and #0A0A0A; lowest ${Math.min(...worst).toFixed(2)}:1`);
 }
 
-// 2b. filled badges and pills (calendar/map .tag, event-detail badge): dark text on the category fill clears AA for all 15
+// 2b. the pill: #0A0A0A text on every category fill clears AA
 {
-  for (const dark of ["#0A0A0A", "#06210F"]) {
-    for (const c of Categories.list) assert.ok(ratio(c.hex, dark) >= 4.5, `${dark} text on the ${c.key} fill (${c.hex}) is ${ratio(c.hex, dark).toFixed(2)}:1, needs 4.5`);
-  }
-  // The event-detail badge must not force white text (white fails on the lightened music, food and gaming fills).
-  assert.ok(!/\.evt-cat-badge\[data-cat=[^{]*\{[^}]*color:#fff/i.test(read("event-template.html")), "event-template.html forces no white badge text");
-  console.log("PASS: dark text on every category fill clears AA (filled badges on calendar, map and event detail); no white-text override remains");
+  for (const c of Categories.list) assert.ok(ratio(c.hex, "#0A0A0A") >= 4.5, `#0A0A0A text on the ${c.key} fill (${c.hex}) is ${ratio(c.hex, "#0A0A0A").toFixed(2)}:1, needs 4.5`);
+  console.log("PASS: dark text on every category fill clears AA");
 }
 
 // 3. the token block defines every variable once
@@ -117,7 +113,7 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   const tag = Categories.tagHtml("music");
   assert.ok(/^<span class="cat-tag" data-cat="music">Music<\/span>$/.test(tag), "the label is the category name in one element: " + tag);
   assert.strictEqual(Categories.tagHtml("music", { size: "detail" }), '<span class="cat-tag cat-tag--detail" data-cat="music">Music</span>');
-  assert.strictEqual(Categories.tagHtml("music", { size: "compact" }), '<span class="cat-tag cat-tag--compact" data-cat="music">Music</span>');
+  assert.strictEqual(Categories.tagHtml("music", { size: "compact", fill: "pill" }), tag, "there is no compact size and no filled variant: other options are ignored");
   assert.strictEqual(Categories.tagHtml("not-a-category"), "", "an unknown type renders nothing");
   assert.ok(!/style=|color/i.test(tag), "the label carries no colour of its own; the rule keyed on data-cat supplies it");
   for (const c of Categories.list) {
@@ -127,26 +123,24 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
 
   // the label rules: one colour rule per category, from its own token; visible; no hiding
   const css = Categories.tagCss();
-  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag[data-cat="${c.key}"]{color:var(${c.token});}`), `${c.key} has its colour rule`);
   assert.ok(!/display:\s*none|visibility:\s*hidden|opacity:\s*0\b/.test(css), "the label is never hidden");
   const size = (re) => Number((css.match(re) || [])[1]);
   assert.ok(size(/\.cat-tag\{[^}]*font-size:([\d.]+)px/) >= 11, "the default label is at least 11px");
-  assert.ok(size(/\.cat-tag--compact\{font-size:([\d.]+)px/) >= 10.5 && size(/\.cat-tag--detail\{font-size:([\d.]+)px/) >= 12, "compact and detail sizes stay readable");
-  // the default colour is the site's ink, not a grey: a label that failed to match a category would still be readable
-  assert.ok(/color:var\(--ink,#F2F0E8\)/.test(css));
-  // the default label is coloured text (not a dot); the filled pill is an explicit variant of the same component
-  assert.ok(!/\.cat-tag\[data-cat=[^{]*\{[^}]*background:/.test(css), "the default label has no category fill");
-  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag--pill[data-cat="${c.key}"]{background:var(${c.token});color:#0A0A0A;}`), `${c.key} has its pill rule from the same token`);
-  assert.strictEqual(Categories.tagHtml("music", { size: "detail", fill: "pill" }), '<span class="cat-tag cat-tag--detail cat-tag--pill" data-cat="music">Music</span>');
-  // Owner design decision (Oct 22): calendar, map and event detail keep their filled pills (same mapping); the pill is at
-  // least as readable as the coloured text for every category.
-  for (const c of Categories.list) assert.ok(ratio(c.hex, "#0A0A0A") >= ratio(c.hex, "#202020"), `${c.key}: pill contrast ${ratio(c.hex, "#0A0A0A").toFixed(2)} is below the text label ${ratio(c.hex, "#202020").toFixed(2)}`);
-  for (const f of ["calendar.html", "map.html"]) {
-    const h = read(f);
-    assert.ok((h.match(/Categories\.tagHtml\(e\.cat, \{fill:'pill'\}\)/g) || []).length === (f === "calendar.html" ? 4 : 1), `${f}: every type label is the shared pill`);
+  assert.ok(size(/\.cat-tag--detail\{font-size:([\d.]+)px/) >= 12, "the detail size stays readable");
+  assert.ok(!/cat-tag--compact|cat-tag--pill|cat-tag--text/.test(css), "one badge: no compact size, no second variant");
+  assert.ok(/\.cat-tag\{[^}]*font-weight:700[^}]*text-transform:uppercase/.test(css) && /color:#0A0A0A;background:#8C78FF;border:1px solid transparent/.test(css) && /padding:3px 7px/.test(css), "weight, capitalisation, text colour, border and padding are defined once");
+  // a filled pill on every surface: each category's fill comes from its own token, text is dark
+  for (const c of Categories.list) assert.ok(css.includes(`.cat-tag[data-cat="${c.key}"]{background:var(${c.token});}`), `${c.key} has its fill rule`);
+  assert.ok(!/\.cat-tag\[data-cat=[^{]*\{[^}]*(?<![-])color:/.test(css), "no per-category text colour");
+  for (const f of ["index.html", "calendar.html", "map.html", "event-template.html", "venue-template.html", "radar.html"]) {
+    assert.ok(!/fill:\s*'pill'|size:\s*'compact'/.test(read(f)), `${f} passes no variant to the label`);
   }
-  assert.ok(/Categories\.tagHtml\(e\.cat, \{size:'detail', fill:'pill'\}\)/.test(read("event-template.html")), "event detail uses the shared pill");
-  for (const f of ["index.html", "venue-template.html", "radar.html"]) assert.ok(!/fill:\s*'pill'/.test(read(f)), `${f} keeps the coloured-text label`);
+  assert.ok(/Categories\.tagHtml\(e\.cat, \{size:'detail'\}\)/.test(read("event-template.html")), "event detail uses the detail size only");
+  // Source attribution stays neutral secondary text and is never styled as a category pill
+  for (const f of ["index.html", "calendar.html", "map.html", "radar.html"]) {
+    const h = read(f);
+    assert.ok(!/\.(?:src|rc-src|rc-outlet)\{[^}]*(?:var\(--c-|background:var\(--accent)/.test(h), `${f}: source attribution carries no category colour or pill fill`);
+  }
   // Radar: the outlet name is neutral; colour is used only by the type label beneath it.
   const radar = read("radar.html");
   assert.ok(!/rc-outlet[^\n]*(cat\.color|var\(--c-|--accent)/.test(radar), "radar outlet name carries no category colour");
@@ -161,7 +155,7 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
     assert.ok(!/\.cat-tag[^{}\n]*\{/.test(html), `${f} does not restyle the shared label`);
   }
   // submit.html is a picker (swatch + name per option), not an event surface; it still uses the shared tokens only.
-  console.log("PASS: one shared event-type label (Option A, coloured text with the type name); never hidden; readable sizes; used by homepage, calendar (4 views), map, event detail, venue and radar; no page styles it");
+  console.log("PASS: one shared event-type label (coloured pill with the type name); never hidden; readable sizes; used by homepage, calendar (4 views), map, event detail, venue and radar; no page styles it");
 }
 
 console.log("\nAll category-colour checks passed.");
