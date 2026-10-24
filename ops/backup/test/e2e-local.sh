@@ -38,6 +38,9 @@ create table public.schema_migrations (filename text primary key);
 insert into public.events(title,status,secret) select 'e'||g, case when g%2=0 then 'approved' else 'pending' end, 'x' from generate_series(1,25) g;
 insert into public.venues(name) values ('v1'),('v2'); insert into public.schema_migrations values ('a'),('b'),('c');
 create view public.events_public as select id,title from public.events where status='approved';
+create function public.f_locked() returns int language sql as 'select 1';
+revoke all on function public.f_locked() from public; grant execute on function public.f_locked() to service_role;
+create function public.f_open() returns int language sql as 'select 2';
 alter table public.events enable row level security;
 create policy "public read approved" on public.events for select to public using (status='approved');
 revoke all on all tables in schema public from anon, authenticated, service_role;
@@ -46,7 +49,7 @@ grant select on public.events_public, public.venues to anon, authenticated;
 grant all on all tables in schema public to service_role;
 SQL
 # Same trap as a new Supabase project: default privileges hand anon/authenticated everything on new public tables.
-psql -X -q -d dst -c "alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role;"
+psql -X -q -d dst -c "alter default privileges in schema public grant all on tables to anon, authenticated; alter default privileges in schema public grant all on tables to service_role; alter default privileges in schema public grant execute on functions to anon, authenticated, service_role;"
 mkdir -p "$tmp/srcfiles/event-flyers/u/abc123" "$tmp/srcfiles/event-flyers/u/def/deep" "$tmp/dstfiles"
 printf 'PNGDATA1' > "$tmp/srcfiles/event-flyers/top.png"; printf 'PNGDATA-two' > "$tmp/srcfiles/event-flyers/u/abc123/nested one.png"; printf 'PNGD-3' > "$tmp/srcfiles/event-flyers/u/def/deep/x.png"
 python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC1=$!
@@ -83,6 +86,21 @@ got="$(psql -X -At -d dst -c "set role anon; select count(*) from public.events"
 if psql -X -q -d dst -c "set role anon; select secret from public.events" >/dev/null 2>&1; then echo "FAIL: anon can read secret column"; exit 1; fi
 if psql -X -q -d dst -c "set role anon; select * from public.source_runs" >/dev/null 2>&1; then echo "FAIL: anon can read source_runs"; exit 1; fi
 echo "PASS 3: restore passed every gate; trap grants replaced; anon sees 12 approved rows only; secret column and source_runs denied"
+# 3b. function privileges restored exactly, despite new-project default EXECUTE grants for anon/authenticated/service_role
+fq="select p.proname, has_function_privilege('anon',p.oid,'execute'), has_function_privilege('authenticated',p.oid,'execute'), has_function_privilege('service_role',p.oid,'execute'), coalesce((select bool_or(a.grantee=0) from aclexplode(p.proacl) a where a.privilege_type='EXECUTE'), true) from pg_proc p where p.pronamespace='public'::regnamespace order by 1"
+fs="$(psql -X -At -d src -c "$fq")"; fd="$(psql -X -At -d dst -c "$fq")"
+[ "$fs" = "$fd" ] || { echo "src: $fs"; echo "dst: $fd"; echo "FAIL: function privileges differ"; exit 1; }
+[ "$(psql -X -At -d dst -c "set role anon; select count(*) from (select public.f_locked()) s" 2>&1 | tail -1)" != 1 ] || { echo "FAIL: anon can execute f_locked"; exit 1; }
+grep -q 'function privileges after restore' "$tmp/r.log" || { echo "FAIL: restore did not print function privileges"; exit 1; }
+echo "PASS 3b: function privileges match the source (f_locked not executable by anon)"
+# 3c. a corrupted archive stops the restore before anything is written (hash check is fatal)
+psql -X -q -c "create database dst2"
+mkdir "$tmp/cx"; age -d -i "$tmp/id" "$a" | tar -x -C "$tmp/cx"; echo corrupt >> "$tmp/cx"/313events-*/db.dump
+tar -C "$tmp/cx" -cf - $(ls "$tmp/cx") | age -r "$rec" -o "$tmp/corrupt.tar.age"
+if ( PGDATABASE=dst2 AGE_IDENTITY="$tmp/id" ARCHIVE="$tmp/corrupt.tar.age" RESTORE_SUPABASE_URL=http://127.0.0.1:54331 RESTORE_SERVICE_KEY="$KEY" "$here/restore-rehearsal.sh" ) >"$tmp/r3.log" 2>&1; then echo "FAIL: corrupted archive was restored"; exit 1; fi
+grep -q 'MANIFEST HASH MISMATCH' "$tmp/r3.log" || { cat "$tmp/r3.log"; echo "FAIL: wrong reason for corrupt archive"; exit 1; }
+[ "$(psql -X -At -d dst2 -c "select count(*) from pg_tables where schemaname='public'")" = 0 ] || { echo "FAIL: corrupt archive wrote to target"; exit 1; }
+echo "PASS 3c: corrupted archive refused before any write"
 # 4. a non-empty target is refused
 if rst >"$tmp/r2.log" 2>&1; then echo "FAIL: restored into a non-empty target"; exit 1; fi; grep -q 'not empty' "$tmp/r2.log" || { echo "FAIL: wrong refusal"; exit 1; }
 # 5. production and staging targets are refused before anything is read

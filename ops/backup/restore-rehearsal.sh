@@ -18,7 +18,8 @@ DB="dbname=$PGDATABASE"
 t0=$(date +%s); lap() { echo "[$(( $(date +%s) - t0 ))s] $1"; }
 work="$(mktemp -d)"; trap 'rm -rf "$work"' EXIT
 age -d -i "$AGE_IDENTITY" "$ARCHIVE" | tar -x -C "$work"; d="$(echo "$work"/313events-*)"; lap "decrypted"
-( cd "$d" && awk '/^--- sha256/{go=1; next} go' MANIFEST.txt | sha256_check ) && lap "manifest hashes verified"
+( cd "$d" && awk '/^--- sha256/{go=1; next} go' MANIFEST.txt | sha256_check ) || { echo "MANIFEST HASH MISMATCH: the archive is corrupt or altered; nothing was restored" >&2; exit 6; }
+lap "manifest hashes verified"
 created="$(awk -F= '$1=="created_utc"{print $2}' "$d/MANIFEST.txt")"
 
 tq() { psql "$DB" -X -q -At -F $'\t' -v ON_ERROR_STOP=1 "$@"; }     # target session (this script writes only to the rehearsal project)
@@ -35,6 +36,14 @@ lap "database restored"
 # Revoke everything for the three API roles, replay the source's exact grants, then require a matching fingerprint.
 tq -c "do \$\$ declare r record; begin for r in select c.relname from pg_class c where c.relnamespace='public'::regnamespace and c.relkind in ('r','v','m') loop execute format('revoke all on public.%I from anon, authenticated, service_role', r.relname); end loop; end \$\$;"
 psql "$DB" -X -q -v ON_ERROR_STOP=1 -f "$d/acl_replay.sql" >/dev/null
+# Function privileges: new projects default-grant EXECUTE on public functions to anon/authenticated/service_role, and the
+# fingerprint hashes function definitions, not their ACLs. Reset every public function to the plain default (PUBLIC execute
+# only), then apply the GRANT/REVOKE lines the dump holds for functions, and print the result for comparison with the source.
+tq -c "do \$\$ declare r record; begin for r in select p.oid::regprocedure as sig from pg_proc p where p.pronamespace='public'::regnamespace loop execute format('revoke all on function %s from public, anon, authenticated, service_role', r.sig); execute format('grant execute on function %s to public', r.sig); end loop; end \$\$;"
+pg_restore --schema=public -f - "$d/db.dump" 2>/dev/null | grep -E '^(GRANT|REVOKE) .* ON FUNCTION ' > "$work/function_acl.sql" || true
+if [ -s "$work/function_acl.sql" ]; then psql "$DB" -X -q -v ON_ERROR_STOP=1 -f "$work/function_acl.sql" >/dev/null; fi
+echo "function privileges after restore (execute: public/anon/authenticated/service_role):"
+tq -c "select p.proname, coalesce((select bool_or(a.grantee=0) from aclexplode(p.proacl) a where a.privilege_type='EXECUTE'), true), has_function_privilege('anon',p.oid,'execute'), has_function_privilege('authenticated',p.oid,'execute'), has_function_privilege('service_role',p.oid,'execute') from pg_proc p where p.pronamespace='public'::regnamespace order by 1" | sed 's/^/  /'
 tq -f "$here/fingerprint.sql" > "$work/fingerprint.target.tsv"
 boundary=0
 while IFS=$'\t' read -r k h n; do
