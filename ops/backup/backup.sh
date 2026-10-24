@@ -24,9 +24,14 @@ DB="${SUPABASE_DB_URL:-dbname=${PGDATABASE:-postgres}}"; export PGSSLMODE="${PGS
 SB_KEY="$SUPABASE_SERVICE_ROLE_KEY"
 case "$(pg_dump --version)" in *" ${PG_DUMP_MAJOR:-17}."*) ;; *) echo "pg_dump major ${PG_DUMP_MAJOR:-17} required (found: $(pg_dump --version))" >&2; exit 1;; esac
 
+umask 077
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUTDIR="${BACKUP_DIR:-$(mktemp -d)}"; mkdir -p "$OUTDIR"; OUTDIR="$(cd "$OUTDIR" && pwd)"
-WORK="$OUTDIR/313events-$STAMP"
+# Plaintext lives only in a private temp directory outside the output folder (which may be synced, e.g. iCloud); the output
+# folder receives ciphertext, its hash and the manifest only. Leftovers from a killed or crashed earlier run are swept first.
+sweep_stale "$OUTDIR"
+WORKROOT="$(mktemp -d "${TMPDIR:-/tmp}/313events-work.XXXXXX")"
+WORK="$WORKROOT/313events-$STAMP"
 mkdir -p "$WORK/storage"
 cd "$WORK"
 
@@ -36,7 +41,7 @@ alert() {
 trap 'alert "${STEP:-unknown}"' ERR
 DONE=0
 cleanup() {  # always remove the plaintext working directory; remove partial ciphertext artifacts if the run did not finish
-  cd /; rm -rf "$WORK"
+  cd /; rm -rf "$WORKROOT"
   [ "$DONE" = 1 ] || rm -f "$OUTDIR/313events-$STAMP.tar.age" "$OUTDIR/313events-$STAMP.tar.age.sha256" "$OUTDIR/313events-$STAMP.manifest.txt"
 }
 trap cleanup EXIT
@@ -44,6 +49,7 @@ trap 'exit 130' INT TERM HUP
 
 # pg_dump itself runs inside a READ ONLY, REPEATABLE READ transaction.
 STEP=dump_custom
+DUMP_STARTED="$(date -u +%Y%m%dT%H%M%SZ)"
 pg_dump "$DB" --format=custom --no-owner --schema=public --schema=supabase_migrations --file=db.dump
 STEP=dump_schema_sql
 pg_dump "$DB" --format=plain --schema-only --no-owner --schema=public --file=schema.sql
@@ -77,11 +83,16 @@ from storage.objects order by 1, 2;
 SQL
 }
 snap > storage_objects.tsv
+LIST_AT="$(date -u +%Y%m%dT%H%M%SZ)"
 q > buckets.json <<'SQL'
 select coalesce(json_agg(b), '[]'::json) from (select id, name, public, file_size_limit, allowed_mime_types from storage.buckets order by id) b;
 SQL
 if awk -F'\t' 'NF != 5 {bad=1} END {exit !bad}' storage_objects.tsv; then echo "unexpected object name or metadata (tab/newline)" >&2; false; fi
 exp_n="$(wc -l < storage_objects.tsv | tr -d ' ')"
+# The object list must agree with the row count taken earlier and with the object rows in the metadata dump.
+rc_n="$(awk -F'\t' '$1=="storage_objects"{print $2}' row_counts.tsv)"
+meta_n="$(awk '/^COPY storage.objects /{f=1; next} /^\\\.$/{f=0} f' storage_meta.sql | wc -l | tr -d ' ')"
+[ "$exp_n" = "$rc_n" ] && [ "$exp_n" = "$meta_n" ] || { echo "storage object count disagrees: list $exp_n, row_counts $rc_n, metadata dump $meta_n (Storage changed during the run; rerun)" >&2; false; }
 exp_bytes="$(awk -F'\t' '{s+=$3} END{print s+0}' storage_objects.tsv)"
 i=0
 while IFS=$'\t' read -r b name size etag upd; do
@@ -98,6 +109,7 @@ done < storage_objects.tsv
 snap > storage_objects.after.tsv
 cmp -s storage_objects.tsv storage_objects.after.tsv || { echo "Storage changed while the backup was running; rerun" >&2; false; }
 rm -f storage_objects.after.tsv
+VERIFIED_AT="$(date -u +%Y%m%dT%H%M%SZ)"
 got_n="$(find storage -type f | wc -l | tr -d ' ')"
 got_bytes="$(find storage -type f | while IFS= read -r f; do fsize "$f"; done | awk '{s+=$1} END{print s+0}')"
 [ "$got_n" = "$exp_n" ] && [ "$got_bytes" = "$exp_bytes" ] || { echo "storage incomplete: files $got_n/$exp_n bytes $got_bytes/$exp_bytes" >&2; false; }
@@ -115,6 +127,9 @@ test -s schema.sql && test -s storage_meta.sql && test -s fingerprint.tsv && tes
 STEP=manifest
 {
   echo "created_utc=$STAMP"
+  echo "db_dump_started_utc=$DUMP_STARTED"
+  echo "storage_listed_utc=$LIST_AT"
+  echo "storage_verified_utc=$VERIFIED_AT"
   echo "source_project=${SUPABASE_URL#https://}"
   echo "pg_dump_version=$(pg_dump --version)"
   echo "storage_files=$got_n"
@@ -127,9 +142,9 @@ STEP=manifest
 
 STEP=encrypt
 cd "$OUTDIR"
-tar -cf - "313events-$STAMP" | age -r "$AGE_RECIPIENT" -o "313events-$STAMP.tar.age"
+tar -C "$WORKROOT" -cf - "313events-$STAMP" | age -r "$AGE_RECIPIENT" -o "313events-$STAMP.tar.age"
 sha256 "313events-$STAMP.tar.age" > "313events-$STAMP.tar.age.sha256"
-cp "313events-$STAMP/MANIFEST.txt" "313events-$STAMP.manifest.txt"   # manifest has counts and hashes only, no row data
+cp "$WORK/MANIFEST.txt" "313events-$STAMP.manifest.txt"   # manifest has counts and hashes only, no row data
 
 if [ "${BACKUP_DRY_RUN:-0}" = 1 ]; then
   DONE=1; echo "dry run complete: $OUTDIR/313events-$STAMP.tar.age"; exit 0

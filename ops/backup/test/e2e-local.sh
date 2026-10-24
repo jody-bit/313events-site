@@ -97,13 +97,14 @@ f2="$(psql -X -q -At -F, -d dst -f "$here/fingerprint.sql" | grep '^table_grants
 echo "PASS 6: fingerprint detects an extra anonymous grant"
 # 7. Storage changing while the backup runs must fail the backup (new object, replaced object), leaving nothing behind
 for change in "insert into storage.objects(bucket_id,name,metadata) values ('event-flyers','late.png','{\"size\":3}')" \
+              "delete from storage.objects where name='u/def/deep/x.png'" \
               "update storage.objects set updated_at=now(), metadata=jsonb_set(metadata,'{eTag}','\"abc\"') where name='top.png'"; do
   kill $SRC3 2>/dev/null || true; sleep 0.3; rm -rf "$tmp/out"
   python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" "" "" "$change" & SRC4=$!; sleep 1
   if run_backup >"$tmp/b3.log" 2>&1; then echo "FAIL: backup passed although Storage changed mid-run"; exit 1; fi
   grep -q 'Storage changed while the backup was running' "$tmp/b3.log" || { cat "$tmp/b3.log"; echo "FAIL: wrong failure reason"; exit 1; }
   [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: leftovers after mid-run change"; exit 1; }
-  psql -X -q -d src -c "delete from storage.objects where name='late.png'; update storage.objects set updated_at=null, metadata=metadata - 'eTag' where name='top.png'" >/dev/null
+  psql -X -q -d src -c "delete from storage.objects where name='late.png'; insert into storage.objects(bucket_id,name,metadata) select 'event-flyers','u/def/deep/x.png','{\"size\":6}' where not exists (select 1 from storage.objects where name='u/def/deep/x.png'); update storage.objects set updated_at=null, metadata=metadata - 'eTag' where name='top.png'" >/dev/null
   SRC3=$SRC4
 done
 echo "PASS 7: Storage changes during the backup (added object, replaced object) fail it and leave nothing behind"
@@ -120,4 +121,13 @@ sleep 2; pkill -INT -P $BP 2>/dev/null || true; kill -INT $BP 2>/dev/null || tru
 [ -z "$(ls -A "$tmp/out" 2>/dev/null)" ] || { ls "$tmp/out"; echo "FAIL: leftovers after interrupt"; exit 1; }
 kill $SRC6 2>/dev/null || true
 echo "PASS 8: encryption failure and interrupt leave no plaintext and no partial archive"
+# 9. a SIGKILL-style leftover from an earlier run is swept at the next start, and plaintext never lands in the output folder
+kill $SRC3 2>/dev/null || true; sleep 0.3
+python3 "$here/test/mock_storage.py" 54330 "$tmp/srcfiles" "$KEY" & SRC7=$!; sleep 1
+mkdir -p "$tmp/t/313events-work.stale/storage" "$tmp/out9/313events-20200101T000000Z"; echo leftover > "$tmp/t/313events-work.stale/storage/x"
+( TMPDIR="$tmp/t" PGDATABASE=src BACKUP_DRY_RUN=1 BACKUP_DIR="$tmp/out9" AGE_RECIPIENT="$rec" SUPABASE_URL=http://127.0.0.1:54330 SUPABASE_SERVICE_ROLE_KEY="$KEY" "$here/backup.sh" ) >"$tmp/b9.log" 2>&1 || { cat "$tmp/b9.log"; echo "FAIL: backup 9"; exit 1; }
+[ ! -e "$tmp/t/313events-work.stale" ] && [ ! -e "$tmp/out9/313events-20200101T000000Z" ] || { echo "FAIL: stale plaintext not swept"; exit 1; }
+[ -z "$(ls "$tmp/t")" ] && [ -z "$(ls "$tmp/out9" | grep -v -E '\.tar\.age$|\.sha256$|\.manifest\.txt$')" ] || { echo "FAIL: leftovers after run 9"; exit 1; }
+kill $SRC7 2>/dev/null || true
+echo "PASS 9: stale plaintext from a killed run is swept; working files live in the temp dir, output folder holds ciphertext only"
 echo "PASS: e2e-local"

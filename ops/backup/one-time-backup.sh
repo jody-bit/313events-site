@@ -75,7 +75,7 @@ f="$(ls -t "$OUT"/*.tar.age | head -1)"
 base="${f%.tar.age}"
 
 # Test decrypt with the private key, verify every hash inside, then delete the plaintext again.
-tmpd="$(mktemp -d)"; trap 'rm -rf "$tmpd"' EXIT
+tmpd="$(mktemp -d "${TMPDIR:-/tmp}/313events-verify.XXXXXX")"; trap 'rm -rf "$tmpd"' EXIT
 age -d -i "$KEYDIR/age.key" "$f" | tar -x -C "$tmpd"
 d="$(echo "$tmpd"/313events-*)"
 ( cd "$d" && awk '/^--- sha256/{go=1; next} go' MANIFEST.txt | sha256_check )

@@ -7,7 +7,7 @@ tmp="$(mktemp -d)"; mkdir "$tmp/bin"
 cat >"$tmp/bin/pg_dump" <<'S'
 #!/usr/bin/env bash
 if [ "$1" = "--version" ]; then echo "pg_dump (stub) 17.0"; exit 0; fi
-for a in "$@"; do case $a in --file=*) echo "-- stub $a" > "${a#--file=}"; esac; done
+for a in "$@"; do case $a in --file=*) f="${a#--file=}"; echo "-- stub $a" > "$f"; case "$f" in storage_meta.sql) printf 'COPY storage.objects (a) FROM stdin;\nrow1\nrow2\n\\.\n' >> "$f";; esac;; esac; done
 S
 printf '#!/usr/bin/env bash\nexit 0\n' >"$tmp/bin/pg_restore"
 cat >"$tmp/bin/psql" <<'S'
