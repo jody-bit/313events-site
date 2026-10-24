@@ -128,6 +128,9 @@
     font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;text-decoration:none;
     border-radius:var(--radius);padding:9px 16px;
   }
+  /* Affiliate notice: full-width last line of the action box, so it reads as part of the ticket link and the box's bottom margin
+     (28px) separates it from whatever follows (owner review 2026-10-23: at least 24px from the description). */
+  .evt-detail-actions #evtAffiliateNote{flex-basis:100%;margin:0;padding-top:2px;}
   .btn-primary{background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);}
   .btn-primary:hover{opacity:.9;}
   .btn-secondary{background:none;color:var(--ink);border:1px solid var(--line);}
@@ -854,6 +857,8 @@ function renderEvent(e){
   const affiliateNoteEl = document.getElementById('evtAffiliateNote');
   affiliateNoteEl.innerHTML = affiliateNoteHtml;
   affiliateNoteEl.style.display = affiliateNoteHtml ? 'block' : 'none';
+  // The notice belongs to the ticket link, so it sits inside the action row (last, full width) and not beside the description.
+  if(affiliateNoteHtml) actions.appendChild(affiliateNoteEl);
 
   const ticketStatusNote = ticketStatusNoteHtml(e);
   const ticketStatusNoteEl = document.getElementById('evtTicketStatusNote');

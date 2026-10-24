@@ -113,4 +113,15 @@ const PLAIN_TM = "https://www.ticketmaster.com/event/ABC";
   console.log(`PASS: notice text clears AA (body ${ratio("#A9AAA3", "#202020").toFixed(1)}:1 on #202020) and wraps on narrow screens`);
 }
 
+// 6. spacing (owner review 2026-10-23): on the event page the notice sits inside the action row, with the row's bottom margin
+//    (at least 24px) between it and the description
+{
+  const html = read("event-template.html");
+  assert.ok(/actions\.appendChild\(affiliateNoteEl\)/.test(html), "the notice is moved into the action row beside the ticket link");
+  const margin = html.match(/\.evt-detail-actions\{[^}]*margin:\s*(\d+)px\s+0\s+(\d+)px/);
+  assert.ok(margin && Number(margin[2]) >= 24, "the action row keeps at least 24px below it, before the description");
+  assert.ok(/\.evt-detail-actions #evtAffiliateNote\{[^}]*flex-basis:100%/.test(html), "the notice is a full-width last line of the row");
+  console.log("PASS: the notice sits in the action row with at least 24px before the description");
+}
+
 console.log("\nAll affiliate-disclosure checks passed.");
