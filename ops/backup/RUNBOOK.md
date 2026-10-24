@@ -33,20 +33,26 @@ The age private key lives in the owner's password manager plus one offline copy.
 ## Retention (proposed; owner to approve)
 14 daily, 8 weekly (Sundays), 12 monthly. `prune.sh` previews deletions; `PRUNE_APPLY=1` deletes. The bucket should block deletion by the upload key where the provider supports it.
 
-## Restore rehearsal
-Only into a new, empty, isolated project (never production or staging; `restore-rehearsal.sh` refuses both and refuses a non-empty target).
-1. Download an archive; have the age private key available locally.
-2. `RESTORE_DB_URL=... AGE_IDENTITY=... ARCHIVE=... ops/backup/restore-rehearsal.sh`
-3. Re-upload the Storage files to the new project's bucket; fetch a few public URLs.
-4. Run `supabase/verify/public_boundary_check.sql` and `catalog_fingerprint.sql` and compare with production; check `select count(*) from events_public`.
-5. Record: archive timestamp (recovery point), total restore seconds (recovery time), checks passed.
-6. Delete the rehearsal project.
+## Restore (rehearsal and real incident use the same script)
+Only into a new, empty, isolated project (never production or staging; `restore-rehearsal.sh` refuses both refs and any non-empty target). Run it from a Mac or workstation holding the age private key; the database password and service key are prompted hidden by `restore-mac.sh` (or supplied as `PG*` / `RESTORE_SERVICE_KEY` environment variables), never as arguments.
+1. Decrypt, verify every SHA-256 in the manifest.
+2. `pg_restore` the database.
+3. **Access-boundary gate (required).** A new Supabase project default-grants `anon` and `authenticated` on new public tables, and a dump cannot undo that (measured 2026-10-24: 336 grant rows vs 107 in production). The script revokes all table/view privileges for `anon`, `authenticated` and `service_role`, replays the source's exact grants from `acl_replay.sql` (captured at backup time, including column-level grants), then compares the catalog fingerprint (`fingerprint.sql`, 12 groups including table and column grants) with the source's. Any difference exits 4 with "DO NOT EXPOSE". **A restored database must not receive application traffic until this gate prints `ok` for every group.**
+4. Row counts compared with the source counts in the manifest.
+5. Storage: buckets are recreated from `buckets.json`, every file is uploaded, then every object is downloaded again and its SHA-256 compared with the manifest; the restored `storage.objects` row count and byte total must equal the archive's.
+6. Record: recovery point (archive `created_utc`), total elapsed seconds (printed per phase), checks passed. Delete the rehearsal project.
+Exit codes: 0 pass, 2 refused target, 3 target not empty, 4 access boundary differs, 5 counts differ, 6 restore errors, 7 storage verification failed.
 
 ## Disaster recovery (real incident)
 Create a new project, run the same restore steps, then repoint the app: update Supabase URL and keys in Vercel (production), redeploy, re-register cron secrets, re-create Storage bucket policies. Expected recovery time and loss are the measured rehearsal numbers.
 
 ## One-time local backup (no credentials in chat)
-`ops/backup/one-time-backup.sh` on the owner's Mac. Secrets come from environment, the macOS Keychain, or a hidden prompt; none is echoed, passed as an argument or stored. It creates the age key pair on first run at `~/.313events-backup/age.key` (outside the repo and CI; copy it to the password manager), runs `backup.sh` in local-only mode, and prints the archive path, size and manifest row counts.
+`ops/backup/one-time-backup.sh` on the owner's Mac (needs `brew install postgresql@17 age jq`; stock macOS `shasum` and BSD tools are supported).
+- Secrets: the database password and the service-role key come from the environment, the macOS Keychain, or a hidden prompt. They are never echoed, never in a command line (database via `PGPASSWORD`, Storage key via a `curl -K` config read from a pipe), never written to disk. Only the pooler host name (not secret) is typed visibly.
+- Read-only: every database session sets `default_transaction_read_only`, `pg_dump` runs in a READ ONLY transaction, Storage is GET only. A preflight prints `on` for the read-only flag before any dump starts. (The credential is the project's postgres role until the least-privilege backup role is approved; see the role review.)
+- Storage: the object list comes from `storage.objects` (so sub-folders cannot be skipped) and the backup fails unless the downloaded file count and byte total equal what the database reports.
+- Creates the age key pair on first run at `~/.313events-backup/age.key` (outside the repo and CI; copy it to the password manager).
+- After encrypting it decrypts the archive with the private key, verifies every hash, then deletes all plaintext. The output folder contains only `.tar.age`, `.sha256` and `.manifest.txt`.
 
 ## Tests
-`ops/backup/test/dry-run.sh` (flow, manifest, ciphertext only) and `ops/backup/test/no-secret-leak.sh` (sentinel secrets never appear in output or manifest; no `set -x`). Full git history (1,073 commits) was scanned for key-shaped strings on 2026-10-24: only fake test fixtures matched.
+`test/dry-run.sh` (flow, nested Storage object, manifest, ciphertext only, no plaintext left), `test/no-secret-leak.sh` (sentinel secrets never appear in output, files or any process argument; no `set -x`), and `test/e2e-local.sh` (real local PostgreSQL plus a mock Storage API: backup with nested objects, fail-closed on a missing object, restore through every gate despite the default-privilege trap, anonymous access checks, refusal of non-empty/production/staging targets, fingerprint sensitivity). Full git history (1,073 commits) was scanned for key-shaped strings on 2026-10-24: only fake test fixtures matched.
