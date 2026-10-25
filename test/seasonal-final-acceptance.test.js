@@ -50,7 +50,7 @@ const all = E.fall.concat(E["fall-color"]);
 assert.strictEqual(all.filter((e) => e.approval).length, 79, "Fall approvals only on the 76 batch-1 + 3 batch-2 records");
 assert.strictEqual(all.filter((e) => ED.COLLECTIONS.isPublic(e)).length, 79, "only the 79 Fall records (76 + 3) are public");
 // Halloween has its own, later owner approval (2026-10-11): 45 records, exactly AUTH_HALLOWEEN; 3 excluded carry none.
-assert.strictEqual(E.halloween.filter((e) => e.approval).length, 45, "45 Halloween approvals");
+assert.strictEqual(E.halloween.filter((e) => e.approval).length, 43, "43 Halloween approvals");
 E.halloween.filter((e) => e.approval).forEach((e) => assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id));
 assert.deepStrictEqual(E.halloween.filter((e) => ED.COLLECTIONS.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "the pinned 25 Halloween records are public");
 

@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 45,
-  "eligiblePublished": 25,
+  "ownerApproved": 43,
+  "eligiblePublished": 23,
   "held": 20,
-  "excluded": 7,
+  "excluded": 9,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -956,35 +956,25 @@
    "inventoryNo": "30",
    "name": "Fort Meigs Garrison Ghost Walk",
    "city": "Perrysburg",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "acquired-file",
    "rightsRoute": "third-party-license",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "fort-meigs-garrison-ghost-walk",
-    "name": "Fort Meigs Garrison Ghost Walk",
-    "city": "Perrysburg",
-    "region": "OH",
-    "categories": [
-     "ghosts-history"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Historical ghost walk",
-    "website": "https://fortmeigs.org/",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__fort-meigs-garrison-ghost-walk__commons-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photo: Mbrickn, CC BY-SA 4.0, via Wikimedia Commons"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Fort Meigs ghost walk page listed Oct 16, 17, 23 and 24, 2026; the final night was Oct 24. Retained as a non-public record; underlying event records and source evidence are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Fort Meigs ghost walk page listed Oct 16, 17, 23 and 24, 2026; the final night was Oct 24. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "haunted-waterville-tours",
@@ -1263,36 +1253,25 @@
    "inventoryNo": "45",
    "name": "Halloween Stroll",
    "city": "Port Huron",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "halloween-stroll",
-    "name": "Halloween Stroll",
-    "city": "Port Huron",
-    "region": "MI",
-    "categories": [
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
-    "website": "https://porthuronrec.com/halloweenstroll",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-6.webp",
-      "/assets/seasonal/halloween-card-8.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "Photography © Port Huron Parks and Recreation"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The Port Huron Parks and Recreation page listed a single Halloween Stroll, Saturday Oct 24, 2026, 10 AM-12:30 PM; it has passed. Retained as a non-public record; underlying event records and source evidence are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Port Huron Parks and Recreation page listed a single Halloween Stroll, Saturday Oct 24, 2026, 10 AM-12:30 PM; it has passed. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "agony-on-alcott",
