@@ -127,13 +127,30 @@ function timingSafeStringEqual(a, b) {
 // instead of aborting the whole run — one bad endpoint should never hide
 // the results of every other check, same "one bad page never aborts the
 // run" convention cron-detroitmonthofdesign.js already established.
+// The function has a 30 s ceiling (vercel.json) and writes its one result row only at the end, so a single stalled
+// request used to lose the whole day's row (no row has been recorded since 2026-10-19). Every check now races a shared
+// deadline: one that has not answered by then is recorded as a failed check naming itself, and the row is still written.
+const CHECK_BUDGET_MS = 22000;
+let checkDeadline = null; // set per invocation by the handler; null (tests) means no deadline
+
 async function runCheck(name, fn) {
   const start = Date.now();
+  let timer;
   try {
-    const detail = await fn();
+    const work = Promise.resolve().then(fn);
+    const detail = checkDeadline === null
+      ? await work
+      : await Promise.race([
+          work,
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`no answer within the ${Math.round(CHECK_BUDGET_MS / 1000)} s run budget`)), Math.max(0, checkDeadline - Date.now()));
+          }),
+        ]);
     return { name, ok: true, detail, ms: Date.now() - start };
   } catch (err) {
     return { name, ok: false, detail: err.message, ms: Date.now() - start };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -499,22 +516,20 @@ async function checkFeedSourcesFreshness(days) {
   if (!Array.isArray(feeds) || !feeds.length) return "no approved registered feeds to check";
 
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-  const stale = [];
-  for (const feed of feeds) {
-    const everResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?select=id&feed_source_id=eq.${encodeURIComponent(feed.id)}&limit=1`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
-    const everRows = everResp.ok ? await everResp.json() : [];
-    if (!Array.isArray(everRows) || !everRows.length) continue; // never pulled anything — not this check's concern
-
-    const freshResp = await fetch(
-      `${SUPABASE_URL}/rest/v1/events?select=id&feed_source_id=eq.${encodeURIComponent(feed.id)}&updated_at=gte.${encodeURIComponent(cutoff)}&limit=1`,
-      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-    );
-    const freshRows = freshResp.ok ? await freshResp.json() : [];
-    if (!Array.isArray(freshRows) || !freshRows.length) stale.push(feed.venue_name || feed.id);
-  }
+  const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` };
+  const hasRow = async (query) => {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/events?select=id&${query}&limit=1`, { headers });
+    const rows = resp.ok ? await resp.json() : [];
+    return Array.isArray(rows) && rows.length > 0;
+  };
+  // One feed's two lookups stay in order (the second only runs for a feed that has ever pulled anything); the feeds
+  // themselves run together, so the check costs about one feed's round trips instead of 27 feeds' worth in series.
+  const verdicts = await Promise.all(feeds.map(async (feed) => {
+    const id = encodeURIComponent(feed.id);
+    if (!(await hasRow(`feed_source_id=eq.${id}`))) return null; // never pulled anything — not this check's concern
+    return (await hasRow(`feed_source_id=eq.${id}&updated_at=gte.${encodeURIComponent(cutoff)}`)) ? null : feed.venue_name || feed.id;
+  }));
+  const stale = verdicts.filter(Boolean);
   if (stale.length) {
     throw new Error(`previously-active feed(s) gone quiet ${days}d+: ${stale.join(", ")}`);
   }
@@ -676,8 +691,12 @@ module.exports = async (req, res) => {
   }
 
   const runStart = Date.now();
+  checkDeadline = runStart + CHECK_BUDGET_MS;
 
-  const sourceOutputChecks = checkSourceOutputs();
+  const sourceOutputChecks = Promise.race([
+    checkSourceOutputs(),
+    new Promise((resolve) => setTimeout(() => resolve([{ name: "source output checks", ok: false, detail: `no answer within the ${Math.round(CHECK_BUDGET_MS / 1000)} s run budget`, ms: CHECK_BUDGET_MS }]), CHECK_BUDGET_MS)),
+  ]);
   const baseChecks = await Promise.all([
     ...PAGES.map((p) => runCheck(`page: ${p}`, () => checkPage(p))),
     runCheck("supabase: approved events reachable", checkSupabaseData),
@@ -735,3 +754,6 @@ module.exports.SOURCE_FRESHNESS_TARGETS = SOURCE_FRESHNESS_TARGETS;
 module.exports.STARTED_RUN_TIMEOUT_MINUTES = STARTED_RUN_TIMEOUT_MINUTES;
 module.exports.sourceOutputCheck = sourceOutputCheck;
 module.exports.checkSourceOutputs = checkSourceOutputs;
+module.exports.runCheck = runCheck;
+module.exports.checkFeedSourcesFreshness = checkFeedSourcesFreshness;
+module.exports._setCheckDeadline = (t) => { checkDeadline = t; };

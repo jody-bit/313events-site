@@ -48,12 +48,6 @@
     --line:#2c2c2c; --line-soft:#212121;
     --accent:#D7FF00; --on-accent:#0A0A0A;
     --radius:0px;
-    --c-music:#5B3EFF; --c-theatre:#FF6A00; --c-dance:#FF2ECC; --c-visual:#00E5FF;
-    --c-museum:#00FFA6; --c-family:#FFC400; --c-fest:#FF2D55; --c-food:#9D00FF;
-    --c-film:#2979FF; --c-night:#E100FF; --c-sports:#FF3B3B; --c-community:#3DFF6E;
-    --c-vendor:#39FF14; /* radioactive lime — vendor & craft markets, flea markets, oddities shows */
-    --c-training:#FFEA00; /* hazard yellow — classes, certifications, workforce training */
-    --c-gaming:#B026FF; /* neon violet — gaming, esports, trading-card & tabletop games */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -104,12 +98,8 @@
     background:var(--panel-alt);border:1px solid var(--line);
   }
 
-  .evt-cat-badge{
-    display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;
-    padding:5px 12px;border-radius:var(--radius);margin-bottom:12px;color:var(--on-accent);
-  }
-  /* Dark badge text fails 4.5:1 on these three category colors; white passes (5.4 to 5.9:1). */
-  .evt-cat-badge[data-cat="music"],.evt-cat-badge[data-cat="food"],.evt-cat-badge[data-cat="gaming"]{color:#fff;}
+  .evt-cat-slot{margin-bottom:12px;}
+  /* The event-type label is the shared .cat-tag from /categories.js (detail size); no local rule. */
   h1.evt-detail-title{
     font-family:var(--font-display);font-stretch:62%;font-weight:900;
     font-size:clamp(28px,5vw,44px);line-height:1.08;letter-spacing:-.01em;
@@ -245,6 +235,7 @@
 <script src="/calendar-location.js"></script>
 <script src="/event-dates.js"></script>
 <script src="/config.js"></script>
+<script src="/categories.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -264,7 +255,7 @@
       <div class="evt-image-wrap" id="evtImageWrap" style="display:none;">
         <img id="evtImage" alt="">
       </div>
-      <div class="evt-cat-badge" id="evtCatBadge"></div>
+      <div class="evt-cat-slot" id="evtCatBadge"></div>
       <h1 class="evt-detail-title" id="evtTitle"></h1>
       <div class="evt-detail-meta" id="evtWhen"></div>
       <div class="evt-ended" id="evtEnded" style="display:none;">This event has ended</div>
@@ -305,23 +296,11 @@
 const SUPABASE_URL = window.__313_CONFIG.supabaseUrl; // from /config.js (api/config.js): per-environment, never hard-coded
 const SUPABASE_ANON_KEY = window.__313_CONFIG.supabaseAnonKey; // publishable key — safe for client code, read-only via RLS
 
-const CATS = {
-  music:    {label:"Music",            color:"var(--c-music)"},
-  theatre:  {label:"Theatre & Comedy",  color:"var(--c-theatre)"},
-  dance:    {label:"Dance & Opera",     color:"var(--c-dance)"},
-  visual:   {label:"Visual Arts",       color:"var(--c-visual)"},
-  museum:   {label:"Museums & History", color:"var(--c-museum)"},
-  family:   {label:"Family",            color:"var(--c-family)"},
-  fest:     {label:"Festivals & Parades", color:"var(--c-fest)"},
-  food:     {label:"Food & Markets",    color:"var(--c-food)"},
-  film:     {label:"Film",              color:"var(--c-film)"},
-  nightlife:{label:"Nightlife & Club",  color:"var(--c-night)"},
-  sports:   {label:"Sports",            color:"var(--c-sports)"},
-  community:{label:"Community",         color:"var(--c-community)"},
-  vendor:   {label:"Vendor Markets",    color:"var(--c-vendor)"},
-  training: {label:"Classes & Training", color:"var(--c-training)"},
-  gaming:   {label:"Gaming & Esports",    color:"var(--c-gaming)"}
-};
+// Keys, labels, order and colours all come from /categories.js (one definition for every page).
+const CATS = {};
+Categories.list.forEach(c => {
+  CATS[c.key] = {label: c.label, color: Categories.cssVar(c.key)};
+});
 
 function decodeEntities(str) {
   if (!str) return str;
@@ -802,9 +781,7 @@ function renderEvent(e){
   // ---- badge / title / meta ----
   const cat = CATS[e.cat] || {label: e.cat || 'Event', color: 'var(--accent)'};
   const badge = document.getElementById('evtCatBadge');
-  badge.textContent = cat.label;
-  badge.style.background = cat.color;
-  badge.dataset.cat = e.cat || '';
+  badge.innerHTML = Categories.tagHtml(e.cat, {size:'detail', fill:'pill'});
   document.getElementById('evtTitle').textContent = e.title;
   document.getElementById('evtWhen').innerHTML = `<strong>${escapeHtml(dateLabel)}</strong>${e.time && !isDatesUnconfirmed(e)?` · ${escapeHtml(e.time)}`:''}${isDatesUnconfirmed(e)?' · days not confirmed':''}`;
   // 2026-09-13: link the venue name to its own permalink page when this

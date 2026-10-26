@@ -23,7 +23,7 @@ const { partitionExpired } = require("./_lib/ingest-eligibility");
 // Congregation-specific rule) — that's shared logic other consumers
 // (press-coverage matching) also depend on, and changing it is a separate
 // decision.
-const { resolveLinkField, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
+const { resolveLinkField, eventPageFromDescription, createRejectionLog, sanitizeLinkForLog } = require("./_lib/link-field");
 const { extractCategory } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 // Vercel Cron job — polls every APPROVED row in feed_sources (organizer-
 // submitted event feeds, registered via submit.html and approved through
@@ -537,6 +537,10 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
         };
 
     const link = resolveLinkField(ev.url, feedSource.feed_url);
+    // A feed whose VEVENT URL is only the calendar-feed path (CivicPlus) still prints the event's own page in its DESCRIPTION
+    // ("https://<same site>/calendar.aspx?EID=<uid>"). Taken only when it is on the feed's own site, unique, and carries this
+    // event's UID (api/_lib/link-field.js); stored as event_url, never as a ticket link. The description is left as given.
+    const derivedEventUrl = link.url ? null : eventPageFromDescription(ev.description, feedSource.feed_url, ev.uid);
     const row = {
       external_id: `feed-${feedSource.id}-${uidOrHash}`.slice(0, 250),
       title: ev.summary || "Untitled event",
@@ -601,6 +605,7 @@ function icsEventsToRows(icsEvents, feedSource, venueMap, venueDetailsMaps, lear
       // CivicPlus calendar-feed path is not an event page (api/_lib/link-field.js); the rejection is reported, not hidden, and
       // the field is then left out of the write so it never replaces a stored link.
       ticket_url: link.url,
+      ...(derivedEventUrl ? { event_url: derivedEventUrl } : {}),
       image_url: ev.image || null,
       // Just the feed's own organization/venue name, matching every other
       // single-venue cron's convention (e.g. cron-trinosophes.js's
@@ -926,6 +931,7 @@ function feedLimits(env = process.env) {
     minStartMs: num(env.FEEDS_MIN_START_MS, 10000),
     resumeWindowMs: num(env.FEEDS_RESUME_WINDOW_MS, 6 * 60 * 60 * 1000),
     stalledAfterMs: num(env.FEEDS_STALLED_AFTER_MS, 10 * 60 * 1000),
+    staleAfterMs: num(env.FEEDS_STALE_AFTER_MS, 72 * 60 * 60 * 1000),
   };
 }
 
@@ -940,7 +946,7 @@ function feedSourceFailures(body) {
   const results = Array.isArray(body && body.results) ? body.results : [];
   const deferred = results.filter((r) => r && r.kind === health.KINDS.DEFERRED).length;
   return {
-    attempted: results.length - deferred,
+    attempted: results.filter((r) => r && r.kind !== health.KINDS.DEFERRED && r.kind !== health.KINDS.SKIPPED_RESUME).length,
     failed: results.filter((r) => health.RUN_FAILURE_KINDS.has(r && r.kind) && r.kind !== health.KINDS.DEFERRED).length,
     deferred,
   };
@@ -958,6 +964,14 @@ const handleRequest = async (req, res) => {
     apikey: SUPABASE_SERVICE_ROLE_KEY,
     Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
   };
+
+  // A resume run exists to finish what the 22:00Z run did not reach; if that run is somehow still going, do nothing
+  // rather than poll the same feeds twice.
+  const resume = !!(req && req.query && ["1", "true"].includes(String(req.query.resume)));
+  if (resume && await health.otherRunInProgress({ supabaseUrl: SUPABASE_URL, headers: sbHeaders })) {
+    res.status(200).json({ upserted: 0, resume: true, note: "resume run skipped: another feeds run is still in progress", fetchedAt: new Date().toISOString() });
+    return;
+  }
 
   let feedSources;
   try {
@@ -979,7 +993,7 @@ const handleRequest = async (req, res) => {
   const runStartedAt = Date.now();
   const budget = createBudget({ budgetMs: limits.budgetMs });
   const stalledRuns = await health.closeStalledRuns({ supabaseUrl: SUPABASE_URL, headers: sbHeaders, olderThanMs: limits.stalledAfterMs });
-  const resume = !!(req && req.query && ["1", "true"].includes(String(req.query.resume)));
+  const staleFeeds = health.staleFeeds(feedSources, runStartedAt, limits.staleAfterMs); // judged on the state before this run polls anything
   const orderedFeeds = health.orderFeedsForRun(feedSources);
   let budgetExhausted = false;
 
@@ -1097,9 +1111,9 @@ const handleRequest = async (req, res) => {
   }
 
   linkLog.flush();
-  const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted });
+  const runHealth = health.summarizeRun(results, { stalledRuns, upserted: totalUpserted, budgetExhausted, staleFeeds, staleAfterMs: limits.staleAfterMs });
   health.logAlerts(runHealth.alerts);
-  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, preambleMs, results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
+  res.status(200).json({ upserted: totalUpserted, skippedPast: totalSkippedPast, feedsChecked: feedSources.length, resume, preambleMs, perFeed: health.compactResults(results), results, ...runHealth, linkRejections: linkLog.summary(), fetchedAt: new Date().toISOString() });
 };
 module.exports = withRunLog("feeds", handleRequest, { sourceFailures: feedSourceFailures });
 module.exports.feedSourceFailures = feedSourceFailures;
