@@ -2382,9 +2382,9 @@
    "name": "Hallowe'en in Greenfield Village",
    "location": "Dearborn, MI",
    "inventory_note": "Historic immersive Halloween experience",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": "halloween-greenfield-village",
-   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "photos": [
     "313p-522299e9-f337",
@@ -2412,7 +2412,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "owner_photo_with_flags",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "family-friendly",
@@ -2516,9 +2516,9 @@
    "name": "Zoo Boo at Detroit Zoo",
    "location": "Royal Oak, MI",
    "inventory_note": "Trick-or-treating and animal encounters",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": "zoo-boo",
-   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "image_manifest": {
     "destination_id": "zoo-boo",
@@ -2540,7 +2540,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "family-friendly"

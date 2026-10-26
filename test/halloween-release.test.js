@@ -38,7 +38,7 @@ assert.deepStrictEqual(Object.keys(batch.records.reduce((o, r) => (o[r.id] = 1, 
 const excluded = H.filter((e) => e.disposition);
 assert.deepStrictEqual(excluded.map((e) => e.id).sort(), Object.keys(AUTHZ.HALLOWEEN_EXCLUDED).sort(), "the three duplicate/closed records");
 for (const e of H) AUTHZ.checkApproval(assert, "halloween", e, new Set());
-assert.strictEqual(H.filter((e) => e.approval).length, 43);
+assert.strictEqual(H.filter((e) => e.approval).length, 41);
 for (const e of H.filter((e) => e.approval)) { assert.ok(e.editorialAccepted && e.editorialAccepted.at === "2026-10-11", e.id + ": editorial acceptance recorded"); assert.ok(/does not waive the publication gate/.test(e.editorialAccepted.scope)); }
 
 // 3. exclusion keeps history; the guard keeps them out even if an approval were added
@@ -64,10 +64,10 @@ for (const id of pubIds) {
   assert.ok(byId[id].evidence.some((x) => x.level === "official" && x.websiteChecked === true), id + ": factual verification is not waived (official-page read recorded)");
   assert.strictEqual(byId[id].status, "PUBLISHED");
 }
-assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 43, 23, 20, 9]);
+assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 41, 21, 20, 11]);
 for (const r of batch.records.filter((r) => r.category === "held")) { assert.ok(r.reasons.length >= 1 && r.reasons.every((x) => x.length > 20), r.id + ": held with an exact reason"); assert.ok(!C.isPublic(byId[r.id])); }
 const states = H.reduce((o, e) => (o[e.status] = (o[e.status] || 0) + 1, o), {});
-assert.deepStrictEqual(states, { PUBLISHED: 23, HOLD_UNVERIFIED: 29 });
+assert.deepStrictEqual(states, { PUBLISHED: 21, HOLD_UNVERIFIED: 31 });
 // the 20 held records are held for FACTUAL verification (no official 2026 evidence, or only indirect evidence); the illustration route is not recorded on them
 const held = H.filter((e) => !e.disposition && !C.isPublic(e));
 assert.strictEqual(held.length, 20);
@@ -138,12 +138,12 @@ assert.strictEqual(g("erebus").website, "https://hauntedpontiac.com");
 assert.strictEqual(g("eloise-asylum").website, "https://eloiseasylum.com/");
 assert.ok(H.every((e) => !/radius check|unverified|not confirmed|hold until|must be verified/i.test(e.summary)), "no internal editorial note in any summary");
 assert.strictEqual(g("full-moon-manor-at-bonadeo-farms").name, "Full Moon Haunted House at Bonadeo Farms");
-// Greenfield: the sold-out advisory is on the public card and nowhere is a price or availability invented
+// Greenfield: ended 2026-10-25 (owner expiry approval 2026-10-22), so its sold-out advisory is no longer on any public card; nowhere is a price or availability invented
 const gf = projection.find((e) => e.id === "halloween-greenfield-village");
-assert.ok(gf && /sold out for 2026/i.test(gf.advisory), "Greenfield carries the SOLD OUT advisory");
+assert.ok(!gf, "Greenfield (ended) is not public");
 assert.ok(!/\$\d/.test(JSON.stringify(projection)), "no price appears on any public Halloween card");
 const html = fs.readFileSync(path.join(root, "halloween.html"), "utf8");
-assert.ok(/sold out for 2026/i.test(html), "the built page shows the sold-out advisory");
+assert.ok(!/sold out for 2026/i.test(html), "the built page no longer shows the Greenfield sold-out advisory");
 const htmlIds = [...new Set([...html.matchAll(/data-entry="([^"]+)"/g)].map((m) => m[1]))].sort();
 assert.deepStrictEqual(htmlIds, AUTHZ.HALLOWEEN_PUBLISHED, "the built page holds exactly the 25");
 
