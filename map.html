@@ -471,6 +471,7 @@
 <script src="/calendar-location.js"></script>
 <script src="/city-resolution.js"></script>
 <script src="/city-table-phase2.js"></script>
+<script src="/place-eligibility.js"></script>
 <script src="/config.js"></script>
 <script src="/categories.js"></script>
 </head>
@@ -707,6 +708,7 @@ const LOCATIONS = [
   // coordinates) so map.html and discovery agree. Phase 1 city resolution.
   {name:"Clinton Township", type:"city", region:"Michigan", lat:42.5869, lng:-82.92},
   {name:"East Lansing", type:"city", region:"Michigan", lat:42.737, lng:-84.4839},
+  {name:"Lansing", type:"city", region:"Michigan", lat:42.71417, lng:-84.56},
 ];
 
 // Phase 2: sourced coordinates for 30 more in-orbit cities (city-table-phase2.js), each gated on
@@ -883,15 +885,11 @@ function matchesFilters(e){
     }
   }
   if(originLocation && radiusMiles !== null){
-    const hit = e.city ? CityResolution.resolve(e.city, CITY_LOOKUP, {source:e.source, venue:e.venue}) : null;
-    const loc = e.city ? (hit && hit.loc) : CITY_LOOKUP.get('detroit');
-    if(!loc) return false;
-    if(radiusMiles === 'all'){
-      const detroit = CITY_LOOKUP.get('detroit');
-      if(haversineMiles(detroit.lat, detroit.lng, loc.lat, loc.lng) > 75) return false;
-    } else if(haversineMiles(originLocation.lat, originLocation.lng, loc.lat, loc.lng) > radiusMiles){
-      return false;
-    }
+    // Shared place rule (PlaceEligibility): same city resolution as before, and Detroit Orbit
+    // now means 75 miles from Detroit's BORDER like the homepage (it was the city centre). A
+    // city that cannot be placed is never guessed: it is left out of an active place filter
+    // and counted by PlaceEligibility.partition() rather than lost silently.
+    if(!PlaceEligibility.withinPlace(e, CITY_LOOKUP, originLocation, radiusMiles).eligible) return false;
   }
   return true;
 }
