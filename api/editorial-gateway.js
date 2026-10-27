@@ -141,12 +141,12 @@ module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Content-Type-Options", "nosniff");
 
-  if (!SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    res.status(500).json({ error: { code: "not_configured", message: "Database is not configured." } });
-    return;
-  }
   if (!gateway.authorized(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN)) {
     res.status(401).json({ error: { code: "unauthorized", message: "Unauthorized." } });
+    return;
+  }
+  if (!SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    res.status(500).json({ error: { code: "not_configured", message: "Database is not configured." } });
     return;
   }
   if (req.method !== "POST") {

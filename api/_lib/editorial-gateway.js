@@ -64,22 +64,50 @@ function authorized(headers, configuredToken) {
 
 // ----------------------------------------------------------------------------- remote fetch (SSRF-guarded)
 
+// Expands an IPv6 literal (any textual form, including a dotted IPv4 tail) into eight 16-bit groups, or null.
+function ipv6Groups(ip) {
+  let s = ip.toLowerCase().split("%")[0];
+  const tail = /(\d+\.\d+\.\d+\.\d+)$/.exec(s);
+  if (tail) {
+    const o = tail[1].split(".").map(Number);
+    if (o.length !== 4 || o.some((n) => !(n >= 0 && n <= 255))) return null;
+    s = s.slice(0, -tail[1].length) + ((o[0] << 8) | o[1]).toString(16) + ":" + ((o[2] << 8) | o[3]).toString(16);
+  }
+  const halves = s.split("::");
+  if (halves.length > 2) return null;
+  const head = halves[0] ? halves[0].split(":") : [];
+  const rest = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
+  const fill = halves.length === 2 ? 8 - head.length - rest.length : 0;
+  if (fill < 0 || (halves.length === 1 && head.length !== 8)) return null;
+  const all = head.concat(Array(fill).fill("0"), rest);
+  if (all.length !== 8 || all.some((g) => !/^[0-9a-f]{1,4}$/.test(g))) return null;
+  return all.map((g) => parseInt(g, 16));
+}
+
+function isPrivateV4Octets(a, b) {
+  return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224;
+}
+
+// True for anything that is not a public unicast address: private/loopback/link-local IPv4, and IPv6 that is local, multicast,
+// or wraps an IPv4 address (IPv4-mapped ::ffff:0:0/96, IPv4-compatible ::/96, NAT64 64:ff9b::/96, 6to4 2002::/16), judged on
+// the wrapped IPv4. Anything unparseable is refused.
 function isPrivateAddress(ip) {
   const v = net.isIP(ip);
-  if (v === 4) {
-    const [a, b] = ip.split(".").map(Number);
-    return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224;
+  if (v === 4) { const [a, b] = ip.split(".").map(Number); return isPrivateV4Octets(a, b); }
+  if (v !== 6) return true;
+  const g = ipv6Groups(ip);
+  if (!g) return true;
+  const v4of = (hi, lo) => isPrivateV4Octets(hi >> 8, hi & 255);
+  if (g.slice(0, 5).every((x) => x === 0) && (g[5] === 0xffff || g[5] === 0)) { // ::, ::1, mapped, compatible
+    if (g[5] === 0 && g[6] === 0 && g[7] <= 1) return true;
+    return v4of(g[6], g[7]);
   }
-  if (v === 6) {
-    const s = ip.toLowerCase();
-    if (s === "::1" || s === "::") return true;
-    if (s.startsWith("fe8") || s.startsWith("fe9") || s.startsWith("fea") || s.startsWith("feb")) return true; // link-local
-    if (s.startsWith("fc") || s.startsWith("fd")) return true; // unique local
-    const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(s);
-    if (mapped) return isPrivateAddress(mapped[1]);
-    return false;
-  }
-  return true; // not an IP at all: refuse
+  if (g[0] === 0x64 && g[1] === 0xff9b && g.slice(2, 6).every((x) => x === 0)) return v4of(g[6], g[7]); // NAT64
+  if (g[0] === 0x64 && g[1] === 0xff9b && g[2] === 1) return true; // local-use NAT64
+  if (g[0] === 0x2002) return v4of(g[1], g[2]); // 6to4
+  if ((g[0] & 0xffc0) === 0xfe80 || (g[0] & 0xfe00) === 0xfc00 || (g[0] & 0xff00) === 0xff00) return true; // link-local, unique-local, multicast
+  if ((g[0] & 0xe000) !== 0x2000) return true; // outside global unicast 2000::/3
+  return false;
 }
 
 async function assertPublicHttps(rawUrl, lookup) {

@@ -233,6 +233,10 @@ async function rejects(promise, code) {
   w.remote.set("https://files.example.com/huge.jpg", { body: FLYER, headers: { "content-length": String(gw.MAX_BYTES + 5) } });
   await rejects(gw.run(ctxFor(w), "upload_event_image", { event_id: EVENT, image_url: "https://files.example.com/huge.jpg" }), "too_large");
   assert.ok(gw.isPrivateAddress("10.1.2.3") && gw.isPrivateAddress("192.168.0.1") && gw.isPrivateAddress("172.20.0.1") && gw.isPrivateAddress("::ffff:127.0.0.1") && gw.isPrivateAddress("fd00::1"));
+  for (const bad of ["::ffff:7f00:1", "::ffff:a9fe:a9fe", "::ffff:a00:1", "::7f00:1", "64:ff9b::7f00:1", "64:ff9b::a9fe:a9fe", "::ffff:127.0.0.1", "0:0:0:0:0:ffff:c0a8:1", "2002:7f00:1::1", "2002:0a00:0001::", "::", "::1", "fe80::1", "fc00::1", "ff02::1", "64:ff9b:1::1", "fd12::9", "not-an-ip"]) assert.ok(gw.isPrivateAddress(bad), `${bad} must be refused`);
+  for (const host of ["https://[::ffff:127.0.0.1]/a.jpg", "https://[::ffff:7f00:1]/a.jpg", "https://[::ffff:a9fe:a9fe]/a.jpg", "https://[64:ff9b::7f00:1]/a.jpg"]) {
+    await rejects(gw.run(ctxFor(w), "upload_event_image", { event_id: EVENT, image_url: host }), "blocked_host");
+  }
   assert.ok(!gw.isPrivateAddress("93.184.216.34") && !gw.isPrivateAddress("2606:2800:220:1:248:1893:25c8:1946"));
   assert.strictEqual(w.writes.length, 0);
   console.log("PASS: remote fetch refuses http, credentials, odd ports, private/loopback/link-local hosts, redirects into them and oversize bodies");
@@ -283,6 +287,11 @@ async function rejects(promise, code) {
   };
   const auth = { authorization: `Bearer ${"t".repeat(40)}` };
   assert.strictEqual((await call({}, { op: "find_event", query: "pop" })).status, 401);
+  {
+    const saved = process.env.SUPABASE_SERVICE_ROLE_KEY; process.env.SUPABASE_SERVICE_ROLE_KEY = "";
+    assert.strictEqual((await call({}, { op: "find_event", query: "pop" })).status, 401, "unauthenticated callers learn nothing about configuration");
+    process.env.SUPABASE_SERVICE_ROLE_KEY = saved;
+  }
   assert.strictEqual((await call({ authorization: "Bearer wrong" }, { op: "find_event", query: "pop" })).status, 401);
   let out = await call(auth, { op: "find_event", query: "pop" });
   assert.strictEqual(out.status, 200);
