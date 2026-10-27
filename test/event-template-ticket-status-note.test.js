@@ -34,6 +34,7 @@ function run() {
   const safeUrlSrc = extract(html, /function safeUrl\([\s\S]*?\n\}\n/, "safeUrl()");
   const notesSrc = extract(html, /const TICKET_STATUS_NOTES = \{[\s\S]*?\n\};\n/, "TICKET_STATUS_NOTES");
   const fnSrc = extract(html, /function ticketStatusNoteHtml\([\s\S]*?\n\}\n/, "ticketStatusNoteHtml()");
+  const haloLabelSrc = extract(html, /function haloVenueLinkLabel\([\s\S]*?\n\}\n/, "haloVenueLinkLabel()");
 
   // safeUrl() reads window.location.href — stub just enough of `window`
   // for new URL(url, base) resolution to work the same way a browser's
@@ -42,7 +43,7 @@ function run() {
 
   // eslint-disable-next-line no-new-func
   const ticketStatusNoteHtml = new Function(
-    `${safeUrlSrc}\n${notesSrc}\n${fnSrc}\nreturn ticketStatusNoteHtml;`
+    `${safeUrlSrc}\n${notesSrc}\n${haloLabelSrc}\n${fnSrc}\nreturn ticketStatusNoteHtml;`
   )();
 
   // --- 1. No ticket/event link, ticket_status='door' (the real HALO

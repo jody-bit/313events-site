@@ -45,7 +45,7 @@ function run() {
     assert.ok(fnMatch, `${f}'s ticketStatusNoteHtml() body not found`);
     const fnBody = fnMatch[0];
     assert.ok(/if\(e\.ticketUrl && safeUrl\(e\.ticketUrl\)\) return '';/.test(fnBody), `${f}'s ticketStatusNoteHtml() must bail out when a real ticketUrl exists`);
-    assert.ok(/if\(e\.eventPageUrl && safeUrl\(e\.eventPageUrl\)\) return '';/.test(fnBody), `${f}'s ticketStatusNoteHtml() must bail out when a real eventPageUrl exists`);
+    assert.ok(/if\(e\.eventPageUrl && safeUrl\(e\.eventPageUrl\) && !haloVenueLinkLabel\(e\)\) return '';/.test(fnBody), `${f}'s ticketStatusNoteHtml() must bail out when a real eventPageUrl exists`);
     console.log(`PASS: ${f}'s ticketStatusNoteHtml() defers to a real ticket/event link when one exists`);
 
     // --- 3. The mapping function captures ticketStatus from the row. ---
