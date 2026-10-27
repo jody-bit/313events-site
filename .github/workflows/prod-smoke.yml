@@ -1,0 +1,51 @@
+name: Production smoke (read-only)
+
+# REL-1 W2 (#198). Manual only. Anonymous GET requests against the public site: no writes, no admin credential, no
+# repository secret. The report is the release evidence required by project/DEFINITION_OF_DONE.md.
+# Not a required check; not scheduled. Inputs are recorded in the report, never validated.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Site to check'
+        required: false
+        default: 'https://313.events'
+      commit_sha:
+        description: 'Deployed commit SHA, for the evidence record'
+        required: false
+      pr:
+        description: 'PR number(s) released'
+        required: false
+      min_events:
+        description: 'Floor for upcoming events (default 1000)'
+        required: false
+        default: '1000'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Read-only production smoke
+        env:
+          SMOKE_COMMIT_SHA: ${{ inputs.commit_sha }}
+          SMOKE_PR: ${{ inputs.pr }}
+          SMOKE_DISPATCHED_BY: ${{ github.actor }} (run ${{ github.run_id }})
+          SMOKE_BASE_URL: ${{ inputs.base_url }}
+          SMOKE_MIN_EVENTS: ${{ inputs.min_events }}
+        run: node scripts/prod-smoke.js --base "$SMOKE_BASE_URL" --min-events "$SMOKE_MIN_EVENTS" --out prod-smoke-report.json
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-smoke-report
+          path: prod-smoke-report.json
+          if-no-files-found: ignore
