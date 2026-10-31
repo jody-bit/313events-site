@@ -95,6 +95,14 @@ function makeCtx(req) {
   };
 }
 
+
+async function readRawBody(req, maxBytes) {
+  if (Buffer.isBuffer(req.body) && req.body.length) { if (req.body.length > maxBytes) throw new Error("too large"); return req.body; }
+  const chunks = []; let total = 0;
+  for await (const chunk of req) { total += chunk.length; if (total > maxBytes) throw new Error("too large"); chunks.push(chunk); }
+  return Buffer.concat(chunks);
+}
+
 function describeError(err) {
   if (err instanceof gateway.GatewayError) return { status: err.status, body: Object.assign({ code: err.code, message: err.message }, err.extra) };
   return { status: 500, body: { code: "internal_error", message: "The gateway failed unexpectedly; nothing further was attempted." } };
@@ -142,7 +150,8 @@ module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Content-Type-Options", "nosniff");
 
-  if (!gateway.authorized(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN)) {
+  const caller = gateway.callerKind(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN);
+  if (!caller) {
     // One line per refusal: a reason word and facts about the server's token (state, length class, stray whitespace), never a value.
     console.log(JSON.stringify({ gateway_auth: "refused", reason: gateway.authFailureReason(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN), configured: gateway.tokenStatus(process.env.EDITORIAL_GATEWAY_TOKEN), method: req.method, vercel_env: process.env.VERCEL_ENV || null }));
     res.status(401).json({ error: { code: "unauthorized", message: "Unauthorized." } });
@@ -158,6 +167,25 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Raw image route: the phone page or an iOS Shortcut posts the file itself (Content-Type image/* or application/octet-stream),
+  // details in the query string (never the credential). The original bytes go straight to the same validated upload path.
+  const ctype = String(req.headers["content-type"] || "").split(";")[0].trim().toLowerCase();
+  if (ctype.startsWith("image/") || ctype === "application/octet-stream") {
+    let bytes;
+    try { bytes = await readRawBody(req, gateway.MAX_BYTES); } catch (e) {
+      res.status(413).json({ ok: false, error: { code: "too_large", message: "That image is larger than 4 MB." } });
+      return;
+    }
+    const q = new URL(req.url || "/", "https://x.invalid").searchParams;
+    const args = { event_id: q.get("event_id") || undefined, image_bytes: bytes, image_content_type: ctype === "application/octet-stream" ? null : ctype,
+      dry_run: q.get("dry_run") === "false" ? false : true, replace: q.get("replace") === "true", expected_sha256: q.get("expected_sha256") || undefined,
+      source_note: q.get("source_note") || undefined, credit: q.get("credit") || undefined, client: q.get("client") || "phone" };
+    const out = await execute(makeCtx(req), "upload_event_image", args);
+    if (out.ok) res.status(200).json({ ok: true, result: out.result });
+    else res.status(out.status).json({ ok: false, error: out.error });
+    return;
+  }
+
   let body = req.body;
   if (typeof body === "string") { try { body = JSON.parse(body); } catch (_) { body = null; } }
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -169,6 +197,16 @@ module.exports = async (req, res) => {
   if (body.jsonrpc === "2.0") { await handleMcp(ctx, body, res); return; }
 
   const { op, ...args } = body;
+  if (op === "create_session") {
+    // Only the long-lived token can open a device session; a session can never mint another.
+    if (caller !== "token") { res.status(403).json({ ok: false, error: { code: "forbidden", message: "Sign in with the gateway token to open a device session." } }); return; }
+    try {
+      const made = gateway.createSession(process.env.EDITORIAL_GATEWAY_TOKEN, { ttl_seconds: (Number(args.ttl_days) || 0) * 86400 || undefined, label: args.label });
+      console.log(JSON.stringify({ gateway: "create_session", ok: true, label: made.label, expires_at: made.expires_at }));
+      res.status(200).json({ ok: true, result: made });
+    } catch (err) { const d = describeError(err); res.status(d.status).json({ ok: false, error: d.body }); }
+    return;
+  }
   const out = await execute(ctx, op, args);
   if (out.ok) res.status(200).json({ ok: true, result: out.result });
   else res.status(out.status).json({ ok: false, error: out.error });

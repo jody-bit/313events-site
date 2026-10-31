@@ -378,7 +378,43 @@ async function rejects(promise, code) {
   out = await call(auth, { jsonrpc: "2.0", method: "notifications/initialized" });
   assert.strictEqual(out.status, 202);
   assert.ok(!JSON.stringify(out.payload || {}).includes("service-role-test-key"), "the service key never appears in a response");
+  // --- device sessions
+  const T = "t".repeat(40);
+  out = await call(auth, { op: "create_session", label: "owner iPhone", ttl_days: 3 });
+  assert.strictEqual(out.status, 200);
+  const sess = out.payload.result.session;
+  assert.ok(sess.startsWith("egs1.") && !sess.includes(T), "the session never contains the token");
+  const sauth = { authorization: `Bearer ${sess}` };
+  assert.strictEqual((await call(sauth, { op: "find_event", query: "pop" })).status, 200, "a session can use the operations");
+  assert.strictEqual((await call(sauth, { op: "create_session" })).status, 403, "a session cannot mint another session");
+  assert.strictEqual((await call({ authorization: `Bearer ${sess.slice(0, -2)}xx` }, { op: "find_event", query: "pop" })).status, 401, "a tampered signature is refused");
+  assert.strictEqual(gw.checkSession(sess, T, new Date(Date.now() + 4 * 86400 * 1000)).reason, "session_expired");
+  assert.strictEqual(gw.checkSession(sess, "u".repeat(40)).ok, false, "rotating the gateway token revokes every session");
+  const made30 = gw.createSession(T, { ttl_seconds: 10 * 365 * 86400 }, new Date());
+  assert.ok(Date.parse(made30.expires_at) - Date.now() <= gw.SESSION_MAX_SECONDS * 1000 + 5000, "lifetime is capped at 30 days");
+
+  // --- raw image route (phone page / Shortcut)
+  const { Readable } = require("stream");
+  const rawCall = async (headers, bytes, qs) => {
+    let status = 200, payload;
+    const res = { setHeader() {}, status(s) { status = s; return this; }, json(p) { payload = p; return this; }, end() { return this; } };
+    const req = Readable.from([bytes]); req.method = "POST"; req.url = "/api/editorial-gateway?" + qs; req.headers = Object.assign({ host: "preview.example" }, headers);
+    await handler(req, res);
+    return { status, payload };
+  };
+  w.events.get(EVENT).image_url = null;
+  out = await rawCall(Object.assign({ "content-type": "image/jpeg" }, sauth), FLYER, `event_id=${EVENT}`);
+  assert.strictEqual(out.payload.result.outcome, "dry_run", "raw uploads default to a dry run");
+  out = await rawCall(Object.assign({ "content-type": "image/jpeg" }, sauth), FLYER, `event_id=${EVENT}&dry_run=false&credit=Organizer`);
+  assert.strictEqual(out.payload.result.outcome, "applied");
+  assert.strictEqual(out.payload.result.image.via, "upload");
+  assert.ok(w.objects.size >= 1 && Buffer.compare([...w.objects.values()].pop(), FLYER) === 0, "original bytes are stored untouched");
+  out = await rawCall(Object.assign({ "content-type": "image/jpeg" }, sauth), Buffer.from("not an image at all"), `event_id=${EVENT}&dry_run=false`);
+  assert.strictEqual(out.payload.error.code, "not_an_image");
+  out = await rawCall({ "content-type": "image/jpeg" }, FLYER, `event_id=${EVENT}&dry_run=false`);
+  assert.strictEqual(out.status, 401, "raw uploads need the credential too");
   global.fetch = realGlobalFetch;
+  console.log("PASS: device sessions are signed, scoped, expiring, revoked by rotation and cannot mint sessions; raw image uploads reach the validated path");
   console.log("PASS: REST and MCP transports require the token, list exactly three tools, mark only the upload as a write, and declare the ChatGPT file param");
 
   console.log("\nAll editorial-gateway.test.js checks passed.");

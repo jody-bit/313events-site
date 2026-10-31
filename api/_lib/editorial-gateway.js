@@ -92,11 +92,53 @@ function givenToken(headers) {
   return { source: "none", value: "" };
 }
 
-// Fails closed when no usable token is configured.
-function authorized(headers, configuredToken) {
-  if (tokenStatus(configuredToken).state !== "ok") return false;
+// ---- device sessions --------------------------------------------------------------------------------------------------
+// The owner types the gateway token once on a device; the device then holds a signed, expiring session instead of the token.
+// A session is "egs1.<base64url payload>.<base64url HMAC>", the HMAC key is derived from the configured token, so
+// rotating EDITORIAL_GATEWAY_TOKEN revokes every session at once. A session carries a scope and an expiry, can use find_event,
+// upload_event_image and verify_event (and the intake operations), and can never mint another session or reach anything else.
+const SESSION_PREFIX = "egs1.";
+const SESSION_MAX_SECONDS = 30 * 24 * 3600;
+const SESSION_DEFAULT_SECONDS = 7 * 24 * 3600;
+const b64u = (buf) => Buffer.from(buf).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const sessionKey = (configured) => crypto.createHash("sha256").update("313events-editorial-gateway-session|" + normalizeToken(configured)).digest();
+
+function createSession(configuredToken, opts, now) {
+  if (tokenStatus(configuredToken).state !== "ok") throw new GatewayError("not_configured", "The gateway token is not configured.", 500);
+  const o = opts || {};
+  const ttl = Math.max(60, Math.min(SESSION_MAX_SECONDS, Math.floor(Number(o.ttl_seconds) || SESSION_DEFAULT_SECONDS)));
+  const iat = Math.floor((now || new Date()).getTime() / 1000);
+  const payload = { v: 1, scope: "editorial", iat, exp: iat + ttl, label: safeLabel(o.label || "device", 40), sid: b64u(crypto.randomBytes(9)) };
+  const body = b64u(JSON.stringify(payload));
+  const mac = b64u(crypto.createHmac("sha256", sessionKey(configuredToken)).update(body).digest());
+  return { session: `${SESSION_PREFIX}${body}.${mac}`, expires_at: new Date(payload.exp * 1000).toISOString(), label: payload.label };
+}
+
+// -> { ok:true, label, exp } | { ok:false, reason }
+function checkSession(value, configuredToken, now) {
+  if (typeof value !== "string" || !value.startsWith(SESSION_PREFIX)) return { ok: false, reason: "not_a_session" };
+  if (tokenStatus(configuredToken).state !== "ok") return { ok: false, reason: `configured_${tokenStatus(configuredToken).state}` };
+  const parts = value.slice(SESSION_PREFIX.length).split(".");
+  if (parts.length !== 2) return { ok: false, reason: "session_malformed" };
+  const expected = b64u(crypto.createHmac("sha256", sessionKey(configuredToken)).update(parts[0]).digest());
+  if (!timingSafeEqualStr(parts[1], expected)) return { ok: false, reason: "session_signature" };
+  let p; try { p = JSON.parse(Buffer.from(parts[0].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")); } catch (_) { return { ok: false, reason: "session_malformed" }; }
+  if (!p || p.v !== 1 || p.scope !== "editorial" || !Number.isFinite(p.exp)) return { ok: false, reason: "session_malformed" };
+  if (Math.floor((now || new Date()).getTime() / 1000) >= p.exp) return { ok: false, reason: "session_expired" };
+  return { ok: true, label: p.label || null, exp: p.exp };
+}
+
+// Who is calling: "token" (the long-lived secret), "session" (a device session) or null. Fails closed when no usable token is configured.
+function callerKind(headers, configuredToken, now) {
+  if (tokenStatus(configuredToken).state !== "ok") return null;
   const given = givenToken(headers).value;
-  return given !== "" && timingSafeEqualStr(given, normalizeToken(configuredToken));
+  if (given === "") return null;
+  if (given.startsWith(SESSION_PREFIX)) return checkSession(given, configuredToken, now).ok ? "session" : null;
+  return timingSafeEqualStr(given, normalizeToken(configuredToken)) ? "token" : null;
+}
+
+function authorized(headers, configuredToken, now) {
+  return callerKind(headers, configuredToken, now) !== null;
 }
 
 // Why a call was refused, as one safe word for the runtime log (no values). "configured_*" means the server's own token is the
@@ -108,6 +150,7 @@ function authFailureReason(headers, configuredToken) {
   if (g.source === "none") return "no_credential_sent";
   if (g.source === "authorization_not_bearer") return "authorization_header_not_bearer";
   if (!g.value) return "empty_credential";
+  if (g.value.startsWith(SESSION_PREFIX)) return checkSession(g.value, configuredToken).reason;
   return "mismatch";
 }
 
@@ -299,6 +342,11 @@ function safeLabel(text, max) {
 }
 
 async function resolveBytes(ctx, args) {
+  // image_bytes is set only by the endpoint's raw-binary route (a phone page or Shortcut sending the file itself); it is not a tool field.
+  if (Buffer.isBuffer(args.image_bytes)) {
+    if (args.file || args.image_url || args.image_base64) throw new GatewayError("bad_request", "Provide exactly one image source.");
+    return { bytes: args.image_bytes, declaredType: args.image_content_type || null, via: "upload" };
+  }
   const given = [args.file, args.image_url, args.image_base64].filter((v) => v !== undefined && v !== null && v !== "");
   if (given.length !== 1) throw new GatewayError("bad_request", "Provide exactly one of: file (ChatGPT attachment), image_url, image_base64.");
   if (args.image_base64) {
@@ -477,4 +525,4 @@ async function run(ctx, op, input) {
   return fn(ctx, input);
 }
 
-module.exports = { GatewayError, OPERATIONS, run, authorized, authFailureReason, tokenStatus, normalizeToken, findEvent, uploadEventImage, verifyEvent, fetchRemoteImage, isPrivateAddress, objectPath, MAX_BYTES, BUCKET };
+module.exports = { GatewayError, OPERATIONS, run, createSession, checkSession, callerKind, SESSION_MAX_SECONDS, authorized, authFailureReason, tokenStatus, normalizeToken, findEvent, uploadEventImage, verifyEvent, fetchRemoteImage, isPrivateAddress, objectPath, MAX_BYTES, BUCKET };

@@ -34,6 +34,17 @@ Not built (next, only after the image workflow passes Preview and production): `
 - Auth: `EDITORIAL_GATEWAY_TOKEN` (at least 16 characters; 32+ recommended for production) as `Authorization: Bearer` or `X-Editorial-Token`.
   Unset or short refuses every call. The Supabase service-role key never leaves the server.
 
+- Image lock: an applied image is recorded with the existing `OWNER-CORRECTION ... fields=image_url` marker, so the feed
+  writer (`event-upsert`) keeps it on later refreshes. The admin correction form is unchanged (image_url is lock-only).
+- No orphans: if the read-back, the database update or the race guard fails, the object this request created is deleted;
+  an object that already existed is never deleted. The caller's `credit` and `source_note` go into the private audit line only.
+- Device sessions: `POST {op:"create_session", label, ttl_days}` with the gateway token returns `egs1.<payload>.<hmac>` (default 7 days,
+  max 30). The HMAC key is derived from the token, so rotating `EDITORIAL_GATEWAY_TOKEN` revokes all sessions. A session works for
+  find / upload / verify, never mints sessions and never appears in a URL.
+- Raw image route: `POST /api/editorial-gateway?event_id=...&dry_run=false` with `Content-Type: image/*` and the file as the body
+  (what `editorial.html` and an iOS Shortcut use). Details go in the query string, the credential only in the header.
+- Phone page: `/editorial.html` (noindex). Sign in once with the token, search, pick a photo, Check (dry run), Apply, and see the verify results.
+
 ## Client matrix (documented from vendor pages on 2026-10-26; NOTHING below is tested on the owner's accounts yet)
 
 | | Claude | ChatGPT |
