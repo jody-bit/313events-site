@@ -47,6 +47,25 @@ const TOOLS = [
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
+    name: "create_event",
+    description: "Create a NEW event only after find_event shows no match. Pass only facts shown on the flyer or a source page; leave unknowns out (never guess a time, venue or price). Requires source_note. Possible duplicates are refused and listed. The event is held as pending_review for an editor unless publish:true (only when the owner said to publish) and the shared event rules find nothing to review. Defaults to a dry run; pass dry_run:false to create.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        title: { type: "string" }, start_date: { type: "string", description: "YYYY-MM-DD" }, end_date: { type: "string" },
+        time_display: { type: "string", description: "As printed, e.g. 9 PM. Omit if the source gives none." },
+        category: { type: "string", enum: ["music", "fest", "dance", "nightlife", "vendor", "sports", "arts", "theater", "comedy", "food-event"] },
+        venue_name: { type: "string" }, venue_address: { type: "string" }, venue_city: { type: "string" },
+        ticket_url: { type: "string" }, event_url: { type: "string" }, description: { type: "string", description: "Readable and event-specific; only supported facts." },
+        source_note: { type: "string", description: "Where the facts came from (required)." },
+        publish: { type: "boolean" }, dry_run: { type: "boolean", description: "Default true." }, client: { type: "string" },
+      },
+      required: ["title", "start_date", "category", "source_note"],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
     name: "upload_event_image",
     description: "Store a promotional image for an EXISTING event in the public event-flyers bucket and set that event's image_url. Never creates events, never overwrites an existing image unless replace is true. Defaults to a dry run that checks everything and writes nothing; pass dry_run:false to apply. Provide exactly one of file, image_url, image_base64.",
     inputSchema: {
