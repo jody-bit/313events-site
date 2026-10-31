@@ -5,89 +5,129 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0A0A0A">
 <title>313.events editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62,700;62,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#111; --card:#1c1c1e; --fg:#f2f2f2; --mut:#a0a0a8; --acc:#ff6a3d; --ok:#3ecf8e; --bad:#ff5c5c; }
+  /* Detroit Signal tokens, as on the public pages (chartreuse = state: selected, ready, done). */
+  :root { --bg:#0A0A0A; --card:#202020; --card-alt:#161616; --fg:#F2F0E8; --mut:#A9AAA3; --line:#2c2c2c; --acc:#D7FF00; --on-acc:#0A0A0A; --ok:#D7FF00; --bad:#ff7a7a;
+    --font-display:'Archivo','Archivo Narrow',-apple-system,sans-serif; --font-ui:'Inter',-apple-system,system-ui,sans-serif; --font-data:'Space Mono',ui-monospace,monospace; }
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.4 -apple-system, system-ui, sans-serif; padding:env(safe-area-inset-top) 16px 40px; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.45 var(--font-ui); padding:max(env(safe-area-inset-top),12px) 16px calc(40px + env(safe-area-inset-bottom)); }
   main { max-width:560px; margin:0 auto; }
-  h1 { font-size:22px; margin:20px 0 4px; } p.sub { color:var(--mut); margin:0 0 16px; font-size:15px; }
-  section { background:var(--card); border-radius:14px; padding:14px; margin:12px 0; }
-  label { display:block; font-size:14px; color:var(--mut); margin:8px 0 4px; }
-  input, button { font:inherit; width:100%; padding:13px; border-radius:10px; border:1px solid #333; background:#000; color:var(--fg); }
-  button { background:var(--acc); border:0; color:#000; font-weight:600; margin-top:10px; }
-  button.secondary { background:#2a2a2d; color:var(--fg); }
-  button:disabled { opacity:.45; }
-  .ev { padding:12px; border:1px solid #333; border-radius:10px; margin:8px 0; cursor:pointer; }
-  .ev.sel { border-color:var(--acc); } .ev small { color:var(--mut); display:block; }
+  h1 { font:900 30px/1 var(--font-display); text-transform:uppercase; margin:18px 0 6px; letter-spacing:.01em; }
+  h2 { font:700 13px/1.2 var(--font-data); text-transform:uppercase; letter-spacing:.08em; margin:0 0 6px; color:var(--acc); }
+  p.sub { color:var(--mut); margin:0 0 14px; font-size:15px; }
+  section { background:var(--card); border:1px solid var(--line); padding:14px; margin:12px 0; }
+  label { display:block; font-size:14px; color:var(--mut); margin:12px 0 4px; }
+  textarea { font:inherit; width:100%; padding:12px; border-radius:0; border:1px solid #3a3a3a; background:#000; color:var(--fg); }
+  textarea:focus-visible, summary:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+  summary { cursor:pointer; min-height:44px; display:flex; align-items:center; color:var(--acc); font:700 13px var(--font-data); text-transform:uppercase; letter-spacing:.06em; }
+  .filled { border-color:var(--acc) !important; }
+  dl.plan { margin:8px 0; display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:15px; } dl.plan dt { color:var(--mut); } dl.plan dd { margin:0; word-break:break-word; }
+  input, select, button { font:inherit; width:100%; min-height:48px; padding:12px; border-radius:0; border:1px solid #3a3a3a; background:#000; color:var(--fg); }
+  input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+  button { background:var(--acc); border:1px solid var(--acc); color:var(--on-acc); font:700 14px var(--font-data); text-transform:uppercase; letter-spacing:.06em; margin-top:12px; cursor:pointer; }
+  button.secondary { background:transparent; border-color:#555; color:var(--fg); }
+  button:disabled { opacity:.45; cursor:default; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .ev { padding:12px; border:1px solid #3a3a3a; margin:8px 0; cursor:pointer; background:var(--card-alt); }
+  .ev:focus-visible { outline:2px solid var(--acc); }
+  .ev.sel { border-color:var(--acc); } .ev small { color:var(--mut); display:block; margin-top:2px; }
   .ok { color:var(--ok); } .bad { color:var(--bad); } .mut { color:var(--mut); font-size:14px; }
-  img.prev { max-width:100%; border-radius:10px; margin-top:8px; }
+  .note { border-left:3px solid var(--acc); padding:6px 10px; margin:10px 0; background:var(--card-alt); font-size:15px; }
+  .note.warn { border-color:var(--bad); }
+  img.prev { max-width:100%; margin-top:10px; display:block; }
   a { color:var(--acc); } pre { white-space:pre-wrap; word-break:break-word; font-size:13px; color:var(--mut); }
+  .url { font:14px var(--font-data); word-break:break-all; padding:10px; background:#000; border:1px solid #3a3a3a; margin:8px 0; }
   [hidden] { display:none !important; }
+  @media (max-width:360px) { .row2 { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
 <main>
   <h1>313.events editor</h1>
-  <p class="sub">Add a flyer to an event from your phone. Nothing is published or replaced until you tap Apply.</p>
+  <p class="sub">Add an event or a flyer from your phone. Nothing goes live until you say so.</p>
 
-  <section id="signin" hidden>
-    <b>Sign in once on this phone</b>
+  <section id="signin" hidden aria-labelledby="signinH">
+    <h2 id="signinH">Sign in once on this phone</h2>
     <p class="mut">Enter the editor token. It is exchanged for a session that lasts 30 days on this phone and is not stored itself.</p>
     <label for="tok">Editor token</label>
-    <input id="tok" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <input id="tok" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
     <button id="signinBtn">Sign in</button>
-    <p id="signinMsg" class="bad"></p>
+    <p id="signinMsg" class="bad" role="alert"></p>
   </section>
 
   <div id="app" hidden>
-    <section>
-      <b>1. Find the event</b>
+    <section aria-labelledby="s1">
+      <h2 id="s1">1. Is it already listed?</h2>
       <label for="q">Title or venue</label>
-      <input id="q" type="search" placeholder="e.g. Pop Tronics" autocapitalize="off">
+      <input id="q" type="search" placeholder="e.g. Pop Tronics" autocapitalize="off" enterkeyhint="search">
       <button id="findBtn" class="secondary">Search</button>
-      <div id="results"></div>
+      <div id="results" role="status" aria-live="polite"></div>
     </section>
 
-    <section id="newSec" hidden>
-      <b>Not listed? Add a new event</b>
-      <p class="mut">Only what the flyer or ticket page says. Leave unknowns blank. It is held for review before it goes live.</p>
-      <label for="nTitle">Title</label><input id="nTitle">
-      <label for="nDate">Date</label><input id="nDate" type="date">
-      <label for="nTime">Time as printed (optional)</label><input id="nTime" placeholder="9 PM">
-      <label for="nVenue">Venue</label><input id="nVenue">
-      <label for="nCity">City</label><input id="nCity">
+    <section id="newSec" hidden aria-labelledby="s1b">
+      <h2 id="s1b">Not listed? Add a new event</h2>
+      <p class="mut">Type only what the flyer or ticket page says. Leave unknowns blank: nothing is guessed. A link or flyer can be added after.</p>
+      <details id="pasteBox">
+        <summary>Paste text from a post or message (optional)</summary>
+        <label for="pasteTxt">Paste it here. Only a date with a year, a time and a link are picked out; you check everything.</label>
+        <textarea id="pasteTxt" rows="4" autocapitalize="off"></textarea>
+        <button id="pasteBtn" class="secondary" type="button">Fill what I can</button>
+        <p id="pasteOut" class="mut" role="status" aria-live="polite"></p>
+      </details>
+      <label for="nTitle">Title</label><input id="nTitle" autocapitalize="words" enterkeyhint="next">
+      <div class="row2">
+        <div><label for="nDate">Date</label><input id="nDate" type="date"></div>
+        <div><label for="nTime">Time as printed (optional)</label><input id="nTime" placeholder="9 PM" enterkeyhint="next"></div>
+      </div>
+      <label for="nVenue">Venue</label><input id="nVenue" autocapitalize="words" enterkeyhint="next">
+      <label for="nCity">City</label><input id="nCity" autocapitalize="words" enterkeyhint="next">
       <label for="nCat">Type</label>
-      <select id="nCat" style="width:100%;padding:13px;border-radius:10px;background:#000;color:#f2f2f2;border:1px solid #333;font:inherit">
+      <select id="nCat">
         <option value="music">Music</option><option value="nightlife">Nightlife</option><option value="arts">Arts</option><option value="theater">Theater</option>
         <option value="comedy">Comedy</option><option value="dance">Dance</option><option value="fest">Festival</option><option value="vendor">Market</option>
         <option value="sports">Sports</option><option value="food-event">Food</option></select>
-      <label for="nLink">Ticket or event link (optional)</label><input id="nLink" type="url" autocapitalize="off">
-      <label for="nSrc">Where this came from</label><input id="nSrc" placeholder="e.g. flyer from the organizer">
+      <label for="nLink">Ticket or event link (optional)</label><input id="nLink" type="url" inputmode="url" autocapitalize="off" autocorrect="off" enterkeyhint="next">
+      <label for="nSrc">Where this came from</label><input id="nSrc" placeholder="e.g. flyer from the organizer" enterkeyhint="done">
       <button id="nCheck" class="secondary">Check it</button>
-      <div id="nOut"></div>
+      <div id="nOut" role="status" aria-live="polite"></div>
       <button id="nCreate" hidden>Add event (held for review)</button>
+      <button id="nPublish" class="secondary" hidden>Add and publish now</button>
+      <p id="nPublishHint" class="mut" hidden>Publishes only if every check passes. Otherwise it is held for review and you are told why.</p>
     </section>
 
-    <section id="pickSec" hidden>
-      <b>2. Choose the flyer</b>
+    <section id="pickSec" hidden aria-labelledby="s2">
+      <h2 id="s2">2. Choose the flyer</h2>
       <p class="mut" id="chosen"></p>
+      <label for="file">Photo or flyer image</label>
       <input id="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
       <label for="credit">Credit / where it came from (optional)</label>
-      <input id="credit" placeholder="e.g. supplied by the organizer">
-      <img id="prev" class="prev" alt="" hidden>
+      <input id="credit" placeholder="e.g. supplied by the organizer" enterkeyhint="done">
+      <img id="prev" class="prev" alt="Preview of the chosen flyer" hidden>
       <button id="checkBtn" disabled>Check it</button>
     </section>
 
-    <section id="checkSec" hidden>
-      <b>3. Check, then apply</b>
-      <div id="checkOut"></div>
+    <section id="checkSec" hidden aria-labelledby="s3">
+      <h2 id="s3">3. Check, then apply</h2>
+      <div id="checkOut" role="status" aria-live="polite"></div>
       <button id="applyBtn" hidden>Apply this image</button>
     </section>
 
-    <section id="doneSec" hidden>
-      <b>4. Result</b>
-      <div id="doneOut"></div>
+    <section id="doneSec" hidden aria-labelledby="s4">
+      <h2 id="s4">4. Result</h2>
+      <div id="doneOut" role="status" aria-live="polite" tabindex="-1"></div>
+    </section>
+
+    <section id="linkSec" hidden aria-labelledby="s5">
+      <h2 id="s5">Event page</h2>
+      <p id="linkState" class="mut"></p>
+      <div class="url" id="linkUrl"></div>
+      <div class="row2"><button id="openBtn" class="secondary">Open</button><button id="shareBtn" class="secondary">Share / copy link</button></div>
+      <button id="againBtn">Add another event</button>
     </section>
 
     <p class="mut"><a href="#" id="signout">Sign out of this phone</a></p>
@@ -99,7 +139,7 @@
   var API = "/api/editorial-gateway";
   var KEY = "313events.editor.session";
   var $ = function (id) { return document.getElementById(id); };
-  var session = null, picked = null, selected = null, expectedHash = null;
+  var session = null, picked = null, selected = null, expectedHash = null, madeStatus = null;
 
   function store(v) { try { if (v) localStorage.setItem(KEY, v); else localStorage.removeItem(KEY); } catch (e) {} }
   function load() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
@@ -114,11 +154,12 @@
     var body = JSON.stringify(Object.assign({ op: op }, args || {}));
     return call({ "Content-Type": "application/json", Authorization: "Bearer " + session }, body).then(function (r) {
       if (r.status === 401) { store(null); session = null; show(); throw new Error("Your sign-in expired. Sign in again."); }
-      if (!r.json.ok) throw new Error((r.json.error && r.json.error.message) || "Request failed.");
+      if (!r.json.ok) { var err = new Error((r.json.error && r.json.error.message) || "Request failed."); err.body = r.json.error || {}; throw err; }
       return r.json.result;
     });
   }
   function show() { session = load(); $("signin").hidden = !!session; $("app").hidden = !session; }
+  function liveUrl(id) { return location.origin + "/event.html?id=" + encodeURIComponent(id); }
 
   $("signinBtn").onclick = function () {
     var t = $("tok").value.trim(); $("signinMsg").textContent = "";
@@ -129,48 +170,141 @@
     }).catch(function () { $("signinMsg").textContent = "Could not reach the site."; });
   };
   $("signout").onclick = function (e) { e.preventDefault(); store(null); show(); };
+  $("tok").onkeydown = function (e) { if (e.key === "Enter") $("signinBtn").click(); };
+  $("q").onkeydown = function (e) { if (e.key === "Enter") { e.preventDefault(); $("findBtn").click(); } };
+
+  // An existing event becomes the target of the flyer step.
+  function choose(ev) {
+    selected = ev;
+    $("chosen").textContent = ev.title + " — " + ev.start_date;
+    $("pickSec").hidden = false; $("checkSec").hidden = true; $("doneSec").hidden = true;
+    $("pickSec").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function evRow(e, i, label) {
+    return '<div class="ev" role="button" tabindex="0" data-i="' + i + '">' + esc(e.title) + '<small>' + esc(e.start_date) + ' · ' + esc(e.venue || e.venue_name_raw || "") + ' · ' + esc(e.status)
+      + (e.has_image || e.image_url ? ' · has image' : '') + '</small>' + (label ? '<small class="ok">' + esc(label) + '</small>' : '') + '</div>';
+  }
+  function wireRows(container, list) {
+    Array.prototype.forEach.call(container.querySelectorAll(".ev"), function (el) {
+      var pick = function () {
+        Array.prototype.forEach.call(container.querySelectorAll(".ev"), function (x) { x.classList.remove("sel"); });
+        el.classList.add("sel"); choose(list[+el.getAttribute("data-i")]);
+      };
+      el.onclick = pick;
+      el.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } };
+    });
+  }
 
   $("findBtn").onclick = function () {
     var q = $("q").value.trim(); if (!q) return;
     $("results").innerHTML = '<p class="mut">Searching…</p>';
     rest("find_event", { query: q }).then(function (r) {
       var list = r.events || [];
-      if (!list.length) { $("results").innerHTML = '<p class="mut">No matching events.</p>'; $("newSec").hidden = false; return; }
       $("newSec").hidden = false;
-      $("results").innerHTML = list.map(function (e, i) {
-        return '<div class="ev" data-i="' + i + '">' + esc(e.title) + '<small>' + esc(e.start_date) + ' · ' + esc(e.venue || e.venue_name_raw || "") + ' · ' + esc(e.status) + (e.has_image || e.image_url ? ' · has image' : '') + '</small></div>';
-      }).join("");
-      Array.prototype.forEach.call($("results").children, function (el) {
-        el.onclick = function () {
-          selected = list[+el.getAttribute("data-i")];
-          Array.prototype.forEach.call($("results").children, function (x) { x.classList.remove("sel"); });
-          el.classList.add("sel");
-          $("chosen").textContent = selected.title + " — " + selected.start_date;
-          $("pickSec").hidden = false; $("checkSec").hidden = true; $("doneSec").hidden = true;
-        };
-      });
+      if (!list.length) { $("results").innerHTML = '<p class="note">No matching events. Add it below.</p>'; return; }
+      $("results").innerHTML = '<p class="mut">Tap an event to add its flyer, or add a new one below if none is the right one.</p>' + list.map(function (e, i) { return evRow(e, i); }).join("");
+      wireRows($("results"), list);
     }).catch(function (e) { $("results").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
   };
 
-  function newArgs(dry) {
+  // Paste helper: deterministic, in the browser, text only (nothing is read from an image and nothing is guessed).
+  var MONTHS = { jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, sept:9, oct:10, nov:11, dec:12, january:1, february:2, march:3, april:4, june:6, july:7, august:8, september:9, october:10, november:11, december:12 };
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function parsePaste(t) {
+    var out = {}, m;
+    if ((m = t.match(/https?:\/\/[^\s<>"')]+/))) out.link = m[0].replace(/[.,;]+$/, "");
+    if ((m = t.match(/\b(20\d\d)-(\d\d)-(\d\d)\b/))) out.date = m[0];
+    else if ((m = t.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(20\d\d)\b/i))) out.date = m[3] + "-" + pad(MONTHS[m[1].toLowerCase().replace(".", "")]) + "-" + pad(+m[2]);
+    else if ((m = t.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d\d)\b/))) out.date = m[3] + "-" + pad(+m[1]) + "-" + pad(+m[2]);
+    if ((m = t.match(/\b(\d{1,2}(?::\d{2})?\s?[ap]\.?m\.?)(?!\w)/i))) out.time = m[1].replace(/\s+/g, " ").toUpperCase().replace(/\./g, "");
+    var first = t.split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean)[0];
+    if (first && first.length >= 3 && first.length <= 80 && !/^https?:/i.test(first)) out.title = first;
+    return out;
+  }
+  $("pasteBtn").onclick = function () {
+    var t = $("pasteTxt").value; if (!t.trim()) { $("pasteOut").textContent = "Nothing to read yet."; return; }
+    var r = parsePaste(t), got = [], map = { title: "nTitle", date: "nDate", time: "nTime", link: "nLink" };
+    Object.keys(map).forEach(function (k) { if (r[k] && !$(map[k]).value) { $(map[k]).value = r[k]; $(map[k]).classList.add("filled"); got.push(k); } });
+    if (!$("nSrc").value && got.length) { $("nSrc").value = "text pasted by the owner"; }
+    resetCreateButtons();
+    $("pasteOut").textContent = got.length ? "Filled: " + got.join(", ") + ". Check each against the flyer; venue and city are never guessed." + (r.date ? "" : " No date with a year was found, so the date is empty.") : "Nothing could be picked out safely. Type the facts below.";
+  };
+  ["nTitle", "nDate", "nTime", "nLink"].forEach(function (id) { $(id).addEventListener("input", function () { $(id).classList.remove("filled"); }); });
+
+  var CAT_LABEL = { music: "Music", nightlife: "Nightlife", arts: "Arts", theater: "Theater", comedy: "Comedy", dance: "Dance", fest: "Festival", vendor: "Market", sports: "Sports", "food-event": "Food" };
+  function planHtml(r) {
+    var ev = r.event_preview || {}, issues = r.review_issues || [];
+    var rows = [["Title", ev.title], ["Date", ev.start_date], ["Time", ev.time_display || "not given"], ["Venue", ev.venue_name_raw || "not given"], ["City", ev.venue_city_raw || "not given"], ["Type", CAT_LABEL[ev.category] || ev.category], ["Link", ev.ticket_url || "none"]];
+    return '<p class="ok">Nothing saved yet. No duplicate found.</p>'
+      + '<dl class="plan">' + rows.map(function (x) { return "<dt>" + esc(x[0]) + "</dt><dd>" + esc(x[1]) + "</dd>"; }).join("") + "</dl>"
+      + (issues.length
+        ? '<p class="note warn"><b>It will be held for review.</b> An editor must look at: ' + esc(issues.join(", ").replace(/_/g, " ")) + ".</p>"
+        : '<p class="note"><b>Every check passed.</b> Add it held for review, or publish it now.</p>');
+  }
+  function newArgs(dry, publish) {
     var a = { title: $("nTitle").value, start_date: $("nDate").value, category: $("nCat").value, venue_name: $("nVenue").value, venue_city: $("nCity").value,
       time_display: $("nTime").value, source_note: $("nSrc").value, client: "phone-editor", dry_run: dry };
     if ($("nLink").value.trim()) a.ticket_url = $("nLink").value.trim();
+    if (publish) a.publish = true;
     return a;
   }
+  function resetCreateButtons() { $("nCreate").hidden = true; $("nPublish").hidden = true; $("nPublishHint").hidden = true; }
+  // Any edit after a check invalidates it: the buttons only ever apply what was just checked.
+  ["nTitle", "nDate", "nTime", "nVenue", "nCity", "nCat", "nLink", "nSrc"].forEach(function (id) { $(id).addEventListener("input", resetCreateButtons); });
+
+  function showDuplicates(err) {
+    var m = (err.body && err.body.matches) || [];
+    if (!m.length) { $("nOut").innerHTML = '<p class="bad">' + esc(err.message) + "</p>"; return; }
+    $("nOut").innerHTML = '<p class="note warn"><b>This may already be listed.</b> Nothing was added. Tap the right one to add its flyer instead.</p>' + m.map(function (e, i) { return evRow(e, i); }).join("");
+    wireRows($("nOut"), m);
+  }
+
   $("nCheck").onclick = function () {
-    $("nOut").innerHTML = '<p class="mut">Checking…</p>'; $("nCreate").hidden = true;
+    $("nOut").innerHTML = '<p class="mut">Checking…</p>'; resetCreateButtons();
     rest("create_event", newArgs(true)).then(function (r) {
-      $("nOut").innerHTML = '<p class="ok">Looks good. No duplicate found. Nothing saved yet.</p>' + (r.review_issues.length ? '<p class="mut">Editor will review: ' + esc(r.review_issues.join(", ")) + "</p>" : "");
+      var issues = r.review_issues || [];
+      $("nOut").innerHTML = planHtml(r);
       $("nCreate").hidden = false;
-    }).catch(function (e) { $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
+      $("nPublish").hidden = issues.length > 0; $("nPublishHint").hidden = issues.length > 0;
+    }).catch(function (e) { if (e.body && e.body.code === "possible_duplicate") showDuplicates(e); else $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
   };
-  $("nCreate").onclick = function () {
-    $("nCreate").disabled = true;
-    rest("create_event", newArgs(false)).then(function (r) {
-      selected = r.event; $("nOut").innerHTML = '<p class="ok">Added and held for review. Now add its flyer below.</p>'; $("nCreate").hidden = true;
+
+  function create(publish) {
+    $("nCreate").disabled = true; $("nPublish").disabled = true;
+    rest("create_event", newArgs(false, publish)).then(function (r) {
+      selected = r.event; madeStatus = r.status || (r.event && r.event.status);
+      var live = madeStatus === "approved";
+      $("nOut").innerHTML = '<p class="ok">' + (live ? "Added and published." : "Added and held for review.") + "</p>"
+        + (publish && !live ? '<p class="note warn">Publishing was requested but the checks held it for review.</p>' : "")
+        + '<p class="mut">Now add its flyer below, or open the event page.</p>';
+      resetCreateButtons();
       $("chosen").textContent = selected.title + " — " + selected.start_date; $("pickSec").hidden = false;
-    }).catch(function (e) { $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; }).then(function () { $("nCreate").disabled = false; });
+      linkSection(selected.id, live);
+    }).catch(function (e) { if (e.body && e.body.code === "possible_duplicate") showDuplicates(e); else $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; })
+      .then(function () { $("nCreate").disabled = false; $("nPublish").disabled = false; });
+  }
+  $("nCreate").onclick = function () { create(false); };
+  $("nPublish").onclick = function () { create(true); };
+
+  function linkSection(id, live) {
+    $("linkUrl").textContent = liveUrl(id);
+    $("linkState").textContent = live ? "Live. This is the public event page." : "Held for review. This link works for the public once an editor approves it.";
+    $("linkSec").hidden = false;
+    $("openBtn").onclick = function () { window.open(liveUrl(id), "_blank", "noopener"); };
+    $("shareBtn").onclick = function () {
+      var u = liveUrl(id), done = function (t) { $("shareBtn").textContent = t; setTimeout(function () { $("shareBtn").textContent = "Share / copy link"; }, 2000); };
+      if (navigator.share) { navigator.share({ title: selected && selected.title || "313.events", url: u }).catch(function () {}); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { done("Copied"); }, function () { done("Copy failed"); });
+      else done("Copy failed");
+    };
+  }
+  $("againBtn").onclick = function () {
+    ["nTitle", "nDate", "nTime", "nVenue", "nCity", "nLink", "nSrc", "q", "credit"].forEach(function (id) { $(id).value = ""; });
+    selected = null; picked = null; expectedHash = null; $("file").value = "";
+    ["pickSec", "checkSec", "doneSec", "linkSec", "newSec"].forEach(function (id) { $(id).hidden = true; });
+    $("prev").hidden = true; $("checkBtn").disabled = true; $("nOut").innerHTML = ""; $("results").innerHTML = ""; resetCreateButtons();
+    window.scrollTo({ top: 0, behavior: "smooth" }); $("q").focus();
   };
 
   $("file").onchange = function () {
@@ -206,12 +340,13 @@
 
   $("applyBtn").onclick = function () {
     $("applyBtn").disabled = true;
-    upload(false).then(function (r) {
+    upload(false).then(function () {
       return rest("verify_event", { event_id: selected.id, expected_sha256: expectedHash }).then(function (v) {
         var rows = (v.checks || []).map(function (c) { return '<div class="' + (c.ok ? "ok" : "bad") + '">' + (c.ok ? "✓ " : "✗ ") + esc(c.name.replace(/_/g, " ")) + "</div>"; }).join("");
-        $("doneOut").innerHTML = '<p class="' + (v.ok ? "ok" : "bad") + '">' + (v.ok ? "Saved and verified." : "Saved, but a check failed.") + "</p>" + rows
-          + '<p><a href="/event.html?id=' + encodeURIComponent(selected.id) + '" target="_blank" rel="noopener">Open the live event page</a></p>';
+        $("doneOut").innerHTML = '<p class="' + (v.ok ? "ok" : "bad") + '">' + (v.ok ? "Saved and verified." : "Saved, but a check failed.") + "</p>" + rows;
         $("doneSec").hidden = false; $("applyBtn").hidden = true;
+        linkSection(selected.id, (selected.status || madeStatus) === "approved");
+        $("doneOut").focus();
       });
     }).catch(function (e) { $("doneOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; $("doneSec").hidden = false; })
       .then(function () { $("applyBtn").disabled = false; });
