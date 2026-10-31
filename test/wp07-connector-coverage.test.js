@@ -75,7 +75,6 @@ const CONNECTORS = [
 // helper, with what it sends and why its shape cannot vary. Audited
 // 2026-10-03.
 const AUDITED_DIRECT_POSTS = [
-  ["api/_lib/editorial-gateway.js", "events", "row", "single object (create_event: one dry-run-first, duplicate-checked, pending_review event)"],
   ["api/_lib/event-source-identities.js", "event_source_identities", "[{ event_id: eventId, source, source_id: sourceId }]", "one row"],
   ["api/_lib/run-log.js", "source_runs", '[{ source_slug: sourceSlug, outcome: "started" }]', "one row"],
   ["api/_lib/venue-lookup.js", "venues", "insertBody", "single object, not a batch"],

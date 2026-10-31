@@ -67,13 +67,6 @@ function makeWorld(overrides) {
       if (gte) rows = rows.filter((r) => r.start_date === gte.slice(4));
       return res(200, rows.map((r) => Object.assign({}, r)));
     }
-    if (u.origin === SB && u.pathname === "/rest/v1/events" && method === "POST") {
-      const body = JSON.parse(opts.body);
-      const id = "aaaaaaaa-0000-0000-0000-" + String(world.events.size).padStart(12, "0");
-      const r = Object.assign({ id, updated_at: "2026-10-31T21:00:00+00:00", image_url: null }, body);
-      world.events.set(id, r); world.writes.push({ created: id });
-      return res(201, [Object.assign({}, r)]);
-    }
     if (u.origin === SB && u.pathname === "/rest/v1/events_public" && method === "GET") {
       const id = (u.searchParams.get("id") || "").replace("eq.", "");
       const r = world.events.get(id);
@@ -368,12 +361,12 @@ async function rejects(promise, code) {
   assert.strictEqual(out.payload.result.serverInfo.name, "313events-editorial-gateway");
   out = await call(auth, { jsonrpc: "2.0", id: 2, method: "tools/list" });
   const names = out.payload.result.tools.map((t) => t.name);
-  assert.deepStrictEqual(names, ["find_event", "create_event", "upload_event_image", "verify_event"]);
+  assert.deepStrictEqual(names, ["find_event", "upload_event_image", "verify_event"]);
   const up = out.payload.result.tools.find((t) => t.name === "upload_event_image");
   assert.deepStrictEqual(up._meta["openai/fileParams"], ["file"]);
   assert.deepStrictEqual(up.inputSchema.properties.file.required, ["download_url", "file_id"]);
   assert.strictEqual(up.annotations.readOnlyHint, false);
-  assert.ok(out.payload.result.tools.filter((t) => t.name !== "upload_event_image" && t.name !== "create_event").every((t) => t.annotations.readOnlyHint === true));
+  assert.ok(out.payload.result.tools.filter((t) => t.name !== "upload_event_image").every((t) => t.annotations.readOnlyHint === true));
   out = await call(auth, { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "find_event", arguments: { query: "pop" } } });
   assert.strictEqual(out.payload.result.isError, false);
   assert.strictEqual(out.payload.result.structuredContent.events[0].id, EVENT);
@@ -385,26 +378,6 @@ async function rejects(promise, code) {
   out = await call(auth, { jsonrpc: "2.0", method: "notifications/initialized" });
   assert.strictEqual(out.status, 202);
   assert.ok(!JSON.stringify(out.payload || {}).includes("service-role-test-key"), "the service key never appears in a response");
-  // --- create_event
-  const wc = makeWorld();
-  const cctx = ctxFor(wc); cctx.now = () => new Date("2026-10-31T21:00:00Z");
-  const evInput = { title: "Beni for Leni", start_date: "2026-11-02", category: "music", venue_name: "The Shop", venue_city: "Hazel Park", source_note: "Owner-supplied flyer 2026-10-31", client: "claude" };
-  let c = await gw.run(cctx, "create_event", evInput);
-  assert.strictEqual(c.outcome, "dry_run"); assert.strictEqual(c.status, "pending_review"); assert.strictEqual(wc.events.size, 3, "dry run writes nothing");
-  assert.strictEqual(c.event_preview.time_display, null, "no start time is invented");
-  c = await gw.run(cctx, "create_event", Object.assign({}, evInput, { dry_run: false }));
-  assert.strictEqual(c.outcome, "created"); assert.strictEqual(c.event.status, "pending_review", "held for an editor by default");
-  c = await gw.run(cctx, "create_event", Object.assign({}, evInput, { dry_run: false }));
-  assert.strictEqual(c.outcome, "already_exists", "retry creates nothing new"); assert.strictEqual(wc.events.size, 4);
-  await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { title: "Another Show", venue_name: "Other Hall", start_date: "2026-11-02", dry_run: false })), "possible_duplicate");
-  await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { source_note: "" })), "bad_request");
-  await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { category: "bogus" })), "bad_request");
-  await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { start_date: "soon" })), "bad_request");
-  await rejects(gw.run(cctx, "create_event", Object.assign({}, evInput, { ticket_url: "javascript:alert(1)" })), "bad_request");
-  c = await gw.run(cctx, "create_event", Object.assign({}, evInput, { title: "Nico Bones + Glow Highway Stallions", start_date: "2026-11-07", venue_name: "Paris Bar", venue_city: "Hamtramck", time_display: "9 PM", publish: true, dry_run: false }));
-  assert.ok(["approved", "pending_review"].includes(c.event.status));
-  console.log("PASS: create_event dry-runs by default, never invents a time, holds for review unless publish is requested and eligible, refuses duplicates and bad input, and is idempotent");
-
   // --- device sessions
   const T = "t".repeat(40);
   out = await call(auth, { op: "create_session", label: "owner iPhone", ttl_days: 3 });
@@ -442,7 +415,7 @@ async function rejects(promise, code) {
   assert.strictEqual(out.status, 401, "raw uploads need the credential too");
   global.fetch = realGlobalFetch;
   console.log("PASS: device sessions are signed, scoped, expiring, revoked by rotation and cannot mint sessions; raw image uploads reach the validated path");
-  console.log("PASS: REST and MCP transports require the token, list exactly four tools, mark only upload and create as writes, and declare the ChatGPT file param");
+  console.log("PASS: REST and MCP transports require the token, list exactly three tools, mark only the upload as a write, and declare the ChatGPT file param");
 
   console.log("\nAll editorial-gateway.test.js checks passed.");
 })().catch((e) => { console.error(e); process.exit(1); });
