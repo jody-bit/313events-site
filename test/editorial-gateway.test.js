@@ -94,6 +94,12 @@ function makeWorld(overrides) {
       world.writes.push({ object: path });
       return res(200, { Key: path });
     }
+    if (u.origin === SB && u.pathname.startsWith("/storage/v1/object/event-flyers/") && method === "DELETE") {
+      const path = u.pathname.replace("/storage/v1/object/event-flyers/", "");
+      world.objects.delete(path);
+      world.writes.push({ deleted: path });
+      return res(200, {});
+    }
     if (u.origin === SB && u.pathname.startsWith("/storage/v1/object/public/event-flyers/") && method === "GET") {
       const path = u.pathname.replace("/storage/v1/object/public/event-flyers/", "");
       const b = world.objects.get(path);
@@ -272,11 +278,40 @@ async function rejects(promise, code) {
   };
   await rejects(gw.run(ctxRace, "upload_event_image", { event_id: EVENT, image_base64: b64(FLYER), dry_run: false }), "conflict");
   assert.strictEqual(w.events.get(EVENT).image_url, null, "a conflicting edit is never overwritten");
+  assert.strictEqual(w.objects.size, 0, "the object created by the conflicted request is removed (no orphan)");
   w = makeWorld();
   w.brokenReadback = true;
   await rejects(gw.run(ctxFor(w), "upload_event_image", { event_id: EVENT, image_base64: b64(FLYER), dry_run: false }), "storage_verify_failed");
   assert.strictEqual(w.events.get(EVENT).image_url, null, "the event is not changed when the stored bytes do not read back identically");
+  assert.strictEqual(w.objects.size, 0, "a bad read-back leaves no orphan object");
+  // A database failure also removes the object this request created.
+  w = makeWorld();
+  const ctxDb = ctxFor(w); const realDb = w.fetch;
+  ctxDb.fetchFn = async (url, opts) => ((opts || {}).method === "PATCH" ? { ok: false, status: 500, json: async () => ({}), text: async () => "" } : realDb(url, opts));
+  await rejects(gw.run(ctxDb, "upload_event_image", { event_id: EVENT, image_base64: b64(FLYER), dry_run: false }), "database_error");
+  assert.strictEqual(w.objects.size, 0, "a failed database update leaves no orphan object");
+  // An object that already existed (same bytes uploaded earlier) is never deleted by a later failure.
+  w = makeWorld();
+  await gw.run(ctxFor(w), "upload_event_image", { event_id: EVENT, image_base64: b64(FLYER), dry_run: false });
+  w.events.get(EVENT).image_url = null;
+  const ctxKeep = ctxFor(w); const realKeep = w.fetch;
+  ctxKeep.fetchFn = async (url, opts) => ((opts || {}).method === "PATCH" ? { ok: false, status: 500, json: async () => ({}), text: async () => "" } : realKeep(url, opts));
+  await rejects(gw.run(ctxKeep, "upload_event_image", { event_id: EVENT, image_base64: b64(FLYER), dry_run: false }), "database_error");
+  assert.strictEqual(w.objects.size, 1, "a pre-existing object is not deleted");
   console.log("PASS: a row edited mid-flight is not overwritten; a bad read-back leaves the event untouched");
+
+  // --- owner-approved image is locked against feed refreshes; credit is recorded internally
+  w = makeWorld();
+  const lockedRes = await gw.run(ctxFor(w), "upload_event_image", { event_id: EVENT, image_base64: b64(FLYER), dry_run: false, credit: "Photo: Jane Doe", client: "claude" });
+  assert.strictEqual(lockedRes.locked_against_feed_refresh, true);
+  const lockNote = w.events.get(EVENT).internal_note;
+  const contractMod = require("../api/_lib/event-contract");
+  assert.ok(contractMod.ownerCorrectedFields(lockNote).has("image_url"), "the marker locks image_url");
+  assert.ok(/credit: Photo: Jane Doe/.test(lockNote), "credit is kept in the internal note");
+  const prot = contractMod.protectOwnerCorrections([{ external_id: "x1", image_url: "https://feed.example/new.jpg", title: "T" }], new Map([["x1", { internal_note: lockNote, image_url: w.events.get(EVENT).image_url }]]));
+  assert.strictEqual(prot.rows[0].image_url, w.events.get(EVENT).image_url, "a feed refresh cannot replace the approved image");
+  assert.deepStrictEqual(contractMod.ownerCorrectionView({ internal_note: lockNote }).owner_corrected, [], "the admin correction view is unchanged by the image lock");
+  console.log("PASS: applied images are locked against feed refreshes, credit recorded internally, no orphan objects after failures");
 
   // --- verify_event
   w = makeWorld();

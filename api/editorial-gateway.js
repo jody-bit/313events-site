@@ -60,6 +60,7 @@ const TOOLS = [
         dry_run: { type: "boolean", description: "Default true. Set false to write." },
         replace: { type: "boolean", description: "Only when the owner wants an existing image replaced." },
         source_note: { type: "string", description: "Where the artwork came from (for example: supplied by the organizer, permission on file)." },
+        credit: { type: "string", description: "Photographer or artist credit, kept internally." },
         client: { type: "string", description: "Which assistant is calling (claude or chatgpt)." },
       },
       required: ["event_id"],

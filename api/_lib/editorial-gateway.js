@@ -25,6 +25,7 @@ const crypto = require("crypto");
 const dns = require("dns").promises;
 const net = require("net");
 const guard = require("./upload-guard");
+const contract = require("./event-contract");
 
 const BUCKET = "event-flyers";
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -330,6 +331,16 @@ async function storeObject(ctx, path, bytes, type) {
   throw new GatewayError("storage_error", `Storage rejected the upload (HTTP ${resp.status}).`, 502);
 }
 
+// Remove an object this call created when the database step did not land, so a failed or conflicted request leaves no orphan.
+// Only ever called for an object created by the same request (stored.created), never for one that already existed.
+async function removeObject(ctx, path) {
+  try {
+    const fetchFn = ctx.fetchFn || fetch;
+    const resp = await fetchFn(`${ctx.supabaseUrl}/storage/v1/object/${BUCKET}/${path}`, { method: "DELETE", headers: sbHeaders(ctx, {}) });
+    return resp.ok;
+  } catch (_) { return false; }
+}
+
 async function fetchPublicBytes(ctx, url) {
   const fetchFn = ctx.fetchFn || fetch;
   const resp = await fetchFn(url, { headers: { Accept: "image/*" } });
@@ -377,30 +388,44 @@ async function uploadEventImage(ctx, input) {
   const stored = await storeObject(ctx, path, bytes, verdict.type);
   const live = await fetchPublicBytes(ctx, url);
   if (!live.ok || sha256(live.bytes) !== hash) {
-    throw new GatewayError("storage_verify_failed", "The stored image could not be read back identically from its public URL; the event was not changed.", 502, { public_status: live.status });
+    const cleaned = stored.created ? await removeObject(ctx, path) : false;
+    throw new GatewayError("storage_verify_failed", "The stored image could not be read back identically from its public URL; the event was not changed.", 502, { public_status: live.status, orphan_removed: cleaned });
   }
 
   const stamp = (ctx.now ? ctx.now() : new Date()).toISOString();
   const who = safeLabel(args.client || "ai-client", 40);
   const evidence = safeLabel(args.source_note || "", 200);
-  const audit = `[editorial-gateway ${stamp}] image_url set via ${via} by ${who}; sha256 ${hash.slice(0, 16)}; ${bytes.length} bytes ${verdict.width}x${verdict.height}${event.image_url ? `; replaced ${safeLabel(event.image_url, 160)}` : ""}${evidence ? `; source: ${evidence}` : ""}`;
+  const credit = safeLabel(args.credit || "", 120);
+  const audit = `[editorial-gateway ${stamp}] image_url set via ${via} by ${who}; sha256 ${hash.slice(0, 16)}; ${bytes.length} bytes ${verdict.width}x${verdict.height}${event.image_url ? `; replaced ${safeLabel(event.image_url, 160)}` : ""}${evidence ? `; source: ${evidence}` : ""}${credit ? `; credit: ${credit}` : ""}`;
+  // The pick is the owner's (dry_run:false is an explicit apply), so it is locked with the same marker the admin corrections use:
+  // a later feed refresh keeps this image (api/_lib/event-upsert.js reads the marker).
+  const lockLine = contract.buildOwnerCorrectionLine({ at: stamp, editId: "editorial-gateway", actor: who, changes: [{ field: "image_url", before: event.image_url || null, after: url }] });
   const prior = await sbGet(ctx, `events?id=eq.${event.id}&select=internal_note`);
-  const note = [prior && prior[0] && prior[0].internal_note, audit].filter(Boolean).join("\n");
+  const note = [prior && prior[0] && prior[0].internal_note, audit, lockLine].filter(Boolean).join("\n");
 
   // Race-safe: only lands if the row is exactly as it was read (updated_at) and still in the state we checked.
   const fetchFn = ctx.fetchFn || fetch;
   const imageGuard = event.image_url ? `image_url=eq.${encodeURIComponent(event.image_url)}` : "image_url=is.null";
-  const resp = await fetchFn(`${ctx.supabaseUrl}/rest/v1/events?id=eq.${event.id}&${imageGuard}&updated_at=eq.${encodeURIComponent(event.updated_at)}&select=${EVENT_COLUMNS}`, {
-    method: "PATCH",
-    headers: sbHeaders(ctx, { "Content-Type": "application/json", Prefer: "return=representation" }),
-    body: JSON.stringify({ image_url: url, internal_note: note }),
-  });
-  if (!resp.ok) throw new GatewayError("database_error", `Database update failed (HTTP ${resp.status}).`, 502);
-  const updated = await resp.json();
-  if (!Array.isArray(updated) || updated.length !== 1) {
-    throw new GatewayError("conflict", "The event changed while the image was being applied; nothing was overwritten. Re-run find_event and try again.", 409);
+  let updated;
+  try {
+    const resp = await fetchFn(`${ctx.supabaseUrl}/rest/v1/events?id=eq.${event.id}&${imageGuard}&updated_at=eq.${encodeURIComponent(event.updated_at)}&select=${EVENT_COLUMNS}`, {
+      method: "PATCH",
+      headers: sbHeaders(ctx, { "Content-Type": "application/json", Prefer: "return=representation" }),
+      body: JSON.stringify({ image_url: url, internal_note: note }),
+    });
+    if (!resp.ok) throw new GatewayError("database_error", `Database update failed (HTTP ${resp.status}).`, 502);
+    updated = await resp.json();
+  } catch (err) {
+    // Nothing referenced the new object, so remove it if this request created it.
+    const cleaned = stored.created ? await removeObject(ctx, path) : false;
+    if (err instanceof GatewayError) { err.extra = Object.assign({}, err.extra, { orphan_removed: cleaned }); throw err; }
+    throw new GatewayError("database_error", "Database update failed.", 502, { orphan_removed: cleaned });
   }
-  return Object.assign({ outcome: "applied", changed: true, object_created: stored.created, event_after: summarize(updated[0]) }, plan);
+  if (!Array.isArray(updated) || updated.length !== 1) {
+    const cleaned = stored.created ? await removeObject(ctx, path) : false;
+    throw new GatewayError("conflict", "The event changed while the image was being applied; nothing was overwritten. Re-run find_event and try again.", 409, { orphan_removed: cleaned });
+  }
+  return Object.assign({ outcome: "applied", changed: true, object_created: stored.created, locked_against_feed_refresh: true, event_after: summarize(updated[0]) }, plan);
 }
 
 // ----------------------------------------------------------------------------- verify_event
