@@ -126,7 +126,25 @@ async function rejects(promise, code) {
   assert.strictEqual(gw.authorized({}, "t".repeat(40)), false);
   assert.strictEqual(gw.authorized({ authorization: "Bearer short" }, "short"), false, "a short configured token is refused outright");
   assert.strictEqual(gw.authorized({ authorization: "Bearer x" }, undefined), false, "no configured token fails closed");
-  console.log("PASS: auth fails closed; bearer and x-editorial-token accepted");
+  // Stray whitespace or quotes from a dashboard paste are not part of the secret.
+  const T40 = "t".repeat(40);
+  assert.strictEqual(gw.authorized({ authorization: `Bearer ${T40}` }, `${T40}\n`), true, "configured token with a trailing newline");
+  assert.strictEqual(gw.authorized({ authorization: `Bearer ${T40}` }, ` "${T40}" `), true, "configured token wrapped in quotes");
+  assert.strictEqual(gw.authorized({ authorization: `Bearer  ${T40}  ` }, T40), true, "caller token with spaces");
+  assert.strictEqual(gw.authorized({ authorization: `Bearer ${T40}x` }, T40), false);
+  assert.strictEqual(gw.authorized({ authorization: "Bearer " }, T40), false);
+  assert.deepStrictEqual(gw.tokenStatus(undefined), { state: "unset" });
+  assert.strictEqual(gw.tokenStatus("abc").state, "too_short");
+  assert.strictEqual(gw.tokenStatus("abc").length_class, "under_16");
+  assert.strictEqual(gw.tokenStatus("x".repeat(20)).length_class, "16_to_23");
+  assert.deepStrictEqual(gw.tokenStatus(`${T40}\n`), { state: "ok", had_outer_whitespace_or_quotes: true, has_inner_whitespace: false, length_class: "24_or_more" });
+  assert.ok(!JSON.stringify(gw.tokenStatus(T40)).includes("tttt"), "the status never carries the value");
+  assert.strictEqual(gw.authFailureReason({}, T40), "no_credential_sent");
+  assert.strictEqual(gw.authFailureReason({ authorization: "Basic abc" }, T40), "authorization_header_not_bearer");
+  assert.strictEqual(gw.authFailureReason({ authorization: "Bearer nope" }, T40), "mismatch");
+  assert.strictEqual(gw.authFailureReason({ authorization: "Bearer nope" }, "short"), "configured_too_short");
+  assert.strictEqual(gw.authFailureReason({ authorization: "Bearer nope" }, undefined), "configured_unset");
+  console.log("PASS: auth fails closed; bearer and x-editorial-token accepted"); console.log("PASS: pasted whitespace/quotes tolerated; refusal reasons and token status never carry the value");
 
   // --- find_event
   let w = makeWorld();

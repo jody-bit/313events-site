@@ -52,14 +52,60 @@ function timingSafeEqualStr(a, b) {
   return crypto.timingSafeEqual(x, y);
 }
 
-// Accepts "Authorization: Bearer <token>" or "X-Editorial-Token: <token>". Fails closed when no token is configured.
-function authorized(headers, configuredToken) {
-  if (!configuredToken || String(configuredToken).length < 24) return false;
+const MIN_TOKEN_CHARS = 24;
+
+// A token pasted into a hosting dashboard often arrives with a trailing newline, spaces or wrapping quotes. Those are never
+// part of the secret, so both sides are compared after the same normalisation.
+function normalizeToken(value) {
+  if (typeof value !== "string") return "";
+  let s = value.trim();
+  if (s.length >= 2 && ((s[0] === '"' && s[s.length - 1] === '"') || (s[0] === "'" && s[s.length - 1] === "'"))) s = s.slice(1, -1).trim();
+  return s;
+}
+
+// What can be said about the configured token without revealing it: a state and a few yes/no facts, never the value or its
+// exact length. Used for logs and the 503 decision.
+function tokenStatus(configured) {
+  const raw = typeof configured === "string" ? configured : "";
+  if (!raw) return { state: "unset" };
+  const norm = normalizeToken(raw);
+  const facts = {
+    had_outer_whitespace_or_quotes: norm !== raw,
+    has_inner_whitespace: /\s/.test(norm),
+    length_class: norm.length === 0 ? "empty" : norm.length < 16 ? "under_16" : norm.length < MIN_TOKEN_CHARS ? "16_to_23" : "24_or_more",
+  };
+  if (norm.length < MIN_TOKEN_CHARS) return Object.assign({ state: "too_short" }, facts);
+  return Object.assign({ state: "ok" }, facts);
+}
+
+// The credential the caller sent: "Authorization: Bearer <token>" or "X-Editorial-Token: <token>".
+function givenToken(headers) {
   const h = headers || {};
   const auth = typeof h.authorization === "string" ? h.authorization : "";
   const bearer = /^Bearer\s+(.+)$/i.exec(auth);
-  const given = bearer ? bearer[1].trim() : (typeof h["x-editorial-token"] === "string" ? h["x-editorial-token"].trim() : "");
-  return timingSafeEqualStr(given, configuredToken);
+  if (bearer) return { source: "authorization_bearer", value: normalizeToken(bearer[1]) };
+  if (typeof h["x-editorial-token"] === "string" && h["x-editorial-token"].trim()) return { source: "x_editorial_token", value: normalizeToken(h["x-editorial-token"]) };
+  if (auth) return { source: "authorization_not_bearer", value: "" };
+  return { source: "none", value: "" };
+}
+
+// Fails closed when no usable token is configured.
+function authorized(headers, configuredToken) {
+  if (tokenStatus(configuredToken).state !== "ok") return false;
+  const given = givenToken(headers).value;
+  return given !== "" && timingSafeEqualStr(given, normalizeToken(configuredToken));
+}
+
+// Why a call was refused, as one safe word for the runtime log (no values). "configured_*" means the server's own token is the
+// problem; "mismatch" means a well-formed token that is not the configured one.
+function authFailureReason(headers, configuredToken) {
+  const st = tokenStatus(configuredToken);
+  if (st.state !== "ok") return `configured_${st.state}`;
+  const g = givenToken(headers);
+  if (g.source === "none") return "no_credential_sent";
+  if (g.source === "authorization_not_bearer") return "authorization_header_not_bearer";
+  if (!g.value) return "empty_credential";
+  return "mismatch";
 }
 
 // ----------------------------------------------------------------------------- remote fetch (SSRF-guarded)
@@ -404,4 +450,4 @@ async function run(ctx, op, input) {
   return fn(ctx, input);
 }
 
-module.exports = { GatewayError, OPERATIONS, run, authorized, findEvent, uploadEventImage, verifyEvent, fetchRemoteImage, isPrivateAddress, objectPath, MAX_BYTES, BUCKET };
+module.exports = { GatewayError, OPERATIONS, run, authorized, authFailureReason, tokenStatus, normalizeToken, findEvent, uploadEventImage, verifyEvent, fetchRemoteImage, isPrivateAddress, objectPath, MAX_BYTES, BUCKET };

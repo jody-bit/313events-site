@@ -142,6 +142,8 @@ module.exports = async (req, res) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
 
   if (!gateway.authorized(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN)) {
+    // One line per refusal: a reason word and facts about the server's token (state, length class, stray whitespace), never a value.
+    console.log(JSON.stringify({ gateway_auth: "refused", reason: gateway.authFailureReason(req.headers, process.env.EDITORIAL_GATEWAY_TOKEN), configured: gateway.tokenStatus(process.env.EDITORIAL_GATEWAY_TOKEN), method: req.method, vercel_env: process.env.VERCEL_ENV || null }));
     res.status(401).json({ error: { code: "unauthorized", message: "Unauthorized." } });
     return;
   }
