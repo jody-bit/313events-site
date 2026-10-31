@@ -22,6 +22,11 @@
   p.sub { color:var(--mut); margin:0 0 14px; font-size:15px; }
   section { background:var(--card); border:1px solid var(--line); padding:14px; margin:12px 0; }
   label { display:block; font-size:14px; color:var(--mut); margin:12px 0 4px; }
+  textarea { font:inherit; width:100%; padding:12px; border-radius:0; border:1px solid #3a3a3a; background:#000; color:var(--fg); }
+  textarea:focus-visible, summary:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+  summary { cursor:pointer; min-height:44px; display:flex; align-items:center; color:var(--acc); font:700 13px var(--font-data); text-transform:uppercase; letter-spacing:.06em; }
+  .filled { border-color:var(--acc) !important; }
+  dl.plan { margin:8px 0; display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:15px; } dl.plan dt { color:var(--mut); } dl.plan dd { margin:0; word-break:break-word; }
   input, select, button { font:inherit; width:100%; min-height:48px; padding:12px; border-radius:0; border:1px solid #3a3a3a; background:#000; color:var(--fg); }
   input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
   button { background:var(--acc); border:1px solid var(--acc); color:var(--on-acc); font:700 14px var(--font-data); text-transform:uppercase; letter-spacing:.06em; margin-top:12px; cursor:pointer; }
@@ -67,6 +72,13 @@
     <section id="newSec" hidden aria-labelledby="s1b">
       <h2 id="s1b">Not listed? Add a new event</h2>
       <p class="mut">Type only what the flyer or ticket page says. Leave unknowns blank: nothing is guessed. A link or flyer can be added after.</p>
+      <details id="pasteBox">
+        <summary>Paste text from a post or message (optional)</summary>
+        <label for="pasteTxt">Paste it here. Only a date with a year, a time and a link are picked out; you check everything.</label>
+        <textarea id="pasteTxt" rows="4" autocapitalize="off"></textarea>
+        <button id="pasteBtn" class="secondary" type="button">Fill what I can</button>
+        <p id="pasteOut" class="mut" role="status" aria-live="polite"></p>
+      </details>
       <label for="nTitle">Title</label><input id="nTitle" autocapitalize="words" enterkeyhint="next">
       <div class="row2">
         <div><label for="nDate">Date</label><input id="nDate" type="date"></div>
@@ -196,6 +208,40 @@
     }).catch(function (e) { $("results").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
   };
 
+  // Paste helper: deterministic, in the browser, text only (nothing is read from an image and nothing is guessed).
+  var MONTHS = { jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, sept:9, oct:10, nov:11, dec:12, january:1, february:2, march:3, april:4, june:6, july:7, august:8, september:9, october:10, november:11, december:12 };
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function parsePaste(t) {
+    var out = {}, m;
+    if ((m = t.match(/https?:\/\/[^\s<>"')]+/))) out.link = m[0].replace(/[.,;]+$/, "");
+    if ((m = t.match(/\b(20\d\d)-(\d\d)-(\d\d)\b/))) out.date = m[0];
+    else if ((m = t.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(20\d\d)\b/i))) out.date = m[3] + "-" + pad(MONTHS[m[1].toLowerCase().replace(".", "")]) + "-" + pad(+m[2]);
+    else if ((m = t.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d\d)\b/))) out.date = m[3] + "-" + pad(+m[1]) + "-" + pad(+m[2]);
+    if ((m = t.match(/\b(\d{1,2}(?::\d{2})?\s?[ap]\.?m\.?)(?!\w)/i))) out.time = m[1].replace(/\s+/g, " ").toUpperCase().replace(/\./g, "");
+    var first = t.split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean)[0];
+    if (first && first.length >= 3 && first.length <= 80 && !/^https?:/i.test(first)) out.title = first;
+    return out;
+  }
+  $("pasteBtn").onclick = function () {
+    var t = $("pasteTxt").value; if (!t.trim()) { $("pasteOut").textContent = "Nothing to read yet."; return; }
+    var r = parsePaste(t), got = [], map = { title: "nTitle", date: "nDate", time: "nTime", link: "nLink" };
+    Object.keys(map).forEach(function (k) { if (r[k] && !$(map[k]).value) { $(map[k]).value = r[k]; $(map[k]).classList.add("filled"); got.push(k); } });
+    if (!$("nSrc").value && got.length) { $("nSrc").value = "text pasted by the owner"; }
+    resetCreateButtons();
+    $("pasteOut").textContent = got.length ? "Filled: " + got.join(", ") + ". Check each against the flyer; venue and city are never guessed." + (r.date ? "" : " No date with a year was found, so the date is empty.") : "Nothing could be picked out safely. Type the facts below.";
+  };
+  ["nTitle", "nDate", "nTime", "nLink"].forEach(function (id) { $(id).addEventListener("input", function () { $(id).classList.remove("filled"); }); });
+
+  var CAT_LABEL = { music: "Music", nightlife: "Nightlife", arts: "Arts", theater: "Theater", comedy: "Comedy", dance: "Dance", fest: "Festival", vendor: "Market", sports: "Sports", "food-event": "Food" };
+  function planHtml(r) {
+    var ev = r.event_preview || {}, issues = r.review_issues || [];
+    var rows = [["Title", ev.title], ["Date", ev.start_date], ["Time", ev.time_display || "not given"], ["Venue", ev.venue_name_raw || "not given"], ["City", ev.venue_city_raw || "not given"], ["Type", CAT_LABEL[ev.category] || ev.category], ["Link", ev.ticket_url || "none"]];
+    return '<p class="ok">Nothing saved yet. No duplicate found.</p>'
+      + '<dl class="plan">' + rows.map(function (x) { return "<dt>" + esc(x[0]) + "</dt><dd>" + esc(x[1]) + "</dd>"; }).join("") + "</dl>"
+      + (issues.length
+        ? '<p class="note warn"><b>It will be held for review.</b> An editor must look at: ' + esc(issues.join(", ").replace(/_/g, " ")) + ".</p>"
+        : '<p class="note"><b>Every check passed.</b> Add it held for review, or publish it now.</p>');
+  }
   function newArgs(dry, publish) {
     var a = { title: $("nTitle").value, start_date: $("nDate").value, category: $("nCat").value, venue_name: $("nVenue").value, venue_city: $("nCity").value,
       time_display: $("nTime").value, source_note: $("nSrc").value, client: "phone-editor", dry_run: dry };
@@ -218,8 +264,7 @@
     $("nOut").innerHTML = '<p class="mut">Checking…</p>'; resetCreateButtons();
     rest("create_event", newArgs(true)).then(function (r) {
       var issues = r.review_issues || [];
-      $("nOut").innerHTML = '<p class="ok">Looks good. No duplicate found. Nothing saved yet.</p>'
-        + (issues.length ? '<p class="note">An editor will review before it can go live: ' + esc(issues.join(", ").replace(/_/g, " ")) + ".</p>" : '<p class="note">Every check passed. You can hold it for review or publish it now.</p>');
+      $("nOut").innerHTML = planHtml(r);
       $("nCreate").hidden = false;
       $("nPublish").hidden = issues.length > 0; $("nPublishHint").hidden = issues.length > 0;
     }).catch(function (e) { if (e.body && e.body.code === "possible_duplicate") showDuplicates(e); else $("nOut").innerHTML = '<p class="bad">' + esc(e.message) + "</p>"; });
