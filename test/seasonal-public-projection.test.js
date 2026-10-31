@@ -32,7 +32,7 @@ for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[s
   approved[slug].push(e);
 }
 const gf = JSON.parse(JSON.stringify(all.halloween.find((x) => x.id === "halloween-greenfield-village")));
-gf.approval = { by: APPROVER, at: "2026-10-12" }; gf.status = C.readiness(gf).state; approved.halloween.push(gf);
+delete gf.disposition; /* in-memory copy: Greenfield is ended in the data; this covers the advisory projection path */ gf.approval = { by: APPROVER, at: "2026-10-12" }; gf.status = C.readiness(gf).state; approved.halloween.push(gf);
 // a linked-image record, to cover that projection too (in memory)
 const linked = JSON.parse(JSON.stringify(all.halloween.find((x) => x.image && x.image.remote && C.readiness(x).state === "PUBLISHED")));
 linked.id = "linked-copy"; linked.approval = { by: APPROVER, at: "2026-10-12" }; linked.status = C.readiness(linked).state; approved.halloween.push(linked);
@@ -99,7 +99,7 @@ for (const slug of ["fall", "fall-color", "halloween"]) {
   for (const slug of C.ORDER) for (const e of pe[slug]) assert.deepStrictEqual(e, ED.publicEntry(all[slug].find((x) => x.id === e.id)), "shipped entry is the public form of its private record");
   assert.strictEqual(pe.fall.length + pe["fall-color"].length, 79, "exactly the 79 authorized Fall records (76 + 3) are published");
   assert.deepStrictEqual(pe.halloween.map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED, "Halloween publishes exactly the 25 records that pass the gate");
-  assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 104);
+  assert.strictEqual(C.ORDER.reduce((n, s) => n + pe[s].length, 0), 98);
 }
 // 6. the 15 launch records carry exactly the authorized approval and are public (nothing else was approved)
 for (const slug of ["fall", "fall-color"]) for (const id of launch.collections[slug]) {

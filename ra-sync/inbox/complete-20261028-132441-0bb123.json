@@ -1,0 +1,133 @@
+{
+  "runToken": "20261028-132441-0bb123",
+  "action": "complete",
+  "runId": "f9fbe03f-8450-4a11-84b7-5f7f53a15ae2",
+  "events": [
+    {
+      "id": "ra-2571066",
+      "title": "The Outpost: DJ Moppy & Donna Gardner",
+      "description": "All Vinyl, All Night\n\nRare Groove/Funk/Soul/Jazz/Etc.\n\nNo Cover",
+      "startDate": "2026-10-30T21:00:00.000",
+      "endDate": "2026-10-30T23:59:00.000",
+      "venueName": "Traverse City Whiskey Co. Outpost",
+      "address": "22812 Woodward Ave #200, Ferndale, MI 48220",
+      "image": [
+        "https://images.ra.co/128064a08a6128bf9a8a85294fe107904650ca8a.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2571072",
+      "title": "The Outpost: Halloween Party with Party Boy Lance & Eddie Logix",
+      "description": "Halloween Party!\n\nCostume Contest & Cocktail Specials\n\nAll Vinyl, All Night\n\nRare Groove/Funk/Soul/Jazz/Disco/New Wave/Etc.\n\nNo Cover",
+      "startDate": "2026-10-31T20:00:00.000",
+      "endDate": "2026-10-31T23:59:00.000",
+      "venueName": "Traverse City Whiskey Co. Outpost",
+      "address": "22812 Woodward Ave #200, Ferndale, MI 48220",
+      "image": [
+        "https://images.ra.co/24d46288b73fba2e759aa46cbfdec7ec578d0621.jpg"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2570880",
+      "title": "The Art of Noise: A Performance and Q&A Series",
+      "description": "The Art of Noise: A Performance and Q&A Series at Moondog Cafe 6/28 featuring Na Bonsai, Luke Polipnick, Sean Blackman.\n\nMusic at 4 p.m. Doors at 3 p.m.\n\n$10-20 PWYC\n\nProduced by Brian McFarlane\nPoster by Jason Tipton\n\nNa Bonsai is a guitarist, vocalist, producer, and sound artist exploring the intersections of Black musical traditions and experimental composition. Through songwriting, graphic scores, improvisation, and exploratory sound design, she creates immersive works that invite embodied listening.\n\nLuke Polipnick is a Chicago-based multi instrumentalist and composer/improviser, and iconoclastic guitarist. He has worked widely in the free improvisation, jazz, folk, extreme metal, and popular music worlds. He is an in-demand collaborator both in Chicago and internationally, and he leads numerous bands ranging from highly composed indie-prog/art rock of Lean Years, the IDM/psych trio Pixilated Cryptids, to the fully improvised extreme metal of Abhorrent Expanse, who’s last album “Enter the Misanthropocene” was #16 on the Wire’s best of 2025 list. He plays bass guitar in brutal prog legends The Flying Luttenbachers and can be heard on their last two records.\n\nAcclaimed, Detroit based guitarist, composer and producer Sean Blackman creates multi-cultural and multi-genre music… modern-hybrids of old and new world sounds. His group, ‘In Transit’ delivers assorted fusions of internationally renowned performers as well as Detroit’s finest. Awarded by the city of Detroit for bringing cultural diversity to the music scene. His unique World Music style is influenced by his deep passion for traditional ethnic music from around the world and of course, growing up in Detroit -  jazz, blues, funk, rock and soul.",
+      "startDate": "2026-11-08T16:00:00.000",
+      "endDate": "2026-11-08T18:00:00.000",
+      "venueName": "Moondog Cafe",
+      "address": "8045 Linwood St #2, Detroit, MI 48206",
+      "image": [
+        "https://images.ra.co/038029425dc6571d990fbdaba4326c486a932ec9.jpg"
+      ],
+      "offersPrice": 11.5,
+      "url": null
+    },
+    {
+      "id": "ra-2569973",
+      "title": "Hoochie Palace x DickAppointment (DETROIT)",
+      "description": "DickAppointment brings Sky Jetta’s HOOCHIE PALACE EP across the country for the Hoochie Palace x DickAppointment Tour.\n\nStep into the world of HOOCHIE PALACE, a celebration of ghetto tech, ghetto house, and the underground Black artists and creatives shaping the culture.\n\nAlong the way, we’re teaming up with iconic nightlife collectives to curate nights featuring bass-heavy, ass-shaking club music for the daddies, baddies, and hoochies.\n\n&lt;3",
+      "startDate": "2026-11-13T22:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Northern Lights Lounge",
+      "address": "660 W. Baltimore Street; Detroit, MI 48202; United States",
+      "image": [
+        "https://images.ra.co/5d5c02bc6a6e0842da58db1813efe82521248fb8.jpg"
+      ],
+      "offersPrice": 11.25,
+      "url": null
+    },
+    {
+      "id": "ra-2571134",
+      "title": "LAÍRE NIGHT XI",
+      "description": "LAÍRE NIGHT XI — EXTENDED SETS\n\nCHAPTER 11 IS HERE.\n\nWe're switching things up this time. Longer sets, deeper selections, and more freedom for each artist to explore their sound.\n\nLess rushing. More storytelling. More music.\n\nTHE LINEUP\nJOTAAA\nCDJANE3K\nNK ULTRA\nREDAX\n\nFour selectors. Extended sets. One night dedicated to the music and the community that keeps Detroit's underground moving.\n\nFRIDAY, NOVEMBER 13\nSOS DETROIT\n310 W 7 Mile Rd, Detroit, MI 48203\n\nTICKETS AVAILABLE ON RESIDENT ADVISOR (RA)\nVisit RA Guide for tickets and event details.\n\nSame community. New chapter. Different experience.\n\nLAÍRE NIGHT XI\nBuilt for the community. Driven by sound.\n\n#LAIRE #LAIRENIGHT #DetroitTechno #DetroitUnderground #ExtendedSets #SOSDetroit #ResidentAdvisor",
+      "startDate": "2026-11-13T20:00:00.000",
+      "endDate": "2026-11-14T04:00:00.000",
+      "venueName": "SOS",
+      "address": "310 W 7 Mile Rd, Detroit, MI 48203",
+      "image": [
+        "https://images.ra.co/be9ff71fc6ad13980d13c7e7497013152a8cb651.png"
+      ],
+      "offersPrice": 5,
+      "url": null
+    },
+    {
+      "id": "ra-2570850",
+      "title": "Mathew Jonson, Shaun Reeves, Nicolas Matar, Ataxia + Mister Joshooa",
+      "description": null,
+      "startDate": "2026-11-13T22:00:00.000",
+      "endDate": "2026-11-14T04:00:00.000",
+      "venueName": "Lincoln Factory",
+      "address": "1331 Holden Street, Detroit, MI 48202, USA",
+      "image": [
+        "https://images.ra.co/91dc3cc21c0764309fa179bd6de91f4f005d71e0.jpg"
+      ],
+      "offersPrice": 11.5,
+      "url": null
+    },
+    {
+      "id": "ra-2570901",
+      "title": "RAY VOLPE - VOLPETRON ETERNAL TOUR",
+      "description": "Doors at 9pm\n\nShow at 9pm\n\n18+ Welcome\n\nExpo Hall at Russell Industrial Center\n\n1600 Clay St\nDetroit, MI 48211",
+      "startDate": "2026-11-13T21:00:00.000",
+      "endDate": "2026-11-14T02:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "address": "1600 Clay Street; Detroit; Michigan; 48211",
+      "image": [
+        "https://images.ra.co/d7190bfd050a5e9c0f81b171ba4247bf84c049f4.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2571059",
+      "title": "Adam X - Marble Bar",
+      "description": null,
+      "startDate": "2026-11-27T22:00:00.000",
+      "endDate": "2026-11-28T04:00:00.000",
+      "venueName": "Marble Bar",
+      "address": "1501 Holden St, Detroit, MI 48208, USA",
+      "image": [
+        "https://images.ra.co/b8a11ef586bf5e76adefe2c2b7cac0947558d9e6.jpg"
+      ],
+      "offersPrice": 20,
+      "url": null
+    },
+    {
+      "id": "ra-2570982",
+      "title": "ZINGARA: THE ALIENS ARE MAKING SOUNDS TOUR",
+      "description": "Doors at 9pm\n\nShow at 9pm\n\n18+ Welcome\n\nExpo Hall at Russell Industrial Center\n\n1600 Clay St\nDetroit, MI 48211",
+      "startDate": "2027-01-30T21:00:00.000",
+      "endDate": "2027-01-31T02:00:00.000",
+      "venueName": "Russell Industrial Center",
+      "address": "1600 Clay Street; Detroit; Michigan; 48211",
+      "image": [
+        "https://images.ra.co/eb58e81f34e0ff7b6d87bb36371bda397d287c8b.png"
+      ],
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}

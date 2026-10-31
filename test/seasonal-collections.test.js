@@ -214,7 +214,7 @@ assert.strictEqual(allEntries, 251, "70 fall + 52 halloween + 129 fall-color rec
   const set = AUTHZ.authorized(ED), n = { fall: 0, halloween: 0, "fall-color": 0 };
   set.forEach((k) => { n[k.split("/")[0]]++; });
   for (const slug of DATA.ORDER) assert.strictEqual(DATA.published(PRIVATE[slug]).length, n[slug], slug + ": public destinations = the authorized batch");
-  assert.deepStrictEqual(n, { fall: 38, halloween: 25, "fall-color": 41 });
+  assert.deepStrictEqual(n, { fall: 38, halloween: 19, "fall-color": 41 });
 }
 
 // ---- 3. renderer behaviour, exercised on complete synthetic records
@@ -335,7 +335,7 @@ for (const slug of DATA.ORDER) {
   for (const c of withEntry) assert.strictEqual(c.status, DATA.readiness(col.entries.find((e) => e.id === c.entry_id)).state, c.entry_id + " registry status equals derived state");
   assert.deepStrictEqual(rows.filter((c) => c.status === "PUBLISHED").map((c) => c.entry_id).sort(), DATA.published(col).map((e) => e.id).sort());
 }
-assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 104, "the ledger shows exactly the 79 Fall records (76 + 3) and the 25 Halloween records that pass the gate as PUBLISHED");
+assert.strictEqual(reg.filter((c) => c.status === "PUBLISHED").length, 98, "the ledger shows exactly the 79 Fall records (76 + 3) and the 19 Halloween records that pass the gate as PUBLISHED");
 
 // ---- 7. built pages in sync, routed, homepage cards link to them
 execFileSync(process.execPath, [path.join(root, "scripts/build-seasonal.js"), "--check"]);

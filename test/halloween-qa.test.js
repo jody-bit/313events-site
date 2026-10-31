@@ -300,17 +300,18 @@ console.log("halloween-qa: ok");
     // the record itself is untouched: no remote image copied, no approval, no state change
     const e = ED.entries().halloween.find((x) => x.id === l.destination_id);
     assert.ok(!e.image.remote || e.image.remote.src !== l.image_link, "a proposal is not copied onto the record");
-    assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id + ": carries the owner Halloween approval; the unadopted proposal adds no rights and no image");
+    if (e.disposition) assert.ok(!e.approval, e.id + ": ended (owner expiry approval), no publication approval; the unadopted proposal adds no rights and no image");
+    else assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, e.id + ": carries the owner Halloween approval; the unadopted proposal adds no rights and no image");
   });
   const cx = recs["crossroads-ghosts-goodies"];
-  assert.strictEqual(cx.publication.state, "PUBLISHED", "Crossroads publishes on the labelled-illustration route; the unadopted proposals change nothing");
+  assert.notStrictEqual(cx.publication.state, "PUBLISHED", "Crossroads is ended (owner expiry approval 2026-10-24, final day Oct 30) and no longer public; the unadopted proposals change nothing");
   assert.strictEqual(cx.manifest.primary_image, "/assets/seasonal/halloween-card-6.webp", "Crossroads default unchanged");
   assert.ok(QA.results(col, qa.records, { category: "all", query: "", view: "grid" }, {}).includes("PROPOSED, not adopted"));
   // nothing in the batch is approved
   const all = ED.entries(), authSet = AUTHZ.authorized(ED);
   Object.keys(all).forEach((k) => all[k].forEach((e) => AUTHZ.checkApproval(assert, k, e, authSet)));
-  assert.strictEqual(all.halloween.filter((e) => e.approval).length, 45, "45 Halloween records carry the owner approval of 2026-10-11");
-  assert.strictEqual(all.halloween.filter((e) => e.disposition).length, 7, "7 are excluded (duplicate, closed or ended) and keep their records");
+  assert.strictEqual(all.halloween.filter((e) => e.approval).length, 39, "39 Halloween records carry the owner approval of 2026-10-11");
+  assert.strictEqual(all.halloween.filter((e) => e.disposition).length, 13, "13 are excluded (duplicate, closed or ended) and keep their records");
   assert.deepStrictEqual(AUTHZ.halloweenApproved(ED).sort(), all.halloween.filter((e) => e.approval).map((e) => e.id).sort(), "the approved set is the 45");
   const md = fs.readFileSync(path.join(root, "api/_lib/seasonal-editorial/APPROVAL_BATCH_1.md"), "utf8");
   assert.ok(/Nothing is approved/.test(md) && /Rotten Manor/.test(md) && /promo-art/.test(md));

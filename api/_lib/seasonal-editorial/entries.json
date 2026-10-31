@@ -5358,7 +5358,7 @@
     "ghosts-history"
    ],
    "featured": true,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "The Henry Ford's evening Halloween event in Greenfield Village.",
    "website": "https://www.thehenryford.org/visit/things-to-do/calendar/halloween-in-greenfield-village",
    "image": {
@@ -5446,14 +5446,15 @@
      ]
     }
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Henry Ford page listed Oct 1-4, 8-11, 15-18 and 22-25, 2026; the final night was Oct 25. Only this seasonal record is removed; the Greenfield Village destination is not affected. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -5465,7 +5466,7 @@
     "family-friendly"
    ],
    "featured": true,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Halloween trick-or-treating event at the Detroit Zoo.",
    "website": "https://detroitzoo.org/events/zoo-boo/",
    "image": {
@@ -5560,14 +5561,15 @@
      ]
     }
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Detroit Zoo page listed Oct. 3-4, 9-11, 16-18 and 23-25, 2026; the final day was Oct 25. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -5663,7 +5665,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Family Halloween at Crossroads Village and the Huckleberry Railroad.",
    "website": "https://geneseecountyparks.org/halloween-ghosts-goodies/",
    "image": {
@@ -5735,14 +5737,15 @@
     "legacyBasis": "inventory entry plus independent web coverage; official site not read; no relevance confirmation; no recorded approval",
     "note": "Preserved as a record. Not grandfathered: it is public only if it passes every gate item, including an explicit approval recorded by the approving person."
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Crossroads Village page listed Oct 3-4, 9-11, 16-18, 22-25 and 29-30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -7505,7 +7508,7 @@
     "ghosts-history"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Historical ghost walk",
    "website": "https://fortmeigs.org/",
    "image": {
@@ -7577,14 +7580,15 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official Fort Meigs pages list Garrison Ghost Walk dates in 2026 with ticket sales starting September 9, 2026 (read 2026-10-12, https://fortmeigs.org/ghostwalk/ and https://fortmeigs.org/). Official shop has a listing for the Oct 16, 2026 7:45 pm walk (https://shop.fortmeigs.org/products/garrison-ghost-walk-friday-october-16-2026-7-45-pm, search result only)."
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Fort Meigs ghost walk page listed Oct 16, 17, 23 and 24, 2026; the final night was Oct 24. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -7644,7 +7648,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "Halloween light displays and characters",
    "website": "https://www.canterburyvillage.com/",
    "image": {
@@ -7713,14 +7717,15 @@
     "checkedBy": "Claude (Cowork session), read via web fetch",
     "note": "Official event page lists 'Halloween Stroll 2026' and the 2026 season (read 2026-10-12, https://www.canterburyvillage.com/event/halloween-stroll/ and https://www.canterburyvillage.com/)."
    },
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The Canterbury Village page listed the Halloween Stroll from Oct 2 to Oct 30, 2026; the final day was Oct 30. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {
@@ -8231,7 +8236,7 @@
     "family-friendly"
    ],
    "featured": false,
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "summary": "A daytime costumed walk-through trick-or-treat in the Sanborn Park woods, run by Port Huron Parks & Recreation, with candy from local businesses and family activities.",
    "image": {
     "src": "/assets/seasonal/photos/halloween/halloween__halloween-stroll__port-huron-mi__venue-porthuron-01__card.webp",
@@ -8289,14 +8294,15 @@
     "note": "Official recreation-department page gives the event as Saturday, October 24, 2026, 10 a.m. to 12:30 p.m., with registration details. https://porthuronrec.com/halloweenstroll (read 2026-10-12). Matches Michigan Public community calendar listing."
    },
    "website": "https://porthuronrec.com/halloweenstroll",
-   "editorialAccepted": {
-    "by": "Jody Tyree (owner)",
-    "at": "2026-10-11",
-    "scope": "Owner approval of 2026-10-11 for inclusion of this destination in THE DARK ORBIT (Halloween 2026 release, batch halloween-release-1). It does not waive the publication gate: the record is public only if official 2026 evidence, relevance, identity, an authorized image route with rights and this approval are all recorded. Linked images rest on the owner's recorded risk acceptance, not on a license from the rights holder."
-   },
-   "approval": {
-    "by": "Jody Tyree",
-    "at": "2026-10-11"
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval 2026-10-22 (cmsg_0139NVW4pFWSu54bJXVBHDMbPQ3yyHgoujsSv5i9CtNXg3); applied by editor",
+    "recordedAt": "2026-10-22",
+    "type": "ended",
+    "reason": "The Port Huron Parks and Recreation page listed a single Halloween Stroll, Saturday Oct 24, 2026, 10 AM-12:30 PM; it has passed. Retained as a non-public record; underlying event records and source evidence are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
+    }
    }
   },
   {

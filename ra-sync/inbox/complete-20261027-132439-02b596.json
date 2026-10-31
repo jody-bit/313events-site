@@ -1,0 +1,67 @@
+{
+  "runToken": "20261027-132439-02b596",
+  "action": "complete",
+  "runId": "e4878120-1ed3-4776-bb8c-b872ff0942c0",
+  "events": [
+    {
+      "id": "ra-2569943",
+      "title": "The Fallout Shelter: Werkout Plan, Mr Rabbit & The Silent Ech0",
+      "description": "Ypsilanti's weekly Wednesday night at the Regal Beagle, presented by Ech0labs Light Industries and Wax Kings. Five years in.\n\nWerkout Plan is a Detroit house project known for heavy house beats, deep basslines and catchy vocals, part of the Never B Alone Records, OFDM Records and Late Night Munchies crews. Mr Rabbit (Mr Rabbit313) plays a live set, a first at the Fallout Shelter. The Silent Ech0 started the Fallout Shelter at 734 Brewing on December 31, 2021 and has held it down ever since, across house, techno and Detroit techno.\n\nLive visuals by Yaboonabi.\n\nHouse, Techno and Tech House.\n\n$5 at the door (cash or Venmo). 18+. No step at the door. Cash bar. 7:30pm to midnight.",
+      "startDate": "2026-10-28T19:30:00.000",
+      "endDate": "2026-10-29T00:00:00.000",
+      "venueName": "Regal Beagle Lounge",
+      "address": "817 E. Michigan Ave Ypsilanti, MI 48918",
+      "image": "https://images.ra.co/22b4fa62df1bd87ec59bf2664f990acfe15eec63.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2570260",
+      "title": "Upstairs at Eric's",
+      "description": "",
+      "startDate": "2026-10-29T19:00:00.000",
+      "endDate": "2026-10-29T22:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/590ace202e00c9cdf3ebfe4a9d23b8ebc988eb6a.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2570146",
+      "title": "TOP2BTTM DEVIL'S NIGHT",
+      "description": "TOP2BTTM DEVIL’S NIGHT @ THE EAGLE!!\n\nWe welcome Chicago’s very own MobeeThicc for a crazy night of sexy spooky sets being supported by some of the cities hottest queers!!\n\nCome get sweaty late into the night for a hauntingly queer experience :)\n\n21+ presale highly recommended \n\n",
+      "startDate": "2026-10-30T23:00:00.000",
+      "endDate": "2026-10-31T05:00:00.000",
+      "venueName": "The Eagle of Detroit",
+      "address": "950 West McNichols",
+      "image": null,
+      "offersPrice": 5,
+      "url": "https://ra.co/events/2570146"
+    },
+    {
+      "id": "ra-2570111",
+      "title": "Interference x Ennate presents Matrixxman, Nick Dagher and Emil Siman",
+      "description": "",
+      "startDate": "2026-11-07T22:00:00.000",
+      "endDate": "2026-11-08T04:00:00.000",
+      "venueName": "Hizz Lounge",
+      "address": "2475 W Grand Blvd, Detroit, MI 48208",
+      "image": "https://images.ra.co/7a11e0e4ee7fd7e2ca30020904b74988e201751d.jpg",
+      "offersPrice": 17.25,
+      "url": "https://ra.co/events/2570111"
+    },
+    {
+      "id": "ra-2570048",
+      "title": "GHETTOTECHTOPIA",
+      "description": "",
+      "startDate": "2026-11-13T22:00:00.000",
+      "endDate": "2026-11-14T04:00:00.000",
+      "venueName": "Lincoln Factory",
+      "address": "1331 Holden Street, Detroit, MI 48202, USA",
+      "image": "https://images.ra.co/2467cbeecacbb6e332f6beb9cfee47f5b3f056c2.jpg",
+      "offersPrice": 17.25,
+      "url": "https://ra.co/events/2570048"
+    }
+  ]
+}

@@ -32,6 +32,9 @@ for (const [id, state] of Object.entries(SIX)) {
   assert.ok(e, id + " preserved as a record");
   assert.strictEqual(e.migration.legacyStatus, "published");
   assert.strictEqual(e.migration.legacyCommit, "7e094df");
+  if (e.disposition) { // ended 2026-10-25 under the owner's expiry approval of 2026-10-22: kept as a non-public record with its history
+    assert.strictEqual(e.disposition.type, "ended", id + " is ended"); assert.strictEqual(e.status, "HOLD_UNVERIFIED", id + " is not public once ended"); assert.ok(!DATA.isPublic(e), id + " is not public"); continue;
+  }
   assert.strictEqual(e.status, state, id + " status is the derived one (not hand-set, not grandfathered)");
   assert.deepStrictEqual(e.approval, AUTHZ.AUTH_HALLOWEEN, id + ": carries exactly the owner's Halloween approval");
   assert.strictEqual(DATA.isPublic(e), state === "PUBLISHED", id + " is public only when every gate item passes");
@@ -61,18 +64,20 @@ for (const id of Object.keys(SIX)) assert.ok(review.includes(SIX[id]), "the revi
 // Hush, Azra and HallowGlow with linked images, and 16 on the labelled-illustration route). The other 27 are held or excluded.
 assert.strictEqual(entries.halloween.filter((e) => !e.migration).length, 46);
 assert.deepStrictEqual(entries.halloween.filter((e) => !e.migration && DATA.isPublic(e)).map((e) => e.id).sort(), AUTHZ.HALLOWEEN_PUBLISHED.filter((id) => !SIX[id]));
-assert.strictEqual(entries.halloween.filter((e) => !e.migration && !DATA.isPublic(e)).length, 27);
+assert.strictEqual(entries.halloween.filter((e) => !e.migration && !DATA.isPublic(e)).length, 30);
 
 // ---- the public projection (B1/B6)
 {
   const pe = require(path.join(root, "seasonal/published-entries.js"));
   assert.deepStrictEqual(Object.keys(pe), DATA.ORDER);
   for (const slug of DATA.ORDER) for (const e of pe[slug]) assert.ok((() => { const priv = ED.entries()[slug].find((x) => x.id === e.id); return DATA.isPublic(priv) && JSON.stringify(e) === JSON.stringify(ED.publicEntry(priv)); })(), "published-entries.js holds an entry that is not PUBLISHED, or not in public form: " + e.id);
-  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 104, "only the 79 authorized Fall records (76 + 3) and the 25 gate-passing Halloween records are public");
+  assert.strictEqual(DATA.ORDER.reduce((n, s) => n + pe[s].length, 0), 98, "only the 79 authorized Fall records (76 + 3) and the 19 gate-passing Halloween records are public");
   assert.deepStrictEqual([].concat(...DATA.ORDER.map((s) => pe[s].map((e) => s + "/" + e.id))).sort(), [...AUTHZ.authorized(ED)].sort(), "the public entries are exactly the authorized set");
   assert.deepStrictEqual(ED.publishedProjection(), pe, "published-entries.js equals the projection of the private data");
   // a hypothetical approval moves an entry into the projection, and ONLY that entry (checked on a copy; nothing is written)
   const e = JSON.parse(JSON.stringify(byId["halloween-greenfield-village"]));
+  // in-memory copy: Greenfield is ended in the data (disposition, approval retired); restore both on the copy to cover the approval path
+  delete e.disposition; e.approval = AUTHZ.AUTH_HALLOWEEN; e.status = DATA.readiness(e).state;
   assert.ok(DATA.isPublic(e)); delete e.approval; e.status = DATA.readiness(e).state;
   assert.strictEqual(e.status, "READY_FOR_REVIEW"); assert.ok(!DATA.isPublic(e), "without the approval Greenfield is not public");
   e.approval = { by: "Test Approver", at: "2026-10-12" }; e.status = DATA.readiness(e).state;
