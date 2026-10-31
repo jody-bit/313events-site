@@ -137,6 +137,9 @@ async function rejects(promise, code) {
   assert.strictEqual(gw.tokenStatus("abc").state, "too_short");
   assert.strictEqual(gw.tokenStatus("abc").length_class, "under_16");
   assert.strictEqual(gw.tokenStatus("x".repeat(20)).length_class, "16_to_23");
+  assert.strictEqual(gw.tokenStatus("x".repeat(20)).state, "ok", "a 16-23 character token (the owner's Preview token) is accepted");
+  assert.strictEqual(gw.tokenStatus("x".repeat(15)).state, "too_short");
+  assert.strictEqual(gw.authorized({ authorization: `Bearer ${"k".repeat(20)}` }, "k".repeat(20)), true);
   assert.deepStrictEqual(gw.tokenStatus(`${T40}\n`), { state: "ok", had_outer_whitespace_or_quotes: true, has_inner_whitespace: false, length_class: "24_or_more" });
   assert.ok(!JSON.stringify(gw.tokenStatus(T40)).includes("tttt"), "the status never carries the value");
   assert.strictEqual(gw.authFailureReason({}, T40), "no_credential_sent");

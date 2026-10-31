@@ -52,7 +52,9 @@ function timingSafeEqualStr(a, b) {
   return crypto.timingSafeEqual(x, y);
 }
 
-const MIN_TOKEN_CHARS = 24;
+// 16 characters of random text is ~95 bits, far beyond online guessing; the owner's Preview token is in the 16-23 range (proven from
+// the 2026-10-31 refusal log), so the floor is 16, not 24. Production should still use a 32+ character random value.
+const MIN_TOKEN_CHARS = 16;
 
 // A token pasted into a hosting dashboard often arrives with a trailing newline, spaces or wrapping quotes. Those are never
 // part of the secret, so both sides are compared after the same normalisation.
@@ -72,7 +74,7 @@ function tokenStatus(configured) {
   const facts = {
     had_outer_whitespace_or_quotes: norm !== raw,
     has_inner_whitespace: /\s/.test(norm),
-    length_class: norm.length === 0 ? "empty" : norm.length < 16 ? "under_16" : norm.length < MIN_TOKEN_CHARS ? "16_to_23" : "24_or_more",
+    length_class: norm.length === 0 ? "empty" : norm.length < 16 ? "under_16" : norm.length < 24 ? "16_to_23" : "24_or_more",
   };
   if (norm.length < MIN_TOKEN_CHARS) return Object.assign({ state: "too_short" }, facts);
   return Object.assign({ state: "ok" }, facts);

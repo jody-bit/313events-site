@@ -6,7 +6,7 @@
 //   REST: POST {"op":"find_event"|"upload_event_image"|"verify_event", ...arguments}. For scripts, tests and any client
 //   that can send JSON but not MCP.
 //
-// Auth: EDITORIAL_GATEWAY_TOKEN (at least 24 characters, set in Vercel), sent as "Authorization: Bearer <token>" or
+// Auth: EDITORIAL_GATEWAY_TOKEN (at least 16 characters; 32+ recommended for production, set in Vercel), sent as "Authorization: Bearer <token>" or
 // "X-Editorial-Token". Unset or short means every call is refused. The Supabase service-role key stays on the server.
 // The work is in api/_lib/editorial-gateway.js; read project/editorial-gateway/README.md for the rules and the client matrix.
 

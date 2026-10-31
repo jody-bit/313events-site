@@ -31,7 +31,7 @@ Not built (next, only after the image workflow passes Preview and production): `
 - Audit: one line appended to `events.internal_note` (not in `events_public`): time, client, route, content hash,
   size, previous image, the caller's source note. Vercel runtime logs carry a one-line record per call (no secrets).
   No schema change; no new table.
-- Auth: `EDITORIAL_GATEWAY_TOKEN` (at least 24 characters) as `Authorization: Bearer` or `X-Editorial-Token`.
+- Auth: `EDITORIAL_GATEWAY_TOKEN` (at least 16 characters; 32+ recommended for production) as `Authorization: Bearer` or `X-Editorial-Token`.
   Unset or short refuses every call. The Supabase service-role key never leaves the server.
 
 ## Client matrix (documented from vendor pages on 2026-10-26; NOTHING below is tested on the owner's accounts yet)
