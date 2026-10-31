@@ -12,7 +12,7 @@ Recorded risk acceptance is not usage rights. No rights-holder permission is on 
 |---|---|---|
 | Hallowe'en in Greenfield Village | HOLD_UNVERIFIED | 5 |
 | Zoo Boo at the Detroit Zoo | HOLD_UNVERIFIED | 5 |
-| Halloween Ghosts & Goodies at Crossroads Village | PUBLISHED | none |
+| Halloween Ghosts & Goodies at Crossroads Village | HOLD_UNVERIFIED | 5 |
 
 Gate items: 1 official verification, 2 relevance, 3 image, 4 image rights, 5 explicit approval.
 
@@ -84,7 +84,7 @@ State: **HOLD_UNVERIFIED**. Official page read, relevance confirmed, an official
 
 ## 3. Halloween Ghosts & Goodies at Crossroads Village (`crossroads-ghosts-goodies`)
 
-State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFIED). It has no real image yet, so it needs a decision on the image before an approval means anything.
+State: **HOLD_UNVERIFIED**. Official page read and relevance confirmed (CONTENT_VERIFIED). It has no real image yet, so it needs a decision on the image before an approval means anything.
 
 | Gate item | Status | Route / note |
 |---|---|---|
@@ -92,7 +92,7 @@ State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFI
 | 2. Relevance to the collection | recorded | Official page describes Halloween Ghosts & Goodies at Crossroads Village, October 2026. |
 | 3. Image | recorded | acquired-file |
 | 4. Image rights | recorded | third-party-license |
-| 5. Explicit publication approval | recorded | only the approving person adds it |
+| 5. Explicit publication approval | NOT recorded | only the approving person adds it |
 
 ### Evidence read (official)
 - Official Genesee County Parks page read 2026-10-11: Halloween Ghosts & Goodies at Crossroads Village, October 2026 (3-4, 9-11, 16-18, 22-25, 29-30). Dates are not shown on the card. Source: https://geneseecountyparks.org/halloween-ghosts-goodies/. Read 2026-10-11 (Claude (Cowork session), read in Chrome).
@@ -104,8 +104,7 @@ State: **PUBLISHED**. Official page read and relevance confirmed (CONTENT_VERIFI
 - **Proposal p2, not adopted:** https://geneseeparkprd.wpengine.com/wp-content/uploads/2022/08/IMG_7645.jpeg. Tile image for Halloween Ghosts & Goodies on the official Crossroads Village page (alt "Halloween"). Viewed in Chrome 2026-10-11: a costumed staff member handing treats to a child on a porch with spider decorations. Load test 2026-10-11: loaded 1600x1600. PROPOSED, not adopted: awaiting an owner decision; no risk acceptance recorded for this image; Shows identifiable people, including children; consider whether to use it; Hosted on the park system's staging host (geneseeparkprd.wpengine.com), which may not be a durable address. **No risk acceptance is recorded for it, and none is implied by your earlier decision.**
 
 ### What becomes public if you approve
-- The public card shows: category tags, the name (linking to the official site), city and region, the one-line summary, the image with its credit. No dates, hours, prices, availability or accessibility.
-- **Also public, in `seasonal/published-entries.js`:** the whole record as stored (2 evidence items and the migration history). It would include these strings: `Jody Tyree`, `Claude (Cowork session)`. The pages do not display them, but anyone who opens the file can read them. I recommend asking engineering to add a public-fields-only projection before the first approval; that is a decision for you, not something I changed.
+- (This record cannot be public until its other gate items are complete, so there is nothing to project yet.)
 
 ### Things you should know
 - **The linked image already on file does not show Crossroads.** It is the porch-pumpkin photo (2400x1600) that the catalogue itself describes as a generic scene. I viewed it: a jack-o'-lantern on a residential walkway with a clapboard house behind. It loads, but it would present a generic image as if it were the place.

@@ -38,7 +38,7 @@ assert.deepStrictEqual(Object.keys(batch.records.reduce((o, r) => (o[r.id] = 1, 
 const excluded = H.filter((e) => e.disposition);
 assert.deepStrictEqual(excluded.map((e) => e.id).sort(), Object.keys(AUTHZ.HALLOWEEN_EXCLUDED).sort(), "the three duplicate/closed records");
 for (const e of H) AUTHZ.checkApproval(assert, "halloween", e, new Set());
-assert.strictEqual(H.filter((e) => e.approval).length, 41);
+assert.strictEqual(H.filter((e) => e.approval).length, 39);
 for (const e of H.filter((e) => e.approval)) { assert.ok(e.editorialAccepted && e.editorialAccepted.at === "2026-10-11", e.id + ": editorial acceptance recorded"); assert.ok(/does not waive the publication gate/.test(e.editorialAccepted.scope)); }
 
 // 3. exclusion keeps history; the guard keeps them out even if an approval were added
@@ -64,10 +64,10 @@ for (const id of pubIds) {
   assert.ok(byId[id].evidence.some((x) => x.level === "official" && x.websiteChecked === true), id + ": factual verification is not waived (official-page read recorded)");
   assert.strictEqual(byId[id].status, "PUBLISHED");
 }
-assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 41, 21, 20, 11]);
+assert.deepStrictEqual(batch.counts && [batch.counts.inventory, batch.counts.ownerApproved, batch.counts.eligiblePublished, batch.counts.held, batch.counts.excluded], [52, 39, 19, 20, 13]);
 for (const r of batch.records.filter((r) => r.category === "held")) { assert.ok(r.reasons.length >= 1 && r.reasons.every((x) => x.length > 20), r.id + ": held with an exact reason"); assert.ok(!C.isPublic(byId[r.id])); }
 const states = H.reduce((o, e) => (o[e.status] = (o[e.status] || 0) + 1, o), {});
-assert.deepStrictEqual(states, { PUBLISHED: 21, HOLD_UNVERIFIED: 31 });
+assert.deepStrictEqual(states, { PUBLISHED: 19, HOLD_UNVERIFIED: 33 });
 // the 20 held records are held for FACTUAL verification (no official 2026 evidence, or only indirect evidence); the illustration route is not recorded on them
 const held = H.filter((e) => !e.disposition && !C.isPublic(e));
 assert.strictEqual(held.length, 20);
@@ -75,7 +75,7 @@ for (const e of held) { const g = C.gate(e); assert.ok(!g.official || !g.relevan
 assert.deepStrictEqual(Object.keys(rel.records).filter((id) => rel.records[id].tier === "verified" && !rel.records[id].disposition).sort(), AUTHZ.HALLOWEEN_ILLUSTRATED.slice().sort());
 
 // 4b. the owner's established illustration decision (2026-10-12): the 18 verified records without an authorized photo publish on the labelled route
-assert.strictEqual(AUTHZ.HALLOWEEN_ILLUSTRATED.length, 16);
+assert.strictEqual(AUTHZ.HALLOWEEN_ILLUSTRATED.length, 14);
 for (const id of AUTHZ.HALLOWEEN_ILLUSTRATED) {
   const e = byId[id], im = e.image, g = C.gate(e);
   if (PHOTO_B2.has(id)) { // since replaced by a licensed photograph (photography batch 2); the credit must reach the public card

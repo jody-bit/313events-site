@@ -2303,9 +2303,9 @@
    "name": "Halloween Stroll at Canterbury Village",
    "location": "Lake Orion, MI",
    "inventory_note": "Halloween light displays and characters",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "halloween-stroll-at-canterbury-village",
@@ -2327,7 +2327,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "family-friendly"
@@ -2555,9 +2555,9 @@
    "name": "Halloween Ghosts & Goodies at Crossroads Village",
    "location": "Flint area, MI",
    "inventory_note": "Historic village Halloween",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": "crossroads-ghosts-goodies",
-   "reason": "Gate state PUBLISHED. All gate items recorded. Was \"published\" on feature/halloween-completion; not grandfathered.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval. Was \"published\" on feature/halloween-completion; not grandfathered.",
    "flags": [],
    "image_manifest": {
     "destination_id": "crossroads-ghosts-goodies",
@@ -2581,7 +2581,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "family-friendly"
