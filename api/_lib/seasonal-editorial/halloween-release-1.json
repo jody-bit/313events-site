@@ -97,7 +97,17 @@
       "categories": [
         "strange-unusual",
         "family-friendly"
-      ]
+      ],
+      "disposition": {
+        "type": "ended",
+        "reason": "The TreeRunner page listed Oct 2-4, 9-11, 16-18, 23-25 and 30-31, 2026; the final night was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
+      }
     },
     "erebus": {
       "tier": "verified",
@@ -297,6 +307,16 @@
           "/assets/seasonal/halloween-card-8.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The operator-stated 2026 season was 10/02/26-10/31/26 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "field-of-fear": {
@@ -314,6 +334,16 @@
           "/assets/seasonal/halloween-card-4.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Field of Fear page listed its final night as Oct 31, 2026. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "dearborn-haunted-trail": {
@@ -415,6 +445,16 @@
           "/assets/seasonal/halloween-card-2.webp"
         ],
         "reason": "The approved card pinned as this record's default; unchanged."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Wildwood Preserve page listed Friday Oct 23 through Saturday Oct 31, 2026, 2 to 8 p.m.; the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "fort-meigs-garrison-ghost-walk": {
@@ -495,6 +535,16 @@
           "/assets/seasonal/halloween-card-6.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "LEGOLAND Discovery Center's operator-stated 2026 range was Oct 1-31 (owner accepted the operator-stated end on 2026-10-21); the final day was Oct 31. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "ooky-spooky-light-show": {
@@ -530,6 +580,16 @@
           "/assets/seasonal/halloween-card-6.webp"
         ],
         "reason": "Visual parity with the approved Fall pages (5c2e988): no two neighbouring cards show the same illustration in the 2-, 3- or 4-column grid. One of the eight approved Halloween cards; same visible Illustrative image label."
+      },
+      "disposition": {
+        "type": "ended",
+        "reason": "The Sloan Longway calendar listed the last Laser Halloween shows on Saturday Oct 31, 2026, at 7 and 8 PM. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+        "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+        "recordedAt": "2026-10-24",
+        "priorApproval": {
+          "by": "Jody Tyree",
+          "at": "2026-10-11"
+        }
       }
     },
     "thiessen-orchards-scaredy-cat-barn": {

@@ -1771,9 +1771,9 @@
    "name": "Spooky Trails",
    "location": "Swartz Creek, MI",
    "inventory_note": "Haunted maze, cornfield and hayride",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "spooky-trails",
@@ -1794,7 +1794,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -1849,9 +1849,9 @@
    "name": "Field of Fear",
    "location": "Monclova, OH",
    "inventory_note": "Haunted cornfield attractions",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -1876,7 +1876,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "haunted-attractions"
@@ -2136,9 +2136,9 @@
    "name": "Wildwood Manor House",
    "location": "Toledo, OH",
    "inventory_note": "Seasonal eerie manor tours",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [
     "outside Michigan: Orbit eligibility and coordinates to confirm"
    ],
@@ -2160,7 +2160,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "ghosts-history"
@@ -2342,9 +2342,9 @@
    "name": "HallowGlow at TreeRunner",
    "location": "West Bloomfield, MI",
    "inventory_note": "Halloween-themed aerial adventure",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "hallowglow-at-treerunner",
@@ -2366,7 +2366,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "linked_unverified",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "strange-unusual",
@@ -2596,9 +2596,9 @@
    "name": "Brick-or-Treat at LEGOLAND Discovery Center",
    "location": "Auburn Hills, MI",
    "inventory_note": "LEGO-themed Halloween activities",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "brick-or-treat-at-legoland-discovery-center",
@@ -2621,7 +2621,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "family-friendly"
@@ -2678,9 +2678,9 @@
    "name": "Laser Halloween",
    "location": "Flint, MI",
    "inventory_note": "Halloween-themed laser show",
-   "status": "PUBLISHED",
+   "status": "HOLD_UNVERIFIED",
    "published_id": null,
-   "reason": "Gate state PUBLISHED. All gate items recorded.",
+   "reason": "Gate state HOLD_UNVERIFIED. Outstanding: excluded (duplicate or closed); 5 explicit approval.",
    "flags": [],
    "image_manifest": {
     "destination_id": "laser-halloween",
@@ -2703,7 +2703,7 @@
      "313p-98ab90f5"
     ],
     "image_status": "generated_default",
-    "editorial_approval_status": "owner_approved"
+    "editorial_approval_status": "not_approved"
    },
    "categories": [
     "family-friendly"
