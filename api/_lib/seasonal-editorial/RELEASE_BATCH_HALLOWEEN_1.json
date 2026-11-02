@@ -3,10 +3,10 @@
  "status": "APPLIED to the branch. Owner approval of 2026-10-11 is recorded on 49 records; 3 duplicate/closed records are excluded with their history preserved. Nothing is merged or deployed.",
  "counts": {
   "inventory": 52,
-  "ownerApproved": 33,
-  "eligiblePublished": 13,
+  "ownerApproved": 32,
+  "eligiblePublished": 12,
   "held": 20,
-  "excluded": 19,
+  "excluded": 20,
   "heldByState": {
    "HOLD_UNVERIFIED": 20
   },
@@ -150,37 +150,25 @@
    "inventoryNo": "32",
    "name": "Glenlore Trails: CarnEvil 2",
    "city": "Commerce Township",
-   "state": "PUBLISHED",
-   "category": "published",
-   "ownerApproved": true,
+   "state": "HOLD_UNVERIFIED",
+   "category": "excluded",
+   "ownerApproved": false,
    "imageRoute": "owner-photo",
    "rightsRoute": "owner-authorization",
-   "reasons": [],
-   "disposition": null,
-   "publicCard": {
-    "id": "glenlore-carnevil-2",
-    "name": "Glenlore Trails: CarnEvil 2",
-    "city": "Commerce Township",
-    "region": "MI",
-    "categories": [
-     "strange-unusual",
-     "family-friendly"
-    ],
-    "featured": false,
-    "status": "PUBLISHED",
-    "summary": "Illuminated night walk with a carnival theme in Commerce Township.",
-    "website": "https://glenloretrails.com",
-    "image": {
-     "src": "/assets/seasonal/photos/halloween/halloween__glenlore-trails-carnevil-2__commerce-township-mi__mine-02__card.webp",
-     "alternates": [
-      "/assets/seasonal/halloween-card-5.webp",
-      "/assets/seasonal/halloween-card-7.webp"
-     ],
-     "placeholder": "/assets/placeholders/event-800.webp",
-     "illustrative": false,
-     "credit": "313.events archive"
+   "reasons": [
+    "EXCLUDED, DUPLICATE: The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved."
+   ],
+   "disposition": {
+    "recordedBy": "Jody Tyree (owner), seasonal expiry approval for waves 3-6 2026-10-24 (cmsg_0139NVW4pFWSu54bJXVBHDMbGLXTtaZi5gAADw5x57XcrX); applied by editor",
+    "recordedAt": "2026-10-24",
+    "type": "ended",
+    "reason": "The operator-stated 2026 run was open through November 1, 2026 (owner accepted the operator-stated end on 2026-10-21); the final day was Nov 1. Retained as a non-public record; underlying event records, source evidence and the destination are preserved.",
+    "priorApproval": {
+     "by": "Jody Tyree",
+     "at": "2026-10-11"
     }
-   }
+   },
+   "publicCard": null
   },
   {
    "id": "crossroads-ghosts-goodies",
