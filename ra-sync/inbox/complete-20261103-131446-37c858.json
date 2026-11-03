@@ -1,0 +1,115 @@
+{
+  "runToken": "20261103-131446-37c858",
+  "action": "complete",
+  "runId": "047499f8-2347-418b-9089-03efd5f48962",
+  "events": [
+    {
+      "id": "ra-2575356",
+      "title": "Deconstruction",
+      "description": "",
+      "startDate": "2026-11-03T19:00:00.000",
+      "endDate": "2026-11-03T22:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/5b1e3849db2ced84591d9dad86a0f5be956c91a1.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2575357",
+      "title": "Go Down",
+      "description": "",
+      "startDate": "2026-11-03T22:00:00.000",
+      "endDate": "2026-11-04T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/c12815c2a8c40c33527345630b98273bb6750454.jpg",
+      "offersPrice": 11.2,
+      "url": null
+    },
+    {
+      "id": "ra-2575366",
+      "title": "Nightcap Detroit",
+      "description": "",
+      "startDate": "2026-11-04T22:00:00.000",
+      "endDate": "2026-11-05T02:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/630097dc00ce833abcf3713a201f9995d10f4165.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2575358",
+      "title": "Planet Funk",
+      "description": "",
+      "startDate": "2026-11-04T19:00:00.000",
+      "endDate": "2026-11-04T22:00:00.000",
+      "venueName": "Spkrbox",
+      "address": "200 Grand River Ave, Detroit, MI 48226, United States",
+      "image": "https://images.ra.co/5e5a0dbdb93f6c4c11c7727c342fa00c893a25e4.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2574995",
+      "title": "The Outpost: Ryan Spencer",
+      "description": "All Vinyl, All Night\n\nRare Groove/Funk/Soul/Jazz/Etc.\n\nNo Cover\n",
+      "startDate": "2026-11-06T21:00:00.000",
+      "endDate": "2026-11-06T23:59:00.000",
+      "venueName": "Traverse City Whiskey Co. Outpost",
+      "address": "22812 Woodward Ave #200, Ferndale, MI 48220",
+      "image": "https://images.ra.co/f2d17d76c442566b493b5c230b85f097a485afe7.png",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2574999",
+      "title": "The Outpost: Joshua Adams",
+      "description": "All Vinyl, All Night\n\nRare Groove/Funk/Soul/Jazz/Etc.\n\nNo Cover\n",
+      "startDate": "2026-11-07T21:00:00.000",
+      "endDate": "2026-11-07T23:59:00.000",
+      "venueName": "Traverse City Whiskey Co. Outpost",
+      "address": "22812 Woodward Ave #200, Ferndale, MI 48220",
+      "image": "https://images.ra.co/8d47bfe4b73ad43c5903eef20a0e9370e18bcbe4.png",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2575361",
+      "title": "klub brief",
+      "description": "At the Eagle of Detroit.\n\nKlub brief started in a hotel ended up as an after hours party \n\n",
+      "startDate": "2026-11-13T23:00:00.000",
+      "endDate": "2026-11-14T05:00:00.000",
+      "venueName": "The Eagle of Detroit",
+      "address": "950 West McNichols",
+      "image": "https://images.ra.co/e48eaa65f5a165abd2cc174bd4d0e9828735a90a.jpg",
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2574682",
+      "title": "Beauty & the Bass",
+      "description": "\nBeauty & The Bass fuses fashion & EDM for one explosive Detroit night. Bold looks, heavy bass, nonstop energy. One unforgettable experience.\n\nBEAUTY X THE BASS — Detroit’s Runway‑Meets‑Rave Experience\nBeauty X The Bass is bringing three creative worlds together for one unforgettable night in Detroit. This event blends the edge of fashion with the pulse of Dubstep, Drum And Bass music, and Flow Arts creating an atmosphere where style, sound, and self expression collide.\n\nExpect bold looks, innovative designers, high energy performances, and a lineup of DJs and artists who know how to move a crowd. This night isn’t just about watching a show, it’s about stepping into a space built for people who thrive on creativity and aren’t afraid to stand out.\n\nBEAUTY X THE BASS\nNovember 13, 2026\n8:00 PM TO 3:00 AM\nDetroit, MI\n\nWhether you’re walking the runway, behind the decks, showcasing your designs, sharing flow arts, or just coming to experience something different, Beauty X The Bass is building a night where creativity has no limits.\n\nDress to make an impact.\nCome ready for the The ARTS.\nFour Worlds. One night. One Price A Detroit experience you won’t forget.\n\n",
+      "startDate": "2026-11-13T20:00:00.000",
+      "endDate": "2026-11-14T03:00:00.000",
+      "venueName": "Tangent Gallery",
+      "address": "715 E Milwaukee St, Detroit, MI 48202",
+      "image": null,
+      "offersPrice": null,
+      "url": null
+    },
+    {
+      "id": "ra-2575446",
+      "title": "House Nation",
+      "description": "WELCOME TO HOUSE NATION PRESENTED BY THE UNDERDAWGS. GET READY TO DANCE TO THE HOTTEST HOUSE TRACKS BANGIN ALL NIGHT. LEGENDARY CHICAGO DJ'S GENE HUNT AND MEL GENTRY ROCK THE STAGE WITH 2 OF DETROITS FINEST DJ RIGHTEOUS AND MARK PRUITT.",
+      "startDate": "2026-11-27T19:00:00.000",
+      "endDate": "2026-11-28T01:00:00.000",
+      "venueName": "The Music Hall",
+      "address": "350 Madison Street Detroit Mi. 48226",
+      "image": "https://images.ra.co/9f7b025d42c1da5136d87803c9ae3840db02aac7.jpg",
+      "offersPrice": null,
+      "url": null
+    }
+  ]
+}
