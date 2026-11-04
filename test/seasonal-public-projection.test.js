@@ -42,7 +42,7 @@ for (const slug of C.ORDER) projection[slug] = approved[slug].filter(C.isPublic)
 assert.strictEqual(projection.fall.length, 10); assert.strictEqual(projection["fall-color"].length, 5); assert.strictEqual(projection.halloween.length, 2);
 
 // 1. display fields only
-const ALLOWED_TOP = ["id", "name", "city", "region", "categories", "featured", "status", "summary", "website", "image", "advisory"];
+const ALLOWED_TOP = ["id", "name", "city", "region", "categories", "featured", "status", "summary", "website", "image", "advisory", "removeAt", "lastDay"];
 const ALLOWED_IMG = ["src", "alternates", "placeholder", "illustrative", "remote", "credit"];
 const text = JSON.stringify(projection);
 for (const slug of C.ORDER) for (const e of projection[slug]) {
