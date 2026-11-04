@@ -13,7 +13,9 @@ const path = require("path");
 const qa = require("./seasonal-qa.js");
 const ED = require("./_lib/seasonal-editorial/editorial.js");
 const RENDER = require("../seasonal/render.js");
-const PREVIEW = require("./_lib/seasonal-editorial/refresh-preview.json");
+const PREVIEW_DATA = require("./_lib/seasonal-editorial/refresh-preview.json");
+// Production-side overlay from Editorial (final copy, checkUrl, image.pending on the nine entries without a cleared photo); used only by api/seasonal-collection.js.
+const RELEASE_DATA = require("./_lib/seasonal-editorial/refresh-release.json");
 const LOCS = require("./_lib/seasonal-editorial/locations.json");
 
 const SLUGS = ["fall", "outside-the-ordinary", "off-the-beaten-orbit"];
@@ -21,8 +23,8 @@ const SLUGS = ["fall", "outside-the-ordinary", "off-the-beaten-orbit"];
 function clone(v) { return JSON.parse(JSON.stringify(v)); }
 
 // The entries of one preview collection, in public display form.
-function entriesFor(slug) {
-  const cfg = PREVIEW[slug], proj = ED.publishedProjection();
+function entriesFor(slug, published) {
+  const cfg = (published ? RELEASE_DATA : PREVIEW_DATA)[slug], proj = ED.publishedProjection();
   const base = slug === "fall" ? proj.fall : cfg.base ? proj[cfg.base] : [];
   const drop = new Set(cfg.remove || []);
   const all = clone(base).filter((e) => !drop.has(e.id)).map((e) => Object.assign(e, { featured: false }, (cfg.overrides || {})[e.id] || {})).concat(clone(cfg.add || []));
@@ -34,16 +36,16 @@ function entriesFor(slug) {
   return lead.map(byId).filter(Boolean).concat(all.filter((e) => lead.indexOf(e.id) < 0));
 }
 
-function previewData(slug) {
-  const cfg = PREVIEW[slug];
-  return { slug, meta: cfg.meta || null, entries: entriesFor(slug) };
+function previewData(slug, published) {
+  const cfg = (published ? RELEASE_DATA : PREVIEW_DATA)[slug];
+  return { slug, meta: cfg.meta || null, entries: entriesFor(slug, published) };
 }
 
 function json(v) { return JSON.stringify(v).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029"); }
 
 function html(slug, qaPins, opts) {
   const pub = !!(opts && opts.published);   // owner-released public page (api/seasonal-collection.js): no review banner, indexable, no "(Preview)"
-  const d = previewData(slug), R = RENDER;
+  const d = previewData(slug, pub), R = RENDER;
   const title = (d.meta ? d.meta.title : "Fall Is On.") + (pub ? "" : " (Preview)") + " — 313.events";
   return `<!DOCTYPE html>
 <html lang="en">

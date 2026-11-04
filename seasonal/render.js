@@ -183,7 +183,7 @@
       }).join("");
     return '<section class="sc-filters" aria-label="Filters">' +
       '<div class="sc-filter-cats"><p class="sc-label" id="scFilterLabel">' + esc(col.filterLabel) + '</p>' +
-      '<div class="sc-chips" role="group" aria-labelledby="scFilterLabel">' + chips + '</div>' +
+      '<div class="sc-chips" role="group" aria-label="Categories" aria-describedby="scFilterLabel">' + chips + '</div>' +
       '<div class="sc-catsum" id="scCatSummary" role="status" aria-live="polite">' + catSummary(col, state) + '</div></div>' +
       '<div class="sc-filter-search"><label class="sc-label" for="scSearch">Search this collection</label>' +
       '<input id="scSearch" type="search" class="sc-search" placeholder="Search destinations, cities, or experiences" value="' + esc(state.query || "") + '"></div>' +
