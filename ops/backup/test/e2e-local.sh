@@ -182,7 +182,15 @@ FAILSUB="" mock11 X=1
 seteTag "$mp-1"; rm -rf "$tmp/out11"; rb >"$tmp/b11.log" 2>&1 || { cat "$tmp/b11.log"; echo "FAIL: multipart-1 backup"; exit 1; }
 m11="$(ls "$tmp"/out11/*.manifest.txt)"
 grep -q '^storage_multipart1_verified=1$' "$m11" && grep -q '^storage_double_fetched=0$' "$m11" && grep -q '^storage_content_hashed=2$' "$m11" || { cat "$m11"; echo "FAIL: multipart-1 manifest counts"; exit 1; }
-seteTag "00000000000000000000000000000000-1"; expect_fail 'multipart eTag mismatch' "single-part multipart eTag that does not match the bytes"
+seteTag "00000000000000000000000000000000-1"; rm -rf "$tmp/out11"
+if rb >"$tmp/b11.log" 2>&1; then echo "FAIL: backup passed with a wrong multipart eTag"; exit 1; fi
+grep -q 'multipart eTag mismatch' "$tmp/b11.log" && grep -q 'no downgrade' "$tmp/b11.log" || { cat "$tmp/b11.log"; echo "FAIL: mismatch message"; exit 1; }
+[ "$(ls "$tmp/out11" | wc -l | tr -d ' ')" = 1 ] && d11="$(ls "$tmp"/out11/313events-DIAGNOSTIC-*.diag.age)" || { ls "$tmp/out11"; echo "FAIL: expected only the encrypted diagnostic"; exit 1; }
+! grep -aq 'PNGD-3' "$d11" || { echo "FAIL: diagnostic is not encrypted"; exit 1; }
+mkdir "$tmp/dg"; age -d -i "$tmp/id" "$d11" | tar -x -C "$tmp/dg"
+cmp -s "$tmp/dg/diag/original" "$tmp/srcfiles/event-flyers/u/def/deep/x.png" && grep -q "^got_md5_of_md5=$mp$" "$tmp/dg/diag/info.txt" && grep -q '^expected_etag="00000000000000000000000000000000-1"$' "$tmp/dg/diag/info.txt" || { cat "$tmp/dg/diag/info.txt"; echo "FAIL: diagnostic content"; exit 1; }
+ls "$tmp"/work* "${TMPDIR:-/tmp}"/313events-work.* >/dev/null 2>&1 && { echo "FAIL: plaintext working dir left"; exit 1; } || true
+echo "PASS 11c-2: a multipart mismatch stops the run (no downgrade), keeps the downloaded original and a second fetch only inside an encrypted diagnostic, and leaves no plaintext"
 seteTag "$mp-2"; rm -rf "$tmp/out11"; rb >"$tmp/b11.log" 2>&1 || { cat "$tmp/b11.log"; echo "FAIL: -2 eTag backup"; exit 1; }
 grep -q '^storage_double_fetched=1$' "$(ls "$tmp"/out11/*.manifest.txt)" || { echo "FAIL: unusual eTag not double-fetched"; exit 1; }
 kill $M11 2>/dev/null || true

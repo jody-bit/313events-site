@@ -116,8 +116,21 @@ while IFS=$'\t' read -r b name size etag upd; do
       # Single-part multipart upload: S3 defines the eTag as MD5(binary MD5 of the part) + "-1", so the bytes can still be verified
       # against a checksum Storage computed itself. Anything that does not have that exact shape falls through to the double fetch.
       if printf '%s' "$e" | grep -Eq '^[0-9a-f]{32}-1$'; then
-        [ "$(openssl dgst -md5 -binary "storage/$b/$name" | openssl dgst -md5 | awk '{print $NF}')" = "${e%-1}" ] \
-          || { echo "multipart eTag mismatch on object #$i" >&2; false; }
+        got_mp="$(openssl dgst -md5 -binary "storage/$b/$name" | openssl dgst -md5 | awk '{print $NF}')"
+        if [ "$got_mp" != "${e%-1}" ]; then
+          # Stop; never downgrade to a weaker check. Keep the downloaded original, a second fetch and the numbers for diagnosis,
+          # encrypted like every other artifact (the plaintext working directory is still deleted on exit).
+          pub_curl -o "storage/$b/$name.refetch" "$url" 2>/dev/null || true
+          { echo "object_index=$i"; echo "object=$b/$name"; echo "expected_etag=$etag"; echo "expected_size=$size"
+            echo "got_size=$(fsize "storage/$b/$name")"; echo "got_md5=$(md5_of "storage/$b/$name")"; echo "got_md5_of_md5=$got_mp"
+            echo "got_sha256=$(openssl dgst -sha256 "storage/$b/$name" | awk '{print $NF}')"
+            [ -f "storage/$b/$name.refetch" ] && echo "refetch_md5=$(md5_of "storage/$b/$name.refetch")"; } > "$WORKROOT/diag.txt"
+          mkdir -p "$WORKROOT/diag"; cp "storage/$b/$name" "$WORKROOT/diag/original"; [ -f "storage/$b/$name.refetch" ] && cp "storage/$b/$name.refetch" "$WORKROOT/diag/refetch"
+          cp "$WORKROOT/diag.txt" "$WORKROOT/diag/info.txt"
+          tar -C "$WORKROOT" -cf - diag | age -r "$AGE_RECIPIENT" -o "$OUTDIR/313events-DIAGNOSTIC-$STAMP.diag.age" || true
+          echo "multipart eTag mismatch on object #$i; STOPPED, no downgrade. Encrypted diagnostic kept: $OUTDIR/313events-DIAGNOSTIC-$STAMP.diag.age" >&2
+          false
+        fi
         multipart1=$((multipart1 + 1))
       else
         pub_curl -o "storage/$b/$name.refetch" "$url" || { echo "object #$i is missing, private or inaccessible on second fetch" >&2; false; }
