@@ -34,7 +34,7 @@ console.log("PASS: pin style and popup sizing match the live maps");
 {
   const { L, log, map } = fakeL(); const el = fakeEl();
   const ctl = MF.create(el, { label: "Map of Detroit-area events" }, { L });
-  assert.ok(ctl.ready); assert.strictEqual(el.attrs.role, "img");
+  assert.ok(ctl.ready); assert.strictEqual(el.attrs.role, "group");
   assert.strictEqual(log.tiles[0].o.attribution, MF.PROVIDER.attribution);
   map._h.focus(); assert.strictEqual(map.sw, true); map._h.blur(); assert.strictEqual(map.sw, false);
   const clicks = [];
