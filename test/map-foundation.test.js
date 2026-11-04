@@ -81,3 +81,26 @@ console.log("PASS: missing library and refused tiles show a visible message, nev
   assert.strictEqual(await MF.loadLeaflet({ L }), L);
   console.log("PASS: an already-loaded Leaflet is reused (no duplicate library)");
 })().catch((e) => { console.error("FAIL:", e); process.exitCode = 1; });
+
+// 8. keyboard: Enter on a focusable pin moves focus into its popup; Escape inside the map closes it and returns focus to the pin
+{
+  const { L, map } = fakeL(); const el = fakeEl(); const handlers = {};
+  el.addEventListener = (type, fn, capture) => { handlers[type] = { fn, capture }; };
+  const ctl = MF.create(el, { label: "x" }, { L });
+  assert.ok(handlers.keydown && handlers.keydown.capture === true, "one capturing keydown handler on the map element");
+  let closed = 0, focused = 0, linkFocused = 0, stopped = 0;
+  map.closePopup = () => { closed++; map._popup = null; };
+  ctl.setPlaces([{ key: "a", lat: 1, lng: 2, title: "A", icon: { className: "p", html: "", size: 44 }, popupHtml: "<a href='#'>x</a>" }]);
+  const pin = ctl.markers.get("a"); pin.getElement = () => ({ focus() { focused++; } });
+  pin._h.popupopen({ popup: { getElement: () => ({ querySelector: () => ({ focus() { linkFocused++; } }) }) } });
+  assert.strictEqual(linkFocused, 0, "a popup opened by mouse does not take focus");
+  handlers.keydown.fn({ key: "Enter", target: { classList: { contains: (c) => c === "leaflet-marker-icon" } } });
+  pin._h.popupopen({ popup: { getElement: () => ({ querySelector: () => ({ focus() { linkFocused++; } }) }) } });
+  assert.strictEqual(linkFocused, 1, "Enter on a pin moves focus to the first link in its popup");
+  map._popup = {};
+  handlers.keydown.fn({ key: "Escape", target: {}, stopPropagation() { stopped++; } });
+  assert.deepStrictEqual([closed, focused, stopped], [1, 1, 1], "Escape closes the popup and refocuses the pin that opened it");
+  handlers.keydown.fn({ key: "Escape", target: {}, stopPropagation() { stopped++; } });
+  assert.strictEqual(closed, 1, "Escape with no popup open does nothing");
+  console.log("PASS: pin keyboard operation (Enter into popup, Escape back to pin)");
+}
