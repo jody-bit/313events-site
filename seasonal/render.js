@@ -98,13 +98,18 @@
     if (img.illustrative || !img.credit || OWNER_CREDIT.test(img.credit)) return "";
     return '<p class="sc-credit">' + (/ via Wikimedia Commons$/.test(img.credit) ? '<a href="/copyright#photo-credits">' + esc(img.credit) + '</a>' : esc(img.credit)) + '</p>';
   }
-  function media(e) {
+  // Owner direction (Nov 4): a generic placeholder is never shown as if it were a photograph. In an owner-review Preview
+  // (col.previewPendingPhotos, set only by api/seasonal-preview.js) a card or hero that is showing the generic placeholder
+  // carries "Photo pending". It is a publication blocker, not a finished illustration, so it is never labelled "Illustrative".
+  function isGenericPlaceholder(src) { return !src || /\/assets\/placeholders\//.test(String(src)); }
+  function media(e, col) {
     var chain = chainOf(e.image), r = linkedOf(e.image), first = pickSrc(e.image);
     var viaLink = !!r && first === r.src;
     var fb = chain.length > 1 ? ' data-src0="' + esc(chain[0]) + '" data-fb="' + esc(JSON.stringify(chain.slice(1))) + '"' : "";
     var owner = !viaLink && !e.image.illustrative && OWNER_CREDIT.test(e.image.credit || "") ? ' data-photo-credit="' + esc(e.image.credit) + '"' : "";
     var html = '<div class="sc-card-media"' + owner + '><img src="' + esc(first) + '"' + (viaLink ? ' referrerpolicy="no-referrer"' : "") + fb + ' alt="" loading="lazy" width="640" height="427">';
     if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
+    if (col && col.previewPendingPhotos === true && isGenericPlaceholder(e.image && e.image.src) && !e.image.illustrative) return html + '<span class="sc-pending">Photo pending</span></div>';
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -138,7 +143,7 @@
     var longWord = 0;
     String(e.name).split(/[\s\-\u2013\u2014]+/).forEach(function (w) { if (w.length >= 10 && w.length > longWord) longWord = w.length; });
     return '<li class="sc-card' + (opts.list ? " sc-card-row" : "") + '" data-entry="' + esc(e.id) + '" id="sc-card-' + esc(e.id) + '"' + (opts.attrs || "") + '>' +
-      media(e) +
+      media(e, col) +
       '<div class="sc-card-body">' + tags(col, e) +
       '<h3 class="sc-card-title' + (longWord ? " sc-card-title--long" : "") + '"' + (longWord ? ' style="--lw:' + longWord + '"' : "") + '>' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
@@ -223,7 +228,7 @@
       '<h1 class="sc-title">' + col.titleLines.map(function (l) { return "<span>" + esc(l) + "</span>"; }).join(" ") + '</h1>' +
       (col.tagline ? '<p class="sc-tagline">' + esc(col.tagline) + '</p>' : "") +
       '<p class="sc-sub">' + esc(col.subtitle) + '</p></div>' +
-      (h.illustrative ? '<span class="sc-illus sc-illus-hero">Illustrative image</span>' : "") + '</section>';
+      (h.illustrative ? '<span class="sc-illus sc-illus-hero">Illustrative image</span>' : (col.previewPendingPhotos === true && isGenericPlaceholder(h.desktop) ? '<span class="sc-pending sc-pending-hero">Photo pending</span>' : "")) + '</section>';
   }
 
   function dontMiss(col, state) {

@@ -71,7 +71,7 @@ ${R.footer()}
 <script src="/seasonal/orbit-cities.js"></script>
 <script>(function () {
   var C = window.SeasonalCollections, slug = ${JSON.stringify(slug)}, META = ${json(d.meta)};
-  var col = C.COLLECTIONS[slug] = Object.assign({}, C.COLLECTIONS[slug] || {}, META || {}, { entries: window.SeasonalPublishedEntries[slug] });
+  var col = C.COLLECTIONS[slug] = Object.assign({}, C.COLLECTIONS[slug] || {}, META || {}, { entries: window.SeasonalPublishedEntries[slug], previewPendingPhotos: true });
   document.getElementById("scMain").innerHTML = window.SeasonalRender.main(col);
 })();</script>
 <script src="/seasonal/image-fallback.js"></script>
