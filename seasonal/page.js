@@ -23,7 +23,8 @@
       [].forEach.call(document.querySelectorAll(".sc-chip"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-cat") === state.category)); });
       [].forEach.call(document.querySelectorAll("button.sc-view"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === state.view)); });
       var s = document.getElementById("scSearch"); if (s && s.value !== state.query) s.value = state.query;
-      var q = new URLSearchParams();
+      var q = new URLSearchParams(location.search);   // keep other URL params; only touch ours
+      q.delete("cat"); q.delete("q"); q.delete("view");
       if (state.category !== "all") q.set("cat", state.category);
       if (state.query) q.set("q", state.query);
       if (state.view === "list") q.set("view", "list");
