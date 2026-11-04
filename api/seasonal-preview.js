@@ -69,7 +69,7 @@ ${R.footer()}
 <script src="/seasonal/collections.js"></script>
 <script src="/seasonal/render.js"></script>
 <script src="/seasonal/orbit-cities.js"></script>
-<script>window.SeasonalMapSettings = {"tileUrl":"https://tile.openstreetmap.org/{z}/{x}/{y}.png","attribution":"\u00a9 OpenStreetMap contributors","maxZoom":18};</script>
+<script>window.SeasonalMapSettings = {"tileUrl":"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=cb1_2w25_1_4715a1af021de1017d3ef172","subdomains":"abcd","attribution":"\u00a9 <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>","maxZoom":19};</script>
 <script>(function () {
   var C = window.SeasonalCollections, slug = ${JSON.stringify(slug)}, META = ${json(d.meta)};
   var col = C.COLLECTIONS[slug] = Object.assign({}, C.COLLECTIONS[slug] || {}, META || {}, { entries: window.SeasonalPublishedEntries[slug] });

@@ -42,7 +42,7 @@
       if (map && map.getContainer() !== holder) { map.remove(); map = null; layer = null; }
       if (!map) {
         map = L.map(holder, { scrollWheelZoom: false }).setView([42.33, -83.05], 8);
-        var tiles = L.tileLayer(S.tileUrl || "https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: S.maxZoom || 18, attribution: S.attribution || "© OpenStreetMap contributors" }).addTo(map);
+        var tiles = L.tileLayer(S.tileUrl || "https://tile.openstreetmap.org/{z}/{x}/{y}.png", { subdomains: S.subdomains || "abc", maxZoom: S.maxZoom || 18, attribution: S.attribution || "© OpenStreetMap contributors" }).addTo(map);
         var failed = 0; tiles.on("tileerror", function () { if (++failed === 3) { var n = document.getElementById("scMapNotice"); if (n) n.textContent += " Map tiles did not load; the list below has every destination."; } });
         layer = L.layerGroup().addTo(map);
       }
