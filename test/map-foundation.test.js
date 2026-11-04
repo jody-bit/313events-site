@@ -14,11 +14,20 @@ function fakeL() {
 function fakeEl() { return { attrs: {}, html: "", setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k]; }, insertAdjacentHTML(_w, h) { this.html += h; }, clientHeight: 380 }; }
 
 // 1. one provider config: the URL and attribution equal what the live pages use today (no silent drift while they migrate)
+const MIGRATED = ["calendar.html"]; // pages already on the foundation; map.html moves in its own PR
 for (const page of ["map.html", "calendar.html"]) {
   const src = fs.readFileSync(path.join(__dirname, "..", page), "utf8");
-  assert.ok(src.includes(MF.PROVIDER.key), page + " must still use the same tile key as the foundation");
-  assert.ok(src.includes("basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"), page + " tile URL pattern");
+  if (MIGRATED.includes(page)) {
+    assert.ok(/<script src="\/map-foundation\.js"><\/script>/.test(src), page + " loads the foundation");
+    assert.ok(src.indexOf("map-foundation.js") > src.indexOf("leaflet@1.9.4/dist/leaflet.js"), page + " loads the foundation after Leaflet");
+    assert.ok(!src.includes(MF.PROVIDER.key) && !/basemaps\.cartocdn\.com/.test(src) && !/L\.tileLayer|L\.circleMarker/.test(src), page + " keeps no private tile config or pin code");
+    assert.ok(/MapFoundation\.create\(/.test(src) && /\.setPlaces\(/.test(src), page + " draws through the foundation");
+  } else {
+    assert.ok(src.includes(MF.PROVIDER.key), page + " must still use the same tile key as the foundation");
+    assert.ok(src.includes("basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"), page + " tile URL pattern");
+  }
 }
+assert.strictEqual((fs.readFileSync(path.join(__dirname, "..", "calendar.html"), "utf8").match(/leaflet\.js/g) || []).length, 1, "one Leaflet library per page");
 assert.strictEqual(MF.tileUrl(), "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=" + MF.PROVIDER.key);
 assert.ok(/OpenStreetMap/.test(MF.PROVIDER.attribution) && /CARTO/.test(MF.PROVIDER.attribution), "attribution stays visible");
 console.log("PASS: one provider config, same URL and key as the live pages, attribution present");
@@ -27,13 +36,13 @@ console.log("PASS: one provider config, same URL and key as the live pages, attr
 assert.deepStrictEqual(MF.pinStyle({ count: 1, precise: true, hex: "#112233" }), { radius: 10, color: "#112233", weight: 2, dashArray: null, fillColor: "#112233", fillOpacity: 0.6 });
 const city = MF.pinStyle({ count: 400, precise: false });
 assert.strictEqual(city.radius, 22); assert.strictEqual(city.dashArray, "3,3"); assert.strictEqual(city.fillOpacity, 0.35); assert.strictEqual(city.color, "#D7FF00");
-assert.deepStrictEqual(MF.popupOptions(380).maxHeight, 280); assert.strictEqual(MF.popupOptions(100).maxHeight, 160); assert.strictEqual(MF.popupOptions(900).maxHeight, 320);
+assert.strictEqual(MF.popupOptions(380).maxHeight, 280); assert.strictEqual(MF.popupOptions(380, 320).maxHeight, 320, "a fixed height wins (calendar keeps its 320)"); assert.strictEqual(MF.popupOptions(100).maxHeight, 160); assert.strictEqual(MF.popupOptions(900).maxHeight, 320);
 console.log("PASS: pin style and popup sizing match the live maps");
 
 // 3. create: ready path, pins, select, accessibility, scroll rule
 {
   const { L, log, map } = fakeL(); const el = fakeEl();
-  const ctl = MF.create(el, { label: "Map of Detroit-area events" }, { L });
+  const ctl = MF.create(el, { label: "Map of Detroit-area events", announce: true }, { L });
   assert.ok(ctl.ready); assert.strictEqual(el.attrs.role, "img");
   assert.strictEqual(log.tiles[0].o.attribution, MF.PROVIDER.attribution);
   map._h.focus(); assert.strictEqual(map.sw, true); map._h.blur(); assert.strictEqual(map.sw, false);
@@ -48,6 +57,14 @@ console.log("PASS: pin style and popup sizing match the live maps");
   ctl.destroy(); assert.ok(map.gone && !ctl.ready);
 }
 console.log("PASS: create, pins, select, aria-label and scroll rule");
+
+// 3a. by default a migrating page keeps its exact aria-label
+{
+  const { L } = fakeL(); const el = fakeEl(); const ctl = MF.create(el, { label: "Map of Detroit-area events" }, { L });
+  ctl.setPlaces([{ key: "a", lat: 1, lng: 2, count: 1 }]);
+  assert.strictEqual(el.attrs["aria-label"], "Map of Detroit-area events", "announce is opt-in");
+}
+console.log("PASS: aria-label unchanged unless announce is on");
 
 // 3b. icon places become keyboard-focusable 44px markers with the page's own markup; circles remain the default
 {

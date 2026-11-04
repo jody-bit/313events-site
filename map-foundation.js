@@ -58,8 +58,9 @@
   }
 
   // Popups scroll inside themselves instead of growing taller than the map (real bug on the live site, 2026-08-30).
-  function popupOptions(mapHeightPx) {
-    return { maxWidth: 260, maxHeight: Math.max(160, Math.min(320, (mapHeightPx || 400) - 100)), autoPanPadding: [24, 24], keepInView: true };
+  function popupOptions(mapHeightPx, fixedMaxHeight) {
+    var h = fixedMaxHeight || Math.max(160, Math.min(320, (mapHeightPx || 400) - 100));
+    return { maxWidth: 260, maxHeight: h, autoPanPadding: [24, 24], keepInView: true };
   }
 
   var leafletPromise = null;
@@ -140,12 +141,12 @@
         } else {
           m = L.circleMarker([place.lat, place.lng], pinStyle(place)).addTo(ctl.map);
         }
-        if (place.popupHtml) m.bindPopup(place.popupHtml, popupOptions(h));
+        if (place.popupHtml) m.bindPopup(place.popupHtml, popupOptions(h, o.popupMaxHeight));
         if (onSelect) m.on("click", function () { onSelect(place.key); });
         ctl.markers.set(place.key, m);
       });
       var n = ctl.places.length;
-      el.setAttribute("aria-label", (o.label || "Map") + (n === 1 ? ": 1 place shown" : ": " + n + " places shown"));
+      if (o.announce) el.setAttribute("aria-label", (o.label || "Map") + (n === 1 ? ": 1 place shown" : ": " + n + " places shown"));
     };
     ctl.select = function (key) { var m = ctl.markers.get(key); if (m) { ctl.map.panTo(m.getLatLng()); m.openPopup(); } return !!m; };
     ctl.closePopup = function () { ctl.map.closePopup(); };

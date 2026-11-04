@@ -801,6 +801,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/map-foundation.js"></script>
 <script>
 // Keys, labels, order and colours all come from /categories.js (one definition for every page).
 const CATS = {};
@@ -2011,44 +2012,19 @@ function buildPlaces(){
 }
 
 let leafletMap = null;
+let mapCtl = null;
 let markersByKey = new Map();
 let selectedPlaceKey = null;
 let mapInitTried = false;
 
-// See map.html's own CARTO_API_KEY comment for the full story: CARTO's
-// free anonymous basemap tiles stopped working late August 2026 and now
-// watermark every tile "API KEY REQUIRED" instead of failing outright,
-// which is why the try/catch fallback below never caught it. Fixed
-// 2026-09-05 with the free key CARTO emailed Jody back — kept as a
-// separate constant from map.html's copy since this file duplicates its
-// own full page (no shared JS module between pages on this site). Param
-// is `key`, not `api_key` (corrected from the original guess once CARTO's
-// email confirmed the actual name).
-const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
+// Tile provider, key and attribution: /map-foundation.js (single config for every map).
 
 function initLeaflet(){
   mapInitTried = true;
-  // See map.html's own initLeaflet() for why this is wrapped: a blocked
-  // CDN (ad blocker, offline, network policy) shouldn't be able to take the
-  // whole page down with it — the city rail and every filter are plain data
-  // rendering with no Leaflet dependency and should keep working either way.
-  try{
-    if(typeof L === 'undefined') throw new Error('Leaflet failed to load');
-    leafletMap = L.map('leafletMap', {scrollWheelZoom:false}).setView([42.3314, -83.0458], 9);
-    const tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      + (CARTO_API_KEY ? `?key=${encodeURIComponent(CARTO_API_KEY)}` : '');
-    L.tileLayer(tileUrl, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
-    }).addTo(leafletMap);
-    leafletMap.on('focus', ()=> leafletMap.scrollWheelZoom.enable());
-    leafletMap.on('blur', ()=> leafletMap.scrollWheelZoom.disable());
-  } catch(err){
-    leafletMap = null;
-    const el = document.getElementById('leafletMap');
-    if(el) el.innerHTML = `<div class="map-unavailable">Map tiles didn't load — you can still browse every event in the list below.</div>`;
-  }
+  // Basemap, tiles, attribution, scroll rule and the "tiles didn't load" message all live in /map-foundation.js (one provider
+  // config for every map). A failed Leaflet load leaves an inert controller: the city rail and every filter keep working.
+  mapCtl = MapFoundation.create(document.getElementById('leafletMap'), { popupMaxHeight: 320 });
+  leafletMap = mapCtl.ready ? mapCtl.map : null;
 }
 
 function placePopupHtml(place){
@@ -2095,31 +2071,18 @@ function jumpToPlaceList(key){
 
 function renderMap(places){
   if(!leafletMap) return;
-  markersByKey.forEach(m => leafletMap.removeLayer(m));
-  markersByKey = new Map();
+  // Adapt this page's places (events grouped by location) into the foundation's common place format; pin look and popup
+  // sizing are the foundation's. Popup wording and what selecting a pin does stay page-specific.
+  const list = [];
   places.forEach(place=>{
-    const count = place.events.length;
-    const r = Math.min(22, Math.max(7, 6 + Math.sqrt(count) * 4));
-    const hex = CAT_HEX[dominantCategory(place.events)] || '#D7FF00';
-    const marker = L.circleMarker([place.lat, place.lng], {
-      radius: r,
-      color: hex,
-      weight: place.precise ? 2 : 1.5,
-      dashArray: place.precise ? null : '3,3',
-      fillColor: hex,
-      fillOpacity: place.precise ? 0.6 : 0.35,
-    }).addTo(leafletMap);
-    // maxHeight caps a many-event place's popup so it scrolls internally
-    // (Leaflet's own CSS adds the scrollbar once this is set) instead of
-    // growing taller than the map and spilling off the top/bottom of the
-    // window with no way to see the rest of it — a real bug hit on the
-    // live site (2026-08-30) with a 40-event cluster near Rochester.
-    // autoPanPadding gives real breathing room from the window edge (the
-    // 5px Leaflet default was letting the popup sit flush against it).
-    marker.bindPopup(placePopupHtml(place), {maxWidth: 260, maxHeight: 320, autoPanPadding: [24, 24], keepInView: true});
-    marker.on('click', ()=> selectPlace(place.key));
-    markersByKey.set(place.key, marker);
+    list.push({
+      key: place.key, lat: place.lat, lng: place.lng, count: place.events.length, precise: place.precise,
+      hex: CAT_HEX[dominantCategory(place.events)] || '#D7FF00',
+      popupHtml: placePopupHtml(place),
+    });
   });
+  mapCtl.setPlaces(list, key => selectPlace(key));
+  markersByKey = mapCtl.markers;
 }
 
 function renderCityRail(places){
