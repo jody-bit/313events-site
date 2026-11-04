@@ -34,7 +34,7 @@ console.log("PASS: pin style and popup sizing match the live maps");
 {
   const { L, log, map } = fakeL(); const el = fakeEl();
   const ctl = MF.create(el, { label: "Map of Detroit-area events" }, { L });
-  assert.ok(ctl.ready); assert.strictEqual(el.attrs.role, "img");
+  assert.ok(ctl.ready); assert.strictEqual(el.attrs.role, "group");
   assert.strictEqual(log.tiles[0].o.attribution, MF.PROVIDER.attribution);
   map._h.focus(); assert.strictEqual(map.sw, true); map._h.blur(); assert.strictEqual(map.sw, false);
   const clicks = [];
@@ -47,6 +47,7 @@ console.log("PASS: pin style and popup sizing match the live maps");
   ctl.fitTo([{ lat: 1, lng: 2 }, { lat: 3, lng: 4 }]); assert.strictEqual(map.fit.o.maxZoom, 13);
   ctl.destroy(); assert.ok(map.gone && !ctl.ready);
 }
+{ const { L } = fakeL(); const e2 = fakeEl(); MF.create(e2, {}, { L }); assert.strictEqual(e2.attrs.role, undefined, "no label means no role: live maps keep their markup"); }
 console.log("PASS: create, pins, select, aria-label and scroll rule");
 
 // 3b. icon places become keyboard-focusable 44px markers with the page's own markup; circles remain the default
