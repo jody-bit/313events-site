@@ -344,7 +344,7 @@
    },
    {
     "id": "post-make-the-gift-workshops",
-    "name": "POST: make-the-gift workshops",
+    "name": "POST workshops",
     "city": "Detroit (Jefferson-Chalmers)",
     "region": "MI",
     "categories": [
@@ -358,7 +358,7 @@
      "src": "/assets/placeholders/event-800.webp",
      "illustrative": false
     },
-    "checkUrl": "https://www.mutualadoration.com/"
+    "checkUrl": "https://www.mutualadoration.com/collections/workshops-at-post"
    },
    {
     "id": "walkerville-brewery-holiday-market",
