@@ -121,6 +121,26 @@
       map.on("focus", function () { map.scrollWheelZoom.enable(); });
       map.on("blur", function () { map.scrollWheelZoom.disable(); });
       ctl.map = map; ctl.ready = true;
+      // Keyboard operation of focusable pins (Leaflet only handles Escape when the map container itself has focus):
+      // Enter on a pin opens its popup and moves focus to the first link in it (otherwise the popup sits after every pin in tab order);
+      // Escape anywhere inside the map closes the popup and returns focus to the pin that opened it.
+      var enterOnPin = false;
+      ctl._keyboardOpen = function (ev) {
+        if (!enterOnPin) return;
+        enterOnPin = false;
+        var pop = ev && ev.popup && ev.popup.getElement && ev.popup.getElement();
+        var first = pop && pop.querySelector && pop.querySelector("a[href], button, [tabindex]");
+        if (first && first.focus) first.focus();
+      };
+      if (el.addEventListener) el.addEventListener("keydown", function (ev) {
+        var t = ev.target, onPin = !!(t && t.classList && t.classList.contains("leaflet-marker-icon"));
+        if (ev.key === "Enter" && onPin) { enterOnPin = true; setTimeout(function () { enterOnPin = false; }, 400); return; }
+        if (ev.key !== "Escape" || !map._popup) return;
+        var opener = ctl._opener, pinEl = opener && opener.getElement && opener.getElement();
+        map.closePopup();
+        if (pinEl && pinEl.focus) pinEl.focus();
+        ev.stopPropagation();
+      }, true);
     } catch (err) {
       ctl.error = err;
       el.innerHTML = UNAVAILABLE_HTML;
@@ -145,6 +165,7 @@
           m = L.circleMarker([place.lat, place.lng], pinStyle(place)).addTo(ctl.map);
         }
         if (place.popupHtml) m.bindPopup(place.popupHtml, popupOptions(h, o.popupMaxHeight));
+        if (place.popupHtml && place.icon) m.on("popupopen", function (ev) { ctl._opener = m; if (ctl._keyboardOpen) ctl._keyboardOpen(ev); });
         if (onSelect) m.on("click", function () { onSelect(place.key); });
         ctl.markers.set(place.key, m);
       });
