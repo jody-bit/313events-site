@@ -17,7 +17,8 @@ const vm = require("vm");
 
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SRC = fs.readFileSync(`${REPO_DIR}/discovery.js`, "utf8");
-const { Discovery: D, _build, _defaultConfig } = require(`${REPO_DIR}/discovery.js`);
+const SHARED = ["blocked-names.js", "place-list.js"].map((f) => fs.readFileSync(`${REPO_DIR}/${f}`, "utf8")).join("\n");
+const { Discovery: D, _build, _defaultConfig } = require(`${REPO_DIR}/test/fixtures/load-discovery.js`);
 
 // Saturday 2026-10-03, 3:00 PM in Detroit (EDT, UTC-4).
 const NOW = new Date("2026-10-03T19:00:00Z");
@@ -40,6 +41,8 @@ function run() {
   {
     // Loads with NOTHING available: no window, document, fetch or module.
     const bare = vm.createContext({});
+    // The two shared lists (issue #16) are loaded first, as the page's <script> tags do; discovery.js itself adds exactly one global.
+    vm.runInContext(SHARED, bare);
     const before = new Set(Object.getOwnPropertyNames(vm.runInContext("globalThis", bare)));
     vm.runInContext(SRC, bare);
     const added = Object.getOwnPropertyNames(vm.runInContext("globalThis", bare)).filter((k) => !before.has(k));
@@ -49,6 +52,7 @@ function run() {
     // Loads beside a page that still declares its own copies of everything
     // (calendar.html and map.html today) without a name collision.
     const page = vm.createContext({});
+    vm.runInContext(SHARED, page);
     vm.runInContext("var window = globalThis; const CATS = {}; const LOCATIONS = []; const CITY_LOOKUP = new Map(); const FEATURE_CHIPS = []; function matchesFilters(){ return 'page'; } function haversineMiles(){ return 'page'; } let activeCats = new Set();", page);
     vm.runInContext(SRC, page);
     assert.strictEqual(vm.runInContext("matchesFilters() + '|' + haversineMiles() + '|' + typeof Discovery.matches", page), "page|page|function");
