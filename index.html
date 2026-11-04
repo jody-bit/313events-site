@@ -3713,6 +3713,12 @@
   }
   .af-clear:hover{color:var(--ink);border-color:var(--ink);}
   .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .cat-summary{flex:0 0 100%;width:100%;margin:2px 0 6px;font-size:13px}
+  .cat-summary:focus{outline:2px solid var(--accent,#c8ff00);outline-offset:3px}
+  .cat-summary-line{margin:0;line-height:2}
+  .cat-sel,.cat-clear{font:inherit;color:inherit;background:transparent;border:1px solid #3a3a3a;padding:4px 10px;cursor:pointer;min-height:32px}
+  .cat-clear{text-decoration:underline;border-color:transparent;margin-left:4px}
+  .cat-sel:hover,.cat-clear:hover{border-color:currentColor}
   .chip{
     border:1px solid var(--line);background:var(--bg);border-radius:0;padding:8px 13px;
     font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink);
@@ -4533,7 +4539,7 @@
         <svg class="mt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"></circle></svg><span class="mt-text"><span class="mt-label">Where</span><span class="mt-sub" id="whereTriggerSub">Everywhere</span></span><svg class="mt-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="2,4 6,8 10,4"></polyline></svg>
       </button>
       <button type="button" class="mobile-trigger" id="filterTriggerBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterBar">
-        <svg class="mt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5"></rect></svg><span class="mt-text"><span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All types</span></span><svg class="mt-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="2,4 6,8 10,4"></polyline></svg>
+        <svg class="mt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5"></rect></svg><span class="mt-text"><span class="mt-label">What</span><span class="mt-sub" id="filterTriggerSub">All categories</span></span><svg class="mt-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="2,4 6,8 10,4"></polyline></svg>
       </button>
       <div class="search-wrap">
         <label class="search-field" for="search">
@@ -5193,6 +5199,47 @@ function currentListMeta(){
 // isWithinRadius(); they were removed 2026-10-03 when it adopted the
 // shared layer.
 
+// "Categories: 2 of 15 selected — Nightlife, Music". Read from the one filter state on every call, so it can never disagree with the list.
+// Every selected name is its own remove button; nothing selected is stated in words. Buttons stop propagation because they are replaced here and
+// the document-level outside-click handler would otherwise read the detached button as a click outside the open sheet and close it.
+function focusCatSummary(){ setTimeout(()=>{ const el = document.getElementById('catSummary'); if(el) el.focus({preventScroll:true}); }, 0); }
+function updateCatSummary(){
+  const box = document.getElementById('catSummary');
+  if(!box) return;
+  const total = Object.keys(CATS).length, keys = state.what.paths.filter(k=>Object.prototype.hasOwnProperty.call(CATS, k));
+  box.innerHTML = '';
+  const line = document.createElement('p');
+  line.className = 'cat-summary-line';
+  const strong = document.createElement('strong');
+  strong.textContent = 'Categories:';
+  line.appendChild(strong);
+  line.appendChild(document.createTextNode(` ${keys.length} of ${total} selected`));
+  if(!keys.length){
+    line.appendChild(document.createTextNode(' \u2014 showing every category'));
+  } else {
+    line.appendChild(document.createTextNode(' \u2014 '));
+    keys.forEach((k, i)=>{
+      if(i) line.appendChild(document.createTextNode(', '));
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cat-sel';
+      b.setAttribute('aria-label', `Remove category: ${CATS[k].label}`);
+      b.appendChild(document.createTextNode(CATS[k].label + ' '));
+      const x = document.createElement('span'); x.setAttribute('aria-hidden', 'true'); x.textContent = '\u00d7'; b.appendChild(x);
+      b.onclick = (ev)=>{ ev.stopPropagation(); setState({what: {remove: k}}); render(); focusCatSummary(); };
+      line.appendChild(b);
+    });
+    const clr = document.createElement('button');
+    clr.type = 'button';
+    clr.className = 'cat-clear';
+    clr.textContent = 'Clear all categories';
+    clr.onclick = (ev)=>{ ev.stopPropagation(); setState({what: {clear: true}}); render(); focusCatSummary(); };
+    line.appendChild(document.createTextNode(' '));
+    line.appendChild(clr);
+  }
+  box.appendChild(line);
+}
+
 function buildFilterBar(){
   const bar = document.getElementById('filterBar');
   bar.innerHTML = '';
@@ -5214,6 +5261,16 @@ function buildFilterBar(){
   header.appendChild(headerClose);
   bar.appendChild(header);
 
+  // Selected-categories summary (Jody 2026-11-04): count out of the total, then every selected name as its own removable button, plus clear all.
+  const catSummary = document.createElement('div');
+  catSummary.id = 'catSummary';
+  catSummary.className = 'cat-summary';
+  catSummary.tabIndex = -1;
+  catSummary.setAttribute('role', 'status');
+  catSummary.setAttribute('aria-live', 'polite');
+  bar.appendChild(catSummary);
+  updateCatSummary();
+
   // "All types" — a single, explicit way back to the unfiltered Event Type
   // state, distinct from "Reset filters" below (which also clears When,
   // Where, and search). Active whenever no category has been narrowed.
@@ -5229,7 +5286,7 @@ function buildFilterBar(){
   // 15 today via migration_007/009b/018/031-032/036-037, each a deliberate,
   // explicit expansion. "gaming" (Gaming & Esports) is the most recent,
   // 2026-09-22, added for the GottaGacha source -- see migration_036/037.
-  allChip.textContent = 'All types';
+  allChip.textContent = 'All categories';   // Jody 2026-11-04: spelled out; this chip clears the Categories selection (Event Type is separate and unchanged)
   allChip.onclick = ()=>{
     setState({what: {clear: true}});
     render();
@@ -5316,6 +5373,7 @@ function toggleCategory(key){
 function syncFilterBar(){
   const bar = document.getElementById('filterBar');
   if(!bar) return;
+  updateCatSummary();
   const selected = state.what.paths;
   const all = selected.length === 0;
   const light = (el, on)=>{
@@ -5401,10 +5459,8 @@ function removeFilter(entry){
 // each active dimension shown as its own removable chip, per the brief's
 // "filter state must be visible" requirement. What is active, what each is
 // called, and how to remove it all come from Discovery.describe(); this
-// page chooses the order it has always shown them in, and collapses the
-// selected categories into one "N of 15 categories" chip (showing up to
-// fourteen category chips here, on top of the chip row itself, would just
-// be noise).
+// page chooses the order it has always shown them in. Each selected
+// category is its own removable chip, matching the names in the filter sheet.
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
   const entries = Discovery.describe(state);
@@ -5416,13 +5472,8 @@ function renderActiveFilters(){
   entries.filter(e => e.dim === 'what' && e.key === 'free').forEach(add);
   entries.filter(e => e.dim === 'what' && e.key !== 'free' && !isCategory(e)).forEach(add); // features
   entries.filter(e => e.dim === 'search').forEach(add);
-  const selectedCats = entries.filter(isCategory).length;
-  if(selectedCats){
-    chips.push({label: `${selectedCats} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
-      setState({what: {clear: true}});
-      render();
-    }});
-  }
+  // Each selected category is its own removable chip, so the tray and the filter bar agree on names as well as the count.
+  entries.filter(isCategory).forEach(add);
   entries.filter(e => e.dim === 'where' && e.key === 'origin').forEach(add);
   entries.filter(e => e.dim === 'where' && e.key === 'neighborhood').forEach(add);
 
@@ -7635,10 +7686,10 @@ function updateMobileTriggers(){
   const totalCats = Object.keys(CATS).length;
   const selectedCats = state.what.paths.length, features = state.what.features.length;
   const parts = [];
-  if(selectedCats) parts.push(`${selectedCats}/${totalCats} cats`);
+  if(selectedCats) parts.push(`${selectedCats} of ${totalCats} categories`);
   if(state.what.free) parts.push('Free');
   if(features) parts.push(`${features} feature${features===1?'':'s'}`);
-  filterSub.textContent = parts.length ? parts.join(' · ') : 'All types';
+  filterSub.textContent = parts.length ? parts.join(' · ') : 'All categories';
   document.getElementById('filterTriggerBtn').classList.toggle('has-value', parts.length > 0);
 }
 
