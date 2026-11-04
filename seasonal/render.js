@@ -238,11 +238,12 @@
     var o = state.origin;
     return '<div class="sc-near" role="group" aria-label="Sort by distance">' +
       '<button type="button" class="sc-near-btn sc-near-main" id="scNearBtn">Nearest to me</button>' +
-      '<div class="sc-near-city"><label class="sc-near-lab" for="scCity">City or ZIP</label>' +
-      '<input id="scCity" class="sc-near-in" type="text" list="scCityList" autocomplete="off" placeholder="e.g. Windsor" value="">' +
+      '<div class="sc-near-city"><label class="sc-near-lab" for="scCity">City</label>' +
+      '<input id="scCity" class="sc-near-in" type="text" list="scCityList" autocomplete="off" placeholder="Start typing a city" value="">' +
       '<datalist id="scCityList"></datalist>' +
       '<button type="button" class="sc-near-btn" id="scCityGo">Use this city</button></div>' +
       '<button type="button" class="sc-near-btn" id="scNearClear"' + (o ? "" : " hidden") + '>Clear location</button>' +
+      '<p class="sc-near-help" id="scCityHelp"></p>' +
       '<p class="sc-near-status" id="scNearStatus" role="status" aria-live="polite">' + (o ? nearStatus(o) : "Editorial order. Choose \u201cNearest to me\u201d or a city to sort by distance. Distances are approximate and are not driving distances or travel times.") + '</p></div>';
   }
   function nearStatus(o) {

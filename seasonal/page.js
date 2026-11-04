@@ -50,11 +50,18 @@
     function cityLookup() {
       var inp = document.getElementById("scCity"), raw = inp ? inp.value : "", t = norm(raw);
       if (!t) { say("Type a city and choose it from the list."); return; }
-      if (/^(\d{5}(-\d{4})?|[a-z]\d[a-z] ?\d[a-z]\d)$/i.test(raw.trim())) { say("ZIP and postal codes aren't supported yet. Choose a city from the list."); return; }
+      if (/^(\d{5}(-\d{4})?|[a-z]\d[a-z] ?\d[a-z]\d)$/i.test(raw.trim())) { say("Only cities are supported, not ZIP or postal codes. Choose a city from the list."); return; }
       var cities = window.SeasonalCities || [], hit = null;
       cities.forEach(function (c) { if (!hit && (norm(c.name + " " + c.region) === t || norm(c.name) === t || norm(c.name + ", " + c.region) === t)) hit = c; });
-      if (!hit) { say("We don't have \u201c" + raw.trim() + "\u201d yet. Choose a city from the list; ZIP and postal codes aren't supported."); return; }
+      if (!hit) { say("We don't have \u201c" + raw.trim() + "\u201d yet. Choose a city from the list; ZIP and postal codes are not supported."); return; }
       setOrigin({ lat: hit.lat, lng: hit.lng, kind: "city", label: hit.name + ", " + hit.region });
+    }
+    function describeCities() {
+      var h = document.getElementById("scCityHelp"), cs = window.SeasonalCities;
+      if (!h || !cs) return;
+      var n = { Michigan: 0, Ontario: 0, Ohio: 0 };
+      cs.forEach(function (c) { if (n[c.region] != null) n[c.region]++; });
+      h.textContent = cs.length + " cities are listed: " + n.Michigan + " in Michigan, " + n.Ontario + " in Ontario (the Windsor\u2013Essex area, Chatham and Sarnia) and " + n.Ohio + " in Ohio (Toledo, Bowling Green and Huron). A city not on the list, a ZIP or a postal code is not supported. Distances are from the city\u2019s center.";
     }
     function fillSuggestions() {
       var inp = document.getElementById("scCity"), dl = document.getElementById("scCityList");
@@ -89,6 +96,7 @@
     document.addEventListener("input", function (e) { if (e.target && e.target.id === "scCity") fillSuggestions(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target && e.target.id === "scCity") { e.preventDefault(); cityLookup(); } });
     sync(false);
+    describeCities();
     loadMapScript();
     // shared title fit: again once the webfonts have loaded, and when the viewport changes
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { R.fitTitles(document); });

@@ -138,3 +138,4 @@ a.sc-view{display:inline-flex;align-items:center;min-height:44px}
 .sc-near-main{flex:0 0 auto}.sc-near-city{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;flex:1 1 320px}
 .sc-near-city .sc-near-lab{flex-basis:100%}.sc-map-tilestatus{margin:0 0 8px;font-size:13px;color:var(--ink-soft)}
 @media (max-width:640px){.sc-near-main,.sc-near-city,.sc-near-city .sc-near-btn,.sc-near-in{flex:1 1 100%;width:100%}}
+.sc-near-help{flex-basis:100%;margin:0;font-size:12px;color:var(--ink-soft)}
