@@ -1,0 +1,354 @@
+{
+ "_note": "PREVIEW ONLY (owner review, 2026-11-04). Served by api/seasonal-preview.js on Vercel preview/development only; production answers 404. Proposals from the 313.events Don't Miss refresh review package (capture 2026-11-03). Nothing here is published, approved or scheduled; expiry fields are PROPOSED. Records without a cleared image show the neutral site placeholder.",
+ "fall": {
+  "remove": [
+   "kackleberry-farms",
+   "debucks-family-farm",
+   "trabbic-family-pumpkin-farm"
+  ],
+  "overrides": {
+   "yates-cider-mill": {
+    "summary": "Take your cider outside and make this a Rochester Hills outing, with the mill as the starting point rather than the whole afternoon. Check the dated November hours before you go.",
+    "featured": true
+   },
+   "franklin-cider-mill": {
+    "summary": "Go for the cider and warm donuts; stay for the story of a mill whose history reaches back to Michigan’s statehood year. Season ends Sunday, November 29, 2026.",
+    "featured": true,
+    "lastDay": "2026-11-29",
+    "removeAt": "2026-11-30T00:00:00-05:00"
+   },
+   "parmenters-northville-cider-mill": {
+    "summary": "Pick up cider in Northville, then spend some time exploring the town around it. This is a short-season stop with a firm final day. Last day November 22, 2026.",
+    "featured": true,
+    "lastDay": "2026-11-22",
+    "removeAt": "2026-11-23T00:00:00-05:00"
+   },
+   "diehls-orchard-and-cider-mill": {
+    "summary": "Make a final November cider-and-donut stop in Holly, then choose a nearby woodland walk if conditions allow. November weekends, noon to 5 p.m.; last day November 22.",
+    "featured": true,
+    "lastDay": "2026-11-22",
+    "removeAt": "2026-11-23T00:00:00-05:00"
+   },
+   "parshallville-cider-mill": {
+    "summary": "Seek out the old mill on Ore Creek for a quieter, history-led cider outing before its short season ends. Wednesday to Sunday, 9 to 6, through mid-November, weather permitting.",
+    "featured": true
+   },
+   "macqueen-orchards": {
+    "summary": "Head into the Ohio side of the Orbit for an orchard-market visit that continues beyond pumpkin season. Shop the market and bakery rather than expecting October’s outdoor attractions. Market open year-round except major holidays (November to April, 9 to 6); the outdoor fall attractions are separate.",
+    "featured": true
+   },
+   "long-family-orchard-and-farm": {
+    "summary": "Commerce Township orchard and farm market with fresh-pressed cider through Thanksgiving Eve, November 25, 2026. The Fun Farm and corn maze ended November 1.",
+    "featured": false,
+    "lastDay": "2026-11-25",
+    "removeAt": "2026-11-26T00:00:00-05:00"
+   },
+   "plymouth-orchards-and-cider-mill": {
+    "summary": "Plymouth orchard with award-winning cider and donuts. The mill closes November 8; the Red Shed (a separate address) continues through November 25.",
+    "featured": false,
+    "lastDay": "2026-11-08",
+    "removeAt": "2026-11-09T00:00:00-05:00"
+   }
+  },
+  "lead": [
+   "yates-cider-mill",
+   "franklin-cider-mill",
+   "parmenters-northville-cider-mill",
+   "diehls-orchard-and-cider-mill",
+   "parshallville-cider-mill",
+   "macqueen-orchards"
+  ]
+ },
+ "outside-the-ordinary": {
+  "base": "fall-color",
+  "remove": [],
+  "overrides": {
+   "highland-state-recreation-area": {
+    "summary": "Follow the woodland story at Haven Hill, where forest and the remains of Edsel Ford’s retreat share the same landscape.",
+    "featured": true
+   },
+   "cranbrook-gardens-and-grounds": {
+    "summary": "Look for the shape of the landscape at Cranbrook: paths, trees and the Japanese Garden give this walk a story beyond fall color. Fall and winter grounds hours 8 to 5, weather permitting.",
+    "featured": true
+   },
+   "wadhams-to-avoca-trail": {
+    "summary": "Walk the former railway over Mill Creek and see the valley from its historic trestle. Make the structure and landscape the story, with autumn color as a bonus.",
+    "featured": true
+   }
+  },
+  "meta": {
+   "slug": "outside-the-ordinary",
+   "route": "/outside-the-ordinary",
+   "title": "Outside the Ordinary",
+   "titleLines": [
+    "Outside the",
+    "Ordinary"
+   ],
+   "tagline": "Go somewhere that earns the trip.",
+   "subtitle": "Landscapes, history and discovery across the Detroit Orbit: woods, marshes, gardens and trails worth the drive.",
+   "metaDescription": "Landscapes, history and discovery across the Detroit Orbit: parks, trails, marshes and gardens in Michigan, Ohio and Ontario. A 313.events collection.",
+   "filterLabel": "How do you want to explore?",
+   "dontMissTitle": "Don't miss outside",
+   "exploreTitle": "Explore outside the ordinary",
+   "discoverTitle": "Where will you go?",
+   "mapTitle": "Explore more of the Orbit",
+   "mapBlurb": "The events map shows all 313.events listings, not only this collection.",
+   "hero": {
+    "desktop": "/assets/seasonal/fall-color-hero-1600.webp",
+    "mobile": "/assets/seasonal/fall-color-hero-800.webp",
+    "alt": "",
+    "illustrative": true,
+    "objectPosition": "50% 50%"
+   },
+   "categories": [
+    {
+     "id": "parks-gardens",
+     "label": "Parks + Gardens",
+     "tile": "Visit a park"
+    },
+    {
+     "id": "trails-woods",
+     "label": "Trails + Woods",
+     "tile": "Walk under the trees"
+    },
+    {
+     "id": "waterfronts",
+     "label": "Waterfronts",
+     "tile": "Explore the waterfront"
+    }
+   ]
+  },
+  "add": [
+   {
+    "id": "crosswinds-marsh",
+    "name": "Crosswinds Marsh",
+    "city": "New Boston / Sumpter Township",
+    "region": "MI",
+    "categories": [
+     "parks-gardens",
+     "trails-woods"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Trade the tree tunnel for a marsh walk at Crosswinds, where wetland paths and boardwalks open the view. Open daily, dawn to dusk.",
+    "website": "https://www.waynecountymi.gov/Parks-Recreation/Explore/Crosswinds-Marsh",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    }
+   },
+   {
+    "id": "ojibway-prairie-complex",
+    "name": "Ojibway Prairie Complex",
+    "city": "Windsor",
+    "region": "ON",
+    "categories": [
+     "parks-gardens",
+     "trails-woods"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Cross the river for the Ojibway landscape: explore authorized trails through a prairie-and-oak ecosystem, with a nature centre to help explain what you are seeing. Natural areas open dawn to dusk; nature-centre hours to confirm.",
+    "website": "https://www.citywindsor.ca/residents/parks-and-forestry/ojibway-prairie-complex/ojibway-nature-centre",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    }
+   },
+   {
+    "id": "hidden-lake-gardens",
+    "name": "Hidden Lake Gardens",
+    "city": "Tipton",
+    "region": "MI",
+    "categories": [
+     "parks-gardens",
+     "trails-woods"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "See the woodland from canopy level at Hidden Lake Gardens, then explore the conservatory for a change of atmosphere. Gardens Tuesday to Sunday, 9 to 5; canopy walk 10 to 4, weather permitting. The drive closes to vehicles from November; walking stays open.",
+    "website": "https://ipf.msu.edu/hidden-lake-gardens",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    }
+   }
+  ],
+  "lead": [
+   "highland-state-recreation-area",
+   "cranbrook-gardens-and-grounds",
+   "wadhams-to-avoca-trail",
+   "crosswinds-marsh",
+   "ojibway-prairie-complex",
+   "hidden-lake-gardens"
+  ]
+ },
+ "off-the-beaten-orbit": {
+  "base": null,
+  "remove": [],
+  "overrides": {},
+  "meta": {
+   "slug": "off-the-beaten-orbit",
+   "route": "/off-the-beaten-orbit",
+   "title": "Off the Beaten Orbit",
+   "titleLines": [
+    "Off the Beaten",
+    "Orbit"
+   ],
+   "tagline": "Winter, made by hand.",
+   "subtitle": "Potters, makers, historic houses and unexpected winter outings across the Detroit Orbit.",
+   "metaDescription": "Potters, makers, historic houses and unexpected winter outings across the Detroit Orbit. A 313.events November and December collection.",
+   "filterLabel": "What kind of outing?",
+   "dontMissTitle": "Don't miss this winter",
+   "exploreTitle": "Explore off the beaten Orbit",
+   "discoverTitle": "Pick your kind of outing",
+   "mapTitle": "Explore more of the Orbit",
+   "mapBlurb": "The events map shows all 313.events listings, not only this collection.",
+   "hero": {
+    "desktop": "/assets/placeholders/event-800.webp",
+    "mobile": "/assets/placeholders/event-800.webp",
+    "alt": "",
+    "illustrative": false,
+    "objectPosition": "50% 50%"
+   },
+   "categories": [
+    {
+     "id": "makers-studios",
+     "label": "Makers + Studios",
+     "tile": "Meet the makers"
+    },
+    {
+     "id": "historic-houses",
+     "label": "Historic Houses",
+     "tile": "Step inside history"
+    },
+    {
+     "id": "markets",
+     "label": "Markets",
+     "tile": "Browse a market"
+    }
+   ]
+  },
+  "add": [
+   {
+    "id": "pewabic-holiday-showcase",
+    "name": "Pewabic Holiday Showcase",
+    "city": "Detroit",
+    "region": "MI",
+    "categories": [
+     "makers-studios",
+     "markets"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Find a gift with a making story at Pewabic’s Holiday Showcase, and add a museum visit or a separately booked workshop to the trip. Showcase begins November 5, 2026; closing date being confirmed.",
+    "website": "https://www.pewabic.org/pages/holiday-showcase",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    }
+   },
+   {
+    "id": "post-make-the-gift-workshops",
+    "name": "POST: make-the-gift workshops",
+    "city": "Detroit (Jefferson-Chalmers)",
+    "region": "MI",
+    "categories": [
+     "makers-studios"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Leave with something you made at POST. Choose a small workshop project or explore the handmade shop, with the actual class schedule guiding the visit. Listed: ceramics workshop November 27 (3 to 6) and mini-stockings December 2 (5 to 8); check seats.",
+    "website": "https://www.mutualadoration.com/",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    }
+   },
+   {
+    "id": "walkerville-brewery-holiday-market",
+    "name": "Walkerville Brewery Holiday Market",
+    "city": "Windsor",
+    "region": "ON",
+    "categories": [
+     "markets",
+     "makers-studios"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Browse local makers inside Walkerville Brewery, with Saturday devoted to pottery from Windsor-area makers. Give the trip a Walkerville story rather than treating Windsor as an afterthought. Friday November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m.",
+    "website": "https://www.walkervillebrewery.com/events/holidaymarket-2026",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    },
+    "lastDay": "2026-11-21",
+    "removeAt": "2026-11-22T00:00:00-05:00"
+   },
+   {
+    "id": "willistead-manor-holiday-tours",
+    "name": "Willistead Manor holiday tours",
+    "city": "Windsor",
+    "region": "ON",
+    "categories": [
+     "historic-houses"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Visit Willistead Manor in its December setting and include the Coach House exhibition to connect the house to the Walker family and Walkerville. December 2, 9, 16 and 23 (6 to 8 p.m.); December 6, 13, 20 and 27 (1 to 4 p.m.).",
+    "website": "https://www.citywindsor.ca/residents/culture/willistead-manor/Willistead-Manor-Tours",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    },
+    "lastDay": "2026-12-27",
+    "removeAt": "2026-12-28T00:00:00-05:00"
+   },
+   {
+    "id": "stahls-motors-and-music",
+    "name": "Stahls Motors and Music Experience",
+    "city": "Chesterfield",
+    "region": "MI",
+    "categories": [
+     "historic-houses",
+     "makers-studios"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Go beyond a conventional car display at Stahls, where motor history shares the space with a remarkable music collection. The November evening opening gives the trip a timely reason. Night at the Museum: November 19, 5 to 8 p.m.",
+    "website": "https://www.stahlsauto.com/visit/",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    }
+   },
+   {
+    "id": "rochester-kris-kringle-market",
+    "name": "Rochester Kris Kringle Market",
+    "city": "Rochester",
+    "region": "MI",
+    "categories": [
+     "markets"
+    ],
+    "featured": true,
+    "status": "PUBLISHED",
+    "summary": "Make Rochester’s open-air Kris Kringle Market the reason for the evening trip: browse handcrafted gifts, greenery and specialty foods, then explore the downtown around it. Friday December 4, 4 to 10 p.m.; Saturday December 5, noon to 10 p.m.; West Fourth Street and Walnut Boulevard.",
+    "website": "https://www.downtownrochestermi.com/kris-kringle-market/",
+    "image": {
+     "src": "/assets/placeholders/event-800.webp",
+     "illustrative": false
+    },
+    "lastDay": "2026-12-05",
+    "removeAt": "2026-12-06T00:00:00-05:00"
+   }
+  ],
+  "lead": [
+   "pewabic-holiday-showcase",
+   "post-make-the-gift-workshops",
+   "walkerville-brewery-holiday-market",
+   "willistead-manor-holiday-tours",
+   "stahls-motors-and-music",
+   "rochester-kris-kringle-market"
+  ]
+ }
+}

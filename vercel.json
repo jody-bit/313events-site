@@ -168,6 +168,9 @@
     },
     "api/seasonal-qa.js": {
       "includeFiles": "api/_lib/seasonal-editorial/**"
+    },
+    "api/seasonal-preview.js": {
+      "includeFiles": "{api/_lib/seasonal-editorial/**,seasonal/**}"
     }
   },
   "rewrites": [
