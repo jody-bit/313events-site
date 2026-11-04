@@ -40,8 +40,9 @@
     }
     function loadMapScript() {
       if (window.SeasonalMapView || state.view !== "map") return;
-      var sc = document.createElement("script"); sc.src = "/seasonal/map-view.js";
-      sc.onload = function () { sync(false); }; document.head.appendChild(sc);
+      function add(src, next) { var sc = document.createElement("script"); sc.src = src; sc.onload = next; document.head.appendChild(sc); }
+      if (window.MapFoundation) add("/seasonal/map-view.js", function () { sync(false); });
+      else add("/map-foundation.js", function () { add("/seasonal/map-view.js", function () { sync(false); }); });
     }
     function say(msg) { var st = document.getElementById("scNearStatus"); if (st) st.textContent = msg; }
     function setOrigin(o) { state.origin = o; sync(false); }

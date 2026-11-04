@@ -16,14 +16,6 @@ const RENDER = require("../seasonal/render.js");
 const PREVIEW = require("./_lib/seasonal-editorial/refresh-preview.json");
 const LOCS = require("./_lib/seasonal-editorial/locations.json");
 
-// One place for the Preview basemap settings: the events map's CARTO setup (key is already public in map.html).
-const MAP_SETTINGS = {
-  tileUrl: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=cb1_2w25_1_4715a1af021de1017d3ef172",
-  subdomains: "abcd",
-  attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors \u00a9 <a href="https://carto.com/attributions">CARTO</a>',
-  maxZoom: 19
-};
-
 const SLUGS = ["fall", "outside-the-ordinary", "off-the-beaten-orbit"];
 
 function clone(v) { return JSON.parse(JSON.stringify(v)); }
@@ -77,7 +69,6 @@ ${R.footer()}
 <script src="/seasonal/collections.js"></script>
 <script src="/seasonal/render.js"></script>
 <script src="/seasonal/orbit-cities.js"></script>
-<script>window.SeasonalMapSettings = ${json(MAP_SETTINGS)};</script>
 <script>(function () {
   var C = window.SeasonalCollections, slug = ${JSON.stringify(slug)}, META = ${json(d.meta)};
   var col = C.COLLECTIONS[slug] = Object.assign({}, C.COLLECTIONS[slug] || {}, META || {}, { entries: window.SeasonalPublishedEntries[slug] });
@@ -109,4 +100,3 @@ module.exports.entriesFor = entriesFor;
 module.exports.previewData = previewData;
 module.exports.html = html;
 module.exports.SLUGS = SLUGS;
-module.exports.MAP_SETTINGS = MAP_SETTINGS;
