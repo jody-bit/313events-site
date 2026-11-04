@@ -126,6 +126,8 @@
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  // Owner rule 2026-11-04: an operating detail we cannot confirm says "Check with the venue before you go" and links to the official visitor/contact page.
+  function checkLine(e) { return e.checkUrl && /^https:\/\//.test(e.checkUrl) ? '<p class="sc-card-sum sc-card-check"><a href="' + esc(e.checkUrl) + '" target="_blank" rel="noopener noreferrer">Check with the venue before you go</a></p>' : ""; }
   function lastDayText(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso); return m ? MONTHS[+m[2] - 1] + " " + (+m[3]) + ", " + m[1] : iso; }
   // One consistent label. A destination's seasonal closing date is "Last day open"; an activity or event with its own final date says so.
   // lastDayKind: "event" -> "Final event day"; "runs" -> "Runs through"; anything else -> "Last day open". lastDayNote adds a short qualifier.
@@ -162,6 +164,7 @@
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
       '<p class="sc-card-sum">' + esc(e.summary) + '</p>' +
       lastDayLine(e) + distanceLine(e, opts.state) + ontarioLine(e) +
+      checkLine(e) +
       (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + creditLine(e) + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }

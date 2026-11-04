@@ -119,6 +119,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-card-body{min-width:0}.sc-qa-line,.sc-qa-bar,.sc-qa-opt{overflow-wrap:anywhere;min-width:0}
 .sc-qa-opt .sc-ph{width:96px;height:64px;flex:none}
 .sc-card-lastday strong{color:var(--ink);font-weight:600}
+.sc-card-check a{color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 /* ---- Map view and nearest-to-me controls ---- */
 .sc-near{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:12px 0}
 .sc-near-lab{font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}

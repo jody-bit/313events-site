@@ -73,3 +73,17 @@ assert.ok(/November 20, 5 to 10 p.m.; Saturday November 21, 11 a.m. to 5 p.m./.t
   ["collections.js", "render.js", "published-entries.js"].forEach((f) => delete require.cache[cache(f)]);
 }
 console.log("seasonal-preview: ok");
+
+// Owner rule 2026-11-04: unconfirmed operating details read "Check with the venue before you go" and link to an official page.
+{
+  const P = require("../api/seasonal-preview.js");
+  const COUNTS = {};
+  P.SLUGS.forEach((slug) => {
+    const es = P.entriesFor(slug).filter((e) => e.checkUrl);
+    COUNTS[slug] = es.length;
+    es.forEach((e) => { assert.ok(/^https:\/\/[^/]+\.[^/]+/.test(e.checkUrl), slug + "/" + e.id + " has an https official link"); });
+  });
+  assert.ok(COUNTS["fall"] >= 15, "fall carries the check line on entries with unconfirmed 2026 details");
+  assert.ok(COUNTS["outside-the-ordinary"] >= 4, "Outside the Ordinary carries it for Holiday Beach, Point Pelee, Ojibway and Cranbrook");
+  assert.ok(P.html("outside-the-ordinary").indexOf("Check with the venue before you go") >= 0 || /checkUrl/.test(P.html("outside-the-ordinary")), "the page carries the check data");
+}

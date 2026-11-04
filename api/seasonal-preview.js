@@ -41,15 +41,16 @@ function previewData(slug) {
 
 function json(v) { return JSON.stringify(v).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029"); }
 
-function html(slug, qaPins) {
+function html(slug, qaPins, opts) {
+  const pub = !!(opts && opts.published);   // owner-released public page (api/seasonal-collection.js): no review banner, indexable, no "(Preview)"
   const d = previewData(slug), R = RENDER;
-  const title = (d.meta ? d.meta.title : "Fall Is On.") + " (Preview) — 313.events";
+  const title = (d.meta ? d.meta.title : "Fall Is On.") + (pub ? "" : " (Preview)") + " — 313.events";
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
+${pub ? `<link rel="canonical" href="https://313.events/${R.esc(slug === "fall" ? "fall" : slug)}">` : '<meta name="robots" content="noindex, nofollow">'}
 <title>${R.esc(title)}</title>
 <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +60,7 @@ function html(slug, qaPins) {
 <link rel="stylesheet" href="/seasonal/seasonal.css">
 </head>
 <body data-collection="${R.esc(slug)}">
-<p role="status" style="margin:0;padding:10px 16px;background:#F5C400;color:#0A0A0A;font:600 14px Inter,sans-serif;text-align:center">PREVIEW FOR OWNER REVIEW. Not published and not approved. Dates and map locations shown here are for review; nothing is scheduled.</p>
+${pub ? "" : '<p role="status" style="margin:0;padding:10px 16px;background:#F5C400;color:#0A0A0A;font:600 14px Inter,sans-serif;text-align:center">PREVIEW FOR OWNER REVIEW. Not published and not approved. Dates and map locations shown here are for review; nothing is scheduled.</p>'}
 <div class="sc-page">
 ${R.header()}
 <main id="scMain"></main>
