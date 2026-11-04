@@ -89,6 +89,8 @@ const ALLOWED = [
   "api/_lib/seasonal-editorial/launch-verification.json",
   "api/_lib/seasonal-editorial/linked-images.json",
   "api/_lib/seasonal-editorial/photo-library.json",
+  // Scheduled placement removal (owner direction 2026-11-04, draft PR #314): the dated list of placements that leave a collection.
+  "api/_lib/seasonal-editorial/placements.json",
   // Release batch 2 (owner gate 5, 2026-10-19): the pinned three-record list and its generated batch record.
   "api/_lib/seasonal-editorial/release-2.json", "api/_lib/seasonal-editorial/RELEASE_BATCH_2.json",
   "api/_lib/seasonal-editorial/qa-client.js",
