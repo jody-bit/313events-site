@@ -92,9 +92,74 @@ async function run() {
     assert.strictEqual(counts.repairableFromCanonicalVenueId, 1);
     assert.strictEqual(applyCalls.length, 1);
     assert.strictEqual(applyCalls[0].id, "e1");
-    assert.deepStrictEqual(applyCalls[0].patch, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    const { internal_note: note1, ...fields1 } = applyCalls[0].patch;
+    assert.deepStrictEqual(fields1, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    assert.ok(/^AUTO-FILL \d{4}-\d\d-\d\d: venue_address_raw, venue_city_raw from canonical_venue_id for "The Loft"; step SH\.1/.test(note1), "every automated fill leaves a dated line: " + note1);
+    assert.deepStrictEqual(counts.writtenFields, [{ id: "e1", fields: ["venue_address_raw", "venue_city_raw"] }], "the run keeps which fields were written to which event");
+    assert.strictEqual(counts.ownerRowSkipped, 0);
+    assert.strictEqual(counts.ledgerDurable, false, "no ledger attached until the table is approved");
   }
   console.log("PASS: a repairable existing event is written exactly once with exactly the missing fields");
+
+  // --- 2b/2c. owner/Editorial rows are NEVER patched (proposed fill recorded instead); a durable ledger is written BEFORE the patch and fails closed ---
+  {
+    const mkFetch = () => async (url) => {
+      if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [{ id: "v1", name: "The Loft", address: "123 Main St", city: "Detroit" }] };
+      if (url.includes("/rest/v1/events")) return { ok: true, status: 200, json: async () => [] };
+      throw new Error("unmocked: " + url);
+    };
+    const base = { venue_id: "v1", venue_name_raw: "The Loft", venue_address_raw: null, venue_city_raw: null, start_date: "2026-12-01", status: "approved" };
+    const rows = () => [
+      { id: "m1", source: "Manual", ...base },
+      { id: "m2", source: "Resident Advisor", ...base, internal_note: "OWNER-CORRECTION 2026-11-01 admin fields=title" },
+      { id: "m3", source: "Resident Advisor", ...base, internal_note: "EDITORIAL-HOLD keep" },
+      { id: "a1", source: "Resident Advisor", ...base },
+    ];
+    const mkLedger = (opts = {}) => {
+      const log = [], seen = new Set(opts.seen || []);
+      return { log, async record(r) { if (opts.fail) throw new Error("boom"); log.push(...r); r.filter((x) => x.status === "proposed").forEach((x) => seen.add(`${x.event_id}|${x.field}|${x.after}`)); }, async hasProposal(k) { return seen.has(k); } };
+    };
+    // no ledger: owner rows skipped, only the feed row is patched
+    {
+      const { repairExistingEvents } = freshScript(); global.fetch = mkFetch();
+      const patches = [];
+      const counts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: "k", logger: silentLogger(), runId: "run-123", fetchCandidates: async () => rows(),
+        applyPatchFn: async (u, h, id, patch) => { patches.push({ id, patch }); return true; } });
+      assert.deepStrictEqual(patches.map((p) => p.id), ["a1"], "Manual, OWNER-CORRECTION and EDITORIAL-HOLD rows are never patched");
+      assert.strictEqual(counts.ownerRowSkipped, 3);
+      assert.deepStrictEqual(counts.proposedFills.map((p) => p.id), ["m1", "m2", "m3"]);
+      assert.ok(/run run-123/.test(patches[0].patch.internal_note));
+      assert.ok(!("title" in patches[0].patch) && !("description" in patches[0].patch), "only blank location fields are ever written");
+    }
+    // ledger: records written (applied + proposed) with before/after, and de-duplicated proposals are not re-queued
+    {
+      const { repairExistingEvents } = freshScript(); global.fetch = mkFetch();
+      const ledger = mkLedger({ seen: ["m3|venue_address_raw|123 Main St", "m3|venue_city_raw|Detroit"] });
+      const patches = [];
+      const counts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: "k", logger: silentLogger(), runId: "r1", ledger, fetchCandidates: async () => rows(),
+        applyPatchFn: async (u, h, id, patch) => { patches.push(id); return true; } });
+      assert.strictEqual(counts.ledgerDurable, true);
+      assert.strictEqual(counts.proposedDeduped, 1, "m3 was already proposed on an earlier day");
+      const byStatus = (st) => ledger.log.filter((r) => r.status === st).map((r) => `${r.event_id}:${r.field}`).sort();
+      assert.deepStrictEqual(byStatus("applied"), ["a1:venue_address_raw", "a1:venue_city_raw"]);
+      assert.deepStrictEqual(byStatus("proposed"), ["m1:venue_address_raw", "m1:venue_city_raw", "m2:venue_address_raw", "m2:venue_city_raw"]);
+      const rec = ledger.log.find((r) => r.event_id === "a1" && r.field === "venue_city_raw");
+      assert.deepStrictEqual([rec.before, rec.after, rec.source, rec.run_id], [null, "Detroit", "SH.1 canonical_venue_id", "r1"]);
+      assert.ok(rec.at, "timestamp present");
+      assert.deepStrictEqual(patches, ["a1"]);
+    }
+    // fail closed: ledger down means no patch
+    {
+      const { repairExistingEvents } = freshScript(); global.fetch = mkFetch();
+      const patches = [];
+      const counts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: "k", logger: silentLogger(), ledger: mkLedger({ fail: true }), fetchCandidates: async () => rows(),
+        applyPatchFn: async (u, h, id) => { patches.push(id); return true; } });
+      assert.strictEqual(patches.length, 0, "no durable record, no patch");
+      assert.strictEqual(counts.ledgerFailedClosed, 1);
+      assert.strictEqual(counts.written, 0);
+    }
+  }
+  console.log("PASS: owner/Editorial rows are never patched; ledger records precede patches, dedupe proposals and fail closed");
 
   // --- 3. concurrent-change: applyPatchFn reports no row matched -> counted,
   //     not treated as an error, and does not stop the run ---
@@ -204,9 +269,13 @@ async function run() {
     assert.strictEqual(counts.written, 2);
     assert.strictEqual(patchCalls.length, 2);
     const e1Patch = patchCalls.find((p) => p.url.includes("id=eq.e1")).body;
-    assert.deepStrictEqual(e1Patch, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    const { internal_note: n1, ...e1Fields } = e1Patch;
+    assert.deepStrictEqual(e1Fields, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    assert.ok(/^AUTO-FILL /.test(n1));
     const e2Patch = patchCalls.find((p) => p.url.includes("id=eq.e2")).body;
-    assert.deepStrictEqual(e2Patch, { venue_city_raw: "Detroit" }, "e2 already had an address — only venue_city_raw should be in its patch");
+    const { internal_note: n2, ...e2Fields } = e2Patch;
+    assert.deepStrictEqual(e2Fields, { venue_city_raw: "Detroit" }, "e2 already had an address — only venue_city_raw should be in its patch");
+    assert.ok(/^AUTO-FILL /.test(n2));
   }
   console.log("PASS: end-to-end query and conditional-PATCH URL construction is correct for both single- and multi-field repairs");
 
