@@ -102,6 +102,16 @@
     return c.length >= 2 && c[c.length - 1] < c[0];
   }
 
+  // Display time: an aggregator end of "11:59 PM" is a placeholder, not a real end (DQ sweep 2026-10-19, 245 rows).
+  // Treat it as unknown and show the start only; with no end, calendar exports use the existing 2-hour default.
+  // Only a trailing "11:59 PM" after a real start clock time is dropped; "11:59 PM" alone and every other range stay as stored.
+  function displayTime(t) {
+    if (typeof t !== "string") return t;
+    var m = t.match(/^(.*?\S)\s*(?:[\u2013\u2014-]|\bto\b|\buntil\b)\s*11:59\s*PM\s*$/i);
+    if (m && /\d\s*(?:AM|PM)|\bnoon\b/i.test(m[1])) return m[1];
+    return t;
+  }
+
   function isMultiDay(e) {
     var s = startOf(e);
     return isIso(s) && endOf(e) > s;
@@ -217,7 +227,8 @@
     expand: expand,
     isActiveOn: isActiveOn,
     availabilityOn: availabilityOn,
-    reviewReason: reviewReason
+    reviewReason: reviewReason,
+    displayTime: displayTime
   });
 
   if (typeof module !== "undefined" && module.exports) {

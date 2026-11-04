@@ -79,6 +79,24 @@ const patch = (calls) => calls.filter((c) => c.method === "PATCH").map((c) => c.
   assert.strictEqual(res.code, 200);
   assert.deepStrictEqual(res.body, { upserted: 7 }, "response is unchanged");
 
+  // --- cron-feeds second-run record reaches the written row (session_data), not just the response ---
+  calls = makeFetch();
+  const feedsBody = { upserted: 6, resume: true, preambleMs: 900, feedsAttempted: 5, feedsDeferred: 1, feedsSkippedOnResume: 20, feedsStale: 0, perFeed: [{ feed: "a", status: "ok", ms: 120 }] };
+  await withRunLog("feeds", async (req, r) => { r.status(200).json(feedsBody); })({ headers: {} }, makeRes());
+  const sd = patch(calls)[0].session_data;
+  assert.strictEqual(sd.resume, true, "session_data.resume is written on the run row");
+  assert.deepStrictEqual(sd.perFeed, feedsBody.perFeed, "per-feed results are written on the run row");
+  for (const k of ["preambleMs", "feedsAttempted", "feedsDeferred", "feedsSkippedOnResume", "feedsStale"]) assert.strictEqual(sd[k], feedsBody[k], k + " written");
+  // the written flag is what source-health reads (the select returns session_data->>resume as the string "true")
+  {
+    const sh = require(path.join(REPO, "api/_lib/source-health.js"));
+    const NOW = Date.parse("2026-10-23T22:30:00Z"), D = 86400000;
+    const run = (d, w, extra) => ({ source_slug: "feeds", outcome: "success", started_at: new Date(NOW - 1800000 - d * D).toISOString(), finished_at: new Date(NOW - 1740000 - d * D).toISOString(), records_fetched: null, records_written: w, ...extra });
+    const cfg = { crons: [{ path: "/api/cron-feeds", schedule: "0 22 * * *" }] };
+    const runs = [run(0, 6, { resume: String(sd.resume) }), run(0.01, 120), ...[1, 2, 3, 4, 5].map((d) => run(d, 120))];
+    assert.strictEqual(sh.evaluateSources({ runs, vercelConfig: cfg, now: NOW }).bySlug.get("feeds").volume.records_written.latest, 120, "a row carrying the written resume flag is ignored by the volume comparison");
+  }
+
   // --- failures are logged, response preserved ---------------------------
   calls = makeFetch();
   res = makeRes();
