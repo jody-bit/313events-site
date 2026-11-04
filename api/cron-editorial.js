@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { requireCronAuth } = require("./_lib/cron-auth"); // Package 1: fail-closed cron auth
+const { createBudget, fetchText: boundedFetchText, isTimeout, rotate } = require("./_lib/run-budget");
 const path = require("path");
 const { linkPressCoverageQueue } = require(path.join(__dirname, "..", "scripts", "press-coverage-linking"));
 const { repairGenericMetadata } = require(path.join(__dirname, "..", "scripts", "generic-metadata-enrichment"));
@@ -365,14 +366,35 @@ function parseFeedItems(xml) {
   return items;
 }
 
-async function fetchText(url) {
-  const r = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/rss+xml, application/xml, text/xml, */*" } });
+// Reliability limits (#256 / #264 pattern; owner GO 2026-10-20 19:59:58Z, minimal
+// scope). vercel.json gives this function 60 s, and the passes after the outlet
+// loop (retroactive re-match, deep press-coverage linking) still need their
+// time, so the outlet phase stops starting new outlets at 35 s. Only the outlet
+// RSS fetch is bounded; every Supabase call and write path is unchanged.
+const OUTLET_BUDGET_MS = 35000;
+const OUTLET_REQUEST_TIMEOUT_MS = 10000;
+const OUTLET_MIN_START_MS = 1500;
+function outletLimits() {
+  const n = (v, d) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d);
+  return {
+    budgetMs: n(process.env.EDITORIAL_OUTLET_BUDGET_MS, OUTLET_BUDGET_MS),
+    requestTimeoutMs: n(process.env.EDITORIAL_REQUEST_TIMEOUT_MS, OUTLET_REQUEST_TIMEOUT_MS),
+    minStartMs: n(process.env.EDITORIAL_MIN_START_MS, OUTLET_MIN_START_MS),
+  };
+}
+
+async function fetchText(url, bounds) {
+  const r = await boundedFetchText(
+    url,
+    { headers: { "User-Agent": UA, Accept: "application/rss+xml, application/xml, text/xml, */*" } },
+    bounds
+  );
   if (!r.ok) {
     const err = new Error(`HTTP ${r.status}`);
     err.status = r.status;
     throw err;
   }
-  return r.text();
+  return r.text;
 }
 
 function daysBetween(isoA, isoB) {
@@ -601,10 +623,22 @@ module.exports = async (req, res) => {
   let totalUpserted = 0;
   let totalMatched = 0;
 
-  for (const outlet of OUTLETS) {
+  const limits = outletLimits();
+  const outletBudget = createBudget({ budgetMs: limits.budgetMs });
+  const outletsTimedOut = [];
+  const outletsDeferred = [];
+  let outletsAttempted = 0;
+  // Rotated by UTC day so a slow head outlet cannot starve the tail every day.
+  for (const outlet of rotate(OUTLETS, Math.floor(Date.now() / 86400000))) {
+    if (outletBudget.remaining() < limits.minStartMs) {
+      outletsDeferred.push(outlet.source);
+      results.push({ source: outlet.source, feedUrl: outlet.feedUrl, result: "Skipped: run time budget reached" });
+      continue;
+    }
+    outletsAttempted++;
     let outletResult;
     try {
-      const xml = await fetchText(outlet.feedUrl);
+      const xml = await fetchText(outlet.feedUrl, { timeoutMs: limits.requestTimeoutMs, budget: outletBudget });
       const items = parseFeedItems(xml);
       if (!items.length) {
         outletResult = "Fetched OK — 0 items parsed (feed may be empty or in an unsupported shape)";
@@ -735,6 +769,7 @@ module.exports = async (req, res) => {
         }
       }
     } catch (err) {
+      if (isTimeout(err)) outletsTimedOut.push(outlet.source);
       outletResult = "Error: " + err.message;
     }
     results.push({ source: outlet.source, feedUrl: outlet.feedUrl, result: outletResult });
@@ -770,6 +805,13 @@ module.exports = async (req, res) => {
     matched: totalMatched,
     candidateEvents: candidateEvents.length,
     outletsChecked: OUTLETS.length,
+    outletsAttempted,
+    outletsTimedOut,
+    outletsDeferred,
+    complete: outletsTimedOut.length === 0 && outletsDeferred.length === 0,
+    partial: outletsTimedOut.length > 0 || outletsDeferred.length > 0,
+    outletBudgetMs: limits.budgetMs,
+    outletElapsedMs: outletBudget.elapsed(),
     results,
     retroactiveRematch: retryResult,
     deepPressCoverageLinking: deepLinkResult,

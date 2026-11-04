@@ -67,9 +67,13 @@
 //   WHERE   Distance is between CITY CENTRES and must be labelled that way
 //           — no venue has coordinates. 'orbit' = within 75 miles of
 //           Detroit's BORDER (DEC-003). A numeric radius is measured from
-//           the chosen place and stays inside the Orbit. An event whose
-//           city is not in `places` cannot be placed: it is excluded by
-//           any radius filter and reported by facets(…, 'placement').
+//           the chosen place and stays inside the Orbit. A city is looked
+//           up by exact name in `places`, then (when city-resolution.js and
+//           city-table-phase2.js are loaded, as on every page) through
+//           CityResolution -- state/ZIP, Twp, Mt = Mount, Grosse Pointe
+//           aliases, source-gated Phase 2 cities. An event whose city still
+//           cannot be placed is excluded by any radius filter, never
+//           guessed, and reported by facets(…, 'placement').
 //   SEARCH  One haystack: title, venue, city, category label,
 //           neighborhood, source, note.
 //   BLOCKED A small always-on suppression list, applied inside matches()
@@ -117,6 +121,8 @@
 //   (`city` is undefined for Detroit, as the pages already store it.)
 (function () {
   "use strict";
+
+  var GLOBAL = globalThis;
 
   // ===================================================================
   // Definitions
@@ -833,7 +839,24 @@
       return e.cat;
     }
 
-    function cityOf(e) { return CITY_BY_NAME.get(String(e.city || "Detroit").toLowerCase()) || null; }
+    // Where is this event's city? An exact name in `places` wins, so nothing that placed before
+    // changes. Otherwise, when the page loaded city-resolution.js (and city-table-phase2.js),
+    // the same rules the map uses apply: "Warren, MI 48092", "Clinton Twp", "Mt. Clemens", the
+    // Grosse Pointe municipalities, and the sourced Phase 2 cities whose bare name is accepted
+    // only for a feed that is jurisdiction evidence. Anything else stays unplaced (never guessed).
+    var CITY_RESOLVER = config.cityResolution !== undefined ? config.cityResolution : (GLOBAL.CityResolution || null);
+    var EXTRA_CITIES = config.extraCities !== undefined ? config.extraCities : (GLOBAL.PHASE2_CITIES || []);
+    var RESOLVE_LOOKUP = new Map(CITY_BY_NAME);
+    EXTRA_CITIES.forEach(function (c) {
+      var k = String(c.name).toLowerCase();
+      if (!RESOLVE_LOOKUP.has(k)) RESOLVE_LOOKUP.set(k, { name: c.name, type: "city", region: c.region, lat: c.lat, lng: c.lng, sources: c.sources });
+    });
+    function cityOf(e) {
+      var exact = CITY_BY_NAME.get(String(e.city || "Detroit").toLowerCase());
+      if (exact || !e.city || !CITY_RESOLVER) return exact || null;
+      var hit = CITY_RESOLVER.resolve(e.city, RESOLVE_LOOKUP, { source: e.source, venue: e.venue });
+      return hit ? hit.loc : null;
+    }
 
     function matchWhat(e, what, c, skip) {
       if (skip !== "category" && what.paths.length) {
