@@ -139,7 +139,7 @@ module.exports = async (req, res) => {
     // deliberately (see this file's own header) rather than factored into a
     // shared module.
     const { repairExistingEvents } = require("../scripts/sh1-repair-existing-venue-address-city");
-    const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY });
+    const venueCounts = await repairExistingEvents({ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, runId: runHandle && runHandle.runId ? runHandle.runId : null });
 
     let descriptionCounts = null;
     let outerLimitsDescriptionError = null;
@@ -302,13 +302,14 @@ module.exports = async (req, res) => {
       // The candidate-cap record (how many rows were examined, whether the cap or the ordering limited the run) rides
       // beside the outcomes and survives capSessionData, which only ever drops `samples`; without it a run row cannot
       // say whether rows were left unexamined (B-037).
-      session_data: genericCounts && (genericCounts.descriptionOutcomes || genericCounts.candidateCap)
+      session_data: (genericCounts && (genericCounts.descriptionOutcomes || genericCounts.candidateCap)) || (venueCounts && venueCounts.written)
         ? {
-            ...(genericCounts.descriptionOutcomes ? { description_outcomes: genericCounts.descriptionOutcomes } : {}),
-            total_considered: genericCounts.totalConsidered,
-            cap_reached: genericCounts.capReached === true,
-            ...(genericCounts.candidateCap ? { candidate_cap: genericCounts.candidateCap } : {}),
-            ...(genericCounts.descriptionOutcomes ? { samples: genericCounts.descriptionOutcomeSamples || [] } : {}),
+            // Which events the venue step wrote and which fields (capped), so a later question about a row has an answer.
+            ...(venueCounts && venueCounts.written ? { venue_fill: { written: venueCounts.written, fields: venueCounts.writtenFields || [], owner_row_fills: venueCounts.ownerRowFills || 0, owner_row_ids: venueCounts.ownerRowFillIds || [] } } : {}),
+            ...(genericCounts && genericCounts.descriptionOutcomes ? { description_outcomes: genericCounts.descriptionOutcomes } : {}),
+            ...(genericCounts ? { total_considered: genericCounts.totalConsidered, cap_reached: genericCounts.capReached === true } : {}),
+            ...(genericCounts && genericCounts.candidateCap ? { candidate_cap: genericCounts.candidateCap } : {}),
+            ...(genericCounts && genericCounts.descriptionOutcomes ? { samples: genericCounts.descriptionOutcomeSamples || [] } : {}),
           }
         : undefined,
     });

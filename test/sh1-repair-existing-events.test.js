@@ -92,9 +92,39 @@ async function run() {
     assert.strictEqual(counts.repairableFromCanonicalVenueId, 1);
     assert.strictEqual(applyCalls.length, 1);
     assert.strictEqual(applyCalls[0].id, "e1");
-    assert.deepStrictEqual(applyCalls[0].patch, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    const { internal_note: note1, ...fields1 } = applyCalls[0].patch;
+    assert.deepStrictEqual(fields1, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    assert.ok(/^AUTO-FILL \d{4}-\d\d-\d\d: venue_address_raw, venue_city_raw from canonical_venue_id for "The Loft"; step SH\.1/.test(note1), "every automated fill leaves a dated line: " + note1);
+    assert.deepStrictEqual(counts.writtenFields, [{ id: "e1", fields: ["venue_address_raw", "venue_city_raw"] }], "the run keeps which fields were written to which event");
+    assert.strictEqual(counts.ownerRowFills, 0);
   }
   console.log("PASS: a repairable existing event is written exactly once with exactly the missing fields");
+
+  // --- 2b. an owner-supplied (Manual) row is still only blank-filled, with its provenance line, and is flagged; existing note kept ---
+  {
+    const { repairExistingEvents } = freshScript();
+    global.fetch = async (url) => {
+      if (url.includes("/rest/v1/venues")) return { ok: true, status: 200, json: async () => [{ id: "v1", name: "The Loft", address: "123 Main St", city: "Detroit" }] };
+      if (url.includes("/rest/v1/events")) return { ok: true, status: 200, json: async () => [] };
+      throw new Error("unmocked: " + url);
+    };
+    const patches = [];
+    const counts = await repairExistingEvents({
+      SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: "test-key", logger: silentLogger(), runId: "run-123",
+      fetchCandidates: async () => [
+        { id: "m1", source: "Manual", venue_id: "v1", venue_name_raw: "The Loft", venue_address_raw: null, venue_city_raw: null, start_date: "2026-12-01", status: "approved", internal_note: "EI intake note." },
+        { id: "a1", source: "Resident Advisor", venue_id: "v1", venue_name_raw: "The Loft", venue_address_raw: null, venue_city_raw: null, start_date: "2026-12-01", status: "approved" },
+      ],
+      applyPatchFn: async (u, h, id, patch) => { patches.push({ id, patch }); return true; },
+    });
+    assert.strictEqual(counts.ownerRowFills, 1);
+    assert.deepStrictEqual(counts.ownerRowFillIds, ["m1"]);
+    assert.ok(patches[0].patch.internal_note.startsWith("EI intake note.\nAUTO-FILL "), "an existing note is kept, the line appended");
+    assert.ok(/run run-123/.test(patches[0].patch.internal_note) && /owner-supplied row, flagged/.test(patches[0].patch.internal_note));
+    assert.ok(!/owner-supplied/.test(patches[1].patch.internal_note), "a feed row is not flagged");
+    assert.ok(!("title" in patches[0].patch) && !("description" in patches[0].patch), "only blank location fields are ever written");
+  }
+  console.log("PASS: automated fills leave a dated line, record written fields, and flag owner-supplied rows");
 
   // --- 3. concurrent-change: applyPatchFn reports no row matched -> counted,
   //     not treated as an error, and does not stop the run ---
@@ -204,9 +234,13 @@ async function run() {
     assert.strictEqual(counts.written, 2);
     assert.strictEqual(patchCalls.length, 2);
     const e1Patch = patchCalls.find((p) => p.url.includes("id=eq.e1")).body;
-    assert.deepStrictEqual(e1Patch, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    const { internal_note: n1, ...e1Fields } = e1Patch;
+    assert.deepStrictEqual(e1Fields, { venue_address_raw: "123 Main St", venue_city_raw: "Detroit" });
+    assert.ok(/^AUTO-FILL /.test(n1));
     const e2Patch = patchCalls.find((p) => p.url.includes("id=eq.e2")).body;
-    assert.deepStrictEqual(e2Patch, { venue_city_raw: "Detroit" }, "e2 already had an address — only venue_city_raw should be in its patch");
+    const { internal_note: n2, ...e2Fields } = e2Patch;
+    assert.deepStrictEqual(e2Fields, { venue_city_raw: "Detroit" }, "e2 already had an address — only venue_city_raw should be in its patch");
+    assert.ok(/^AUTO-FILL /.test(n2));
   }
   console.log("PASS: end-to-end query and conditional-PATCH URL construction is correct for both single- and multi-field repairs");
 

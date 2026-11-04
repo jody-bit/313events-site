@@ -83,6 +83,23 @@ function classifyTier(event, canonicalMaps, learnedMap, decision) {
 // growing and a row past the cap would simply never be repaired. Pages of
 // 1,000 until a short page, 40 pages at most (the same ceiling as Admin's
 // Needs Follow-up read, DEBT-003).
+const WRITTEN_FIELDS_CAP = 100;
+const AUTO_FILL_MARKER = "AUTO-FILL";
+
+// Owner-supplied rows: Manual source, or a private note carrying an owner correction or an editorial hold. SH.1 only ever
+// fills blank fields, so these rows are still filled, but each such fill is flagged (ownerRowFills) for the daily digest.
+function isOwnerSuppliedRow(event) {
+  const note = typeof event.internal_note === "string" ? event.internal_note : "";
+  return String(event.source || "").toLowerCase() === "manual" || /OWNER-CORRECTION|EDITORIAL[-_ ]HOLD/i.test(note);
+}
+
+// One dated line per automated fill that has no VENUE_KNOWLEDGE_FILLED line: date, step, fields, tier, run id.
+function autoFillLine(fields, decision, event, today, runId) {
+  const tier = (decision && decision.tier) || "canonical";
+  const name = event.venue_name_raw ? ` for "${String(event.venue_name_raw).replace(/[\r\n"]+/g, " ").slice(0, 80)}"` : "";
+  return `${AUTO_FILL_MARKER} ${today}: ${fields.join(", ")} from ${tier}${name}; step SH.1 enrichment blank-field fill${runId ? `; run ${runId}` : ""}${isOwnerSuppliedRow(event) ? "; owner-supplied row, flagged" : ""}`;
+}
+
 const REPAIR_PAGE_SIZE = 1000;
 const REPAIR_MAX_PAGES = 40;
 async function fetchRepairCandidates(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, sbHeaders) {
@@ -143,6 +160,7 @@ async function repairExistingEvents({
   SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY,
   fetchCandidates = fetchRepairCandidates,
   applyPatchFn = applyPatch,
+  runId = null,
 } = {}) {
   const counts = {
     totalConsidered: 0,
@@ -171,6 +189,11 @@ async function repairExistingEvents({
     // blank description) -- summing the two counters alone would double-
     // count that event. Purely additive; nothing here reads or uses it.
     writtenIds: [],
+    // Nov 4 attribution (R&Q proposal, Nico Bones finding): which fields each written event received (capped), and
+    // how many of the filled rows were owner-supplied (Manual source or an owner marker). Observation only.
+    writtenFields: [],
+    ownerRowFills: 0,
+    ownerRowFillIds: [],
     // Issue #49: why the rest were not filled. A conflict goes to a person
     // (Needs Decision); a venue known from one source only is confirmed
     // once, at venue level; an excluded name (TBA, secret, multiple
@@ -217,6 +240,12 @@ async function repairExistingEvents({
     if (decision && decision.tier && decision.tier !== "canonical_venue_id" && decision.tier !== "canonical_name") {
       const line = provenanceLine(decision, today);
       patch.internal_note = event.internal_note ? `${event.internal_note}\n${line}` : line;
+    } else {
+      // A canonical fill is still an automated change to a stored row: say so, once, in the private note (Nov 4 finding:
+      // an exact-name venue link on an owner-supplied row left no trace). A different marker from VENUE_KNOWLEDGE_FILLED, so
+      // the learned-evidence rule that skips marked rows is unchanged.
+      const line = autoFillLine(Object.keys(fieldPatch), decision, event, today, runId);
+      patch.internal_note = event.internal_note ? `${event.internal_note}\n${line}` : line;
     }
     const tier = classifyTier(event, canonicalMaps, learnedMap, decision);
     if (tier === "canonical_venue_id") counts.repairableFromCanonicalVenueId++;
@@ -232,6 +261,11 @@ async function repairExistingEvents({
       counts.written++;
       counts.fieldsWritten += Object.keys(fieldPatch).length;
       counts.writtenIds.push(event.id);
+      if (counts.writtenFields.length < WRITTEN_FIELDS_CAP) counts.writtenFields.push({ id: event.id, fields: Object.keys(fieldPatch) });
+      if (isOwnerSuppliedRow(event)) {
+        counts.ownerRowFills++;
+        if (counts.ownerRowFillIds.length < WRITTEN_FIELDS_CAP) counts.ownerRowFillIds.push(event.id);
+      }
     } else {
       counts.skippedConcurrentChange++;
       logger.warn(`Skipped event ${event.id} — a field in ${JSON.stringify(patch)} was no longer null at write time (concurrent change).`);
