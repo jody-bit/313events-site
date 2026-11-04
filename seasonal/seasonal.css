@@ -141,9 +141,5 @@ a.sc-view{display:inline-flex;align-items:center;min-height:44px}
 .sc-near-city .sc-near-lab{flex-basis:100%}.sc-map-tilestatus{margin:0 0 8px;font-size:13px;color:var(--ink-soft)}
 @media (max-width:640px){.sc-near-main,.sc-near-city,.sc-near-city .sc-near-btn,.sc-near-in{flex:1 1 100%;width:100%}}
 .sc-near-help{flex-basis:100%;margin:0;font-size:12px;color:var(--ink-soft)}
-.sc-catsum{margin:12px 0 0;font-family:var(--font-data);font-size:12px;letter-spacing:.04em;color:var(--ink)}
-.sc-catsum:focus{outline:2px solid var(--accent);outline-offset:3px}
-.sc-catsum-line{margin:0;line-height:2}
-.sc-catsel,.sc-catclear{font:inherit;color:var(--ink);background:transparent;border:1px solid #3a3a3a;padding:4px 10px;cursor:pointer;min-height:32px}
-.sc-catclear{margin-left:6px;text-decoration:underline;border-color:transparent}
-.sc-catsel:hover,.sc-catclear:hover{border-color:var(--ink)}
+.sc-catsum{margin:8px 0 0;font-size:14px}
+.sc-catsum-line{margin:0;line-height:1.6}

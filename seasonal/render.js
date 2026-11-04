@@ -22,17 +22,9 @@
     DATA.live(col).forEach(function (e) { e.categories.forEach(function (c) { seen[c] = true; }); });
     return col.categories.filter(function (c) { return seen[c.id]; });
   }
-  // Categories are a multi-select (an entry matches when it is in ANY selected category). state.categories is the ordered list of selected ids;
-  // the older single state.category is still honoured so links and callers that use it keep working.
-  function selectedCategories(state) {
-    state = state || {};
-    if (Array.isArray(state.categories)) return state.categories;
-    return state.category && state.category !== "all" ? [state.category] : [];
-  }
   function matches(e, state) {
     state = state || {};
-    var sel = selectedCategories(state);
-    if (sel.length && !sel.some(function (c) { return e.categories.indexOf(c) >= 0; })) return false;
+    if (state.category && state.category !== "all" && e.categories.indexOf(state.category) < 0) return false;
     var q = (state.query || "").trim().toLowerCase();
     if (q) {
       var hay = [e.name, e.city, e.region, e.summary].concat(e.categories.map(function (c) { return c; })).join(" ").toLowerCase();
@@ -174,28 +166,22 @@
       (e.website ? arrow : "") + '</li>';
   }
 
-  // "Categories: 2 of 15 selected \u2014 Nightlife, Music". The counts come from the actual selection and the categories this collection offers;
-  // every selected name is its own remove button, followed by a clear-all button. Re-rendered on every change (see page.js sync).
+  // Presentation only: "Categories: 1 of 7 selected \u2014 Music" (or "0 of 7 selected \u2014 showing all destinations"). Read-only text, no extra controls;
+  // selection itself is still the chips below (one category at a time, "All categories" to reset), unchanged.
   function catSummary(col, state) {
-    var all = usedCategories(col), ids = all.map(function (c) { return c.id; });
-    var sel = selectedCategories(state).filter(function (c) { return ids.indexOf(c) >= 0; });
-    var names = sel.map(function (id) {
-      var label = catLabel(col, id);
-      return '<button type="button" class="sc-catsel" data-cat-remove="' + esc(id) + '" aria-label="Remove category: ' + esc(label) + '">' + esc(label) + ' <span aria-hidden="true">\u00d7</span></button>';
-    });
-    return '<p class="sc-catsum-line"><strong>Categories:</strong> ' + sel.length + ' of ' + all.length + ' selected' +
-      (sel.length ? ' \u2014 ' + names.join(', ') + ' <button type="button" class="sc-catclear" data-cat-clear>Clear all categories</button>' : ' (showing every destination)') + '</p>';
+    var all = usedCategories(col), one = state && state.category && state.category !== "all" && all.some(function (c) { return c.id === state.category; }) ? state.category : null;
+    return '<p class="sc-catsum-line"><strong>Categories:</strong> ' + (one ? '1' : '0') + ' of ' + all.length + ' selected' +
+      (one ? ' \u2014 <span class="sc-catname">' + esc(catLabel(col, one)) + '</span>' : ' (showing every destination)') + '</p>';
   }
   function filterBar(col, state) {
-    var sel = selectedCategories(state);
-    var chips = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="' + (sel.length === 0) + '">All categories</button>' +
+    var chips = '<button type="button" class="sc-chip" data-cat="all" aria-pressed="' + (!state.category || state.category === "all") + '">All categories</button>' +
       usedCategories(col).map(function (c) {
-        return '<button type="button" class="sc-chip" data-cat="' + esc(c.id) + '" aria-pressed="' + (sel.indexOf(c.id) >= 0) + '">' + esc(c.label) + '</button>';
+        return '<button type="button" class="sc-chip" data-cat="' + esc(c.id) + '" aria-pressed="' + (state.category === c.id) + '">' + esc(c.label) + '</button>';
       }).join("");
     return '<section class="sc-filters" aria-label="Filters">' +
       '<div class="sc-filter-cats"><p class="sc-label" id="scFilterLabel">' + esc(col.filterLabel) + '</p>' +
-      '<div class="sc-chips" role="group" aria-label="Categories (choose any number)" aria-describedby="scFilterLabel">' + chips + '</div>' +
-      '<div class="sc-catsum" id="scCatSummary" tabindex="-1" role="status" aria-live="polite">' + catSummary(col, state) + '</div></div>' +
+      '<div class="sc-chips" role="group" aria-labelledby="scFilterLabel">' + chips + '</div>' +
+      '<div class="sc-catsum" id="scCatSummary" role="status" aria-live="polite">' + catSummary(col, state) + '</div></div>' +
       '<div class="sc-filter-search"><label class="sc-label" for="scSearch">Search this collection</label>' +
       '<input id="scSearch" type="search" class="sc-search" placeholder="Search destinations, cities, or experiences" value="' + esc(state.query || "") + '"></div>' +
       '</section>';
@@ -320,5 +306,5 @@
     });
   }
 
-  return { catSummary: catSummary, selectedCategories: selectedCategories, dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, isParkLocation: isParkLocation, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
+  return { catSummary: catSummary, dontMiss: dontMiss, lastDayHtml: lastDayLine, milesBetween: milesBetween, hasPin: hasPin, isCandidate: isCandidate, isParkLocation: isParkLocation, setQaPins: setQaPins, mapEnabled: mapEnabled, coverage: coverage, nearStatus: nearStatus, fitTitles: fitTitles, setFailedLookup: setFailedLookup, pickSrc: pickSrc, chainOf: chainOf, PLACEHOLDER: PLACEHOLDER, catLabel: catLabel, matches: matches, esc: esc, visible: visible, results: results, main: main, header: header, footer: footer, usedCategories: usedCategories, card: card };
 });
