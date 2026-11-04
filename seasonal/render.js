@@ -38,8 +38,12 @@
     var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
     return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
   }
-  function hasPin(e) { return !!(e.loc && typeof e.loc.lat === "number" && typeof e.loc.lng === "number" && (e.loc.status === "verified" || e.loc.status === "address-point")); }
-  function distanceOf(e, state) { return state && state.origin && hasPin(e) ? milesBetween(state.origin, e.loc) : null; }
+  // A map pin needs a verified entrance or official coordinates (status "verified"). A Census address-point is a candidate location, not proof of
+  // where a visitor enters, so those places stay in Grid/List and are counted as "still being verified". Distances may still use an address-point.
+  function hasCoords(e) { return !!(e.loc && typeof e.loc.lat === "number" && typeof e.loc.lng === "number"); }
+  function hasPin(e) { return hasCoords(e) && e.loc.status === "verified"; }
+  function hasLocation(e) { return hasCoords(e) && (e.loc.status === "verified" || e.loc.status === "address-point"); }
+  function distanceOf(e, state) { return state && state.origin && hasLocation(e) ? milesBetween(state.origin, e.loc) : null; }
   // Editorial order is the default. With a chosen origin, destinations with a known location sort nearest first (stable); the rest keep their order after them.
   function visible(col, state) {
     state = state || {};
@@ -176,7 +180,7 @@
     var pre = "";
     if (state.view === "map" && mapEnabled(col)) {
       var cv = coverage(col, state);
-      pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">Showing ' + cv.pinned + ' of ' + cv.shown + ' destinations on the map' +
+      pre = '<p class="sc-map-notice" id="scMapNotice" role="status" aria-live="polite">' + (cv.pinned ? 'Showing ' + cv.pinned + ' of ' + cv.shown + ' destinations on the map' : 'No destinations are on the map yet') +
         (cv.unresolved ? '; ' + cv.unresolved + ' location' + (cv.unresolved === 1 ? '' : 's') + ' still being verified (listed below)' : '') + '.</p>' +
         '<div id="scMap" class="sc-map" aria-label="Map of the destinations in this collection (the list below has the same destinations)"></div>' +
         '<p class="sc-map-credit">Map tiles \u00a9 OpenStreetMap contributors \u00a9 CARTO. The accessible list below shows every destination.</p><p class="sc-map-tilestatus" id="scMapTiles" role="status" aria-live="polite"></p>';
