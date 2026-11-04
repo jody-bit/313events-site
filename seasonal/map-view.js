@@ -51,6 +51,7 @@
       var pts = [];
       pins.forEach(function (e) {
         var m = L.marker([e.loc.lat, e.loc.lng], { title: e.name, keyboard: true, alt: e.name, icon: L.divIcon({ className: "sc-pin", html: '<span class="sc-pin-dot"></span>', iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -14] }) }).bindPopup(popup(e, R.lastDayHtml(e)), { maxWidth: 280 });
+        m.on("add", function () { var el = m.getElement(); if (el) el.setAttribute("aria-label", e.name); });
         m.on("popupclose", function () { if (lastKey === "Escape" && m.getElement()) m.getElement().focus(); });
         layer.addLayer(m); pts.push([e.loc.lat, e.loc.lng]);
       });
