@@ -386,6 +386,7 @@
   .evt-link:hover{text-decoration:underline;}
   .evt-link::after{content:'→';}
   .evt-link{position:relative;}
+  .evt-link:not(:last-child){margin-right:16px;} /* Get tickets / Event details / Venue website must not read as one run (390px) */
   .evt-link::before{content:"";position:absolute;inset:-16.5px -6px;}
   @media (max-width:480px){ .evt-link{min-height:44px;} .evt-link::before{content:none;} }
 
