@@ -1216,9 +1216,14 @@ let markersByKey = new Map();
 // map "works," it just has a watermark stamped across it.
 //
 // Fixed 2026-09-05: Jody requested and received a free key from CARTO
-// (5M tile requests/month across raster+vector combined, no cost — CARTO's
-// own email says they'll reach out rather than cut access off if that's
-// ever exceeded). Per that same email the query param is named `key`, not
+// (5M tile requests/month was the allowance in CARTO's email of that day;
+// that is CARTO's NON-commercial limit). CORRECTED 2026-11-04 from CARTO's
+// basemap terms (carto.com/legal/basemap-terms): commercial use is
+// 1,000,000 tile requests per UTC calendar month across all keys, applying
+// to every key from 2026-12-01 (keys issued before 2026-09-23 keep the old
+// limit until 2026-11-30). Above it CARTO may rate-limit or block the key
+// without notice; the terms describe no overage fee and no automatic
+// upgrade. Usage: dashboard.basemaps.carto.com. Per that same email the query param is named `key`, not
 // `api_key` as originally guessed here — corrected below. Their raster
 // tile service is the one that needed this; vector doesn't require a key
 // yet (CARTO says that's coming later, and this key will cover it when it

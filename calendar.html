@@ -2023,7 +2023,9 @@ let mapInitTried = false;
 // separate constant from map.html's copy since this file duplicates its
 // own full page (no shared JS module between pages on this site). Param
 // is `key`, not `api_key` (corrected from the original guess once CARTO's
-// email confirmed the actual name).
+// email confirmed the actual name). The tile allowance is 1,000,000
+// requests/month for commercial use from 2026-12-01 (not 5M; see the
+// 2026-11-04 correction in map.html). This page's map spends the same quota.
 const CARTO_API_KEY = "cb1_2w25_1_4715a1af021de1017d3ef172";
 
 function initLeaflet(){
