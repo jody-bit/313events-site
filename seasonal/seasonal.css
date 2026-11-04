@@ -132,3 +132,4 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .sc-card-dist .sc-dist-how{color:var(--ink-soft);font-size:12px}
 a.sc-view{display:inline-flex;align-items:center;min-height:44px}
 @media (max-width:640px){.sc-map{height:340px}.sc-near-btn{flex:1 1 auto}}
+.sc-section-head{flex-wrap:wrap;gap:8px}.sc-views{flex-wrap:wrap;max-width:100%}
