@@ -459,7 +459,7 @@ async function run() {
     assert.strictEqual(chip(page, '.chip[data-cat="film"]').getAttribute("aria-pressed"), "false");
     assert.deepStrictEqual(sorted(v.titles), ["Jazz at Seven", "Out There", "Sunday Show"], "only music events");
     assert.ok(!v.titles.includes("No Category"), "an uncategorised event is not in any selected category");
-    assert.deepStrictEqual(v.tray, ["All Upcoming", "Music"], "the tray shows each selected category as its own chip");
+    assert.deepStrictEqual(v.tray, ["All Upcoming", "1 of 15 categories"], "the tray collapses the selection into one chip, as before");
     assert.strictEqual(page.el("filterTriggerSub").textContent, "1 of 15 categories");
     assert.strictEqual(v.url, "/?when=all&cats=music");
 
@@ -469,7 +469,7 @@ async function run() {
     assert.deepStrictEqual(v.state.what.paths, ["music", "film"]);
     assert.deepStrictEqual(litCats(page), ["music", "film"]);
     assert.deepStrictEqual(sorted(v.titles), ["Jazz at Seven", "Matinee Somewhere", "Out There", "Sunday Show"], "music or film");
-    assert.deepStrictEqual(v.tray, ["All Upcoming", "Music", "Film"]);
+    assert.deepStrictEqual(v.tray, ["All Upcoming", "2 of 15 categories"]);
     assert.strictEqual(v.url, "/?when=all&cats=" + encodeURIComponent("music,film"));
     assert.deepStrictEqual(plain(D.fromQuery(v.url.slice(1))), v.state, "the link means exactly this selection");
 
@@ -478,7 +478,7 @@ async function run() {
     v = view(page);
     assert.deepStrictEqual(v.state.what.paths, ["film"]);
     assert.deepStrictEqual(v.titles, ["Matinee Somewhere"]);
-    assert.deepStrictEqual(v.tray, ["All Upcoming", "Film"]);
+    assert.deepStrictEqual(v.tray, ["All Upcoming", "1 of 15 categories"]);
     chip(page, '.chip[data-cat="film"]').click();
     v = view(page);
     assert.deepStrictEqual(v.state.what.paths, [], "deselecting the last chip returns to ALL events (approved: there is no show-nothing state)");
@@ -496,7 +496,7 @@ async function run() {
 
     // Tray ✕ on the category chip, and "All categories".
     chip(page, '.chip[data-cat="sports"]').click();
-    trayRemove(page, "Sports");
+    trayRemove(page, "1 of 15 categories");
     assert.deepStrictEqual(view(page).state.what.paths, []);
     chip(page, '.chip[data-cat="sports"]').click();
     chip(page, "#allTypesChip").click();
@@ -722,7 +722,7 @@ async function run() {
     assert.strictEqual(page.el("locInput").value, "Ann Arbor");
     assert.deepStrictEqual(litCats(page), ["music", "fest"]);
     assert.ok(chip(page, "#freeChip").classList.contains("active"));
-    assert.deepStrictEqual(view(page).tray, ["Oct 7–Oct 10", "Free only", '"fest"', "Music", "Festivals & Parades", "25 mi · Ann Arbor"], "tray order: when, free, features, search, categories, location, neighborhood — as before");
+    assert.deepStrictEqual(view(page).tray, ["Oct 7–Oct 10", "Free only", '"fest"', "2 of 15 categories", "25 mi · Ann Arbor"], "tray order: when, free, features, search, categories, location, neighborhood — as before");
 
     // The approved differences in how a link is read.
     page = await open("/?cats=");

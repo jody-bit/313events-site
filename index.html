@@ -3716,9 +3716,8 @@
   .cat-summary{flex:0 0 100%;width:100%;margin:2px 0 6px;font-size:13px}
   .cat-summary:focus{outline:2px solid var(--accent,#c8ff00);outline-offset:3px}
   .cat-summary-line{margin:0;line-height:2}
-  .cat-sel,.cat-clear{font:inherit;color:inherit;background:transparent;border:1px solid #3a3a3a;padding:4px 10px;cursor:pointer;min-height:32px}
-  .cat-clear{text-decoration:underline;border-color:transparent;margin-left:4px}
-  .cat-sel:hover,.cat-clear:hover{border-color:currentColor}
+  .cat-name{display:inline-flex;align-items:center;gap:6px;margin:0 6px 0 0;padding:2px 8px;border:1px solid #3a3a3a}
+  .cat-name .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
   .chip{
     border:1px solid var(--line);background:var(--bg);border-radius:0;padding:8px 13px;
     font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--ink);
@@ -5200,9 +5199,7 @@ function currentListMeta(){
 // shared layer.
 
 // "Categories: 2 of 15 selected — Nightlife, Music". Read from the one filter state on every call, so it can never disagree with the list.
-// Every selected name is its own remove button; nothing selected is stated in words. Buttons stop propagation because they are replaced here and
-// the document-level outside-click handler would otherwise read the detached button as a click outside the open sheet and close it.
-function focusCatSummary(){ setTimeout(()=>{ const el = document.getElementById('catSummary'); if(el) el.focus({preventScroll:true}); }, 0); }
+// Display-only context (name with its category colour); no extra controls. Nothing selected is stated in words.
 function updateCatSummary(){
   const box = document.getElementById('catSummary');
   if(!box) return;
@@ -5219,23 +5216,14 @@ function updateCatSummary(){
   } else {
     line.appendChild(document.createTextNode(' \u2014 '));
     keys.forEach((k, i)=>{
-      if(i) line.appendChild(document.createTextNode(', '));
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'cat-sel';
-      b.setAttribute('aria-label', `Remove category: ${CATS[k].label}`);
-      b.appendChild(document.createTextNode(CATS[k].label + ' '));
-      const x = document.createElement('span'); x.setAttribute('aria-hidden', 'true'); x.textContent = '\u00d7'; b.appendChild(x);
-      b.onclick = (ev)=>{ ev.stopPropagation(); setState({what: {remove: k}}); render(); focusCatSummary(); };
-      line.appendChild(b);
+      if(i) line.appendChild(document.createTextNode(' '));
+      // Display-only: the category's own colour dot and name. Selecting and deselecting stays with the category chips above.
+      const c = document.createElement('span');
+      c.className = 'cat-name';
+      const d = document.createElement('span'); d.className = 'dot'; d.setAttribute('aria-hidden', 'true'); d.style.background = CATS[k].color;
+      c.appendChild(d); c.appendChild(document.createTextNode(CATS[k].label));
+      line.appendChild(c);
     });
-    const clr = document.createElement('button');
-    clr.type = 'button';
-    clr.className = 'cat-clear';
-    clr.textContent = 'Clear all categories';
-    clr.onclick = (ev)=>{ ev.stopPropagation(); setState({what: {clear: true}}); render(); focusCatSummary(); };
-    line.appendChild(document.createTextNode(' '));
-    line.appendChild(clr);
   }
   box.appendChild(line);
 }
@@ -5459,8 +5447,9 @@ function removeFilter(entry){
 // each active dimension shown as its own removable chip, per the brief's
 // "filter state must be visible" requirement. What is active, what each is
 // called, and how to remove it all come from Discovery.describe(); this
-// page chooses the order it has always shown them in. Each selected
-// category is its own removable chip, matching the names in the filter sheet.
+// page chooses the order it has always shown them in, and collapses the
+// selected categories into one "N of 15 categories" chip (the names are shown
+// in the filter sheet).
 function renderActiveFilters(){
   const tray = document.getElementById('activeFilters');
   const entries = Discovery.describe(state);
@@ -5472,8 +5461,13 @@ function renderActiveFilters(){
   entries.filter(e => e.dim === 'what' && e.key === 'free').forEach(add);
   entries.filter(e => e.dim === 'what' && e.key !== 'free' && !isCategory(e)).forEach(add); // features
   entries.filter(e => e.dim === 'search').forEach(add);
-  // Each selected category is its own removable chip, so the tray and the filter bar agree on names as well as the count.
-  entries.filter(isCategory).forEach(add);
+  const selectedCats = entries.filter(isCategory).length;
+  if(selectedCats){
+    chips.push({label: `${selectedCats} of ${Object.keys(CATS).length} categories`, onRemove: ()=>{
+      setState({what: {clear: true}});
+      render();
+    }});
+  }
   entries.filter(e => e.dim === 'where' && e.key === 'origin').forEach(add);
   entries.filter(e => e.dim === 'where' && e.key === 'neighborhood').forEach(add);
 
