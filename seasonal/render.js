@@ -19,7 +19,7 @@
   }
   function usedCategories(col) {
     var seen = {};
-    DATA.published(col).forEach(function (e) { e.categories.forEach(function (c) { seen[c] = true; }); });
+    DATA.live(col).forEach(function (e) { e.categories.forEach(function (c) { seen[c] = true; }); });
     return col.categories.filter(function (c) { return seen[c.id]; });
   }
   function matches(e, state) {
@@ -31,7 +31,7 @@
     }
     return true;
   }
-  function visible(col, state) { return DATA.published(col).filter(function (e) { return matches(e, state); }); }
+  function visible(col, state) { return DATA.live(col).filter(function (e) { return matches(e, state); }); }
 
   function tags(col, e) {
     return '<ul class="sc-tags">' + e.categories.map(function (c) {
@@ -84,6 +84,8 @@
     if (viaLink) return html + '<span class="sc-illus sc-illus-fb">Illustrative image</span></div>';
     return html + (e.image.illustrative ? '<span class="sc-illus">Illustrative image</span>' : e.image.historic === true ? '<span class="sc-hist">Historic photo</span>' : "") + '</div>';
   }
+  var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function lastDayText(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso); return m ? MONTHS[+m[2] - 1] + " " + (+m[3]) + ", " + m[1] : iso; }
   function card(col, e, opts) {
     opts = opts || {};
     var arrow = '<span class="sc-arrow" aria-hidden="true">&rarr;</span>';
@@ -101,6 +103,7 @@
       '<h3 class="sc-card-title' + (longWord ? " sc-card-title--long" : "") + '"' + (longWord ? ' style="--lw:' + longWord + '"' : "") + '>' + name + '</h3>' +
       '<p class="sc-card-where">' + esc(e.city) + ', ' + esc(e.region) + '</p>' +
       '<p class="sc-card-sum">' + esc(e.summary) + '</p>' +
+      (e.lastDay ? '<p class="sc-card-sum sc-card-lastday"><strong>Last day:</strong> ' + esc(lastDayText(e.lastDay)) + '</p>' : "") +
       (e.advisory ? '<p class="sc-card-sum sc-card-advisory"><strong>Access advisory:</strong> ' + esc(e.advisory) + '</p>' : "") + creditLine(e) + (opts.extra || "") + '</div>' +
       (e.website ? arrow : "") + '</li>';
   }
@@ -133,7 +136,7 @@
     var shown = {};   // shared rule: navigation tiles never repeat an image; each takes the first destination in its category whose image no earlier tile used
     return '<section class="sc-section" aria-labelledby="scDiscover"><h2 class="sc-h2" id="scDiscover">' + esc(col.discoverTitle) + '</h2>' +
       '<ul class="sc-tiles">' + used.map(function (c, i) {
-        var inCat = DATA.published(col).filter(function (e) { return e.categories.indexOf(c.id) >= 0; });
+        var inCat = DATA.live(col).filter(function (e) { return e.categories.indexOf(c.id) >= 0; });
         var n = inCat.filter(function (e) { return !shown[e.image.src]; })[0] || inCat[0];
         shown[n.image.src] = true;
         return '<li><button type="button" class="sc-tile" data-cat="' + esc(c.id) + '"><img src="' + esc(n.image.src) + '" alt="" loading="lazy" width="640" height="427"><span class="sc-tile-label">' + esc(c.tile) + ' <span aria-hidden="true">&rarr;</span></span></button></li>';
@@ -175,7 +178,7 @@
   }
 
   function dontMiss(col, state) {
-    var feat = DATA.published(col).filter(function (e) { return e.featured; });
+    var feat = DATA.live(col).filter(function (e) { return e.featured; });
     if (!feat.length) return "";
     return '<section class="sc-section" aria-labelledby="scDontMiss"><div class="sc-section-head"><h2 class="sc-h2" id="scDontMiss">' + esc(col.dontMissTitle) + '</h2></div>' +
       '<ul class="sc-grid sc-rail' + (feat.length === 1 ? " sc-rail-solo" : "") + '">' + feat.map(function (e) { return card(col, e, { list: feat.length === 1 }); }).join("") + '</ul></section>';
@@ -186,7 +189,7 @@
       '<div class="sc-views" role="group" aria-label="View"><button type="button" class="sc-view" data-view="grid" aria-pressed="' + (state.view !== "list") + '">Grid</button>' +
       '<button type="button" class="sc-view" data-view="list" aria-pressed="' + (state.view === "list") + '">List</button>' +
       '<a class="sc-view" href="/map.html" title="General events map, not filtered to this collection">Events map</a></div></div>' +
-      '<p class="sc-count" id="scCount" aria-live="polite">' + visible(col, state).length + ' of ' + DATA.published(col).length + ' destinations</p>' +
+      '<p class="sc-count" id="scCount" aria-live="polite">' + visible(col, state).length + ' of ' + DATA.live(col).length + ' destinations</p>' +
       '<div id="scResults">' + results(col, state) + '</div></section>';
   }
 
